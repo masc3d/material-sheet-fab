@@ -13,12 +13,11 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import kotlinx.android.synthetic.main.fragment_delivery.*
-import kotlinx.android.synthetic.main.row_delivery_menu_entry.view.*
+import kotlinx.android.synthetic.main.item_delivery_menu_entry.view.*
+import kotlinx.android.synthetic.main.screen_menu.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
-import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 import sx.android.getLayoutInflater
@@ -28,7 +27,7 @@ import sx.android.getLayoutInflater
  *
  * Presents the main entry point within the delivery process.
  */
-class DeliveryMainScreen : ScreenFragment() {
+class MenuScreen : ScreenFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
@@ -50,7 +49,7 @@ class DeliveryMainScreen : ScreenFragment() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val inflater = context.getLayoutInflater()
 
-            val v: View = convertView ?: inflater.inflate(R.layout.row_delivery_menu_entry, parent, false)
+            val v: View = convertView ?: inflater.inflate(R.layout.item_delivery_menu_entry, parent, false)
 
             v.uxMenuDescription.text = entries[position].description
             v.uxMenuIcon.setImageDrawable(entries[position].icon)
@@ -86,7 +85,7 @@ class DeliveryMainScreen : ScreenFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_delivery, container, false)
+        return inflater.inflate(R.layout.screen_menu, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {

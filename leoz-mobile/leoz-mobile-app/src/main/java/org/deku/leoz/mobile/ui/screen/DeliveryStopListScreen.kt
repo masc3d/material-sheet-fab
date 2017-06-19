@@ -20,7 +20,7 @@ import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.StopListItem
 import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
-import kotlinx.android.synthetic.main.fragment_stop_overview.*
+import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.LazyInstance
@@ -29,7 +29,7 @@ import sx.LazyInstance
 /**
  * A simple [Fragment] subclass.
  */
-class StopOverviewScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListener {
+class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val delivery: Delivery by Kodein.global.lazy.instance()
@@ -73,7 +73,7 @@ class StopOverviewScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListener 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_stop_overview, container, false)
+        return inflater.inflate(R.layout.screen_delivery_stop_list, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {

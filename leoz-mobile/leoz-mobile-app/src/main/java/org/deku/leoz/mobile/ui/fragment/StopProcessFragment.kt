@@ -13,7 +13,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_stop_process.*
+import kotlinx.android.synthetic.main.fragment_delivery_stop_process.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Order
@@ -56,7 +56,7 @@ class StopProcessFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_stop_process, container, false)
+        return inflater!!.inflate(R.layout.fragment_delivery_stop_process, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {

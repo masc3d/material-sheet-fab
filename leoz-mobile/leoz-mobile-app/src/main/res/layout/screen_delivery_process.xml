@@ -7,7 +7,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical" >
 
-    <include layout="@layout/item_stop_overview" />
+    <include layout="@layout/item_stop" />
 
     <LinearLayout
         android:id="@+id/uxContainer"

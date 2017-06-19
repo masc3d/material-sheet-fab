@@ -19,7 +19,7 @@ import sx.android.fragment.CameraFragment
  */
 class DeliveryActivity : Activity(),
         CameraFragment.Listener,
-        DeliveryMainScreen.Listener,
+        MenuScreen.Listener,
         SignatureScreen.Listener,
         VehicleLoadingDialog.OnDialogResultListener {
 
@@ -38,7 +38,7 @@ class DeliveryActivity : Activity(),
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            this.showScreen(DeliveryMainScreen(), addToBackStack = false)
+            this.showScreen(MenuScreen(), addToBackStack = false)
 
             this.supportActionBar?.setTitle(R.string.delivery)
         }
@@ -56,9 +56,9 @@ class DeliveryActivity : Activity(),
      * Fragment listener
      */
 
-    override fun onDeliveryMenuChoosed(entryType: DeliveryMainScreen.MenuEntry.Entry) {
+    override fun onDeliveryMenuChoosed(entryType: MenuScreen.MenuEntry.Entry) {
         when (entryType) {
-            DeliveryMainScreen.MenuEntry.Entry.LOADING -> {
+            MenuScreen.MenuEntry.Entry.LOADING -> {
                 /**
                  * Start "vehicle loading" process
                  */
@@ -66,8 +66,8 @@ class DeliveryActivity : Activity(),
                 dialog.show(supportFragmentManager, "LOADINGDIALOG")
             }
 
-            DeliveryMainScreen.MenuEntry.Entry.ORDERLIST -> {
-                this.showScreen(StopOverviewScreen())
+            MenuScreen.MenuEntry.Entry.ORDERLIST -> {
+                this.showScreen(DeliveryStopListScreen())
             }
         }
     }
