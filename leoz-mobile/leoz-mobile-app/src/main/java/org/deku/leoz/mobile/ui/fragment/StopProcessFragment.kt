@@ -20,6 +20,7 @@ import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ParcelListAdapter
+import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 
@@ -77,6 +78,8 @@ class StopProcessFragment : Fragment() {
         }
 
         this.uxParcelList.adapter = ParcelListAdapter(context, parcelList)
+
+        (this.activity as DeliveryActivity).showDeliverFabButtons()
     }
 
     override fun onResume() {

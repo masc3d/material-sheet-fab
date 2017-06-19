@@ -19,6 +19,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
+import org.deku.leoz.mobile.ui.fragment.StopDetailFragment
 import org.deku.leoz.mobile.ui.fragment.StopProcessFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -85,8 +86,10 @@ class DeliveryProcessScreen : ScreenFragment() {
         )
         (this.activity as DeliveryActivity).showDeliverFabButtons()
 
+
         childFragmentManager.withTransaction {
             it.replace(this.uxContainer.id, StopProcessFragment.create(this.stop))
+            it.replace(this.uxContainer.id, StopDetailFragment.create(stop))
         }
         //this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, arrayOf("Nachnahme", "Tel. Empfangsbestätigung", "Security Return", "X-Change"))
     }
