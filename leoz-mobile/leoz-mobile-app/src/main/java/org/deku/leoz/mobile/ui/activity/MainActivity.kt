@@ -21,7 +21,7 @@ import android.view.LayoutInflater
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import kotlinx.android.synthetic.main.main_content.*
+import kotlinx.android.synthetic.main.main.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.ui.Activity

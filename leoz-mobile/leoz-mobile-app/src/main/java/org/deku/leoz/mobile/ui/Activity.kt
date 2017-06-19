@@ -22,7 +22,6 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.main.*
-import kotlinx.android.synthetic.main.main_app_bar.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
@@ -33,7 +32,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.view.*
-import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
@@ -99,14 +97,17 @@ open class Activity : RxAppCompatActivity(),
         toggle.syncState()
         //endregion
 
+        // Disable collapsing toolbar title (for now). This will leave regular support action bar title intact.
+        this.uxCollapsingToolbarLayout.isTitleEnabled = false
+
         //region Backstack listener
         this.supportFragmentManager.addOnBackStackChangedListener {
             val fragments = this.supportFragmentManager.fragments ?: listOf<Fragment>()
                     .filterNotNull()
                     .map { it.javaClass.simpleName }
-                    .joinToString(", ")
 
-            log.info("BACKSTACK [${fragments}]")
+            // Log backstack state
+            log.trace("BACKSTACK [${fragments.joinToString(", ")}]")
         }
         //endregion
 
@@ -420,6 +421,11 @@ open class Activity : RxAppCompatActivity(),
     override fun onScreenFragmentResume(fragment: ScreenFragment) {
         // Take over action items from screen fragment when it resumes
         this.actionItems = fragment.actionItems
+
+        // Make sure app bar is visible (eg. when screen changes)
+        // otherwise transitioning from a scrolling to a static content screen
+        // may leave the app bar hidden.
+        this.uxAppBarLayout.setExpanded(true)
     }
 
     override fun onScreenFragmentPause(fragment: ScreenFragment) {
