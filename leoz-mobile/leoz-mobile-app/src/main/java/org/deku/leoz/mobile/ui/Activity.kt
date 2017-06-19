@@ -422,31 +422,33 @@ open class Activity : RxAppCompatActivity(),
         // Take over action items from screen fragment when it resumes
         this.actionItems = fragment.actionItems
 
-        var appBarExpanded = true
-        var collapsingScroll = fragment.scrollWithCollapsingToolbarEnabled
+        var expandAppBar = true
+        var scrollWithCollapsingToolbarEnabled = fragment.scrollWithCollapsingToolbarEnabled
 
         if (fragment.hideActionBar) {
             // Workaround for supportActionBar not adjusting content area
-            appBarExpanded = false
 
             // Setting the appbar expanded flag to false only works with in conjunction
             // with collapsing toolbar scroll/snap mode
-            collapsingScroll = true
+            expandAppBar = false
+            scrollWithCollapsingToolbarEnabled = true
         }
 
         // Make sure app bar is visible (eg. when screen changes)
         // otherwise transitioning from a scrolling to a static content screen
         // may leave the app bar hidden.
-        this.uxAppBarLayout.setExpanded(appBarExpanded)
+        this.uxAppBarLayout.setExpanded(expandAppBar)
 
         // Apply collapsing toolbar settings
-        val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
+        run {
+            val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
-        layoutParams.scrollFlags =
-                if (collapsingScroll)
-                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
-                else
-                    0
+            layoutParams.scrollFlags =
+                    if (scrollWithCollapsingToolbarEnabled)
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+                    else
+                        0
+        }
 
         // Apply requested orientation
         this.requestedOrientation = fragment.orientation
