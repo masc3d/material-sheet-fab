@@ -13,6 +13,7 @@ import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
+import sx.time.toCalendar
 import java.util.*
 
 /**
@@ -70,10 +71,30 @@ class Delivery {
                 city = "Neuenstein",
                 phone = "+49 6677 9582"
         )
+        val addr2 = Order.Address(
+                classification = Order.Address.Classification.PICKUP,
+                addressLine1 = "Prangenberg",
+                addressLine2 = "2. Adresszeile",
+                addressLine3 = "3. Addresszeile",
+                street = "Burscheidter Weg",
+                streetNo = "4",
+                zipCode = "40822",
+                city = "Mettmann",
+                phone = "+49 6677 9582"
+        )
+
+        val dateFrom = Date().toCalendar()
+        dateFrom.set(Calendar.HOUR_OF_DAY, 8)
+        dateFrom.set(Calendar.MINUTE, 0)
+
+        val dateTo = Date().toCalendar()
+        dateTo.set(Calendar.HOUR_OF_DAY, 12)
+        dateTo.set(Calendar.MINUTE, 0)
+
         val appointment = Order.Appointment(
                 classification = Order.Appointment.Classification.DELIVERY,
-                dateFrom = Date(),
-                dateTo = Date()
+                dateFrom = Date(dateFrom.timeInMillis),
+                dateTo = Date(dateTo.timeInMillis)
         )
 
         stopList.add(Stop(
@@ -96,7 +117,7 @@ class Delivery {
                                                 labelReference = "10000000003"
                                         )
                                 ),
-                                addresses = mutableListOf(addr),
+                                addresses = mutableListOf(addr, addr2),
                                 appointment = listOf(appointment),
                                 carrier = Carrier.DER_KURIER,
                                 services = listOf(Order.Service(
@@ -121,7 +142,7 @@ class Delivery {
                                         id = "a",
                                         labelReference = "02000000001"
                                 )),
-                                addresses = mutableListOf(addr),
+                                addresses = mutableListOf(addr, addr2),
                                 appointment = listOf(appointment),
                                 carrier = Carrier.DER_KURIER,
                                 services = listOf(Order.Service(

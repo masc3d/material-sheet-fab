@@ -15,10 +15,17 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Corresponsing address"
+            android:text="Corresponsing orders"
             style="@style/TextAppearance.AppCompat.Body2"/>
 
-        <include layout="@layout/item_stop_overview"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/uxOrderList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+
+        </android.support.v7.widget.RecyclerView>
 
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="wrap_content"

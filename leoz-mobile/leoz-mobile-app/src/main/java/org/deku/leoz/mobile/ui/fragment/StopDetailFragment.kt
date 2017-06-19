@@ -2,17 +2,24 @@ package org.deku.leoz.mobile.ui.fragment
 
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.fragment_stop_detail.*
+import eu.davidea.flexibleadapter.FlexibleAdapter
+import eu.davidea.flexibleadapter.items.IFlexible
+import kotlinx.android.synthetic.main.fragment_stop_detail.uxOrderList
+import kotlinx.android.synthetic.main.fragment_stop_detail.uxServiceList
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.OrderListItem
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
+import org.jetbrains.anko.layoutInflater
+import sx.LazyInstance
 
 
 /**
@@ -23,6 +30,13 @@ class StopDetailFragment : Fragment() {
     private lateinit var stop: Stop
     private var order: Order? = null
     private var serviceDescriptions: MutableList<String> = mutableListOf()
+
+    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<OrderListItem>>( {
+        FlexibleAdapter(stop.orders.map {
+            OrderListItem(context, it)
+        }, this)
+    })
+    private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
     companion object {
         fun create(stop: Stop): StopDetailFragment {
@@ -54,10 +68,18 @@ class StopDetailFragment : Fragment() {
                 .flatMap { it.services }
                 .forEach { serviceDescriptions.add(it.service.toString()) }
 
-        if (serviceDescriptions.size == 0)
-            serviceDescriptions.add("No Service")
-
         this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, serviceDescriptions)
+
+        // Flexible adapter needs to be re-created with views
+        flexibleAdapterInstance.reset()
+
+        this.uxOrderList.adapter = flexibleAdapter
+        this.uxOrderList.layoutManager = LinearLayoutManager(context)
+        //this.uxStopList.addItemDecoration(dividerItemDecoration)
+
+        flexibleAdapter.isLongPressDragEnabled = true
+        flexibleAdapter.isHandleDragEnabled = true
+        flexibleAdapter.isSwipeEnabled  = false
     }
 
     override fun onResume() {
