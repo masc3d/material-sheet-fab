@@ -11,8 +11,8 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.viewholders.FlexibleViewHolder
-import kotlinx.android.synthetic.main.item_stop_overview.*
-import kotlinx.android.synthetic.main.item_stop_overview.view.*
+import kotlinx.android.synthetic.main.item_stop.*
+import kotlinx.android.synthetic.main.item_stop.view.*
 import org.deku.leoz.mobile.model.Stop
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
@@ -49,11 +49,11 @@ class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: View
     }
 
     override fun getLayoutRes(): Int {
-        return R.layout.item_stop_overview
+        return R.layout.item_stop
     }
 
     override fun createViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, inflater: LayoutInflater?, parent: ViewGroup?): ViewHolder {
-        return ViewHolder(inflater!!.inflate(R.layout.item_stop_overview, parent, false), adapter!!)
+        return ViewHolder(inflater!!.inflate(R.layout.item_stop, parent, false), adapter!!)
     }
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?, holder: ViewHolder?, position: Int,

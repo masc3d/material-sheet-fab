@@ -5,9 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.view.LayoutInflater
-import android.widget.ImageView
-import android.widget.TextView
-import kotlinx.android.synthetic.main.row_delivery_process_parcel_list.view.*
+import kotlinx.android.synthetic.main.item_delivery_process_parcel_list.view.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Order
 
@@ -20,7 +18,7 @@ class ParcelListAdapter(val context: Context, val data: List<Order.Parcel>, val 
     var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val vi: View = convertView ?: inflater.inflate(R.layout.row_delivery_process_parcel_list, rootViewGroup)
+        val vi: View = convertView ?: inflater.inflate(R.layout.item_delivery_process_parcel_list, rootViewGroup)
 
         vi.uxParcelReference.text = data[position].labelReference
         vi.uxParcelStatus.setImageDrawable(context.resources.getDrawable(R.drawable.ic_cancel_black))

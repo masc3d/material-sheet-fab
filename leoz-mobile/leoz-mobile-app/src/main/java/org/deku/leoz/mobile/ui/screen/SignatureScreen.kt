@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.gcacace.signaturepad.views.SignaturePad
-import kotlinx.android.synthetic.main.fragment_signature.*
+import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -31,7 +31,7 @@ class SignatureScreen
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_signature, container, false)
+        return inflater!!.inflate(R.layout.screen_signature, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
