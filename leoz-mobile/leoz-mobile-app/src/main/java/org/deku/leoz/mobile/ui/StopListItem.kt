@@ -22,7 +22,11 @@ import java.util.*
  * Created by phpr on 06.06.2017.
  */
 
-class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: ViewGroup? = null) : AbstractFlexibleItem<org.deku.leoz.mobile.ui.StopListItem.ViewHolder>() {
+class StopListItem(
+        val context: Context,
+        val stop: Stop)
+    :
+        AbstractFlexibleItem<StopListItem.ViewHolder>() {
 
     var parcelCount: Int = 0
     val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm")
