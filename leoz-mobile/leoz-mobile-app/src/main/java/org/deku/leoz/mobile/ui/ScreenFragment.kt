@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui
 
+import android.content.pm.ActivityInfo
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
 
@@ -16,6 +17,16 @@ open class ScreenFragment : Fragment() {
      * off screen when this mode is enabled.
      */
     var scrollWithCollapsingToolbarEnabled = false
+
+    /**
+     * One of ActivityInfo.SCREEN_ORIENTATION_*
+     */
+    var orientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+    /**
+     * Screen should hide action bar
+     */
+    var hideActionBar: Boolean = false
 
     interface Listener {
         fun onScreenFragmentResume(fragment: ScreenFragment) {}

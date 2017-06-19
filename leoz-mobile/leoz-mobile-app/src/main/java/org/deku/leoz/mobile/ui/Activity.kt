@@ -422,20 +422,34 @@ open class Activity : RxAppCompatActivity(),
         // Take over action items from screen fragment when it resumes
         this.actionItems = fragment.actionItems
 
+        var appBarExpanded = true
+        var collapsingScroll = fragment.scrollWithCollapsingToolbarEnabled
+
+        if (fragment.hideActionBar) {
+            // Workaround for supportActionBar not adjusting content area
+            appBarExpanded = false
+
+            // Setting the appbar expanded flag to false only works with in conjunction
+            // with collapsing toolbar scroll/snap mode
+            collapsingScroll = true
+        }
+
         // Make sure app bar is visible (eg. when screen changes)
         // otherwise transitioning from a scrolling to a static content screen
         // may leave the app bar hidden.
-        this.uxAppBarLayout.setExpanded(true)
+        this.uxAppBarLayout.setExpanded(appBarExpanded)
 
-        // Set collapsing toolbar scrolling flags dependent on screen fragment setting
+        // Apply collapsing toolbar settings
         val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
         layoutParams.scrollFlags =
-                if (fragment.scrollWithCollapsingToolbarEnabled)
+                if (collapsingScroll)
                     AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
                 else
                     0
 
+        // Apply requested orientation
+        this.requestedOrientation = fragment.orientation
     }
 
     override fun onScreenFragmentPause(fragment: ScreenFragment) {
