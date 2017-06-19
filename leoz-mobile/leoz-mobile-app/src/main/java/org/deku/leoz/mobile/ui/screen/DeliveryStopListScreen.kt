@@ -34,8 +34,14 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val delivery: Delivery by Kodein.global.lazy.instance()
 
-    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<IFlexible<*>>>( {
-        FlexibleAdapter(getItemList(delivery.stopList.filter { it.state == Stop.State.PENDING }), this)
+    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<StopListItem>>({
+        FlexibleAdapter(
+                // Items
+                delivery.stopList
+                        .filter { it.state == Stop.State.PENDING }
+                        .map { StopListItem(context, it) },
+                // Listener
+                this)
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
@@ -63,7 +69,8 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
         log.debug("ONITEMCLICK")
 
         activity.showScreen(
-                DeliveryProcessScreen.create((flexibleAdapter.getItem(item) as StopListItem).stop)
+                DeliveryProcessScreen.create(
+                        stop = (flexibleAdapter.getItem(item) as StopListItem).stop)
         )
 
         true
@@ -101,17 +108,9 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
 
         flexibleAdapter.isLongPressDragEnabled = true
         flexibleAdapter.isHandleDragEnabled = true
-        flexibleAdapter.isSwipeEnabled  =true
+        flexibleAdapter.isSwipeEnabled = true
         flexibleAdapter.addListener(onItemClickListener)
 //        flexibleAdapter.setDisplayHeadersAtStartUp(true)
 //        flexibleAdapter.setStickyHeaders(true)
-    }
-
-    fun getItemList(stops: List<Stop>): List<IFlexible<*>> {
-        val list = mutableListOf<IFlexible<*>>()
-        list.addAll(stops.map {
-            StopListItem(context, it)
-        })
-        return list
     }
 }
