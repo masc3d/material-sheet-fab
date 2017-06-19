@@ -7,14 +7,14 @@
     <!-- Container for dim overlays. -->
     <!-- Each material sheet requires a dedicated one for sheet click events to work properly -->
     <RelativeLayout
-        android:id="@+id/actionoverlay_dim_container"
+        android:id="@+id/uxActionOverlayDimContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
 
     <!-- Container for floating action buttons -->
     <LinearLayout
-        android:id="@+id/actionoverlay_container"
+        android:id="@+id/uxActionOverlayContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="end"
@@ -23,7 +23,7 @@
 
     <!--Container for material sheet fab's reveal layouts -->
     <RelativeLayout
-        android:id="@+id/actionoverlay_sheet_container"
+        android:id="@+id/uxActionOverlaySheetContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />

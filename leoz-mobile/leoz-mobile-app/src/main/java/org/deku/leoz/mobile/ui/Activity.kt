@@ -81,15 +81,15 @@ open class Activity : RxAppCompatActivity(),
 
         this.setContentView(R.layout.main)
 
-        this.nav_view.setNavigationItemSelectedListener(this)
+        this.uxNavView.setNavigationItemSelectedListener(this)
 
         //region Action bar
-        this.setSupportActionBar(this.toolbar)
+        this.setSupportActionBar(this.uxToolbar)
 
         val toggle = ActionBarDrawerToggle(
                 this,
                 this.drawer_layout,
-                this.toolbar,
+                this.uxToolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close)
 
@@ -228,7 +228,7 @@ open class Activity : RxAppCompatActivity(),
             }
 
             R.id.nav_logout -> {
-                this.nav_view.postDelayed({
+                this.uxNavView.postDelayed({
                     login.logout()
                     this.startActivity(
                             Intent(applicationContext, MainActivity::class.java)
@@ -309,11 +309,11 @@ open class Activity : RxAppCompatActivity(),
 
         // Customize navigation drawer
 
-        val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
+        val navHeaderView = this.drawer_layout.uxNavView.getHeaderView(0)
         navHeaderView.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
 
         if (this.debugSettings.enabled) {
-            this.nav_view.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
+            this.uxNavView.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
         }
 
         this.actionItemsProperty
@@ -357,11 +357,11 @@ open class Activity : RxAppCompatActivity(),
                     val user = it.value
                     when {
                         user != null -> {
-                            this.nav_view.menu
+                            this.uxNavView.menu
                                     .findItem(R.id.nav_logout)
                                     .setVisible(true)
 
-                            this.nav_view.menu
+                            this.uxNavView.menu
                                     .findItem(R.id.nav_dev_prototype)
                                     .setVisible(this.debugSettings.enabled)
 
@@ -371,11 +371,11 @@ open class Activity : RxAppCompatActivity(),
                             navHeaderView.uxStationID.text = "-_-"
                         }
                         else -> {
-                            this.nav_view.menu
+                            this.uxNavView.menu
                                     .findItem(R.id.nav_logout)
                                     .setVisible(false)
 
-                            this.nav_view.menu
+                            this.uxNavView.menu
                                     .findItem(R.id.nav_dev_prototype)
                                     .setVisible(false)
 

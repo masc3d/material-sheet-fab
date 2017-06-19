@@ -6,7 +6,6 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.IdRes
 import android.support.annotation.StyleRes
 import android.support.design.widget.FloatingActionButton
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.AttributeSet
 import android.view.Menu
 import android.view.View
@@ -205,9 +204,9 @@ class ActionOverlayView : RelativeLayout {
     fun update() {
         val updateImpl = {
             // Remove fabs
-            this.actionoverlay_container.removeAllViews()
+            this.uxActionOverlayContainer.removeAllViews()
             // Remove fab sheets
-            this.actionoverlay_sheet_container.removeAllViews()
+            this.uxActionOverlaySheetContainer.removeAllViews()
 
             this.materialSheetFabs.clear()
 
@@ -233,7 +232,7 @@ class ActionOverlayView : RelativeLayout {
                             this.listener?.onActionItem(item.id)
                         }
 
-                        this.actionoverlay_container.addView(fab)
+                        this.uxActionOverlayContainer.addView(fab)
                     }
                     else -> {
                         // Create animated fab and material sheet
@@ -253,10 +252,10 @@ class ActionOverlayView : RelativeLayout {
 
                         val sheet = this.context.layoutInflater.inflate(
                                 R.layout.view_actionoverlay_sheet,
-                                this.actionoverlay_sheet_container,
+                                this.uxActionOverlaySheetContainer,
                                 false)
 
-                        this.actionoverlay_sheet_container.addView(sheet)
+                        this.uxActionOverlaySheetContainer.addView(sheet)
 
                         // Create dedicated dim overlay for this sheet
                         val dimOverlay = DimOverlayFrameLayout(this.context)
@@ -265,7 +264,7 @@ class ActionOverlayView : RelativeLayout {
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT)
 
-                        this.actionoverlay_dim_container.addView(dimOverlay)
+                        this.uxActionOverlayDimContainer.addView(dimOverlay)
 
                         // Create matieral sheet fab
                         val sheetBackgroundColor = resources.getColor(android.R.color.background_light)
@@ -279,7 +278,7 @@ class ActionOverlayView : RelativeLayout {
                         val sheetFab = SheetFab(
                                 MaterialSheetFab<AnimatedFloatingActionButton>(
                                         fab,
-                                        sheet.actionoverlay_sheet,
+                                        sheet.uxActionOverlaySheet,
                                         dimOverlay,
                                         sheetBackgroundColor,
                                         fabColor)
@@ -291,28 +290,28 @@ class ActionOverlayView : RelativeLayout {
                         log.info("FU ${materialSheetFabs.count()}")
 
                         // Set sheet color
-                        sheet.actionoverlay_sheet_bar.setBackgroundColor(fabColor)
+                        sheet.uxAtionOverlaySheetBar.setBackgroundColor(fabColor)
 
                         // Create sheet items
                         item.menu.itemsSequence().forEach { menuItem ->
                             val sheetItem = this.context.layoutInflater.inflate(
                                     R.layout.view_actionoverlay_sheet_item,
-                                    sheet.actionoverlay_sheet_item_container,
+                                    sheet.uxActionOverlaySheetItemContainer,
                                     false)
 
-                            sheetItem.actionoverlay_sheet_item_icon.setImageDrawable(
+                            sheetItem.uxActionOverlaySheetItemIcon.setImageDrawable(
                                     menuItem.icon
                                             // Set default icon if applicable
                                             ?: (if (this.defaultIcon != 0) context.getDrawable(this.defaultIcon) else null))
 
-                            sheetItem.actionoverlay_sheet_item_title.setText(menuItem.title)
+                            sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
 
                             sheetItem.setOnClickListener {
                                 sheetFab.value.hideSheet()
                                 this.listener?.onActionItem(menuItem.itemId)
                             }
 
-                            sheet.actionoverlay_sheet_item_container.addView(sheetItem)
+                            sheet.uxActionOverlaySheetItemContainer.addView(sheetItem)
                         }
 
                         fab.setOnClickListener {
@@ -323,7 +322,7 @@ class ActionOverlayView : RelativeLayout {
                             sheetFab.value.showSheet()
                         }
 
-                        this.actionoverlay_container.addView(fab)
+                        this.uxActionOverlayContainer.addView(fab)
                     }
                 }
             }
