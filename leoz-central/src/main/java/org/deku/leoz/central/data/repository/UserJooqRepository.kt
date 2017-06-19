@@ -140,6 +140,10 @@ open class UserJooqRepository {
 fun MstUserRecord.toUser(): UserService.User {
 
     val user = UserService.User(
+            // IMPORTANT: password must never be set when converting to service instance
+            // as it leaks hashes to the client. That's why the initial recommendation
+            // was to *not* have password on service level entities and
+            // introduce password set/update operations as a dedicated entry point.
             id = this.id,
             email = this.email,
             debitorId = this.debitorId,
