@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-/*$color-deku-blue: #184b7d;
-$color-sortable-th: #7493b1;*/
+$color-deku-blue: #184b7d;
+$color-sortable-th: #7493b1;
 
 html {
   touch-action: manipulation;
@@ -298,7 +298,7 @@ a {
   text-decoration: none !important;
 }
 a:hover, a:focus {
-  color: #184b7d !important;
+  color: $color-deku-blue !important;
 }
 
 .ui-widget-header .ui-state-active, .ui-widget-content .ui-state-active, .ui-state-active {
@@ -339,30 +339,27 @@ a:hover, a:focus {
   border-color: #4CAF50;
 }
 .ui-button {
-  background-color: #184b7d;;
+  background-color: $color-deku-blue;;
 }
 .ui-button:enabled:hover,
 .ui-button:focus {
-  /*background-color: lighten( #184b7d, 7% ) !important;*/
-  background-color: #1e5d9b !important;
+  background-color: lighten( $color-deku-blue, 7% ) !important;
+  //background-color: #1e5d9b !important;
 }
 
 .ui-datatable th.ui-state-active {
-  background-color: #7493b1 !important;
+  background-color: $color-sortable-th !important;
   color: #ffffff;
 }
 
 .ui-state-default a {
-  /*color: #184b7d !important;*/
   color: #000000 !important;
   font-weight: normal;
 }
 .ui-panelmenu .ui-panelmenu-header.ui-state-active a {
-   /*color: #184b7d !important;*/
    color: #000000 !important;
 }
 
 .ui-panelmenu .ui-panelmenu-content .ui-menuitem-link {
-   /*color: #184b7d !important;*/
    color: #000000 !important;
 }
