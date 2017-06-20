@@ -5,6 +5,7 @@ import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import sx.io.serialization.Serializable
+import sx.mq.MqHandler
 import java.util.*
 
 /**
@@ -49,6 +50,16 @@ interface LocationService {
             var userEmail: String? = null,
             @get:ApiModelProperty(required = false, value = "Positions")
             var gpsDataPoints: List<GpsDataPoint>? = null
+    )
+
+    /**
+     * GPS message sent by nodes/devices
+     */
+    @Serializable(0xd307ea744273ae)
+    data class GpsMessage(
+            var userId: Int? = null,
+            var nodeId: String? = null,
+            var dataPoints: Array<GpsDataPoint>? = null
     )
 
     /**

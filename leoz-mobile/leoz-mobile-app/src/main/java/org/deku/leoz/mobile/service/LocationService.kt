@@ -10,6 +10,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import org.deku.leoz.identity.Identity
+import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.LocationService
 import org.slf4j.LoggerFactory
@@ -18,26 +20,29 @@ import sx.time.Duration
 import java.util.*
 
 class LocationService(
-        val period: Duration,
-        val minDistance: Int,
-        val allowMockLocation: Boolean,
-        val enabled: Boolean
-) : Service() {
-    private val log = LoggerFactory.getLogger(this.javaClass)
-    var locationManager: LocationManager? = null
+        val period: Duration = Duration.ofSeconds(30),
+        val minDistance: Int = 250,
+        val enabled: Boolean = true
+)
+    : Service() {
 
-    constructor() : this(Duration.ofSeconds(30), 250, false, true) {}
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    private var locationManager: LocationManager? = null
+    private val login: Login by Kodein.global.lazy.instance()
+    private val identity: Identity by Kodein.global.lazy.instance()
 
     override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        log.debug("ONSTARTCOMMAND")
+
+        log.trace("ONSTARTCOMMAND")
+
         return START_STICKY
     }
 
     override fun onCreate() {
-        log.debug("ONCREATE")
         if (locationManager == null)
             locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -70,7 +75,6 @@ class LocationService(
             }
     }
 
-
     val INTERVAL = period.toMillis() // In milliseconds
     val DISTANCE = minDistance.toFloat() // In meters
 
@@ -79,14 +83,14 @@ class LocationService(
             LTRLocationListener(LocationManager.NETWORK_PROVIDER)
     )
 
-    class LTRLocationListener(provider: String) : android.location.LocationListener {
+    inner class LTRLocationListener(provider: String) : android.location.LocationListener {
         private val log = LoggerFactory.getLogger(this.javaClass)
         val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
         val lastLocation = Location(provider)
 
         override fun onLocationChanged(location: Location?) {
 
-            log.debug("ONLOCATIONCHANGED")
+            log.trace("ONLOCATIONCHANGED")
 
             if (location == null) {
                 log.warn("Location object is null.")
@@ -108,8 +112,13 @@ class LocationService(
 
             // TODO: Store location data in database and send it as an set of multiple positions once.
 
-            // TODO: A list is not a good type for a message. Declasre a dedicated class (eg. PositionMessage) {@link LogMessage}
-            mqttChannels.central.transient.channel().send(listOf(currentPosition))
+            mqttChannels.central.transient.channel().send(
+                    message = LocationService.GpsMessage(
+                            userId = this@LocationService.login.authenticatedUser?.id,
+                            nodeId = this@LocationService.identity.key.value,
+                            dataPoints = arrayOf(currentPosition)
+                    )
+            )
         }
 
         override fun onProviderDisabled(provider: String?) {
@@ -120,7 +129,5 @@ class LocationService(
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
         }
-
     }
-
 }

@@ -34,7 +34,8 @@ CREATE TABLE station (
 );
 
 CREATE TABLE user (
-    email VARCHAR NOT NULL PRIMARY KEY,
+    id INTEGER NOT NULL PRIMARY KEY,
+    email VARCHAR NOT NULL,
     password VARCHAR NOT NULL,
     api_key VARCHAR NOT NULL
 );

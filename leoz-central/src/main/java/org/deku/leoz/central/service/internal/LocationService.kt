@@ -34,8 +34,10 @@ import java.time.ZoneId
 @Named
 @ApiKey(true)
 @Path("internal/v1/location")
-//class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint> {
-class LocationService : LocationService, MqHandler<LocationService.GpsData> {
+class LocationService
+    :
+        LocationService,
+        MqHandler<LocationService.GpsMessage> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -289,54 +291,33 @@ class LocationService : LocationService, MqHandler<LocationService.GpsData> {
 
     }
 
-    //?? from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
-    override fun onMessage(message: LocationService.GpsData, replyChannel: MqChannel?) {
-        //override fun onMessage(message: LocationService.GpsDataPoint, replyChannel: MqChannel?) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        try {
-            //log.info(message)
+    /**
+     * Location service message handler
+     */
+    override fun onMessage(message: LocationService.GpsMessage, replyChannel: MqChannel?) {
+        // TODO: from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
 
-            val geoList = message.gpsDataPoints
-            val userRecord: MstUserRecord?
-            val email = message.userEmail
-            var userId: Int? = null
-            if (email != null) {
-                userRecord = userRepository.findByMail(email)
-                userId = userRecord?.id
-            }
+        val dataPoints = message.dataPoints?.toList()
+                ?: throw DefaultProblem(
+                detail = "Missing data points",
+                status = Response.Status.BAD_REQUEST)
 
-            //val geoPos = message
-            geoList?.forEach {
-                val geoPos = it
-                val geoposRec = dslContext.newRecord(Tables.TRN_NODE_GEOPOSITION)
-                if (geoPos.latitude != null)
-                    geoposRec.latitude = geoPos.latitude
-                if (geoPos.longitude != null)
-                    geoposRec.longitude = geoPos.longitude
+        log.trace("Received ${dataPoints.count()} from [${message.nodeId}] user [${message.userId}]")
 
-                if (geoPos.time != null)
-                    geoposRec.positionDatetime = geoPos.time?.toTimestamp()
-                if (geoPos.speed != null)
-                    geoposRec.speed = geoPos.speed?.toDouble()
-                if (geoPos.bearing != null)
-                    geoposRec.bearing = geoPos.bearing?.toDouble()
-                if (geoPos.altitude != null)
-                    geoposRec.altitude = geoPos.altitude
-                if (geoPos.accuracy != null)
-                    geoposRec.accuracy = geoPos.accuracy?.toDouble()
+        dataPoints.forEach {
+            val r = dslContext.newRecord(Tables.TRN_NODE_GEOPOSITION)
 
-                if (userId != null) {
-                    geoposRec.userId = userId
-                }
+            r.userId = message.userId
+            r.latitude = it.latitude
+            r.longitude = it.longitude
+            r.positionDatetime = it.time?.toTimestamp()
+            r.speed = it.speed?.toDouble()
+            r.bearing = it.bearing?.toDouble()
+            r.altitude = it.altitude
+            r.accuracy = it.accuracy?.toDouble()
 
-                posRepository.save(geoposRec)
-            }
-
-
-        } catch (e: Exception) {
-            log.error(e.message, e)
+            posRepository.save(r)
         }
-
     }
 
     fun geoFilter(posList: List<TrnNodeGeopositionRecord>): MutableList<LocationService.GpsDataPoint> {

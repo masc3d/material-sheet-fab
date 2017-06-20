@@ -33,12 +33,13 @@ class Login {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
+        val DEV_ID = 0
         val DEV_EMAIL = "dev@leoz"
         val DEV_PASSWORD = "password"
     }
 
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
-    private val device: Device = Kodein.global.instance()
+    private val device: Device by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
@@ -87,17 +88,21 @@ class Login {
 
                 val authResponse = authService.authorizeMobile(request)
 
+                val user = User(
+                        id = authResponse.user?.id!!,
+                        email = email,
+                        apiKey = authResponse.key
+                )
+
                 // Store user in database
                 val rUser = UserEntity()
-                rUser.email = email
+                rUser.id = user.id
+                rUser.email = user.email
                 rUser.password = hashedPassword
                 rUser.apiKey = authResponse.key
                 db.store.upsert(rUser).blockingGet()
 
-                return User(
-                        email = email,
-                        apiKey = authResponse.key
-                )
+                return user
             }
 
             fun authorizeOffline(): User {
@@ -111,7 +116,10 @@ class Login {
                 if (rUser == null)
                     throw NoSuchElementException("User [${email}] not found, offline login not applicable")
 
-                return User(email = rUser.email, apiKey = rUser.apiKey)
+                return User(
+                        id = rUser.id,
+                        email = rUser.email,
+                        apiKey = rUser.apiKey)
             }
 
             if (connectivity.network.state == NetworkInfo.State.CONNECTED) {

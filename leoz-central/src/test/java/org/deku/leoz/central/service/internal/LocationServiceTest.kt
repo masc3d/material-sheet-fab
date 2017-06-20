@@ -4,6 +4,7 @@ import org.deku.leoz.central.config.DataTestConfiguration
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
+import org.deku.leoz.service.internal.LocationService
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
@@ -25,7 +26,7 @@ import javax.inject.Inject
 class LocationServiceTest {
 
     @Inject
-    lateinit var locationService: LocationService
+    lateinit var locationService: org.deku.leoz.central.service.internal.LocationService
 
     @Test
     fun testOnMessage() {
@@ -40,9 +41,10 @@ class LocationServiceTest {
                 accuracy = 0.toFloat()
         )
 
-        val gpsData = org.deku.leoz.service.internal.LocationService.GpsData(userEmail = "user@deku.org", gpsDataPoints = listOf(currentPosition))
+        val gpsMessage = LocationService.GpsMessage(
+                userId = 0,
+                dataPoints = listOf(currentPosition))
 
-        locationService.onMessage(gpsData, null)
-        //locationService.onMessage(currentPosition, null)
+        locationService. onMessage(gpsMessage, null)
     }
 }
