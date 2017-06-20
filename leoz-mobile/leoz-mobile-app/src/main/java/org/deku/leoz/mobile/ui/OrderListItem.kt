@@ -56,7 +56,7 @@ class OrderListItem(val context: Context, val order: Order, val rootViewGroup: V
     }
 
     class ViewHolder(val view: View, val adapter: FlexibleAdapter<out IFlexible<*>>) : FlexibleViewHolder(view, adapter) {
-        val recipient = view.uxReceipient
+        val recipient = view.uxRecipient
         val sender = view.uxSender
         val cityTo = view.uxCityTo
         val cityFrom = view.uxCityFrom

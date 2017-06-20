@@ -21,7 +21,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/uxReceipient"
+                android:id="@+id/uxRecipient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Philipp Prangenberg"
@@ -32,7 +32,7 @@
                 android:id="@+id/uxStreet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/uxReceipient"
+                android:layout_below="@id/uxRecipient"
                 android:text="Lärchenweg"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 />

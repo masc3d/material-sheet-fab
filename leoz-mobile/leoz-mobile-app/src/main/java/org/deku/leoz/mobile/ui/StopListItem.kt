@@ -11,7 +11,6 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.viewholders.FlexibleViewHolder
-import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.item_stop.view.*
 import org.deku.leoz.mobile.model.Stop
 import sx.time.toCalendar
@@ -68,7 +67,7 @@ class StopListItem(
         holder.streetNo.text = stop.address.streetNo
         holder.zip.text = stop.address.zipCode
         holder.city.text = stop.address.city
-        holder.receipient.text = stop.address.addressLine1
+        holder.recipient.text = stop.address.addressLine1
         holder.appointmentFrom.text = simpleDateFormat.format(stop.appointment.dateFrom)
         holder.appointmentTo.text = simpleDateFormat.format(stop.appointment.dateTo)
 
@@ -88,7 +87,7 @@ class StopListItem(
         val streetNo = view.uxStreetNo
         val zip = view.uxZip
         val city = view.uxCity
-        val receipient = view.uxReceipient
+        val recipient = view.uxRecipient
         val appointmentFrom = view.uxAppointmentFrom
         val appointmentTo = view.uxAppointmentTo
         val appointmentClock = view.uxAppointmentClock

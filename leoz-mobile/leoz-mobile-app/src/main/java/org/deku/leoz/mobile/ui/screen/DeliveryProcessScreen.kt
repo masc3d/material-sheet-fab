@@ -14,7 +14,6 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.item_stop.*
-import kotlinx.android.synthetic.main.item_stop.view.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 
 import org.deku.leoz.mobile.R
@@ -22,10 +21,8 @@ import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.fragment.StopDetailFragment
-import org.deku.leoz.mobile.ui.fragment.StopProcessFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
-import org.jetbrains.anko.layoutInflater
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.fragment.util.withTransaction
@@ -100,7 +97,7 @@ class DeliveryProcessScreen : ScreenFragment() {
         /**
          * Set the values of the included layout 'item_stop'
          */
-        this.uxReceipient.text = stop.address.addressLine1
+        this.uxRecipient.text = stop.address.addressLine1
         this.uxStreet.text = stop.address.street
         this.uxStreetNo.text = stop.address.streetNo
         this.uxCity.text = stop.address.city
@@ -143,7 +140,7 @@ class DeliveryProcessScreen : ScreenFragment() {
                         R.id.ux_action_deliver_postbox -> {
 
                         }
-                        R.id.ux_action_deliver_receipient -> {
+                        R.id.ux_action_deliver_recipient -> {
                             (this.activity as DeliveryActivity).showSignaturePad()
                         }
                     }
