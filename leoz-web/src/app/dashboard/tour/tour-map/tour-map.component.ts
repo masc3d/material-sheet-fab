@@ -2,9 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TourService } from '../tour.service';
 import { Position } from '../position.model';
 import { Subscription } from 'rxjs/Subscription';
-import { GeoJSONDirective, MapComponent } from '@yaga/leaflet-ng2';
-import { advanceActivatedRoute } from '@angular/router/src/router_state';
-import { element } from 'protractor';
+import { MapComponent } from '@yaga/leaflet-ng2';
 
 @Component( {
   selector: 'app-tour-map',
@@ -13,11 +11,10 @@ import { element } from 'protractor';
       <yaga-zoom-control></yaga-zoom-control>
       <yaga-scale-control [metric]="true" [imperial]="false"></yaga-scale-control>
       <yaga-attribution-control></yaga-attribution-control>
-      <!--<yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"-->
-      <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"
-                       [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
-      <!--<yaga-tile-layer [url]="'http://192.168.161.202:8080/styles/osm-bright/rendered/{z}/{x}/{y}.png'"-->
-      <!--[attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>-->
+     <!-- <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"
+                       [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>-->
+      <yaga-tile-layer [url]="'http://tiles.derkurier.de/styles/osm-bright/rendered/{z}/{x}/{y}.png'"
+      [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
       <yaga-geojson [data]="routeGeoJson"></yaga-geojson>
       <yaga-marker [lat]="markerLat" [lng]="markerLng" [display]="displayMarker">
         <yaga-popup>
