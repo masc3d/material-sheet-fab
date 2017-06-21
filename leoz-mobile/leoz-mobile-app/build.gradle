@@ -72,6 +72,10 @@ android {
         }
     }
 
+    dataBinding {
+        enabled true
+    }
+
     productFlavors {
         dev {
             // Enable pre-dexing to produce an APK that can be tested on
