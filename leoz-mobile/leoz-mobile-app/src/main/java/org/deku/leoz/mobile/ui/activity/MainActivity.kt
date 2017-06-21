@@ -26,6 +26,7 @@ import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
+import org.jetbrains.anko.contentView
 
 
 class MainActivity
@@ -103,7 +104,7 @@ class MainActivity
                 .subscribe {
                     when (it) {
                         R.id.action_help -> {
-                            Snackbar.make(this.uxContainer, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
+                            Snackbar.make(this@MainActivity.contentView!!, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
                                 this@MainActivity.showAlert(
                                         title = "Call assistance?",
                                         text = "Are you sure you want to call a supervisor?",

@@ -1,0 +1,64 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/uxCoordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.activity.MainActivity">
+
+    <!-- Main content fragment container -->
+    <FrameLayout
+        android:id="@+id/uxContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/uxAppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <!-- Collapsing toolbar layout. The scroll flags are updated during runtime -->
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/uxCollapsingToolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            >
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/uxToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@drawable/actionbar_background"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <!-- Camera/scanner fragment container -->
+    <FrameLayout
+        android:id="@+id/uxScannerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@android:color/transparent"
+        app:layout_behavior="sx.android.view.behavior.MoveWithSnackbarBehavior"/>
+
+    <!-- Action overlay view -->
+    <org.deku.leoz.mobile.ui.view.ActionOverlayView
+        android:id="@+id/uxActionOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="sx.android.view.behavior.MoveWithSnackbarBehavior"/>
+
+</android.support.design.widget.CoordinatorLayout>
