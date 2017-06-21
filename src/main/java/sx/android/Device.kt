@@ -21,11 +21,12 @@ open class Device(private val context: Context) {
             Honeywell,
             Motorola,
         }
+
         /**
          * Manufacturer type
          */
         val type: Type by lazy {
-            if (this.name.contains("honeywell",ignoreCase = true))
+            if (this.name.contains("honeywell", ignoreCase = true))
                 Type.Honeywell
             else if (this.name.contains("motorola", ignoreCase = true))
                 Type.Motorola
@@ -39,9 +40,19 @@ open class Device(private val context: Context) {
     }
 
     /**
+     * Indicates if this device is an emulator
+     */
+    val isEmulator by lazy {
+        when (Build.HARDWARE) {
+            "goldfish", "ranchu" -> true
+            else -> false
+        }
+    }
+
+    /**
      * Device model
      */
-    data class Model(val name: String = Build.MODEL) { }
+    data class Model(val name: String = Build.MODEL) {}
 
     val imei: String by lazy {
         val telephonyManager = this.context.getTelephonyManager()
@@ -57,7 +68,7 @@ open class Device(private val context: Context) {
         Settings.Secure.getString(this.context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    val serial: String  = Build.SERIAL
+    val serial: String = Build.SERIAL
     val manufacturer: Manufacturer = Manufacturer()
     val model: Model = Model()
 
