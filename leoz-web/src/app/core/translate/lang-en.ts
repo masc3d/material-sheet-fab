@@ -46,6 +46,9 @@ export const LANG_EN_TRANS = {
   'duplicate email': 'Email address already exists.',
   'expires_on': 'Expires on',
   'user account deactivated': 'Your account is deactivated',
+  // map form
+  'allusers': 'all users',
+  'drivers': 'drivers',
   'could not get geolocation points': 'Could not get geolocation points',
   // stationloading form
   'loadingcontrol': 'Loading control',
