@@ -1,20 +1,22 @@
-// lang-de.ts
 export const LANG_DE_TRANS = {
+  // login form
   'login': 'Anmeldung',
   'username': 'Benutzername',
+  'btlogin': 'anmelden',
   'username is required': 'Benutzername muss angegeben werden',
   'User does not exist': 'Benutzername existiert nicht',
   'User authentication failed': 'Anmeldung fehlgeschlagen',
   'password': 'Kennwort',
   'password is required': 'Kennwort muss angegeben werden',
-  'btlogin': 'anmelden',
+  // menu
   'home': 'Startseite',
   'footer': 'Fussbereich',
-  'dispo': 'Dispo',
+  'dispo': 'Disposition',
   'tour': 'Tour',
   'management': 'Management',
   'users': 'Mitarbeiter',
   'logout': 'Abmelden',
+  // user form
   'firstname': 'Vorname',
   'surname': 'Nachname',
   'email': 'Email',
@@ -44,6 +46,34 @@ export const LANG_DE_TRANS = {
   'duplicate email': 'Die E-Mailadresse existiert bereits.',
   'expires_on': 'Gültig bis',
   'user account deactivated': 'Ihr Konto ist deaktiviert',
-  'could not get geolocation points': 'Keine Geokoordinaten gefunden'
+  'could not get geolocation points': 'Keine Geokoordinaten gefunden',
+  // stationloading form
+  'loadingcontrol': 'Verladesteuerung',
+  'newloadlist': 'Neue Ladeliste',
+  'payload': 'Zuladung in Kg',
+  'exportdate': 'Versanddatum',
+  'loadlist': 'Ladeliste',
+  'selectloadlist': 'Ladeliste',
+  'printlabel': 'Label',
+  'alllists': 'alle',
+  'selectedlist': 'für Auswahl',
+  'actuallist': 'aktuell',
+  'preview': 'Vorschau',
+  'directprint': 'Sofortdruck',
+  'information': 'Information',
+  'loadlistnumber': 'Ladelisten Nr',
+  'loadedweight': 'geladene (Kg)',
+  'freeweight': 'noch frei (Kg)',
+  'stillopen': 'noch offen',
+  'packcount': 'Anzahl PkSt',
+  'weight': 'Gewicht',
+  'loaded': 'geladen',
+  'notloaded': 'offen',
+  'loadingscan': 'Ladelistenscan',
+  'packages': 'Packstücke',
+  'scanmsgfield': 'Scan Nachrichten',
+  'scanfield': 'Scanfeld',
+  'loadinglistscan': 'Ladelistenscan',
+  'bagscan': 'Bagscan'
 };
 

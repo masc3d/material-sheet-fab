@@ -24,6 +24,12 @@ export const routes = [
         canActivate: [ AuthenticationGuard,
                        RoleGuard ],
         loadChildren: 'app/dashboard/tour/tour.module#TourModule'
+      },
+      {
+        path: 'stationloading', data: [ 'Stationloading' ],
+        // canActivate: [ AuthenticationGuard,
+        //   RoleGuard ],
+        loadChildren: 'app/dashboard/stationloading/stationloading.module#StationloadingModule'
       }
     ]
   }
