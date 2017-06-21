@@ -85,9 +85,9 @@ export class LeftMenuComponent extends AbstractTranslateComponent {
     } );
 
     // items.push( {
-    //   label: this.translate.instant( 'test for bagscan' ),
+    //   label: this.translate.instant( 'stationloading' ),
     //   icon: '',
-    //   routerLink: '/dashboard/stationloading',
+    //   routerLink: '/dashboard/stationloading/loadinglistscan',
     //   command: closeMenu
     // } );
 
