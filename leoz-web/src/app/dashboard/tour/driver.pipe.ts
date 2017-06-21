@@ -18,7 +18,6 @@ export class DriverFilterPipe implements PipeTransform {
     }
     if (this.roleGuard.userRole === Driver.RoleEnum.DRIVER) {
       const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-      console.log('currUser.email', currUser.user.email)
       return drivers.filter( ( driver: Driver ) => driver.email === currUser.user.email );
       // return drivers.filter( ( driver: Driver ) => driver.email === 'driver@deku.org' );
     } else {

@@ -48,7 +48,7 @@ export class TourMapComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log( 'yagaMap', this.yagaMap );
+    // console.log( 'yagaMap', this.yagaMap );
 
     this.subscriptionDisplay = this.tourService.displayMarker.subscribe( ( displayMarker: boolean ) => {
       this.displayMarker = displayMarker;
