@@ -51,6 +51,11 @@ class Login {
      */
     private val SALT = "f169bf5444f57fbc4abdd5d089c8395e".parseHex()
 
+    /**
+     * This IMEI is provided in case the device has none (eg newer emulators)
+     */
+    private val DUMMY_IMEI = "000000000000000"
+
     // Consumers can observe this property for changes
     val authenticatedUserProperty = ObservableRxProperty<User?>(null)
     // Delegated property for convenient access
@@ -82,7 +87,7 @@ class Login {
                         mobile = AuthorizationService.Mobile(
                                 model = device.model.name,
                                 serial = device.serial,
-                                imei = device.imei
+                                imei = if (device.imei.isNotBlank()) device.imei else DUMMY_IMEI
                         )
                 )
 
