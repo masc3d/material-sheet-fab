@@ -11,6 +11,8 @@ import android.support.transition.TransitionManager
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.view.menu.MenuBuilder
+import android.support.v7.view.menu.MenuPopupHelper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -160,6 +162,10 @@ open class Activity : RxAppCompatActivity(),
                 .findItem(R.id.action_logout)
                 .setVisible(this.login.authenticatedUser != null)
 
+        menu.setGroupVisible(0,
+                menu.getItem(0).subMenu.hasVisibleItems()
+        )
+
         return true
     }
 
@@ -170,9 +176,6 @@ open class Activity : RxAppCompatActivity(),
         val id = item.itemId
 
         when (id) {
-            R.id.action_settings -> {
-                return false
-            }
             R.id.action_logout -> {
                 login.logout()
 
