@@ -1,11 +1,9 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
-import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
 import org.deku.leoz.service.internal.UserService.User
-import org.deku.leoz.hashUserPassword
 import sx.io.serialization.Serializable
 import sx.rs.PATCH
 import javax.ws.rs.Consumes
@@ -87,7 +85,7 @@ interface AuthorizationService {
     /**
      * Web authorization response
      */
-    data class WebResponse(
+    data class Response(
             var key: String = "",
             var user: User? = null
     )
@@ -99,7 +97,7 @@ interface AuthorizationService {
     @PATCH
     @Path("/mobile")
     @ApiOperation(value = "Request mobile device authorization")
-    fun authorizeMobile(request: MobileRequest): WebResponse
+    fun authorizeMobile(request: MobileRequest): Response
 
     /**
      * Request authorization
@@ -108,7 +106,7 @@ interface AuthorizationService {
     @PATCH
     @Path("/web")
     @ApiOperation(value = "Request web authorization")
-    fun authorizeWeb(request: Credentials): WebResponse
+    fun authorize(request: Credentials): Response
 
     companion object {
         // TODO: extension methods on interface level will break feign. also this looks like it rather belongs to mst_user/leoz-central

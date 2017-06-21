@@ -1,10 +1,8 @@
 package org.deku.leoz.central.service.internal
 
-import org.apache.commons.lang3.RandomStringUtils
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.model.UserRole
@@ -57,7 +55,7 @@ class AuthorizationService
     /**
      * Mobile authorization request
      */
-    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.WebResponse {
+    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.Response {
         val serial = request.mobile?.serial
         val imei = request.mobile?.imei
 
@@ -65,17 +63,16 @@ class AuthorizationService
             throw DefaultProblem(title = "At least one of serial or imei must be provided")
 
         // TODO: handle mobile info as required
-
-
+        
         val user = request.user
 
         user ?:
                 throw DefaultProblem(title = "User is required")
 
-        return authorizeWeb(AuthorizationService.Credentials(user.email, user.password))
+        return authorize(AuthorizationService.Credentials(user.email, user.password))
     }
 
-    override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
+    override fun authorize(request: AuthorizationService.Credentials): AuthorizationService.Response {
         val user = request
 
         val userRecord = this.userRepository.findByMail(email = user.email)
@@ -125,7 +122,7 @@ class AuthorizationService
         if (keyRecord == null)
             throw DefaultProblem(title = "User key not valid")
 
-        return AuthorizationService.WebResponse(
+        return AuthorizationService.Response(
                 key = keyRecord.key,
                 user = userRecord.toUser())
     }
