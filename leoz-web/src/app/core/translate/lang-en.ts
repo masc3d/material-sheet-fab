@@ -1,12 +1,14 @@
 export const LANG_EN_TRANS = {
+  // login form
   'login': 'Login',
   'username': 'Username',
+  'btlogin': 'login',
   'username is required': 'Username is required',
   'User does not exist': 'User does not exist',
   'User authentication failed': 'User authentication failed',
   'password': 'Password',
   'password is required': 'Password is required',
-  'btlogin': 'login',
+  // menu
   'home': 'Home',
   'footer': 'Footer',
   'dispo': 'Dispo',
@@ -14,6 +16,7 @@ export const LANG_EN_TRANS = {
   'management': 'Management',
   'users': 'Users',
   'logout': 'Logout',
+  // user form
   'firstname': 'First Name',
   'surname': 'Surname',
   'email': 'Email',
@@ -43,6 +46,33 @@ export const LANG_EN_TRANS = {
   'duplicate email': 'Email address already exists.',
   'expires_on': 'Expires on',
   'user account deactivated': 'Your account is deactivated',
-  'could not get geolocation points': 'Could not get geolocation points'
+  'could not get geolocation points': 'Could not get geolocation points',
+  // stationloading form
+  'loadingcontrol': 'Loading control',
+  'newloadlist': 'New loadlist',
+  'payload': 'Payload in Kg',
+  'exportdate': 'Date of export',
+  'loadlist': 'loadlist',
+  'selectloadlist': 'Select loadlist',
+  'printlabel': 'label',
+  'alllists': 'all lists',
+  'selectedlist': 'selected list',
+  'actuallist': 'actual list',
+  'preview': 'preview',
+  'directprint': 'direct print',
+  'information': 'Information',
+  'loadlistnumber': 'Loadlist-No',
+  'loadedweight': 'loaded (Kg)',
+  'freeweight': 'free weight (Kg)',
+  'stillopen': 'still open',
+  'packcount': 'No of packs',
+  'weight': 'Weight',
+  'loaded': 'loaded',
+  'notloaded': 'open',
+  'loadingscan': 'Loadingscan',
+  'packages': 'Packages',
+  'scanmsgfield': 'Scan Message',
+  'scanfield': 'Scanfield',
+  'loadinglistscan': 'Loadlistscan',
+  'bagscan': 'Bagscan'
 };
-// lang-en.ts
