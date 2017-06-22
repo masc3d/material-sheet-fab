@@ -43,7 +43,7 @@ class LocationServiceTest {
 
         val gpsMessage = LocationService.GpsMessage(
                 userId = 0,
-                dataPoints = listOf(currentPosition))
+                dataPoints = arrayOf(currentPosition))
 
         locationService. onMessage(gpsMessage, null)
     }
