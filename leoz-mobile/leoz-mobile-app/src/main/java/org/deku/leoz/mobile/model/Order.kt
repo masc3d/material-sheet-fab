@@ -11,7 +11,7 @@ import java.util.*
  */
 class Order (
         val id: String,
-        val state: State = Order.State.PENDING,
+        var state: State = Order.State.PENDING,
         val classification: org.deku.leoz.model.OrderClassification,
         val parcel: List<Parcel> = mutableListOf(),
         val addresses: MutableList<Address>,
@@ -24,13 +24,18 @@ class Order (
 
     data class Parcel (
             val id: String,
+            var state: Parcel.State = Parcel.State.PENDING,
             val labelReference: String?,
             val status: MutableList<Status>? = mutableListOf(),
             val length: Float = 0.0F,
             val height: Float = 0.0F,
             val width: Float = 0.0F,
             val weight: Float = 0.0F
-    )
+    ) {
+        enum class State{
+            PENDING, LOADED, MISSING, DONE
+        }
+    }
 
     data class Address (
             val classification: Classification,
@@ -115,8 +120,11 @@ class Order (
         )
     }
 
-    enum class State {
-        PENDING, DONE, FAILED
+    enum class State(val key: String) {
+        PENDING("PENDING"),
+        LOADED("LOADED"),
+        DONE("DONE"),
+        FAILED("FAILED")
     }
 
     fun equalsAddress(order: Order): Boolean {
@@ -173,6 +181,28 @@ class Order (
         }
     }
     //data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
+
+    fun parcelVehicleLoading(parcel: Order.Parcel): Boolean {
+        val parcel = this.parcel.firstOrNull { it == parcel } ?: throw IllegalArgumentException("Parcel [${parcel.id}] is not part of the order [${this.id}]")
+
+        parcel.state = Order.Parcel.State.LOADED
+
+        var allSet = true
+        this.parcel.forEach {
+            if (it.state == Parcel.State.PENDING) {
+                allSet = false
+            }
+        }
+
+        if (allSet && this.state == Order.State.PENDING)
+            this.state = Order.State.LOADED
+
+        return true
+    }
+
+    fun findParcelByReference(ref: String): Parcel? {
+        return this.parcel.firstOrNull { it.labelReference == ref }
+    }
 }
 
 /**

@@ -20,6 +20,7 @@ import org.deku.leoz.mobile.ui.StopListItem
 import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
+import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.LazyInstance
@@ -37,7 +38,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
         FlexibleAdapter(
                 // Items
                 delivery.stopList
-                        .filter { it.state == Stop.State.PENDING }
+                        .filter { it.state == Stop.State.PENDING && it.orders.firstOrNull { it.state == Order.State.LOADED } != null }
                         .map { StopListItem(context, it) },
                 // Listener
                 this)

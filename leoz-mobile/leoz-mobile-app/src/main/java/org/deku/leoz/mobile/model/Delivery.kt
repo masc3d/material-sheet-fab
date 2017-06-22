@@ -83,6 +83,31 @@ class Delivery {
                 phone = "+49 6677 9582"
         )
 
+        val delAddresses = listOf(
+                Order.Address(
+                        classification = Order.Address.Classification.DELIVERY,
+                        addressLine1 = "Max Mustermann",
+                        addressLine2 = "DEK KURIER",
+                        addressLine3 = "3. Addresszeile",
+                        street = "Dörrwiese",
+                        streetNo = "2",
+                        zipCode = "36286",
+                        city = "Neuenstein",
+                        phone = "+49 6677 9582"
+                ),
+                Order.Address(
+                        classification = Order.Address.Classification.DELIVERY,
+                        addressLine1 = "Prangenberg",
+                        addressLine2 = "2. Adresszeile",
+                        addressLine3 = "3. Addresszeile",
+                        street = "Burscheidter Weg",
+                        streetNo = "4",
+                        zipCode = "40822",
+                        city = "Mettmann",
+                        phone = "+49 6677 9582"
+                )
+        )
+
         val dateFrom = Date().toCalendar()
         dateFrom.set(Calendar.HOUR_OF_DAY, 8)
         dateFrom.set(Calendar.MINUTE, 0)
@@ -97,7 +122,7 @@ class Delivery {
                 dateTo = Date(dateTo.timeInMillis)
         )
 
-        for (i in 0..50) {
+        for (i in 10..60) {
             stopList.add(Stop(
                     orders = mutableListOf(
                             Order(
@@ -107,15 +132,15 @@ class Delivery {
                                     parcel = listOf(
                                             Order.Parcel(
                                                     id = "a",
-                                                    labelReference = "10000000001"
+                                                    labelReference = "100000000$i"
                                             ),
                                             Order.Parcel(
                                                     id = "b",
-                                                    labelReference = "10000000002"
+                                                    labelReference = "100000001$i"
                                             ),
                                             Order.Parcel(
                                                     id = "c",
-                                                    labelReference = "10000000003"
+                                                    labelReference = "100000002$i"
                                             )
                                     ),
                                     addresses = mutableListOf(addr, addr2),
@@ -141,7 +166,7 @@ class Delivery {
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(Order.Parcel(
                                             id = "a",
-                                            labelReference = "02000000001"
+                                            labelReference = "020000000$i"
                                     )),
                                     addresses = mutableListOf(addr, addr2),
                                     appointment = listOf(appointment),
@@ -157,6 +182,10 @@ class Delivery {
                     appointment = appointment,
                     state = Stop.State.PENDING
             ))
+        }
+
+        stopList.forEach {
+            orderList.addAll(it.orders)
         }
     }
 
@@ -294,5 +323,13 @@ class Delivery {
                 it.labelReference == labelReference
             }.isNotEmpty()
         }
+    }
+
+    fun countParcelsToBeVehicleLoaded(): Int {
+        var count = 0
+        count += orderList.filter { it.state == Order.State.PENDING }
+                .flatMap { it.parcel }
+                .filter { it.state == Order.Parcel.State.PENDING }.size
+        return count
     }
 }

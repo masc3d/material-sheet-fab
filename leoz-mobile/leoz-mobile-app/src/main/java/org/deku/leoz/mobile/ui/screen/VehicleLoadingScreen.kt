@@ -1,16 +1,21 @@
 package org.deku.leoz.mobile.ui.screen
 
 
+import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_vehicle_loading.*
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.DeliveryList
 
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.slf4j.LoggerFactory
 
 
 /**
@@ -18,7 +23,11 @@ import org.deku.leoz.mobile.ui.ScreenFragment
  */
 class VehicleLoadingScreen : ScreenFragment() {
 
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
+    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
     override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
@@ -31,6 +40,7 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         aidcReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     processLabelScan(it.data)
                     this.uxLabelNo.setText(it.data)
@@ -38,6 +48,28 @@ class VehicleLoadingScreen : ScreenFragment() {
     }
 
     private fun processLabelScan(data: String) {
+        val order = delivery.findOrderByLabelReference(data)
 
+        log.debug("VehicleLoading parcel reference [$data] Orders found [${order.size}]")
+
+        when (order.size) {
+            0 -> {
+                //Error, order could not be found
+                log.warn("No order with a parcel reference [$data] could be found")
+
+                //Query order from Central services
+            }
+            1 -> {
+                //Continue
+                val parcel = order.first().findParcelByReference(data)
+                log.debug("Parcel ID [${parcel!!.id}] Order ID [${order.first().id}] State [${parcel.state}]")
+                order.first().parcelVehicleLoading(parcel)
+                log.debug("State after processing [${parcel.state}]")
+            }
+            else -> {
+                //What to do if multiple orders are found?
+                log.warn("Multiple orders found with a parcel reference [$data]")
+            }
+        }
     }
 }

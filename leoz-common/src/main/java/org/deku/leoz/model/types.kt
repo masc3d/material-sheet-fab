@@ -172,7 +172,6 @@ enum class ParcelService(
                     personalDeliveryOnly = true,
                     alternateDeliveryAllowed = false
             ),
-
             validForStop = StopClassification.BOTH),
     ADDRESS_CORRECTION(
             serviceId = 1024,
@@ -214,7 +213,9 @@ enum class ParcelService(
             validForStop = StopClassification.BOTH),
     XCHANGE(
             serviceId = 262144,
-            parcelServiceRestriction = ParcelServiceRestriction(),
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    summarizedDeliveryAllowed = false
+            ),
             validForStop = StopClassification.DELIVERY),
     PHONE_RECEIPT(
             serviceId = 524288,
