@@ -31,10 +31,19 @@ class StopDetailFragment : Fragment() {
     private var order: Order? = null
     private var serviceDescriptions: MutableList<String> = mutableListOf()
 
-    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<OrderListItem>>( {
-        FlexibleAdapter(stop.orders.map {
-            OrderListItem(context, it)
-        }, this)
+    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<OrderListItem>>({
+        FlexibleAdapter(
+                //Orders to be listed
+                stop.orders
+                        .filter {
+                            it.state == Order.State.LOADED
+                        }
+                        .map {
+                            OrderListItem(context, it)
+                        },
+                //Listener
+                this
+        )
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
 

@@ -68,6 +68,7 @@ class StopListItem(
         holder.zip.text = stop.address.zipCode
         holder.city.text = stop.address.city
         holder.recipient.text = stop.address.addressLine1
+        holder.addressLine2.text = stop.address.addressLine2
         holder.appointmentFrom.text = simpleDateFormat.format(stop.appointment.dateFrom)
         holder.appointmentTo.text = simpleDateFormat.format(stop.appointment.dateTo)
 
@@ -88,6 +89,7 @@ class StopListItem(
         val zip = view.uxZip
         val city = view.uxCity
         val recipient = view.uxRecipient
+        val addressLine2 = view.uxAddressLine2
         val appointmentFrom = view.uxAppointmentFrom
         val appointmentTo = view.uxAppointmentTo
         val appointmentClock = view.uxAppointmentClock

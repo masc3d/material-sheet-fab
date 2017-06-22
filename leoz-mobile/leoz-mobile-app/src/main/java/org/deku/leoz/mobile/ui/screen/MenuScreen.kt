@@ -18,6 +18,8 @@ import kotlinx.android.synthetic.main.screen_menu.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 import sx.android.getLayoutInflater
@@ -97,13 +99,13 @@ class MenuScreen : ScreenFragment() {
                         MenuEntry(
                                 entryType = MenuEntry.Entry.LOADING,
                                 description = "Fahrzeugbeladung",
-                                counter = 10,
+                                counter = delivery.countParcelsToBeVehicleLoaded(),
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
                         ),
                         MenuEntry(
                                 entryType = MenuEntry.Entry.ORDERLIST,
                                 description = "Auftragsliste",
-                                counter = delivery.stopList.size,
+                                counter = delivery.stopList.filter { it.state == Stop.State.PENDING && it.orders.firstOrNull { it.state == Order.State.LOADED } != null }.size,
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_format_list_bulleted)!!
                         )
                 ))
