@@ -63,7 +63,9 @@ dependencies {
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             // Feign REST
             "io.github.openfeign:feign-jackson:$v_feign",
-            "io.github.openfeign:feign-jaxrs:$v_feign",
+            dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
+                exclude group: "javax.ws.rs", module: "jsr311-api"
+            },
             // YAML
             "org.yaml:snakeyaml:1.18",
             // Jackson
