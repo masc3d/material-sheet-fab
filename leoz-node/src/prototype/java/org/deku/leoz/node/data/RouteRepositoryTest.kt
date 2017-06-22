@@ -16,10 +16,13 @@ import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
 import sx.junit.PrototypeTest
+import sx.time.toTimestamp
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -100,6 +103,32 @@ open class RouteRepositoryTest {
                     .resultList
             log.info("${sw} ${result.count()}")
         }
+    }
+
+    @Transactional
+    @Test
+    open fun testFindRoutingSpringData() {
+        val qRoute = QMstRoute.mstRoute
+
+        for (i in 0..2000) {
+            val sw = Stopwatch.createStarted()
+
+            val result = routeRepository.findAll(
+                    qRoute.layer.eq(1)
+                            .and(qRoute.country.eq("DE"))
+                            .and(qRoute.zipFrom.loe("50181"))
+                            .and(qRoute.zipTo.goe("50181"))
+                            .and(qRoute.validFrom.before(Date().toTimestamp()))
+                            .and(qRoute.validTo.after(Date().toTimestamp()))
+            )
+
+            result.sortedByDescending {
+                it.syncId
+            }.first()
+
+            log.info("${sw} ${result.count()}")
+        }
+
     }
 
     @Transactional
