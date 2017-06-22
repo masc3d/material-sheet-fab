@@ -281,16 +281,11 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
                         .and(qRoute.zipTo.goe(queryZipCode))
                         .and(qRoute.validFrom.before(validDate?.toTimestamp()))
                         .and(qRoute.validTo.after(validDate?.toTimestamp()))
-                ,
-                PageRequest(
-                        // Page index
-                        0,
-                        // Size of page (essentially LIMIT 1)
-                        1,
-                        // Sort by syncid descending to make sure the result is a current one
-                        Sort(Sort.Direction.DESC, qRoute.syncId.metadata.name)
-                )
         )
+                // Sorting a few records in memory is much faster than adding sort criteria to complex query with h2
+                .sortedByDescending {
+                    it.syncId
+                }
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
