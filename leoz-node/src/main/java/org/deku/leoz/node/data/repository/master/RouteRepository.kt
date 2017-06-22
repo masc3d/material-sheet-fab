@@ -18,7 +18,11 @@ interface RouteRepository :
         QueryDslPredicateExecutor<MstRoute>,
         RouteRepositoryCustom {
     @QueryHints(
-            QueryHint(name = org.eclipse.persistence.config.QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+            // masc20170622. CACHING EXAMPLE
+            // IMPORTANT. cache options are very restrictive and documentation of eg. CacheUsage
+            // has to be read carefully. eg. enabling a single entity cache on findAll will silently
+            // enforce the query to return the first result only.
+            QueryHint(name = org.eclipse.persistence.config.QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
     )
     override fun findAll(predicate: Predicate): Iterable<MstRoute>
 }

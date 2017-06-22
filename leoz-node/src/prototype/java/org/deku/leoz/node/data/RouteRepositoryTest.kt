@@ -6,6 +6,7 @@ import com.querydsl.sql.Configuration
 import com.querydsl.sql.H2Templates
 import com.querydsl.sql.SQLQueryFactory
 import org.deku.leoz.node.config.DataTestConfiguration
+import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repository.master.RouteRepository
@@ -13,6 +14,7 @@ import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
@@ -41,19 +43,20 @@ open class RouteRepositoryTest {
     @Inject
     private lateinit var routeRepository: RouteRepository
 
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
     @Inject
     private lateinit var dataSource: DataSource
 
+    @Transactional
     @Test
     open fun testFindAll() {
         val qRoute = QMstRoute.mstRoute
 
-        routeRepository.findAll(
-                qRoute.timestamp.gt(Timestamp.valueOf(LocalDateTime.of(2014, 1, 1, 0, 0, 0))))
-                .forEach {
-            log.info("${it} ${it.station}")
-            return
-        }
+        val result = routeRepository.findAll(
+                qRoute.country.eq("DE")
+        )
+
+        log.info("RESULT COUNT ${result.count()}")
     }
 
     @Transactional
@@ -93,7 +96,7 @@ open class RouteRepositoryTest {
                     .createNamedQuery(query.toString())
                     .setParameter(1, 1)
                     .setParameter(2, "DE")
-                    .setParameter(3, "63571")
+                    .setParameter(3, "50181")
                     .resultList
             log.info("${sw} ${result.count()}")
         }
@@ -109,7 +112,7 @@ open class RouteRepositoryTest {
             val result = routeRepository.findAll(
                     qRoute.layer.eq(1)
                             .and(qRoute.country.eq("DE"))
-                            .and(qRoute.zipFrom.eq("63571")))
+            )
             log.info("${sw} ${result.count()}")
         }
     }
