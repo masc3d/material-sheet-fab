@@ -16,6 +16,8 @@ import org.deku.leoz.service.entity.DayType
 import org.deku.leoz.service.entity.ServiceErrorCode
 import org.deku.leoz.service.pub.RoutingService.*
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import sx.rs.auth.ApiKey
 import sx.time.toDate
 import sx.time.toLocalDate
@@ -278,7 +280,17 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
                         .and(qRoute.zipFrom.loe(queryZipCode))
                         .and(qRoute.zipTo.goe(queryZipCode))
                         .and(qRoute.validFrom.before(validDate?.toTimestamp()))
-                        .and(qRoute.validTo.after(validDate?.toTimestamp())))
+                        .and(qRoute.validTo.after(validDate?.toTimestamp()))
+                ,
+                PageRequest(
+                        // Page index
+                        0,
+                        // Size of page (essentially LIMIT 1)
+                        1,
+                        // Sort by syncid descending to make sure the result is a current one
+                        Sort(Sort.Direction.DESC, qRoute.syncId.metadata.name)
+                )
+        )
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
