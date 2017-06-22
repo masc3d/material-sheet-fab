@@ -48,17 +48,12 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        style="@style/AppTheme.Layout.Screen"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
-        <ListView
-            style="@style/AppTheme.ListView"
-            android:id="@+id/uxMenuList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+    <ListView
+        android:id="@+id/uxMenuList"
+        style="@style/AppTheme.ListView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        />
 
 </LinearLayout>

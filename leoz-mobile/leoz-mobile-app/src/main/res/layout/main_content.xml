@@ -16,7 +16,6 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
 
-
     <android.support.design.widget.AppBarLayout
         android:id="@+id/uxAppBarLayout"
         android:layout_width="match_parent"
@@ -29,15 +28,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:contentScrim="@android:color/transparent"
+            app:layout_scrollFlags="scroll|enterAlways"
             >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/actionbar_background"
+                app:layout_collapseMode="pin"
+            />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/uxToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@drawable/actionbar_background"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
