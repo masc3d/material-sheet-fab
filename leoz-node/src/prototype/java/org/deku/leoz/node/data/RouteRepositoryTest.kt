@@ -2,34 +2,26 @@ package org.deku.leoz.node.data
 
 import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
-import com.querydsl.sql.Configuration
-import com.querydsl.sql.H2Templates
-import com.querydsl.sql.SQLQueryFactory
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repository.master.RouteRepository
-import org.eclipse.persistence.annotations.CacheType
 import org.eclipse.persistence.config.HintValues
 import org.eclipse.persistence.config.QueryHints
-import org.eclipse.persistence.config.QueryType
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
+import sx.jpa.NamedQuery
 import sx.junit.PrototypeTest
 import sx.time.toTimestamp
 import java.sql.Timestamp
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 import javax.persistence.EntityManager
@@ -110,9 +102,81 @@ open class RouteRepositoryTest {
         }
     }
 
+
     @Transactional
     @Test
     open fun testFindRoutingSpringDataPrepared() {
+        val qRoute = QMstRoute.mstRoute
+
+        class Params {
+            val layer = Param(Int::class.java)
+            val country = Param(String::class.java)
+            val zipFrom = Param(String::class.java)
+            val zipTo = Param(String::class.java)
+            val validFrom = Param(Timestamp::class.java)
+            val validTo = Param(Timestamp::class.java)
+        }
+
+        val timestamp = Date().toTimestamp()
+
+        val pquery = NamedQuery(
+                entityManager = entityManager,
+                resultType = MstRoute::class.java,
+                paramsType = Params::class.java,
+                hints = listOf(
+                        Pair(QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE),
+                        Pair(QueryHints.QUERY_RESULTS_CACHE_SIZE, 500.toString())
+                ),
+                query = { q, p ->
+                    q.from(qRoute)
+                            .where(qRoute.layer.eq(p.layer)
+                                    .and(qRoute.country.eq(p.country))
+                                    .and(qRoute.zipFrom.loe(p.zipFrom))
+                                    .and(qRoute.zipTo.goe(p.zipTo))
+                                    .and(qRoute.validFrom.before(p.validFrom))
+                                    .and(qRoute.validTo.after(p.validTo))
+                            )
+                }
+        )
+
+        for (i in 0..20) {
+            val sw = Stopwatch.createStarted()
+
+            fun query(zipFrom: String, zipTo: String): List<MstRoute> {
+                val result = pquery.create { q, p ->
+                    q.set(p.layer, 1)
+                    q.set(p.country, "DE")
+                    q.set(p.zipFrom, zipFrom)
+                    q.set(p.zipTo, zipTo)
+                    q.set(p.validFrom, timestamp)
+                    q.set(p.validTo, timestamp)
+                }
+                        .execute()
+
+                return result.sortedByDescending {
+                    it.syncId
+                }
+            }
+
+            var result: List<MstRoute> = listOf()
+
+            sw.restart()
+            result = query(zipFrom = "50181", zipTo = "50181")
+            log.info("${sw} ${result.count()}")
+
+            sw.restart()
+            result = query(zipFrom = "36286", zipTo = "36286")
+            log.info("${sw} ${result.count()}")
+
+            sw.restart()
+            result = query(zipFrom = "63571", zipTo = "63571")
+            log.info("${sw} ${result.count()}")
+        }
+    }
+
+    @Transactional
+    @Test
+    open fun testFindRoutingSpringDataPreparedRaw() {
         val qRoute = QMstRoute.mstRoute
 
         val pLayer = Param(Int::class.java, qRoute.layer.metadata.name)
@@ -156,7 +220,7 @@ open class RouteRepositoryTest {
 
         val timestamp = Date().toTimestamp()
 
-        for (i in 0..2000) {
+        for (i in 0..20) {
             val sw = Stopwatch.createStarted()
 
             fun query(zipFrom: String, zipTo: String): List<MstRoute> {
