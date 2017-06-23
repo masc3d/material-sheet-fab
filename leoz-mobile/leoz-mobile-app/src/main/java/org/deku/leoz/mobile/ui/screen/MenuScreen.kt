@@ -34,11 +34,13 @@ class MenuScreen : ScreenFragment() {
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
 
-    data class MenuEntry(val entryType: Entry, val description: String, var counter: Int, val icon: Drawable) {
+    data class MenuEntry(val entryType: Entry, val description: String, var counter: Int, var counter2: Int, val icon: Drawable) {
         enum class Entry(val value: Long) {
             ORDERLIST(0),
             LOADING(1)
         }
+
+        constructor(entryType: Entry, description: String, counter: Int, icon: Drawable) : this(entryType, description, counter, 0, icon)
     }
 
     /**
@@ -61,7 +63,13 @@ class MenuScreen : ScreenFragment() {
             } else {
                 v.uxCount.visibility = View.VISIBLE
             }
+            if (entries[position].counter2 == 0) {
+                v.uxCount2.visibility = View.GONE
+            } else {
+                v.uxCount2.visibility = View.VISIBLE
+            }
             v.uxCount.text = entries[position].counter.toString()
+            v.uxCount2.text = entries[position].counter2.toString()
 
             return v
         }
@@ -76,10 +84,6 @@ class MenuScreen : ScreenFragment() {
 
         override fun getCount(): Int {
             return entries.size
-        }
-
-        fun setEntryCounter(position: Int, counter: Int) {
-            (getItem(position) as MenuEntry).counter = counter
         }
     }
 
@@ -100,6 +104,7 @@ class MenuScreen : ScreenFragment() {
                                 entryType = MenuEntry.Entry.LOADING,
                                 description = "Fahrzeugbeladung",
                                 counter = delivery.countParcelsToBeVehicleLoaded(),
+                                counter2 = 20, /** TODO: replace with delivery.countParcelsToBeVehicleUnLoaded() */
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
                         ),
                         MenuEntry(

@@ -41,7 +41,7 @@ class DeliveryActivity : Activity(),
         if (savedInstanceState == null) {
             this.showScreen(MenuScreen(), addToBackStack = false)
 
-            this.supportActionBar?.setTitle(R.string.delivery)
+            this.supportActionBar?.title = getString(R.string.menu)
         }
     }
 

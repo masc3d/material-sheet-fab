@@ -4,8 +4,8 @@
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
 
-    <string name="app_name" translatable="false">Mobile Suite</string>
-    <string name="app_name_long" translatable="false">Mobile Suite</string>
+    <string name="app_name" translatable="false">mobileX</string>
+    <string name="app_name_long" translatable="false">mobileX</string>
     <string name="app_project_name" translatable="false">leoz-mobile</string>
 
     <string name="cancel">Cancel</string>
@@ -14,7 +14,7 @@
 
     <string name="check_for_updates">Check for updates</string>
 
-    <string name="continue_without">Continue withour</string>
+    <string name="continue_without">Continue without</string>
 
     <string name="delivery">Delivery</string>
 
@@ -78,4 +78,5 @@
     <string name="version_available">v%s is available</string>
 
     <string name="warehouse">Warehouse</string>
+    <string name="menu">Menu</string>
 </resources>

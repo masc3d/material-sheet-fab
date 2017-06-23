@@ -33,7 +33,7 @@ class Order (
             val weight: Float = 0.0F
     ) {
         enum class State{
-            PENDING, LOADED, MISSING, DONE
+            PENDING, LOADED, MISSING, DONE, FAILED
         }
     }
 
@@ -162,6 +162,17 @@ class Order (
         return address
     }
 
+    fun getAppointmentOfInterest(): Appointment {
+
+        when (this.classification) {
+            OrderClassification.PICKUP -> return this.appointment.first { it.classification == Appointment.Classification.PICKUP }
+            OrderClassification.DELIVERY -> return this.appointment.first { it.classification == Appointment.Classification.DELIVERY }
+            else -> {
+                throw IllegalStateException()
+            }
+        }
+    }
+
     /**
      * @param stopList The stopList this method should use to iterate
      * @return If a existing stop has been found, the stop is returned. If not, it will be null
@@ -202,6 +213,14 @@ class Order (
 
     fun findParcelByReference(ref: String): Parcel? {
         return this.parcel.firstOrNull { it.labelReference == ref }
+    }
+
+    fun toStop(): Stop {
+        return Stop(
+                orders = mutableListOf(this),
+                address = this.getAddressOfInterest(),
+                appointment = this.getAppointmentOfInterest()
+        )
     }
 }
 

@@ -34,6 +34,8 @@ class StopProcessFragment : Fragment() {
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     private lateinit var stop: Stop
+    private lateinit var orderList: List<Order>
+    private lateinit var parcelList: MutableList<Order.Parcel>
     private var lastRef: String? = null
     private var resultCount: Int = 0
 
@@ -44,6 +46,23 @@ class StopProcessFragment : Fragment() {
         fun create(stop: Stop): StopProcessFragment {
             val f = StopProcessFragment()
             f.stop = stop
+            f.orderList = f.stop.orders.filter { it.state == Order.State.LOADED }
+            f.orderList.forEach {
+                f.parcelList.addAll(it.parcel)
+            }
+            return f
+        }
+
+        /**
+         * @param orders List of orders which are supposed to be processed summarized. Note: The list should only contain orders which meet the requirements to be compressed into a single Stop
+         */
+        fun create(orders: List<Order>): StopProcessFragment {
+            val f = StopProcessFragment()
+            f.orderList = orders
+            f.orderList.forEach {
+                f.parcelList.addAll(it.parcel)
+            }
+            f.stop = f.orderList.first().toStop()
             return f
         }
     }
@@ -67,16 +86,6 @@ class StopProcessFragment : Fragment() {
             this.uxLabelNo.error = null
         }
 
-        val parcelList = mutableListOf<Order.Parcel>()
-
-        stop.orders.forEach {
-            parcelList.addAll(it.parcel)
-        }
-
-        val parcelRefList: List<String> = parcelList.map {
-            it.labelReference ?: ""
-        }
-
         this.uxParcelList.adapter = ParcelListAdapter(context, parcelList)
 
         (this.activity as DeliveryActivity).showDeliverFabButtons()
@@ -95,7 +104,7 @@ class StopProcessFragment : Fragment() {
     }
 
     private fun processLabelRef(ref: String) {
-        val order: Order? = stop.orders.firstOrNull {
+        val order: Order? = orderList.firstOrNull {
             it.parcel.firstOrNull {
                 it.labelReference == ref
             } != null

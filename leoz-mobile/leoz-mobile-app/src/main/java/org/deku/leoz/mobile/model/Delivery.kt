@@ -332,4 +332,12 @@ class Delivery {
                 .filter { it.state == Order.Parcel.State.PENDING }.size
         return count
     }
+
+    fun countParcelsToBeVehicleUnLoaded(): Int {
+        var count = 0
+        count += orderList.filter { it.state == Order.State.FAILED || it.state == Order.State.LOADED }
+                .flatMap { it.parcel }
+                .filter { it.state == Order.Parcel.State.FAILED }.size
+        return count
+    }
 }
