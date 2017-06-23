@@ -27,7 +27,7 @@
                 android:layout_marginEnd="@dimen/horizontal_large_margin"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_cancel_black"/>
+                app:srcCompat="@drawable/ic_cancel_black" />
 
             <TextView
                 android:id="@+id/uxMenuDescription"
@@ -35,16 +35,34 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="Menu-Name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         </LinearLayout>
 
-        <sx.android.view.BadgeTextView
-            android:id="@+id/uxCount"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:background="@color/colorAccent"/>
+            android:layout_margin="@dimen/small_margin"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <sx.android.view.BadgeTextView
+                android:id="@+id/uxCount"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@color/colorAccent"/>
+
+            <sx.android.view.BadgeTextView
+                android:id="@+id/uxCount2"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@color/colorPrimary"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+
     </RelativeLayout>
 </android.support.v7.widget.CardView>

@@ -41,10 +41,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:gravity="center"
-            android:text="Mobile Drive"
+            android:text="mobileTouR"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </FrameLayout>
 
