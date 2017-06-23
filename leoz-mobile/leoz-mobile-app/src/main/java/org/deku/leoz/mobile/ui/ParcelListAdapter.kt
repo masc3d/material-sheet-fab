@@ -13,7 +13,7 @@ import org.deku.leoz.mobile.model.Order
 /**
  * Created by 27694066 on 22.05.2017.
  */
-class ParcelListAdapter(val context: Context, val data: List<Order.Parcel>, val rootViewGroup: ViewGroup? = null): BaseAdapter() {
+class ParcelListAdapter(val context: Context, val data: List<Order.Parcel>, val rootViewGroup: ViewGroup? = null, val readOnly: Boolean = false): BaseAdapter() {
 
     var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -22,6 +22,10 @@ class ParcelListAdapter(val context: Context, val data: List<Order.Parcel>, val 
 
         vi.uxParcelReference.text = data[position].labelReference
         vi.uxParcelStatus.setImageDrawable(context.resources.getDrawable(R.drawable.ic_cancel_black))
+
+        if (readOnly) {
+            vi.uxParcelStatus.visibility = View.GONE
+        }
 
         return vi
     }

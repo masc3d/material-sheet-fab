@@ -41,7 +41,7 @@ class DeliveryActivity : Activity(),
         if (savedInstanceState == null) {
             this.showScreen(MenuScreen(), addToBackStack = false)
 
-            this.supportActionBar?.title = getString(R.string.menu)
+            this.setAppBarTitle(getString(R.string.menu))
         }
     }
 
@@ -113,7 +113,11 @@ class DeliveryActivity : Activity(),
     fun showDeliverFabButtons() {
     }
 
+    fun showSignaturePad(text: String) {
+        this.showScreen(SignatureScreen.create(text))
+    }
+
     fun showSignaturePad() {
-        this.showScreen(SignatureScreen())
+        this.showSignaturePad("")
     }
 }

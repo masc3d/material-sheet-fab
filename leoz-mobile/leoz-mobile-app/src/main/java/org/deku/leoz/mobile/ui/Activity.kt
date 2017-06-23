@@ -422,6 +422,10 @@ open class Activity : RxAppCompatActivity(),
         }
     }
 
+    fun setAppBarTitle(title: String) {
+        this.supportActionBar?.title = title
+    }
+
     override fun onScreenFragmentResume(fragment: ScreenFragment) {
         // Take over action items from screen fragment when it resumes
         this.actionItems = fragment.actionItems

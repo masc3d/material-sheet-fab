@@ -104,7 +104,7 @@ class MenuScreen : ScreenFragment() {
                                 entryType = MenuEntry.Entry.LOADING,
                                 description = "Fahrzeugbeladung",
                                 counter = delivery.countParcelsToBeVehicleLoaded(),
-                                counter2 = 20, /** TODO: replace with delivery.countParcelsToBeVehicleUnLoaded() */
+                                counter2 = delivery.countParcelsToBeVehicleUnLoaded(),
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
                         ),
                         MenuEntry(
