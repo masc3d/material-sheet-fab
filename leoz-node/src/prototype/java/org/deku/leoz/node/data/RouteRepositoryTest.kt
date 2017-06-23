@@ -10,6 +10,10 @@ import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repository.master.RouteRepository
+import org.eclipse.persistence.annotations.CacheType
+import org.eclipse.persistence.config.HintValues
+import org.eclipse.persistence.config.QueryHints
+import org.eclipse.persistence.config.QueryType
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -93,7 +97,7 @@ open class RouteRepositoryTest {
 
         this.entityManager.entityManagerFactory.addNamedQuery(query.toString(), query)
 
-        for (i in 0..2000000) {
+        for (i in 0..2000) {
             val sw = Stopwatch.createStarted()
             val result = entityManager
                     .createNamedQuery(query.toString())
@@ -101,6 +105,90 @@ open class RouteRepositoryTest {
                     .setParameter(2, "DE")
                     .setParameter(3, "50181")
                     .resultList
+
+            log.info("${sw} ${result.count()}")
+        }
+    }
+
+    @Transactional
+    @Test
+    open fun testFindRoutingSpringDataPrepared() {
+        val qRoute = QMstRoute.mstRoute
+
+        val pLayer = Param(Int::class.java, qRoute.layer.metadata.name)
+        val pCountry = Param(String::class.java, qRoute.country.metadata.name)
+        val pZipFrom = Param(String::class.java, qRoute.zipFrom.metadata.name)
+        val pZipTo = Param(String::class.java, qRoute.zipTo.metadata.name)
+        val pValidFrom = Param(Timestamp::class.java, qRoute.validFrom.metadata.name)
+        val pValidTo = Param(Timestamp::class.java, qRoute.validTo.metadata.name)
+
+        val d = Date().toTimestamp()
+        val query = JPAQuery<MstRoute>(entityManager)
+                .from(qRoute)
+                .where(qRoute.layer.eq(pLayer)
+                        .and(qRoute.country.eq(pCountry))
+                        .and(qRoute.zipFrom.loe(pZipFrom))
+                        .and(qRoute.zipTo.goe(pZipTo))
+                        .and(qRoute.validFrom.before(pValidFrom))
+                        .and(qRoute.validTo.after(pValidTo))
+                )
+                .set(pLayer, 0)
+                .set(pCountry, "")
+                .set(pZipFrom, "")
+                .set(pZipTo, "")
+                .set(pValidFrom, Date().toTimestamp())
+                .set(pValidTo, Date().toTimestamp())
+                .createQuery()
+
+        query.setHint(QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE)
+        query.setHint(QueryHints.QUERY_RESULTS_CACHE_SIZE, 500.toString())
+
+        entityManager.entityManagerFactory.addNamedQuery(
+                query.toString(),
+                query)
+
+        entityManager
+                .createNamedQuery(query.toString(), MstRoute::class.java)
+                .parameters
+                .forEach {
+                    log.info("PARAM ${it.name} POS ${it.position} TYPE ${it.parameterType}")
+                }
+
+        val timestamp = Date().toTimestamp()
+
+        for (i in 0..2000) {
+            val sw = Stopwatch.createStarted()
+
+            fun query(zipFrom: String, zipTo: String): List<MstRoute> {
+                val nquery = entityManager
+                        .createNamedQuery(query.toString(), MstRoute::class.java)
+                        .setParameter(1, 1)
+                        .setParameter(2, "DE")
+                        .setParameter(3, zipFrom)
+                        .setParameter(4, zipTo)
+                        .setParameter(5, timestamp)
+                        .setParameter(6, timestamp)
+
+                val result = nquery
+                        .resultList
+
+                return result.sortedByDescending {
+                    it.syncId
+                }
+            }
+
+            var result: List<MstRoute> = listOf()
+
+            sw.restart()
+            result = query(zipFrom = "50181", zipTo = "50181")
+            log.info("${sw} ${result.count()}")
+
+            sw.restart()
+            result = query(zipFrom = "36286", zipTo = "36286")
+            log.info("${sw} ${result.count()}")
+
+            sw.restart()
+            result = query(zipFrom = "63571", zipTo = "63571")
             log.info("${sw} ${result.count()}")
         }
     }
@@ -110,6 +198,8 @@ open class RouteRepositoryTest {
     open fun testFindRoutingSpringData() {
         val qRoute = QMstRoute.mstRoute
 
+        val timestamp = Date().toTimestamp()
+
         for (i in 0..2000) {
             val sw = Stopwatch.createStarted()
 
@@ -118,8 +208,8 @@ open class RouteRepositoryTest {
                             .and(qRoute.country.eq("DE"))
                             .and(qRoute.zipFrom.loe("50181"))
                             .and(qRoute.zipTo.goe("50181"))
-                            .and(qRoute.validFrom.before(Date().toTimestamp()))
-                            .and(qRoute.validTo.after(Date().toTimestamp()))
+                            .and(qRoute.validFrom.before(timestamp))
+                            .and(qRoute.validTo.after(timestamp))
             )
 
             result.sortedByDescending {
@@ -128,7 +218,6 @@ open class RouteRepositoryTest {
 
             log.info("${sw} ${result.count()}")
         }
-
     }
 
     @Transactional

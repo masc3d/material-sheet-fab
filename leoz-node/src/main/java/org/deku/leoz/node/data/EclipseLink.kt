@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
  * Change listener handling entity events
  * Created by masc on 11/10/2016.
  */
-class ChangeListener : DescriptorEventAdapter() {
+class EclipseEventListener : DescriptorEventAdapter() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun postInsert(event: DescriptorEvent?) {
@@ -23,13 +23,18 @@ class ChangeListener : DescriptorEventAdapter() {
  * Descriptor customizor, setting up listeners.
  * Customizers are setup via annotations, eclispelink properties or persistence.xml
  */
-class Customizer : DescriptorCustomizer {
+class EclipseLinkCustomizer : DescriptorCustomizer {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun customize(descriptor: ClassDescriptor?) {
         if (descriptor == null)
             return
         log.info("Registering event listener [${descriptor.alias}]")
-        descriptor.eventManager.addListener(ChangeListener())
+
+        // Setting all entites to cacheable
+        descriptor.cachePolicy.setCacheable(true)
+
+        // Register entity event listener
+        descriptor.eventManager.addListener(EclipseEventListener())
     }
 }

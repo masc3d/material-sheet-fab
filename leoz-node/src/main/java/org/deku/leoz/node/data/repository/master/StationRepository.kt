@@ -13,13 +13,13 @@ import javax.inject.Inject
  */
 interface StationRepository :
         JpaRepository<MstStation, Int>,
-        QueryDslPredicateExecutor<MstStation>, StationRepositoryCustom
+        QueryDslPredicateExecutor<MstStation>, StationRepositoryExtension
 
-interface StationRepositoryCustom {
+interface StationRepositoryExtension {
     fun findWithQuery(query: String): List<MstStation>
 }
 
-class StationRepositoryImpl : StationRepositoryCustom {
+class StationRepositoryImpl: StationRepositoryExtension {
     @Inject
     private lateinit var depotRepository: StationRepository
 
@@ -70,3 +70,4 @@ class StationRepositoryImpl : StationRepositoryCustom {
         return Lists.newArrayList(depots)
     }
 }
+

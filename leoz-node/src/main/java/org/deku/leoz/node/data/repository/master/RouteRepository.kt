@@ -16,7 +16,7 @@ import javax.persistence.QueryHint
 interface RouteRepository :
         JpaRepository<MstRoute, Long>,
         QueryDslPredicateExecutor<MstRoute>,
-        RouteRepositoryCustom {
+        RouteRepositoryExtension {
     @QueryHints(
             // masc20170622. CACHING EXAMPLE
             // IMPORTANT. cache options are very restrictive and documentation of eg. CacheUsage
@@ -27,9 +27,9 @@ interface RouteRepository :
     override fun findAll(predicate: Predicate): Iterable<MstRoute>
 }
 
-interface RouteRepositoryCustom
+interface RouteRepositoryExtension
 
-class RouteRepositoryImpl : RouteRepositoryCustom {
+class RouteRepositoryImpl : RouteRepositoryExtension {
     @Inject
-    private lateinit var mRouteRepository: RouteRepository
+    private lateinit var routeRepository: RouteRepository
 }

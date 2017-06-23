@@ -3,6 +3,7 @@ package org.deku.leoz.node.config
 import org.deku.leoz.node.Storage
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.PersistenceUnitProperties
+import org.eclipse.persistence.platform.database.H2Platform
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor
 import org.flywaydb.core.Flyway
 import org.h2.jdbcx.JdbcConnectionPool
@@ -14,15 +15,16 @@ import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.autoconfigure.flyway.FlywayDataSource
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.*
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.jdbc.datasource.ConnectionHandle
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
+import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -32,6 +34,7 @@ import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
 import javax.persistence.Entity
+import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
 
@@ -141,80 +144,103 @@ open class PersistenceConfiguration {
 
     @Bean
     open fun entityManagerFactory(): LocalContainerEntityManagerFactoryBean {
-            // TODO. more robust behaviour when database is down.
-            // eg. webservice fails when database is unreachable (on startup eg.)
-            // more tests required referring to db outages during runtime
-            val em = LocalContainerEntityManagerFactoryBean()
-            em.dataSource = this.dataSource
-            em.setPackagesToScan(org.deku.leoz.node.data.Package.name)
+        // TODO. more robust behaviour when database is down.
+        // eg. webservice fails when database is unreachable (on startup eg.)
+        // more tests required referring to db outages during runtime
+        val em = LocalContainerEntityManagerFactoryBean()
+        em.dataSource = this.dataSource
+        em.setPackagesToScan(org.deku.leoz.node.data.Package.name)
 
-            // Setup specific jpa vendor adaptor
-            val vendorAdapter = EclipseLinkJpaVendorAdapter()
-            em.jpaVendorAdapter = vendorAdapter
+        // Eclipselink setup
 
-            //region Setup eclipselink
-            val eclipseLinkProperties = Properties()
-            eclipseLinkProperties.setProperty(PersistenceUnitProperties.TARGET_DATABASE, org.eclipse.persistence.platform.database.H2Platform::class.java.canonicalName)
+        // region Eclipselink dialect & vendor adapter
 
-            //region Dev/debug code for automatically generating database from jpa entites
+        // Workaround for spring-jdbc breaking eclipselink's shared object cache (and query cache with it)
+        // https://jira.spring.io/browse/SPR-7753
+        // TODO: remove custom dialect as soon as this is fixed in EclipseLinkJpaVendorAdapter
+
+        val customDialect = object : EclipseLinkJpaDialect() {
+            override fun getJdbcConnection(entityManager: EntityManager, readOnly: Boolean): ConnectionHandle? {
+                // Hides: return super.getJdbcConnection(entityManager, readOnly);
+                // IMPORTANT LINE
+                return null
+            }
+        }
+
+        customDialect.setLazyDatabaseTransaction(true)
+
+        // Setup specific jpa vendor adaptor
+        val vendorAdapter = object : EclipseLinkJpaVendorAdapter() {
+            override fun getJpaDialect(): EclipseLinkJpaDialect {
+                return customDialect
+            }
+        }
+        em.jpaVendorAdapter = vendorAdapter
+        // endregion
+
+        val properties = Properties()
+        properties.set(PersistenceUnitProperties.TARGET_DATABASE, H2Platform::class.java.canonicalName)
+
+        //region Dev/debug code for automatically generating database from jpa entites
 //        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create")
 //        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true")
-            //endregion
+        //endregion
 
-            //region Dev/debug code for letting eclipselink/jpa generate DDL/SQL from entites
-            if (false) {
-                val sqlFile = File("sql/leoz-ddl.sql")
-                File(sqlFile.getParent()).mkdirs()
+        //region Dev/debug code for letting eclipselink/jpa generate DDL/SQL from entites
+        if (false) {
+            val sqlFile = File("sql/leoz-ddl.sql")
+            File(sqlFile.getParent()).mkdirs()
 
-                eclipseLinkProperties.setProperty(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, "create")
-                eclipseLinkProperties.setProperty(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, sqlFile.toString())
-                eclipseLinkProperties.setProperty(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_TERMINATE_STATEMENTS, "true")
-            }
-            //endregion
-
-            //region Caching
-            eclipseLinkProperties.setProperty(PersistenceUnitProperties.CACHE_SHARED_DEFAULT, "true")
-            //endregion
-
-            //region Profiling
-            if (this.profiling) {
-                eclipseLinkProperties.setProperty(PersistenceUnitProperties.PROFILER, PerformanceMonitor::class.java.simpleName)
-            }
-            //endregion
-
-            // Some master tables may have zero id values
-            eclipseLinkProperties.setProperty(PersistenceUnitProperties.ID_VALIDATION, "NULL")
-
-            // Enable jdbc batch writing
-            eclipseLinkProperties.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC)
-            eclipseLinkProperties.setProperty(PersistenceUnitProperties.JDBC_BIND_PARAMETERS, "true")
-            eclipseLinkProperties.setProperty(PersistenceUnitProperties.CACHE_STATEMENTS, "true")
-
-            // Weaving is required for lazy loading (amongst other features). Requires a LoadTimeWeaver to be setup (may require -javaagent as JVMARGS depending on setup)
-            eclipseLinkProperties.setProperty(PersistenceUnitProperties.WEAVING, "static")
-
-            if (showSql) {
-                vendorAdapter.setShowSql(true)
-                eclipseLinkProperties.setProperty(PersistenceUnitProperties.LOGGING_PARAMETERS, "true")
-            }
-
-            //region Entity setup
-            // Scan and iterate entity classes
-            val scanner = ClassPathScanningCandidateComponentProvider(false)
-            scanner.addIncludeFilter(AnnotationTypeFilter(Entity::class.java))
-
-            for (bd in scanner.findCandidateComponents(org.deku.leoz.node.data.Package.name)) {
-                // Setup event listeners for all entity classes
-                eclipseLinkProperties.setProperty(
-                        "${PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_}${bd.beanClassName}",
-                        org.deku.leoz.node.data.Customizer::class.java.canonicalName)
-            }
-            //endregion
-
-            em.setJpaProperties(eclipseLinkProperties)
-
-            return em
+            properties.set(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, "create")
+            properties.set(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, sqlFile.toString())
+            properties.set(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_TERMINATE_STATEMENTS, "true")
         }
+        //endregion
+
+        //region Caching
+        properties.set(PersistenceUnitProperties.CACHE_SHARED_DEFAULT, "true")
+        //endregion
+
+        //region Profiling
+        if (this.profiling) {
+            properties.set(PersistenceUnitProperties.PROFILER, PerformanceMonitor::class.java.simpleName)
+        }
+        //endregion
+
+        // Some master tables may have zero id values
+        properties.set(PersistenceUnitProperties.ID_VALIDATION, "NULL")
+
+        // Enable jdbc batch writing
+        properties.set(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC)
+        properties.set(PersistenceUnitProperties.JDBC_BIND_PARAMETERS, "true")
+        properties.set(PersistenceUnitProperties.CACHE_STATEMENTS, "true")
+
+        // Weaving is required for lazy loading (amongst other features). Requires a LoadTimeWeaver to be setup (may require -javaagent as JVMARGS depending on setup)
+        properties.set(PersistenceUnitProperties.WEAVING, "static")
+
+        if (showSql) {
+            vendorAdapter.setShowSql(true)
+            properties.set(PersistenceUnitProperties.LOGGING_PARAMETERS, "true")
+        }
+
+        //region Entity setup
+        // Scan and iterate entity classes
+        val scanner = ClassPathScanningCandidateComponentProvider(false)
+        scanner.addIncludeFilter(AnnotationTypeFilter(Entity::class.java))
+
+        for (bd in scanner.findCandidateComponents(org.deku.leoz.node.data.Package.name)) {
+            // Setup event listeners for all entity classes
+            properties.set(
+                    "${PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_}${bd.beanClassName}",
+                    org.deku.leoz.node.data.EclipseLinkCustomizer::class.java.canonicalName)
+        }
+        //endregion
+
+        em.setJpaProperties(properties)
+        em.afterPropertiesSet()
+
+        return em
+    }
     //endregion
 
     //region JOOQ
