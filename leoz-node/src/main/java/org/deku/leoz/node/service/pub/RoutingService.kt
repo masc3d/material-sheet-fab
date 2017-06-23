@@ -274,14 +274,14 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 //
         val qRoute = QMstRoute.mstRoute
 
-        val rRoutes = routeRepository.findAll(
-                qRoute.layer.eq(routingLayer.layer)
-                        .and(qRoute.country.eq(requestParticipant?.country?.toUpperCase()))
-                        .and(qRoute.zipFrom.loe(queryZipCode))
-                        .and(qRoute.zipTo.goe(queryZipCode))
-                        .and(qRoute.validFrom.before(validDate?.toTimestamp()))
-                        .and(qRoute.validTo.after(validDate?.toTimestamp()))
-        )
+        val rRoutes = routeRepository.findRouteQuery.create { query, p ->
+            query
+                    .set(p.layer, routingLayer.layer)
+                    .set(p.country, requestParticipant?.country?.toUpperCase())
+                    .set(p.zip, queryZipCode)
+                    .set(p.validDate, validDate?.toTimestamp())
+        }
+                .execute()
                 // Sorting a few records in memory is much faster than adding sort criteria to complex query with h2
                 .sortedByDescending {
                     it.syncId
