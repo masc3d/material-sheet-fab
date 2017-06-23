@@ -6,10 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.gcacace.signaturepad.views.SignaturePad
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 
 /**
@@ -21,13 +24,26 @@ class SignatureScreen
         SignaturePad.OnSignedListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+    private val listener by lazy { this.activity as? Listener }
+    private var descriptionText: String = ""
+
+    companion object {
+        fun create(text: String): SignatureScreen {
+            val s = SignatureScreen()
+            s.descriptionText = text
+            return s
+        }
+
+        enum class SaveInstanceBundleKeys(val key: String) {
+            DESCRIPTION_TEXT("DESCRIPTION_TEXT")
+        }
+    }
 
     interface Listener {
         fun onSignatureCancelled()
         fun onSignatureSubmitted()
     }
 
-    private val listener by lazy { this.activity as? Listener }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,19 +61,60 @@ class SignatureScreen
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxSubmit.setOnClickListener {
-            this.listener?.onSignatureSubmitted()
-        }
-
-        this.uxCancel.setOnClickListener {
-            if (this.uxSignaturePad.isEmpty) {
-                //exit process
-            } else {
-                this.uxSignaturePad.clear()
+        if (savedInstanceState != null)
+            if (savedInstanceState.containsKey(SaveInstanceBundleKeys.DESCRIPTION_TEXT.key)) {
+                this.descriptionText = savedInstanceState.getString(SaveInstanceBundleKeys.DESCRIPTION_TEXT.key)
             }
-        }
+
+        this.uxConclusion.text = descriptionText
 
         this.uxSignaturePad.setOnSignedListener(this)
+
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_signature_submit,
+                        colorRes = R.color.colorGreen,
+                        iconRes = R.drawable.ic_check_circle
+                ),
+                ActionItem(
+                        id = R.id.action_signature_clear,
+                        colorRes = R.color.colorGrey,
+                        iconRes = R.drawable.ic_circle_cancel
+                ),
+                ActionItem(
+                        id = R.id.action_signature_cancel,
+                        colorRes = R.color.colorRed,
+                        iconRes = R.drawable.ic_cancel_black
+                )
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        this.activity.actionEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it) {
+                        R.id.action_signature_submit -> {
+                            //Submit signature, finish process (delivery only)
+                            this.listener?.onSignatureSubmitted()
+                        }
+                        R.id.action_signature_clear -> {
+                            //Clear signature pad
+                            this.uxSignaturePad.clear()
+                        }
+                        R.id.action_signature_cancel -> {
+                            //Cancel process
+                            this.listener?.onSignatureCancelled()
+                        }
+                    }
+                }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putString(SaveInstanceBundleKeys.DESCRIPTION_TEXT.key, this.descriptionText)
     }
 
     // SignaturePad listeners

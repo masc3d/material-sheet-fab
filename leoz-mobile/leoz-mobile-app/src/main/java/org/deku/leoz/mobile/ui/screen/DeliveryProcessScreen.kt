@@ -141,7 +141,7 @@ class DeliveryProcessScreen : ScreenFragment() {
 
                         }
                         R.id.ux_action_deliver_recipient -> {
-                            (this.activity as DeliveryActivity).showSignaturePad()
+                            (this.activity as DeliveryActivity).showSignaturePad("Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.addressLine1}\nAngenommen von: ${stop.address.addressLine1}")
                         }
                     }
                 }

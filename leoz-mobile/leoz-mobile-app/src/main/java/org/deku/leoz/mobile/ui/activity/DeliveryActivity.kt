@@ -113,7 +113,11 @@ class DeliveryActivity : Activity(),
     fun showDeliverFabButtons() {
     }
 
+    fun showSignaturePad(text: String) {
+        this.showScreen(SignatureScreen.create(text))
+    }
+
     fun showSignaturePad() {
-        this.showScreen(SignatureScreen())
+        this.showSignaturePad("")
     }
 }
