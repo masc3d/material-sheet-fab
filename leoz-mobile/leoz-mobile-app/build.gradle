@@ -319,6 +319,10 @@ dependencies {
 
             // Support-v4 (Anko Layouts)
             "org.jetbrains.anko:anko-support-v4:$v_anko",
+
+            // Dialog
+            "com.afollestad.material-dialogs:core:0.9.4.5",
+            "com.afollestad.material-dialogs:commons:0.9.4.5",
     )
 
     debugCompile(

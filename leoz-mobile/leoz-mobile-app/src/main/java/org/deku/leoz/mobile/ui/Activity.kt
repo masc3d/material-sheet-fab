@@ -50,6 +50,7 @@ import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 
 
 /**

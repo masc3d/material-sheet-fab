@@ -1,19 +1,21 @@
 package org.deku.leoz.mobile.ui.activity
 
-import android.content.pm.ActivityInfo
+import android.content.SharedPreferences
 import android.os.Bundle
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import kotlinx.android.synthetic.main.main.*
-import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.ui.Activity
+import org.deku.leoz.mobile.ui.ChangelogItem
+import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
+import java.util.*
 
 /**
  * Created by 27694066 on 09.05.2017.
@@ -25,7 +27,8 @@ class DeliveryActivity : Activity(),
         VehicleLoadingDialog.OnDialogResultListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    val delivery: Delivery by Kodein.global.lazy.instance()
+    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
 
     companion object {
         const val FRAGMENT_TAG_CAMERA = "fragmentCamera"
@@ -33,15 +36,17 @@ class DeliveryActivity : Activity(),
         const val FRAGMENT_TAG_TOURSELECTION = "fragmentTourSelection"
         const val FRAGMENT_TAG_TOUROVERVIEW = "fragmentTourOverview"
         const val FRAGMENT_TAG_DELIVERYMENUE = "fragmentDeliveryMenue"
+        const val DIALOG_TAG_DISCLAIMER = "privacyDisclaimerDialog"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
+            //TODO: First fragment to be shown should be the privacy disclaimer (Maybe to be displayed as an dialog?)
             this.showScreen(MenuScreen(), addToBackStack = false)
-
-            this.setAppBarTitle(getString(R.string.menu))
+            //queryChangelogDisplay()
+            showChangelogDialog()
         }
     }
 
@@ -51,6 +56,59 @@ class DeliveryActivity : Activity(),
         } else {
             super.onBackPressed()
         }
+    }
+
+    fun showDeliverFabButtons() {
+    }
+
+    fun showSignaturePad(text: String) {
+        this.showScreen(SignatureScreen.create(text))
+    }
+
+    fun showSignaturePad() {
+        this.showSignaturePad("")
+    }
+
+    /**
+     * Determine if changelog should be displayed automatically e.g. after an APP update.
+     * Display the dialog only after the user has been logged in
+     */
+    fun queryChangelogDisplay() {
+        var currentVersionNumber = 0
+        val savedVersionNumber = sharedPreferences.getInt(SharedPreference.CHANGELOG_VERSION.key, 0)
+
+        try {
+            val pi = packageManager.getPackageInfo(packageName, 0)
+            currentVersionNumber = pi.versionCode
+        } catch (e: Exception) {
+            log.error("${e.message}\r\n${e.stackTrace}")
+        }
+
+        log.debug("Checking for changelog dialog. Current version [$currentVersionNumber] Recently saved version [$savedVersionNumber]")
+
+        if (currentVersionNumber > savedVersionNumber) {
+            showChangelogDialog()
+
+            val editor = sharedPreferences.edit()
+
+            editor.putInt(SharedPreference.CHANGELOG_VERSION.key, currentVersionNumber)
+            editor.apply()
+        }
+    }
+
+    fun showChangelogDialog() {
+        val entries = listOf(
+                ChangelogItem(
+                        date = Date(1498255200),
+                        version = "0.15-SNAPSHOT",
+                        entries = ChangelogItem.ChangelogEntry(
+                                title = "Performance update",
+                                description = "We improved the app performance to provide you an better user experience."
+                        )
+                )
+        )
+
+        ChangelogDialog.create(entries).show(supportFragmentManager, "DIALOG_CHANGELOG")
     }
 
     /**
@@ -108,16 +166,5 @@ class DeliveryActivity : Activity(),
     }
 
     override fun onCanceled() {
-    }
-
-    fun showDeliverFabButtons() {
-    }
-
-    fun showSignaturePad(text: String) {
-        this.showScreen(SignatureScreen.create(text))
-    }
-
-    fun showSignaturePad() {
-        this.showSignaturePad("")
     }
 }

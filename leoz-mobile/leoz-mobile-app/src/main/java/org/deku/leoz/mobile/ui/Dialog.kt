@@ -1,15 +1,28 @@
-package org.deku.leoz.mobile.ui.dialog
+package org.deku.leoz.mobile.ui
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.support.annotation.LayoutRes
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
+import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
+import sx.android.aidc.AidcReader
 
 /**
  * Created by phpr on 29.05.2017.
  */
-open class Dialog: RxAppCompatDialogFragment() {
-    private val log = LoggerFactory.getLogger(this.javaClass)
+abstract class Dialog(@LayoutRes val dialogLayoutId: Int): RxAppCompatDialogFragment() {
+    protected val log = LoggerFactory.getLogger(this.javaClass)
+    protected val aidcReader: AidcReader by Kodein.global.lazy.instance()
+
+    val builderView by lazy {
+        activity.layoutInflater.inflate(dialogLayoutId, null)
+    }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -40,4 +53,5 @@ open class Dialog: RxAppCompatDialogFragment() {
         super.onResume()
         log.debug("ONRESUME")
     }
+
 }

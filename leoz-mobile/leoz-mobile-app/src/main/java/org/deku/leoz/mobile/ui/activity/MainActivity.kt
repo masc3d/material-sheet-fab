@@ -21,10 +21,10 @@ import android.view.LayoutInflater
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import kotlinx.android.synthetic.main.main.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.ui.Activity
+import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.jetbrains.anko.contentView
 
@@ -67,33 +67,6 @@ class MainActivity
     override fun onBackPressed() {
         showExitDialog()
         return
-    }
-
-    /**
-     * Determine if changelog should be displayed automatically e.g. after an APP update.
-     * Display the dialog only after the user has been logged in
-     */
-    fun queryChangelogDisplay() {
-        var currentVersionNumber = 0
-        val savedVersionNumber = sharedPreferences.getInt(SharedPreference.CHANGELOG_VERSION.key, 0)
-
-        try {
-            val pi = packageManager.getPackageInfo(packageName, 0)
-            currentVersionNumber = pi.versionCode
-        } catch (e: Exception) {
-            log.error("${e.message}\r\n${e.stackTrace}")
-        }
-
-        log.debug("Checking for changelog dialog. Current version [$currentVersionNumber] Recently saved version [$savedVersionNumber]")
-
-        if (currentVersionNumber > savedVersionNumber) {
-            showChangelogDialog()
-
-            val editor = sharedPreferences.edit()
-
-            editor.putInt(SharedPreference.CHANGELOG_VERSION.key, currentVersionNumber)
-            editor.apply()
-        }
     }
 
     override fun onResume() {
