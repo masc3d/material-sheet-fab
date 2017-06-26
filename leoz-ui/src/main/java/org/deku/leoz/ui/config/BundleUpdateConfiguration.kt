@@ -27,7 +27,7 @@ class BundleUpdateConfiguration {
 
                 val connectionConfiguration: ConnectionConfiguration = instance()
                 connectionConfiguration.nodeUpdatdEvent.subscribe {
-                    if (it != null) {
+                    if (it.node != null) {
                         service.enabled = true
                         service.trigger()
                     }
