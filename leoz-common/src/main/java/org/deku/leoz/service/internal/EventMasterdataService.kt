@@ -20,22 +20,28 @@ interface EventMasterdataService {
     @GET
     @Path("/")
     @ApiOperation(value = "Get EventMasterdata")
-    fun get(): List<Event>
+    fun get(): List<EventReason>
 
 
     @Serializable(0x999)
     @ApiModel(value = "Event", description = "i.e.: EN delivered | EN not delivered")
     data class Event(
             val id: Int = 0, // evtl nicht nötig
-            val name: List<EventName>,
-            val usage: EventUsage,
-            val reason: List<Reason>
+            val name: List<EventName>
     )
 
-    @ApiModel(value = "Reason", description = "i.e.: not delivered: EN ubsent ")
+    @ApiModel(value = "Reason", description = "i.e.: not delivered: EN absent ")
     data class Reason(
             val id: Int = 0, // evtl nicht nötig
             val name: List<ReasonName>
+    )
+
+    data class EventReason(
+            val event: Event,
+            val reason: Reason,
+            val usage: EventUsage,
+            val description: Map<String, String>,
+            val publishLevel: Level
     )
 
     data class EventName(
@@ -52,5 +58,9 @@ interface EventMasterdataService {
         DELIVERED,
         NOT_DELIVERED,
         IMPORT_SCAN
+    }
+
+    enum class Level {
+        PUBLIC, INTERNAL, SYSTEM
     }
 }
