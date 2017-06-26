@@ -12,7 +12,7 @@ apply from: '../versions.gradle'
 buildscript {
     ext {
         v_android_buildtools = '26.0.0'
-        v_android_support = '25.3.1'
+        v_android_support = '25.4.0'
     }
 
     repositories {
