@@ -40,7 +40,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
             FlexibleAdapter<
                     FlexibleViewModelItem<
                             StopItemViewModel>>>({
-        FlexibleAdapter(
+        val adapter = FlexibleAdapter(
                 // Items
                 delivery.stopList
                         .filter {
@@ -49,14 +49,22 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
                             }
                         }
                         .map {
-                            FlexibleViewModelItem(
+                            val item = FlexibleViewModelItem(
                                     R.layout.item_stop,
                                     BR.stop,
                                     StopItemViewModel(it)
                             )
+
+                            item.isEnabled = true
+                            item.isDraggable = true
+                            item.isSwipeable = true
+
+                            item
                         },
                 // Listener
                 this)
+
+        adapter
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
