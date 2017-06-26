@@ -133,6 +133,11 @@ class UpdateService(
                 return
             }
 
+            if (updateInfo.latestDesignatedVersion == null) {
+                log.warn("Remote repository doesn't have a designated version for alias [${versionAlias}] pattern [${updateInfo.bundleVersionPattern}]")
+                return
+            }
+
             val apkName = ApplicationPackageName(
                     bundleName = updateInfo.bundleName,
                     version = updateInfo.latestDesignatedVersion!!)
