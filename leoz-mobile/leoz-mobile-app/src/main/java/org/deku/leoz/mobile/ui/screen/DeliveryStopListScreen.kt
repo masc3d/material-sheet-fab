@@ -88,31 +88,15 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        this.uxStopList.setOnItemClickListener { parent, view, position, id ->
-//            val dialog = StopListDialog(this.uxStopList.getItemAtPosition(position) as Stop)
-//            dialog.show(childFragmentManager, "TOURLISTDIALOG")
-//        }
-//
-//        this.uxStopList.adapter = StopListAdapter(context, delivery.stopList.filter { it.state == Stop.State.PENDING })
-
-//        flexibleAdapter.expandItemsAtStartUp()
-//        flexibleAdapter.setAnimationOnScrolling(true)
-
-        //val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager(context).orientation)
-
-
         // Flexible adapter needs to be re-created with views
         flexibleAdapterInstance.reset()
 
         this.uxStopList.adapter = flexibleAdapter
         this.uxStopList.layoutManager = LinearLayoutManager(context)
-        //this.uxStopList.addItemDecoration(dividerItemDecoration)
 
         flexibleAdapter.isLongPressDragEnabled = true
         flexibleAdapter.isHandleDragEnabled = true
         flexibleAdapter.isSwipeEnabled = true
         flexibleAdapter.addListener(onItemClickListener)
-//        flexibleAdapter.setDisplayHeadersAtStartUp(true)
-//        flexibleAdapter.setStickyHeaders(true)
     }
 }
