@@ -20,9 +20,9 @@
     </declare-styleable>
 
     <declare-styleable name="ClockView">
-        <attr name="clockColor" format="color" />
-        <attr name="h" format="integer" />
-        <attr name="m" format="integer" />
+        <attr name="color" format="color" />
+        <attr name="hour" format="integer" />
+        <attr name="minute" format="integer" />
     </declare-styleable>
 
     <declare-styleable name="CircularProgressView">

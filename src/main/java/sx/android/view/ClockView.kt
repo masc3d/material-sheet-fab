@@ -42,9 +42,9 @@ class ClockView : View {
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         val arr = context.obtainStyledAttributes(attrs, R.styleable.ClockView)
-        color = arr.getColor(R.styleable.ClockView_clockColor, Color.parseColor("#F44336"))
-        hour = arr.getInteger(R.styleable.ClockView_h, 17)
-        minute = arr.getInteger(R.styleable.ClockView_m, 0)
+        color = arr.getColor(R.styleable.ClockView_color, Color.parseColor("#F44336"))
+        hour = arr.getInteger(R.styleable.ClockView_hour, 17)
+        minute = arr.getInteger(R.styleable.ClockView_minute, 0)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
