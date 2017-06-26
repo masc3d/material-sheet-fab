@@ -251,7 +251,7 @@ dependencies {
             },
 
             // UI
-            "eu.davidea:flexible-adapter:5.0.0-rc1", //TODO: For updating to 5.0.0-rc2 you need to update support-library to 25.0.4 as well
+            "eu.davidea:flexible-adapter:5.0.0-rc2",
             'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0',
 
             //

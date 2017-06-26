@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.fragment
 
 
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -137,7 +138,7 @@ class StopProcessFragment : Fragment() {
         val view =  if (resultCount%2 == 0) this.uxResultLeft else this.uxResultRight
 
         //view.setBackgroundResource(backgroundResource)
-        view.setImageDrawable(resources.getDrawable(backgroundResource))
+        view.setImageDrawable(ContextCompat.getDrawable(this.context, backgroundResource))
         view.visibility = View.VISIBLE
 
         resultCount++

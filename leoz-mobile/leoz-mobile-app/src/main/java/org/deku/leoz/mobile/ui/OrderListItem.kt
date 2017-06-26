@@ -34,11 +34,11 @@ class OrderListItem(val context: Context, val order: Order, val rootViewGroup: V
     }
 
     override fun getLayoutRes(): Int {
-        return R.layout.item_stop
+        return R.layout.item_order_short
     }
 
-    override fun createViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, inflater: LayoutInflater?, parent: ViewGroup?): ViewHolder {
-        return ViewHolder(inflater!!.inflate(R.layout.item_order_short, parent, false), adapter!!)
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): ViewHolder {
+        return ViewHolder(view, adapter)
     }
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?, holder: ViewHolder?, position: Int,

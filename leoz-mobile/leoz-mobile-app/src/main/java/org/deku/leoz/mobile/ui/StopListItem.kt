@@ -55,8 +55,8 @@ class StopListItem(
         return R.layout.item_stop
     }
 
-    override fun createViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, inflater: LayoutInflater?, parent: ViewGroup?): StopListItem.ViewHolder {
-        return ViewHolder(inflater!!.inflate(R.layout.item_stop, parent, false), adapter!!)
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): ViewHolder {
+        return ViewHolder(view, adapter)
     }
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?,

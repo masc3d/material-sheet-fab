@@ -15,7 +15,10 @@ import java.util.*
 /**
  * Created by phpr on 24.06.2017.
  */
-class ChangelogItem private constructor(val date: String, val version: String, val entry: ChangelogEntry): AbstractFlexibleItem<ChangelogItem.ViewHolder>() {
+class ChangelogItem private constructor(
+        val date: String,
+        val version: String,
+        val entry: ChangelogEntry): AbstractFlexibleItem<ChangelogItem.ViewHolder>() {
 
     companion object {
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN)
@@ -39,11 +42,11 @@ class ChangelogItem private constructor(val date: String, val version: String, v
     }
 
     override fun getLayoutRes(): Int {
-        return R.layout.item_stop
+        return R.layout.item_changelog
     }
 
-    override fun createViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, inflater: LayoutInflater?, parent: ViewGroup?): ChangelogItem.ViewHolder {
-        return ViewHolder(inflater!!.inflate(R.layout.item_changelog, parent, false), adapter!!)
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): ViewHolder {
+        return ViewHolder(view, adapter)
     }
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?,
