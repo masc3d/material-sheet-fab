@@ -16,13 +16,15 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.ui.StopListItem
 import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
+import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.vm.FlexibleViewModelItem
+import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import sx.LazyInstance
 
 
@@ -34,12 +36,25 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val delivery: Delivery by Kodein.global.lazy.instance()
 
-    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<StopListItem>>({
+    private val flexibleAdapterInstance = LazyInstance<
+            FlexibleAdapter<
+                    FlexibleViewModelItem<
+                            StopItemViewModel>>>({
         FlexibleAdapter(
                 // Items
                 delivery.stopList
-                        .filter { it.state == Stop.State.PENDING && it.orders.firstOrNull { it.state == Order.State.LOADED } != null }
-                        .map { StopListItem(context, it) },
+                        .filter {
+                            it.state == Stop.State.PENDING && it.orders.any {
+                                it.state == Order.State.LOADED
+                            }
+                        }
+                        .map {
+                            FlexibleViewModelItem(
+                                    R.layout.item_stop,
+                                    BR.stop,
+                                    StopItemViewModel(it)
+                            )
+                        },
                 // Listener
                 this)
     })
@@ -70,10 +85,15 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
     private val onItemClickListener = FlexibleAdapter.OnItemClickListener { item ->
         log.debug("ONITEMCLICK")
 
-        activity.showScreen(
-                DeliveryProcessScreen.create(
-                        stop = (flexibleAdapter.getItem(item) as StopListItem).stop)
-        )
+        val stop = flexibleAdapter.getItem(item)?.viewModel?.stop
+
+        if (stop != null) {
+            activity.showScreen(
+                    DeliveryProcessScreen.create(
+                            stop = stop
+                    )
+            )
+        }
 
         true
     }

@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.screen
 
 
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,8 +18,10 @@ import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.fragment.StopDetailFragment
 import org.deku.leoz.mobile.ui.inflateMenu
@@ -26,15 +29,12 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.fragment.util.withTransaction
-import sx.time.toCalendar
 import java.text.SimpleDateFormat
-import java.util.*
 
 class DeliveryProcessScreen : ScreenFragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm")
 
     private lateinit var stop: Stop
 
@@ -55,8 +55,9 @@ class DeliveryProcessScreen : ScreenFragment() {
         this.retainInstance = true
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
         // Inflate the layout for this fragment
         return inflater!!.inflate(R.layout.screen_delivery_process, container, false)
     }
@@ -94,21 +95,8 @@ class DeliveryProcessScreen : ScreenFragment() {
             it.replace(this.uxContainer.id, StopDetailFragment.create(this.stop))
         }
 
-        /**
-         * Set the values of the included layout 'item_stop'
-         */
-        this.uxRecipient.text = stop.address.addressLine1
-        this.uxStreet.text = stop.address.street
-        this.uxStreetNo.text = stop.address.streetNo
-        this.uxCity.text = stop.address.city
-        this.uxZip.text = stop.address.zipCode
-        this.uxOrderCount.text = stop.orders.count().toString()
-        this.uxParcelCount.text = "X"
-        this.uxAppointmentFrom.text = simpleDateFormat.format(stop.appointment.dateFrom)
-        this.uxAppointmentTo.text = simpleDateFormat.format(stop.appointment.dateTo)
-
-        this.uxAppointmentClock.hour = stop.appointment.dateFrom.toCalendar().get(Calendar.HOUR)
-        this.uxAppointmentClock.minute = stop.appointment.dateFrom.toCalendar().get(Calendar.MINUTE)
+        val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
+        binding.stop = StopItemViewModel(this.stop)
     }
 
     override fun onResume() {

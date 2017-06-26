@@ -351,7 +351,8 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.github.Raizlabs.DBFlow:dbflow-processor:$v_dbflow"
+            "com.github.Raizlabs.DBFlow:dbflow-processor:$v_dbflow",
+            "com.android.databinding:compiler:2.3.3"
     )
 }
 
