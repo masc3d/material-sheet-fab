@@ -30,7 +30,7 @@ class ObservableRxProperty<T>(
 
     private var value = default
 
-    override fun subscribeActual(observer: Observer<in Update<T>>?) {
+    override fun subscribeActual(observer: Observer<in Update<T>>) {
         this.observable.subscribe(observer)
     }
 
