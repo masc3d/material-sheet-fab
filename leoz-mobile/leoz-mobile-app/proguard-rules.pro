@@ -75,6 +75,7 @@
 -dontwarn rx.internal.**
 -dontwarn sx.concurrent.**
 -dontwarn sx.io.**
+-dontwarn sx.jpa.**
 -dontwarn sx.jsch.**
 -dontwarn sx.junit.**
 -dontwarn sx.mq.**

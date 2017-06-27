@@ -12,7 +12,6 @@ import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.Dialog
-import org.deku.leoz.mobile.ui.StopListItem
 import sx.LazyInstance
 
 /**
