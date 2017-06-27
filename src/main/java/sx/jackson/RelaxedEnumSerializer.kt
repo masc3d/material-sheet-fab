@@ -8,9 +8,10 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 
 /**
+ * Serializes unknown enum values to null
  * Created by masc on 27.06.17.
  */
-class OptionalEnumDeserializer<E : Enum<E>>
+class RelaxedEnumSerializer<E : Enum<E>>
     : JsonDeserializer<E>(), ContextualDeserializer {
 
     private lateinit var type: Class<E>
