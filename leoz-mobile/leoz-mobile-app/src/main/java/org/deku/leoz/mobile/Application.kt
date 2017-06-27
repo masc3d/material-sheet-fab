@@ -83,6 +83,15 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
             }
         }
         //endregion
+
+        if (!BuildConfig.DEBUG) {
+            // FlexibleAdapter logging is currently not compatible with obfuscated builds
+            // Internally tries to extract a stack trace element which does not
+            // work with obfuscated class names (presumably)
+            // TODO: should be investigated/fixed upstream
+            eu.davidea.flexibleadapter.utils.Log.setLevel(
+                    eu.davidea.flexibleadapter.utils.Log.Level.SUPPRESS)
+        }
     }
 
     override fun onTerminate() {
