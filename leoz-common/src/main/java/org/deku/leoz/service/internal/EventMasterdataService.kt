@@ -24,39 +24,45 @@ interface EventMasterdataService {
 
 
     @Serializable(0x999)
-    @ApiModel(value = "Event", description = "i.e.: EN delivered | EN not delivered")
+    @ApiModel(value = "Event", description = "delivered, not delivered")
     data class Event(
-            val id: Int = 0, // evtl nicht nötig
-            val name: List<EventName>
+            val id: Int = 0,
+            val name: Map<String, String>
     )
 
-    @ApiModel(value = "Reason", description = "i.e.: not delivered: EN absent ")
+    @ApiModel(value = "Reason", description = "normal, absent ")
     data class Reason(
-            val id: Int = 0, // evtl nicht nötig
-            val name: List<ReasonName>
+            val id: Int = 0,
+            val name: Map<String, String>
     )
 
+    @ApiModel(value = "Event Reason", description = "not delivered; absent ")
     data class EventReason(
             val event: Event,
             val reason: Reason,
-            val usage: EventUsage,
-            val description: Map<String, String>,
-            val publishLevel: Level
+            val usage: EventReasonUsage,
+            val longdescription: Map<String, String>,
+            val publishLevel: Level,
+            val clearingrelevant: Boolean,
+            val qualityrelevant: Boolean,
+            val stopaction: List<StopAction>
     )
 
-    data class EventName(
-            val language: String,
-            val name: String
+    data class StopAction(
+            val messagetext: String,
+            val actiontype: ActionType
     )
 
-    data class ReasonName(
-            val language: String,
-            val name: String
-    )
+    enum class ActionType {
+        TAKE_IMAGE,
+        DISPLAY_TEXT,
+        TAKE_NEIGHBOR_NAME
+    }
 
-    enum class EventUsage {
-        DELIVERED,
-        NOT_DELIVERED,
+    enum class EventReasonUsage {
+        DELIVERED_NORMAL,
+        DELIVERED_NEIGHBOR,
+        NOT_DELIVERED_NORMAL,
         IMPORT_SCAN
     }
 
