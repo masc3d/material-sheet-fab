@@ -410,7 +410,7 @@ class LocationServiceV2 :
     @Inject
     private lateinit var v1: LocationServiceV1
 
-    override fun get(userId: Int?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationServiceV2.GpsDataV2> {
+    override fun get(userId: Int?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationServiceV2.GpsData> {
         // TODO: simply mapped to v1 for now. this should be properly migrated when v1 is phased out.
         val v1Result: List<LocationServiceV1.GpsData>
 
@@ -446,14 +446,14 @@ class LocationServiceV2 :
         }
 
         return v1Result.map {
-            LocationServiceV2.GpsDataV2(
+            LocationServiceV2.GpsData(
                     userId = userId,
                     gpsDataPoints = it.gpsDataPoints
             )
         }
     }
 
-    override fun getRecent(userId: Int?, debitorId: Int?, duration: Int?, apiKey: String?): List<LocationServiceV2.GpsDataV2> {
+    override fun getRecent(userId: Int?, debitorId: Int?, duration: Int?, apiKey: String?): List<LocationServiceV2.GpsData> {
         // TODO: simply mapped to v1 for now. this should be properly migrated when v1 is phased out.
         val v1Result: List<LocationServiceV1.GpsData>
 
@@ -487,7 +487,7 @@ class LocationServiceV2 :
         }
 
         return v1Result.map {
-            LocationServiceV2.GpsDataV2(
+            LocationServiceV2.GpsData(
                     userId = it.userId,
                     gpsDataPoints = it.gpsDataPoints
             )

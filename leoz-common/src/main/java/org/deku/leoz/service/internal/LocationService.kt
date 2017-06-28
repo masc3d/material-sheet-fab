@@ -42,7 +42,7 @@ interface LocationServiceV1 {
      *
      * Created by helke on 24.05.17.
      */
-    @ApiModel(description = "GpsData Model")
+    @ApiModel(value = "GpsData Model")
     @Serializable(0x730a673f58f04d)
     data class GpsData(
             @get:ApiModelProperty(value = "User identifier")
@@ -115,9 +115,9 @@ interface LocationServiceV2 {
      *
      * Created by helke on 24.05.17.
      */
-    @ApiModel(description = "GpsData Model V2")
+    @ApiModel(value = "GpsData Model V2")
     @Serializable(0x4f1c7194f28566)
-    data class GpsDataV2(
+    data class GpsData(
             @get:ApiModelProperty(value = "User identifier")
             var userId: Int? = null,
             @get:ApiModelProperty(required = false, value = "GPS data points")
@@ -137,7 +137,7 @@ interface LocationServiceV2 {
             @QueryParam(FROM) @ApiParam(value = "from", example = "05/31/2017 00:30:00 +0100") from: Date? = null,
             @QueryParam(TO) @ApiParam(value = "to") to: Date? = null,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
-    ): List<GpsDataV2>
+    ): List<GpsData>
 
     /**
      * Get recent location
@@ -151,5 +151,5 @@ interface LocationServiceV2 {
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
             @QueryParam(DURATION) @ApiParam(value = "Duration") duration: Int? = null,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
-    ): List<GpsDataV2>
+    ): List<GpsData>
 }
