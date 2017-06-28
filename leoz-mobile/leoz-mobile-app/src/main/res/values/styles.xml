@@ -11,7 +11,7 @@
     </style>
 
     <!-- Application theme for API Levels below 21 (no native material design support) -->
-    <style name="AppTheme" parent="AppThemeBase" />
+    <style name="AppTheme" parent="AppThemeBase"/>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
@@ -25,11 +25,12 @@
     </style>
 
     <!-- Widfet styles -->
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
     <!-- Layout styles -->
-    <style name="AppTheme.Layout" />
+    <style name="AppTheme.Layout"/>
 
     <!-- Common screen style -->
     <style name="AppTheme.Layout.Screen">
@@ -57,6 +58,17 @@
     <style name="AppTheme.ListView">
         <item name="android:divider">@android:color/transparent</item>
         <item name="android:dividerHeight">0dp</item>
+    </style>
+
+    <style name="AppTheme.ActionOverlay"/>
+
+    <style name="AppTheme.ActionOverlay.ImageView">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_width">32dp</item>
+    </style>
+
+    <style name="AppTheme.ActionOverlay.TextAppearance" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textSize">14sp</item>
     </style>
 
     <!-- Standalone cardview, eg. menu -->

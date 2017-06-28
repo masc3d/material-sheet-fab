@@ -40,8 +40,8 @@
 
             <ImageView
                 android:id="@+id/uxParcelStatus"
-                android:layout_width="@dimen/icon_size_small"
-                android:layout_height="@dimen/icon_size_small"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center"
                 android:layout_marginRight="@dimen/horizontal_large_margin"
                 android:layout_weight="1"
