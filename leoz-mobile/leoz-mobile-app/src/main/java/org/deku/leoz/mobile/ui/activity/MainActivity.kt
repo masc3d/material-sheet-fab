@@ -27,6 +27,8 @@ import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.jetbrains.anko.contentView
+import com.afollestad.materialdialogs.MaterialDialog
+import org.deku.leoz.mobile.device.Tone
 
 
 class MainActivity
@@ -36,7 +38,9 @@ class MainActivity
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val login: Login by Kodein.global.lazy.instance()
+
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
+    private val tone: Tone by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,5 +121,19 @@ class MainActivity
                 Intent(applicationContext, DeliveryActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
                                 Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
+
+    override fun onLoginPending() {
+        MaterialDialog.Builder(this)
+                .title(R.string.login_pending)
+                .content(R.string.please_wait)
+                .progress(true, 0)
+                .show()
+    }
+
+    override fun onLoginFailed() {
+        tone.errorBeep()
+        Snackbar.make(this.contentView!!, "Login failed", Snackbar.LENGTH_SHORT)
+                .show()
     }
 }

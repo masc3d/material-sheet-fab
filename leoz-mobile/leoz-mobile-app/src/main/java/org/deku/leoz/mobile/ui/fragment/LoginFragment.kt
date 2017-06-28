@@ -15,14 +15,17 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.ui.Fragment
 import org.slf4j.LoggerFactory
 import sx.android.aidc.*
+import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
 
@@ -33,14 +36,15 @@ import javax.mail.internet.InternetAddress
 class LoginFragment : Fragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val tone: Tone by Kodein.global.lazy.instance()
-
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
 
     interface Listener {
-        fun onLoginSuccessful()
+        /** Called when it's appropriate to show progress indication */
+        fun onLoginPending() {}
+
+        fun onLoginFailed() {}
+        fun onLoginSuccessful() {}
     }
 
     private val listener get() = this.activity as? Listener
@@ -77,20 +81,6 @@ class LoginFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        aidcReader.decoders.set(
-                Ean8Decoder(true),
-                Ean13Decoder(true),
-                Interleaved25Decoder(true, 11, 12),
-                DatamatrixDecoder(true),
-                Code128Decoder(true)
-        )
-
-        aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    log.info("Barcode scanned ${it.data}")
-                }
-
         // Actions triggering login
 
         val rxLoginTrigger =
@@ -104,6 +94,7 @@ class LoginFragment : Fragment() {
                 ))
 
         rxLoginTrigger
+                .observeOn(AndroidSchedulers.mainThread())
                 .switchMap {
                     Observable.fromCallable {
                         // Verify all fields
@@ -119,13 +110,22 @@ class LoginFragment : Fragment() {
                     login.authenticate(
                             email = uxMailaddress.text.toString(),
                             password = uxPassword.text.toString()
-                    )
+                    ).mergeWith(
+                            Observable.timer(250, TimeUnit.MILLISECONDS)
+                                    .doOnNext {
+                                        this.view?.post {
+                                            this.listener?.onLoginPending()
+                                        }
+                                    }
+                                    .ignoreElements()
+                                    .toObservable())
                 }
                 .doOnError {
-                    tone.errorBeep()
-                    Snackbar.make(this.view!!, "Login failed", Snackbar.LENGTH_SHORT)
-                            .show()
+                    log.error(it.message, it)
+                    this.listener?.onLoginFailed()
+
                 }
+                // Retrying the entire observable (including required triggers, eg. user input)
                 .retry()
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())

@@ -47,13 +47,18 @@
     <string name="linehaul">Linehaul</string>
 
     <string name="login" translatable="false">Login</string>
+    <string name="login_pending">Authenticating</string>
 
     <string name="logout">Logout</string>
+
+    <string name="menu">Menu</string>
 
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
 
     <string name="ok" translatable="false">OK</string>
+
+    <string name="please_wait">Please wait</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
@@ -78,5 +83,4 @@
     <string name="version_available">v%s is available</string>
 
     <string name="warehouse">Warehouse</string>
-    <string name="menu">Menu</string>
 </resources>

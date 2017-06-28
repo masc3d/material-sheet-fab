@@ -40,10 +40,16 @@
 
     <string name="linehaul">Linie</string>
 
+    <string name="login_pending">Anmeldung</string>
+
     <string name="logout">Abmelden</string>
+
+    <string name="menu">Menü</string>
 
     <string name="navigation_drawer_close">Navigation schließen</string>
     <string name="navigation_drawer_open">Navigation öffnen</string>
+
+    <string name="please_wait">Bitte warten</string>
 
     <string name="prompt_password">Passwort (optional)</string>
     <string name="prompt_reinstall">Bitte installieren Sie die Anwendung neu</string>
@@ -66,5 +72,4 @@
     <string name="version_available">v%s ist verfügbar</string>
 
     <string name="warehouse">Lager</string>
-    <string name="menu">Menü</string>
 </resources>
