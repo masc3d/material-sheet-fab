@@ -71,6 +71,11 @@ class MainActivity
         return
     }
 
+    override fun onDestroy() {
+        this.loginPendingDialog.cancel()
+        super.onDestroy()
+    }
+
     override fun onResume() {
         super.onResume()
 
