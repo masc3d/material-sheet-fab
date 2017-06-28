@@ -81,6 +81,11 @@ class LoginFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        data class State(
+                val pending: Boolean = false,
+                val result: User? = null
+        )
+
         // Actions triggering login
 
         val rxLoginTrigger =
@@ -110,28 +115,41 @@ class LoginFragment : Fragment() {
                     login.authenticate(
                             email = uxMailaddress.text.toString(),
                             password = uxPassword.text.toString()
-                    ).mergeWith(
-                            Observable.timer(250, TimeUnit.MILLISECONDS)
-                                    .doOnNext {
-                                        this.view?.post {
-                                            this.listener?.onLoginPending()
-                                        }
-                                    }
-                                    .ignoreElements()
-                                    .toObservable())
+                    )
+                            .map {
+                                // Map success result to state
+                                State(pending = false, result = it)
+                            }
+                            // Merge pending state which is emitted delayed
+                            .mergeWith(Observable
+                                    .just(State(pending = true))
+                                    .delay(250, TimeUnit.MILLISECONDS)
+                            )
+                            // Complete this observable on success result
+                            .takeUntil {
+                                it.pending == false
+                            }
                 }
                 .doOnError {
                     log.error(it.message, it)
-                    this.listener?.onLoginFailed()
-
+                    this.view?.post {
+                        this.listener?.onLoginFailed()
+                    }
                 }
                 // Retrying the entire observable (including required triggers, eg. user input)
                 .retry()
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    log.info("Login successful $it")
-                    this.listener?.onLoginSuccessful()
+                    when {
+                        it.pending == true -> {
+                            this.listener?.onLoginPending()
+                        }
+                        else -> {
+                            log.info("Login successful $it")
+                            this.listener?.onLoginSuccessful()
+                        }
+                    }
                 }
     }
 
