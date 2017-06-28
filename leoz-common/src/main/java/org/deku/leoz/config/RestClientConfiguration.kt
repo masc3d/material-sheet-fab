@@ -94,8 +94,8 @@ abstract class RestClientConfiguration {
                 createServiceProxy(config = instance(), serviceType = AuthorizationService::class.java)
             }
 
-            bind<LocationService>() with provider {
-                createServiceProxy(config = instance(), serviceType = LocationService::class.java)
+            bind<LocationServiceV2>() with provider {
+                createServiceProxy(config = instance(), serviceType = LocationServiceV2::class.java)
             }
         }
     }

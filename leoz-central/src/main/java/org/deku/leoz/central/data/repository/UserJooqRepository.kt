@@ -9,13 +9,7 @@ import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.text.parseHex
 import javax.inject.Inject
-import sx.time.toLocalDate
-import java.util.*
 import javax.inject.Named
-import org.deku.leoz.central.data.jooq.tables.MstDebitor
-import org.jooq.impl.DSL.*
-import org.deku.leoz.service.internal.LocationService
-import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.service.internal.UserService
 
 

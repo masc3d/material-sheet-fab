@@ -1,5 +1,6 @@
 package org.deku.leoz.node.service.internal
 
+import io.swagger.annotations.Api
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
@@ -34,6 +35,7 @@ import javax.ws.rs.core.Response
 @ApiKey(false)
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v1/bundle")
+@Api(value = "Bundle operations")
 open class BundleServiceV1 : BundleServiceV1 {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -151,6 +153,7 @@ open class BundleServiceV1 : BundleServiceV1 {
 @ApiKey(false)
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v2/bundle")
+@Api(value = "Bundle operations")
 open class BundleServiceV2 : BundleServiceV2 {
     @Inject
     protected lateinit var bundleServiceV1: BundleServiceV1

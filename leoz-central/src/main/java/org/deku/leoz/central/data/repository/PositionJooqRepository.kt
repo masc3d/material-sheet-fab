@@ -9,7 +9,6 @@ import javax.inject.Named
 import org.deku.leoz.central.data.jooq.tables.records.TrnNodeGeopositionRecord
 import sx.time.toTimestamp
 import java.util.*
-import org.deku.leoz.service.internal.LocationService
 
 /**
  * Created by helke on 29.05.17.
@@ -49,16 +48,3 @@ class PositionJooqRepository {
 
 }
 
-fun TrnNodeGeopositionRecord.toGpsData(): LocationService.GpsDataPoint {
-    val gpsPoint = LocationService.GpsDataPoint(
-            this.latitude,
-            this.longitude,
-            this.positionDatetime,
-            this.speed?.toFloat(),
-            this.bearing?.toFloat(),
-            this.altitude,
-            this.accuracy?.toFloat()
-
-    )
-    return gpsPoint
-}

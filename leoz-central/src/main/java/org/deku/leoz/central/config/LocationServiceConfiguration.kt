@@ -1,7 +1,6 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.service.internal.LocationService
-import org.deku.leoz.central.service.internal.LogService
+import org.deku.leoz.central.service.internal.LocationServiceV1
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import javax.annotation.PostConstruct
@@ -17,7 +16,7 @@ open class LocationServiceConfiguration {
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
     @Inject
-    private lateinit var locationService: LocationService
+    private lateinit var locationService: LocationServiceV1
 
     @PostConstruct
     fun onInitialize() {

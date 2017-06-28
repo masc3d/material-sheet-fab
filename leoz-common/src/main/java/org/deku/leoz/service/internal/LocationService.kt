@@ -5,21 +5,20 @@ import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import sx.io.serialization.Serializable
-import sx.mq.MqHandler
 import java.util.*
 
 /**
+ * Location service V1
  * Created by helke on 24.05.17.
  */
 @Path("internal/v1/location")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Location service")
-interface LocationService {
+interface LocationServiceV1 {
     companion object {
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
-        //const val HEADERPARAM_APIKEY = "x-api-key"
         const val FROM = "from"
         const val TO = "to"
         const val DURATION = "duration"
@@ -46,7 +45,9 @@ interface LocationService {
     @ApiModel(description = "GpsData Model")
     @Serializable(0x730a673f58f04d)
     data class GpsData(
-            @get:ApiModelProperty(example = "foo@bar.com", required = true, value = "User identifier")
+            @get:ApiModelProperty(value = "User identifier")
+            var userId: Int? = null,
+            @get:ApiModelProperty(example = "foo@bar.com", required = true, value = "User email")
             var userEmail: String? = null,
             @get:ApiModelProperty(required = false, value = "Positions")
             var gpsDataPoints: List<GpsDataPoint>? = null
@@ -90,4 +91,65 @@ interface LocationService {
             @QueryParam(DURATION) @ApiParam(value = "Duration") duration: Int? = null,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
     ): List<GpsData>
+}
+
+/**
+ * Location service V2
+ * Created by helke on 24.05.17.
+ */
+@Path("internal/v2/location")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Api(value = "Location service")
+interface LocationServiceV2 {
+    companion object {
+        const val USER_ID = "user-id"
+        const val EMAIL = "email"
+        const val DEBITOR_ID = "debitor-id"
+        const val FROM = "from"
+        const val TO = "to"
+        const val DURATION = "duration"
+    }
+
+    /**
+     *
+     * Created by helke on 24.05.17.
+     */
+    @ApiModel(description = "GpsData Model V2")
+    @Serializable(0x4f1c7194f28566)
+    data class GpsDataV2(
+            @get:ApiModelProperty(value = "User identifier")
+            var userId: Int? = null,
+            @get:ApiModelProperty(required = false, value = "GPS data points")
+            var gpsDataPoints: List<LocationServiceV1.GpsDataPoint>? = null
+    )
+
+    /**
+     * Get location
+     * @param email User email
+     */
+    @GET
+    @Path("/")
+    @ApiOperation(value = "Get location data")
+    fun get(
+            @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
+            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
+            @QueryParam(FROM) @ApiParam(value = "from", example = "05/31/2017 00:30:00 +0100") from: Date? = null,
+            @QueryParam(TO) @ApiParam(value = "to") to: Date? = null,
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+    ): List<GpsDataV2>
+
+    /**
+     * Get recent location
+     * @param email User email
+     */
+    @GET
+    @Path("/recent/")
+    @ApiOperation(value = "Get recent location data")
+    fun getRecent(
+            @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
+            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
+            @QueryParam(DURATION) @ApiParam(value = "Duration") duration: Int? = null,
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+    ): List<GpsDataV2>
 }

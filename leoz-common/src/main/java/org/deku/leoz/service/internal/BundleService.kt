@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response
 @Path("internal/v1/bundle")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Bundle operations v1")
+@Api(value = "Bundle operations")
 interface BundleServiceV1 {
 
     companion object {
@@ -62,7 +62,7 @@ interface BundleServiceV1 {
 @Path("internal/v2/bundle")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Bundle operations v2")
+@Api(value = "Bundle operations")
 interface BundleServiceV2 {
 
     companion object {
