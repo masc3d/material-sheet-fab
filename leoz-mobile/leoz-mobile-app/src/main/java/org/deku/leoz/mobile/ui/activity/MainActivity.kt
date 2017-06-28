@@ -22,9 +22,7 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.model.Login
-import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.ui.Activity
-import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.jetbrains.anko.contentView
 import com.afollestad.materialdialogs.MaterialDialog
@@ -116,6 +114,14 @@ class MainActivity
         builder.create().show()
     }
 
+    val loginPendingDialog by lazy {
+        MaterialDialog.Builder(this)
+                .title(R.string.login_pending)
+                .content(R.string.please_wait)
+                .progress(true, 0)
+                .build()
+    }
+
     override fun onLoginSuccessful() {
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java)
@@ -124,14 +130,11 @@ class MainActivity
     }
 
     override fun onLoginPending() {
-        MaterialDialog.Builder(this)
-                .title(R.string.login_pending)
-                .content(R.string.please_wait)
-                .progress(true, 0)
-                .show()
+        this.loginPendingDialog.show()
     }
 
     override fun onLoginFailed() {
+        this.loginPendingDialog.dismiss()
         tone.errorBeep()
         Snackbar.make(this.contentView!!, "Login failed", Snackbar.LENGTH_SHORT)
                 .show()
