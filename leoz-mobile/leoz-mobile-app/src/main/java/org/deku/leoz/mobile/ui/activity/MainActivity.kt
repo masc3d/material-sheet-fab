@@ -17,7 +17,6 @@ import org.deku.leoz.mobile.ui.showErrorAlert
 import org.slf4j.LoggerFactory
 import android.content.DialogInterface
 import android.content.SharedPreferences
-import android.view.LayoutInflater
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
@@ -78,43 +77,15 @@ class MainActivity
 
     override fun onResume() {
         super.onResume()
-
-        this.actionEvent
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .subscribe {
-                    when (it) {
-                        R.id.action_help -> {
-                            Snackbar.make(this@MainActivity.contentView!!, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
-                                this@MainActivity.showAlert(
-                                        title = "Call assistance?",
-                                        text = "Are you sure you want to call a supervisor?",
-                                        positiveButton = AlertButton(text = android.R.string.yes, handler = {
-                                        }),
-                                        negativeButton = AlertButton(text = android.R.string.cancel))
-                            }).show()
-                        }
-                    }
-                }
-    }
-
-    private fun showChangelogDialog() {
-        val inflater = LayoutInflater.from(this)
-        val view = inflater.inflate(R.layout.dialog_whatsnew, null)
-        val builder = AlertDialog.Builder(this)
-
-        builder.setView(view)
-                .setPositiveButton(getString(R.string.dismiss), DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
-
-        builder.create().show()
     }
 
     private fun showExitDialog() {
         val builder = AlertDialog.Builder(this)
 
-        builder.setTitle("Exit application?")
-                .setMessage("Do you really want to exit the application?")
-                .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which -> System.exit(0) })
-                .setNegativeButton("No", null)
+        builder.setTitle(R.string.exit_application)
+                .setMessage(R.string.exit_application_prompt)
+                .setPositiveButton(android.R.string.yes, { dialog, which -> System.exit(0) })
+                .setNegativeButton(android.R.string.no, null)
 
         builder.create().show()
     }
@@ -127,6 +98,7 @@ class MainActivity
                 .build()
     }
 
+    //region LoginFragment listener
     override fun onLoginSuccessful() {
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java)
@@ -144,4 +116,5 @@ class MainActivity
         Snackbar.make(this.contentView!!, "Login failed", Snackbar.LENGTH_SHORT)
                 .show()
     }
+    //endregion
 }

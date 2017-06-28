@@ -29,6 +29,9 @@
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
     <string name="error_invalid_password">Das Passwort ist zu kurz</string>
 
+    <string name="exit_application">Anwendung verlassen</string>
+    <string name="exit_application_prompt">Möchten Sie die Anwendung wirklich verlassen?</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
