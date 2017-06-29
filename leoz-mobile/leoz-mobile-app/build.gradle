@@ -391,7 +391,9 @@ afterEvaluate {
     }
 }
 
-// Clean out sqlite naive libs for release builds only
+// Exclude sqlite native libs for release builds only.
+// As android.packagingOptions can't be defined on build type level,
+// need hook into tasks and clean before tasks.package*Release
 
 def removeSqliteLibs() {
     fileTree("${buildDir}/intermediates") {
