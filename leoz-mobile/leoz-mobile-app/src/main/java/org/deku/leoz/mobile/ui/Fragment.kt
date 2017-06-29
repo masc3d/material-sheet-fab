@@ -3,17 +3,18 @@ package org.deku.leoz.mobile.ui
 import android.content.Context
 import android.os.Bundle
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
+import kotlinx.android.synthetic.main.main_content.*
 import org.slf4j.LoggerFactory
 
 /**
  * Created by n3 on 01/03/2017.
  */
-open class Fragment(var fragmentTitle: String = "") : RxAppCompatDialogFragment() {
+open class Fragment(var title: String = "") : RxAppCompatDialogFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
-        if (fragmentTitle.isNullOrBlank()) {
-            fragmentTitle = javaClass.simpleName
+        if (title.isNullOrBlank()) {
+            title = javaClass.simpleName
         }
     }
 

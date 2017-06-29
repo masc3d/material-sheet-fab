@@ -25,6 +25,7 @@ import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.jetbrains.anko.contentView
 import com.afollestad.materialdialogs.MaterialDialog
+import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.device.Tone
 
 
@@ -112,8 +113,13 @@ class MainActivity
 
     override fun onLoginFailed() {
         this.loginPendingDialog.dismiss()
+
         tone.errorBeep()
-        Snackbar.make(this.contentView!!, "Login failed", Snackbar.LENGTH_SHORT)
+
+        Snackbar.make(this.snackbarParentView,
+                "Login failed",
+                Snackbar.LENGTH_SHORT
+        )
                 .show()
     }
     //endregion

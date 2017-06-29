@@ -80,6 +80,11 @@ open class Activity : RxAppCompatActivity(),
     private val actionEventSubject = PublishSubject.create<Int>()
     val actionEvent = this.actionEventSubject.hide()
 
+    // Views
+
+    /** Snackbar parent view. To be used in derived activities with Snackbar.make */
+    val snackbarParentView by lazy { this.uxCoordinatorLayout }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -342,7 +347,7 @@ open class Activity : RxAppCompatActivity(),
                 .subscribeBy(
                         onNext = { event ->
                             val sb = Snackbar.make(
-                                    this.uxContainer,
+                                    this.uxCoordinatorLayout,
                                     this@Activity.getString(R.string.version_available, event.version),
                                     Snackbar.LENGTH_INDEFINITE)
                             sb.setAction(R.string.update, {
@@ -454,7 +459,7 @@ open class Activity : RxAppCompatActivity(),
 
             layoutParams.scrollFlags =
                     if (scrollWithCollapsingToolbarEnabled)
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
                     else
                         0
         }
