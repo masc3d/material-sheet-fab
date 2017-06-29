@@ -90,8 +90,6 @@ class LoginFragment : Fragment() {
 
         val rxLoginTrigger =
                 Observable.merge(listOf(
-                        RxView.clicks(this.uxLogin)
-                                .map { Unit },
                         RxTextView.editorActions(this.uxPassword)
                                 .map { Unit }
                                 .replay(1).refCount(),
