@@ -89,18 +89,19 @@ class Database(
      * Requery entity store
      */
     val store by lazy {
-        // Requery data store
-        val ds = object : DatabaseSource(
+        // Using requery's more current sqlite implementation
+        // SqlitexDatabaseSource -> https://github.com/requery/sqlite-android
+        val ds = object : io.requery.android.sqlitex.SqlitexDatabaseSource(
                 this.context,
                 Models.REQUERY,
                 name,
                 1) {
 
-            override fun onCreate(db: SQLiteDatabase?) {
+            override fun onCreate(db: io.requery.android.database.sqlite.SQLiteDatabase?) {
                 // Leave creation/migration to flyway
             }
 
-            override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+            override fun onUpgrade(db: io.requery.android.database.sqlite.SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
                 // Leave creation/migration to flyway
             }
         }

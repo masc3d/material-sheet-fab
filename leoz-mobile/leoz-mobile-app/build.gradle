@@ -219,6 +219,7 @@ dependencies {
             // Requery
             "io.requery:requery:$v_requery",
             "io.requery:requery-android:$v_requery",
+            "io.requery:sqlite-android:3.19.2",
 
             // Flyway
             "org.sqldroid:sqldroid:1.0.3",
