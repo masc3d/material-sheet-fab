@@ -5,6 +5,8 @@ import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -23,8 +25,10 @@ import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.ui.Fragment
+import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.aidc.*
+import sx.android.hideSoftInput
 import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
@@ -92,7 +96,11 @@ class LoginFragment : Fragment() {
                 Observable.merge(listOf(
                         RxTextView.editorActions(this.uxPassword)
                                 .map { Unit }
-                                .replay(1).refCount(),
+                                .replay(1)
+                                .refCount()
+                                .doOnNext {
+                                    this.context.inputMethodManager.hideSoftInput()
+                                },
                         this.syntheticLoginSubject
                 ))
 
@@ -118,7 +126,7 @@ class LoginFragment : Fragment() {
                                 // Map success result to state
                                 State(pending = false, result = it)
                             }
-                            // Merge pending state which is emitted delayed
+                            // Merge delayed pending state
                             .mergeWith(Observable
                                     .just(State(pending = true))
                                     .delay(250, TimeUnit.MILLISECONDS)
