@@ -362,7 +362,7 @@ victor {
     svgDpi = 72
 
     // Do not generate these densities for SVG assets
-    excludeDensities = [ 'ldpi' ]
+    excludeDensities = ['ldpi']
 
     // WARNING: EXPERIMENTAL
     // Generates Android drawables instead of PNGs.
@@ -388,6 +388,27 @@ afterEvaluate {
         project.task "${it.name}" {
             outputDir GENERATED_SVG_DIR
         }
+    }
+}
+
+// Clean out sqlite naive libs for release builds only
+
+def removeSqliteLibs() {
+    fileTree("${buildDir}/intermediates") {
+        include '**/arm64-v8a/libsqlite3x.so'
+        include '**/x86/libsqlite3x.so'
+        include '**/x86_64/libsqlite3x.so'
+    }.each {
+        it.absoluteFile.delete()
+    }
+}
+
+afterEvaluate {
+    tasks.packageProdRelease.doFirst {
+        removeSqliteLibs()
+    }
+    tasks.packageDevRelease.doFirst {
+        removeSqliteLibs()
     }
 }
 
