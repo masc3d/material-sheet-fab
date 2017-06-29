@@ -50,7 +50,6 @@ class LazyInstance<T>
         when (threadSafetyMode) {
             LazyInstance.ThreadSafetyMode.Synchronized -> this.lock = ReentrantLock()
             LazyInstance.ThreadSafetyMode.None -> this.lock = null
-            else -> throw UnsupportedOperationException(String.format("Unsupported thread safety mode [%s]", threadSafetyMode))
         }
     }
 
