@@ -127,7 +127,7 @@ class Delivery {
                     orders = mutableListOf(
                             Order(
                                     id = "1",
-                                    state = Order.State.PENDING,
+                                    state = Order.State.LOADED,
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(
                                             Order.Parcel(
@@ -162,7 +162,7 @@ class Delivery {
                     orders = mutableListOf(
                             Order(
                                     id = "2",
-                                    state = Order.State.PENDING,
+                                    state = Order.State.LOADED,
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(Order.Parcel(
                                             id = "a",
