@@ -58,13 +58,13 @@ interface OrderService {
 
             //pickups haben evtl keine parcels und benötigen daher eine id
             @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "OrderID")
-            var id: Int = 0,
+            var id: Long = 0,
 
             @get:ApiModelProperty(example = "DERKURIER", position = 20, required = true, value = "Carrier")
             var carrier: Carrier = Carrier.UNKNOWN,
 
             @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referenceIDToExchangeOrderID")
-            var referenceIDToExchangeOrderID: Int = 0,
+            var referenceIDToExchangeOrderID: Long = 0,
 
             @get:ApiModelProperty(example = "DELIVERY", position = 40, required = true, value = "OrderClassification")
             var orderClassification: OrderClassification = OrderClassification.DELIVERY,
@@ -167,10 +167,10 @@ interface OrderService {
 
         @ApiModel(value = "Parcel", description = "Parcel within Order")
         data class Parcel(
-                @get:ApiModelProperty(example = "12345678901", position = 20, required = true, value = "parcelID")
-                var id: Int = 0,
                 @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "parcelScanNumber")
                 var number: String = "",
+                @get:ApiModelProperty(example = "12345678901", position = 20, required = true, value = "parcelID")
+                var id: Int = 0,
                 @get:ApiModelProperty(position = 40, required = true, value = "ParcelDimension")
                 var dimension: ParcelDimension? = null
         ) {
