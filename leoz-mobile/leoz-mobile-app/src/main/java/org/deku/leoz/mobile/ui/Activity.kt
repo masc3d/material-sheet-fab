@@ -527,7 +527,7 @@ open class Activity : RxAppCompatActivity(),
             this.header.headerDrawable = if (fragment.headerImage != 0)
                 ContextCompat.getDrawable(baseContext, fragment.headerImage)
             else
-            this.header.default
+                this.header.default
         }
 
         // Apply collapsing toolbar settings

@@ -73,7 +73,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
 
         this.scrollWithCollapsingToolbarEnabled = true
         this.title = "Delivery Stops"
-        this.headerImage = R.drawable.img_parcels_1
+        this.headerImage = R.drawable.img_parcels_1a
     }
 
     //region Listener interface implementation

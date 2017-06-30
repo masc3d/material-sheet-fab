@@ -26,6 +26,7 @@
 
     <!-- Appbar Style -->
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <!-- Appbar popup menu style -->
