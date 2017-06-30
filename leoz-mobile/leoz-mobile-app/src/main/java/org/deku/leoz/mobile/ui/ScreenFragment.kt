@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui
 
 import android.content.pm.ActivityInfo
+import android.support.annotation.DrawableRes
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
 
@@ -27,6 +28,12 @@ open class ScreenFragment : Fragment() {
      * Screen should hide action bar
      */
     var hideActionBar: Boolean = false
+
+    /**
+     * Header image
+     */
+    var headerImage: Int = 0
+        @DrawableRes get
 
     interface Listener {
         fun onScreenFragmentResume(fragment: ScreenFragment) {}

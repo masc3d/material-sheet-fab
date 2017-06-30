@@ -52,6 +52,8 @@ class DeliveryProcessScreen : ScreenFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        this.title ="Delivery Process"
+
         this.retainInstance = true
     }
 

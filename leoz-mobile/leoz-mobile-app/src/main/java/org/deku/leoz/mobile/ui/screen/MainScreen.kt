@@ -33,6 +33,13 @@ class MainScreen : ScreenFragment() {
                     LoginFragment::class.java.canonicalName) as LoginFragment
         }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        this.title = "mobileX"
+        this.headerImage = R.drawable.img_street_1
+    }
+
     /**
      * Create view
      */

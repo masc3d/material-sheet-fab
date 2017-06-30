@@ -1,13 +1,19 @@
 package org.deku.leoz.mobile.ui
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Shader
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
-import android.support.transition.Fade
-import android.support.transition.TransitionManager
+import android.support.annotation.DrawableRes
+import android.support.design.widget.*
+import android.support.transition.*
+import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -16,6 +22,7 @@ import android.support.v7.view.menu.MenuPopupHelper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -37,6 +44,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
+import kotlinx.android.synthetic.main.screen_menu.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
@@ -50,8 +58,6 @@ import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
-
 
 /**
  * Leoz activity base class
@@ -80,6 +86,55 @@ open class Activity : RxAppCompatActivity(),
     private val actionEventSubject = PublishSubject.create<Int>()
     val actionEvent = this.actionEventSubject.hide()
 
+    /**
+     * Responsible for controlling header
+     */
+    private inner class Header {
+        /** The default header drawable */
+        val default by lazy {
+            // Prepare default image
+            val sourceImage = BitmapFactory.decodeResource(getResources(), R.drawable.img_street_1)
+
+            val bitmap = Bitmap.createBitmap(
+                    sourceImage,
+                    0,
+                    150,
+                    sourceImage.width,
+                    200)
+
+            val drawable = BitmapDrawable(this@Activity.resources, bitmap)
+            drawable.tileModeY = Shader.TileMode.REPEAT
+
+            drawable
+        }
+
+        var headerDrawable: Drawable? = null
+            set(value) {
+                if (field != null) {
+                    val oldDrawable = if (field != null) field else default
+                    val newDrawable = if (value != null) value else default
+
+                    val drawables = listOf(oldDrawable, newDrawable)
+
+                    val td = TransitionDrawable(drawables.toTypedArray())
+
+                    this@Activity.uxHeaderImageView.setImageDrawable(td)
+                    td.isCrossFadeEnabled = true
+                    td.startTransition(500)
+                } else {
+                    // Don't animate initially
+                    this@Activity.uxHeaderImageView.setImageDrawable(value)
+                }
+
+                field = value
+            }
+    }
+
+    /**
+     * Header
+     */
+    private val header = Header()
+
     // Views
 
     /** Snackbar parent view. To be used in derived activities with Snackbar.make */
@@ -107,7 +162,7 @@ open class Activity : RxAppCompatActivity(),
         //endregion
 
         // Disable collapsing toolbar title (for now). This will leave regular support action bar title intact.
-        this.uxCollapsingToolbarLayout.isTitleEnabled = false
+        this.uxCollapsingToolbarLayout.isTitleEnabled = true
 
         //region Backstack listener
         this.supportFragmentManager.addOnBackStackChangedListener {
@@ -428,40 +483,62 @@ open class Activity : RxAppCompatActivity(),
         }
     }
 
-    fun setAppBarTitle(title: String) {
-        this.supportActionBar?.title = title
-    }
-
     override fun onScreenFragmentResume(fragment: ScreenFragment) {
         // Take over action items from screen fragment when it resumes
         this.actionItems = fragment.actionItems
 
+        // Setup collapsing layout, appbar & header
+
+        // EXIT_UNTIL_COLLAPSED should always be the default, so title and appbar expansion works properly
+        var collapsingScrollFlag = AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+
+        this.uxCollapsingToolbarLayout.title = fragment.title
+
         var expandAppBar = true
         var scrollWithCollapsingToolbarEnabled = fragment.scrollWithCollapsingToolbarEnabled
+
+        if (fragment.headerImage == 0) {
+            expandAppBar = false
+        }
 
         if (fragment.hideActionBar) {
             // Workaround for supportActionBar not adjusting content area
 
-            // Setting the appbar expanded flag to false only works with in conjunction
+            // Hiding the entire appbar via expanded flag only works in conjunction
             // with collapsing toolbar scroll/snap mode
             expandAppBar = false
             scrollWithCollapsingToolbarEnabled = true
         }
 
-        // Make sure app bar is visible (eg. when screen changes)
-        // otherwise transitioning from a scrolling to a static content screen
-        // may leave the app bar hidden.
-        this.uxAppBarLayout.setExpanded(expandAppBar)
+        // Apply action bar changes
+        run {
+            // Make sure app bar is visible (eg. when screen changes)
+            // otherwise transitioning from a scrolling to a static content screen
+            // may leave the app bar hidden.
+            log.trace("EXPAND ${expandAppBar}")
+
+            this.uxAppBarLayout.setExpanded(expandAppBar, true)
+        }
+
+        // Apply header changes
+        run {
+            // TODO: don't expand when scroll position is not top on pre-existing fragment
+
+            this.header.headerDrawable = if (fragment.headerImage != 0)
+                ContextCompat.getDrawable(baseContext, fragment.headerImage)
+            else
+            this.header.default
+        }
 
         // Apply collapsing toolbar settings
         run {
+            if (scrollWithCollapsingToolbarEnabled)
+                collapsingScrollFlag = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
+
             val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
             layoutParams.scrollFlags =
-                    if (scrollWithCollapsingToolbarEnabled)
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
-                    else
-                        0
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or collapsingScrollFlag
         }
 
         // Apply requested orientation

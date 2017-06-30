@@ -24,10 +24,18 @@
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
-    <!-- Widfet styles -->
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <!-- Appbar Style -->
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar">
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <!-- Appbar popup menu style -->
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <!--<item name="android:background">@color/colorWhiteSmoke</item>-->
+    </style>
+
+    <!-- Collapsing toolbar title style -->
+    <style name="AppTheme.AppBarOverlay.TextAppearance"/>
+    <style name="AppTheme.AppBarOverlay.TextAppearance.Title" parent="@style/TextAppearance.AppCompat.Display1" />
 
     <!-- Layout styles -->
     <style name="AppTheme.Layout"/>

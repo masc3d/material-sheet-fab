@@ -89,6 +89,13 @@ class MenuScreen : ScreenFragment() {
 
     private var listener: Listener? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        this.title = "mobileX Tour"
+        this.headerImage = R.drawable.img_street_1
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.screen_menu, container, false)

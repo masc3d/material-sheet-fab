@@ -9,15 +9,17 @@ import org.slf4j.LoggerFactory
 /**
  * Created by n3 on 01/03/2017.
  */
-open class Fragment(var title: String = "") : RxAppCompatDialogFragment() {
+open class Fragment : RxAppCompatDialogFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    init {
-        if (title.isNullOrBlank()) {
-            title = javaClass.simpleName
-        }
-    }
+    /**
+     * Title
+     */
+    var title: String = ""
 
+    /**
+     * Activity
+     */
     val activity: Activity
         get() = super.getActivity() as Activity
 
