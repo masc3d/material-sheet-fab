@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_more"
-        android:icon="@android:drawable/ic_menu_more"
+        android:icon="@drawable/ic_dots_vertical"
         android:orderInCategory="1"
         android:title="More"
         app:showAsAction="always">

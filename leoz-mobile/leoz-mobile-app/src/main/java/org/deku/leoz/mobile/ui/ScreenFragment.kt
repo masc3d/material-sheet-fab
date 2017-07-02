@@ -35,6 +35,9 @@ open class ScreenFragment : Fragment() {
     var headerImage: Int = 0
         @DrawableRes get
 
+    /** The initial aidc reader setting for this screen */
+    var aidcEnabled: Boolean = false
+
     interface Listener {
         fun onScreenFragmentResume(fragment: ScreenFragment) {}
         fun onScreenFragmentPause(fragment: ScreenFragment) {}

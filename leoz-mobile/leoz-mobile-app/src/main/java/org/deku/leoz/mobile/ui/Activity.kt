@@ -390,10 +390,26 @@ open class Activity : RxAppCompatActivity(),
                             ActionItem(
                                     id = R.id.action_aidc_camera,
                                     colorRes = R.color.colorAccent,
-                                    iconRes = R.drawable.ic_barcode
+                                    iconRes = R.drawable.ic_barcode,
+                                    visible = this.aidcReader.enabled
                             )
                     )
+
                     this.uxActionOverlay.items = items
+                }
+
+        this.aidcReader.enabledProperty
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { enabled  ->
+                    val aidcActionItem = this.uxActionOverlay.items
+                            .filter { it.id == R.id.action_aidc_camera && it.visible != enabled.value }
+                            .firstOrNull()
+
+                    if (aidcActionItem != null) {
+                        aidcActionItem.visible = enabled.value
+                        this.uxActionOverlay.update()
+                    }
                 }
 
         this.updateService.availableUpdateEvent
@@ -543,6 +559,8 @@ open class Activity : RxAppCompatActivity(),
 
         // Apply requested orientation
         this.requestedOrientation = fragment.orientation
+
+        this.aidcReader.enabled = fragment.aidcEnabled
     }
 
     override fun onScreenFragmentPause(fragment: ScreenFragment) {

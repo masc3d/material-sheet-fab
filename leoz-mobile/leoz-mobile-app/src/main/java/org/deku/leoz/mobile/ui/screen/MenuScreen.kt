@@ -22,6 +22,7 @@ import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
+import sx.android.aidc.AidcReader
 import sx.android.getLayoutInflater
 
 /**
@@ -33,6 +34,7 @@ class MenuScreen : ScreenFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     data class MenuEntry(val entryType: Entry, val description: String, var counter: Int, var counter2: Int, val icon: Drawable) {
         enum class Entry(val value: Long) {
@@ -94,6 +96,8 @@ class MenuScreen : ScreenFragment() {
 
         this.title = "mobileX Tour"
         this.headerImage = R.drawable.img_street_1
+
+        this.aidcEnabled = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

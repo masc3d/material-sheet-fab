@@ -1,31 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/dialog_whatsnew"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="20dp"
-    android:background="@drawable/deku_background_selector"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:gravity="center_vertical|center"
-        android:text="What´s new"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textColor="@color/colorAccent"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/dialog_whatsnew"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/deku_background_selector"
+              android:orientation="vertical"
+    >
 
     <LinearLayout
+        style="@style/AppTheme.Layout.Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="News"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/AppTheme.Layout.Screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
         android:orientation="vertical"
-        android:padding="5dp">
+        >
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/uxChangeList"
@@ -37,5 +44,6 @@
             android:scrollbars="vertical"/>
 
     </LinearLayout>
+
 
 </LinearLayout>

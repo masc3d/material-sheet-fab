@@ -45,7 +45,8 @@ data class ActionItem(
         @ColorRes val colorRes: Int? = null,
         @DrawableRes val iconRes: Int? = null,
         @ColorRes val iconTintRes: Int? = null,
-        val menu: Menu? = null
+        val menu: Menu? = null,
+        var visible: Boolean = true
 )
 
 /**
@@ -212,7 +213,10 @@ class ActionOverlayView : RelativeLayout {
 
             this.materialSheetFabs.clear()
 
-            this.items.reversed().forEach { item ->
+            this.items
+                    .filter { it.visible }
+                    .reversed()
+                    .forEach { item ->
 
                 when {
                     item.menu == null -> {
