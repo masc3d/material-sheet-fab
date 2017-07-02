@@ -40,7 +40,7 @@ abstract class AidcReader {
 
     data class ReadEvent(val data: String, val barcodeType: BarcodeType)
 
-    protected val enabledProperty = ObservableRxProperty(true)
+    val enabledProperty = ObservableRxProperty(false)
     /**
      * Enable or disable barcode reader
      */
