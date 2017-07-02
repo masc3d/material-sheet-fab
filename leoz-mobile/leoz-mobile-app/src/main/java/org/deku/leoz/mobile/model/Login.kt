@@ -22,6 +22,7 @@ import sx.android.Device
 import sx.rx.ObservableRxProperty
 import sx.rx.toHotReplay
 import sx.text.parseHex
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.util.*
 
@@ -135,7 +136,8 @@ class Login {
                     // There should not be a generic fallback, as the exception may also indicate
                     // a user cannot authorize due to being disabled or non-existent.
                     when (e.cause) {
-                        is SocketTimeoutException -> {
+                        is SocketTimeoutException,
+                        is ConnectException -> {
                             authorizeOffline()
                         }
                         else -> throw e

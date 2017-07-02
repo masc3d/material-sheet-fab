@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -51,6 +52,7 @@ import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import java.util.NoSuchElementException
 
 /**
  * Leoz activity base class
@@ -83,8 +85,22 @@ open class Activity : RxAppCompatActivity(),
      * Responsible for controlling header
      */
     private inner class Header {
+        /** Default expanded header height */
+        private val headerDefaultExpandedSize by lazy {
+            this@Activity.resources.getDimension(R.dimen.header_expanded_default_height).toInt()
+        }
+
+        /** Default header height (-> action bar height */
+        private val headerDefaultHeight by lazy {
+            val tv = TypedValue();
+            if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics())
+                tv.data
+            } else throw NoSuchElementException("Couldnt find attribute actionBarSize")
+        }
+
         /** The default header drawable */
-        val default by lazy {
+        val defaultDrawable by lazy {
             // Prepare default image
             val sourceImage = BitmapFactory.decodeResource(getResources(), R.drawable.img_street_1)
 
@@ -93,29 +109,31 @@ open class Activity : RxAppCompatActivity(),
                     0,
                     150,
                     sourceImage.width,
-                    200)
+                    800)
 
             val drawable = BitmapDrawable(this@Activity.resources, bitmap)
-            drawable.tileModeY = Shader.TileMode.REPEAT
 
             drawable
         }
 
+        /** Header drawable */
         var headerDrawable: Drawable? = null
             set(value) {
                 if (field != null) {
-                    val oldDrawable = if (field != null) field else default
-                    val newDrawable = if (value != null) value else default
+                    // Drawable transition animatino
+                    val oldDrawable = if (field != null) field else defaultDrawable
+                    val newDrawable = if (value != null) value else defaultDrawable
 
-                    val drawables = listOf(oldDrawable, newDrawable)
+                    val drawable = TransitionDrawable(listOf(
+                            oldDrawable,
+                            newDrawable
+                    ).toTypedArray())
 
-                    val td = TransitionDrawable(drawables.toTypedArray())
-
-                    this@Activity.uxHeaderImageView.setImageDrawable(td)
-                    td.isCrossFadeEnabled = true
-                    td.startTransition(500)
+                    this@Activity.uxHeaderImageView.setImageDrawable(drawable)
+                    drawable.isCrossFadeEnabled = true
+                    drawable.startTransition(500)
                 } else {
-                    // Don't animate initially
+                    // Don't animate when drawable is set initially
                     this@Activity.uxHeaderImageView.setImageDrawable(value)
                 }
 
@@ -394,7 +412,7 @@ open class Activity : RxAppCompatActivity(),
         this.aidcReader.enabledProperty
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { enabled  ->
+                .subscribe { enabled ->
                     val aidcActionItem = this.uxActionOverlay.items
                             .filter { it.id == R.id.action_aidc_camera && it.visible != enabled.value }
                             .firstOrNull()
@@ -502,10 +520,14 @@ open class Activity : RxAppCompatActivity(),
 
         var expandAppBar = true
         var scrollCollapseMode = fragment.scrollCollapseMode
+        var scroll = (scrollCollapseMode != ScreenFragment.ScrollCollapseModeType.None)
 
         if (fragment.headerImage == 0) {
             expandAppBar = false
+            scroll = true
         }
+
+        log.trace("HEADER HEIGHT ${this.uxHeader.layoutParams.height}")
 
         if (fragment.hideActionBar) {
             // Workaround for supportActionBar not adjusting content area
@@ -513,7 +535,8 @@ open class Activity : RxAppCompatActivity(),
             // Hiding the entire appbar via expanded flag only works in conjunction
             // with collapsing toolbar scroll/snap mode
             expandAppBar = false
-            scrollCollapseMode = ScreenFragment.ScrollCollapseModeType.ExitUntilCollapsed
+            scroll = true
+            scrollCollapseMode = ScreenFragment.ScrollCollapseModeType.EnterAlwaysCollapsed
         }
 
         // Apply action bar changes
@@ -533,13 +556,13 @@ open class Activity : RxAppCompatActivity(),
             this.header.headerDrawable = if (fragment.headerImage != 0)
                 ContextCompat.getDrawable(baseContext, fragment.headerImage)
             else
-                this.header.default
+                this.header.defaultDrawable
         }
 
         // Apply collapsing toolbar settings
         run {
             // EXIT_UNTIL_COLLAPSED should always be the default, so title and appbar expansion works properly
-            val collapsingScrollFlag = when(scrollCollapseMode) {
+            val collapsingScrollFlag = when (scrollCollapseMode) {
                 ScreenFragment.ScrollCollapseModeType.ExitUntilCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
                 ScreenFragment.ScrollCollapseModeType.EnterAlways -> AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
                 ScreenFragment.ScrollCollapseModeType.EnterAlwaysCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
@@ -548,7 +571,12 @@ open class Activity : RxAppCompatActivity(),
                 else -> 0
             }
 
-            val scrollSnapFlag = when(fragment.scrollSnap) {
+            val scrollFlag = when(scroll) {
+                false -> 0
+                else -> AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+            }
+
+            val scrollSnapFlag = when (fragment.scrollSnap) {
                 true -> AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
                 false -> 0
             }
@@ -556,7 +584,7 @@ open class Activity : RxAppCompatActivity(),
             val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
             layoutParams.scrollFlags =
-                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or collapsingScrollFlag or scrollSnapFlag
+                    scrollFlag or collapsingScrollFlag or scrollSnapFlag
 
             log.trace("SCROLL FLAGS ${layoutParams.scrollFlags}")
         }

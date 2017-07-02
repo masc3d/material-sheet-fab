@@ -8,7 +8,7 @@
     </item>
 
     <item>
-        <bitmap android:src="@drawable/img_parcels_1"
-                android:alpha="0.5" />
+        <bitmap android:src="@drawable/img_street_1"
+                android:alpha="0.8" />
     </item>
 </layer-list>

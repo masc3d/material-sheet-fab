@@ -95,7 +95,7 @@ class MenuScreen : ScreenFragment() {
         super.onCreate(savedInstanceState)
 
         this.title = "mobileX Tour"
-        this.headerImage = R.drawable.img_street_1
+        this.headerImage = R.drawable.img_street_1a
 
         this.aidcEnabled = true
     }

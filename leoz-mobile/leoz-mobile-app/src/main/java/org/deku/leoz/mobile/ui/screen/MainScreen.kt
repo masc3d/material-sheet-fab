@@ -37,7 +37,7 @@ class MainScreen : ScreenFragment() {
         super.onCreate(savedInstanceState)
 
         this.title = "mobileX"
-        this.headerImage = R.drawable.img_street_1
+        this.headerImage = R.drawable.img_street_1a
     }
 
     /**
