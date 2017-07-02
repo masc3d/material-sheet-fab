@@ -5,24 +5,18 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
-import android.support.annotation.DrawableRes
 import android.support.design.widget.*
 import android.support.transition.*
 import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.view.menu.MenuBuilder
-import android.support.v7.view.menu.MenuPopupHelper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -44,7 +38,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
-import kotlinx.android.synthetic.main.screen_menu.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
@@ -505,13 +498,10 @@ open class Activity : RxAppCompatActivity(),
 
         // Setup collapsing layout, appbar & header
 
-        // EXIT_UNTIL_COLLAPSED should always be the default, so title and appbar expansion works properly
-        var collapsingScrollFlag = AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-
         this.uxCollapsingToolbarLayout.title = fragment.title
 
         var expandAppBar = true
-        var scrollWithCollapsingToolbarEnabled = fragment.scrollWithCollapsingToolbarEnabled
+        var scrollCollapseMode = fragment.scrollCollapseMode
 
         if (fragment.headerImage == 0) {
             expandAppBar = false
@@ -523,7 +513,7 @@ open class Activity : RxAppCompatActivity(),
             // Hiding the entire appbar via expanded flag only works in conjunction
             // with collapsing toolbar scroll/snap mode
             expandAppBar = false
-            scrollWithCollapsingToolbarEnabled = true
+            scrollCollapseMode = ScreenFragment.ScrollCollapseModeType.ExitUntilCollapsed
         }
 
         // Apply action bar changes
@@ -548,13 +538,27 @@ open class Activity : RxAppCompatActivity(),
 
         // Apply collapsing toolbar settings
         run {
-            if (scrollWithCollapsingToolbarEnabled)
-                collapsingScrollFlag = AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
+            // EXIT_UNTIL_COLLAPSED should always be the default, so title and appbar expansion works properly
+            val collapsingScrollFlag = when(scrollCollapseMode) {
+                ScreenFragment.ScrollCollapseModeType.ExitUntilCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+                ScreenFragment.ScrollCollapseModeType.EnterAlways -> AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                ScreenFragment.ScrollCollapseModeType.EnterAlwaysCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
+
+                ScreenFragment.ScrollCollapseModeType.None -> AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+                else -> 0
+            }
+
+            val scrollSnapFlag = when(fragment.scrollSnap) {
+                true -> AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+                false -> 0
+            }
 
             val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
             layoutParams.scrollFlags =
-                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or collapsingScrollFlag
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or collapsingScrollFlag or scrollSnapFlag
+
+            log.trace("SCROLL FLAGS ${layoutParams.scrollFlags}")
         }
 
         // Apply requested orientation

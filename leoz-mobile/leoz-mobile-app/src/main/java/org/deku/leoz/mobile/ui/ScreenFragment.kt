@@ -12,12 +12,22 @@ open class ScreenFragment : Fragment() {
     val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
     var actionItems by actionItemsProperty
 
+    enum class ScrollCollapseModeType {
+        None,
+        ExitUntilCollapsed,
+        EnterAlways,
+        EnterAlwaysCollapsed
+    }
+
     /**
      * Enables collapsing toolbar's scroll/snap mode.
-     * This should be disabled for screens with static/ottom aligned content, as it may be partially
-     * off screen when this mode is enabled.
      */
-    var scrollWithCollapsingToolbarEnabled = false
+    var scrollCollapseMode: ScrollCollapseModeType = ScrollCollapseModeType.None
+
+    /**
+     * Enable/disable scroll snap
+     */
+    var scrollSnap = false
 
     /**
      * One of ActivityInfo.SCREEN_ORIENTATION_*

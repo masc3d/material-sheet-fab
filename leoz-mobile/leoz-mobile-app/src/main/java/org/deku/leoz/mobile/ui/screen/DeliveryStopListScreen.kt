@@ -71,7 +71,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.scrollWithCollapsingToolbarEnabled = true
+        this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
         this.title = "Delivery Stops"
         this.headerImage = R.drawable.img_parcels_1a
     }
