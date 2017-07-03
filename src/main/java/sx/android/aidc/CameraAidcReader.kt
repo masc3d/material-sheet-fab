@@ -9,6 +9,7 @@ import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import org.slf4j.LoggerFactory
+import sx.aidc.SymbologyType
 import sx.rx.ObservableRxProperty
 
 /**
