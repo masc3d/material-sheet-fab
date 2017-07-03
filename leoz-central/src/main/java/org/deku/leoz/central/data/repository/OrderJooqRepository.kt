@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.TrnVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.tables.records.TrnVOrderRecord
-import org.deku.leoz.model.AdditionalInformationType
-import org.deku.leoz.model.Carrier
-import org.deku.leoz.model.OrderClassification
-import org.deku.leoz.model.ParcelService
+import org.deku.leoz.model.*
 import org.deku.leoz.node.rest.DefaultProblem
 import javax.ws.rs.core.Response
 
@@ -54,97 +51,96 @@ open class OrderJooqRepository {
                     title = "Order not found",
                     status = Response.Status.NOT_FOUND)
 
-        var O: OrderService.Order? = readOrder(R)
+        val O: OrderService.Order? = readOrder(R)
         val P = dslContext.fetchOne(Tables.TRN_V_ORDER_PARCEL, Tables.TRN_V_ORDER_PARCEL.ORDER_ID.eq(R.id))
-        if (P !=null)
+        if (P != null)
             O!!.parcels = readParcel(P)
 
         return O
-
     }
 
-    fun readParcel(R: TrnVOrderParcelRecord): List<OrderService.Order.Parcel> {
-        val Parcels: List<OrderService.Order.Parcel>? = null
+    fun readParcel(r: TrnVOrderParcelRecord): List<OrderService.Order.Parcel> {
+        val parcels: List<OrderService.Order.Parcel>? = null
 
-        val P : OrderService.Order.Parcel=OrderService.Order.Parcel()
-        P.number=R.scanId.toString()
-        //P.parcelType=R.parcelType
-        P.lastDeliveryListId=R.lastDeliveryListId.toInt()
+        val p: OrderService.Order.Parcel = OrderService.Order.Parcel()
+        p.number = r.scanId.toString()
+        p.parcelType =  ParcelType.valueMap.getValue(r.parcelType)
+        p.lastDeliveryListId = r.lastDeliveryListId.toInt()
         //P.information=
-        P.dimension!!.weight=R.dimentionWeight
+        p.dimension!!.weight = r.dimentionWeight
 
-        Parcels!!.plus(P)
+        parcels!!.plus(p)
 
-        return Parcels!!
+        return parcels
     }
 
 
-    fun readOrder(R: TrnVOrderRecord): OrderService.Order {
+    fun readOrder(record: TrnVOrderRecord): OrderService.Order {
+        val r = record
+        val O: OrderService.Order? = null
 
-        var O: OrderService.Order? = null
-
-        O!!.id = R.id.toLong()
-        O.referenceIDToExchangeOrderID = R.referenceIdToExchangeId.toLong()
+        O!!.id = r.id.toLong()
+        O.referenceIDToExchangeOrderID = r.referenceIdToExchangeId.toLong()
         O.carrier = Carrier.DER_KURIER
 
-        if (R.pickupStation == R.deliveryStation && R.customerStation == R.deliveryStation)
+        if (r.pickupStation == r.deliveryStation && r.customerStation == r.deliveryStation)
             O.orderClassification = OrderClassification.PICKUP_DELIVERY
-        else if (R.customerStation == R.deliveryStation)
+        else if (r.customerStation == r.deliveryStation)
             O.orderClassification = OrderClassification.DELIVERY
-        else if (R.customerStation == R.pickupStation)
+        else if (r.customerStation == r.pickupStation)
             O.orderClassification = OrderClassification.PICKUP
 
 
-        O.pickupAddress.line1 = R.pickupAddressLine1
-        O.pickupAddress.line2 = R.pickupAddressLine2
-        O.pickupAddress.line3 = R.pickupAddressLine3
-        O.pickupAddress.street = R.pickupAddressStreet
-        O.pickupAddress.streetNo = R.pickupAddressStreetNo
-        O.pickupAddress.countryCode = R.pickupAddressCountryCode
-        O.pickupAddress.zipCode = R.pickupAddressZipCode
-        O.pickupAddress.city = R.pickupAddressCity
+        O.pickupAddress.line1 = r.pickupAddressLine1
+        O.pickupAddress.line2 = r.pickupAddressLine2
+        O.pickupAddress.line3 = r.pickupAddressLine3
+        O.pickupAddress.street = r.pickupAddressStreet
+        O.pickupAddress.streetNo = r.pickupAddressStreetNo
+        O.pickupAddress.countryCode = r.pickupAddressCountryCode
+        O.pickupAddress.zipCode = r.pickupAddressZipCode
+        O.pickupAddress.city = r.pickupAddressCity
         O.pickupService = OrderService.Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE))  //todo
 
         var info: OrderService.Order.AdditionalInformation? = null
         var infoList: List<OrderService.Order.AdditionalInformation>? = null
-        if (R.pickupInformation1 != null) {
+        if (r.pickupInformation1 != null) {
             info!!.additionalInformationType = AdditionalInformationType.LOADING_LIST_INFO
-            info!!.information = R.pickupInformation1
+            info!!.information = r.pickupInformation1
             var infoList: List<OrderService.Order.AdditionalInformation>? = null
             infoList!!.plus(info)
             O!!.pickupInformation!!.additionalInformation = infoList
         }
-        O.appointmentPickup.dateStart = R.appointmentPickupStart
-        O.appointmentPickup.dateEnd = R.appointmentPickupEnd
-        O.appointmentPickup.notBeforeStart = R.appointmentPickupNotBeforeStart == 1
-        O.appointmentPickup.dateStart = R.appointmentPickupStart
-        O.appointmentPickup.dateEnd = R.appointmentPickupEnd
-        O.appointmentPickup.notBeforeStart = R.appointmentPickupNotBeforeStart == 1
+        O.appointmentPickup.dateStart = r.appointmentPickupStart
+        O.appointmentPickup.dateEnd = r.appointmentPickupEnd
+        O.appointmentPickup.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
+        O.appointmentPickup.dateStart = r.appointmentPickupStart
+        O.appointmentPickup.dateEnd = r.appointmentPickupEnd
+        O.appointmentPickup.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
 
 
-        O.deliveryAddress.line1 = R.deliveryAddressLine1
-        O.deliveryAddress.line2 = R.deliveryAddressLine2
-        O.deliveryAddress.line3 = R.deliveryAddressLine3
-        O.deliveryAddress.street = R.deliveryAddressStreet
-        O.deliveryAddress.streetNo = R.deliveryAddressStreetNo
-        O.deliveryAddress.countryCode = R.deliveryAddressCountryCode
-        O.deliveryAddress.zipCode = R.deliveryAddressZipCode
-        O.deliveryAddress.city = R.deliveryAddressCity
+        O.deliveryAddress.line1 = r.deliveryAddressLine1
+        O.deliveryAddress.line2 = r.deliveryAddressLine2
+        O.deliveryAddress.line3 = r.deliveryAddressLine3
+        O.deliveryAddress.street = r.deliveryAddressStreet
+        O.deliveryAddress.streetNo = r.deliveryAddressStreetNo
+        O.deliveryAddress.countryCode = r.deliveryAddressCountryCode
+        O.deliveryAddress.zipCode = r.deliveryAddressZipCode
+        O.deliveryAddress.city = r.deliveryAddressCity
         O.deliveryService = OrderService.Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)) //todo
 
-        if (R.deliveryInformation != null) {
+        if (r.deliveryInformation != null) {
             info!!.additionalInformationType = AdditionalInformationType.LOADING_LIST_INFO
-            info!!.information = R.deliveryInformation
+            info!!.information = r.deliveryInformation
             infoList = null
             infoList!!.plus(info)
             O!!.deliveryInformation!!.additionalInformation = infoList
         }
-        O.appointmentDelivery.dateStart = R.appointmentDeliveryStart
-        O.appointmentDelivery.dateEnd = R.appointmentDeliveryEnd
-        O.appointmentDelivery.notBeforeStart = R.appointmentDeliveryNotBeforeStart == 1
-        O.appointmentDelivery.dateStart = R.appointmentDeliveryStart
-        O.appointmentDelivery.dateEnd = R.appointmentDeliveryEnd
-        O.appointmentDelivery.notBeforeStart = R.appointmentDeliveryNotBeforeStart == 1
+        O.appointmentDelivery.dateStart = r.appointmentDeliveryStart
+        O.appointmentDelivery.dateEnd = r.appointmentDeliveryEnd
+        O.appointmentDelivery.notBeforeStart = r.appointmentDeliveryNotBeforeStart == 1
+        O.appointmentDelivery.dateStart = r.appointmentDeliveryStart
+        O.appointmentDelivery.dateEnd = r.appointmentDeliveryEnd
+        O.appointmentDelivery.notBeforeStart = r.appointmentDeliveryNotBeforeStart == 1
 
         return O
     }

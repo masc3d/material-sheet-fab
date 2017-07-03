@@ -21,7 +21,7 @@ import java.util.*
  * Created by JT on 30.06.17.
  */
 @Named
-@ApiKey(true)
+@ApiKey(false)
 @Path("internal/v1/order")
 class OrderService : OrderService {
 

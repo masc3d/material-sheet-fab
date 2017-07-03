@@ -279,7 +279,7 @@ enum class Carrier(val value: Int) {
     UNKNOWN(1)
 }
 
-enum class ParcelType(val value:Int){
+enum class ParcelType(val value: Int) {
     UNKNOWN(1),
     LATTICE_BOX(2),
     FLYER(3),
@@ -290,7 +290,13 @@ enum class ParcelType(val value:Int){
     ENVELOPE(8),
     ROLL(9),
     NB(10),
-    VALUABLES(91)
+    VALUABLES(91);
+
+    companion object {
+        val valueMap = mapOf(
+                *ParcelType.values().map { Pair(it.value, it) }.toTypedArray()
+        )
+    }
 }
 
 /**
