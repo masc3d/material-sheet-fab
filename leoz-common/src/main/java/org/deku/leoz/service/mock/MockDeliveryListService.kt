@@ -20,9 +20,9 @@ class MockDeliveryListService : DeliveryListService {
     override fun getById(id: String): DeliveryListService.DeliveryList {
 
         val addr = Order.Address(
-                addressLine1 = "Prangenberg",
-                addressLine2 = "DEK KURIER",
-                addressLine3 = "3. Addresszeile",
+                line1 = "Prangenberg",
+                line2 = "DEK KURIER",
+                line3 = "3. Addresszeile",
                 street = "Dörrwiese",
                 streetNo = "2",
                 zipCode = "36286",
