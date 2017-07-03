@@ -50,7 +50,7 @@ dependencies {
 
     compileOnly(
             // Misc
-            "org.apache.commons:commons-lang3:3.5",
+            "org.apache.commons:commons-lang3:3.6",
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:2.0.1",
             // JNA
