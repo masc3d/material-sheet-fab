@@ -26,10 +26,10 @@ open class OrderJooqRepository {
                 Tables.TRN_V_ORDER.ID.eq(id.toDouble()))
     }
 
-    fun findByScan(ScanId: String): TrnVOrderRecord? {
+    fun findByScan(scanId: String): TrnVOrderRecord? {
         val rParcel = dslContext.fetchOne(
                 Tables.TRN_V_ORDER_PARCEL,
-                Tables.TRN_V_ORDER_PARCEL.SCAN_ID.eq(ScanId.toDouble()))
+                Tables.TRN_V_ORDER_PARCEL.SCAN_ID.eq(scanId.toDouble()))
 
         return findByID(rParcel.orderId.toLong())
     }
