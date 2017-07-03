@@ -66,7 +66,7 @@ interface OrderService {
             var orderClassification: OrderClassification = OrderClassification.DELIVERY,
 
             @get:ApiModelProperty(position = 60, required = true, value = "appointmentPickup")
-            var appointmentPickup: Appointment,
+            var appointmentPickup: Appointment = Appointment(),
             @get:ApiModelProperty(required = true, position = 120, value = "Pickup address")
             var pickupAddress: Address = Address(),
             @get:ApiModelProperty(required = true, position = 120, value = "Pickup service")
@@ -75,7 +75,7 @@ interface OrderService {
             var pickupInformation: Information? = null,
 
             @get:ApiModelProperty(position = 60, required = true, value = "appointmentDelivery")
-            var appointmentDelivery: Appointment,
+            var appointmentDelivery: Appointment = Appointment(),
             @ApiModelProperty(required = true, position = 130, value = "Delivery address")
             var deliveryAddress: Address = Address(),
             @get:ApiModelProperty(required = true, position = 120, value = "delivery services")
@@ -84,9 +84,7 @@ interface OrderService {
             var deliveryInformation: Information? = null,
 
             @get:ApiModelProperty(position = 140, required = false, value = "Parcels")
-            var parcels: List<Parcel>
-
-
+            var parcels: List<Parcel> = listOf()
     ) {
         companion object {
             val pN = "12345678901"
