@@ -1,5 +1,6 @@
 package sx.android.aidc
 
+import sx.aidc.SymbologyType
 
 /**
  * Generic decoder
@@ -12,23 +13,6 @@ abstract class Decoder(
      * Unique key of this decoder
      */
     abstract val key: String
-}
-
-/**
- * Symbology type
- * Created by masc on 28/02/2017.
- */
-enum class SymbologyType {
-    Unknown,
-
-    Code128,
-    Code39,
-    Datamatrix,
-    Ean8,
-    Ean13,
-    Interleaved25,
-    Pdf417,
-    QrCode,
 }
 
 /**
