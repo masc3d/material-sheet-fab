@@ -7,6 +7,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import sx.LazyInstance
 import sx.android.aidc.*
+import sx.aidc.SymbologyType
 import sx.rx.toHotReplay
 
 /**
