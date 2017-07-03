@@ -24,18 +24,23 @@ import java.util.*
 @ApiKey(true)
 @Path("internal/v1/order")
 class OrderService : OrderService {
-    override fun getById(id: String): OrderService.Order {
+
+    override fun get(labelRef: String?, custRef: String?, parcelScan: String?): OrderService.Order {
+        val O = readOrder(parcelScan)
+        if (O == null)
+            throw DefaultProblem(
+                    title = "Order not found",
+                    status = Response.Status.NOT_FOUND)
+        return O
+    }
+
+    override fun getById(id: Long): OrderService.Order {
         val O = readOrder(id)
         if (O == null)
             throw DefaultProblem(
                     title = "Order not found",
                     status = Response.Status.NOT_FOUND)
-        val R: OrderService.Order = O
-        return R
-    }
-
-    override fun get(labelRef: String?, custRef: String?, ref: String?): List<OrderService.Order> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return O
     }
 
 //    private val log = LoggerFactory.getLogger(this.javaClass)
@@ -46,12 +51,12 @@ class OrderService : OrderService {
     @Inject
     private lateinit var orderRepository: OrderJooqRepository
 
+    fun readOrder(id: Long): OrderService.Order? {
+        return  orderRepository.findByID(id = id)
+    }
 
-    fun readOrder(Id: String): OrderService.Order? {
-        var O: OrderService.Order? = null
-        O = orderRepository.findByID(Id = Id)
-
-        return O
+    fun readOrder(parcelScan: String?): OrderService.Order? {
+        return orderRepository.findByScan(ScanId = parcelScan)
     }
 
 }
