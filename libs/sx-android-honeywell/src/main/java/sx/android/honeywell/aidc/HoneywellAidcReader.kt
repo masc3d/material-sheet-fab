@@ -5,7 +5,6 @@ import com.honeywell.aidc.*
 import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
-import org.reactivestreams.Subscription
 import sx.LazyInstance
 import sx.android.aidc.*
 import sx.rx.toHotReplay
@@ -205,32 +204,32 @@ class HoneywellAidcReader private constructor(
                                 properties.put(BarcodeReader.PROPERTY_QR_CODE_MAXIMUM_LENGTH, decoder.maximumLength as Int)
                             this.honeywellReader.setProperties(properties)
                         }
-                        else -> throw UnsupportedOperationException("Unsupported barcode type [${decoder.barcodeType}]")
+                        else -> throw UnsupportedOperationException("Unsupported barcode type [${decoder.symbologyType}]")
                     }
                 }
             }
         }
     }
 
-    enum class CodeId(val value: String, val barcodeType: BarcodeType) {
-        Unknown("", BarcodeType.Unknown),
+    enum class CodeId(val value: String, val symbologyType: SymbologyType) {
+        Unknown("", SymbologyType.Unknown),
 
-        Code128("j", BarcodeType.Code128),
-        Code39("b", BarcodeType.Code39),
-        DataMatrix("w", BarcodeType.Datamatrix),
-        Ean8("D", BarcodeType.Ean8),
-        Ean13("d", BarcodeType.Ean13),
-        Interleaved25("e", BarcodeType.Interleaved25),
-        Pdf417("r", BarcodeType.Pdf417),
-        QrCode("s", BarcodeType.QrCode),
+        Code128("j", SymbologyType.Code128),
+        Code39("b", SymbologyType.Code39),
+        DataMatrix("w", SymbologyType.Datamatrix),
+        Ean8("D", SymbologyType.Ean8),
+        Ean13("d", SymbologyType.Ean13),
+        Interleaved25("e", SymbologyType.Interleaved25),
+        Pdf417("r", SymbologyType.Pdf417),
+        QrCode("s", SymbologyType.QrCode),
     }
 
     override fun onBarcodeEvent(evt: BarcodeReadEvent) {
         val barcodeType = CodeId.values()
                 .firstOrNull { it.value == evt.codeId }
-                ?.barcodeType ?: BarcodeType.Unknown
+                ?.symbologyType ?: SymbologyType.Unknown
 
-        this.readEventSubject.onNext(ReadEvent(data = evt.barcodeData, barcodeType = barcodeType))
+        this.readEventSubject.onNext(ReadEvent(data = evt.barcodeData, symbologyType = barcodeType))
     }
 
     override fun onFailureEvent(evt: BarcodeFailureEvent) {
