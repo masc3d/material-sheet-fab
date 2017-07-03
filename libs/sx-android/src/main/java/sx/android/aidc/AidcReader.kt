@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import sx.rx.ObservableRxProperty
+import sx.aidc.SymbologyType
 
 /**
  * Abstract barcode reader
