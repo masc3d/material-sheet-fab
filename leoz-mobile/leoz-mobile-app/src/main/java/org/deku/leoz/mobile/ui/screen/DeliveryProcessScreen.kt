@@ -29,7 +29,6 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.fragment.util.withTransaction
-import java.text.SimpleDateFormat
 
 class DeliveryProcessScreen : ScreenFragment() {
 
@@ -131,7 +130,7 @@ class DeliveryProcessScreen : ScreenFragment() {
 
                         }
                         R.id.ux_action_deliver_recipient -> {
-                            (this.activity as DeliveryActivity).showSignaturePad("Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.addressLine1}\nAngenommen von: ${stop.address.addressLine1}")
+                            (this.activity as DeliveryActivity).showSignaturePad("Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${stop.address.line1}")
                         }
                     }
                 }

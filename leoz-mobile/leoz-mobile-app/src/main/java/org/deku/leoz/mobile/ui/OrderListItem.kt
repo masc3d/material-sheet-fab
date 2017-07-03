@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.ui
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
@@ -43,8 +42,8 @@ class OrderListItem(val context: Context, val order: Order, val rootViewGroup: V
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?, holder: ViewHolder?, position: Int,
                                 payloads: List<*>?) {
-        holder!!.recipient.text = order.addresses.first { it.classification == Order.Address.Classification.DELIVERY }.addressLine1
-        holder.sender.text = order.addresses.first { it.classification == Order.Address.Classification.PICKUP }.addressLine1
+        holder!!.recipient.text = order.addresses.first { it.classification == Order.Address.Classification.DELIVERY }.line1
+        holder.sender.text = order.addresses.first { it.classification == Order.Address.Classification.PICKUP }.line1
         holder.cityTo.text = order.addresses.first { it.classification == Order.Address.Classification.DELIVERY }.city
         holder.cityFrom.text = order.addresses.first { it.classification == Order.Address.Classification.PICKUP }.city
         holder.zipTo.text = order.addresses.first { it.classification == Order.Address.Classification.DELIVERY }.zipCode

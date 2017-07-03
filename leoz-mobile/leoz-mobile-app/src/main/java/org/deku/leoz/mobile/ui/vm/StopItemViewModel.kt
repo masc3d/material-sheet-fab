@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
-import android.databinding.ViewDataBinding
 import org.deku.leoz.mobile.model.Stop
 import sx.time.toCalendar
 import java.text.SimpleDateFormat

@@ -39,9 +39,9 @@ class Order (
 
     data class Address (
             val classification: Classification,
-            val addressLine1: String,
-            val addressLine2: String = "",
-            val addressLine3: String = "",
+            val line1: String,
+            val line2: String = "",
+            val line3: String = "",
             val street: String,
             val streetNo: String = "",
             val zipCode: String,
@@ -247,9 +247,9 @@ fun OrderService.Order.toOrder(): Order {
             addresses = mutableListOf(
                     Order.Address(
                             classification = Order.Address.Classification.DELIVERY,
-                            addressLine1 = this.deliveryAddress.addressLine1,
-                            addressLine2 = this.deliveryAddress.addressLine2 ?: "",
-                            addressLine3 = this.deliveryAddress.addressLine3 ?: "",
+                            line1 = this.deliveryAddress.line1,
+                            line2 = this.deliveryAddress.line2 ?: "",
+                            line3 = this.deliveryAddress.line3 ?: "",
                             street = this.deliveryAddress.street,
                             streetNo = this.deliveryAddress.streetNo ?: "",
                             zipCode = this.deliveryAddress.zipCode,
@@ -260,9 +260,9 @@ fun OrderService.Order.toOrder(): Order {
                     ),
                     Order.Address(
                             classification = Order.Address.Classification.PICKUP,
-                            addressLine1 = this.pickupAddress.addressLine1,
-                            addressLine2 = this.pickupAddress.addressLine2 ?: "",
-                            addressLine3 = this.pickupAddress.addressLine3 ?: "",
+                            line1 = this.pickupAddress.line1,
+                            line2 = this.pickupAddress.line2 ?: "",
+                            line3 = this.pickupAddress.line3 ?: "",
                             street = this.pickupAddress.street,
                             streetNo = this.pickupAddress.streetNo ?: "",
                             zipCode = this.pickupAddress.zipCode,
