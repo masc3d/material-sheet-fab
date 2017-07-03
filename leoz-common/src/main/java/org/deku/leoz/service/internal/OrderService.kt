@@ -31,9 +31,8 @@ interface OrderService {
     @Path("/{$ORDERID}")
     @ApiOperation(value = "Get order by order ID")
     fun getById(
-            @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: String
+            @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long
     ): Order
-
 
     /**
      * Get orders
@@ -47,8 +46,8 @@ interface OrderService {
     fun get(
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
-            @QueryParam(PARCELSCAN) @ApiParam(value = "Order reference") ref: String? = null
-    ): List<Order>
+            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String? = null
+    ): Order
 
     @ApiModel(description = "Order Model")
     data class Order(
@@ -152,10 +151,10 @@ interface OrderService {
         data class AdditionalInformation(
 
                 @get:ApiModelProperty(example = "cash", position = 110, required = true, value = "AdditionalInformationType")
-                val additionalInformationType: AdditionalInformationType? = null,
+                var additionalInformationType: AdditionalInformationType? = null,
 
                 @get:ApiModelProperty(example = "take cash in currency €", position = 120, required = false, value = "information")
-                val information: String? = null,
+                var information: String? = null,
 
                 @get:ApiModelProperty(example = "10.99", position = 130, required = false, value = "cashAmount")
                 var cashAmount: Double? = null
@@ -164,27 +163,29 @@ interface OrderService {
 
         @ApiModel(value = "Parcel", description = "Parcel within Order")
         data class Parcel(
-                @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "parcelScanNumber")
-                var number: String = "",
                 @get:ApiModelProperty(example = "1234567890101", position = 20, required = true, value = "parcelID")
                 var id: Long = 0,
+                @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "parcelScanNumber")
+                var number: String = "",
                 @get:ApiModelProperty(example = "info", position = 30, required = true, value = "parcelType")
                 var parcelType: ParcelType = ParcelType.UNKNOWN,
-                @get:ApiModelProperty(example = "info", position = 40, required = false, value = "information")
+                @get:ApiModelProperty(example = "10729985", position = 40, required = true, value = "parcelType")
+                var lastDeliveryListId: Int? = null,
+                @get:ApiModelProperty(example = "info", position = 50, required = false, value = "information")
                 var information: String? = null,
-                @get:ApiModelProperty(position = 50, required = true, value = "ParcelDimension")
+                @get:ApiModelProperty(position = 60, required = true, value = "ParcelDimension")
                 var dimension: ParcelDimension? = null
         ) {
             @ApiModel(value = "ParcelDimentions", description = "Parcel dementions and weight")
             data class ParcelDimension(
                     @ApiModelProperty(dataType = "double", example = "10", position = 10, required = false, value = "length")
-                    val length: Int? = null,
+                    var length: Int? = null,
                     @ApiModelProperty(dataType = "double", example = "20", position = 20, required = false, value = "height")
-                    val height: Int? = null,
+                    var height: Int? = null,
                     @ApiModelProperty(dataType = "double", example = "30", position = 30, required = false, value = "width")
-                    val width: Int? = null,
+                    var width: Int? = null,
                     @ApiModelProperty(dataType = "double", example = "11.5", position = 40, required = true, value = "weight")
-                    val weight: Double = 0.0
+                    var weight: Double = 0.0
             )
         }
     }
