@@ -45,8 +45,12 @@ class DeliveryActivity : Activity(),
         if (savedInstanceState == null) {
             //TODO: First fragment to be shown should be the privacy disclaimer (Maybe to be displayed as an dialog?)
             this.showScreen(MenuScreen(), addToBackStack = false)
-            //queryChangelogDisplay()
-            showChangelogDialog()
+            //Show privacy disclaimer
+            //TODO
+            //Show vehicle selection dialog
+            //TODO Call the function when the disclaimer is dismissed
+            //Check if the changelog dialog should be displayed TODO: Call this function when the vehicle selection is done.
+            queryChangelogDisplay()
         }
     }
 

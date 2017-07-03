@@ -1,6 +1,8 @@
 package org.deku.leoz.mobile.ui.screen
 
 
+import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -18,6 +20,8 @@ import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ParcelListAdapter
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.inflateMenu
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 
 
@@ -37,6 +41,18 @@ class VehicleLoadingScreen : ScreenFragment() {
                               savedInstanceState: android.os.Bundle?): android.view.View? {
         // Inflate the layout for this fragment
         return inflater!!.inflate(R.layout.fragment_vehicle_loading, container, false)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_deliver_fail,
+                        colorRes = R.color.colorRed,
+                        iconRes = R.drawable.ic_circle_cancel
+                )
+        )
     }
 
     override fun onResume() {

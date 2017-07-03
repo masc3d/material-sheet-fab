@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -115,7 +116,17 @@ class DeliveryProcessScreen : ScreenFragment() {
                             startActivity(intent)
                         }
                         R.id.ux_action_contact -> {
-
+                            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + stop.address.phone))
+                            val dialogBuilder = MaterialDialog.Builder(context)
+                            dialogBuilder.title("Confirm call")
+                            dialogBuilder.content(stop.address.phone)
+                            dialogBuilder.positiveText("Call")
+                            dialogBuilder.negativeText("Cancel")
+                            dialogBuilder.cancelable(true)
+                            dialogBuilder.onPositive { materialDialog, dialogAction ->
+                                startActivity(intent)
+                            }
+                            dialogBuilder.build().show()
                         }
                         R.id.ux_action_cancel -> {
 

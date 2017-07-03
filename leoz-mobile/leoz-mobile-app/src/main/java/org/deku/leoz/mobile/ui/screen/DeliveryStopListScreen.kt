@@ -57,7 +57,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
 
                             item.isEnabled = true
                             item.isDraggable = true
-                            item.isSwipeable = true
+                            item.isSwipeable = false
 
                             item
                         },

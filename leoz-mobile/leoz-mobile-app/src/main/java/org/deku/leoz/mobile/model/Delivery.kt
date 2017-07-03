@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model
 
+import android.support.annotation.DrawableRes
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -47,6 +48,8 @@ class Delivery {
     val stopList: MutableList<Stop> = mutableListOf()
     val orderList: MutableList<Order> = mutableListOf()
 
+    val deliveryVehicle: Vehicle? = null
+
     /**
      * When initiating, check for existing orders stored in the local DB and (re)load them into the variables.
      */
@@ -60,50 +63,93 @@ class Delivery {
     fun load() {
         // TODO: move mock data to `MockDeliveryListService`, load data from db
 
-        val addr = Order.Address(
-                classification = Order.Address.Classification.DELIVERY,
-                line1 = "Prangenberg",
-                line2 = "DEK KURIER",
-                line3 = "3. Addresszeile",
-                street = "Dörrwiese",
-                streetNo = "2",
-                zipCode = "36286",
-                city = "Neuenstein",
-                phone = "+49 6677 9582"
-        )
-        val addr2 = Order.Address(
-                classification = Order.Address.Classification.PICKUP,
-                line1 = "Prangenberg",
-                line2 = "2. Adresszeile",
-                line3 = "3. Addresszeile",
-                street = "Burscheidter Weg",
-                streetNo = "4",
-                zipCode = "40822",
-                city = "Mettmann",
-                phone = "+49 6677 9582"
-        )
-
-        val delAddresses = listOf(
+        val addresses = listOf(
                 Order.Address(
                         classification = Order.Address.Classification.DELIVERY,
-                        line1 = "Max Mustermann",
-                        line2 = "DEK KURIER",
+                        line1 = "Mathias Friedmannn",
+                        line2 = "2. Addresszeile",
                         line3 = "3. Addresszeile",
-                        street = "Dörrwiese",
-                        streetNo = "2",
+                        street = "Dörrwiese.",
+                        streetNo = "4",
                         zipCode = "36286",
-                        city = "Neuenstein",
+                        city = "Neuenstein-Aua",
                         phone = "+49 6677 9582"
                 ),
                 Order.Address(
                         classification = Order.Address.Classification.DELIVERY,
-                        line1 = "Prangenberg",
+                        line1 = "Philipp Prangenberg",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
-                        street = "Burscheidter Weg",
+                        street = "An den Auewiesen",
+                        streetNo = "25",
+                        zipCode = "36286",
+                        city = "Neuenstein-Obergeiß",
+                        phone = "+49 6677 9582"
+                ),
+                Order.Address(
+                        classification = Order.Address.Classification.DELIVERY,
+                        line1 = "Jannik Trombach",
+                        line2 = "2. Adresszeile",
+                        line3 = "3. Addresszeile",
+                        street = "Pappelweg",
+                        streetNo = "2",
+                        zipCode = "36286",
+                        city = "Gittersdorf",
+                        phone = "+49 6677 9585"
+                ),
+                Order.Address(
+                        classification = Order.Address.Classification.DELIVERY,
+                        line1 = "Lisa Himmel",
+                        line2 = "2. Adresszeile",
+                        line3 = "3. Addresszeile",
+                        street = "Am Wendeberg",
+                        streetNo = "5",
+                        zipCode = "36251",
+                        city = "Bad Hersfeld",
+                        phone = "+49 6677 9595"
+                ),
+                Order.Address(
+                        classification = Order.Address.Classification.PICKUP,
+                        line1 = "Lisa Himmel",
+                        line2 = "2. Adresszeile",
+                        line3 = "3. Addresszeile",
+                        street = "Am Wendeberg",
+                        streetNo = "5",
+                        zipCode = "36251",
+                        city = "Bad Hersfeld",
+                        phone = "+49 6677 9595"
+                ),
+                Order.Address(
+                        classification = Order.Address.Classification.PICKUP,
+                        line1 = "Jannik Trombach",
+                        line2 = "2. Adresszeile",
+                        line3 = "3. Addresszeile",
+                        street = "Pappelweg",
+                        streetNo = "2",
+                        zipCode = "36286",
+                        city = "Gittersdorf",
+                        phone = "+49 6677 9585"
+                ),
+                Order.Address(
+                        classification = Order.Address.Classification.PICKUP,
+                        line1 = "Philipp Prangenberg",
+                        line2 = "2. Adresszeile",
+                        line3 = "3. Addresszeile",
+                        street = "An den Auewiesen",
+                        streetNo = "25",
+                        zipCode = "36286",
+                        city = "Neuenstein-Obergeiß",
+                        phone = "+49 6677 9582"
+                ),
+                Order.Address(
+                        classification = Order.Address.Classification.PICKUP,
+                        line1 = "Mathias Friedmannn",
+                        line2 = "2. Addresszeile",
+                        line3 = "3. Addresszeile",
+                        street = "Dörrwiese.",
                         streetNo = "4",
-                        zipCode = "40822",
-                        city = "Mettmann",
+                        zipCode = "36286",
+                        city = "Neuenstein-Aua",
                         phone = "+49 6677 9582"
                 )
         )
@@ -116,13 +162,16 @@ class Delivery {
         dateTo.set(Calendar.HOUR_OF_DAY, 12)
         dateTo.set(Calendar.MINUTE, 0)
 
-        val appointment = Order.Appointment(
-                classification = Order.Appointment.Classification.DELIVERY,
-                dateFrom = Date(dateFrom.timeInMillis),
-                dateTo = Date(dateTo.timeInMillis)
-        )
+        for (i in 0..3) {
+            dateFrom.set(Calendar.HOUR_OF_DAY, 8 + i * 2)
+            dateTo.set(Calendar.HOUR_OF_DAY, 12 + i * 2)
 
-        for (i in 10..60) {
+            val appointment = Order.Appointment(
+                    classification = Order.Appointment.Classification.DELIVERY,
+                    dateFrom = Date(dateFrom.timeInMillis),
+                    dateTo = Date(dateTo.timeInMillis)
+            )
+
             stopList.add(Stop(
                     orders = mutableListOf(
                             Order(
@@ -132,18 +181,18 @@ class Delivery {
                                     parcel = listOf(
                                             Order.Parcel(
                                                     id = "a",
-                                                    labelReference = "100000000$i"
+                                                    labelReference = "1000000000$i"
                                             ),
                                             Order.Parcel(
                                                     id = "b",
-                                                    labelReference = "100000001$i"
+                                                    labelReference = "1000000001$i"
                                             ),
                                             Order.Parcel(
                                                     id = "c",
-                                                    labelReference = "100000002$i"
+                                                    labelReference = "1000000002$i"
                                             )
                                     ),
-                                    addresses = mutableListOf(addr, addr2),
+                                    addresses = mutableListOf(addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i], addresses.filter { it.classification == Order.Address.Classification.PICKUP }[i]),
                                     appointment = listOf(appointment),
                                     carrier = Carrier.DER_KURIER,
                                     services = listOf(Order.Service(
@@ -153,7 +202,7 @@ class Delivery {
                                     sort = 0
                             )
                     ),
-                    address = addr,
+                    address = addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i],
                     appointment = appointment,
                     state = Stop.State.PENDING
             ))
@@ -166,9 +215,9 @@ class Delivery {
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(Order.Parcel(
                                             id = "a",
-                                            labelReference = "020000000$i"
+                                            labelReference = "0200000000$i"
                                     )),
-                                    addresses = mutableListOf(addr, addr2),
+                                    addresses = mutableListOf(addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i], addresses.filter { it.classification == Order.Address.Classification.PICKUP }[i]),
                                     appointment = listOf(appointment),
                                     carrier = Carrier.DER_KURIER,
                                     services = listOf(Order.Service(
@@ -178,7 +227,7 @@ class Delivery {
                                     sort = 0
                             )
                     ),
-                    address = addr,
+                    address = addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i],
                     appointment = appointment,
                     state = Stop.State.PENDING
             ))
@@ -186,6 +235,15 @@ class Delivery {
 
         stopList.forEach {
             orderList.addAll(it.orders)
+        }
+    }
+
+    data class Vehicle(
+            val type: VehicleType,
+            @DrawableRes val icon: Int
+    ) {
+        enum class VehicleType {
+            VAN, CAR, BICYCLE
         }
     }
 

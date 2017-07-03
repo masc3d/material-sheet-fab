@@ -81,11 +81,13 @@ class StartupActivity : RxAppCompatActivity() {
             // Acquire permissions
             val ovPermissions = RxPermissions(this)
                     .request(
-                            Manifest.permission.READ_PHONE_STATE,
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_NETWORK_STATE)
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_NETWORK_STATE,
+                            Manifest.permission.CALL_PHONE,
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.READ_PHONE_STATE
+                    )
                     .switchMap<Boolean> {
                         when (it) {
                             true -> {
