@@ -62,9 +62,9 @@ class Delivery {
 
         val addr = Order.Address(
                 classification = Order.Address.Classification.DELIVERY,
-                addressLine1 = "Prangenberg",
-                addressLine2 = "DEK KURIER",
-                addressLine3 = "3. Addresszeile",
+                line1 = "Prangenberg",
+                line2 = "DEK KURIER",
+                line3 = "3. Addresszeile",
                 street = "Dörrwiese",
                 streetNo = "2",
                 zipCode = "36286",
@@ -73,9 +73,9 @@ class Delivery {
         )
         val addr2 = Order.Address(
                 classification = Order.Address.Classification.PICKUP,
-                addressLine1 = "Prangenberg",
-                addressLine2 = "2. Adresszeile",
-                addressLine3 = "3. Addresszeile",
+                line1 = "Prangenberg",
+                line2 = "2. Adresszeile",
+                line3 = "3. Addresszeile",
                 street = "Burscheidter Weg",
                 streetNo = "4",
                 zipCode = "40822",
@@ -86,9 +86,9 @@ class Delivery {
         val delAddresses = listOf(
                 Order.Address(
                         classification = Order.Address.Classification.DELIVERY,
-                        addressLine1 = "Max Mustermann",
-                        addressLine2 = "DEK KURIER",
-                        addressLine3 = "3. Addresszeile",
+                        line1 = "Max Mustermann",
+                        line2 = "DEK KURIER",
+                        line3 = "3. Addresszeile",
                         street = "Dörrwiese",
                         streetNo = "2",
                         zipCode = "36286",
@@ -97,9 +97,9 @@ class Delivery {
                 ),
                 Order.Address(
                         classification = Order.Address.Classification.DELIVERY,
-                        addressLine1 = "Prangenberg",
-                        addressLine2 = "2. Adresszeile",
-                        addressLine3 = "3. Addresszeile",
+                        line1 = "Prangenberg",
+                        line2 = "2. Adresszeile",
+                        line3 = "3. Addresszeile",
                         street = "Burscheidter Weg",
                         streetNo = "4",
                         zipCode = "40822",

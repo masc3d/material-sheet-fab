@@ -14,11 +14,11 @@ class StopItemViewModel(val stop: Stop) : BaseObservable() {
 
     val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    val addressLine1: String
-        get() = this.stop.address.addressLine1
+    val line1: String
+        get() = this.stop.address.line1
 
-    val addressLine2: String
-        get() = this.stop.address.addressLine2
+    val line2: String
+        get() = this.stop.address.line2
 
     val street: String
         get() = "${this.stop.address.street} ${this.stop.address.streetNo}"

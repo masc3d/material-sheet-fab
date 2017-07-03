@@ -1,10 +1,7 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
-import org.deku.leoz.model.AdditionalInformationType
-import org.deku.leoz.model.Carrier
-import org.deku.leoz.model.OrderClassification
-import org.deku.leoz.model.ParcelService
+import org.deku.leoz.model.*
 import java.util.Date
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -99,32 +96,32 @@ interface OrderService {
         @ApiModel(value = "Address", description = "pickup or delivery address")
         data class Address(
                 @ApiModelProperty(dataType = "string", example = "Hans Mustermann", position = 10, required = true, value = "addressLine1")
-                val addressLine1: String = "",
+                var line1: String = "",
                 @get:ApiModelProperty(dataType = "string", example = "c/o Schuster", position = 20, required = false, value = "addressLine2")
-                val addressLine2: String? = null,
+                var line2: String? = null,
                 @get:ApiModelProperty(dataType = "string", example = "Bitte bei S klingeln", position = 30, required = false, value = "addressLine3")
-                val addressLine3: String? = null,
+                var line3: String? = null,
                 @get:ApiModelProperty(dataType = "string", example = "0123456789", position = 50, required = false, value = "Telefon Numbner")
-                val phoneNumber: String? = null,
+                var phoneNumber: String? = null,
                 @get:ApiModelProperty(dataType = "string", example = "DE", position = 60, required = true, value = "Countr Code")
-                val countryCode: String = "",
+                var countryCode: String = "",
                 @get:ApiModelProperty(dataType = "string", example = "648450", position = 70, required = true, value = "Zip")
-                val zipCode: String = "",
+                var zipCode: String = "",
                 @get:ApiModelProperty(dataType = "string", example = "Schaafheim", position = 80, required = true, value = "Citty")
-                val city: String = "",
+                var city: String = "",
                 @get:ApiModelProperty(dataType = "string", example = "Hauptstrasse", position = 90, required = true, value = "Street")
-                val street: String = "",
+                var street: String = "",
                 @get:ApiModelProperty(dataType = "string", example = "HH 2", position = 100, required = false, value = "StreetNo")
-                val streetNo: String? = null,
+                var streetNo: String? = null,
                 @get:ApiModelProperty(position = 110, required = false, value = "Geo Location")
-                val geoLocation: GeoLocation? = null
+                var geoLocation: GeoLocation? = null
         ) {
             @ApiModel(value = "geoLocation", description = "geoLocation")
             data class GeoLocation(
                     @get:ApiModelProperty(dataType = "Double", example = "52.76866", position = 10, required = true, value = "latitude")
-                    val latitude: Double = 0.0,
+                    var latitude: Double = 0.0,
                     @get:ApiModelProperty(dataType = "Double", example = "8.875875875", position = 20, required = true, value = "longitude")
-                    val longitude: Double = 0.0
+                    var longitude: Double = 0.0
             )
         }
 
@@ -144,11 +141,11 @@ interface OrderService {
         @ApiModel(value = "Appointment", description = "Apointment")
         data class Appointment(
                 @ApiModelProperty(position = 10, required = true, value = "AppointmentStart")
-                val dateStart: Date? = null,
+                var dateStart: Date? = null,
                 @ApiModelProperty(position = 20, required = true, value = "AppointmentEnd")
-                val dateEnd: Date? = null,
-                @ApiModelProperty(position = 30, required = false, value = "noDeliveryBefore")
-                val noDeliveryBefore: Boolean = false
+                var dateEnd: Date? = null,
+                @ApiModelProperty(position = 30, required = false, value = "notBeforeStart")
+                var notBeforeStart: Boolean = false
         )
 
         @ApiModel(value = "AdditionalInformation", description = "AdditionalInformation")
@@ -169,20 +166,24 @@ interface OrderService {
         data class Parcel(
                 @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "parcelScanNumber")
                 var number: String = "",
-                @get:ApiModelProperty(example = "12345678901", position = 20, required = true, value = "parcelID")
-                var id: Int = 0,
-                @get:ApiModelProperty(position = 40, required = true, value = "ParcelDimension")
+                @get:ApiModelProperty(example = "1234567890101", position = 20, required = true, value = "parcelID")
+                var id: Long = 0,
+                @get:ApiModelProperty(example = "info", position = 30, required = true, value = "parcelType")
+                var parcelType: ParcelType = ParcelType.UNKNOWN,
+                @get:ApiModelProperty(example = "info", position = 40, required = false, value = "information")
+                var information: String? = null,
+                @get:ApiModelProperty(position = 50, required = true, value = "ParcelDimension")
                 var dimension: ParcelDimension? = null
         ) {
             @ApiModel(value = "ParcelDimentions", description = "Parcel dementions and weight")
             data class ParcelDimension(
                     @ApiModelProperty(dataType = "double", example = "10", position = 10, required = false, value = "length")
-                    val length: Double? = null,
+                    val length: Int? = null,
                     @ApiModelProperty(dataType = "double", example = "20", position = 20, required = false, value = "height")
-                    val height: Double? = null,
+                    val height: Int? = null,
                     @ApiModelProperty(dataType = "double", example = "30", position = 30, required = false, value = "width")
-                    val width: Double? = null,
-                    @ApiModelProperty(dataType = "double", example = "10", position = 40, required = true, value = "weight")
+                    val width: Int? = null,
+                    @ApiModelProperty(dataType = "double", example = "11.5", position = 40, required = true, value = "weight")
                     val weight: Double = 0.0
             )
         }

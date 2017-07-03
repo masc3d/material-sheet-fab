@@ -279,6 +279,20 @@ enum class Carrier(val value: Int) {
     UNKNOWN(1)
 }
 
+enum class ParcelType(val value:Int){
+    UNKNOWN(1),
+    LATTICE_BOX(2),
+    FLYER(3),
+    PARCEL(4),
+    WITHOUT_PACKING(5),
+    EUROPALLET(6),
+    THERMO_BOX(7),
+    ENVELOPE(8),
+    ROLL(9),
+    NB(10),
+    VALUABLES(91)
+}
+
 /**
  * Created by JT on 24.05.17.
  */
