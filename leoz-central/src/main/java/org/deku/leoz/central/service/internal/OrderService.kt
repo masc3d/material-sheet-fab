@@ -77,7 +77,7 @@ class OrderService : OrderService {
                     title = "Wrong Order id",
                     status = Response.Status.NOT_FOUND)
 
-        val order = this.orderRepository.findByID(id)
+        val order = this.orderRepository.findById(id)
                 ?.toOrder()
                 ?: throw DefaultProblem(
                 title = "Order not found",
