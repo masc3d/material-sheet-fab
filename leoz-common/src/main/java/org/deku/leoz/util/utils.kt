@@ -6,6 +6,9 @@ package org.deku.leoz.util
 
 
 //fun checkCheckDigit(fullOrderNo: Double): Boolean{
+/**
+ *
+ */
 fun checkCheckDigit(fullOrderNo: String): Boolean {
     val stringOrderNo: String = fullOrderNo
     //zum test ob numeric
@@ -25,6 +28,24 @@ fun checkCheckDigit(fullOrderNo: String): Boolean {
 fun checkCheckDigit(orderNo: String, checkDigit: Int): Boolean {
     return (getCheckDigit(orderNo) == checkDigit)
 }
+
+/**
+
+ DEKU number, immer 11 stellen zzgl prüfziffer.
+ Optional komma als platzhalter für pz (fällt zukünftig weg)
+
+ * erste drei stellen immer stationsnummer
+ 01000000000,
+ 010000000001
+
+ GLS numbers
+ * 85 pos 3 -> indikator für gls paketnummer
+ 338500000001  gls
+
+ GLS nuber im DEKU System
+ erste stelle 8, 4. Stelle 5
+ 833500000002  deku
+ */
 
 /**
 //public fun getCheckDigit(orderNo: Double): Int{
