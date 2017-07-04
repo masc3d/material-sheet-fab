@@ -140,12 +140,12 @@ class GlsUnitNumber private constructor(
 
         fun parse(value: String): GlsUnitNumber {
             if (value.length != 11)
-                throw IllegalArgumentException("Label based GLS unit number must have 11 digits")
+                throw IllegalArgumentException("GLS unit number must have 11 digits")
 
             val un = GlsUnitNumber(value)
 
             if (un.serviceType != ServiceType.EXPRESS)
-                throw IllegalArgumentException("Wrong type of GLS unit number")
+                throw IllegalArgumentException("GLS unit number has invalid service type")
 
             return GlsUnitNumber(value)
         }
@@ -155,14 +155,14 @@ class GlsUnitNumber private constructor(
                 throw IllegalArgumentException("Label based GLS unit number must have 12 digits")
 
             if (!value.all { it.isDigit() })
-                throw IllegalArgumentException("Unit number must be numeric")
+                throw IllegalArgumentException("GLS unit number must be numeric")
 
             val number = value.substring(0, 11)
             val checkDigit = value.substring(11, 12).toInt()
 
             log.info("${calculateCheckDigit(number)}")
             if (calculateCheckDigit(number) != checkDigit)
-                throw IllegalArgumentException("Unit number has invalid check digit")
+                throw IllegalArgumentException("GLS unit number has invalid check digit")
 
             return GlsUnitNumber(number)
         }
