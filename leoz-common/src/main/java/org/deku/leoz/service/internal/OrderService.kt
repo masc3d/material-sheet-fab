@@ -47,7 +47,7 @@ interface OrderService {
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
             @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String? = null
-    ): Order
+    ): List<Order>
 
     @ApiModel(description = "Order Model")
     data class Order(

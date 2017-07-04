@@ -37,8 +37,8 @@ class OrderService : OrderService {
     @Inject
     private lateinit var orderRepository: OrderJooqRepository
 
-    override fun get(labelRef: String?, custRef: String?, parcelScan: String?): OrderService.Order {
-        val order: Order
+    override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
+        val orders: List<Order>
 
         when {
             parcelScan != null -> {
@@ -50,21 +50,25 @@ class OrderService : OrderService {
                             title = "Wrong Scan id",
                             status = Response.Status.NOT_FOUND)
 
-                order = this.orderRepository.findByScan(parcelScan)
+                val order = this.orderRepository.findByScan(parcelScan)
                         ?.toOrder()
                         ?: throw DefaultProblem(
                         title = "Order not found",
                         status = Response.Status.NOT_FOUND)
+
+                orders = listOf(order)
             }
 
             else -> TODO("Handle other query types here")
         }
 
         // Complement order parcels
-        order.parcels = this.orderRepository.findParcelsByOrderId(order.id)
+        orders.forEach {
+            it.parcels = this.orderRepository.findParcelsByOrderId(it.id)
                 .map { it.toParcel() }
+        }
 
-        return order
+        return orders
     }
 
     override fun getById(id: Long): OrderService.Order {
