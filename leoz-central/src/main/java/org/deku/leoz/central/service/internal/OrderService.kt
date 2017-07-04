@@ -116,18 +116,16 @@ class OrderService : OrderService {
         o.pickupService = OrderService.Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE))  //todo
 
         if (r.pickupInformation1 != null) {
-            val info = Order.AdditionalInformation()
-            info.additionalInformationType = AdditionalInformationType.LOADING_LIST_INFO
-            info.information = r.pickupInformation1
-
-            val infoList = mutableListOf<OrderService.Order.AdditionalInformation>()
-            infoList.add(info)
-
-            val pickupInformation = Order.Information()
-            pickupInformation.additionalInformation = infoList
-
-            o.pickupInformation = pickupInformation
+            o.pickupInformation = Order.Information(
+                    additionalInformation = listOf(
+                            Order.AdditionalInformation(
+                                    additionalInformationType = AdditionalInformationType.LOADING_LIST_INFO,
+                                    information = r.pickupInformation1
+                            )
+                    )
+            )
         }
+
         o.appointmentPickup.dateStart = r.appointmentPickupStart
         o.appointmentPickup.dateEnd = r.appointmentPickupEnd
         o.appointmentPickup.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
@@ -147,17 +145,14 @@ class OrderService : OrderService {
         o.deliveryService = OrderService.Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)) //todo
 
         if (r.deliveryInformation != null) {
-            val info = Order.AdditionalInformation()
-            info.additionalInformationType = AdditionalInformationType.LOADING_LIST_INFO
-            info.information = r.deliveryInformation
-
-            val infoList = mutableListOf<OrderService.Order.AdditionalInformation>()
-            infoList.add(info)
-
-            val information = Order.Information()
-            information.additionalInformation = infoList
-
-            o.deliveryInformation = information
+            o.deliveryInformation = Order.Information(
+                    additionalInformation = listOf(
+                            Order.AdditionalInformation(
+                                    additionalInformationType = AdditionalInformationType.LOADING_LIST_INFO,
+                                    information = r.deliveryInformation
+                            )
+                    )
+            )
         }
 
         o.appointmentDelivery.dateStart = r.appointmentDeliveryStart
