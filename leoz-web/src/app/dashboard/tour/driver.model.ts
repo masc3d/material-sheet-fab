@@ -1,4 +1,5 @@
 export interface Driver {
+  id: number;
   firstName: string;
   lastName: string;
   role: Driver.RoleEnum;
