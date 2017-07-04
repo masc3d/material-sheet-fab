@@ -6,8 +6,6 @@ import org.deku.leoz.central.data.repository.HistoryJooqRepository
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.internal.BagService.ErrorCode
 import org.deku.leoz.util.checkCheckDigit
-import org.deku.leoz.util.getNextDeliveryDate
-import org.deku.leoz.util.getWorkingDate
 import org.jooq.DSLContext
 import org.jooq.types.UInteger
 import org.slf4j.LoggerFactory
@@ -50,6 +48,14 @@ class BagService : BagService {
 
     @Inject
     private lateinit var depotRepository: DepotJooqRepository
+
+    fun getNextDeliveryDate(): java.time.LocalDate {
+        return java.time.LocalDate.now().plusDays(1)
+    }
+
+    fun getWorkingDate(): java.time.LocalDate {
+        return java.time.LocalDateTime.now().minusHours((6)).toLocalDate()
+    }
 
     override fun get(id: String): String {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

@@ -115,14 +115,7 @@ fun getCheckDigitGLS(sOrderNo: String): Int {
     return result
 }
 
-fun getNextDeliveryDate(): java.time.LocalDate {
-    return java.time.LocalDate.now().plusDays(1)
-}
 
-fun getWorkingDate(): java.time.LocalDate {
-    return java.time.LocalDateTime.now().minusHours((6)).toLocalDate()
-
-}
 
 fun getDekuUnitNoFromGlsUnitNo(glsUnitNo: String): String {
     var sDeku = "0"
