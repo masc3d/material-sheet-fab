@@ -7,6 +7,7 @@ import { Position } from './position.model';
 import { Subscription } from 'rxjs/Subscription';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 import { MsgService } from '../../shared/msg/msg.service';
+import { Driver } from './driver.model';
 
 @Injectable()
 export class TourService {
@@ -23,18 +24,18 @@ export class TourService {
   private activeRouteSubject = new BehaviorSubject<Position[]>( <Position[]> [] );
   public activeRoute = this.activeRouteSubject.asObservable().distinctUntilChanged();
 
-  private locationUrl = `${environment.apiUrl}/internal/v1/location/recent`;
-  private routeUrl = `${environment.apiUrl}/internal/v1/location`;
+  private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
+  private routeUrl = `${environment.apiUrl}/internal/v2/location`;
   private subscription: Subscription;
 
   constructor( private http: Http, private msgService: MsgService ) {
   }
 
-  getLocation( email: string ): Observable<Response> {
+  getLocation( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
-    queryParameters.set( 'email', email );
+    queryParameters.set( 'user-id', String(userId) );
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
@@ -44,11 +45,11 @@ export class TourService {
     return this.http.get( this.locationUrl, options );
   }
 
-  getRoute( email: string ): Observable<Response> {
+  getRoute( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
-    queryParameters.set( 'email', email );
+    queryParameters.set( 'user-id', String(userId) );
     queryParameters.set( 'from', '05/31/2017' );  // hardcoded for developement
 
     const options = new RequestOptions( {
@@ -59,8 +60,8 @@ export class TourService {
     return this.http.get( this.routeUrl, options );
   }
 
-  changeActiveMarker( selectedDriver ) {
-    this.subscription = this.getLocation( selectedDriver.email )
+  changeActiveMarker( selectedDriver: Driver ) {
+    this.subscription = this.getLocation( selectedDriver.id )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
@@ -81,7 +82,7 @@ export class TourService {
   }
 
   changeActiveRoute( selectedDriver ) {
-    this.subscription = this.getRoute( selectedDriver.email )
+    this.subscription = this.getRoute( selectedDriver.id )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
