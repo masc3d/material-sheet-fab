@@ -3,9 +3,9 @@ package org.deku.leoz.model
 /**
  * Event types
  */
-enum class EventType(val id: Int, reasonType: Class<*>) {
-    Delivered(1, reasonType = EventDeliveredReason::class.java),
-    NotDelivered(2, reasonType = EventNotDeliveredReason::class.java)
+enum class EventType(val id: Int, val reasonType: Class<*>) {
+    Delivered(id = 1, reasonType = EventDeliveredReason::class.java),
+    NotDelivered(id = 2, reasonType = EventNotDeliveredReason::class.java)
 }
 
 /**
