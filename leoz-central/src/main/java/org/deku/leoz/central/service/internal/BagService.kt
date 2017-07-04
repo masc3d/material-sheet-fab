@@ -5,7 +5,6 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.HistoryJooqRepository
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.internal.BagService.ErrorCode
-import org.deku.leoz.util.checkCheckDigit
 import org.jooq.DSLContext
 import org.jooq.types.UInteger
 import org.slf4j.LoggerFactory
@@ -100,16 +99,18 @@ class BagService : BagService {
             throw ServiceException(ErrorCode.DEPOT_NR_NOT_VALID)
         }
 
-        if (!checkCheckDigit(bagId)) {
-            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
-        }
+        // TODO: apply UnitNumber class which include checkdigit verification
 
-        if (!checkCheckDigit(whiteSeal)) {
-            throw ServiceException(ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
-        }
-        if (!checkCheckDigit(yellowSeal)) {
-            throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
-        }
+//        if (!checkCheckDigit(bagId)) {
+//            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
+//        }
+//
+//        if (!checkCheckDigit(whiteSeal)) {
+//            throw ServiceException(ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
+//        }
+//        if (!checkCheckDigit(yellowSeal)) {
+//            throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
+//        }
 
         // TODO
         // TODO: define constants for repetitive strings (eg. "initBag", "isBagFree")
@@ -277,9 +278,11 @@ class BagService : BagService {
             throw ServiceException(ErrorCode.DEPOT_NR_NOT_VALID)
         }
 
-        if (!checkCheckDigit(bagId)) {
-            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
-        }
+        // TODO: apply UnitNumber class which include checkdigit verification
+
+//        if (!checkCheckDigit(bagId)) {
+//            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
+//        }
 
         //TODO
 
@@ -659,12 +662,14 @@ class BagService : BagService {
             throw ServiceException(ErrorCode.BAG_UNITNO_MISSING_CHECK_DIGIT)
         }
 
-        if (!checkCheckDigit(bagId)) {
-            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
-        }
-        if (!checkCheckDigit(unitNo)) {
-            throw ServiceException(ErrorCode.BAG_UNITNO_WRONG_CHECK_DIGIT)
-        }
+        // TODO: apply UnitNumber class which include checkdigit verification
+
+//        if (!checkCheckDigit(bagId)) {
+//            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
+//        }
+//        if (!checkCheckDigit(unitNo)) {
+//            throw ServiceException(ErrorCode.BAG_UNITNO_WRONG_CHECK_DIGIT)
+//        }
         var ok = false
         val info: String?
         val isBagOk = "isBagOk"
@@ -900,11 +905,13 @@ class BagService : BagService {
         if (lineScanId.length < 12) {
             lineScanId = lineScanId.padStart(12, '0')
         }
-        if (!lineScanId.endsWith(',')) {
-            if (!checkCheckDigit(lineScanId)) {
-                throw ServiceException(ErrorCode.SCAN_ID_WRONG_CHECK_DIGIT)
-            }
-        }
+
+        // TODO: remove support for check digit place holder, apply UnitNumber class which include checkdigit verification
+//        if (!lineScanId.endsWith(',')) {
+//            if (!checkCheckDigit(lineScanId)) {
+//                throw ServiceException(ErrorCode.SCAN_ID_WRONG_CHECK_DIGIT)
+//            }
+//        }
         lineScanId = lineScanId.substring(0, 11)
         var ok = false
         var info: String?
@@ -1055,11 +1062,11 @@ class BagService : BagService {
         if (bagUnitNo.length < 12) {
             bagUnitNo = bagUnitNo.padStart(12, '0')
         }
-        if (!bagUnitNo.endsWith(',')) {
-            if (!checkCheckDigit(bagUnitNo)) {
-                throw ServiceException(ErrorCode.BAG_UNITNO_WRONG_CHECK_DIGIT)
-            }
-        }
+//        if (!bagUnitNo.endsWith(',')) {
+//            if (!checkCheckDigit(bagUnitNo)) {
+//                throw ServiceException(ErrorCode.BAG_UNITNO_WRONG_CHECK_DIGIT)
+//            }
+//        }
         bagUnitNo = bagUnitNo.substring(0, 11)
         var bagSealNo = sealNo
         if (bagSealNo.length > 12) {
@@ -1068,11 +1075,14 @@ class BagService : BagService {
         if (bagSealNo.length < 12) {
             bagSealNo = bagSealNo.padStart(12, '0')
         }
-        if (!bagSealNo.endsWith(',')) {
-            if (!checkCheckDigit(bagSealNo)) {
-                throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
-            }
-        }
+
+        // TODO: remove support for check digit place holder, apply UnitNumber class which include checkdigit verification
+//        if (!bagSealNo.endsWith(',')) {
+//            if (!checkCheckDigit(bagSealNo)) {
+//                throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
+//            }
+//        }
+
         //bagSealNo = bagSealNo.substring(0, 11)
         var ok = false
         var info: String? = null
