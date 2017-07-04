@@ -1,9 +1,13 @@
 package org.deku.leoz.mobile.ui.screen
 
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -15,6 +19,7 @@ import kotlinx.android.synthetic.main.fragment_vehicle_loading.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.DeliveryList
+import org.deku.leoz.mobile.model.FailureReason
 import org.deku.leoz.mobile.model.Order
 
 import org.deku.leoz.mobile.ui.Fragment
@@ -36,6 +41,9 @@ class VehicleLoadingScreen : ScreenFragment() {
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val loadedParcels: MutableList<Order.Parcel> = mutableListOf()
+    private val reasonAdapter = MaterialSimpleListAdapter(MaterialSimpleListAdapter.Callback { materialDialog, i, materialSimpleListItem ->
+        log.debug("ONMATERIALLISTITEMSELECTED [$i]")
+    })
 
     override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
@@ -65,6 +73,16 @@ class VehicleLoadingScreen : ScreenFragment() {
                     processLabelScan(it.data)
                 }
 
+        this.activity.actionEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it) {
+                        R.id.action_deliver_fail -> {
+                            showFailureReasons()
+                        }
+                    }
+                }
+
         loadedParcels.addAll(delivery.orderList.flatMap { it.parcel }.filter { it.state == Order.Parcel.State.LOADED })
         updateLoadedParcelList(mutableListOf<Order.Parcel>())
 
@@ -74,7 +92,7 @@ class VehicleLoadingScreen : ScreenFragment() {
     private fun processLabelScan(data: String) {
         val order = delivery.findOrderByLabelReference(data)
 
-        log.debug("VehicleLoading parcel reference [$data] Orders found [${order.size}]")
+        log.debug("VehicleLoading parcel reference [$data] Orders found [${order.size}] ")
 
         when (order.size) {
             0 -> {
@@ -104,4 +122,23 @@ class VehicleLoadingScreen : ScreenFragment() {
         loadedParcels.addAll(0, parcels)
         this.uxParcelList.adapter = ParcelListAdapter(context = context, data = loadedParcels, readOnly = true) //ArrayAdapter(context, android.R.layout.simple_list_item_1, loadedParcels.map { it.labelReference })
     }
+
+    private fun showFailureReasons() {
+
+        reasonAdapter.clear()
+
+        FailureReason.values().filter { it.listInVehicleLoading }
+                .forEach {
+                    reasonAdapter.add(MaterialSimpleListItem.Builder(context)
+                            .content(getString(it.stringRes))
+                            .backgroundColor(Color.WHITE)
+                            .build())
+                }
+
+        val dialog = MaterialDialog.Builder(context)
+                .title("Fehlercode")
+                .adapter(reasonAdapter, null)
+                .show()
+    }
+
 }

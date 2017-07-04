@@ -3,12 +3,15 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.content.Intent
 import android.databinding.DataBindingUtil
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -20,6 +23,7 @@ import kotlinx.android.synthetic.main.screen_delivery_process.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
+import org.deku.leoz.mobile.model.FailureReason
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
@@ -35,6 +39,9 @@ class DeliveryProcessScreen : ScreenFragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val reasonAdapter = MaterialSimpleListAdapter(MaterialSimpleListAdapter.Callback { materialDialog, i, materialSimpleListItem ->
+        log.debug("ONMATERIALLISTITEMSELECTED [$i]")
+    })
 
     private lateinit var stop: Stop
 
@@ -132,7 +139,7 @@ class DeliveryProcessScreen : ScreenFragment() {
 
                         }
                         R.id.ux_action_fail -> {
-
+                            showFailureReasons()
                         }
                         R.id.ux_action_deliver_neighbour -> {
 
@@ -149,5 +156,23 @@ class DeliveryProcessScreen : ScreenFragment() {
         /**
          * TODO: Action trigger on uxLabelNo TextView
          */
+    }
+
+    private fun showFailureReasons() {
+
+        reasonAdapter.clear()
+
+        FailureReason.values().filter { it.listInDelivery }
+                .forEach {
+                    reasonAdapter.add(MaterialSimpleListItem.Builder(context)
+                            .content(getString(it.stringRes))
+                            .backgroundColor(Color.WHITE)
+                            .build())
+                }
+
+        val dialog = MaterialDialog.Builder(context)
+                .title("Fehlercode")
+                .adapter(reasonAdapter, null)
+                .show()
     }
 }
