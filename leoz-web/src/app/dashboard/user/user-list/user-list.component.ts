@@ -14,11 +14,24 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
     <p-dataTable [value]="users | async | userfilter" resizableColumns="true" [responsive]="true">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
-      <p-column field="role" header="{{'role' | translate}}" [sortable]="true"></p-column>
+      <p-column field="role" header="{{'role' | translate}}" [sortable]="true">
+        <ng-template let-user="rowData" pTemplate="body">
+          {{ translate.role(user.role) }}
+        </ng-template>
+      </p-column>
       <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phone' | translate}}"></p-column>
-      <p-column field="active" header="{{'active' | translate}}" [sortable]="true"></p-column>
-      <p-column header="{{'expires_on' | translate}}">
+      <p-column field="active" header="{{'active' | translate}}" sortable="true">
+        <ng-template let-user="rowData" pTemplate="body">
+          <span *ngIf="user.active; else inactivePart">
+            {{ 'yes' | translate }}
+          </span>
+          <ng-template #inactivePart>
+            {{ 'no' | translate }}
+          </ng-template>
+        </ng-template>
+      </p-column>
+      <p-column field="expiresOn" header="{{'expires_on' | translate}}" sortable="true">
         <ng-template let-user="rowData" pTemplate="body">
           {{user.expiresOn | date:dateFormat}}
         </ng-template>
@@ -41,7 +54,7 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
 
   constructor( private userService: UserService,
                private msgService: MsgService,
-               protected translate: TranslateService ) {
+               public translate: TranslateService ) {
     super( translate );
   }
 

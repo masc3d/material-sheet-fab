@@ -3,6 +3,7 @@ import { DATEFORMATS } from './dateformats';
 import { Translation } from './translation';
 import { environment } from '../../../environments/environment';
 import { CALENDAR_LOCALES } from './calendar-locales';
+import { User } from '../../dashboard/user/user.model';
 
 @Injectable()
 export class TranslateService {
@@ -44,6 +45,31 @@ export class TranslateService {
 
   public instant( key: string ) {
     // call translation
+    return this.translate( key );
+  }
+
+  public role( role: User.RoleEnum ): string {
+    let key;
+    switch (role) {
+      case User.RoleEnum.ADMIN:
+        key = 'Admin';
+        break;
+      case User.RoleEnum.POWERUSER:
+        key = 'Poweruser';
+        break;
+      case User.RoleEnum.USER:
+        key = 'User';
+        break;
+      case User.RoleEnum.DRIVER:
+        key = 'Driver';
+        break;
+      case User.RoleEnum.CUSTOMER:
+        key = 'Customer';
+        break;
+      default:
+        key = '';
+        break;
+    }
     return this.translate( key );
   }
 }

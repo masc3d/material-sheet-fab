@@ -38,6 +38,7 @@ export const LANG_EN_TRANS = {
   'AliasMaxLength': 'Alias cannot exceed 30 characters',
   'save': 'Save',
   'clear': 'Clear',
+  'Admin': 'Admin',
   'Poweruser': 'Poweruser',
   'User': 'User',
   'Driver': 'Driver',
@@ -46,6 +47,8 @@ export const LANG_EN_TRANS = {
   'duplicate email': 'Email address already exists.',
   'expires_on': 'Expires on',
   'user account deactivated': 'Your account is deactivated',
+  'yes': 'yes',
+  'no': 'no',
   // map form
   'allusers': 'all users',
   'drivers': 'drivers',

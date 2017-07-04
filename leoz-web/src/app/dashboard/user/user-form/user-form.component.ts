@@ -109,8 +109,8 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   private createStateOptions(): SelectItem[] {
     const stateOptions = [];
-    stateOptions.push( { label: this.translate.instant( 'active' ), value: 1 } );
-    stateOptions.push( { label: this.translate.instant( 'inactive' ), value: 0 } );
+    stateOptions.push( { label: this.translate.instant( 'yes' ), value: 1 } );
+    stateOptions.push( { label: this.translate.instant( 'no' ), value: 0 } );
     return stateOptions;
   }
 
