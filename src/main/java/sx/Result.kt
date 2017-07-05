@@ -11,9 +11,21 @@ package sx
  * @property error Error
  */
 class Result<T> @JvmOverloads constructor (
-        val result: T? = null,
+        result: T? = null,
         val error: Throwable? = null
 ) {
+    private val _result: T?
+
+    /**
+     * Delivers the result or throws in case of error condition
+     */
+    private val result: T
+        get() = _result ?: throw error!!
+
+    init {
+        _result = result
+    }
+
     /** Indicates if result has error condition */
     val hasError = (this.error != null)
 
@@ -22,6 +34,6 @@ class Result<T> @JvmOverloads constructor (
 
     init {
         if (result != null && error != null)
-            throw IllegalStateException("Result and error are mutually exclusive")
+            throw IllegalStateException("Result value and error are mutually exclusive")
     }
 }
