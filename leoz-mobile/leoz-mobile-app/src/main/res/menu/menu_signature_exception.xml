@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <item
+        android:id="@+id/ux_action_signature_paper"
+        android:orderInCategory="100"
+        android:title="Sign on paper"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/ux_action_signature_cancel"
+        android:orderInCategory="500"
+        android:title="@string/cancel"
+        app:showAsAction="never" />
+</menu>

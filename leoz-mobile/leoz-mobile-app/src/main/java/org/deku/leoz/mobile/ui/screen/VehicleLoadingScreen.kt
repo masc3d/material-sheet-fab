@@ -56,9 +56,10 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         this.actionItems = listOf(
                 ActionItem(
-                        id = R.id.action_deliver_fail,
+                        id = R.id.action_vehicle_loading_exception,
                         colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_circle_cancel
+                        iconRes = R.drawable.ic_circle_cancel,
+                        menu = this.activity.inflateMenu(R.menu.menu_vehicle_loading_exception)
                 )
         )
     }
@@ -73,15 +74,15 @@ class VehicleLoadingScreen : ScreenFragment() {
                     processLabelScan(it.data)
                 }
 
-        this.activity.actionEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    when (it) {
-                        R.id.action_deliver_fail -> {
-                            showFailureReasons()
-                        }
-                    }
-                }
+//        this.activity.actionEvent
+//                .bindUntilEvent(this, FragmentEvent.PAUSE)
+//                .subscribe {
+//                    when (it) {
+//                        R.id.action_deliver_fail -> {
+//                            showFailureReasons()
+//                        }
+//                    }
+//                }
 
         loadedParcels.addAll(delivery.orderList.flatMap { it.parcel }.filter { it.state == Order.Parcel.State.LOADED })
         updateLoadedParcelList(mutableListOf<Order.Parcel>())

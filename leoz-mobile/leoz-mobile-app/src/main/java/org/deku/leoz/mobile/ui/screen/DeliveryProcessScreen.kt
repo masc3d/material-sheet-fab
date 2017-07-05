@@ -95,7 +95,7 @@ class DeliveryProcessScreen : ScreenFragment() {
                         id = R.id.action_deliver_cancel,
                         colorRes = R.color.colorRed,
                         iconRes = R.drawable.ic_cancel_black,
-                        menu = this.activity.inflateMenu(R.menu.menu_deliver_fail)
+                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
                 )
         )
         (this.activity as DeliveryActivity).showDeliverFabButtons()

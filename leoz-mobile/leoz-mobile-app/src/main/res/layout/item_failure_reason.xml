@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppTheme.CardView"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:foreground="?attr/selectableItemBackground"
+    >
+
+    <FrameLayout
+        style="@style/AppTheme.Layout.List"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="match_parent"
+            android:text="TO BE REPLACED"
+            android:id="@+id/uxReasonTitle"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+</android.support.v7.widget.CardView>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <item
+        android:id="@+id/ux_action_vehicleloading_damaged"
+        android:orderInCategory="100"
+        android:title="Parcel damaged"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/ux_action_vehicleloading_missing"
+        android:orderInCategory="500"
+        android:title="Parcel missing"
+        app:showAsAction="never" />
+</menu>

@@ -63,3 +63,5 @@ class OrderListItem(val context: Context, val order: Order, val rootViewGroup: V
         val zipFrom = view.uxZipFrom
     }
 }
+
+

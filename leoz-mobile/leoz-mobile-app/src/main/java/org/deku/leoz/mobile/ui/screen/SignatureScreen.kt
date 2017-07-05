@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.gcacace.signaturepad.views.SignaturePad
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
@@ -12,6 +13,7 @@ import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 
@@ -84,7 +86,8 @@ class SignatureScreen
                 ActionItem(
                         id = R.id.action_signature_cancel,
                         colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_cancel_black
+                        iconRes = R.drawable.ic_cancel_black,
+                        menu = this.activity.inflateMenu(R.menu.menu_signature_exception)
                 )
         )
     }
@@ -98,13 +101,25 @@ class SignatureScreen
                     when (it) {
                         R.id.action_signature_submit -> {
                             //Submit signature, finish process (delivery only)
-                            this.listener?.onSignatureSubmitted()
+                            if (this.uxSignaturePad.isEmpty) {
+                                val dialog = MaterialDialog.Builder(context)
+                                        .title("Signature missing")
+                                        .content("There is no signature provided. Did the customer signed on the paper list?")
+                                        .negativeText("Retry")
+                                        .positiveText("Signed on paper")
+                                        .onPositive { materialDialog, dialogAction ->
+                                            //TODO go to "Paper signature" process
+                                        }
+                                dialog.show()
+                            } else {
+                                this.listener?.onSignatureSubmitted()
+                            }
                         }
                         R.id.action_signature_clear -> {
                             //Clear signature pad
                             this.uxSignaturePad.clear()
                         }
-                        R.id.action_signature_cancel -> {
+                        R.id.ux_action_signature_cancel -> {
                             //Cancel process
                             this.listener?.onSignatureCancelled()
                         }

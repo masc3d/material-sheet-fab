@@ -61,6 +61,12 @@ enum class FailureReason(val reason: EventNotDeliveredReason, val stringRes: Int
             listInDelivery = true,
             listInVehicleLoading = false
     ),
+    XC_OBJECT_NOT_READY(
+            reason = EventNotDeliveredReason.XC_ObjectNotReady,
+            stringRes = R.string.event_reason_xc_not_ready,
+            listInDelivery = true,
+            listInVehicleLoading = false
+    ),
     XC_OBJECT_WRONG(
             reason = EventNotDeliveredReason.XC_ObjectWrong,
             stringRes = R.string.event_reason_xc_wrong,
@@ -82,12 +88,6 @@ enum class FailureReason(val reason: EventNotDeliveredReason, val stringRes: Int
     IDENT_DOC_NOT_PRESENT(
             reason = EventNotDeliveredReason.IdentDocNotPresent,
             stringRes = R.string.event_reason_no_ident_doc,
-            listInDelivery = true,
-            listInVehicleLoading = false
-    ),
-    XC_OBJECT_NOT_READY(
-            reason = EventNotDeliveredReason.XC_ObjectNotReady,
-            stringRes = R.string.event_reason_xc_not_ready,
             listInDelivery = true,
             listInVehicleLoading = false
     ),
