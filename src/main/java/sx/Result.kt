@@ -7,7 +7,7 @@ package sx
  * Setting both to a non-null value will yield {@link IllegalStateException}
  *
  * Created by masc on 05.07.17
- * @property result Result
+ * @property value Result
  * @property error Error
  */
 class Result<T> @JvmOverloads constructor (
@@ -17,10 +17,16 @@ class Result<T> @JvmOverloads constructor (
     private val _value: T?
 
     /**
-     * Delivers the result or throws in case of error condition
+     * Delivers the result value or throws in case of error condition
      */
-    private val result: T
+    val value: T
         get() = _value ?: throw error!!
+
+    /**
+     * Delivers the result value or null in case of error
+     */
+    val valueOrNull: T?
+        get() = _value
 
     init {
         _value = value
@@ -30,7 +36,7 @@ class Result<T> @JvmOverloads constructor (
     val hasError = (this.error != null)
 
     /** Indicates if result has result */
-    val hasValue = (this.result != null)
+    val hasValue = (this.value != null)
 
     init {
         if (value != null && error != null)
