@@ -25,10 +25,10 @@ enum class EventDeliveredReason(val id: Int) {
 }
 
 enum class EventNotDeliveredReason(val id: Int) {
-    Absend(500),
+    Absent(500),
     Refuse(503), // Text : Wer? / Warum?
     Vacation(504), // Text : Wie lange?
-    AdressWrong(507), // Text : Richtige Adresse?
+    AddressWrong(507), // Text : Richtige Adresse?
     Moved(509), // Text : Neue Adresse?
     Unknown(510),
     Damaged(513), // Packstück bleibt in der Auswahl

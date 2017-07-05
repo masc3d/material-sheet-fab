@@ -8,7 +8,7 @@ import org.deku.leoz.model.EventNotDeliveredReason
  */
 enum class FailureReason(val reason: EventNotDeliveredReason, val stringRes: Int, val iconRes: Int? = null, val listInDelivery: Boolean = true, val listInVehicleLoading: Boolean = false) {
     ABSENT(
-            reason = EventNotDeliveredReason.Absend,
+            reason = EventNotDeliveredReason.Absent,
             stringRes = R.string.event_reason_absent,
             listInDelivery = true,
             listInVehicleLoading = false
@@ -26,7 +26,7 @@ enum class FailureReason(val reason: EventNotDeliveredReason, val stringRes: Int
             listInVehicleLoading = false
     ),
     ADDRESS_WRONG(
-            reason = EventNotDeliveredReason.AdressWrong,
+            reason = EventNotDeliveredReason.AddressWrong,
             stringRes = R.string.event_reason_address_wrong,
             listInDelivery = true,
             listInVehicleLoading = false
@@ -94,7 +94,8 @@ enum class FailureReason(val reason: EventNotDeliveredReason, val stringRes: Int
     PIN_IMEI_WRONG(
             reason = EventNotDeliveredReason.PIN_IMEI_Wrong,
             stringRes = R.string.event_reason_pin_imei_wrong,
-            listInDelivery = false
+            listInDelivery = false,
+            listInVehicleLoading = false
     ),
     WAIT_TIME(
             reason = EventNotDeliveredReason.WaitTime,
