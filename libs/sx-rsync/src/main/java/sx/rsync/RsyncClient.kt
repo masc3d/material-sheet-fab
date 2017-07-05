@@ -230,7 +230,7 @@ class RsyncClient() {
     fun list(uri: Rsync.URI): List<ListRecord> {
         val result = ArrayList<ListRecord>()
 
-        this.prepareTunnel(uri, { uri ->
+        this.prepareTunnel(uri, { uri_ ->
             val command = ArrayList<String>()
 
             command.add(Rsync.executable.file.toString())
@@ -238,7 +238,7 @@ class RsyncClient() {
 
             this.addCommonOptions(command)
 
-            command.add(uri.toString())
+            command.add(uri_.toString())
 
             log.debug(command.joinToString(" "))
 
