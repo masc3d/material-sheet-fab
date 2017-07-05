@@ -1,6 +1,7 @@
 package org.deku.leoz.model
 
 import org.slf4j.LoggerFactory
+import sx.Result
 
 /**
  * DEKU unit number
@@ -44,32 +45,36 @@ class UnitNumber private constructor(
      */
     val stationNr by lazy {
         when {
-            this.type == Type.Parcel -> this.value.substring(0,3).toInt()
+            this.type == Type.Parcel && !this.isGlsParcel -> this.value.substring(0,3).toInt()
             else -> null
         }
     }
 
-    init {
+    /**
+     * Indicates if this parcel is a GLS parcel
+     */
+    val isGlsParcel by lazy {
+        this.value[0] == '8' && this.value[3] == '5'
     }
 
     companion object {
         private val log = LoggerFactory.getLogger(UnitNumber::class.java)
 
         /** Parse a plain unit number without check digit */
-        fun parse(value: String): UnitNumber {
+        fun parse(value: String): Result<UnitNumber> {
             if (value.length != 11)
-                throw IllegalArgumentException("Unit number must have 11 digits")
+                return Result(error = IllegalArgumentException("Unit number must have 11 digits"))
 
-            return UnitNumber(value)
+            return Result(UnitNumber(value))
         }
 
         /** Parse label unit number, which includes a check digit */
-        fun parseLabel(value: String): UnitNumber {
+        fun parseLabel(value: String): Result<UnitNumber> {
             if (value.length != 12)
-                throw IllegalArgumentException("Label based unit number must have 12 digits")
+                return Result(error = IllegalArgumentException("Label based unit number must have 12 digits"))
 
             if (!value.all { it.isDigit() })
-                throw IllegalArgumentException("Unit number must be numeric")
+                return Result(error = IllegalArgumentException("Unit number must be numeric"))
 
             val number = value.substring(0, 11)
             val checkDigit = value.substring(11, 12).toInt()
@@ -77,9 +82,9 @@ class UnitNumber private constructor(
             log.info("${UnitNumber.calculateCheckDigit(number)}")
 
             if (calculateCheckDigit(number) != checkDigit)
-                throw IllegalArgumentException("Unit number has invalid check digit")
+                return Result(error = IllegalArgumentException("Unit number has invalid check digit"))
 
-            return UnitNumber(number)
+            return Result(UnitNumber(number))
         }
 
         /**
@@ -138,33 +143,33 @@ class GlsUnitNumber private constructor(
     companion object {
         private val log = LoggerFactory.getLogger(GlsUnitNumber::class.java)
 
-        fun parse(value: String): GlsUnitNumber {
+        fun parse(value: String): Result<GlsUnitNumber> {
             if (value.length != 11)
-                throw IllegalArgumentException("GLS unit number must have 11 digits")
+                return Result(error = IllegalArgumentException("GLS unit number must have 11 digits"))
 
             val un = GlsUnitNumber(value)
 
             if (un.serviceType != ServiceType.EXPRESS)
-                throw IllegalArgumentException("GLS unit number has invalid service type")
+                return Result(error = IllegalArgumentException("GLS unit number has invalid service type"))
 
-            return GlsUnitNumber(value)
+            return Result(GlsUnitNumber(value))
         }
 
-        fun parseLabel(value: String): GlsUnitNumber {
+        fun parseLabel(value: String): Result<GlsUnitNumber> {
             if (value.length != 12)
-                throw IllegalArgumentException("Label based GLS unit number must have 12 digits")
+                return Result(error = IllegalArgumentException("Label based GLS unit number must have 12 digits"))
 
             if (!value.all { it.isDigit() })
-                throw IllegalArgumentException("GLS unit number must be numeric")
+                return Result(error = IllegalArgumentException("GLS unit number must be numeric"))
 
             val number = value.substring(0, 11)
             val checkDigit = value.substring(11, 12).toInt()
 
             log.info("${calculateCheckDigit(number)}")
             if (calculateCheckDigit(number) != checkDigit)
-                throw IllegalArgumentException("GLS unit number has invalid check digit")
+                return Result(error = IllegalArgumentException("GLS unit number has invalid check digit"))
 
-            return GlsUnitNumber(number)
+            return Result(GlsUnitNumber(number))
         }
 
         /**
@@ -194,13 +199,17 @@ class GlsUnitNumber private constructor(
  * Transform GLS unit number to DEKU unit number
  */
 fun GlsUnitNumber.toUnitNumber(): UnitNumber {
+    if (this.serviceType != GlsUnitNumber.ServiceType.EXPRESS)
+        throw IllegalArgumentException("GLS unit number has invalid service type for unit number conversion")
+
     val sb = StringBuilder()
 
+    // Convert GLS unit number by "pulling" 3rd digit to beginning
     val prefix = this.value.substring(0, 2)
     val ident = this.value.substring(2, 3)
     val suffix = this.value.substring(3)
 
     sb.append(ident, prefix, suffix)
 
-    return UnitNumber.parse(sb.toString())
+    return UnitNumber.parse(sb.toString()).value
 }
