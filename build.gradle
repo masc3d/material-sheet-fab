@@ -37,7 +37,7 @@ assertJvmVersion(v_jvm)
 
 buildscript {
     ext {
-        v_jgit = '4.6.1.201703071140-r'
+        v_jgit = '4.8.0.201706111038-r'
         v_jsch = '0.0.9'
     }
 
