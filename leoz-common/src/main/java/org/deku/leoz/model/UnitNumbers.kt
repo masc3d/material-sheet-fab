@@ -79,8 +79,6 @@ class UnitNumber private constructor(
             val number = value.substring(0, 11)
             val checkDigit = value.substring(11, 12).toInt()
 
-            log.info("${UnitNumber.calculateCheckDigit(number)}")
-
             if (calculateCheckDigit(number) != checkDigit)
                 return Result(error = IllegalArgumentException("Unit number has invalid check digit"))
 
@@ -165,7 +163,6 @@ class GlsUnitNumber private constructor(
             val number = value.substring(0, 11)
             val checkDigit = value.substring(11, 12).toInt()
 
-            log.info("${calculateCheckDigit(number)}")
             if (calculateCheckDigit(number) != checkDigit)
                 return Result(error = IllegalArgumentException("GLS unit number has invalid check digit"))
 
