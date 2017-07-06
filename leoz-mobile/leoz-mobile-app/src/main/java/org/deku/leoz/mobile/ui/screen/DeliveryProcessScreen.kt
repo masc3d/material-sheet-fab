@@ -145,7 +145,14 @@ class DeliveryProcessScreen
                                     .events(this.delivery.allowedEvents)
                                     .listener(this)
                                     .build()
-                                    .show()
+
+                            dialog.selectedItemEvent
+                                    .bindToLifecycle(this)
+                                    .subscribe {
+                                log.trace("SELECTEDITEAM VIA RX")
+                            }
+
+                            dialog.show()
                         }
                         R.id.ux_action_deliver_neighbour -> {
 
@@ -161,8 +168,6 @@ class DeliveryProcessScreen
     }
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
-        super.onEventDialogItemSelected(event)
-
-        log.debug("SELECTEDITEM PUBLISHED")
+        log.trace("SELECTEDITEAM VIA LISTENER")
     }
 }

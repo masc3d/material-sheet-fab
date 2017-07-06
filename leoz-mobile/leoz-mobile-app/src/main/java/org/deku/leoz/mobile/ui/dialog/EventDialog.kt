@@ -7,6 +7,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import io.reactivex.subjects.PublishSubject
+import io.reactivex.Observable
 import org.deku.leoz.mobile.model.getEventText
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.EventValue
@@ -18,7 +19,10 @@ import org.slf4j.LoggerFactory
  * Created by phpr on 06.07.2017.
  */
 class EventDialog private constructor(
-        builder: EventDialog.Builder) : MaterialDialog(builder) {
+        builder: EventDialog.Builder,
+        /** Selected item event */
+        val selectedItemEvent: Observable<EventNotDeliveredReason>
+) : MaterialDialog(builder) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -32,9 +36,14 @@ class EventDialog private constructor(
     class Builder(context: Context) : MaterialDialog.Builder(context) {
         private val log = LoggerFactory.getLogger(this.javaClass)
 
+        private val selectedItemSubject = PublishSubject.create<EventNotDeliveredReason>()
+
         private val eventAdapter = MaterialSimpleListAdapter({ materialDialog, i, materialSimpleListItem ->
             log.debug("ONMATERIALLISTITEMSELECTED [$i]")
-            this.listener?.onEventDialogItemSelected(materialSimpleListItem.tag as EventNotDeliveredReason)
+
+            val event = materialSimpleListItem.tag as EventNotDeliveredReason
+            this.listener?.onEventDialogItemSelected(event)
+            this.selectedItemSubject.onNext(event)
         })
 
         private var events = listOf<EventNotDeliveredReason>()
@@ -67,7 +76,9 @@ class EventDialog private constructor(
         fun listener(listener: Listener) = apply { this.listener = listener }
 
         override fun build(): EventDialog {
-            return EventDialog(this)
+            return EventDialog(
+                    selectedItemEvent = this.selectedItemSubject.hide(),
+                    builder = this)
         }
     }
 }
