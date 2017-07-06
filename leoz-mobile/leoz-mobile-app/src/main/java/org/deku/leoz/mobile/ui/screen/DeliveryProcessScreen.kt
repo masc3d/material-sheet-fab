@@ -44,7 +44,7 @@ class DeliveryProcessScreen : ScreenFragment() {
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val events: Events by Kodein.global.lazy.instance()
     private val eventDialog: EventDialog by lazy {
-        EventDialog(context = this.context, events = delivery.allowedEvents)
+        EventDialog(c = this.context, events = delivery.allowedEvents)
     }
 
     private lateinit var stop: Stop

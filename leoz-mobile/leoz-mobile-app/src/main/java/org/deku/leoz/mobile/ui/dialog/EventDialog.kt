@@ -13,14 +13,15 @@ import org.slf4j.LoggerFactory
 
 /**
  * Created by phpr on 06.07.2017.
+ * @param c The application context
+ * @param events List of events to be displayed in this dialog
  */
-class EventDialog(context: Context, events: List<EventNotDeliveredReason>) : MaterialDialog.Builder(context) {
+class EventDialog(val c: Context, val events: List<EventNotDeliveredReason>) : MaterialDialog.Builder(c) {
 
     private val selectedItemSubject = PublishSubject.create<Int>()
     val selectedItem = this.selectedItemSubject.hide()!!
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-
 
     private val reasonAdapter = MaterialSimpleListAdapter(MaterialSimpleListAdapter.Callback { materialDialog, i, materialSimpleListItem ->
         log.debug("ONMATERIALLISTITEMSELECTED [$i]")
@@ -30,15 +31,15 @@ class EventDialog(context: Context, events: List<EventNotDeliveredReason>) : Mat
     init {
         events.forEach {
             reasonAdapter.add(
-                    MaterialSimpleListItem.Builder(context)
-                            .content(context.getEventText(it))
+                    MaterialSimpleListItem.Builder(c)
+                            .content(c.getEventText(it))
                             .id(it.id.toLong())
                             .backgroundColor(Color.WHITE)
                             .build()
             )
         }
-
-        this.adapter = reasonAdapter
+        
+        this.adapter(reasonAdapter, android.support.v7.widget.LinearLayoutManager(c))
         this.title("Event selection")
         this.build()
     }
