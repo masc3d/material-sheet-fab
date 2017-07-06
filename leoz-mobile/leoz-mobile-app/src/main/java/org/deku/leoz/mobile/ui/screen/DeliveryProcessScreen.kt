@@ -9,12 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
@@ -32,20 +32,18 @@ import org.deku.leoz.mobile.ui.fragment.StopDetailFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.EventType
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.fragment.util.withTransaction
 
-class DeliveryProcessScreen : ScreenFragment() {
+class DeliveryProcessScreen
+    :
+        ScreenFragment(),
+        EventDialog.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
-    private val events: Events by Kodein.global.lazy.instance()
-    private val eventDialog: EventDialog by lazy {
-        EventDialog(c = this.context, events = delivery.allowedEvents)
-    }
 
     private lateinit var stop: Stop
 
@@ -63,7 +61,7 @@ class DeliveryProcessScreen : ScreenFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.title ="Delivery Process"
+        this.title = "Delivery Process"
 
         this.retainInstance = true
     }
@@ -143,7 +141,11 @@ class DeliveryProcessScreen : ScreenFragment() {
 
                         }
                         R.id.ux_action_fail -> {
-                            eventDialog.show()
+                            val dialog = EventDialog.Builder(this.context)
+                                    .events(this.delivery.allowedEvents)
+                                    .listener(this)
+                                    .build()
+                                    .show()
                         }
                         R.id.ux_action_deliver_neighbour -> {
 
@@ -156,16 +158,11 @@ class DeliveryProcessScreen : ScreenFragment() {
                         }
                     }
                 }
-
-        eventDialog.selectedItem
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    log.debug("SELECTEDITEM PUBLISHED")
-                }
-
-        /**
-         * TODO: Action trigger on uxLabelNo TextView
-         */
     }
 
+    override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
+        super.onEventDialogItemSelected(event)
+
+        log.debug("SELECTEDITEM PUBLISHED")
+    }
 }
