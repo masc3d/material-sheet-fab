@@ -20,12 +20,6 @@ import org.slf4j.LoggerFactory
  */
 open class Fragment : RxAppCompatDialogFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val events: Events by Kodein.global.lazy.instance()
-    private var lastEventList: List<EventNotDeliveredReason> = listOf()
-    private val reasonAdapter = MaterialSimpleListAdapter(MaterialSimpleListAdapter.Callback { materialDialog, i, materialSimpleListItem ->
-        log.debug("ONMATERIALLISTITEMSELECTED [$i]")
-        events.thrownEventValue = lastEventList[i]
-    })
 
     /**
      * Title
@@ -66,25 +60,5 @@ open class Fragment : RxAppCompatDialogFragment() {
     override fun onResume() {
         super.onResume()
         log.trace("ONRESUME")
-    }
-
-    fun showFailureReasons(events: List<EventNotDeliveredReason>) {
-        reasonAdapter.clear()
-
-        events.forEach {
-                    reasonAdapter.add(MaterialSimpleListItem.Builder(context)
-                            .content(context.getEventText(it))
-                            .backgroundColor(Color.WHITE)
-                            .build())
-                }
-
-        val dialog = MaterialDialog.Builder(context)
-                .title("Fehlercode")
-                .adapter(reasonAdapter, null)
-                .build()
-
-        lastEventList = events
-
-        dialog.show()
     }
 }
