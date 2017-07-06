@@ -3,15 +3,12 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.content.Intent
 import android.databinding.DataBindingUtil
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -24,7 +21,7 @@ import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.Delivery
-import org.deku.leoz.mobile.model.FailureReason
+import org.deku.leoz.mobile.model.Events
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
@@ -32,6 +29,8 @@ import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.fragment.StopDetailFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
+import org.deku.leoz.model.EventNotDeliveredReason
+import org.deku.leoz.model.EventType
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.fragment.util.withTransaction
@@ -41,6 +40,7 @@ class DeliveryProcessScreen : ScreenFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val events: Events by Kodein.global.lazy.instance()
 
     private lateinit var stop: Stop
 
@@ -148,6 +148,22 @@ class DeliveryProcessScreen : ScreenFragment() {
                         }
                         R.id.ux_action_deliver_recipient -> {
                             (this.activity as DeliveryActivity).showSignaturePad("Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${stop.address.line1}")
+                        }
+                    }
+                }
+
+        events.thrownEventValueProperty
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it.value!!.event) {
+                        EventType.Delivered -> {
+
+                        }
+                        EventType.NotDelivered -> {
+
+                        }
+                        else -> {
+                            throw NotImplementedError()
                         }
                     }
                 }

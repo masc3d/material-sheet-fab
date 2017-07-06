@@ -11,9 +11,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
-import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.model.Events
-import org.deku.leoz.mobile.model.FailureReason
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 
@@ -26,7 +24,7 @@ open class Fragment : RxAppCompatDialogFragment() {
     private var lastEventList: List<EventNotDeliveredReason> = listOf()
     private val reasonAdapter = MaterialSimpleListAdapter(MaterialSimpleListAdapter.Callback { materialDialog, i, materialSimpleListItem ->
         log.debug("ONMATERIALLISTITEMSELECTED [$i]")
-        events.thrownFailedDeliveryEvent = lastEventList[i]
+        events.thrownEventValue = lastEventList[i]
     })
 
     /**

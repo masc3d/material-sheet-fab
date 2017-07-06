@@ -1,6 +1,9 @@
 package org.deku.leoz.mobile.model
 
+import android.content.Context
+import org.deku.leoz.mobile.R
 import org.deku.leoz.model.EventNotDeliveredReason
+import org.deku.leoz.model.EventValue
 import sx.rx.ObservableRxProperty
 
 /**
@@ -8,6 +11,41 @@ import sx.rx.ObservableRxProperty
  */
 
 class Events {
-    val thrownFailedDeliveryEventProperty = ObservableRxProperty<EventNotDeliveredReason?>(null)
-    var thrownFailedDeliveryEvent: EventNotDeliveredReason? by thrownFailedDeliveryEventProperty
+    val thrownEventValueProperty = ObservableRxProperty<EventValue<*>?>(null)
+    var thrownEventValue: EventValue<*>? by thrownEventValueProperty
+
+    companion object {
+        fun setEvent(stop: Stop, event: EventValue<*>) {
+            setEvent(orders = stop.orders.toList(), event = event)
+        }
+
+        fun setEvent(order: Order, event: EventValue<*>) {
+            setEvent(orders = listOf(order), event = event)
+        }
+
+        fun setEvent(orders: List<Order>, event: EventValue<*>) {
+
+        }
+    }
+}
+
+fun Context.getEventText(event: EventNotDeliveredReason): String {
+    return when (event) {
+        EventNotDeliveredReason.Absent -> this.getString(R.string.event_reason_absent)
+        EventNotDeliveredReason.Refuse -> this.getString(R.string.event_reason_refuse)
+        EventNotDeliveredReason.Vacation -> this.getString(R.string.event_reason_vacation)
+        EventNotDeliveredReason.AddressWrong -> this.getString(R.string.event_reason_address_wrong)
+        EventNotDeliveredReason.Moved -> this.getString(R.string.event_reason_moved)
+        EventNotDeliveredReason.Unknown -> this.getString(R.string.event_reason_unknown)
+        EventNotDeliveredReason.Damaged -> this.getString(R.string.event_reason_damaged)
+        EventNotDeliveredReason.XC_CodeWrong -> this.getString(R.string.event_reason_xc_code_wrong)
+        EventNotDeliveredReason.XC_ObjectDamaged -> this.getString(R.string.event_reason_xc_damaged)
+        EventNotDeliveredReason.XC_ObjectNotReady -> this.getString(R.string.event_reason_xc_not_ready)
+        EventNotDeliveredReason.XC_ObjectWrong -> this.getString(R.string.event_reason_xc_wrong)
+        EventNotDeliveredReason.SignatureRefused -> this.getString(R.string.event_reason_signature_refused)
+        EventNotDeliveredReason.CouldWantNotPay -> this.getString(R.string.event_reason_could_want_not_pay)
+        EventNotDeliveredReason.IdentDocNotPresent -> this.getString(R.string.event_reason_no_ident_doc)
+        EventNotDeliveredReason.PIN_IMEI_Wrong -> this.getString(R.string.event_reason_pin_imei_wrong)
+        else -> event.name
+    }
 }
