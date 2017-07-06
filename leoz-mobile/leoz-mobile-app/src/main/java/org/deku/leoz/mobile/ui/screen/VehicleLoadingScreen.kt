@@ -1,13 +1,8 @@
 package org.deku.leoz.mobile.ui.screen
 
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
-import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -19,7 +14,6 @@ import kotlinx.android.synthetic.main.fragment_vehicle_loading.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.DeliveryList
-import org.deku.leoz.mobile.model.FailureReason
 import org.deku.leoz.mobile.model.Order
 
 import org.deku.leoz.mobile.ui.Fragment
