@@ -1,18 +1,8 @@
 package org.deku.leoz.mobile.ui
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
-import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
-import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
-import org.deku.leoz.mobile.model.Events
-import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 
 /**

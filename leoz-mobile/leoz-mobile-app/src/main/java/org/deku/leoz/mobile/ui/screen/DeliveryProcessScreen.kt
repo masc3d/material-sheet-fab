@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.Delivery
-import org.deku.leoz.mobile.model.Events
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel

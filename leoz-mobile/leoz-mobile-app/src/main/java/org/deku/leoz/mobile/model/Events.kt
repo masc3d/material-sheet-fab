@@ -3,32 +3,8 @@ package org.deku.leoz.mobile.model
 import android.content.Context
 import org.deku.leoz.mobile.R
 import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.EventValue
-import sx.rx.ObservableRxProperty
 
-/**
- * Created by masc on 05.07.17.
- */
-
-class Events {
-    val thrownEventValueProperty = ObservableRxProperty<EventValue<*>?>(null)
-    var thrownEventValue: EventValue<*>? by thrownEventValueProperty
-
-    companion object {
-        fun setEvent(stop: Stop, event: EventValue<*>) {
-            setEvent(orders = stop.orders.toList(), event = event)
-        }
-
-        fun setEvent(order: Order, event: EventValue<*>) {
-            setEvent(orders = listOf(order), event = event)
-        }
-
-        fun setEvent(orders: List<Order>, event: EventValue<*>) {
-
-        }
-    }
-}
-
+/** Get event text */
 fun Context.getEventText(event: EventNotDeliveredReason): String {
     return when (event) {
         EventNotDeliveredReason.Absent -> this.getString(R.string.event_reason_absent)
