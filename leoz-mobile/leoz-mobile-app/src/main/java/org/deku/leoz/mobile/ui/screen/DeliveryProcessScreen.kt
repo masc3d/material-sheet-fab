@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.screen_delivery_process.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
+import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.FailureReason
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -39,9 +40,7 @@ class DeliveryProcessScreen : ScreenFragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val reasonAdapter = MaterialSimpleListAdapter(MaterialSimpleListAdapter.Callback { materialDialog, i, materialSimpleListItem ->
-        log.debug("ONMATERIALLISTITEMSELECTED [$i]")
-    })
+    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     private lateinit var stop: Stop
 
@@ -139,7 +138,7 @@ class DeliveryProcessScreen : ScreenFragment() {
 
                         }
                         R.id.ux_action_fail -> {
-                            showFailureReasons()
+                            showFailureReasons(delivery.allowedEvents)
                         }
                         R.id.ux_action_deliver_neighbour -> {
 
@@ -158,21 +157,4 @@ class DeliveryProcessScreen : ScreenFragment() {
          */
     }
 
-    private fun showFailureReasons() {
-
-        reasonAdapter.clear()
-
-        FailureReason.values().filter { it.listInDelivery }
-                .forEach {
-                    reasonAdapter.add(MaterialSimpleListItem.Builder(context)
-                            .content(getString(it.stringRes))
-                            .backgroundColor(Color.WHITE)
-                            .build())
-                }
-
-        val dialog = MaterialDialog.Builder(context)
-                .title("Fehlercode")
-                .adapter(reasonAdapter, null)
-                .show()
-    }
 }

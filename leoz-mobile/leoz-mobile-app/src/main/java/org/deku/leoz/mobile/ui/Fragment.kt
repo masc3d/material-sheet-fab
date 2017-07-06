@@ -1,9 +1,20 @@
 package org.deku.leoz.mobile.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import kotlinx.android.synthetic.main.main_content.*
+import org.deku.leoz.mobile.model.Events
+import org.deku.leoz.mobile.model.FailureReason
+import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 
 /**
@@ -11,6 +22,12 @@ import org.slf4j.LoggerFactory
  */
 open class Fragment : RxAppCompatDialogFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
+    private val events: Events by Kodein.global.lazy.instance()
+    private var lastEventList: List<EventNotDeliveredReason> = listOf()
+    private val reasonAdapter = MaterialSimpleListAdapter(MaterialSimpleListAdapter.Callback { materialDialog, i, materialSimpleListItem ->
+        log.debug("ONMATERIALLISTITEMSELECTED [$i]")
+        events.thrownFailedDeliveryEvent = lastEventList[i]
+    })
 
     /**
      * Title
@@ -51,5 +68,25 @@ open class Fragment : RxAppCompatDialogFragment() {
     override fun onResume() {
         super.onResume()
         log.trace("ONRESUME")
+    }
+
+    fun showFailureReasons(events: List<EventNotDeliveredReason>) {
+        reasonAdapter.clear()
+
+        events.forEach {
+                    reasonAdapter.add(MaterialSimpleListItem.Builder(context)
+                            .content(context.getEventText(it))
+                            .backgroundColor(Color.WHITE)
+                            .build())
+                }
+
+        val dialog = MaterialDialog.Builder(context)
+                .title("Fehlercode")
+                .adapter(reasonAdapter, null)
+                .build()
+
+        lastEventList = events
+
+        dialog.show()
     }
 }

@@ -41,9 +41,6 @@ class VehicleLoadingScreen : ScreenFragment() {
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val loadedParcels: MutableList<Order.Parcel> = mutableListOf()
-    private val reasonAdapter = MaterialSimpleListAdapter(MaterialSimpleListAdapter.Callback { materialDialog, i, materialSimpleListItem ->
-        log.debug("ONMATERIALLISTITEMSELECTED [$i]")
-    })
 
     override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
@@ -122,24 +119,6 @@ class VehicleLoadingScreen : ScreenFragment() {
         parcels.removeAll(loadedParcels)
         loadedParcels.addAll(0, parcels)
         this.uxParcelList.adapter = ParcelListAdapter(context = context, data = loadedParcels, readOnly = true) //ArrayAdapter(context, android.R.layout.simple_list_item_1, loadedParcels.map { it.labelReference })
-    }
-
-    private fun showFailureReasons() {
-
-        reasonAdapter.clear()
-
-        FailureReason.values().filter { it.listInVehicleLoading }
-                .forEach {
-                    reasonAdapter.add(MaterialSimpleListItem.Builder(context)
-                            .content(getString(it.stringRes))
-                            .backgroundColor(Color.WHITE)
-                            .build())
-                }
-
-        val dialog = MaterialDialog.Builder(context)
-                .title("Fehlercode")
-                .adapter(reasonAdapter, null)
-                .show()
     }
 
 }

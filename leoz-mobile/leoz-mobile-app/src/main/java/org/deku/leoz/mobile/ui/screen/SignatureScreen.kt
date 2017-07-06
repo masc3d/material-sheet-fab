@@ -103,9 +103,9 @@ class SignatureScreen
                             //Submit signature, finish process (delivery only)
                             if (this.uxSignaturePad.isEmpty) {
                                 val dialog = MaterialDialog.Builder(context)
-                                        .title("Signature missing")
-                                        .content("There is no signature provided. Did the customer signed on the paper list?")
-                                        .negativeText("Retry")
+                                        .title(getString(R.string.title_missing_signature))
+                                        .content(getString(R.string.dialog_text_missing_signature))
+                                        .negativeText(getString(R.string.action_retry))
                                         .positiveText("Signed on paper")
                                         .onPositive { materialDialog, dialogAction ->
                                             //TODO go to "Paper signature" process
