@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import org.deku.leoz.model.Carrier
+import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.internal.DeliveryListService
@@ -49,6 +50,22 @@ class Delivery {
     val orderList: MutableList<Order> = mutableListOf()
 
     val deliveryVehicle: Vehicle? = null
+
+    val allowedEvents: List<EventNotDeliveredReason> by lazy {
+        listOf(
+                EventNotDeliveredReason.Absent,
+                EventNotDeliveredReason.Refuse,
+                EventNotDeliveredReason.Vacation,
+                EventNotDeliveredReason.AddressWrong,
+                EventNotDeliveredReason.Moved,
+                EventNotDeliveredReason.Damaged,
+                EventNotDeliveredReason.XC_ObjectDamaged,
+                EventNotDeliveredReason.XC_ObjectNotReady,
+                EventNotDeliveredReason.XC_ObjectWrong,
+                EventNotDeliveredReason.CouldWantNotPay,
+                EventNotDeliveredReason.IdentDocNotPresent
+        )
+    }
 
     /**
      * When initiating, check for existing orders stored in the local DB and (re)load them into the variables.

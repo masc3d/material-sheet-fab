@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.rx.toHotReplay
@@ -19,6 +20,13 @@ class DeliveryList {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
+
+    val allowedEvents: List<EventNotDeliveredReason> by lazy {
+        listOf(
+                EventNotDeliveredReason.Damaged
+        //TODO "Missing" reason is not present yet
+        )
+    }
 
     /**
      * Loads delivery list data from remote peer into local database
