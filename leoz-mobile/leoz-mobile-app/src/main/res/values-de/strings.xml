@@ -90,5 +90,7 @@
     <string name="event_reason_xc_not_ready">XC Paket nicht fertig</string>
     <string name="event_reason_xc_wrong">XC Paket falsch</string>
     <string name="action_retry">Erneut versuchen</string>
-    <string name="dialog_text_missing_signature">Es wurde keine Unterschrift gegeben. Hat der Kunde auf Papier unterschrieben?</string>
+    <string name="dialog_text_missing_signature">Es wurde keine Unterschrift gefunden. Hat der Kunde auf Papier unterschrieben?</string>
+    <string name="signed_on_paper">Unters. auf Papier</string>
+    <string name="title_missing_signature">Unterschrift fehlt</string>
 </resources>

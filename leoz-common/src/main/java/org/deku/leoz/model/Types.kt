@@ -243,7 +243,7 @@ enum class ParcelService(
             serviceId = 8388608,
             parcelServiceRestriction = ParcelServiceRestriction(),
             validForStop = StopClassification.BOTH),
-    RAIR_SERVICE(
+    FAIR_SERVICE(
             serviceId = 16777216,
             parcelServiceRestriction = ParcelServiceRestriction(),
             validForStop = StopClassification.BOTH),

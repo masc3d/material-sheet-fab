@@ -101,8 +101,8 @@
     <string name="event_reason_no_ident_doc">No ident document</string>
     <string name="event_reason_xc_not_ready">XC object not ready</string>
     <string name="event_reason_pin_imei_wrong">PIN / IMEI wrong</string>
-    <string name="title_fail_reason">Fehlercode</string>
     <string name="title_missing_signature">Signature missing</string>
     <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
     <string name="action_retry">Retry</string>
+    <string name="signed_on_paper">Signed on paper</string>
 </resources>

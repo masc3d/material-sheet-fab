@@ -18,9 +18,40 @@ class Order (
         val appointment: List<Appointment>,
         val carrier: org.deku.leoz.model.Carrier,
         val services: List<Service>,
-        val information: MutableList<Information>? = null,
-        val sort: Int
+        val information: MutableList<Information>? = null
 ) {
+
+    val serviceCheckList: List<ServiceCheck> by lazy {
+        val list: MutableList<ServiceCheck> = mutableListOf()
+        val parcelServiceList: List<ParcelService> = this.getServiceOfInterest().service
+
+        parcelServiceList.forEach {
+            when (it) {
+                ParcelService.CASH_ON_DELIVERY,
+                ParcelService.RECEIPT_ACKNOWLEDGEMENT,
+                ParcelService.PHARMACEUTICALS,
+                ParcelService.IDENT_CONTRACT_SERVICE,
+                ParcelService.SUBMISSION_PARTICIPATION,
+                ParcelService.SECURITY_RETURN,
+                ParcelService.XCHANGE,
+                ParcelService.PHONE_RECEIPT,
+                ParcelService.DOCUMENTED_PERSONAL_DELIVERY,
+                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS,
+                ParcelService.PACKAGING_RECIRCULATION -> list.add(ServiceCheck(service = it))
+                else -> {
+
+                }
+            }
+        }
+
+        list.toList()
+    }
+
+    data class ServiceCheck(val service: ParcelService, var done: Boolean = false, var success: Boolean = false)
+
+    fun getNextServiceCheck(): ServiceCheck? {
+        return if (serviceCheckList.isNotEmpty()) serviceCheckList.firstOrNull { !it.done } else null
+    }
 
     data class Parcel (
             val id: String,
@@ -173,6 +204,16 @@ class Order (
         }
     }
 
+    fun getServiceOfInterest(): Service {
+        when (this.classification) {
+            OrderClassification.PICKUP -> return this.services.first { it.classification == Service.Classification.PICKUP_SERVICE }
+            OrderClassification.DELIVERY -> return this.services.first { it.classification == Service.Classification.DELIVERY_SERVICE }
+            else -> {
+                throw IllegalStateException()
+            }
+        }
+    }
+
     /**
      * @param stopList The stopList this method should use to iterate
      * @return If a existing stop has been found, the stop is returned. If not, it will be null
@@ -303,8 +344,7 @@ fun OrderService.Order.toOrder(): Order {
                                 )
                             }.toMutableList()
                     )
-            ),
-            sort = 0
+            )
     )
 }
 

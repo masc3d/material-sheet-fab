@@ -11,10 +11,12 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
+import org.deku.leoz.model.EventDeliveredReason
 import org.slf4j.LoggerFactory
 
 /**
@@ -28,11 +30,15 @@ class SignatureScreen
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val listener by lazy { this.activity as? Listener }
     private var descriptionText: String = ""
+    private var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal
+    private lateinit var stop: Stop
 
     companion object {
-        fun create(text: String): SignatureScreen {
+        fun create(deliveryReason: EventDeliveredReason, stop: Stop): SignatureScreen {
             val s = SignatureScreen()
-            s.descriptionText = text
+            s.deliveryReason = deliveryReason
+            s.stop = stop
+            s.descriptionText = "Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${stop.address.line1}"
             return s
         }
 
@@ -106,7 +112,8 @@ class SignatureScreen
                                         .title(getString(R.string.title_missing_signature))
                                         .content(getString(R.string.dialog_text_missing_signature))
                                         .negativeText(getString(R.string.action_retry))
-                                        .positiveText("Signed on paper")
+                                        .positiveText(getString(R.string.signed_on_paper))
+                                        .cancelable(false)
                                         .onPositive { materialDialog, dialogAction ->
                                             //TODO go to "Paper signature" process
                                         }

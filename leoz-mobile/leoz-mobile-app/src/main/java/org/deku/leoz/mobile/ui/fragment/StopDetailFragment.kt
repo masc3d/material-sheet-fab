@@ -77,8 +77,6 @@ class StopDetailFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (this.activity as DeliveryActivity).showDeliverFabButtons()
-
         stop.orders
                 .flatMap { it.services }
                 .forEach { serviceDescriptions.add(it.service.toString()) }
