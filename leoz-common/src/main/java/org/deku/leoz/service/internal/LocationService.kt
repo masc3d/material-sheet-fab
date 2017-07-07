@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
+import org.deku.leoz.model.MobileVehicleType
 import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import sx.io.serialization.Serializable
 import java.util.*
@@ -121,7 +122,9 @@ interface LocationServiceV2 {
             @get:ApiModelProperty(value = "User identifier")
             var userId: Int? = null,
             @get:ApiModelProperty(required = false, value = "GPS data points")
-            var gpsDataPoints: List<LocationServiceV1.GpsDataPoint>? = null
+            var gpsDataPoints: List<LocationServiceV1.GpsDataPoint>? = null,
+            @get:ApiModelProperty(required = false, value = "CAR", allowableValues = "BIKE,CAR,VAN,TRUCK")
+            var mobileVehicleType: MobileVehicleType? = null
     )
 
     /**

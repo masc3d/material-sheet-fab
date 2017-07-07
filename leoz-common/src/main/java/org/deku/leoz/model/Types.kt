@@ -332,3 +332,11 @@ enum class UserRole(val value: Int) {
     DRIVER(4),
     CUSTOMER(2)
 }
+
+enum class MobileVehicleType(val value: String) {
+    BIKE("BIKE"),
+    CAR("CAR"),
+    VAN("VAN"),
+    TRUCK("TRUCK")
+
+}
