@@ -321,6 +321,8 @@ dependencies {
 
             // Support-v4 (Anko Layouts)
             "org.jetbrains.anko:anko-support-v4:$v_anko",
+
+            "com.fenchtose:tooltip:0.1.5",
     )
 
     debugCompile(
