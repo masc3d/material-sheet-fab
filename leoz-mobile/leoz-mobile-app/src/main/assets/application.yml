@@ -37,3 +37,5 @@ location:
 # Developer/debug settings
 debug:
    enabled: false
+   # By default free screen rotation is not allowed and controlled per screen
+   user-screen-rotation: false

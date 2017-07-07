@@ -31,14 +31,13 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
     override fun onCreate() {
         super.onCreate()
 
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-
+        // region Injection setup
         // Base modules
         Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
         Kodein.global.addImport(SettingsConfiguration.module)
 
-        // Android specific modules
+        //Android specific modules
         Kodein.global.addImport(androidModule)
         Kodein.global.addImport(Kodein.Module {
             bind<Context>() with singleton { this@Application.applicationContext }
@@ -57,8 +56,7 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
         Kodein.global.addImport(ToneConfiguration.module)
         Kodein.global.addImport(MqttConfiguration.module)
-
-        this.registerActivityLifecycleCallbacks(this)
+        //endregion
 
         //region Global exception handler
         run {
@@ -84,11 +82,16 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         }
         //endregion
 
+        // Enable app compat vector support
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        this.registerActivityLifecycleCallbacks(this)
+
         if (!BuildConfig.DEBUG) {
             // FlexibleAdapter logging is currently not compatible with obfuscated builds
             // Internally tries to extract a stack trace element which does not
             // work with obfuscated class names (presumably)
-            // TODO: should be investigated/fixed upstream
+            // TODO: should be investigated/reported/fixed upstream
             eu.davidea.flexibleadapter.utils.Log.setLevel(
                     eu.davidea.flexibleadapter.utils.Log.Level.SUPPRESS)
         }
