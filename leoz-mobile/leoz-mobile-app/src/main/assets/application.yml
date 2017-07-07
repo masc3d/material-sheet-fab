@@ -32,7 +32,7 @@ location:
    force: true
    # Period in seconds
    period: 600
-   allowMockLocation: false
+   allow-mock-location: false
 
 # Developer/debug settings
 debug:
