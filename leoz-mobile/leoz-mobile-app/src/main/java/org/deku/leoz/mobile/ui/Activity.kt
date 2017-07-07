@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Shader
@@ -495,6 +496,7 @@ open class Activity : RxAppCompatActivity(),
      */
     fun showScreen(fragment: ScreenFragment, addToBackStack: Boolean = true): Int {
         log.trace("SHOW SCREEN [${fragment.javaClass.simpleName}]")
+
         return supportFragmentManager.withTransaction {
             if (addToBackStack) {
                 it.setCustomAnimations(
@@ -590,8 +592,11 @@ open class Activity : RxAppCompatActivity(),
         }
 
         // Apply requested orientation
-        this.requestedOrientation = fragment.orientation
-
+        this.requestedOrientation = when {
+            debugSettings.userScreenRotation -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            // Enforce orientation on every fragment resume
+            else -> fragment.orientation
+        }
         this.aidcReader.enabled = fragment.aidcEnabled
     }
 
