@@ -88,8 +88,6 @@ class StopProcessFragment : Fragment() {
         }
 
         this.uxParcelList.adapter = ParcelListAdapter(context, parcelList)
-
-        (this.activity as DeliveryActivity).showDeliverFabButtons()
     }
 
     override fun onResume() {

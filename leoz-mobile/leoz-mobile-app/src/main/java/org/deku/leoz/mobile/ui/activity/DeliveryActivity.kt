@@ -8,11 +8,16 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
+import org.deku.leoz.model.EventDeliveredReason
+import org.deku.leoz.model.MobileVehicleType
+import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
 import java.util.*
@@ -52,6 +57,9 @@ class DeliveryActivity : Activity(),
             //Check if the changelog dialog should be displayed TODO: Call this function when the vehicle selection is done.
             queryChangelogDisplay()
         }
+
+        //val locService = LocationService.instance
+        LocationService.vehicleType = MobileVehicleType.CAR
     }
 
     override fun onBackPressed() {
@@ -62,15 +70,36 @@ class DeliveryActivity : Activity(),
         }
     }
 
-    fun showDeliverFabButtons() {
+    override fun onResume() {
+        super.onResume()
+
     }
 
-    fun showSignaturePad(text: String) {
-        this.showScreen(SignatureScreen.create(text))
+    fun showSignaturePad(stop: Stop, reason: EventDeliveredReason) {
+        this.showScreen(SignatureScreen.create(deliveryReason = reason, stop = stop))
     }
 
-    fun showSignaturePad() {
-        this.showSignaturePad("")
+    fun runServiceWorkflow(stop: Stop, reason: EventDeliveredReason) {
+        val serviceCheck = stop.orders.first().getNextServiceCheck()
+
+        if (serviceCheck == null) {
+            showSignaturePad(stop = stop, reason = reason)
+        } else {
+            when (serviceCheck.service) {
+                ParcelService.CASH_ON_DELIVERY -> TODO()
+                ParcelService.RECEIPT_ACKNOWLEDGEMENT -> TODO()
+                ParcelService.PHARMACEUTICALS -> TODO()
+                ParcelService.IDENT_CONTRACT_SERVICE -> TODO()
+                ParcelService.SUBMISSION_PARTICIPATION -> TODO()
+                ParcelService.SECURITY_RETURN -> TODO()
+                ParcelService.XCHANGE -> TODO()
+                ParcelService.PHONE_RECEIPT -> TODO()
+                ParcelService.DOCUMENTED_PERSONAL_DELIVERY -> TODO()
+                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS -> TODO()
+                ParcelService.PACKAGING_RECIRCULATION -> TODO()
+            }
+        }
+
     }
 
     /**

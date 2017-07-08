@@ -243,7 +243,7 @@ enum class ParcelService(
             serviceId = 8388608,
             parcelServiceRestriction = ParcelServiceRestriction(),
             validForStop = StopClassification.BOTH),
-    RAIR_SERVICE(
+    FAIR_SERVICE(
             serviceId = 16777216,
             parcelServiceRestriction = ParcelServiceRestriction(),
             validForStop = StopClassification.BOTH),
@@ -331,4 +331,15 @@ enum class UserRole(val value: Int) {
     USER(6),
     DRIVER(4),
     CUSTOMER(2)
+}
+
+/**
+ * Enumeration for possible types of vehicles, provided by the mobile app.
+ */
+enum class MobileVehicleType(val value: String) {
+    BIKE("BIKE"),
+    CAR("CAR"),
+    VAN("VAN"),
+    TRUCK("TRUCK")
+
 }

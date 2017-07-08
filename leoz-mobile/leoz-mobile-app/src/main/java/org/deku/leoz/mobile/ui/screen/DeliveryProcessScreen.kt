@@ -18,18 +18,19 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
-
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.fragment.StopDetailFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
+import org.deku.leoz.mobile.ui.vm.StopItemViewModel
+import org.deku.leoz.model.EventDelivered
+import org.deku.leoz.model.EventDeliveredReason
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
@@ -99,7 +100,6 @@ class DeliveryProcessScreen
                         menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
                 )
         )
-        (this.activity as DeliveryActivity).showDeliverFabButtons()
 
         childFragmentManager.withTransaction {
             it.replace(this.uxContainer.id, StopDetailFragment.create(this.stop))
@@ -154,13 +154,25 @@ class DeliveryProcessScreen
                             dialog.show()
                         }
                         R.id.ux_action_deliver_neighbour -> {
-
+                            startHandOver(
+                                    event = EventDelivered(
+                                            reason = EventDeliveredReason.Neighbor
+                                    )
+                            )
                         }
                         R.id.ux_action_deliver_postbox -> {
-
+                            startHandOver(
+                                    event = EventDelivered(
+                                            reason = EventDeliveredReason.Postbox
+                                    )
+                            )
                         }
                         R.id.ux_action_deliver_recipient -> {
-                            (this.activity as DeliveryActivity).showSignaturePad(text = "Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${stop.address.line1}")
+                            startHandOver(
+                                    event = EventDelivered(
+                                            reason = EventDeliveredReason.Normal
+                                    )
+                            )
                         }
                     }
                 }
@@ -169,4 +181,9 @@ class DeliveryProcessScreen
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
         log.trace("SELECTEDITEAM VIA LISTENER")
     }
+
+    fun startHandOver(event: EventDelivered) {
+        (this.activity as DeliveryActivity).runServiceWorkflow(stop, event.reason)
+    }
+
 }

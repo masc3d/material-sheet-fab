@@ -39,12 +39,12 @@ class Delivery {
      */
     val informationSubject: Subject<ServiceInformation> = PublishSubject.create()
 
-    /**
-     * Receives the result of a service workflow and publishes it to the subscribers.
-     * eg. IMEI Check OK/Failed, CASH (didn't) collected, correct/wrong ID-Document
-     */
-    val serviceCheckEventSubject by lazy { PublishSubject.create<ServiceCheck>() }
-    val serviceCheckEvent by lazy { serviceCheckEventSubject.hide() }
+//    /**
+//     * Receives the result of a service workflow and publishes it to the subscribers.
+//     * eg. IMEI Check OK/Failed, CASH (didn't) collected, correct/wrong ID-Document
+//     */
+//    val serviceCheckEventSubject by lazy { PublishSubject.create<ServiceCheck>() }
+//    val serviceCheckEvent by lazy { serviceCheckEventSubject.hide() }
 
     val stopList: MutableList<Stop> = mutableListOf()
     val orderList: MutableList<Order> = mutableListOf()
@@ -67,6 +67,22 @@ class Delivery {
         )
     }
 
+//    val serviceCheckList: List<ServiceCheck> = listOf(
+//            ServiceCheck(type = ServiceCheck.CheckType.CASH),
+//            ServiceCheck(type = ServiceCheck.CheckType.IMEI_PIN)
+//    )
+
+//    val serviceCheckList: List<Delivery.ServiceCheck> by lazy {
+//        ServiceCheck.CheckType.values().map {
+//            Delivery.ServiceCheck(type = it)
+//        }
+//
+//        data class ServiceCheck(val type: CheckType, var done: Boolean = false, var success: Boolean = false) {
+//            enum class CheckType {
+//                IMEI_PIN, CASH, IDENT, XC, SXC
+//            }
+//        }
+
     /**
      * When initiating, check for existing orders stored in the local DB and (re)load them into the variables.
      */
@@ -74,6 +90,7 @@ class Delivery {
         this.load()
     }
 
+    //region MOCK DATA
     /**
      * Load stop data from database
      */
@@ -215,8 +232,7 @@ class Delivery {
                                     services = listOf(Order.Service(
                                             classification = Order.Service.Classification.DELIVERY_SERVICE,
                                             service = listOf(ParcelService.NO_ADDITIONAL_SERVICE))
-                                    ),
-                                    sort = 0
+                                    )
                             )
                     ),
                     address = addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i],
@@ -240,8 +256,7 @@ class Delivery {
                                     services = listOf(Order.Service(
                                             classification = Order.Service.Classification.DELIVERY_SERVICE,
                                             service = listOf(ParcelService.NO_ADDITIONAL_SERVICE))
-                                    ),
-                                    sort = 0
+                                    )
                             )
                     ),
                     address = addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i],
@@ -254,6 +269,7 @@ class Delivery {
             orderList.addAll(it.orders)
         }
     }
+    //endregion
 
     data class Vehicle(
             val type: VehicleType,
@@ -261,12 +277,6 @@ class Delivery {
     ) {
         enum class VehicleType {
             VAN, CAR, BICYCLE
-        }
-    }
-
-    data class ServiceCheck(val type: CheckType, val success: Boolean) {
-        enum class CheckType {
-            IMEI_CHECKED, CASH_COLLECTED
         }
     }
 

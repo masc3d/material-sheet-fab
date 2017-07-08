@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
+import org.deku.leoz.model.MobileVehicleType
 import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import sx.io.serialization.Serializable
 import java.util.*
@@ -36,7 +37,9 @@ interface LocationServiceV1 {
             val speed: Float? = null,
             val bearing: Float? = null,
             val altitude: Double? = null,
-            val accuracy: Float? = null)
+            val accuracy: Float? = null,
+            var mobileVehicleType: MobileVehicleType? = null
+    )
 
     /**
      *
@@ -69,7 +72,8 @@ interface LocationServiceV1 {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "Get location data")
+    @ApiOperation(value = "Get location data", hidden = true)
+    @Deprecated(message = "This function is deprecated and replaced in LocationServiceV2.", replaceWith = ReplaceWith(expression = "LocationServiceV2.get"), level = DeprecationLevel.WARNING)
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
@@ -84,7 +88,8 @@ interface LocationServiceV1 {
      */
     @GET
     @Path("/recent/")
-    @ApiOperation(value = "Get recent location data")
+    @ApiOperation(value = "Get recent location data", hidden = true)
+    @Deprecated(message = "This function is deprecated and replaced in LocationServiceV2.", replaceWith = ReplaceWith(expression = "LocationServiceV2.getRecent"), level = DeprecationLevel.WARNING)
     fun getRecent(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
