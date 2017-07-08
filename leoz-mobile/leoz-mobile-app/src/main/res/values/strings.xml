@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="action_retry">Retry</string>
     <string name="action_settings">Settings</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
@@ -16,9 +17,13 @@
 
     <string name="continue_without">Continue without</string>
 
+    <string name="delivered">Delivered</string>
+
     <string name="delivery">Delivery</string>
 
     <string name="dev_login">Developer login</string>
+
+    <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
 
     <string name="dismiss">Dismiss</string>
 
@@ -32,6 +37,22 @@
     <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
+
+    <string name="event_reason_absent">Consignee absent</string>
+    <string name="event_reason_address_wrong">Wrong address</string>
+    <string name="event_reason_could_want_not_pay">Could/Want not pay</string>
+    <string name="event_reason_damaged">Parcel damaged</string>
+    <string name="event_reason_moved">Customer moved</string>
+    <string name="event_reason_no_ident_doc">No ident document</string>
+    <string name="event_reason_pin_imei_wrong">PIN / IMEI wrong</string>
+    <string name="event_reason_refuse">Consignee refused</string>
+    <string name="event_reason_signature_refused">Signature refused</string>
+    <string name="event_reason_unknown" translatable="false">N/A</string>
+    <string name="event_reason_vacation">Consignee in vacation</string>
+    <string name="event_reason_xc_code_wrong">XC code wrong</string>
+    <string name="event_reason_xc_damaged">XC object damaged</string>
+    <string name="event_reason_xc_not_ready">XC object not ready</string>
+    <string name="event_reason_xc_wrong">XC wrong object</string>
 
     <string name="exit_application">Exit application</string>
     <string name="exit_application_prompt">Do you really want to exit the application?</string>
@@ -72,11 +93,14 @@
 
     <string name="report_bug">Report bug</string>
 
+    <string name="signed_on_paper">Signed on paper</string>
+
     <string name="skip">Skip</string>
 
     <string name="station_id">Station ID</string>
 
     <string name="title_activity_delivery">Delivery</string>
+    <string name="title_missing_signature">Signature missing</string>
 
     <string name="update">Update</string>
 
@@ -86,23 +110,4 @@
     <string name="version_available">v%s is available</string>
 
     <string name="warehouse">Warehouse</string>
-    <string name="event_reason_absent">Consignee absent</string>
-    <string name="event_reason_refuse">Consignee refused</string>
-    <string name="event_reason_vacation">Consignee in vacation</string>
-    <string name="event_reason_address_wrong">Wrong address</string>
-    <string name="event_reason_moved">Customer moved</string>
-    <string name="event_reason_unknown" translatable="false">N/A</string>
-    <string name="event_reason_damaged">Parcel damaged</string>
-    <string name="event_reason_xc_code_wrong">XC code wrong</string>
-    <string name="event_reason_xc_damaged">XC object damaged</string>
-    <string name="event_reason_xc_wrong">XC wrong object</string>
-    <string name="event_reason_signature_refused">Signature refused</string>
-    <string name="event_reason_could_want_not_pay">Could/Want not pay</string>
-    <string name="event_reason_no_ident_doc">No ident document</string>
-    <string name="event_reason_xc_not_ready">XC object not ready</string>
-    <string name="event_reason_pin_imei_wrong">PIN / IMEI wrong</string>
-    <string name="title_missing_signature">Signature missing</string>
-    <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
-    <string name="action_retry">Retry</string>
-    <string name="signed_on_paper">Signed on paper</string>
 </resources>

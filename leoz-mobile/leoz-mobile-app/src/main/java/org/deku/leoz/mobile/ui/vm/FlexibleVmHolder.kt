@@ -13,11 +13,12 @@ import org.deku.leoz.mobile.R
  * Flexible view model holder
  * Created by masc on 26.06.17.
  */
-class FlexibleViewModelHolder(
+class FlexibleVmHolder(
         val view: View,
-        val adapter: FlexibleAdapter<out IFlexible<*>>)
+        val adapter: FlexibleAdapter<out IFlexible<*>>,
+        isStickyHeader: Boolean = false)
     :
-        FlexibleViewHolder(view, adapter) {
+        FlexibleViewHolder(view, adapter, isStickyHeader) {
 
     val binding: ViewDataBinding
 

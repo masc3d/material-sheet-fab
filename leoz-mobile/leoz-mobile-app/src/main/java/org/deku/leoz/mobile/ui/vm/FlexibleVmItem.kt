@@ -1,21 +1,19 @@
 package org.deku.leoz.mobile.ui.vm
 
-import android.databinding.ViewDataBinding
 import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
-import org.deku.leoz.mobile.databinding.ItemStopBinding
 
 /**
  * Created by masc on 26.06.17.
  */
-class FlexibleViewModelItem<VM>(
+class FlexibleVmItem<VM>(
         val viewRes: Int,
         val variableId: Int,
         val viewModel: VM
 )
-    : AbstractFlexibleItem<FlexibleViewModelHolder>() {
+    : AbstractFlexibleItem<FlexibleVmHolder>() {
 
     override fun equals(other: Any?): Boolean {
         return this === other
@@ -27,7 +25,7 @@ class FlexibleViewModelItem<VM>(
 
     override fun bindViewHolder(
             adapter: FlexibleAdapter<out IFlexible<*>>,
-            viewHolder: FlexibleViewModelHolder,
+            viewHolder: FlexibleVmHolder,
             position: Int,
             payloads: MutableList<Any?>) {
 
@@ -35,8 +33,8 @@ class FlexibleViewModelItem<VM>(
         viewHolder.binding.executePendingBindings()
     }
 
-    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleViewModelHolder {
-        return FlexibleViewModelHolder(view, adapter)
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
+        return FlexibleVmHolder(view, adapter)
     }
 
     override fun getLayoutRes(): Int {

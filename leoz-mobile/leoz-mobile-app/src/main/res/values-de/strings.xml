@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="action_retry">Erneut versuchen</string>
     <string name="action_settings">Einstellungen</string>
     <string name="action_sign_in">Anmelden / Registrieren</string>
     <string name="action_sign_in_short">Anmelden</string>
@@ -12,9 +13,13 @@
 
     <string name="continue_without">Ohne fortfahren</string>
 
+    <string name="delivered">Zugestellt</string>
+
     <string name="delivery">Zustellung</string>
 
     <string name="dev_login">Developer login</string>
+
+    <string name="dialog_text_missing_signature">Es wurde keine Unterschrift gegeben. Hat der Kunde auf Papier unterschrieben?</string>
 
     <string name="dismiss">Verwerfen</string>
 
@@ -28,6 +33,21 @@
     <string name="error_invalid_credentials">Email &amp; Passwort Kombination konnte nicht gefunden werden.</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
     <string name="error_invalid_password">Das Passwort ist zu kurz</string>
+
+    <string name="event_reason_absent">Kunde abwesend</string>
+    <string name="event_reason_address_wrong">Falsche adresse</string>
+    <string name="event_reason_could_want_not_pay">Kann/Will nicht zahlen</string>
+    <string name="event_reason_damaged">Paket beschädigt</string>
+    <string name="event_reason_moved">Kunde umgezogen</string>
+    <string name="event_reason_no_ident_doc">Ausweis nicht verfügbar</string>
+    <string name="event_reason_pin_imei_wrong">PIN / IMEI falsch</string>
+    <string name="event_reason_refuse">Kunde verweigert annahme</string>
+    <string name="event_reason_signature_refused">Unterschrift verweigert</string>
+    <string name="event_reason_vacation">Kunde in Urlaub</string>
+    <string name="event_reason_xc_code_wrong">XC Code falsch</string>
+    <string name="event_reason_xc_damaged">XC Paket beschädigt</string>
+    <string name="event_reason_xc_not_ready">XC Paket nicht fertig</string>
+    <string name="event_reason_xc_wrong">XC Paket falsch</string>
 
     <string name="exit_application">Anwendung verlassen</string>
     <string name="exit_application_prompt">Möchten Sie die Anwendung wirklich verlassen?</string>
@@ -61,11 +81,14 @@
 
     <string name="report_bug">Report bug</string>
 
+    <string name="signed_on_paper">Unters. auf Papier</string>
+
     <string name="skip">Überspringen</string>
 
     <string name="station_id">Station:</string>
 
     <string name="title_activity_delivery">Zustellung</string>
+    <string name="title_missing_signature">Unterschrift fehlt</string>
 
     <string name="update">Aktualisieren</string>
 
@@ -75,22 +98,4 @@
     <string name="version_available">v%s ist verfügbar</string>
 
     <string name="warehouse">Lager</string>
-    <string name="event_reason_absent">Kunde abwesend</string>
-    <string name="event_reason_address_wrong">Falsche adresse</string>
-    <string name="event_reason_could_want_not_pay">Kann/Will nicht zahlen</string>
-    <string name="event_reason_damaged">Paket beschädigt</string>
-    <string name="event_reason_moved">Kunde umgezogen</string>
-    <string name="event_reason_no_ident_doc">Ausweis nicht verfügbar</string>
-    <string name="event_reason_pin_imei_wrong">PIN / IMEI falsch</string>
-    <string name="event_reason_refuse">Kunde verweigert annahme</string>
-    <string name="event_reason_signature_refused">Unterschrift verweigert</string>
-    <string name="event_reason_vacation">Kunde in Urlaub</string>
-    <string name="event_reason_xc_code_wrong">XC Code falsch</string>
-    <string name="event_reason_xc_damaged">XC Paket beschädigt</string>
-    <string name="event_reason_xc_not_ready">XC Paket nicht fertig</string>
-    <string name="event_reason_xc_wrong">XC Paket falsch</string>
-    <string name="action_retry">Erneut versuchen</string>
-    <string name="dialog_text_missing_signature">Es wurde keine Unterschrift gefunden. Hat der Kunde auf Papier unterschrieben?</string>
-    <string name="signed_on_paper">Unters. auf Papier</string>
-    <string name="title_missing_signature">Unterschrift fehlt</string>
 </resources>

@@ -23,7 +23,7 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.vm.FlexibleViewModelItem
+import org.deku.leoz.mobile.ui.vm.FlexibleVmItem
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import sx.LazyInstance
 
@@ -38,7 +38,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
 
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
-                    FlexibleViewModelItem<
+                    FlexibleVmItem<
                             StopItemViewModel>>>({
         val adapter = FlexibleAdapter(
                 // Items
@@ -49,7 +49,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
                             }
                         }
                         .map {
-                            val item = FlexibleViewModelItem(
+                            val item = FlexibleVmItem(
                                     R.layout.item_stop,
                                     BR.stop,
                                     StopItemViewModel(it)
