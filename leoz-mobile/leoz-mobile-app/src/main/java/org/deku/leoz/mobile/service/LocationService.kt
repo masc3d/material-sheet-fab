@@ -13,7 +13,7 @@ import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.model.MobileVehicleType
+import org.deku.leoz.model.VehicleType
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
@@ -33,11 +33,6 @@ class LocationService(
     private val login: Login by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
 
-    companion object {
-        lateinit var instance: LocationService
-        var vehicleType: MobileVehicleType? = null
-    }
-
     override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -49,8 +44,6 @@ class LocationService(
     }
 
     override fun onCreate() {
-        LocationService.instance = this
-
         if (locationManager == null)
             locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -113,7 +106,7 @@ class LocationService(
                     bearing = location.bearing,
                     altitude = location.altitude,
                     accuracy = location.accuracy,
-                    mobileVehicleType = LocationService.vehicleType
+                    vehicleType = login.authenticatedUser?.vehicleType
             )
             lastLocation.set(location)
 

@@ -336,7 +336,7 @@ enum class UserRole(val value: Int) {
 /**
  * Enumeration for possible types of vehicles, provided by the mobile app.
  */
-enum class MobileVehicleType(val value: String) {
+enum class VehicleType(val value: String) {
     BIKE("BIKE"),
     CAR("CAR"),
     VAN("VAN"),

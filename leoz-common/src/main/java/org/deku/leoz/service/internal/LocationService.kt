@@ -3,7 +3,7 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
-import org.deku.leoz.model.MobileVehicleType
+import org.deku.leoz.model.VehicleType
 import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import sx.io.serialization.Serializable
 import java.util.*
@@ -38,7 +38,7 @@ interface LocationServiceV1 {
             val bearing: Float? = null,
             val altitude: Double? = null,
             val accuracy: Float? = null,
-            var mobileVehicleType: MobileVehicleType? = null
+            var vehicleType: VehicleType? = null
     )
 
     /**

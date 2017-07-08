@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.ui.Activity
@@ -16,7 +17,7 @@ import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
 import org.deku.leoz.model.EventDeliveredReason
-import org.deku.leoz.model.MobileVehicleType
+import org.deku.leoz.model.VehicleType
 import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
@@ -32,8 +33,11 @@ class DeliveryActivity : Activity(),
         VehicleLoadingDialog.OnDialogResultListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
+    private val locationService: LocationService by Kodein.global.lazy.instance()
+
+    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     companion object {
         const val FRAGMENT_TAG_CAMERA = "fragmentCamera"
@@ -57,9 +61,6 @@ class DeliveryActivity : Activity(),
             //Check if the changelog dialog should be displayed TODO: Call this function when the vehicle selection is done.
             queryChangelogDisplay()
         }
-
-        //val locService = LocationService.instance
-        LocationService.vehicleType = MobileVehicleType.CAR
     }
 
     override fun onBackPressed() {
