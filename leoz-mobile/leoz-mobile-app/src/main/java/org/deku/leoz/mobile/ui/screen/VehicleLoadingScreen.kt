@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.screen
 
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -9,23 +10,23 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_vehicle_loading.*
+import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Delivery
-import org.deku.leoz.mobile.model.DeliveryList
-import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.*
 
-import org.deku.leoz.mobile.ui.Fragment
-import org.deku.leoz.mobile.ui.ParcelListAdapter
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
+import org.deku.leoz.mobile.ui.vm.*
 import org.slf4j.LoggerFactory
+import sx.LazyInstance
 
 
 /**
- * A simple [Fragment] subclass.
+ * Vehicle loading screen
  */
 class VehicleLoadingScreen : ScreenFragment() {
 
@@ -34,16 +35,69 @@ class VehicleLoadingScreen : ScreenFragment() {
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
-    private val loadedParcels: MutableList<Order.Parcel> = mutableListOf()
+    private val loadedParcels: MutableList<Parcel> = mutableListOf()
 
-    override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?,
+    private val parcelListAdapterInstance = LazyInstance<
+            FlexibleAdapter<
+                    FlexibleVmSectionableItem<
+                            ParcelViewModel>>>({
+
+        val header1 = FlexibleVmHeaderItem<ParcelListHeaderViewModel>(
+                viewRes = R.layout.item_parcel_header,
+                variableId = BR.header,
+                viewModel = ParcelListHeaderViewModel()
+        )
+
+        val adapter = FlexibleAdapter(
+                // Items
+                delivery.stopList
+                        .flatMap {
+                            it.orders
+                                    .flatMap { it.parcel }
+                        }
+                        .map {
+                            val item = FlexibleVmSectionableItem(
+                                    viewRes = R.layout.item_parcel,
+                                    variableId = BR.parcel,
+                                    viewModel = ParcelViewModel(it)
+                            )
+
+                            item.header = header1
+                            item.isEnabled = true
+                            item.isDraggable = true
+                            item.isSwipeable = false
+
+                            item
+                        },
+                // Listener
+                this)
+
+        adapter.headerItems.add(header1)
+        adapter.setDisplayHeadersAtStartUp(true)
+        adapter.setStickyHeaders(true)
+        adapter.showAllHeaders()
+
+        adapter
+    })
+    private val parcelListAdapter get() = parcelListAdapterInstance.get()
+
+    override fun onCreateView(inflater: android.view.LayoutInflater,
+                              container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_vehicle_loading, container, false)
+        return inflater.inflate(R.layout.fragment_vehicle_loading, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Flexible adapter needs to be re-created with views
+        this.parcelListAdapterInstance.reset()
+
+        this.uxParcelList.adapter = parcelListAdapter
+        this.uxParcelList.layoutManager = LinearLayoutManager(context)
+
+//        parcelListAdapter.addListener(onItemClickListener)
 
         this.actionItems = listOf(
                 ActionItem(
@@ -75,9 +129,6 @@ class VehicleLoadingScreen : ScreenFragment() {
 //                    }
 //                }
 
-        loadedParcels.addAll(delivery.orderList.flatMap { it.parcel }.filter { it.state == Order.Parcel.State.LOADED })
-        updateLoadedParcelList(mutableListOf<Order.Parcel>())
-
         this.activity.supportActionBar?.title = "Vehicle loading"
     }
 
@@ -97,9 +148,9 @@ class VehicleLoadingScreen : ScreenFragment() {
                 //Continue
                 val parcel = order.first().findParcelByReference(data)
                 log.debug("Parcel ID [${parcel!!.id}] Order ID [${order.first().id}] State [${parcel.state}]")
-                if (order.first().parcelVehicleLoading(parcel)) {
-                    updateLoadedParcelList(mutableListOf(parcel))
-                }
+//                if (order.first().parcelVehicleLoading(parcel)) {
+//                    updateLoadedParcelList(mutableListOf(parcel))
+//                }
                 log.debug("State after processing [${parcel.state}]")
             }
             else -> {
@@ -108,11 +159,4 @@ class VehicleLoadingScreen : ScreenFragment() {
             }
         }
     }
-
-    private fun updateLoadedParcelList(parcels: MutableList<Order.Parcel>) {
-        parcels.removeAll(loadedParcels)
-        loadedParcels.addAll(0, parcels)
-        this.uxParcelList.adapter = ParcelListAdapter(context = context, data = loadedParcels, readOnly = true) //ArrayAdapter(context, android.R.layout.simple_list_item_1, loadedParcels.map { it.labelReference })
-    }
-
 }

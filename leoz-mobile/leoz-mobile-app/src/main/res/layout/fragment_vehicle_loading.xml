@@ -1,21 +1,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+              tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
 
     <!-- TODO: Update blank fragment layout -->
 
     <android.support.v7.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        style="@style/AppTheme.CardView"
+        style="@style/AppTheme.CardView.List"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/small_margin"
         android:foreground="?attr/selectableItemBackground"
+        android:padding="@dimen/small_margin"
         >
 
         <LinearLayout
@@ -39,7 +39,7 @@
                     android:editable="false"
                     android:ems="10"
                     android:text="Stops"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                 <TextView
                     android:id="@+id/uxStopCount"
@@ -48,7 +48,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="0/0"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
             </LinearLayout>
 
@@ -66,7 +66,7 @@
                     android:editable="false"
                     android:ems="10"
                     android:text="Orders"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                 <TextView
                     android:id="@+id/uxOrderCount"
@@ -75,7 +75,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="0/0"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
             </LinearLayout>
 
             <LinearLayout
@@ -92,7 +92,7 @@
                     android:editable="false"
                     android:ems="10"
                     android:text="Parcels"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                 <TextView
                     android:id="@+id/uxParcelCount"
@@ -101,7 +101,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="0/0"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
             </LinearLayout>
 
             <LinearLayout
@@ -118,7 +118,7 @@
                     android:editable="false"
                     android:ems="10"
                     android:text="Weight"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                 <TextView
                     android:id="@+id/uxWeight"
@@ -127,7 +127,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="0/0"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -135,24 +135,24 @@
     </android.support.v7.widget.CardView>
 
     <LinearLayout
-        style="@style/AppTheme.Layout.Content"
+        style="@style/AppTheme.Layout.List"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            style="@style/TextAppearance.AppCompat.Large"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Parcels loaded into vehicle:" />
-
-        <ListView
-            android:id="@+id/uxParcelList"
-            style="@style/AppTheme.ListView"
+        <!-- FlexibleAdapter/RecyclerView wrapper layout for sticky headers -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/uxParcelList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:longClickable="false"
+                android:scrollbars="none"/>
 
-        </ListView>
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

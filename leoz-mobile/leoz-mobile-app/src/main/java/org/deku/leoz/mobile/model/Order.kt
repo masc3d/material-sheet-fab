@@ -53,21 +53,6 @@ class Order (
         return if (serviceCheckList.isNotEmpty()) serviceCheckList.firstOrNull { !it.done } else null
     }
 
-    data class Parcel (
-            val id: String,
-            var state: Parcel.State = Parcel.State.PENDING,
-            val labelReference: String?,
-            val status: MutableList<Status>? = mutableListOf(),
-            val length: Float = 0.0F,
-            val height: Float = 0.0F,
-            val width: Float = 0.0F,
-            val weight: Float = 0.0F
-    ) {
-        enum class State{
-            PENDING, LOADED, MISSING, DONE, FAILED
-        }
-    }
-
     data class Address (
             val classification: Classification,
             val line1: String,
@@ -234,10 +219,10 @@ class Order (
     }
     //data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
 
-    fun parcelVehicleLoading(parcel: Order.Parcel): Boolean {
+    fun parcelVehicleLoading(parcel: Parcel): Boolean {
         val parcel = this.parcel.firstOrNull { it == parcel } ?: throw IllegalArgumentException("Parcel [${parcel.id}] is not part of the order [${this.id}]")
 
-        parcel.state = Order.Parcel.State.LOADED
+        parcel.state = Parcel.State.LOADED
 
         var allSet = true
         this.parcel.forEach {
@@ -275,10 +260,9 @@ fun OrderService.Order.toOrder(): Order {
             state = Order.State.PENDING,
             classification = this.orderClassification,
             parcel = this.parcels.map {
-                Order.Parcel(
+                Parcel(
                         id = it.id.toString(),
                         labelReference = it.number,
-                        status = null,
                         length = it.dimension?.length?.toFloat() ?: 0.0F,
                         height = it.dimension?.height?.toFloat() ?: 0.0F,
                         width = it.dimension?.width?.toFloat() ?: 0.0F,

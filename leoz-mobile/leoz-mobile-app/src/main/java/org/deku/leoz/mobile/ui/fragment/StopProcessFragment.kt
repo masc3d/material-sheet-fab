@@ -18,10 +18,10 @@ import kotlinx.android.synthetic.main.fragment_delivery_stop_process.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.Parcel
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ParcelListAdapter
-import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 
@@ -36,7 +36,7 @@ class StopProcessFragment : Fragment() {
 
     private lateinit var stop: Stop
     private lateinit var orderList: List<Order>
-    private lateinit var parcelList: MutableList<Order.Parcel>
+    private lateinit var parcelList: MutableList<Parcel>
     private var lastRef: String? = null
     private var resultCount: Int = 0
 

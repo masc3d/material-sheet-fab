@@ -7,13 +7,13 @@ import android.widget.BaseAdapter
 import android.view.LayoutInflater
 import kotlinx.android.synthetic.main.item_delivery_process_parcel_list.view.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.Parcel
 
 
 /**
  * Created by 27694066 on 22.05.2017.
  */
-class ParcelListAdapter(val context: Context, val data: List<Order.Parcel>, val rootViewGroup: ViewGroup? = null, val readOnly: Boolean = false): BaseAdapter() {
+class ParcelListAdapter(val context: Context, val data: List<Parcel>, val rootViewGroup: ViewGroup? = null, val readOnly: Boolean = false): BaseAdapter() {
 
     var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 

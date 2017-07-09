@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <data>
+
+        <variable
+            name="parcel"
+            type="org.deku.leoz.mobile.ui.vm.ParcelViewModel"/>
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/uxStopItem"
+        style="@style/AppTheme.CardView"
+        app:cardElevation="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        >
+
+        <LinearLayout
+            style="@style/AppTheme.Layout.Content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin"
+            android:orientation="horizontal"
+            >
+
+            <ImageView
+                android:src="@drawable/ic_package_closed"
+                android:tint="@color/colorDarkGrey"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/large_margin"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:layout_gravity="center_vertical"
+                android:text="@{parcel.number, default=000000000}"
+                />
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</layout>

@@ -152,11 +152,7 @@ class DeliveryActivity : Activity(),
     override fun onDeliveryMenuChoosed(entryType: MenuScreen.MenuEntry.Entry) {
         when (entryType) {
             MenuScreen.MenuEntry.Entry.LOADING -> {
-                /**
-                 * Start "vehicle loading" process
-                 */
-                val dialog: VehicleLoadingDialog = VehicleLoadingDialog(this)
-                dialog.show(supportFragmentManager, "LOADINGDIALOG")
+                this.showScreen(VehicleLoadingScreen())
             }
 
             MenuScreen.MenuEntry.Entry.ORDERLIST -> {
@@ -168,7 +164,6 @@ class DeliveryActivity : Activity(),
     override fun onCameraFragmentPictureTaken(data: ByteArray?) {
         log.debug("ONCAMERAFRAGMENTPICTURETAKEN")
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-
     }
 
     override fun onCameraFragmentShutter() {

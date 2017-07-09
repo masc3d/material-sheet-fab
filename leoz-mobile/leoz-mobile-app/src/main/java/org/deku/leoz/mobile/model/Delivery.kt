@@ -213,15 +213,15 @@ class Delivery {
                                     state = Order.State.LOADED,
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(
-                                            Order.Parcel(
+                                            Parcel(
                                                     id = "a",
                                                     labelReference = "1000000000$i"
                                             ),
-                                            Order.Parcel(
+                                            Parcel(
                                                     id = "b",
                                                     labelReference = "1000000001$i"
                                             ),
-                                            Order.Parcel(
+                                            Parcel(
                                                     id = "c",
                                                     labelReference = "1000000002$i"
                                             )
@@ -246,7 +246,7 @@ class Delivery {
                                     id = "2",
                                     state = Order.State.LOADED,
                                     classification = OrderClassification.DELIVERY,
-                                    parcel = listOf(Order.Parcel(
+                                    parcel = listOf(Parcel(
                                             id = "a",
                                             labelReference = "0200000000$i"
                                     )),
@@ -414,7 +414,7 @@ class Delivery {
         var count = 0
         count += orderList.filter { it.state == Order.State.PENDING }
                 .flatMap { it.parcel }
-                .filter { it.state == Order.Parcel.State.PENDING }.size
+                .filter { it.state == Parcel.State.PENDING }.size
         return count
     }
 
@@ -422,7 +422,7 @@ class Delivery {
         var count = 0
         count += orderList.filter { it.state == Order.State.FAILED || it.state == Order.State.LOADED }
                 .flatMap { it.parcel }
-                .filter { it.state == Order.Parcel.State.FAILED || it.state == Order.Parcel.State.LOADED }.size
+                .filter { it.state == Parcel.State.FAILED || it.state == Parcel.State.LOADED }.size
         return count
     }
 }
