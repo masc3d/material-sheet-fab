@@ -12,7 +12,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_vehicle_loading.*
+import kotlinx.android.synthetic.main.fragment_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.*
