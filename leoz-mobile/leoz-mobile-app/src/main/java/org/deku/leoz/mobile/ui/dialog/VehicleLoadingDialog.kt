@@ -14,7 +14,7 @@ import org.deku.leoz.mobile.ui.Dialog
 /**
  * Created by phpr on 29.05.2017.
  */
-class VehicleLoadingDialog(val listener: OnDialogResultListener): Dialog(dialogLayoutId = R.layout.dialog_vehicle_loading) {
+class VehicleLoadingDialog(val listener: OnDialogResultListener): Dialog(dialogLayoutId = R.layout.dialog_vehicleloading) {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
         val builder = AlertDialog.Builder(context)

@@ -85,7 +85,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                               container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_vehicle_loading, container, false)
+        return inflater.inflate(R.layout.fragment_vehicleloading, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
