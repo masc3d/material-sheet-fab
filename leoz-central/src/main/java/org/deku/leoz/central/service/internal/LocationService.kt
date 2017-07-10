@@ -14,6 +14,7 @@ import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.deku.leoz.model.UserRole
+import org.deku.leoz.model.VehicleType
 import org.deku.leoz.service.internal.LocationServiceV2
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -43,7 +44,8 @@ open class LocationServiceV1
                 this.speed?.toFloat(),
                 this.bearing?.toFloat(),
                 this.altitude,
-                this.accuracy?.toFloat()
+                this.accuracy?.toFloat(),
+                VehicleType.valueOf(this.vehicleType)
 
         )
         return gpsPoint
@@ -318,6 +320,7 @@ open class LocationServiceV1
             r.bearing = it.bearing?.toDouble()
             r.altitude = it.altitude
             r.accuracy = it.accuracy?.toDouble()
+            r.vehicleType = it.vehicleType?.value?.toUpperCase()
 
             posRepository.save(r)
         }

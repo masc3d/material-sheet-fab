@@ -341,5 +341,4 @@ enum class VehicleType(val value: String) {
     CAR("CAR"),
     VAN("VAN"),
     TRUCK("TRUCK")
-
 }

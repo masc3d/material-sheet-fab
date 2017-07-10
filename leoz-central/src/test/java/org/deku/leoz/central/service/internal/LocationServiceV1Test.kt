@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.DataTestConfiguration
+import org.deku.leoz.model.VehicleType
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -38,7 +39,8 @@ class LocationServiceV1Test {
                 speed = 57.toFloat(),
                 bearing = 0.toFloat(),
                 altitude = 0.0,
-                accuracy = 0.toFloat()
+                accuracy = 0.toFloat(),
+                vehicleType = VehicleType.BIKE
         )
 
         val gpsMessage = LocationServiceV1.GpsMessage(
