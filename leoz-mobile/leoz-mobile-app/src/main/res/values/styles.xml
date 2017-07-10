@@ -93,6 +93,11 @@
         <item name="cardUseCompatPadding">true</item>
     </style>
 
+    <!-- Standalone cardview, eg. menu -->
+    <style name="AppTheme.CardView.Flat">
+        <item name="cardElevation">2dp</item>
+    </style>
+
     <!-- Card view used in continues lists -->
     <style name="AppTheme.CardView.List" parent="AppTheme.CardView">
         <item name="android:layout_marginBottom">@dimen/small_margin</item>
