@@ -2,7 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.TrnNodeGeopositionRecord
+import org.deku.leoz.central.data.jooq.tables.records.TadNodeGeopositionRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.node.rest.DefaultProblem
 import org.jooq.DSLContext
@@ -36,7 +36,7 @@ open class LocationServiceV1
         org.deku.leoz.service.internal.LocationServiceV1,
         MqHandler<LocationServiceV1.GpsMessage> {
 
-    fun TrnNodeGeopositionRecord.toGpsData(): LocationServiceV1.GpsDataPoint {
+    fun TadNodeGeopositionRecord.toGpsData(): LocationServiceV1.GpsDataPoint {
         val gpsPoint = LocationServiceV1.GpsDataPoint(
                 latitude = this.latitude,
                 longitude = this.longitude,
@@ -218,7 +218,7 @@ open class LocationServiceV1
                             || ((authorizedUserRecord.debitorId == it.debitorId)
                             && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(it.role).value))) {
 
-                        val posList: List<TrnNodeGeopositionRecord>?
+                        val posList: List<TadNodeGeopositionRecord>?
                         if (duration != null) {
                             val pos_to = Date()
                             val pos_from = Date().minusMinutes(duration)
@@ -255,7 +255,7 @@ open class LocationServiceV1
                         || ((authorizedUserRecord.debitorId == userRecord.debitorId)
                         && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value))) {
 
-                    val posList: List<TrnNodeGeopositionRecord>?
+                    val posList: List<TadNodeGeopositionRecord>?
                     if (duration != null) {
                         val pos_to = Date()
                         val pos_from = Date().minusMinutes(duration)
@@ -310,7 +310,7 @@ open class LocationServiceV1
         log.trace("Received ${dataPoints.count()} from [${message.nodeId}] user [${message.userId}]")
 
         dataPoints.forEach {
-            val r = dslContext.newRecord(Tables.TRN_NODE_GEOPOSITION)
+            val r = dslContext.newRecord(Tables.TAD_NODE_GEOPOSITION)
 
             r.userId = message.userId
             r.latitude = it.latitude
@@ -326,7 +326,7 @@ open class LocationServiceV1
         }
     }
 
-    fun geoFilter(posList: List<TrnNodeGeopositionRecord>): MutableList<LocationServiceV1.GpsDataPoint> {
+    fun geoFilter(posList: List<TadNodeGeopositionRecord>): MutableList<LocationServiceV1.GpsDataPoint> {
         val gpsList = mutableListOf<LocationServiceV1.GpsDataPoint>()
 
         var lastLon: Double = 0.0

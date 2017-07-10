@@ -1,8 +1,8 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.tables.records.TrnVOrderParcelRecord
-import org.deku.leoz.central.data.jooq.tables.records.TrnVOrderRecord
+import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
+import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.OrderJooqRepository
 import org.deku.leoz.model.*
 import org.deku.leoz.node.rest.DefaultProblem
@@ -69,7 +69,7 @@ class OrderService : OrderService {
     /**
      * Order record conversion extension
      */
-    fun TrnVOrderRecord.toOrder(): Order {
+    fun TadVOrderRecord.toOrder(): Order {
         val o = Order()
         val r = this
 
@@ -142,7 +142,7 @@ class OrderService : OrderService {
     /**
      * Order parcel record conversion extension
      */
-    fun TrnVOrderParcelRecord.toParcel(): Order.Parcel {
+    fun TadVOrderParcelRecord.toParcel(): Order.Parcel {
         val r = this
         val p = Order.Parcel()
         p.id = r.id.toLong()
