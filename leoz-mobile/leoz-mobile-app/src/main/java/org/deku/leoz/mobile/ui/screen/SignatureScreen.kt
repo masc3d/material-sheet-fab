@@ -30,15 +30,17 @@ class SignatureScreen
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val listener by lazy { this.activity as? Listener }
     private var descriptionText: String = ""
+    private var recipient: String = ""
     private var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal
     private lateinit var stop: Stop
 
     companion object {
-        fun create(deliveryReason: EventDeliveredReason, stop: Stop): SignatureScreen {
+        fun create(deliveryReason: EventDeliveredReason, stop: Stop, recipient: String = ""): SignatureScreen {
             val s = SignatureScreen()
             s.deliveryReason = deliveryReason
             s.stop = stop
-            s.descriptionText = "Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${stop.address.line1}"
+            s.recipient = recipient
+            s.descriptionText = "Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: $recipient"
             return s
         }
 

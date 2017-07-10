@@ -8,7 +8,6 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.Delivery
-import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.ui.Activity
@@ -17,7 +16,6 @@ import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
 import org.deku.leoz.model.EventDeliveredReason
-import org.deku.leoz.model.VehicleType
 import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
@@ -76,15 +74,21 @@ class DeliveryActivity : Activity(),
 
     }
 
-    fun showSignaturePad(stop: Stop, reason: EventDeliveredReason) {
-        this.showScreen(SignatureScreen.create(deliveryReason = reason, stop = stop))
+    fun runSigningProcess(stop: Stop, reason: EventDeliveredReason) {
+        when (reason) {
+            EventDeliveredReason.Normal -> TODO()
+            EventDeliveredReason.Neighbor -> this.showScreen(NeighbourDeliveryScreen.create(stop = stop))
+            EventDeliveredReason.Postbox -> TODO()
+            else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")
+        }
+        //this.showScreen(SignatureScreen.create(deliveryReason = reason, stop = stop))
     }
 
     fun runServiceWorkflow(stop: Stop, reason: EventDeliveredReason) {
         val serviceCheck = stop.orders.first().getNextServiceCheck()
 
         if (serviceCheck == null) {
-            showSignaturePad(stop = stop, reason = reason)
+            runSigningProcess(stop = stop, reason = reason)
         } else {
             when (serviceCheck.service) {
                 ParcelService.CASH_ON_DELIVERY -> TODO()
@@ -178,7 +182,7 @@ class DeliveryActivity : Activity(),
     }
 
     override fun onSignatureSubmitted() {
-        this@DeliveryActivity.supportFragmentManager.popBackStack(DeliveryProcessScreen::class.java.canonicalName, 0)
+        this@DeliveryActivity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
     }
 
     /**

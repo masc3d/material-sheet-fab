@@ -124,16 +124,11 @@ class Order (
 
     data class Information (
             val classification: Classification,
-            val additionalInformation: MutableList<AdditionalInformation>
+            val additionalInformation: String
     ) {
         enum class Classification {
             DELIVERY_INFO, PICKUP_INFO
         }
-
-        data class AdditionalInformation (
-                val type: AdditionalInformationType,
-                val value: String
-        )
     }
 
     enum class State(val key: String) {
@@ -312,21 +307,11 @@ fun OrderService.Order.toOrder(): Order {
             information = mutableListOf(
                     Order.Information(
                             classification = Order.Information.Classification.DELIVERY_INFO,
-                            additionalInformation = this.deliveryInformation!!.additionalInformation!!.map {
-                                Order.Information.AdditionalInformation(
-                                        type = it.additionalInformationType!!,
-                                        value = it.information ?: ""
-                                )
-                            }.toMutableList()
+                            additionalInformation = this.deliveryTextInformation ?: ""
                     ),
                     Order.Information(
                             classification = Order.Information.Classification.PICKUP_INFO,
-                            additionalInformation = this.pickupInformation!!.additionalInformation!!.map {
-                                Order.Information.AdditionalInformation(
-                                        type = it.additionalInformationType!!,
-                                        value = it.information ?: ""
-                                )
-                            }.toMutableList()
+                            additionalInformation = this.pickupTextInformation ?: ""
                     )
             )
     )

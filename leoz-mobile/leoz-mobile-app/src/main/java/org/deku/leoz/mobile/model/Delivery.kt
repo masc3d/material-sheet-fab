@@ -5,9 +5,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.raizlabs.android.dbflow.kotlinextensions.save
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
 import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
@@ -32,12 +29,6 @@ class Delivery {
 
     val activeStopProperty = ObservableRxProperty<Stop?>(null)
     val activeStop: Stop? by activeStopProperty
-
-    /**
-     * Receives the acquired information during the service workflow process, to be published to its subscribers.
-     * eg. entered information of ID document
-     */
-    val informationSubject: Subject<ServiceInformation> = PublishSubject.create()
 
 //    /**
 //     * Receives the result of a service workflow and publishes it to the subscribers.
@@ -276,12 +267,6 @@ class Delivery {
             @DrawableRes val icon: Int
     )
 
-    data class ServiceInformation(val type: Order.Information.Classification, val value: Order.Information.AdditionalInformation)
-
-    fun addInformation(serviceInformation: ServiceInformation) {
-        informationSubject.onNext(serviceInformation)
-    }
-
     /**
      * Clean the existing Delivery.stopList
      * Merge existing orders in Delivery.orderList into the blank Delivery.stopList
@@ -420,5 +405,9 @@ class Delivery {
                 .flatMap { it.parcel }
                 .filter { it.state == Parcel.State.FAILED || it.state == Parcel.State.LOADED }.size
         return count
+    }
+
+    fun Stop.deliver(reason: EventDeliveredReason, recipient: String) {
+
     }
 }
