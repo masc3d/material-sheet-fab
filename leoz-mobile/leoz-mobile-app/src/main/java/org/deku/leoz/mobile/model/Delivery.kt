@@ -7,10 +7,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import org.deku.leoz.model.Carrier
-import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.OrderClassification
-import org.deku.leoz.model.ParcelService
+import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
 import org.slf4j.LoggerFactory
@@ -274,11 +271,7 @@ class Delivery {
     data class Vehicle(
             val type: VehicleType,
             @DrawableRes val icon: Int
-    ) {
-        enum class VehicleType {
-            VAN, CAR, BICYCLE
-        }
-    }
+    )
 
     data class ServiceInformation(val type: Order.Information.Classification, val value: Order.Information.AdditionalInformation)
 

@@ -12,7 +12,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_vehicleloading.*
+import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.*
@@ -85,7 +85,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                               container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_vehicleloading, container, false)
+        return inflater.inflate(R.layout.screen_vehicleloading, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
