@@ -38,14 +38,14 @@ open class LocationServiceV1
 
     fun TrnNodeGeopositionRecord.toGpsData(): LocationServiceV1.GpsDataPoint {
         val gpsPoint = LocationServiceV1.GpsDataPoint(
-                this.latitude,
-                this.longitude,
-                this.positionDatetime,
-                this.speed?.toFloat(),
-                this.bearing?.toFloat(),
-                this.altitude,
-                this.accuracy?.toFloat(),
-                VehicleType.valueOf(this.vehicleType)
+                latitude = this.latitude,
+                longitude = this.longitude,
+                time = this.positionDatetime,
+                speed = this.speed?.toFloat(),
+                bearing = this.bearing?.toFloat(),
+                altitude = this.altitude,
+                accuracy = this.accuracy?.toFloat(),
+                vehicleType = if (this.vehicleType.isNullOrEmpty()) null else VehicleType.valueOf(this.vehicleType)
 
         )
         return gpsPoint
