@@ -2,7 +2,7 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
 import org.deku.leoz.model.*
-import java.util.Date
+import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -67,23 +67,27 @@ interface OrderService {
 
             @get:ApiModelProperty(position = 60, required = true, value = "appointmentPickup")
             var appointmentPickup: Appointment = Appointment(),
-            @get:ApiModelProperty(required = true, position = 120, value = "Pickup address")
+            @get:ApiModelProperty(required = true, position = 70, value = "Pickup address")
             var pickupAddress: Address = Address(),
-            @get:ApiModelProperty(required = true, position = 120, value = "Pickup service")
+            @get:ApiModelProperty(required = true, position = 80, value = "Pickup service")
             var pickupService: Service = Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)),
-            @get:ApiModelProperty(required = true, position = 120, value = "Pickup information")
-            var pickupInformation: Information? = null,
+            @get:ApiModelProperty(required = true, position = 90, value = "Pickup text information")
+            var pickupTextInformation: String? = null,
 
-            @get:ApiModelProperty(position = 60, required = true, value = "appointmentDelivery")
+            @get:ApiModelProperty(position = 100, required = true, value = "appointmentDelivery")
             var appointmentDelivery: Appointment = Appointment(),
-            @ApiModelProperty(required = true, position = 130, value = "Delivery address")
+            @ApiModelProperty(required = true, position = 110, value = "Delivery address")
             var deliveryAddress: Address = Address(),
             @get:ApiModelProperty(required = true, position = 120, value = "delivery services")
             var deliveryService: Service = Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)),
-            @get:ApiModelProperty(required = true, position = 120, value = "delivery information")
-            var deliveryInformation: Information? = null,
+            @get:ApiModelProperty(required = true, position = 130, value = "delivery Cash information")
+            var deliveryCashService: CashService? = null,
 
-            @get:ApiModelProperty(position = 140, required = false, value = "Parcels")
+            @get:ApiModelProperty(required = true, position = 140, value = "delivery text information")
+            var deliveryTextInformation: String? = null,
+
+
+            @get:ApiModelProperty(position = 150, required = false, value = "Parcels")
             var parcels: List<Parcel> = listOf()
     ) {
         companion object {
@@ -128,12 +132,14 @@ interface OrderService {
                 var services: List<ParcelService>? = null
         )
 
-        @ApiModel(value = "Information", description = "Information")
-        data class Information(
-                @get:ApiModelProperty(example = "AdditionalInformation", position = 50, required = false, value = "AdditionalInformation")
-                var additionalInformation: List<AdditionalInformation>? = null
-        )
 
+        data class CashService(
+                //                @get:ApiModelProperty(example = "take cash in currency €", position = 120, required = false, value = "information")
+                @get:ApiModelProperty(example = "10.99", position = 130, required = false, value = "cashAmount")
+                var cashAmount: Double = 0.0,
+                var currency: String = "DE"
+
+        )
 
         @ApiModel(value = "Appointment", description = "Apointment")
         data class Appointment(
@@ -143,20 +149,6 @@ interface OrderService {
                 var dateEnd: Date? = null,
                 @ApiModelProperty(position = 30, required = false, value = "notBeforeStart")
                 var notBeforeStart: Boolean = false
-        )
-
-        @ApiModel(value = "AdditionalInformation", description = "AdditionalInformation")
-        data class AdditionalInformation(
-
-                @get:ApiModelProperty(example = "cash", position = 110, required = true, value = "AdditionalInformationType")
-                var additionalInformationType: AdditionalInformationType? = null,
-
-                @get:ApiModelProperty(example = "take cash in currency €", position = 120, required = false, value = "information")
-                var information: String? = null,
-
-                @get:ApiModelProperty(example = "10.99", position = 130, required = false, value = "cashAmount")
-                var cashAmount: Double? = null
-
         )
 
         @ApiModel(value = "Parcel", description = "Parcel within Order")
@@ -172,7 +164,7 @@ interface OrderService {
                 @get:ApiModelProperty(example = "info", position = 50, required = false, value = "information")
                 var information: String? = null,
                 @get:ApiModelProperty(position = 60, required = true, value = "ParcelDimension")
-                var dimension: ParcelDimension? = null
+                var dimension: ParcelDimension = Parcel.ParcelDimension()
         ) {
             @ApiModel(value = "ParcelDimentions", description = "Parcel dementions and weight")
             data class ParcelDimension(
