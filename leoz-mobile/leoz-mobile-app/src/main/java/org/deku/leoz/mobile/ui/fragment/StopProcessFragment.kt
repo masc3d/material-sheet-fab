@@ -105,7 +105,7 @@ class StopProcessFragment : Fragment() {
     private fun processLabelRef(ref: String) {
         val order: Order? = orderList.firstOrNull {
             it.parcel.firstOrNull {
-                it.labelReference == ref
+                it.labelRef == ref
             } != null
         }
 

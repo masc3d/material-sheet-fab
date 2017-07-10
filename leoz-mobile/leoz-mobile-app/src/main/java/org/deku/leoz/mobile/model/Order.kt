@@ -238,7 +238,7 @@ class Order (
     }
 
     fun findParcelByReference(ref: String): Parcel? {
-        return this.parcel.firstOrNull { it.labelReference == ref }
+        return this.parcel.firstOrNull { it.labelRef == ref }
     }
 
     fun toStop(): Stop {
@@ -262,11 +262,11 @@ fun OrderService.Order.toOrder(): Order {
             parcel = this.parcels.map {
                 Parcel(
                         id = it.id.toString(),
-                        labelReference = it.number,
-                        length = it.dimension?.length?.toFloat() ?: 0.0F,
-                        height = it.dimension?.height?.toFloat() ?: 0.0F,
-                        width = it.dimension?.width?.toFloat() ?: 0.0F,
-                        weight = it.dimension?.weight?.toFloat() ?: 0.0F
+                        labelRef = it.number,
+                        length = it.dimension?.length?.toDouble() ?: 0.0,
+                        height = it.dimension?.height?.toDouble() ?: 0.0,
+                        width = it.dimension?.width?.toDouble() ?: 0.0,
+                        weight = it.dimension?.weight ?: 0.0
                 )
             },
             addresses = mutableListOf(

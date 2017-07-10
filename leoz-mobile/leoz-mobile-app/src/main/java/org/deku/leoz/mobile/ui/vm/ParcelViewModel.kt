@@ -12,5 +12,5 @@ import java.util.*
 class ParcelViewModel(val parcel: Parcel) : BaseObservable() {
 
     val number: String
-        get() = this.parcel.labelReference
+        get() = this.parcel.labelRef
 }

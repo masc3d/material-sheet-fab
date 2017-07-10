@@ -5,11 +5,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.raizlabs.android.dbflow.kotlinextensions.save
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
+import org.deku.leoz.mobile.Database
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
 import sx.time.toCalendar
@@ -21,6 +23,7 @@ import java.util.*
 class Delivery {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
     private val orderService: OrderService by Kodein.global.lazy.instance()
 
@@ -212,15 +215,15 @@ class Delivery {
                                     parcel = listOf(
                                             Parcel(
                                                     id = "a",
-                                                    labelReference = "1000000000$i"
+                                                    labelRef = "1000000000$i"
                                             ),
                                             Parcel(
                                                     id = "b",
-                                                    labelReference = "1000000001$i"
+                                                    labelRef = "1000000001$i"
                                             ),
                                             Parcel(
                                                     id = "c",
-                                                    labelReference = "1000000002$i"
+                                                    labelRef = "1000000002$i"
                                             )
                                     ),
                                     addresses = mutableListOf(addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i], addresses.filter { it.classification == Order.Address.Classification.PICKUP }[i]),
@@ -245,7 +248,7 @@ class Delivery {
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(Parcel(
                                             id = "a",
-                                            labelReference = "0200000000$i"
+                                            labelRef = "0200000000$i"
                                     )),
                                     addresses = mutableListOf(addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i], addresses.filter { it.classification == Order.Address.Classification.PICKUP }[i]),
                                     appointment = listOf(appointment),
@@ -295,7 +298,7 @@ class Delivery {
      *
      */
     fun queryDeliveryList(listId: String): List<Order> {
-        try{
+        try {
             val deliveryList: DeliveryListService.DeliveryList = deliveryListService.getById(id = listId)
 
             if (deliveryList.orders.isEmpty()) {
@@ -389,7 +392,7 @@ class Delivery {
         return stopList.filter {
             it.orders.filter {
                 it.parcel.filter {
-                    it.labelReference == labelReference
+                    it.labelRef == labelReference
                 }.isNotEmpty()
             }.isNotEmpty()
         }
@@ -398,7 +401,7 @@ class Delivery {
     fun findOrderByLabelReference(labelReference: String): List<Order> {
         return orderList.filter {
             it.parcel.filter {
-                it.labelReference == labelReference
+                it.labelRef == labelReference
             }.isNotEmpty()
         }
     }
