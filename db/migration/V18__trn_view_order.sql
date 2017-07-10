@@ -11,7 +11,7 @@ VIEW trn_v_order AS
     DepotNrAD                        AS customer_station,
     DepotNrAbD                       AS pickup_station,
     DepotNrLD                        AS delivery_station,
-    Nachnahmebetrag                  AS cash_amount,
+    PreisNN                          AS cash_amount,
     ColliesGesamt                    AS number_of_parcels,
     GewichtGesamt                    AS weight_of_order,
     Information1                     AS pickup_information1,
@@ -62,4 +62,5 @@ VIEW trn_v_order_parcel AS
     Breite                   AS dimension_width,
     GewichtReal              AS dimention_weight
   FROM
-    tblauftragcollies;
+    tblauftragcollies
+  WHERE CollieBelegNr > 0 AND OrderPos > 0;
