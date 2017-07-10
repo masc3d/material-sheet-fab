@@ -272,7 +272,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 //
 //        val rRoutes = emq.resultList
 //
-        val qRoute = QMstRoute.mstRoute
+//        val qRoute = QMstRoute.mstRoute
 
         val rRoutes = routeRepository.findRouteQuery.create { query, p ->
             query

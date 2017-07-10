@@ -4,14 +4,11 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.tables.records.TrnVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.tables.records.TrnVOrderRecord
 import org.deku.leoz.central.data.repository.OrderJooqRepository
-import org.deku.leoz.model.AdditionalInformationType
-import org.deku.leoz.model.Carrier
-import org.deku.leoz.model.OrderClassification
-import org.deku.leoz.model.ParcelService
-import org.deku.leoz.model.ParcelType
+import org.deku.leoz.model.*
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.OrderService.Order
+import org.deku.leoz.ws.gls.shipment.CashService
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -32,9 +29,6 @@ class OrderService : OrderService {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
-    @Inject
     private lateinit var orderRepository: OrderJooqRepository
 
     override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
@@ -43,50 +37,32 @@ class OrderService : OrderService {
         when {
             parcelScan != null -> {
                 // Query by parcel scan
-
-                // TODO: if "parcelScan" is a parcel number which has constraints, those should be handled by a ParcelNumber model class which throws on parsing a parcel number
-                if (parcelScan.toLong() < 1000000000 && parcelScan.toLong() > 9999999999999)
-                    throw DefaultProblem(
-                            title = "Wrong Scan id",
-                            status = Response.Status.NOT_FOUND)
-
                 val order = this.orderRepository.findByScan(parcelScan)
                         ?.toOrder()
                         ?: throw DefaultProblem(
                         title = "Order not found",
                         status = Response.Status.NOT_FOUND)
-
                 orders = listOf(order)
             }
-
             else -> TODO("Handle other query types here")
         }
 
-        // Complement order parcels
-        orders.forEach {
-            it.parcels = this.orderRepository.findParcelsByOrderId(it.id)
-                .map { it.toParcel() }
+        orders.forEach { order ->
+            order.parcels = this.orderRepository
+                    .findParcelsByOrderId(order.id)
+                    .map { it.toParcel() }
         }
 
         return orders
     }
 
     override fun getById(id: Long): OrderService.Order {
-        if (id < 10000000000 && id > 9999999999999)
-            throw DefaultProblem(
-                    title = "Wrong Order id",
-                    status = Response.Status.NOT_FOUND)
 
         val order = this.orderRepository.findById(id)
                 ?.toOrder()
                 ?: throw DefaultProblem(
                 title = "Order not found",
                 status = Response.Status.NOT_FOUND)
-
-        // Complement order parcels
-        order.parcels = this.orderRepository.findParcelsByOrderId(order.id)
-                .map { it.toParcel() }
-
         return order
     }
 
@@ -118,16 +94,8 @@ class OrderService : OrderService {
         o.pickupAddress.zipCode = r.pickupAddressZipCode
         o.pickupAddress.city = r.pickupAddressCity
         o.pickupService = OrderService.Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE))  //todo
-
         if (r.pickupInformation1 != null) {
-            o.pickupInformation = Order.Information(
-                    additionalInformation = listOf(
-                            Order.AdditionalInformation(
-                                    additionalInformationType = AdditionalInformationType.LOADING_LIST_INFO,
-                                    information = r.pickupInformation1
-                            )
-                    )
-            )
+            o.pickupTextInformation = r.pickupInformation1
         }
 
         o.appointmentPickup.dateStart = r.appointmentPickupStart
@@ -148,15 +116,16 @@ class OrderService : OrderService {
         o.deliveryAddress.city = r.deliveryAddressCity
         o.deliveryService = OrderService.Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)) //todo
 
+
+        if (r.cashAmount > 0 && r.service.toLong() == ParcelService.CASH_ON_DELIVERY.serviceId)
+        //todo check bit set
+        {
+            var cs = Order.CashService() //.cashAmount
+            cs.cashAmount = r.cashAmount
+            o.deliveryCashService = cs
+        }
         if (r.deliveryInformation != null) {
-            o.deliveryInformation = Order.Information(
-                    additionalInformation = listOf(
-                            Order.AdditionalInformation(
-                                    additionalInformationType = AdditionalInformationType.LOADING_LIST_INFO,
-                                    information = r.deliveryInformation
-                            )
-                    )
-            )
+            o.deliveryTextInformation = r.deliveryInformation
         }
 
         o.appointmentDelivery.dateStart = r.appointmentDeliveryStart
@@ -169,19 +138,32 @@ class OrderService : OrderService {
         return o
     }
 
+
     /**
      * Order parcel record conversion extension
      */
     fun TrnVOrderParcelRecord.toParcel(): Order.Parcel {
         val r = this
-        val p = OrderService.Order.Parcel()
-
-        p.number = r.scanId.toString()
+        val p = Order.Parcel()
+        p.id = r.id.toLong()
+        p.number = toUnitNo(r.scanId)
         p.parcelType = ParcelType.valueMap.getValue(r.parcelType)
         p.lastDeliveryListId = r.lastDeliveryListId.toInt()
         //P.information=
-        p.dimension!!.weight = r.dimentionWeight
+        p.dimension.weight = r.dimentionWeight
+        p.dimension.height = r.dimensionHeight.toInt()
+        p.dimension.length = r.dimensionLength.toInt()
+        p.dimension.width = r.dimensionWidth.toInt()
 
         return p
     }
+
+    fun toUnitNo(id: Double): String {
+        return id.toLong().toString().padStart(11, padChar = '0')
+    }
+
+//    fun OrderService.toDouble.toUnitNumber(): String {
+//        return this.toLong().toString().padStart(11, padChar = '0')
+//    }
 }
+

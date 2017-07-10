@@ -280,6 +280,7 @@ enum class Carrier(val value: Int) {
 }
 
 enum class ParcelType(val value: Int) {
+    NOT_SET(0),
     UNKNOWN(1),
     LATTICE_BOX(2),
     FLYER(3),
