@@ -60,6 +60,13 @@ class UnitNumber private constructor(
     companion object {
         private val log = LoggerFactory.getLogger(UnitNumber::class.java)
 
+        /** Generates a unit number instance from a database double unit number */
+        fun from(number: Double): UnitNumber {
+            return UnitNumber(
+                    number.toLong().toString().padStart(11, padChar = '0')
+            )
+        }
+
         /** Parse a plain unit number without check digit */
         fun parse(value: String): Result<UnitNumber> {
             if (value.length != 11)
