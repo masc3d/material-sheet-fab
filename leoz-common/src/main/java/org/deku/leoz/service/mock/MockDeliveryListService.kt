@@ -2,6 +2,7 @@ package org.deku.leoz.service.mock
 
 import org.deku.leoz.model.Carrier
 import org.deku.leoz.model.OrderClassification
+import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService.Order
@@ -34,6 +35,7 @@ class MockDeliveryListService : DeliveryListService {
                 dateStart = Date(),
                 dateEnd = Date()
         )
+        val ps : MutableList<ParcelService> = arrayListOf()
 
         val order = Order(
                 id = 1,
@@ -50,7 +52,9 @@ class MockDeliveryListService : DeliveryListService {
                                 number = "10000000003")
                 ),
                 appointmentDelivery = appointment,
-                deliveryAddress = addr
+                deliveryAddress = addr,
+                deliveryService = ps,
+                pickupService = ps
         )
 
         return DeliveryListService.DeliveryList(
