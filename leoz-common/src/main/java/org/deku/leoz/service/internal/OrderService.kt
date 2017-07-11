@@ -52,7 +52,6 @@ interface OrderService {
     @ApiModel(description = "Order Model")
     data class Order(
 
-            //pickups haben evtl keine parcels und benötigen daher eine id
             @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "OrderID")
             var id: Long = 0,
 
@@ -70,7 +69,7 @@ interface OrderService {
             @get:ApiModelProperty(required = true, position = 70, value = "Pickup address")
             var pickupAddress: Address = Address(),
             @get:ApiModelProperty(required = true, position = 80, value = "Pickup service")
-            var pickupService: Service = Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)),
+            var pickupService: MutableList<ParcelService>? = null,
             @get:ApiModelProperty(required = true, position = 90, value = "Pickup text information")
             var pickupTextInformation: String? = null,
 
@@ -78,8 +77,8 @@ interface OrderService {
             var appointmentDelivery: Appointment = Appointment(),
             @ApiModelProperty(required = true, position = 110, value = "Delivery address")
             var deliveryAddress: Address = Address(),
-            @get:ApiModelProperty(required = true, position = 120, value = "delivery services")
-            var deliveryService: Service = Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)),
+            @get:ApiModelProperty(required = true, position = 50, value = "delivery services")
+            var deliveryService: MutableList<ParcelService>? = null,
             @get:ApiModelProperty(required = true, position = 130, value = "delivery Cash information")
             var deliveryCashService: CashService? = null,
 
@@ -126,11 +125,11 @@ interface OrderService {
             )
         }
 
-        @ApiModel(value = "Service", description = "Service")
-        data class Service(
-                @get:ApiModelProperty(example = "xChange", position = 40, required = false, value = "Order Service")
-                var services: List<ParcelService>? = null
-        )
+//        @ApiModel(value = "Service", description = "Service")
+//        data class Service(
+//                @get:ApiModelProperty(example = "xChange", position = 40, required = false, value = "Order Service")
+//                var services: List<ParcelService>? = null
+//        )
 
 
         data class CashService(

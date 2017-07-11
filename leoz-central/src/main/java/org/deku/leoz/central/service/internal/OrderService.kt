@@ -84,7 +84,6 @@ class OrderService : OrderService {
         else if (r.customerStation == r.pickupStation)
             o.orderClassification = OrderClassification.PICKUP
 
-
         o.pickupAddress.line1 = r.pickupAddressLine1
         o.pickupAddress.line2 = r.pickupAddressLine2
         o.pickupAddress.line3 = r.pickupAddressLine3
@@ -93,10 +92,21 @@ class OrderService : OrderService {
         o.pickupAddress.countryCode = r.pickupAddressCountryCode
         o.pickupAddress.zipCode = r.pickupAddressZipCode
         o.pickupAddress.city = r.pickupAddressCity
-        o.pickupService = OrderService.Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE))  //todo
         if (r.pickupInformation1 != null) {
             o.pickupTextInformation = r.pickupInformation1
         }
+        var pickupServiceValue = 0   //todo take from Mysql
+        var s: Array<ParcelService> = ParcelService.values()
+        var ps: MutableList<ParcelService> = arrayListOf()
+        if (pickupServiceValue.toLong() > 0) {
+            s.forEach {
+                if (((it.serviceId and pickupServiceValue.toLong()) == it.serviceId) && it.serviceId > 0)
+                    ps.add(ParcelService.valueOf(it.name))
+            }
+        } else {
+            ps.add(ParcelService.valueOf(ParcelService.NO_ADDITIONAL_SERVICE.name))
+        }
+        o.pickupService = ps
 
         o.appointmentPickup.dateStart = r.appointmentPickupStart
         o.appointmentPickup.dateEnd = r.appointmentPickupEnd
@@ -104,7 +114,6 @@ class OrderService : OrderService {
         o.appointmentPickup.dateStart = r.appointmentPickupStart
         o.appointmentPickup.dateEnd = r.appointmentPickupEnd
         o.appointmentPickup.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
-
 
         o.deliveryAddress.line1 = r.deliveryAddressLine1
         o.deliveryAddress.line2 = r.deliveryAddressLine2
@@ -114,13 +123,21 @@ class OrderService : OrderService {
         o.deliveryAddress.countryCode = r.deliveryAddressCountryCode
         o.deliveryAddress.zipCode = r.deliveryAddressZipCode
         o.deliveryAddress.city = r.deliveryAddressCity
-        o.deliveryService = OrderService.Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)) //todo
 
+        var ds: MutableList<ParcelService> = arrayListOf()
+        ds.clear()
+        if (r.service.toLong() > 0) {
+            s.forEach {
+                if (((it.serviceId and r.service.toLong()) == it.serviceId) && it.serviceId > 0)
+                    ds.add(ParcelService.valueOf(it.name))
+            }
+        } else {
+            ds.add(ParcelService.valueOf(ParcelService.NO_ADDITIONAL_SERVICE.name))
+        }
+        o.deliveryService = ds
 
-        if (r.cashAmount > 0 && r.service.toLong() == ParcelService.CASH_ON_DELIVERY.serviceId)
-        //todo check bit set
-        {
-            var cs = Order.CashService() //.cashAmount
+        if (r.cashAmount > 0 && r.service.toLong() == ParcelService.CASH_ON_DELIVERY.serviceId) {
+            var cs = Order.CashService()
             cs.cashAmount = r.cashAmount
             o.deliveryCashService = cs
         }
@@ -161,9 +178,5 @@ class OrderService : OrderService {
     fun toUnitNo(id: Double): String {
         return id.toLong().toString().padStart(11, padChar = '0')
     }
-
-//    fun OrderService.toDouble.toUnitNumber(): String {
-//        return this.toLong().toString().padStart(11, padChar = '0')
-//    }
 }
 

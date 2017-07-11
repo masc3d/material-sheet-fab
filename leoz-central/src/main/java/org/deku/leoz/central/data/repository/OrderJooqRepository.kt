@@ -69,5 +69,5 @@ open class OrderJooqRepository {
                 Tables.TAD_V_ORDER_PARCEL,
                 Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble()))
 
-}
+    }
 }
