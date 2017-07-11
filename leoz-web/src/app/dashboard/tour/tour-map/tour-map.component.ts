@@ -3,6 +3,7 @@ import { TourService } from '../tour.service';
 import { Position } from '../position.model';
 import { Subscription } from 'rxjs/Subscription';
 import { MapComponent } from '@yaga/leaflet-ng2';
+import Point = L.Point;
 
 @Component( {
   selector: 'app-tour-map',
@@ -11,10 +12,10 @@ import { MapComponent } from '@yaga/leaflet-ng2';
       <yaga-zoom-control></yaga-zoom-control>
       <yaga-scale-control [metric]="true" [imperial]="false"></yaga-scale-control>
       <yaga-attribution-control></yaga-attribution-control>
-     <!-- <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"
-                       [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>-->
+      <!-- <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"
+                        [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>-->
       <yaga-tile-layer [url]="'http://tiles.derkurier.de/styles/osm-bright/rendered/{z}/{x}/{y}.png'"
-      [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
+                       [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
       <yaga-geojson [data]="routeGeoJson"></yaga-geojson>
       <yaga-marker [lat]="markerLat" [lng]="markerLng" [display]="displayMarker">
         <yaga-popup>
@@ -23,6 +24,7 @@ import { MapComponent } from '@yaga/leaflet-ng2';
             Longitude: {{markerLng}}
           </p>
         </yaga-popup>
+        <yaga-icon [iconUrl]="iconUrl" [iconSize]="iconSize"></yaga-icon>
       </yaga-marker>
     </yaga-map>`
 } )
@@ -33,6 +35,8 @@ export class TourMapComponent implements OnInit, OnDestroy {
   displayMarker: boolean;
   name: string;
   routeGeoJson: any;
+  iconSize: Point;
+  iconUrl: string;
 
   @ViewChild( 'yagaMap' )
   yagaMap: MapComponent;
@@ -61,6 +65,28 @@ export class TourMapComponent implements OnInit, OnDestroy {
     } );
 
     this.subscriptionMarker = this.tourService.activeMarker.subscribe( ( activeMarker: Position ) => {
+      switch (activeMarker.vehicleType) {
+        case Position.VehicleType.BIKE:
+          this.iconUrl = 'assets/css/images/bike-icon.png';
+          this.iconSize = new Point( 32, 32 );
+          break;
+        case Position.VehicleType.CAR:
+          this.iconUrl = 'assets/css/images/car-icon.png';
+          this.iconSize = new Point( 32, 32 );
+          break;
+        case Position.VehicleType.VAN:
+          this.iconUrl = 'assets/css/images/van-icon.png';
+          this.iconSize = new Point( 32, 32 );
+          break;
+        case Position.VehicleType.TRUCK:
+          this.iconUrl = 'assets/css/images/truck-icon.png';
+          this.iconSize = new Point( 32, 32 );
+          break;
+        default:
+          this.iconUrl = 'assets/css/images/marker-icon.png';
+          this.iconSize = new Point( 25, 41 );
+          break;
+      }
       this.markerLat = activeMarker.latitude;
       this.markerLng = activeMarker.longitude;
       this.yagaMap.flyTo( L.latLng( activeMarker.latitude, activeMarker.longitude ) );
