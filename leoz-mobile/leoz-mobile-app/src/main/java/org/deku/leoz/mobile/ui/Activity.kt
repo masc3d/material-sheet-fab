@@ -54,6 +54,9 @@ import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import org.jetbrains.anko.contentView
+import sx.android.convertDpToPx
+import sx.android.convertPxToDp
+import sx.android.toBitmap
 import java.util.NoSuchElementException
 
 /**
@@ -104,14 +107,15 @@ open class Activity : RxAppCompatActivity(),
         /** The default header drawable */
         val defaultDrawable by lazy {
             // Prepare default image
-            val sourceImage = BitmapFactory.decodeResource(getResources(), R.drawable.img_street_1)
+            val sourceImage = this@Activity.baseContext.getDrawable(R.drawable.img_street_1a).toBitmap()
 
             val bitmap = Bitmap.createBitmap(
                     sourceImage,
                     0,
-                    150,
+                    this@Activity.baseContext.convertDpToPx(75F).toInt(),
                     sourceImage.width,
-                    800)
+                    this@Activity.baseContext.convertDpToPx(400F).toInt()
+            )
 
             val drawable = BitmapDrawable(this@Activity.resources, bitmap)
 
