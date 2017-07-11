@@ -24,7 +24,7 @@ class DeviceConfiguration {
                 val device = instance<Device>()
                 MobileIdentityFactory(
                         serial = device.serial,
-                        imei = device.imei
+                        imei = "000000000000000"
                 ).create()
             }
 

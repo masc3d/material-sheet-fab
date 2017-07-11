@@ -33,18 +33,6 @@ class DeliveryActivity : Activity(),
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
-    private val locationService: LocationService by Kodein.global.lazy.instance()
-
-    private val delivery: Delivery by Kodein.global.lazy.instance()
-
-    companion object {
-        const val FRAGMENT_TAG_CAMERA = "fragmentCamera"
-        const val FRAGMENT_TAG_SIGNATURE = "fragmentSignature"
-        const val FRAGMENT_TAG_TOURSELECTION = "fragmentTourSelection"
-        const val FRAGMENT_TAG_TOUROVERVIEW = "fragmentTourOverview"
-        const val FRAGMENT_TAG_DELIVERYMENUE = "fragmentDeliveryMenue"
-        const val DIALOG_TAG_DISCLAIMER = "privacyDisclaimerDialog"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,16 +80,16 @@ class DeliveryActivity : Activity(),
         } else {
             when (serviceCheck.service) {
                 ParcelService.CASH_ON_DELIVERY -> TODO()
-                ParcelService.RECEIPT_ACKNOWLEDGEMENT -> TODO()
-                ParcelService.PHARMACEUTICALS -> TODO()
-                ParcelService.IDENT_CONTRACT_SERVICE -> TODO()
-                ParcelService.SUBMISSION_PARTICIPATION -> TODO()
-                ParcelService.SECURITY_RETURN -> TODO()
-                ParcelService.XCHANGE -> TODO()
-                ParcelService.PHONE_RECEIPT -> TODO()
                 ParcelService.DOCUMENTED_PERSONAL_DELIVERY -> TODO()
-                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS -> TODO()
+                ParcelService.IDENT_CONTRACT_SERVICE -> TODO()
                 ParcelService.PACKAGING_RECIRCULATION -> TODO()
+                ParcelService.PHARMACEUTICALS -> TODO()
+                ParcelService.PHONE_RECEIPT -> TODO()
+                ParcelService.RECEIPT_ACKNOWLEDGEMENT -> TODO()
+                ParcelService.SECURITY_RETURN -> TODO()
+                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS -> TODO()
+                ParcelService.SUBMISSION_PARTICIPATION -> TODO()
+                ParcelService.XCHANGE -> TODO()
             }
         }
 

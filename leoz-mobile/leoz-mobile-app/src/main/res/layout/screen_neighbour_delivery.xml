@@ -28,7 +28,9 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:hint="Name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+                android:nextFocusDown="@+id/uxNeighboursStreet"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
@@ -61,7 +63,9 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:completionThreshold="1"
+                android:maxLines="1"
                 android:hint="Street"
+                android:nextFocusRight="@+id/uxNeighboursStreetNo"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
         </android.support.design.widget.TextInputLayout>
@@ -77,7 +81,8 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:hint="No."
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             </android.support.design.widget.TextInputLayout>
 
