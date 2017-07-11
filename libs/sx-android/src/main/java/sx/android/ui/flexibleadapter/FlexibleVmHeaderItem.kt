@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.vm
+package sx.android.ui.flexibleadapter
 
 import android.view.View
 import eightbitlab.com.blurview.BlurView
@@ -6,7 +6,6 @@ import eightbitlab.com.blurview.RenderScriptBlur
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.items.IHeader
-import kotlinx.android.synthetic.main.item_parcel_header.view.*
 import org.slf4j.LoggerFactory
 
 /**
@@ -48,7 +47,7 @@ class FlexibleVmHeaderItem<VM>(
         if (view is BlurView) {
             val rootView = adapter.recyclerView
 
-            view.uxBlurView.setupWith(rootView)
+            view.setupWith(rootView)
                     .windowBackground(adapter.recyclerView.background)
                     .blurAlgorithm(RenderScriptBlur(view.context))
                     .blurRadius(this.blurRadius)

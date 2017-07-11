@@ -27,6 +27,8 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.android.ui.flexibleadapter.FlexibleVmHeaderItem
+import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 
 /**
  * Vehicle loading screen

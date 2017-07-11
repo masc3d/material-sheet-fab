@@ -23,7 +23,7 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.vm.FlexibleVmItem
+import sx.android.ui.flexibleadapter.FlexibleVmItem
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import sx.LazyInstance
 

@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.vm
+package sx.android.ui.flexibleadapter
 
 import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter

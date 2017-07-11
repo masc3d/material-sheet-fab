@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.vm
+package sx.android.ui.flexibleadapter
 
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.items.IHeader

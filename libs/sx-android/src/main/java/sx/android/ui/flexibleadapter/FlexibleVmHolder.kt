@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.vm
+package sx.android.ui.flexibleadapter
 
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
@@ -6,8 +6,6 @@ import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.viewholders.FlexibleViewHolder
-import org.deku.leoz.mobile.BR
-import org.deku.leoz.mobile.R
 
 /**
  * Flexible view model holder
