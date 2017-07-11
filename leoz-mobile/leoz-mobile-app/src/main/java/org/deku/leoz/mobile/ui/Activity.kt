@@ -53,6 +53,7 @@ import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import org.jetbrains.anko.contentView
 import java.util.NoSuchElementException
 
 /**
@@ -562,7 +563,7 @@ open class Activity : RxAppCompatActivity(),
         }
 
         // Apply collapsing toolbar settings
-        run {
+        this.uxCollapsingToolbarLayout.post {
             // EXIT_UNTIL_COLLAPSED should always be the default, so title and appbar expansion works properly
             val collapsingScrollFlag = when (scrollCollapseMode) {
                 ScreenFragment.ScrollCollapseModeType.ExitUntilCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
@@ -573,7 +574,7 @@ open class Activity : RxAppCompatActivity(),
                 else -> 0
             }
 
-            val scrollFlag = when(scroll) {
+            val scrollFlag = when (scroll) {
                 false -> 0
                 else -> AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
             }
@@ -589,12 +590,14 @@ open class Activity : RxAppCompatActivity(),
                     scrollFlag or collapsingScrollFlag or scrollSnapFlag
 
             log.trace("SCROLL FLAGS ${layoutParams.scrollFlags}")
+
+            this.uxCollapsingToolbarLayout.requestLayout()
         }
 
         // Apply requested orientation
         this.requestedOrientation = when {
             debugSettings.userScreenRotation -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            // Enforce orientation on every fragment resume
+        // Enforce orientation on every fragment resume
             else -> fragment.orientation
         }
         this.aidcReader.enabled = fragment.aidcEnabled
