@@ -110,7 +110,11 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
             // ReactiveNetwork
-            'com.github.pwittchen:reactivenetwork-rx2:0.9.1'
+            "com.github.pwittchen:reactivenetwork-rx2:0.9.1",
+
+            // Flexible adapter
+            "eu.davidea:flexible-adapter:5.0.0-rc2",
+            "com.eightbitlab:blurview:1.3.3"
     )
 
     testCompile(
