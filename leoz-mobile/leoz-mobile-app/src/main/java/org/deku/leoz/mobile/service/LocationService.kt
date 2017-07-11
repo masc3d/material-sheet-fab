@@ -6,11 +6,14 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
+import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.model.VehicleType
@@ -21,17 +24,23 @@ import sx.time.Duration
 import java.util.*
 
 class LocationService(
-        val period: Duration = Duration.ofSeconds(30),
-        val minDistance: Int = 250,
-        val enabled: Boolean = true
+        var period: Duration = Duration.ofSeconds(30),
+        var minDistance: Int = 250,
+        var enabled: Boolean = true
 )
     : Service() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+    private val locationSettings: LocationSettings by Kodein.global.lazy.instance()
 
     private var locationManager: LocationManager? = null
     private val login: Login by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
+
+    init {
+        this.period = Duration.ofSeconds(locationSettings.period)
+        this.minDistance = locationSettings.minDistance
+    }
 
     override fun onBind(intent: Intent?) = null
 
@@ -46,6 +55,12 @@ class LocationService(
     override fun onCreate() {
         if (locationManager == null)
             locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+//        try {
+//            (locationManager as LocationManager).removeTestProvider(LocationManager.GPS_PROVIDER)
+//        }catch (e: IllegalArgumentException) {
+//
+//        }
 
         try {
             locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL, DISTANCE, locationListeners[1])
@@ -98,6 +113,26 @@ class LocationService(
                 return
             }
 
+            /**
+             * Check weather the acquired location is provided by a mock provider.
+             * If so, try to remove TestProviders from this LocationProvider and cancel the processing of this location
+             * Only available from API level 18+
+             */
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                if (location.isFromMockProvider && !locationSettings.allowMockLocation) {
+                    log.warn("Mock location received!")
+                    //Removed because android requires specific permissions to work with mock locations - even removing them
+//                try {
+//                    if (locationManager == null)
+//                        locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//                    (locationManager as LocationManager).removeTestProvider(location.provider)
+//                } catch (e: Exception) {
+//                    log.error("Removing TestProvider from LocationProvider [${location.provider}] failed with an exception.", e)
+//                }
+                    throw MockLocationException("Received a mock location. Mock locations are not allowed.")
+                }
+            }
+
             val currentPosition = LocationServiceV1.GpsDataPoint(
                     latitude = location.latitude,
                     longitude = location.longitude,
@@ -132,4 +167,6 @@ class LocationService(
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
         }
     }
+
+    class MockLocationException(message: String): Throwable(message)
 }
