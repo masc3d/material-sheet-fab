@@ -1,21 +1,34 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.view.View
+import eightbitlab.com.blurview.BlurView
+import eightbitlab.com.blurview.RenderScriptBlur
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.items.IHeader
+import kotlinx.android.synthetic.main.item_parcel_header.view.*
+import org.slf4j.LoggerFactory
 
 /**
+ * Flexible view model header item.
+ * Supports blur view as root layout of the header view and will set it up accordingly.
  * Created by masc on 06.07.17.
+ * @param viewRes The view layout resource ID
+ * @param variableId View model binding ID
+ * @param viewModel The view model
+ * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
  */
 class FlexibleVmHeaderItem<VM>(
         val viewRes: Int,
         val variableId: Int,
-        val viewModel: VM
+        val viewModel: VM,
+        val blurRadius: Float = 1F
 )
     :
         IHeader<FlexibleVmHolder>,
         IFlexible<FlexibleVmHolder> by FlexibleVmItem(viewRes, variableId, viewModel) {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
         this.isSelectable = false
@@ -31,6 +44,16 @@ class FlexibleVmHeaderItem<VM>(
     }
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
+        // Blur view support
+        if (view is BlurView) {
+            val rootView = adapter.recyclerView
+
+            view.uxBlurView.setupWith(rootView)
+                    .windowBackground(adapter.recyclerView.background)
+                    .blurAlgorithm(RenderScriptBlur(view.context))
+                    .blurRadius(this.blurRadius)
+        }
+
         return FlexibleVmHolder(view, adapter, true)
     }
 }

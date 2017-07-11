@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
             name="header"
-            type="org.deku.leoz.mobile.ui.vm.ParcelListHeaderViewModel" />
+            type="org.deku.leoz.mobile.ui.vm.ParcelListHeaderViewModel"/>
     </data>
 
-    <LinearLayout
-        android:background="@color/colorPrimary"
-        android:alpha="0.92"
-        android:orientation="vertical"
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/uxBlurView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:blurOverlayColor="@color/colorPrimaryTransparent">
 
         <FrameLayout
             style="@style/AppTheme.Layout.Content"
@@ -22,13 +22,13 @@
             >
 
             <TextView
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/parcels"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
                 />
 
         </FrameLayout>
 
-    </LinearLayout>
+    </eightbitlab.com.blurview.BlurView>
 </layout>

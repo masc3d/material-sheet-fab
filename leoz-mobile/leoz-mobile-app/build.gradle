@@ -259,6 +259,8 @@ dependencies {
             "com.afollestad.material-dialogs:core:$v_material_dialogs",
             "com.afollestad.material-dialogs:commons:$v_material_dialogs",
 
+            "com.eightbitlab:blurview:1.3.3",
+
             //
             // FOR TESTING
             //
