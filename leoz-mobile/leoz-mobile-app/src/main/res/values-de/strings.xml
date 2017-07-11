@@ -98,4 +98,5 @@
     <string name="version_available">v%s ist verfügbar</string>
 
     <string name="warehouse">Lager</string>
+    <string name="parcels">Pakete</string>
 </resources>

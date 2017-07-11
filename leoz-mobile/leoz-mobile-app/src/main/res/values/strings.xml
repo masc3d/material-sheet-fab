@@ -82,6 +82,8 @@
 
     <string name="ok" translatable="false">OK</string>
 
+    <string name="parcels">Parcels</string>
+
     <string name="please_wait">Please wait</string>
 
     <!-- Strings related to login -->

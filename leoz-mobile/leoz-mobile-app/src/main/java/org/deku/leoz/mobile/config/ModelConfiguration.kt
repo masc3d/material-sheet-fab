@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.config
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
 import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.DeliveryList
 import org.deku.leoz.mobile.model.Login
 
 /**
@@ -16,8 +17,12 @@ class ModelConfiguration {
                 Login()
             }
 
-            bind<Delivery>() with eagerSingleton {
+            bind<Delivery>() with singleton {
                 Delivery()
+            }
+
+            bind<DeliveryList>() with singleton {
+                DeliveryList()
             }
         }
     }

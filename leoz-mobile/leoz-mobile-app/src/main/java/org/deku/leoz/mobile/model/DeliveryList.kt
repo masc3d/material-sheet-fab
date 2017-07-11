@@ -21,6 +21,23 @@ class DeliveryList {
 
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
 
+    // TODO: lazily calculate those values when loading state changes
+    val stopAmount: Int = 0
+
+    val stopTotalAmount: Int = 0
+
+    val orderAmount: Int = 0
+
+    val orderTotalAmount: Int = 0
+
+    val parcelAmount: Int = 0
+
+    val parcelTotalAmount: Int = 0
+
+    val weight: Double = 0.0
+
+    val totalWeight: Double = 0.0
+
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         listOf(
                 EventNotDeliveredReason.Damaged

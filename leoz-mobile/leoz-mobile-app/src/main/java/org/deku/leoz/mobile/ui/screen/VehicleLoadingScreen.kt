@@ -1,6 +1,9 @@
 package org.deku.leoz.mobile.ui.screen
 
 
+import android.databinding.BaseObservable
+import android.databinding.DataBindingUtil
+import android.databinding.ObservableField
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -15,6 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.model.*
 
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -24,13 +28,45 @@ import org.deku.leoz.mobile.ui.vm.*
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 
-
 /**
  * Vehicle loading screen
  */
 class VehicleLoadingScreen : ScreenFragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    /**
+     * Created by masc on 10.07.17.
+     */
+    class StatsViewModel(
+            val deliveryList: DeliveryList
+    )
+        : BaseObservable() {
+
+        val stopCounter = CounterViewModel(
+                drawableRes = R.drawable.ic_location,
+                amount = ObservableField("${this.deliveryList.stopAmount}"),
+                totalAmount = ObservableField("${this.deliveryList.stopTotalAmount}")
+        )
+
+        val orderCounter = CounterViewModel(
+                drawableRes = R.drawable.ic_file_document,
+                amount = ObservableField("${this.deliveryList.orderAmount}"),
+                totalAmount = ObservableField("${this.deliveryList.orderTotalAmount}")
+        )
+
+        val parcelCounter = CounterViewModel(
+                drawableRes = R.drawable.ic_package_closed,
+                amount = ObservableField("${this.deliveryList.parcelAmount}"),
+                totalAmount = ObservableField("${this.deliveryList.parcelTotalAmount}")
+        )
+
+        val weightCounter = CounterViewModel(
+                drawableRes = R.drawable.ic_scale,
+                amount = ObservableField("${this.deliveryList.weight}kg"),
+                totalAmount = ObservableField("${this.deliveryList.totalWeight}kg")
+        )
+    }
 
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
@@ -45,7 +81,9 @@ class VehicleLoadingScreen : ScreenFragment() {
         val header1 = FlexibleVmHeaderItem<ParcelListHeaderViewModel>(
                 viewRes = R.layout.item_parcel_header,
                 variableId = BR.header,
-                viewModel = ParcelListHeaderViewModel()
+                viewModel = ParcelListHeaderViewModel(
+                        this.deliveryList
+                )
         )
 
         val adapter = FlexibleAdapter(
@@ -84,8 +122,16 @@ class VehicleLoadingScreen : ScreenFragment() {
     override fun onCreateView(inflater: android.view.LayoutInflater,
                               container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.screen_vehicleloading, container, false)
+
+        val binding: ScreenVehicleloadingBinding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.screen_vehicleloading,
+                container, false)
+
+        // Setup bindings
+        binding.stats = StatsViewModel(deliveryList)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
