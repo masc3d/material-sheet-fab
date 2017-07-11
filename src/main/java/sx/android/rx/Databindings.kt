@@ -28,6 +28,5 @@ fun <T> ObservableField<T>.toObservable(): Observable<T> {
 
         // Initial/behavioral emission
         it.onNext(this.get())
-
     }
 }
