@@ -13,7 +13,7 @@ buildscript {
         classpath(
                 'com.android.tools.build:gradle:2.3.3',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
-                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.1",
+                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.2",
                 "com.trello:victor:0.3.0",
                 "sx:sx-packager-gradle:0.1",
         )
@@ -219,7 +219,7 @@ dependencies {
             // Requery
             "io.requery:requery:$v_requery",
             "io.requery:requery-android:$v_requery",
-            "io.requery:sqlite-android:3.19.2",
+            "io.requery:sqlite-android:3.19.3",
 
             // Flyway
             "org.sqldroid:sqldroid:1.0.3",

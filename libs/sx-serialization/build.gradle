@@ -5,7 +5,7 @@ buildscript {
     ext {
         v_kotlin = '1.1.3-2'
         v_slf4j = '1.7.25'
-        v_protostuff = '1.5.3'
+        v_protostuff = '1.6.0'
     }
 
     repositories {
@@ -45,7 +45,7 @@ dependencies {
             "io.protostuff:protostuff-core:$v_protostuff",
             "io.protostuff:protostuff-runtime:$v_protostuff",
             // Snappy
-            "org.xerial.snappy:snappy-java:1.1.2.6"
+            "org.xerial.snappy:snappy-java:1.1.4"
     )
 
     testCompile(
