@@ -293,7 +293,6 @@ class ActionOverlayView : RelativeLayout {
                         // Material sheet fabs are not directly added to view hierarchy,
                         // but used for controlling behavior. Storing internally.
                         this.materialSheetFabs.put(item.id, sheetFab)
-                        log.info("FU ${materialSheetFabs.count()}")
 
                         // Set sheet color
                         sheet.uxAtionOverlaySheetBar.setBackgroundColor(fabColor)

@@ -70,13 +70,13 @@ class Login {
      * @return Hot observable
      */
     fun authenticate(email: String, password: String): Observable<User> {
-        val task = Observable.fromCallable {
-            val hashedPassword = hashUserPassword(
-                    salt = SALT,
-                    email = email,
-                    password = password
-            )
 
+        // Authorization task
+        val task = Observable.fromCallable {
+
+            /**
+             * Authorize online
+             */
             fun authorizeOnline(): User {
                 log.info("Authorizing user [${email}] online")
 
@@ -104,13 +104,20 @@ class Login {
                 val rUser = UserEntity()
                 rUser.id = user.id
                 rUser.email = user.email
-                rUser.password = hashedPassword
+                rUser.password = hashUserPassword(
+                        salt = SALT,
+                        email = email,
+                        password = password
+                )
                 rUser.apiKey = authResponse.key
                 db.store.upsert(rUser).blockingGet()
 
                 return user
             }
 
+            /**
+             * Authorize offline
+             */
             fun authorizeOffline(): User {
                 log.info("Authorizing user [${email}] offline")
 
@@ -128,6 +135,7 @@ class Login {
                         apiKey = rUser.apiKey)
             }
 
+            // Actual authorization logic
             if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
                 try {
                     authorizeOnline()
