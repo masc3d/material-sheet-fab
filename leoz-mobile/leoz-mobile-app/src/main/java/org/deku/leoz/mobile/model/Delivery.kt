@@ -88,9 +88,8 @@ class Delivery {
     fun load() {
         // TODO: move mock data to `MockDeliveryListService`, load data from db
 
-        val addresses = listOf(
-                Order.Address(
-                        classification = Order.Address.Classification.DELIVERY,
+        val deliveryAddresses = listOf(
+                Address(
                         line1 = "Mathias Friedmannn",
                         line2 = "2. Addresszeile",
                         line3 = "3. Addresszeile",
@@ -100,8 +99,7 @@ class Delivery {
                         city = "Neuenstein-Aua",
                         phone = "+49 6677 9582"
                 ),
-                Order.Address(
-                        classification = Order.Address.Classification.DELIVERY,
+                Address(
                         line1 = "Philipp Prangenberg",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -111,8 +109,7 @@ class Delivery {
                         city = "Neuenstein-Obergeiß",
                         phone = "+49 6677 9582"
                 ),
-                Order.Address(
-                        classification = Order.Address.Classification.DELIVERY,
+                Address(
                         line1 = "Jannik Trombach",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -122,8 +119,20 @@ class Delivery {
                         city = "Gittersdorf",
                         phone = "+49 6677 9585"
                 ),
-                Order.Address(
-                        classification = Order.Address.Classification.DELIVERY,
+                Address(
+                        line1 = "Lisa Himmel",
+                        line2 = "2. Adresszeile",
+                        line3 = "3. Addresszeile",
+                        street = "Am Wendeberg",
+                        streetNo = "5",
+                        zipCode = "36251",
+                        city = "Bad Hersfeld",
+                        phone = "+49 6677 9595"
+                )
+        )
+
+        val pickupAddresses = listOf(
+                Address(
                         line1 = "Lisa Himmel",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -133,19 +142,7 @@ class Delivery {
                         city = "Bad Hersfeld",
                         phone = "+49 6677 9595"
                 ),
-                Order.Address(
-                        classification = Order.Address.Classification.PICKUP,
-                        line1 = "Lisa Himmel",
-                        line2 = "2. Adresszeile",
-                        line3 = "3. Addresszeile",
-                        street = "Am Wendeberg",
-                        streetNo = "5",
-                        zipCode = "36251",
-                        city = "Bad Hersfeld",
-                        phone = "+49 6677 9595"
-                ),
-                Order.Address(
-                        classification = Order.Address.Classification.PICKUP,
+                Address(
                         line1 = "Jannik Trombach",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -155,8 +152,7 @@ class Delivery {
                         city = "Gittersdorf",
                         phone = "+49 6677 9585"
                 ),
-                Order.Address(
-                        classification = Order.Address.Classification.PICKUP,
+                Address(
                         line1 = "Philipp Prangenberg",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -166,8 +162,7 @@ class Delivery {
                         city = "Neuenstein-Obergeiß",
                         phone = "+49 6677 9582"
                 ),
-                Order.Address(
-                        classification = Order.Address.Classification.PICKUP,
+                Address(
                         line1 = "Mathias Friedmannn",
                         line2 = "2. Addresszeile",
                         line3 = "3. Addresszeile",
@@ -191,8 +186,7 @@ class Delivery {
             dateFrom.set(Calendar.HOUR_OF_DAY, 8 + i * 2)
             dateTo.set(Calendar.HOUR_OF_DAY, 12 + i * 2)
 
-            val appointment = Order.Appointment(
-                    classification = Order.Appointment.Classification.DELIVERY,
+            val deliveryAppointment = Order.Appointment(
                     dateFrom = Date(dateFrom.timeInMillis),
                     dateTo = Date(dateTo.timeInMillis)
             )
@@ -217,8 +211,9 @@ class Delivery {
                                                     labelRef = "1000000002$i"
                                             )
                                     ),
-                                    addresses = mutableListOf(addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i], addresses.filter { it.classification == Order.Address.Classification.PICKUP }[i]),
-                                    appointment = listOf(appointment),
+                                    deliveryAddress = deliveryAddresses[i],
+                                    pickupAddress = pickupAddresses[i],
+                                    deliveryAppointment = deliveryAppointment,
                                     carrier = Carrier.DER_KURIER,
                                     services = listOf(Order.Service(
                                             classification = Order.Service.Classification.DELIVERY_SERVICE,
@@ -226,8 +221,8 @@ class Delivery {
                                     )
                             )
                     ),
-                    address = addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i],
-                    appointment = appointment,
+                    address = deliveryAddresses[i],
+                    appointment = deliveryAppointment,
                     state = Stop.State.PENDING
             ))
 
@@ -241,8 +236,9 @@ class Delivery {
                                             id = "a",
                                             labelRef = "0200000000$i"
                                     )),
-                                    addresses = mutableListOf(addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i], addresses.filter { it.classification == Order.Address.Classification.PICKUP }[i]),
-                                    appointment = listOf(appointment),
+                                    deliveryAddress = deliveryAddresses[i],
+                                    pickupAddress = pickupAddresses[i],
+                                    deliveryAppointment = deliveryAppointment,
                                     carrier = Carrier.DER_KURIER,
                                     services = listOf(Order.Service(
                                             classification = Order.Service.Classification.DELIVERY_SERVICE,
@@ -250,8 +246,8 @@ class Delivery {
                                     )
                             )
                     ),
-                    address = addresses.filter { it.classification == Order.Address.Classification.DELIVERY }[i],
-                    appointment = appointment,
+                    address = deliveryAddresses[i],
+                    appointment = deliveryAppointment,
                     state = Stop.State.PENDING
             ))
         }
@@ -364,9 +360,11 @@ class Delivery {
                     Stop(
                             orders = mutableListOf(order),
                             address = order.getAddressOfInterest(),
-                            appointment = order.appointment.first {
-                                (it.classification == Order.Appointment.Classification.DELIVERY && order.classification == OrderClassification.DELIVERY) || (it.classification == Order.Appointment.Classification.PICKUP && order.classification == OrderClassification.PICKUP)
-                            }
+                            appointment = when (order.classification) {
+                                OrderClassification.PICKUP -> order.pickupAppointment
+                                OrderClassification.DELIVERY -> order.deliveryAppointment
+                                else -> throw IllegalStateException()
+                            } ?: throw IllegalStateException()
                     )
             )
             return stopList.last()

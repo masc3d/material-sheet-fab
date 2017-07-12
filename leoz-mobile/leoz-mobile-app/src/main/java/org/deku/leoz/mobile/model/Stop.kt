@@ -5,7 +5,7 @@ package org.deku.leoz.mobile.model
  */
 class Stop (
         val orders: MutableList<Order>,
-        val address: Order.Address,
+        val address: Address,
         var appointment: Order.Appointment,
         val state: State = Stop.State.PENDING
 ) {

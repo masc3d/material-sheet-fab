@@ -8,16 +8,19 @@ import java.util.*
 /**
  * Created by phpr on 31.05.2017.
  */
-class Order (
+class Order(
         val id: String,
         var state: State = Order.State.PENDING,
         val classification: org.deku.leoz.model.OrderClassification,
         val parcel: List<Parcel> = mutableListOf(),
-        val addresses: MutableList<Address>,
-        val appointment: List<Appointment>,
+        val deliveryAddress: Address,
+        val deliveryAppointment: Appointment? = null,
+        val deliveryNotice: String? = null,
+        val pickupAddress: Address,
+        val pickupAppointment: Appointment? = null,
+        val pickupNotice: String? = null,
         val carrier: org.deku.leoz.model.Carrier,
-        val services: List<Service>,
-        val information: MutableList<Information>? = null
+        val services: List<Service>
 ) {
 
     val serviceCheckList: List<ServiceCheck> by lazy {
@@ -52,25 +55,7 @@ class Order (
         return if (serviceCheckList.isNotEmpty()) serviceCheckList.firstOrNull { !it.done } else null
     }
 
-    data class Address (
-            val classification: Classification,
-            val line1: String,
-            val line2: String = "",
-            val line3: String = "",
-            val street: String,
-            val streetNo: String = "",
-            val zipCode: String,
-            val city: String,
-            val latitude: Double = 0.0,
-            val longitude: Double = 0.0,
-            val phone: String = ""
-    ) {
-        enum class Classification {
-            PICKUP, DELIVERY, EXCHANGE_DELIVERY, EXCHANGE_PICKUP
-        }
-    }
-
-    data class Status (
+    data class Status(
             val event: Long,
             val reason: Long,
             val date: Date,
@@ -80,18 +65,17 @@ class Order (
     )
 
     data class Appointment(
-            val classification: Classification,
             val dateFrom: Date,
             val dateTo: Date
     ) {
         enum class Classification {
-                PICKUP, DELIVERY
+            PICKUP, DELIVERY
         }
     }
 
-    data class Service (
-        val classification: Classification,
-        val service: List<ParcelService>
+    data class Service(
+            val classification: Classification,
+            val service: List<ParcelService>
     ) {
         enum class Classification {
             DELIVERY_SERVICE, PICKUP_SERVICE
@@ -107,7 +91,7 @@ class Order (
                 }
             }
 
-            return if(parcelServiceList.size == 0) listOf(ParcelService.NO_ADDITIONAL_SERVICE) else parcelServiceList
+            return if (parcelServiceList.size == 0) listOf(ParcelService.NO_ADDITIONAL_SERVICE) else parcelServiceList
         }
 
         fun getBinaryFromService(service: Service): Long {
@@ -121,7 +105,7 @@ class Order (
         }
     }
 
-    data class Information (
+    data class Information(
             val classification: Classification,
             val additionalInformation: String
     ) {
@@ -137,56 +121,48 @@ class Order (
         FAILED("FAILED")
     }
 
-    fun equalsAddress(order: Order): Boolean {
-        val adrType: Address.Classification? = null
-
-        if (this.classification != order.classification) {
-            throw IllegalArgumentException()
-        }
-
-
-
-        val address1: Address = order.addresses.first {
-            it.classification == adrType
-        }
-
-        val address2: Address = this.addresses.first {
-            it.classification == adrType
-        }
-
-        return address1 == address2
-    }
+//    fun equalsAddress(order: Order): Boolean {
+//        val adrType: Address.Classification? = null
+//
+//        if (this.classification != order.classification) {
+//            throw IllegalArgumentException()
+//        }
+//
+//
+//
+//        val address1: Address = order.addresses.first {
+//            it.classification == adrType
+//        }
+//
+//        val address2: Address = this.addresses.first {
+//            it.classification == adrType
+//        }
+//
+//        return address1 == address2
+//    }
 
     fun getAddressOfInterest(): Address {
-        var adrType: Address.Classification? = null
-
-        when {
-            this.classification == OrderClassification.DELIVERY-> adrType = Address.Classification.DELIVERY
-            this.classification == OrderClassification.PICKUP-> adrType = Address.Classification.PICKUP
-        }
-
-        val address: Address = this.addresses.first {
-            it.classification == adrType
-        }
-
-        return address
-    }
-
-    fun getAppointmentOfInterest(): Appointment {
-
-        when (this.classification) {
-            OrderClassification.PICKUP -> return this.appointment.first { it.classification == Appointment.Classification.PICKUP }
-            OrderClassification.DELIVERY -> return this.appointment.first { it.classification == Appointment.Classification.DELIVERY }
+        return when (this.classification) {
+            OrderClassification.DELIVERY -> this.deliveryAddress
+            OrderClassification.PICKUP -> this.pickupAddress
             else -> {
                 throw IllegalStateException()
             }
         }
     }
 
+    fun getAppointmentOfInterest(): Appointment {
+        return when (this.classification) {
+            OrderClassification.PICKUP -> this.deliveryAppointment
+            OrderClassification.DELIVERY -> this.pickupAppointment
+            else -> null
+        } ?: throw IllegalStateException()
+    }
+
     fun getServiceOfInterest(): Service {
-        when (this.classification) {
-            OrderClassification.PICKUP -> return this.services.first { it.classification == Service.Classification.PICKUP_SERVICE }
-            OrderClassification.DELIVERY -> return this.services.first { it.classification == Service.Classification.DELIVERY_SERVICE }
+        return when (this.classification) {
+            OrderClassification.PICKUP -> this.services.first { it.classification == Service.Classification.PICKUP_SERVICE }
+            OrderClassification.DELIVERY -> this.services.first { it.classification == Service.Classification.DELIVERY_SERVICE }
             else -> {
                 throw IllegalStateException()
             }
@@ -214,7 +190,8 @@ class Order (
     //data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
 
     fun parcelVehicleLoading(parcel: Parcel): Boolean {
-        val parcel = this.parcel.firstOrNull { it == parcel } ?: throw IllegalArgumentException("Parcel [${parcel.id}] is not part of the order [${this.id}]")
+        val parcel = this.parcel.firstOrNull { it == parcel }
+                ?: throw IllegalArgumentException("Parcel [${parcel.id}] is not part of the order [${this.id}]")
 
         parcel.state = Parcel.State.LOADED
 
@@ -253,66 +230,56 @@ fun OrderService.Order.toOrder(): Order {
             id = this.id.toString(),
             state = Order.State.PENDING,
             classification = this.orderClassification,
-            parcel = this.parcels.map {
-                Parcel(
-                        id = it.id.toString(),
-                        labelRef = it.number,
-                        length = it.dimension.length?.toDouble() ?: 0.0,
-                        height = it.dimension.height?.toDouble() ?: 0.0,
-                        width = it.dimension.width?.toDouble() ?: 0.0,
-                        weight = it.dimension.weight ?: 0.0
-                )
-            },
-            addresses = mutableListOf(
-                    Order.Address(
-                            classification = Order.Address.Classification.DELIVERY,
-                            line1 = this.deliveryAddress.line1,
-                            line2 = this.deliveryAddress.line2 ?: "",
-                            line3 = this.deliveryAddress.line3 ?: "",
-                            street = this.deliveryAddress.street,
-                            streetNo = this.deliveryAddress.streetNo ?: "",
-                            zipCode = this.deliveryAddress.zipCode,
-                            city = this.deliveryAddress.city,
-                            latitude = this.deliveryAddress.geoLocation?.latitude ?: 0.0,
-                            longitude = this.deliveryAddress.geoLocation?.longitude ?: 0.0,
-                            phone = this.deliveryAddress.phoneNumber ?: ""
-                    ),
-                    Order.Address(
-                            classification = Order.Address.Classification.PICKUP,
-                            line1 = this.pickupAddress.line1,
-                            line2 = this.pickupAddress.line2 ?: "",
-                            line3 = this.pickupAddress.line3 ?: "",
-                            street = this.pickupAddress.street,
-                            streetNo = this.pickupAddress.streetNo ?: "",
-                            zipCode = this.pickupAddress.zipCode,
-                            city = this.pickupAddress.city,
-                            latitude = this.pickupAddress.geoLocation?.latitude ?: 0.0,
-                            longitude = this.pickupAddress.geoLocation?.longitude ?: 0.0,
-                            phone = this.pickupAddress.phoneNumber ?: ""
-                    )
-            ),
-            appointment = listOf(),
+            parcel = this.parcels.map { it.toParcel() },
+            deliveryAddress = this.deliveryAddress.toAddress(),
+            deliveryAppointment = this.deliveryAppointment.toOrderAppointment(),
+            deliveryNotice = this.deliveryNotice,
+            pickupAddress = this.pickupAddress.toAddress(),
+            pickupAppointment = this.deliveryAppointment.toOrderAppointment(),
+            pickupNotice = this.pickupNotice,
             carrier = this.carrier,
             services = listOf(
                     Order.Service(
                             classification = Order.Service.Classification.DELIVERY_SERVICE,
-                            service = this.deliveryServices ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
+                            service = this.deliveryServices ?: listOf()
                     ),
                     Order.Service(
                             classification = Order.Service.Classification.PICKUP_SERVICE,
-                            service = this.pickupServices ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
-                    )
-            ),
-            information = mutableListOf(
-                    Order.Information(
-                            classification = Order.Information.Classification.DELIVERY_INFO,
-                            additionalInformation = this.deliveryNotice ?: ""
-                    ),
-                    Order.Information(
-                            classification = Order.Information.Classification.PICKUP_INFO,
-                            additionalInformation = this.pickupNotice ?: ""
+                            service = this.pickupServices ?: listOf()
                     )
             )
     )
 }
 
+fun OrderService.Order.Appointment.toOrderAppointment(): Order.Appointment {
+    return Order.Appointment(
+            dateFrom = this.dateStart ?: throw IllegalArgumentException("Appointment [dateFrom] cannot be nzll"),
+            dateTo = this.dateEnd ?: throw IllegalArgumentException("Appointment [dateTo] cannot be nzll")
+    )
+}
+
+fun OrderService.Order.Address.toAddress(): Address {
+    return Address(
+            line1 = this.line1,
+            line2 = this.line2 ?: "",
+            line3 = this.line3 ?: "",
+            street = this.street,
+            streetNo = this.streetNo ?: "",
+            zipCode = this.zipCode,
+            city = this.city,
+            latitude = this.geoLocation?.latitude ?: 0.0,
+            longitude = this.geoLocation?.longitude ?: 0.0,
+            phone = this.phoneNumber ?: ""
+    )
+}
+
+fun OrderService.Order.Parcel.toParcel(): Parcel {
+    return Parcel(
+            id = this.id.toString(),
+            labelRef = this.number,
+            length = this.dimension.length?.toDouble() ?: 0.0,
+            height = this.dimension.height?.toDouble() ?: 0.0,
+            width = this.dimension.width?.toDouble() ?: 0.0,
+            weight = this.dimension.weight ?: 0.0
+    )
+}

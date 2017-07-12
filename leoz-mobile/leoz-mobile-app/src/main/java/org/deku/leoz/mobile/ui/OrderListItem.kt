@@ -19,11 +19,11 @@ import org.deku.leoz.mobile.model.Order
 
 class OrderListItem(val context: Context, val order: Order, val rootViewGroup: ViewGroup? = null) : AbstractFlexibleItem<org.deku.leoz.mobile.ui.OrderListItem.ViewHolder>() {
 
-    override fun equals(inObject: Any?): Boolean {
-        if (inObject is OrderListItem) {
-            return this == inObject
-        } else if (inObject is Order) {
-            return this.order == inObject
+    override fun equals(other: Any?): Boolean {
+        if (other is OrderListItem) {
+            return this == other
+        } else if (other is Order) {
+            return this.order == other
         }
         return false
     }
@@ -42,12 +42,12 @@ class OrderListItem(val context: Context, val order: Order, val rootViewGroup: V
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?, holder: ViewHolder?, position: Int,
                                 payloads: List<*>?) {
-        holder!!.recipient.text = order.addresses.first { it.classification == Order.Address.Classification.DELIVERY }.line1
-        holder.sender.text = order.addresses.first { it.classification == Order.Address.Classification.PICKUP }.line1
-        holder.cityTo.text = order.addresses.first { it.classification == Order.Address.Classification.DELIVERY }.city
-        holder.cityFrom.text = order.addresses.first { it.classification == Order.Address.Classification.PICKUP }.city
-        holder.zipTo.text = order.addresses.first { it.classification == Order.Address.Classification.DELIVERY }.zipCode
-        holder.zipFrom.text = order.addresses.first { it.classification == Order.Address.Classification.PICKUP }.zipCode
+        holder!!.recipient.text = order.deliveryAddress.line1
+        holder.sender.text = order.pickupAddress.line1
+        holder.cityTo.text = order.deliveryAddress.city
+        holder.cityFrom.text = order.pickupAddress.city
+        holder.zipTo.text = order.deliveryAddress.zipCode
+        holder.zipFrom.text = order.pickupAddress.zipCode
 
         this.isEnabled = true
         this.isDraggable = false

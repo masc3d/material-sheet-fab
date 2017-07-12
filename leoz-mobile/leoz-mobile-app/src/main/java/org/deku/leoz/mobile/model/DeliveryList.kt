@@ -61,8 +61,8 @@ class DeliveryList {
             val stops = orders.map { order ->
                 Stop(
                         orders = mutableListOf(order),
-                        address = order.addresses.first(),
-                        appointment = order.appointment.first()
+                        address = order.deliveryAddress,
+                        appointment = order.deliveryAppointment ?: TODO()
                 )
             }
 
