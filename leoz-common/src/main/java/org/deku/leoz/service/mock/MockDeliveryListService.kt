@@ -14,11 +14,11 @@ import java.util.*
 class MockDeliveryListService : DeliveryListService {
 
     private val info = DeliveryListService.DeliveryListInfo(
-            id = "1",
+            id = 1,
             date = ShortDate(Date())
     )
 
-    override fun getById(id: String): DeliveryListService.DeliveryList {
+    override fun getById(id: Long): DeliveryListService.DeliveryList {
 
         val addr = Order.Address(
                 line1 = "Prangenberg",

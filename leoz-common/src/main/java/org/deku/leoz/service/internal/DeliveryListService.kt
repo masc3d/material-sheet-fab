@@ -2,6 +2,7 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
 import org.deku.leoz.service.entity.ShortDate
+import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -24,7 +25,7 @@ interface DeliveryListService {
     @Path("/{${ID}}")
     @ApiOperation(value = "Get delivery list by id")
     fun getById(
-            @PathParam(ID) @ApiParam(value = "Delivery list ID", required = true) id: String
+            @PathParam(ID) @ApiParam(value = "Delivery list ID", required = true) id: Long
     ): DeliveryList
 
     @GET
@@ -48,16 +49,16 @@ interface DeliveryListService {
     @ApiModel(description = "Delivery list")
     data class DeliveryList(
             @ApiModelProperty(position = 10, required = true, value = "DeliveryListInfo")
-            val info: DeliveryListInfo,
+            var info: DeliveryListInfo,
             @ApiModelProperty(position = 30, required = true, value = "Orders")
-            val orders: List<OrderService.Order>
+            var orders: List<OrderService.Order>
     )
 
     @ApiModel(description = "Delivery list info")
     data class DeliveryListInfo(
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
-            val id: String,
+            var id: Long,
             @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
-            val date: ShortDate
+            var date: ShortDate
     )
 }
