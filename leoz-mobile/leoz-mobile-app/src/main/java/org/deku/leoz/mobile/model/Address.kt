@@ -18,9 +18,9 @@ data class Address(val entity: AddressEntity = AddressEntity())
             longitude: Double = 0.0,
             phone: String
     ): this() {
-        this.address1 = line1
-        this.address2 = line2
-        this.address3 = line3
+        this.line1 = line1
+        this.line2 = line2
+        this.line3 = line3
         this.street = street
         this.streetNo = streetNo
         this.zipCode = zipCode
