@@ -136,7 +136,7 @@ class OrderService : OrderService {
         }
         o.deliveryServices = ds
 
-        if (r.cashAmount > 0 && r.service.toLong() == ParcelService.CASH_ON_DELIVERY.serviceId) {
+        if (r.cashAmount > 0 && (r.service.toLong() and ParcelService.CASH_ON_DELIVERY.serviceId) == ParcelService.CASH_ON_DELIVERY.serviceId) {
             val cs = Order.CashService()
             cs.cashAmount = r.cashAmount
             o.deliveryCashService = cs
