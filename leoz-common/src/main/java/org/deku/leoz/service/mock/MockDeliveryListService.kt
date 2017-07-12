@@ -41,7 +41,7 @@ class MockDeliveryListService : DeliveryListService {
                 id = 1,
                 carrier = Carrier.DER_KURIER,
                 orderClassification = OrderClassification.PICKUP_DELIVERY,
-                appointmentPickup = appointment,
+                pickupAppointment = appointment,
                 pickupAddress = addr,
                 parcels = listOf(
                         Order.Parcel(id = 1,
@@ -51,10 +51,10 @@ class MockDeliveryListService : DeliveryListService {
                         Order.Parcel(id = 1,
                                 number = "10000000003")
                 ),
-                appointmentDelivery = appointment,
+                deliveryAppointment = appointment,
                 deliveryAddress = addr,
-                deliveryService = ps,
-                pickupService = ps
+                deliveryServices = ps,
+                pickupServices = ps
         )
 
         return DeliveryListService.DeliveryList(

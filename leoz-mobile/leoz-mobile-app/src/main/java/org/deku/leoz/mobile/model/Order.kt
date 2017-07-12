@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.model
 
-import org.deku.leoz.model.AdditionalInformationType
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.internal.OrderService
@@ -258,10 +257,10 @@ fun OrderService.Order.toOrder(): Order {
                 Parcel(
                         id = it.id.toString(),
                         labelRef = it.number,
-                        length = it.dimension?.length?.toDouble() ?: 0.0,
-                        height = it.dimension?.height?.toDouble() ?: 0.0,
-                        width = it.dimension?.width?.toDouble() ?: 0.0,
-                        weight = it.dimension?.weight ?: 0.0
+                        length = it.dimension.length?.toDouble() ?: 0.0,
+                        height = it.dimension.height?.toDouble() ?: 0.0,
+                        width = it.dimension.width?.toDouble() ?: 0.0,
+                        weight = it.dimension.weight ?: 0.0
                 )
             },
             addresses = mutableListOf(
@@ -297,11 +296,11 @@ fun OrderService.Order.toOrder(): Order {
             services = listOf(
                     Order.Service(
                             classification = Order.Service.Classification.DELIVERY_SERVICE,
-                            service = this.deliveryService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
+                            service = this.deliveryServices ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
                     ),
                     Order.Service(
                             classification = Order.Service.Classification.PICKUP_SERVICE,
-                            service = this.pickupService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
+                            service = this.pickupServices ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
                     )
             ),
             information = mutableListOf(

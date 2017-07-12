@@ -65,20 +65,20 @@ interface OrderService {
             var orderClassification: OrderClassification = OrderClassification.DELIVERY,
 
             @get:ApiModelProperty(position = 60, required = true, value = "appointmentPickup")
-            var appointmentPickup: Appointment = Appointment(),
+            var pickupAppointment: Appointment = Appointment(),
             @get:ApiModelProperty(required = true, position = 70, value = "Pickup address")
             var pickupAddress: Address = Address(),
             @get:ApiModelProperty(required = true, position = 80, value = "Pickup service")
-            var pickupService: MutableList<ParcelService>? = null,
+            var pickupServices: List<ParcelService>? = listOf(),
             @get:ApiModelProperty(required = true, position = 90, value = "Pickup text information")
             var pickupTextInformation: String? = null,
 
             @get:ApiModelProperty(position = 100, required = true, value = "appointmentDelivery")
-            var appointmentDelivery: Appointment = Appointment(),
+            var deliveryAppointment: Appointment = Appointment(),
             @ApiModelProperty(required = true, position = 110, value = "Delivery address")
             var deliveryAddress: Address = Address(),
             @get:ApiModelProperty(required = true, position = 50, value = "delivery services")
-            var deliveryService: MutableList<ParcelService>? = null,
+            var deliveryServices: List<ParcelService>? = listOf(),
             @get:ApiModelProperty(required = true, position = 130, value = "delivery Cash information")
             var deliveryCashService: CashService? = null,
 

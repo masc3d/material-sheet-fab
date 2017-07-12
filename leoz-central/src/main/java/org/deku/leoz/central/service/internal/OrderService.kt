@@ -95,9 +95,9 @@ class OrderService : OrderService {
         if (r.pickupInformation1 != null) {
             o.pickupTextInformation = r.pickupInformation1
         }
-        var pickupServiceValue = 0   //todo take from Mysql
-        var s: Array<ParcelService> = ParcelService.values()
-        var ps: MutableList<ParcelService> = arrayListOf()
+        val pickupServiceValue = 0   //todo take from Mysql
+        val s: Array<ParcelService> = ParcelService.values()
+        val ps: MutableList<ParcelService> = arrayListOf()
         if (pickupServiceValue.toLong() > 0) {
             s.forEach {
                 if (((it.serviceId and pickupServiceValue.toLong()) == it.serviceId) && it.serviceId > 0)
@@ -106,14 +106,14 @@ class OrderService : OrderService {
         } else {
             ps.add(ParcelService.valueOf(ParcelService.NO_ADDITIONAL_SERVICE.name))
         }
-        o.pickupService = ps
+        o.pickupServices = ps
 
-        o.appointmentPickup.dateStart = r.appointmentPickupStart
-        o.appointmentPickup.dateEnd = r.appointmentPickupEnd
-        o.appointmentPickup.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
-        o.appointmentPickup.dateStart = r.appointmentPickupStart
-        o.appointmentPickup.dateEnd = r.appointmentPickupEnd
-        o.appointmentPickup.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
+        o.pickupAppointment.dateStart = r.appointmentPickupStart
+        o.pickupAppointment.dateEnd = r.appointmentPickupEnd
+        o.pickupAppointment.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
+        o.pickupAppointment.dateStart = r.appointmentPickupStart
+        o.pickupAppointment.dateEnd = r.appointmentPickupEnd
+        o.pickupAppointment.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
 
         o.deliveryAddress.line1 = r.deliveryAddressLine1
         o.deliveryAddress.line2 = r.deliveryAddressLine2
@@ -124,7 +124,7 @@ class OrderService : OrderService {
         o.deliveryAddress.zipCode = r.deliveryAddressZipCode
         o.deliveryAddress.city = r.deliveryAddressCity
 
-        var ds: MutableList<ParcelService> = arrayListOf()
+        val ds: MutableList<ParcelService> = arrayListOf()
         ds.clear()
         if (r.service.toLong() > 0) {
             s.forEach {
@@ -134,10 +134,10 @@ class OrderService : OrderService {
         } else {
             ds.add(ParcelService.valueOf(ParcelService.NO_ADDITIONAL_SERVICE.name))
         }
-        o.deliveryService = ds
+        o.deliveryServices = ds
 
         if (r.cashAmount > 0 && r.service.toLong() == ParcelService.CASH_ON_DELIVERY.serviceId) {
-            var cs = Order.CashService()
+            val cs = Order.CashService()
             cs.cashAmount = r.cashAmount
             o.deliveryCashService = cs
         }
@@ -145,12 +145,12 @@ class OrderService : OrderService {
             o.deliveryTextInformation = r.deliveryInformation
         }
 
-        o.appointmentDelivery.dateStart = r.appointmentDeliveryStart
-        o.appointmentDelivery.dateEnd = r.appointmentDeliveryEnd
-        o.appointmentDelivery.notBeforeStart = r.appointmentDeliveryNotBeforeStart == 1
-        o.appointmentDelivery.dateStart = r.appointmentDeliveryStart
-        o.appointmentDelivery.dateEnd = r.appointmentDeliveryEnd
-        o.appointmentDelivery.notBeforeStart = r.appointmentDeliveryNotBeforeStart == 1
+        o.deliveryAppointment.dateStart = r.appointmentDeliveryStart
+        o.deliveryAppointment.dateEnd = r.appointmentDeliveryEnd
+        o.deliveryAppointment.notBeforeStart = r.appointmentDeliveryNotBeforeStart == 1
+        o.deliveryAppointment.dateStart = r.appointmentDeliveryStart
+        o.deliveryAppointment.dateEnd = r.appointmentDeliveryEnd
+        o.deliveryAppointment.notBeforeStart = r.appointmentDeliveryNotBeforeStart == 1
 
         return o
     }
