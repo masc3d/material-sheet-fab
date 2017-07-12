@@ -8,16 +8,18 @@ import android.os.Bundle
 import android.support.multidex.MultiDexApplication
 import android.support.v7.app.AppCompatDelegate
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.bind
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.singleton
 import com.tinsuke.icekick.extension.freezeInstanceState
 import com.tinsuke.icekick.extension.unfreezeInstanceState
+import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
-import sx.ConfigurationMap
-import sx.ConfigurationMapPath
+
 
 /**
  * Application
@@ -86,6 +88,7 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         this.registerActivityLifecycleCallbacks(this)
+        this.registerComponentCallbacks(this)
 
         if (!BuildConfig.DEBUG) {
             // FlexibleAdapter logging is currently not compatible with obfuscated builds
@@ -122,6 +125,20 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         applicationInfo.loadLabel(this.packageManager).toString();
     }
 
+    private var activityCount: Int = 0
+
+    /**
+     * Application state
+     */
+    enum class StateType {
+        Foreground,
+        Background
+    }
+
+    private val stateChangedEventSubject = PublishSubject.create<StateType>()
+    /** Application state change event */
+    val stateChangedEvent = this.stateChangedEventSubject.hide()
+
     /**
      * Terminate/kill application immediately
      */
@@ -129,45 +146,66 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
-    override fun onConfigurationChanged(p0: Configuration?) {
-        log.trace("CONFIGCHANGE")
+    //region Component callbacks
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        log.trace("CONFIGURATION CHANGE")
+
+        super.onConfigurationChanged(newConfig)
     }
 
     override fun onLowMemory() {
-        log.trace("LOWMEM")
+        log.trace("MEMORY LOW")
+
+        super.onLowMemory()
     }
 
-    override fun onTrimMemory(p0: Int) {
-        log.trace("TRIMMEM")
+    override fun onTrimMemory(level: Int) {
+        log.trace("MEMORY TRIMMED [${level}]")
+
+        super.onTrimMemory(level)
+    }
+    //endregion
+
+    //region Lifecycle callbacks
+    override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
+        log.trace("ACTIVITY CREATED [${activity}]")
     }
 
-    override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
-        log.trace("ACT_CREATED [${p0}]")
+    override fun onActivityDestroyed(activity: Activity) {
+        log.trace("ACTIVITY DESTROYED [${activity}]")
     }
 
-    override fun onActivityDestroyed(p0: Activity?) {
-        log.trace("ACT_DESTROYED [${p0}]")
+    override fun onActivityPaused(activity: Activity) {
+        log.trace("ACTIVITY PAUSED [${activity}]")
     }
 
-    override fun onActivityPaused(p0: Activity?) {
-        log.trace("ACT_PAUSED [${p0}]")
+    override fun onActivityResumed(activity: Activity) {
+        log.trace("ACTIVITY RESUMED [${activity}]")
     }
 
-    override fun onActivityResumed(p0: Activity?) {
-        log.trace("ACT_RESUMED [${p0}]")
+    override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle?) {
+        log.trace("ACTIVITY SAVEINSTANCESTATE [${activity}]")
     }
 
-    override fun onActivitySaveInstanceState(p0: Activity?, p1: Bundle?) {
-        log.trace("ACT_SAVEINSTANCESTATE [${p0}]")
+    override fun onActivityStarted(activity: Activity) {
+        log.trace("ACTIVITY STARTED [${activity}]")
+        if (this.activityCount == 0) {
+            log.trace("APPLICATION FOREGROUND")
+            this.stateChangedEventSubject.onNext(StateType.Foreground)
+        }
+        this.activityCount++
     }
 
-    override fun onActivityStarted(p0: Activity?) {
-        log.trace("ACT_STARTED [${p0}]")
-    }
+    override fun onActivityStopped(activity: Activity) {
+        log.trace("ACTIVITY STOPPED [${activity}]")
+        this.activityCount--
 
-    override fun onActivityStopped(p0: Activity?) {
-        log.trace("ACT_STOPPED [${p0}]")
+        if (this.activityCount == 0) {
+            log.trace("APPLICATION BACKGROUND")
+            this.stateChangedEventSubject.onNext(StateType.Background)
+        }
     }
+    //endregion
 }
 
 val Activity.app: Application get() = this.application as Application
