@@ -88,7 +88,6 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         this.registerActivityLifecycleCallbacks(this)
-        this.registerComponentCallbacks(this)
 
         if (!BuildConfig.DEBUG) {
             // FlexibleAdapter logging is currently not compatible with obfuscated builds
