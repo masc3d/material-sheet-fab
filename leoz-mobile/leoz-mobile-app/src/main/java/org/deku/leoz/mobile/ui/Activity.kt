@@ -494,6 +494,8 @@ open class Activity : RxAppCompatActivity(),
                     this.tone.beep()
                     this.cameraAidcFragmentVisible = false
                 }
+
+        checkMockLocationSettings()
     }
 
     /**
@@ -615,10 +617,11 @@ open class Activity : RxAppCompatActivity(),
 
     private fun checkMockLocationSettings() {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (Settings.Secure.ALLOW_MOCK_LOCATION == "1") {
+            if (Settings.Secure.getString(this.application.contentResolver, Settings.Secure.ALLOW_MOCK_LOCATION) == "1") {
+                log.warn("Mock locations enabled!")
                 val dialog = MaterialDialog.Builder(this.applicationContext)
                         .title("Mock locations enabled")
-                        .content("Mock locations are enabled on your device. To continue, this setting must be disabled!")
+                        .content("Mock locations are enabled on your device. To continue, you must disable mock locations!")
                         .positiveText("Settings")
                         .negativeText("Abort")
                         .onPositive { materialDialog, dialogAction ->
@@ -631,6 +634,7 @@ open class Activity : RxAppCompatActivity(),
                                 else -> this.finishAffinity()
                             }
                         }
+                        .cancelable(false)
                         .show()
             }
         }
