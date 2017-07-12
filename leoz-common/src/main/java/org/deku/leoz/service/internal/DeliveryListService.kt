@@ -15,30 +15,27 @@ import javax.ws.rs.core.MediaType
 @Api(value = "Delivery list service")
 interface DeliveryListService {
     companion object {
-        const val ORDERID = "order-id"
-        const val DELIVERYLIST = "delivery-list"
+        const val ORDER_ID = "order-id"
+        const val ID = "delivery-list"
         const val DRIVER = "driver"
     }
 
     @GET
-    @Path("/{${DELIVERYLIST}}")
+    @Path("/{${ID}}")
     @ApiOperation(value = "Get delivery list by id")
     fun getById(
-            @PathParam(DELIVERYLIST) @ApiParam(value = "Delivery list ID", required = true) id: String
+            @PathParam(ID) @ApiParam(value = "Delivery list ID", required = true) id: String
     ): DeliveryList
 
     @GET
-    @Path("/")
+    @Path("/info")
     @ApiOperation(value = "Get delivery list info")
     fun get(
             @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null
     ): List<DeliveryListInfo>
 
-
-
     /**
      * Created by JT on 24.05.17.
-     *
      *
      *  Order:       (Auftrag / Sendung) kann Packstücke beinhalten
      *  Shipment:   = Order
@@ -47,11 +44,8 @@ interface DeliveryListService {
      *  Deliverylist:  List<Order>
      *  Stop
      *  Job
-     *
-     *
      */
-
-    @ApiModel(description = "Delivery List")
+    @ApiModel(description = "Delivery list")
     data class DeliveryList(
             @ApiModelProperty(position = 10, required = true, value = "DeliveryListInfo")
             val info: DeliveryListInfo,
@@ -59,14 +53,11 @@ interface DeliveryListService {
             val orders: List<OrderService.Order>
     )
 
-    @ApiModel(description = "Delivery List Info")
+    @ApiModel(description = "Delivery list info")
     data class DeliveryListInfo(
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
             val id: String,
             @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
             val date: ShortDate
     )
-
-
-
 }
