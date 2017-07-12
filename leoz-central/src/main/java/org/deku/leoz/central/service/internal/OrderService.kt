@@ -93,7 +93,7 @@ class OrderService : OrderService {
         o.pickupAddress.zipCode = r.pickupAddressZipCode
         o.pickupAddress.city = r.pickupAddressCity
         if (r.pickupInformation1 != null) {
-            o.pickupTextInformation = r.pickupInformation1
+            o.pickupNotice = r.pickupInformation1
         }
         val pickupServiceValue = 0   //todo take from Mysql
         val s: Array<ParcelService> = ParcelService.values()
@@ -142,7 +142,7 @@ class OrderService : OrderService {
             o.deliveryCashService = cs
         }
         if (r.deliveryInformation != null) {
-            o.deliveryTextInformation = r.deliveryInformation
+            o.deliveryNotice = r.deliveryInformation
         }
 
         o.deliveryAppointment.dateStart = r.appointmentDeliveryStart

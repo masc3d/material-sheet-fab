@@ -306,11 +306,11 @@ fun OrderService.Order.toOrder(): Order {
             information = mutableListOf(
                     Order.Information(
                             classification = Order.Information.Classification.DELIVERY_INFO,
-                            additionalInformation = this.deliveryTextInformation ?: ""
+                            additionalInformation = this.deliveryNotice ?: ""
                     ),
                     Order.Information(
                             classification = Order.Information.Classification.PICKUP_INFO,
-                            additionalInformation = this.pickupTextInformation ?: ""
+                            additionalInformation = this.pickupNotice ?: ""
                     )
             )
     )
