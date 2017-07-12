@@ -71,7 +71,7 @@ interface OrderService {
             @get:ApiModelProperty(required = true, position = 80, value = "Pickup service")
             var pickupServices: List<ParcelService>? = listOf(),
             @get:ApiModelProperty(required = true, position = 90, value = "Pickup text information")
-            var pickupTextInformation: String? = null,
+            var pickupNotice: String? = null,
 
             @get:ApiModelProperty(position = 100, required = true, value = "appointmentDelivery")
             var deliveryAppointment: Appointment = Appointment(),
@@ -83,7 +83,7 @@ interface OrderService {
             var deliveryCashService: CashService? = null,
 
             @get:ApiModelProperty(required = true, position = 140, value = "delivery text information")
-            var deliveryTextInformation: String? = null,
+            var deliveryNotice: String? = null,
 
 
             @get:ApiModelProperty(position = 150, required = false, value = "Parcels")
@@ -161,7 +161,7 @@ interface OrderService {
                 @get:ApiModelProperty(example = "10729985", position = 40, required = true, value = "parcelType")
                 var lastDeliveryListId: Int? = null,
                 @get:ApiModelProperty(example = "info", position = 50, required = false, value = "information")
-                var information: String? = null,
+                var notice: String? = null,
                 @get:ApiModelProperty(position = 60, required = true, value = "ParcelDimension")
                 var dimension: ParcelDimension = Parcel.ParcelDimension()
         ) {
