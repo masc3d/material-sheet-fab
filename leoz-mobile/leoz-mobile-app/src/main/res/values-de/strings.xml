@@ -99,4 +99,19 @@
 
     <string name="warehouse">Lager</string>
     <string name="parcels">Pakete</string>
+    <string name="service_suitcase">Kofferversand</string>
+    <string name="service_submission">Submissionsteilnahme</string>
+    <string name="service_selfpickup">Selbstabholung</string>
+    <string name="service_self_completion_duty">Eigenverzollung/Dokumente</string>
+    <string name="service_receipt_acknowledgement">Empfangsbestätigung</string>
+    <string name="service_postbox_delivery">Briefkastenzustellung</string>
+    <string name="service_phone_receipt">Tel. Empfangsbestätigung</string>
+    <string name="service_packaging_recirculation">Verpackungsrückführung</string>
+    <string name="service_no_alternative">Keine alternativzustellung</string>
+    <string name="service_cash_delivery">Nachnahme</string>
+    <string name="service_department_delivery">Bereichszustellung</string>
+    <string name="service_documented_personal">Per. Zustellung & Doku</string>
+    <string name="service_fair">Messeservice</string>
+    <string name="service_fixed">Fixtermin</string>
+    <string name="service_ident_contract">Ident Vertragsservice</string>
 </resources>

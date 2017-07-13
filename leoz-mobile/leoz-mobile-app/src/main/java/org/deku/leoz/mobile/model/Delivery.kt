@@ -420,10 +420,7 @@ fun Stop.deliver(reason: EventDeliveredReason, recipient: String, signature: Bit
 
 fun Context.getServiceText(service: ParcelService): String {
     return when(service) {
-        ParcelService.APPOINTMENT -> getString(R.string.service_appointment)
         ParcelService.SUITCASE_SHIPPING -> getString(R.string.service_suitcase)
-        ParcelService.BANK_HOLIDAY_DELIVERY -> getString(R.string.service_bank_holiday)
-        ParcelService.LATE_PICKUP -> getString(R.string.service_late_pickup)
         ParcelService.RECEIPT_ACKNOWLEDGEMENT -> getString(R.string.service_receipt_acknowledgement)
         ParcelService.SELF_PICKUP -> getString(R.string.service_selfpickup)
         ParcelService.CASH_ON_DELIVERY -> getString(R.string.service_cash_delivery)
