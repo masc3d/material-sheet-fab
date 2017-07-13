@@ -189,9 +189,6 @@ class StopDetailScreen
                             }
                             dialogBuilder.build().show()
                         }
-                        R.id.ux_action_cancel -> {
-
-                        }
                         R.id.ux_action_fail -> {
                             val dialog = EventDialog.Builder(this.context)
                                     .events(this.delivery.allowedEvents)

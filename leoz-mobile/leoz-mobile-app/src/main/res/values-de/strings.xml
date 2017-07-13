@@ -110,7 +110,7 @@
     <string name="service_no_alternative">Keine alternativzustellung</string>
     <string name="service_cash_delivery">Nachnahme</string>
     <string name="service_department_delivery">Bereichszustellung</string>
-    <string name="service_documented_personal">Per. Zustellung & Doku</string>
+    <string name="service_documented_personal">Per. Zustellung &amp; Doku</string>
     <string name="service_fair">Messeservice</string>
     <string name="service_fixed">Fixtermin</string>
     <string name="service_ident_contract">Ident Vertragsservice</string>
