@@ -2,17 +2,21 @@ package org.deku.leoz.mobile
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
+import android.provider.Settings
 import android.support.multidex.MultiDexApplication
 import android.support.v7.app.AppCompatDelegate
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
+import com.github.salomonbrys.kodein.lazy
 import com.tinsuke.icekick.extension.freezeInstanceState
 import com.tinsuke.icekick.extension.unfreezeInstanceState
 import io.reactivex.subjects.PublishSubject
@@ -27,6 +31,8 @@ import org.slf4j.LoggerFactory
  */
 open class Application : MultiDexApplication(), android.app.Application.ActivityLifecycleCallbacks {
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     internal val bundle = Bundle()
 
@@ -97,6 +103,7 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
             eu.davidea.flexibleadapter.utils.Log.setLevel(
                     eu.davidea.flexibleadapter.utils.Log.Level.SUPPRESS)
         }
+
     }
 
     override fun onTerminate() {
@@ -188,9 +195,11 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
 
     override fun onActivityStarted(activity: Activity) {
         log.trace("ACTIVITY STARTED [${activity}]")
+
         if (this.activityCount == 0) {
             log.trace("APPLICATION FOREGROUND")
             this.stateChangedEventSubject.onNext(StateType.Foreground)
+            checkDeveloperSettings(activity)
         }
         this.activityCount++
     }
@@ -205,6 +214,58 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         }
     }
     //endregion
+
+    /**
+     * Function for checking if mock locations are allowed in device settings.
+     * Only interesting for devices with API level <18
+     */
+    private fun checkMockLocationSettings(activity: Activity) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (Settings.Secure.getString(this.contentResolver, Settings.Secure.ALLOW_MOCK_LOCATION) == "1") {
+                log.warn("Mock locations enabled!")
+                val dialog = MaterialDialog.Builder(this.applicationContext)
+                        .title("Mock locations enabled")
+                        .content("Mock locations are enabled on your device. To continue, you must disable mock locations!")
+                        .positiveText("Settings")
+                        .negativeText("Abort")
+                        .onPositive { materialDialog, dialogAction ->
+                            val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                            activity.startActivityForResult(intent, 0)
+                        }
+                        .onNegative { materialDialog, dialogAction ->
+                            when (android.os.Build.VERSION.SDK_INT) {
+                                android.os.Build.VERSION_CODES.LOLLIPOP -> activity.finishAndRemoveTask()
+                                else -> activity.finishAffinity()
+                            }
+                        }
+                        .cancelable(false)
+                        .show()
+            }
+        }
+    }
+
+    private fun checkDeveloperSettings(activity: Activity) {
+        if (!debugSettings.enabled && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
+            log.warn("Developer options enabled!")
+            val dialog = MaterialDialog.Builder(this.applicationContext)
+                    .title("Developer options enabled")
+                    .content("Developer options are enabled on your device. To continue, you must disable developer options!")
+                    .positiveText("Settings")
+                    .negativeText("Abort")
+                    .onPositive { materialDialog, dialogAction ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                        activity.startActivityForResult(intent, 0)
+                    }
+                    .onNegative { materialDialog, dialogAction ->
+                        when (android.os.Build.VERSION.SDK_INT) {
+                            android.os.Build.VERSION_CODES.LOLLIPOP -> activity.finishAndRemoveTask()
+                            else -> activity.finishAffinity()
+                        }
+                    }
+                    .cancelable(false)
+                    .show()
+        }
+    }
 }
 
 val Activity.app: Application get() = this.application as Application
