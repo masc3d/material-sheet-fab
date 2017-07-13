@@ -112,4 +112,26 @@
     <string name="version_available">v%s is available</string>
 
     <string name="warehouse">Warehouse</string>
+    <string name="service_no_additional">No service</string>
+    <string name="service_appointment">Appointment</string>
+    <string name="service_suitcase">Suitcase shipping</string>
+    <string name="service_bank_holiday">Bank holiday delivery</string>
+    <string name="service_late_pickup">Late pickup</string>
+    <string name="service_receipt_acknowledgement">Receipt acknowledgement</string>
+    <string name="service_selfpickup">Self-Pickup</string>
+    <string name="service_cash_delivery">Cash on delivery</string>
+    <string name="service_pharmaceuticals">Pharmaceuticals</string>
+    <string name="service_ident_contract">Ident contract</string>
+    <string name="service_submission">Submission participation</string>
+    <string name="service_security_return">Security return</string>
+    <string name="service_xchange">X-Change</string>
+    <string name="service_phone_receipt">Phone receipt</string>
+    <string name="service_documented_personal">Documented personal delivery</string>
+    <string name="service_department_delivery">Department delivery</string>
+    <string name="service_fixed">Fixed appointment</string>
+    <string name="service_fair">Fair service</string>
+    <string name="service_self_completion_duty">Self completion of duty</string>
+    <string name="service_packaging_recirculation">Packaging recirculation</string>
+    <string name="service_postbox_delivery">Postbox delivery</string>
+    <string name="service_no_alternative">No alternative delivery</string>
 </resources>

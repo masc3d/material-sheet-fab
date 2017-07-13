@@ -13,6 +13,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,14 +23,20 @@ import org.deku.leoz.mobile.BR
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
+import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Parcel
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.activity.DeliveryActivity
+import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
+import org.deku.leoz.model.EventDelivered
+import org.deku.leoz.model.EventDeliveredReason
+import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.AidcReader
@@ -39,10 +46,13 @@ import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 /**
  * A simple [Fragment] subclass.
  */
-class StopProcessScreen : ScreenFragment() {
+class StopProcessScreen :
+        ScreenFragment(),
+        EventDialog.Listener    {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     private lateinit var stop: Stop
     private val orderList: MutableList<Order> = mutableListOf()
@@ -161,6 +171,56 @@ class StopProcessScreen : ScreenFragment() {
                     log.info("Barcode scanned ${it.data}")
                     processLabelRef(ref = it.data)
                 }
+
+        this.activity.actionEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    when (it) {
+                        R.id.ux_action_cancel -> {
+
+                        }
+                        R.id.ux_action_fail -> {
+                            val dialog = EventDialog.Builder(this.context)
+                                    .events(this.delivery.allowedEvents)
+                                    .listener(this)
+                                    .build()
+
+                            dialog.selectedItemEvent
+                                    .bindToLifecycle(this)
+                                    .subscribe {
+                                        log.trace("SELECTEDITEAM VIA RX")
+                                    }
+
+                            dialog.show()
+                        }
+                        R.id.ux_action_deliver_neighbour -> {
+                            startHandOver(
+                                    event = EventDelivered(
+                                            reason = EventDeliveredReason.Neighbor
+                                    )
+                            )
+                        }
+                        R.id.ux_action_deliver_postbox -> {
+                            startHandOver(
+                                    event = EventDelivered(
+                                            reason = EventDeliveredReason.Postbox
+                                    )
+                            )
+                        }
+                        R.id.ux_action_deliver_recipient -> {
+                            startHandOver(
+                                    event = EventDelivered(
+                                            reason = EventDeliveredReason.Normal
+                                    )
+                            )
+                        }
+                    }
+                }
+    }
+
+    fun startHandOver(event: EventDelivered) {
+        (this.activity as DeliveryActivity).runServiceWorkflow(stop, event.reason)
     }
 
     private fun processLabelRef(ref: String) {
@@ -202,6 +262,10 @@ class StopProcessScreen : ScreenFragment() {
     private fun hideResultImages() {
         this.uxResultLeft.visibility = View.INVISIBLE
         this.uxResultRight.visibility = View.INVISIBLE
+    }
+
+    override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
+        log.trace("SELECTEDITEAM VIA LISTENER")
     }
 
 }

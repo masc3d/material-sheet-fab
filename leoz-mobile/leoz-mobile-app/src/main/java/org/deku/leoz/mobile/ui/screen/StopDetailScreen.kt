@@ -27,6 +27,7 @@ import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.getServiceText
 import org.deku.leoz.mobile.ui.OrderListItem
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
@@ -104,7 +105,8 @@ class StopDetailScreen
 
         stop.orders
                 .flatMap { it.services }
-                .forEach { serviceDescriptions.add(it.service.toString()) }
+                .flatMap { it.service }
+                .forEach { serviceDescriptions.add(context.getServiceText(it)) }
 
         this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, serviceDescriptions)
 
@@ -204,37 +206,12 @@ class StopDetailScreen
 
                             dialog.show()
                         }
-                        R.id.ux_action_deliver_neighbour -> {
-                            startHandOver(
-                                    event = EventDelivered(
-                                            reason = EventDeliveredReason.Neighbor
-                                    )
-                            )
-                        }
-                        R.id.ux_action_deliver_postbox -> {
-                            startHandOver(
-                                    event = EventDelivered(
-                                            reason = EventDeliveredReason.Postbox
-                                    )
-                            )
-                        }
-                        R.id.ux_action_deliver_recipient -> {
-                            startHandOver(
-                                    event = EventDelivered(
-                                            reason = EventDeliveredReason.Normal
-                                    )
-                            )
-                        }
                     }
                 }
     }
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
         log.trace("SELECTEDITEAM VIA LISTENER")
-    }
-
-    fun startHandOver(event: EventDelivered) {
-        (this.activity as DeliveryActivity).runServiceWorkflow(stop, event.reason)
     }
 
 }
