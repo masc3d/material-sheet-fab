@@ -6,35 +6,23 @@
     android:layout_height="match_parent"
     tools:context="org.deku.leoz.mobile.ui.fragment.StopProcessFragment">
 
-    <LinearLayout
+    <FrameLayout
         style="@style/AppTheme.Layout.List"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/uxParcelList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
+            android:clickable="true"
+            android:longClickable="false"
+            android:scrollbars="none" />
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/uxLabelNo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="true"
-                android:hint="Parcel-No."
-                android:inputType="textCapCharacters|textNoSuggestions"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+    </FrameLayout>
 
-        </android.support.design.widget.TextInputLayout>
 
-    </LinearLayout>
-
-    <ListView
-        android:id="@+id/uxParcelList"
-        style="@style/AppTheme.ListView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"

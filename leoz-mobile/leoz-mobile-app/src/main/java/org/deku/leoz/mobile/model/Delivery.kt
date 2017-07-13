@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model
 
+import android.graphics.Bitmap
 import android.support.annotation.DrawableRes
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -278,7 +279,7 @@ class Delivery {
     /**
      *
      */
-    fun queryDeliveryList(listId: String): List<Order> {
+    fun queryDeliveryList(listId: Long): List<Order> {
         try {
             val deliveryList: DeliveryListService.DeliveryList = deliveryListService.getById(id = listId)
 
@@ -404,8 +405,15 @@ class Delivery {
                 .filter { it.state == Parcel.State.FAILED || it.state == Parcel.State.LOADED }.size
         return count
     }
+}
 
-    fun Stop.deliver(reason: EventDeliveredReason, recipient: String) {
-
+fun Stop.deliver(reason: EventDeliveredReason, recipient: String, signature: Bitmap? = null) {
+    this.orders.forEach {
+        it.state = Order.State.DONE
+        it.parcel.forEach {
+            it.state = Parcel.State.DONE
+        }
     }
+
+
 }

@@ -12,6 +12,7 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.deliver
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
@@ -32,7 +33,7 @@ class SignatureScreen
     private var descriptionText: String = ""
     private var recipient: String = ""
     private var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal
-    private lateinit var stop: Stop
+    private var stop: Stop? = null
 
     companion object {
         fun create(deliveryReason: EventDeliveredReason, stop: Stop, recipient: String = ""): SignatureScreen {
@@ -60,6 +61,7 @@ class SignatureScreen
 
         this.orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         this.hideActionBar = true
+        this.retainInstance = true
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -121,6 +123,7 @@ class SignatureScreen
                                         }
                                 dialog.show()
                             } else {
+                                stop!!.deliver(reason = deliveryReason, recipient = recipient, signature = this.uxSignaturePad.signatureBitmap)
                                 this.listener?.onSignatureSubmitted()
                             }
                         }

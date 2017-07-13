@@ -7,9 +7,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.SharedPreference
-import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
@@ -64,7 +62,7 @@ class DeliveryActivity : Activity(),
 
     fun runSigningProcess(stop: Stop, reason: EventDeliveredReason) {
         when (reason) {
-            EventDeliveredReason.Normal -> TODO()
+            EventDeliveredReason.Normal -> this.showScreen(SignatureScreen.create(deliveryReason = org.deku.leoz.model.EventDeliveredReason.Normal, stop = stop, recipient = ""))
             EventDeliveredReason.Neighbor -> this.showScreen(NeighbourDeliveryScreen.create(stop = stop))
             EventDeliveredReason.Postbox -> TODO()
             else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")
@@ -73,6 +71,7 @@ class DeliveryActivity : Activity(),
     }
 
     fun runServiceWorkflow(stop: Stop, reason: EventDeliveredReason) {
+
         val serviceCheck = stop.orders.first().getNextServiceCheck()
 
         if (serviceCheck == null) {

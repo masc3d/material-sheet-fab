@@ -16,6 +16,7 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.R
@@ -26,6 +27,7 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.fragment.StopDetailFragment
+import org.deku.leoz.mobile.ui.fragment.StopProcessFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
@@ -80,26 +82,7 @@ class DeliveryProcessScreen
 
         //endregion
 
-        this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_deliver_ok,
-                        colorRes = R.color.colorGreen,
-                        iconRes = R.drawable.ic_check_circle,
-                        menu = this.activity.inflateMenu(R.menu.menu_deliver_options)
-                ),
-                ActionItem(
-                        id = R.id.action_deliver_fail,
-                        colorRes = R.color.colorAccent,
-                        iconRes = R.drawable.ic_information_outline,
-                        menu = this.activity.inflateMenu(R.menu.menu_deliver_actions)
-                ),
-                ActionItem(
-                        id = R.id.action_deliver_cancel,
-                        colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_cancel_black,
-                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
-                )
-        )
+        showInitFabButtons()
 
         childFragmentManager.withTransaction {
             it.replace(this.uxContainer.id, StopDetailFragment.create(this.stop))
@@ -109,13 +92,59 @@ class DeliveryProcessScreen
         binding.stop = StopItemViewModel(this.stop)
     }
 
+    fun showInitFabButtons() {
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_deliver_continue,
+                        colorRes = R.color.colorGreen,
+                        iconRes = R.drawable.ic_check_circle
+                ),
+                ActionItem(
+                        id = R.id.action_deliver_action,
+                        colorRes = R.color.colorAccent,
+                        iconRes = R.drawable.ic_information_outline,
+                        menu = this.activity.inflateMenu(R.menu.menu_deliver_actions)
+                ),
+                ActionItem(
+                        id = R.id.action_deliver_fail,
+                        colorRes = R.color.colorRed,
+                        iconRes = R.drawable.ic_cancel_black,
+                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
+                )
+        )
+    }
+
+    fun showDeliverFabButtons() {
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_deliver_ok,
+                        colorRes = R.color.colorGreen,
+                        iconRes = R.drawable.ic_check_circle,
+                        menu = this.activity.inflateMenu(R.menu.menu_deliver_options)
+                ),
+                ActionItem(
+                        id = R.id.action_deliver_fail,
+                        colorRes = R.color.colorRed,
+                        iconRes = R.drawable.ic_cancel_black,
+                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
+                )
+        )
+    }
+
     override fun onResume() {
         super.onResume()
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     when (it) {
+                        R.id.action_deliver_continue -> {
+                            childFragmentManager.withTransaction {
+                                it.replace(this.uxContainer.id, StopProcessFragment.create(this.stop))
+                            }
+                            showDeliverFabButtons()
+                        }
                         R.id.ux_action_navigate -> {
                             val intent: Intent = Intent(
                                     Intent.ACTION_VIEW,

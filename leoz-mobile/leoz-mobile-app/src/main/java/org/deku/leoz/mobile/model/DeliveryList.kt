@@ -51,7 +51,7 @@ class DeliveryList {
      */
     fun load(): Observable<List<Stop>> {
         return Observable.fromCallable {
-            val deliveryList = this.deliveryListServive.getById("1")
+            val deliveryList = this.deliveryListServive.getById(1)
 
             // Map service orders to mobile orders
             val orders = deliveryList.orders.map { it.toOrder() }
