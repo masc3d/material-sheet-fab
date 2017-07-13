@@ -64,8 +64,6 @@ class DeliveryProcessScreen
         super.onCreate(savedInstanceState)
 
         this.title = "Delivery Process"
-
-        this.retainInstance = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -90,9 +88,12 @@ class DeliveryProcessScreen
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
         binding.stop = StopItemViewModel(this.stop)
+
+        this.retainInstance = true
     }
 
     fun showInitFabButtons() {
+        log.debug("Show initial FAB buttons")
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_deliver_continue,
@@ -115,6 +116,7 @@ class DeliveryProcessScreen
     }
 
     fun showDeliverFabButtons() {
+        log.debug("Show deliver FAB buttons")
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_deliver_ok,

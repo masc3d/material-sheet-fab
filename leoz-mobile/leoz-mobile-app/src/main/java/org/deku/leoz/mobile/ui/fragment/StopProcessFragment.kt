@@ -127,7 +127,22 @@ class StopProcessFragment : Fragment() {
         this.parcelListAdapterInstance.reset()
 
         this.uxParcelList.adapter = parcelListAdapter
-        this.uxParcelList.layoutManager = LinearLayoutManager(context
+        this.uxParcelList.layoutManager = LinearLayoutManager(context)
+
+//        (this.parentFragment as ScreenFragment).actionItems = listOf(
+//                ActionItem(
+//                        id = R.id.action_deliver_ok,
+//                        colorRes = R.color.colorGreen,
+//                        iconRes = R.drawable.ic_check_circle,
+//                        menu = this.activity.inflateMenu(R.menu.menu_deliver_options)
+//                ),
+//                ActionItem(
+//                        id = R.id.action_deliver_fail,
+//                        colorRes = R.color.colorRed,
+//                        iconRes = R.drawable.ic_cancel_black,
+//                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
+//                )
+//        )
     }
 
     override fun onResume() {
