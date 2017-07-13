@@ -2,7 +2,6 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
 import org.deku.leoz.service.entity.ShortDate
-import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -52,29 +51,22 @@ interface DeliveryListService {
             var id: Long,
             @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
             var date: ShortDate,
-            @ApiModelProperty(position = 30, required = true, value = "Stoplist")
-            var stopList: List<Stop>,
             @ApiModelProperty(position = 40, required = true, value = "Orders within deliverylist")
-            var orders: List<OrderService.Order>
+            var orders: List<OrderService.Order>,
+            @ApiModelProperty(position = 30, required = true, value = "Stoplist")
+            var stops: List<Stop>
     )
-
-    @ApiModel(description = "Stop list")
-    data class Stop(
-            @ApiModelProperty(position = 10, required = true)
-            var jobs: List<Job>
-    )
-
 
     @ApiModel(description = "Joblist within stop")
-    data class Job(
+    data class Stop(
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "order id")
             var orderId: Long,
             @ApiModelProperty(example = "Pickup", position = 20, required = true, value = "stoptype")
             var stopType: Type
-    )
-
-    enum class Type {
-        Pickup,
-        Delivery
+    ) {
+        enum class Type {
+            Pickup,
+            Delivery
+        }
     }
 }
