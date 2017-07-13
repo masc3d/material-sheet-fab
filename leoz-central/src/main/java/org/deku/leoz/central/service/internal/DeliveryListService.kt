@@ -29,9 +29,10 @@ class DeliveryListService : DeliveryListService {
         val deliveryList: DeliveryListService.DeliveryList
         when {
             id != null -> {
-                deliveryList = this.deliveryListRepository.findById(id)
-                        ?.toDeliveryList()
-                        ?: throw DefaultProblem(
+//                deliveryList = this.deliveryListRepository.findById(id)
+//                        ?.toDeliveryList()
+//                        ?:
+                throw DefaultProblem(
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
             }
@@ -39,20 +40,20 @@ class DeliveryListService : DeliveryListService {
                 TODO("Handle other query types here")
             }
 
-            //deliveryList.orders = listOf(OrderService.Order())
+        //deliveryList.orders = listOf(OrderService.Order())
 
         }
         return deliveryList
     }
 
-    override fun get(driver: String?): List<DeliveryListService.DeliveryListInfo> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }
 
-fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList {
-    val d = DeliveryListService.DeliveryList(info = DeliveryListService.DeliveryListInfo(date = ShortDate(Date()), id = 1), orders = listOf())
-    d.info.date = ShortDate( this.deliveryListDate)
-    d.info.id = this.id.toLong()
-    return d
-}
+//fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList {
+//    val d:DeliveryListService.DeliveryList=DeliveryListService.DeliveryList()
+//    val d = DeliveryListService.DeliveryList(info = DeliveryListService.DeliveryListInfo(
+//            date = ShortDate(Date()), id = 1), orders = listOf(),stops = ,id = 1)
+//    var d :org.deku.leoz.central.service.internal.DeliveryListService
+//    d.info.date = ShortDate( this.deliveryListDate)
+//    d.info.id = this.id.toLong()
+//    return d
+//}

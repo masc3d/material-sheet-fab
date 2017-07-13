@@ -35,7 +35,7 @@ class MockDeliveryListService : DeliveryListService {
                 dateStart = Date(),
                 dateEnd = Date()
         )
-        val ps : MutableList<ParcelService> = arrayListOf()
+        val ps: MutableList<ParcelService> = arrayListOf()
 
         val order = Order(
                 id = 1,
@@ -58,12 +58,14 @@ class MockDeliveryListService : DeliveryListService {
         )
 
         return DeliveryListService.DeliveryList(
+                id = 1,
                 info = this.info,
-                orders = listOf(order)
+                orders = listOf(order),
+                stops = listOf(DeliveryListService.Stop(orderId = 1, stopType = DeliveryListService.Stop.Type.Delivery))
         )
     }
 
-    override fun get(driver: String?): List<DeliveryListService.DeliveryListInfo> {
-        return listOf(info)
-    }
+//    override fun get(driver: String?): List<DeliveryListService.DeliveryListInfo> {
+//        return listOf(info)
+//    }
 }

@@ -45,15 +45,16 @@ interface DeliveryListService {
      *  Stop
      *  Job
      */
+
     @ApiModel(description = "Delivery list")
     data class DeliveryList(
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
             var id: Long,
             @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
-            var date: ShortDate,
-            @ApiModelProperty(position = 40, required = true, value = "Orders within deliverylist")
+            var info: DeliveryListInfo,
+            @ApiModelProperty(position = 30, required = true, value = "Orders within deliverylist")
             var orders: List<OrderService.Order>,
-            @ApiModelProperty(position = 30, required = true, value = "Stoplist")
+            @ApiModelProperty(position = 40, required = true, value = "Stoplist")
             var stops: List<Stop>
     )
 
@@ -69,4 +70,13 @@ interface DeliveryListService {
             Delivery
         }
     }
+
+    @ApiModel(description = "Delivery list info")
+    data class DeliveryListInfo(
+            @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
+            var id: Long,
+            @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
+            var date: ShortDate
+    )
+
 }
