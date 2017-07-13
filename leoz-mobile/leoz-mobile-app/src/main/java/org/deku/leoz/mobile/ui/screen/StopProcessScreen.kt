@@ -1,6 +1,7 @@
-package org.deku.leoz.mobile.ui.fragment
+package org.deku.leoz.mobile.ui.screen
 
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -15,18 +16,20 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_delivery_stop_process.*
+import kotlinx.android.synthetic.main.item_stop.*
+import kotlinx.android.synthetic.main.screen_stop_process.*
 import org.deku.leoz.mobile.BR
 
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Parcel
 import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
+import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.AidcReader
@@ -36,7 +39,7 @@ import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 /**
  * A simple [Fragment] subclass.
  */
-class StopProcessFragment : Fragment() {
+class StopProcessScreen : ScreenFragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -84,8 +87,8 @@ class StopProcessFragment : Fragment() {
         /**
          * Create instance with parameters. This pattern requires `retainInstance` to be set in `onCreate`!
          */
-        fun create(stop: Stop): StopProcessFragment {
-            val f = StopProcessFragment()
+        fun create(stop: Stop): StopProcessScreen {
+            val f = StopProcessScreen()
             f.stop = stop
             f.orderList.addAll(f.stop.orders.filter { it.state == Order.State.LOADED })
             f.orderList.forEach {
@@ -97,8 +100,8 @@ class StopProcessFragment : Fragment() {
         /**
          * @param orders List of orders which are supposed to be processed summarized. Note: The list should only contain orders which meet the requirements to be compressed into a single Stop
          */
-        fun create(orders: List<Order>): StopProcessFragment {
-            val f = StopProcessFragment()
+        fun create(orders: List<Order>): StopProcessScreen {
+            val f = StopProcessScreen()
             f.orderList.addAll(orders)
             f.orderList.forEach {
                 f.parcelList.addAll(it.parcel)
@@ -117,7 +120,7 @@ class StopProcessFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_delivery_stop_process, container, false)
+        return inflater.inflate(R.layout.screen_stop_process, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -129,20 +132,23 @@ class StopProcessFragment : Fragment() {
         this.uxParcelList.adapter = parcelListAdapter
         this.uxParcelList.layoutManager = LinearLayoutManager(context)
 
-//        (this.parentFragment as ScreenFragment).actionItems = listOf(
-//                ActionItem(
-//                        id = R.id.action_deliver_ok,
-//                        colorRes = R.color.colorGreen,
-//                        iconRes = R.drawable.ic_check_circle,
-//                        menu = this.activity.inflateMenu(R.menu.menu_deliver_options)
-//                ),
-//                ActionItem(
-//                        id = R.id.action_deliver_fail,
-//                        colorRes = R.color.colorRed,
-//                        iconRes = R.drawable.ic_cancel_black,
-//                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
-//                )
-//        )
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_deliver_ok,
+                        colorRes = R.color.colorGreen,
+                        iconRes = R.drawable.ic_check_circle,
+                        menu = this.activity.inflateMenu(R.menu.menu_deliver_options)
+                ),
+                ActionItem(
+                        id = R.id.action_deliver_fail,
+                        colorRes = R.color.colorRed,
+                        iconRes = R.drawable.ic_cancel_black,
+                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
+                )
+        )
+
+        val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
+        binding.stop = StopItemViewModel(this.stop)
     }
 
     override fun onResume() {

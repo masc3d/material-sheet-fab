@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="org.deku.leoz.mobile.ui.fragment.StopProcessFragment">
+    tools:context="org.deku.leoz.mobile.ui.screen.StopProcessScreen">
+
+    <include layout="@layout/item_stop" />
 
     <FrameLayout
         style="@style/AppTheme.Layout.List"
