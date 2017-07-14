@@ -27,8 +27,8 @@ class PostboxDeliveryScreen: ScreenFragment(), CameraFragment.Listener {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.screen_postbox_delivery, container)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.screen_postbox_delivery, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
