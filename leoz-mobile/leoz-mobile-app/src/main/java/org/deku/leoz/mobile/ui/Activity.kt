@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.text.InputType
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -56,7 +57,9 @@ import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import org.deku.leoz.mobile.model.Delivery
 import org.jetbrains.anko.contentView
+import sx.aidc.SymbologyType
 import sx.android.convertDpToPx
 import sx.android.convertPxToDp
 import sx.android.toBitmap
@@ -81,6 +84,7 @@ open class Activity : RxAppCompatActivity(),
     private val updateService: UpdateService by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     /** Action items */
     private val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
@@ -244,6 +248,12 @@ open class Activity : RxAppCompatActivity(),
                 .findItem(R.id.action_logout)
                 .setVisible(this.login.authenticatedUser != null)
 
+        menu
+                .findItem(R.id.action_scan).isVisible = debugSettings.enabled
+
+        menu
+                .findItem(R.id.action_scan_dialog).isVisible = debugSettings.enabled
+
         menu.setGroupVisible(0,
                 menu.getItem(0).subMenu.hasVisibleItems()
         )
@@ -269,6 +279,32 @@ open class Activity : RxAppCompatActivity(),
 
                 return true
             }
+
+            R.id.action_scan -> {
+                this.aidcReader.emulateReadEvent(AidcReader.ReadEvent(data = "1001000000", symbologyType = SymbologyType.Interleaved25))
+                return true
+            }
+
+            R.id.action_scan_dialog -> {
+                val items = mutableListOf<String>()
+
+                delivery.orderList.flatMap { it.parcel }.forEach { items.add(it.labelRef) }
+
+//                val dialog = MaterialDialog.Builder(this.applicationContext)
+//                        .title("Scan emulation")
+//                        .inputType(InputType.TYPE_CLASS_TEXT)
+//                        .input("123456789012", null, true, MaterialDialog.InputCallback { materialDialog, charSequence ->
+//                            aidcReader.emulateReadEvent(event = AidcReader.ReadEvent(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25))
+//                        })
+//                        .items(items)
+//                        .itemsCallback { materialDialog, view, i, charSequence ->
+//                            aidcReader.emulateReadEvent(event = AidcReader.ReadEvent(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25))
+//                        }
+//                        .cancelable(true)
+//                        .show()
+                return true
+            }
+
             else -> {
                 return super.onOptionsItemSelected(item)
             }
