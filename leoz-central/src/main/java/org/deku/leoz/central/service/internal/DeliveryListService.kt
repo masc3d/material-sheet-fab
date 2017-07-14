@@ -2,13 +2,10 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
-import org.deku.leoz.central.data.repository.OrderJooqRepository
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
-import org.deku.leoz.service.internal.OrderService
 import sx.rs.auth.ApiKey
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -25,11 +22,18 @@ class DeliveryListService : DeliveryListService {
     @Inject
     private lateinit var deliveryListRepository: DeliveryListJooqRepository
 
+    override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
+        val ll: List<DeliveryListService.DeliveryListInfo>
+        ll = listOf()
+        return ll
+    }
+
     override fun getById(id: Long): DeliveryListService.DeliveryList {
-        val deliveryList: DeliveryListService.DeliveryList
+        val deliveryListService: DeliveryListService.DeliveryList
         when {
             id != null -> {
 //                deliveryList = this.deliveryListRepository.findById(id)
+//                        ?.toDeliveryList()
 //                        ?.toDeliveryList()
 //                        ?:
                 throw DefaultProblem(
@@ -39,21 +43,14 @@ class DeliveryListService : DeliveryListService {
             else -> {
                 TODO("Handle other query types here")
             }
-
-        //deliveryList.orders = listOf(OrderService.Order())
-
         }
-        return deliveryList
+        return deliveryListService
     }
-
 }
 
-//fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList {
-//    val d:DeliveryListService.DeliveryList=DeliveryListService.DeliveryList()
-//    val d = DeliveryListService.DeliveryList(info = DeliveryListService.DeliveryListInfo(
-//            date = ShortDate(Date()), id = 1), orders = listOf(),stops = ,id = 1)
-//    var d :org.deku.leoz.central.service.internal.DeliveryListService
-//    d.info.date = ShortDate( this.deliveryListDate)
-//    d.info.id = this.id.toLong()
-//    return d
-//}
+fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList {
+    val r = this
+    val l: DeliveryListService.DeliveryList
+    l = r.toDeliveryList()
+    return l
+}
