@@ -37,6 +37,7 @@ import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import org.deku.leoz.model.EventDelivered
 import org.deku.leoz.model.EventDeliveredReason
 import org.deku.leoz.model.EventNotDeliveredReason
+import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.AidcReader
@@ -142,12 +143,15 @@ class StopProcessScreen :
         this.uxParcelList.adapter = parcelListAdapter
         this.uxParcelList.layoutManager = LinearLayoutManager(context)
 
+        val deliverMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
+        deliverMenu.findItem(R.id.ux_action_deliver_postbox).isEnabled = this.stop.orders.first().getServiceOfInterest().service.contains(ParcelService.POSTBOX_DELIVERY)
+
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_deliver_ok,
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_check_circle,
-                        menu = this.activity.inflateMenu(R.menu.menu_deliver_options)
+                        menu = deliverMenu
                 ),
                 ActionItem(
                         id = R.id.action_deliver_fail,
@@ -156,6 +160,8 @@ class StopProcessScreen :
                         menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
                 )
         )
+
+        this
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
         binding.stop = StopItemViewModel(this.stop)

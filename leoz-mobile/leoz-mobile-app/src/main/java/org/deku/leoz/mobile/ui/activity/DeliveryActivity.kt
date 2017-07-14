@@ -23,7 +23,6 @@ import java.util.*
  * Created by 27694066 on 09.05.2017.
  */
 class DeliveryActivity : Activity(),
-        CameraFragment.Listener,
         MenuScreen.Listener,
         SignatureScreen.Listener,
         VehicleLoadingDialog.OnDialogResultListener {
@@ -64,7 +63,7 @@ class DeliveryActivity : Activity(),
         when (reason) {
             EventDeliveredReason.Normal -> this.showScreen(SignatureScreen.create(deliveryReason = org.deku.leoz.model.EventDeliveredReason.Normal, stop = stop, recipient = ""))
             EventDeliveredReason.Neighbor -> this.showScreen(NeighbourDeliveryScreen.create(stop = stop))
-            EventDeliveredReason.Postbox -> TODO()
+            EventDeliveredReason.Postbox -> this.showScreen(PostboxDeliveryScreen.create(stop = stop))
             else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")
         }
         //this.showScreen(SignatureScreen.create(deliveryReason = reason, stop = stop))
@@ -150,19 +149,6 @@ class DeliveryActivity : Activity(),
                 this.showScreen(DeliveryStopListScreen())
             }
         }
-    }
-
-    override fun onCameraFragmentPictureTaken(data: ByteArray?) {
-        log.debug("ONCAMERAFRAGMENTPICTURETAKEN")
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onCameraFragmentShutter() {
-        log.debug("ONCAMERAFRAGMENTSHUTTER")
-    }
-
-    override fun onCameraFragmentDiscarded() {
-        log.debug("ONCAMERAFRAGMENTDISCARDED")
     }
 
     override fun onSignatureCancelled() {

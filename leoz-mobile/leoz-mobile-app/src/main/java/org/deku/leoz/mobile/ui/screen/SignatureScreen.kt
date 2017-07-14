@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +42,6 @@ class SignatureScreen
             s.deliveryReason = deliveryReason
             s.stop = stop
             s.recipient = recipient
-            s.descriptionText = "Aufträge: ${stop.orders.count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: $recipient"
             return s
         }
 
@@ -78,7 +78,7 @@ class SignatureScreen
                 this.descriptionText = savedInstanceState.getString(SaveInstanceBundleKeys.DESCRIPTION_TEXT.key)
             }
 
-        this.uxConclusion.text = descriptionText
+        setText()
 
         this.uxSignaturePad.setOnSignedListener(this)
 
@@ -100,6 +100,19 @@ class SignatureScreen
                         menu = this.activity.inflateMenu(R.menu.menu_signature_exception)
                 )
         )
+
+        if (recipient.isNullOrEmpty()) {
+            val dialog = MaterialDialog.Builder(context)
+                    .title("Recipient")
+                    .cancelable(false)
+                    .content("Wer hat die Sendung(en) angenommen?")
+                    .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
+                    .input("Max Mustermann", null, false, MaterialDialog.InputCallback { materialDialog, charSequence ->
+                        this.recipient = charSequence.toString()
+                        this.setText()
+                    })
+                    .show()
+        }
     }
 
     override fun onResume() {
@@ -137,6 +150,11 @@ class SignatureScreen
                         }
                     }
                 }
+    }
+
+    private fun setText() {
+        this.descriptionText = "Aufträge: ${stop!!.orders.count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: $recipient"
+        this.uxConclusion.text = descriptionText
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

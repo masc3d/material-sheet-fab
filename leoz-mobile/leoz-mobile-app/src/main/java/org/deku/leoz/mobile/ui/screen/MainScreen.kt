@@ -19,6 +19,7 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
+import sx.android.fragment.util.withTransaction
 
 /**
  * Created by n3 on 26/02/2017.
@@ -57,9 +58,9 @@ class MainScreen : ScreenFragment() {
         // Setup views
         this.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
 
-        val ft = this.childFragmentManager.beginTransaction()
-        ft.replace(this.uxContainer.id, LoginFragment(), LoginFragment::class.java.canonicalName)
-        ft.commit()
+        this.childFragmentManager.withTransaction {
+            it.replace(this.uxContainer.id, LoginFragment(), LoginFragment::class.java.canonicalName)
+        }
 
         if (this.debugSettings.enabled) {
             this.actionItems = listOf(
