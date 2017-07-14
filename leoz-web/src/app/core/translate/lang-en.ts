@@ -49,6 +49,8 @@ export const LANG_EN_TRANS = {
   'user account deactivated': 'Your account is deactivated',
   'yes': 'yes',
   'no': 'no',
+  'UserInsertSuccessful': 'User insert successful',
+  'UserUpdateSuccessful': 'User update successful',
   // map form
   'allusers': 'all users',
   'drivers': 'drivers',
@@ -59,7 +61,6 @@ export const LANG_EN_TRANS = {
   'payload': 'Payload in Kg',
   'exportdate': 'Date of export',
   'loadlist': 'loadlist',
-  'selectloadlist': 'Select loadlist',
   'printlabel': 'label',
   'alllists': 'all lists',
   'selectedlist': 'selected list',
@@ -80,5 +81,20 @@ export const LANG_EN_TRANS = {
   'scanmsgfield': 'Scan Message',
   'scanfield': 'Scanfield',
   'loadinglistscan': 'Loadlistscan',
-  'bagscan': 'Bagscan'
+  'bagscan': 'Bagscan',
+  'packageId': 'PackNo',
+  'zip': 'Zip',
+  'city': 'City',
+  'devliveryStation': 'Station of delivery',
+  'loadinglistNo': 'Loadinglist No',
+  'loadinglist': 'Loadinglist',
+  'wrapperType': 'Wrappertype',
+  'valore': 'Valore',
+  'print': 'Print',
+  'noAction': 'No action selected',
+  'actionNewLoadlist': 'Action: New loadlist',
+  'actionChangePayload': 'Action: Change payload',
+  'actionChangeLoadlist': 'Action: Change loadlist',
+  'notOnLoadlist': 'not yet on loadlist',
+  'onLoadlist': 'already loaded'
 };
