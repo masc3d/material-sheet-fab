@@ -49,6 +49,8 @@ export const LANG_DE_TRANS = {
   'user account deactivated': 'Ihr Konto ist deaktiviert',
   'yes': 'ja',
   'no': 'nein',
+  'UserInsertSuccessful': 'Benutzer erfolgreich angelegt',
+  'UserUpdateSuccessful': 'Benutzer erfolgreich geändert',
   // map form
   'allusers': 'alle Mitarbeiter',
   'drivers': 'Fahrer',
@@ -59,7 +61,6 @@ export const LANG_DE_TRANS = {
   'payload': 'Zuladung in Kg',
   'exportdate': 'Versanddatum',
   'loadlist': 'Ladeliste',
-  'selectloadlist': 'Ladeliste',
   'printlabel': 'Label',
   'alllists': 'alle',
   'selectedlist': 'für Auswahl',
@@ -80,6 +81,21 @@ export const LANG_DE_TRANS = {
   'scanmsgfield': 'Scan Nachrichten',
   'scanfield': 'Scanfeld',
   'loadinglistscan': 'Ladelistenscan',
-  'bagscan': 'Bagscan'
+  'bagscan': 'Bagscan',
+  'packageId': 'PkSt Nr',
+  'zip': 'PLZ',
+  'city': 'Ort',
+  'devliveryStation': 'Lieferdepot',
+  'loadinglistNo': 'Ladelisten Nr',
+  'loadinglist': 'Ladeliste',
+  'wrapperType': 'Verpackungsart',
+  'valore': 'Valore',
+  'print': 'Drucken',
+  'noAction': 'keine Aktion ausgewählt',
+  'actionNewLoadlist': 'Aktion: Neue Ladeliste',
+  'actionChangePayload': 'Aktion: Änderung der Zuladung',
+  'actionChangeLoadlist': 'Aktion: Wechsel Ladeliste',
+  'notOnLoadlist': 'noch nicht auf Ladeliste',
+  'onLoadlist': 'bereits geladen'
 };
 

@@ -159,7 +159,8 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
         ( resp: Response ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.msgService.success( 'User insert successful' );
+            this.msgService.success( this.translate.instant('UserInsertSuccessful') )
+            // this.msgService.success( 'User insert successful' );
             this.clearActiveUser();
             this.userService.getUsers();
           } else {
@@ -179,7 +180,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
         ( resp: Response ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.msgService.success( 'User update successful' );
+            this.msgService.success( this.translate.instant('UserUpdateSuccessful') )
             this.clearActiveUser();
             this.userService.getUsers();
           } else {
