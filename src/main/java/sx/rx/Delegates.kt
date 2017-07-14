@@ -39,6 +39,10 @@ class ObservableRxProperty<T>(
     }
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        this.set(value)
+    }
+
+    fun set(value: T) {
         val old = this.value
 
         this.value = value
