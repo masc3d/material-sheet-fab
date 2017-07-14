@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
+import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.*
 
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -27,6 +28,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.android.Device
 import sx.android.ui.flexibleadapter.FlexibleVmHeaderItem
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 
@@ -72,6 +74,7 @@ class VehicleLoadingScreen : ScreenFragment() {
 
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val tone: Tone by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val loadedParcels: MutableList<Parcel> = mutableListOf()
 
@@ -189,7 +192,7 @@ class VehicleLoadingScreen : ScreenFragment() {
             0 -> {
                 //Error, order could not be found
                 log.warn("No order with a parcel reference [$data] could be found")
-
+                tone.errorBeep()
                 //Query order from Central services
             }
             1 -> {

@@ -17,6 +17,20 @@
                 android:visible="false"
                 app:showAsAction="never"/>
 
+            <item
+                android:id="@+id/action_scan"
+                android:icon="@drawable/ic_barcode_scan"
+                android:title="Scan (DEV)"
+                android:visible="false"
+                app:showAsAction="never"/>
+
+            <item
+                android:id="@+id/action_scan_dialog"
+                android:icon="@drawable/ic_barcode_scan"
+                android:title="Scan Dialog (DEV)"
+                android:visible="false"
+                app:showAsAction="never"/>
+
         </menu>
     </item>
 </menu>
