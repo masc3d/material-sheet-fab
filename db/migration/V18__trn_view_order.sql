@@ -1,6 +1,6 @@
 USE dekuclient;
 CREATE OR REPLACE ALGORITHM = UNDEFINED
-VIEW trn_v_order AS
+VIEW tad_v_order AS
   SELECT
     OrderID                          AS id,
     AuftragsID                       AS customer_reference,
@@ -50,7 +50,7 @@ VIEW trn_v_order AS
     tblauftrag;
 
 CREATE OR REPLACE ALGORITHM = UNDEFINED
-VIEW trn_v_order_parcel AS
+VIEW tad_v_order_parcel AS
   SELECT
     OrderID * 100 + OrderPos AS id,
     OrderID                  AS order_id,
