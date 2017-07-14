@@ -12,6 +12,9 @@ import java.util.*
  * Created by masc on 18.06.17.
  */
 class MockDeliveryListService : DeliveryListService {
+    override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private val info = DeliveryListService.DeliveryListInfo(
             id = 1,
