@@ -1,6 +1,14 @@
 USE dekuclient;
 CREATE OR REPLACE
   ALGORITHM = UNDEFINED
+VIEW tad_v_deliverylistinfo AS
+  SELECT
+    rkkopf.rollkartennummer AS id,
+    rkkopf.rollkartendatum  AS delivery_list_date
+  FROM rkkopf;
+
+CREATE OR REPLACE
+  ALGORITHM = UNDEFINED
 VIEW tad_v_deliverylist AS
   SELECT
     rkkopf.rollkartennummer AS id,

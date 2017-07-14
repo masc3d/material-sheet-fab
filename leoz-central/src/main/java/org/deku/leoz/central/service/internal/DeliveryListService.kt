@@ -1,10 +1,12 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistRecord
+import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistinfoRecord
 import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
+import org.deku.leoz.service.internal.OrderService
 import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
@@ -18,39 +20,60 @@ import javax.ws.rs.core.Response
 @ApiKey(false)
 @Path("internal/v1/deliverylist")
 class DeliveryListService : DeliveryListService {
-
     @Inject
     private lateinit var deliveryListRepository: DeliveryListJooqRepository
 
-    override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
-        val ll: List<DeliveryListService.DeliveryListInfo>
-        ll = listOf()
-        return ll
-    }
-
     override fun getById(id: Long): DeliveryListService.DeliveryList {
-        val deliveryListService: DeliveryListService.DeliveryList
+        val deliveryList: DeliveryListService.DeliveryList
         when {
             id != null -> {
-//                deliveryList = this.deliveryListRepository.findById(id)
-//                        ?.toDeliveryList()
-//                        ?.toDeliveryList()
-//                        ?:
-                throw DefaultProblem(
-                        title = "DeliveryList not found",
-                        status = Response.Status.NOT_FOUND)
+                deliveryList = this.deliveryListRepository.findById(id)
+                        ?.toDeliveryList()
+                        ?:
+                        throw DefaultProblem(
+                                title = "DeliveryList not found",
+                                status = Response.Status.NOT_FOUND)
             }
             else -> {
                 TODO("Handle other query types here")
             }
         }
-        return deliveryListService
+        return deliveryList
     }
-}
 
-fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList {
-    val r = this
-    val l: DeliveryListService.DeliveryList
-    l = r.toDeliveryList()
-    return l
+    override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
+        val deliveryList: List<TadVDeliverylistinfoRecord>
+        val listInfos = mutableListOf<DeliveryListService.DeliveryListInfo>()
+
+        when {
+            deliveryDate != null -> {
+                deliveryList = deliveryListRepository.findInfoByDate(deliveryDate.date)
+                deliveryList.forEach { deliveryList ->
+                    val di: DeliveryListService.DeliveryListInfo = DeliveryListService.DeliveryListInfo(
+                            deliveryList.id.toLong(),
+                            ShortDate(deliveryList.deliveryListDate))
+                    listInfos.add(di)
+                }
+            }
+            else -> {
+                TODO("Handle other query types here")
+            }
+        }
+        return listInfos.toList()
+    }
+
+    fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList {
+        val r = this
+        var orders = mutableListOf<OrderService.Order>()
+        val l = DeliveryListService.DeliveryList(
+                id = r.id.toLong(),
+                info = DeliveryListService.DeliveryListInfo(
+                        id = r.id.toLong(),
+                        date = ShortDate(r.deliveryListDate)
+                ),
+                orders = orders,
+                stops = listOf()
+        )
+        return l
+    }
 }

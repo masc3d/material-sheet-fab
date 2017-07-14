@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType
  *  Job
  */
 
-@Path("internal/v1/delivery-list")
+@Path("internal/v1/deliverylist")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Delivery list service")
@@ -41,12 +41,12 @@ interface DeliveryListService {
     @ApiOperation(value = "Get delivery list info")
     fun get(
 //todo not jet implemented            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null,
-            @QueryParam(DELIVERY_DATE) @ApiParam(value = "Delivery date", required = false) deliveryDate: ShortDate? = null
+            @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-06-20",value = "Delivery date", required = false) deliveryDate: ShortDate? = null
     ): List<DeliveryListInfo>
 
     @ApiModel(description = "Delivery list")
     data class DeliveryList(
-            @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
+            @ApiModelProperty(example = "10729637", position = 10, required = true, value = "DeliveryListID")
             var id: Long,
             @ApiModelProperty(example = "2017-05-26", position = 20, required = true)
             var info: DeliveryListInfo,
@@ -71,9 +71,9 @@ interface DeliveryListService {
 
     @ApiModel(description = "Delivery list info")
     data class DeliveryListInfo(
-            @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
+            @ApiModelProperty(example = "10729637", position = 10, required = true, value = "DeliveryListID")
             var id: Long,
-            @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
+            @ApiModelProperty(example = "2017-06-20", position = 20, required = true, value = "Date")
             var date: ShortDate
     )
 
