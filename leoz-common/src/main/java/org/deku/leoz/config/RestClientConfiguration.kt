@@ -5,7 +5,6 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
 import org.deku.leoz.service.internal.*
-import org.deku.leoz.service.mock.MockDeliveryListService
 import sx.rs.proxy.RestClientProxy
 import java.net.URI
 
@@ -77,9 +76,7 @@ abstract class RestClientConfiguration {
             }
 
             bind<DeliveryListService>() with provider {
-                // TODO: replace with proxy when implementation is done
-                // createServiceProxy(config = instance(), serviceType = DeliveryListService::class.java)
-                MockDeliveryListService()
+                 createServiceProxy(config = instance(), serviceType = DeliveryListService::class.java)
             }
 
             bind<OrderService>() with provider {
