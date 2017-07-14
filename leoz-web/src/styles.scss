@@ -363,7 +363,7 @@ p-tabpanel > div {
   padding: 5px !important;
 }
 
-.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-button {
+.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
   background-color: $color-deku-blue;
 
   &:enabled:hover,
