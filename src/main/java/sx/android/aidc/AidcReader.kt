@@ -106,4 +106,8 @@ abstract class AidcReader {
         this.lifecycle.bindUntilEvent(activity, ActivityEvent.PAUSE).subscribe()
     }
     //endregion
+
+    fun emulateReadEvent(event: ReadEvent) {
+        readEventSubject.onNext(event)
+    }
 }
