@@ -26,6 +26,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
@@ -522,7 +523,11 @@ open class Activity : RxAppCompatActivity(),
 
     override fun onScreenFragmentResume(fragment: ScreenFragment) {
         // Take over action items from screen fragment when it resumes
-        this.actionItems = fragment.actionItems
+        fragment.actionItemsProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    this.actionItems = it.value
+                }
 
         // Setup collapsing layout, appbar & header
 
