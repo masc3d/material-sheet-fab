@@ -21,7 +21,6 @@ buildscript {
 
     ext {
         v_anko = '0.10.1'
-        v_dbflow = '4.0.4'
         v_material_dialogs = '0.9.4.5'
         v_parceler = '1.1.9'
         v_roboelectric = '3.3.2'
@@ -274,18 +273,6 @@ dependencies {
             // Volley
             "com.android.volley:volley:1.0.0",
 
-            "com.github.Raizlabs.DBFlow:dbflow-core:$v_dbflow",
-            "com.github.Raizlabs.DBFlow:dbflow:$v_dbflow",
-
-            // kotlin extensions
-            "com.github.Raizlabs.DBFlow:dbflow-kotlinextensions:$v_dbflow",
-
-            // RXJava 2 support
-            "com.github.Raizlabs.DBFlow:dbflow-rx2:$v_dbflow",
-
-            // RXJava 2 Kotlin Extensions Support
-            "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:$v_dbflow",
-
             // Anko
             "org.jetbrains.anko:anko-commons:$v_anko",
 
@@ -327,6 +314,10 @@ dependencies {
             "com.fenchtose:tooltip:0.1.5",
     )
 
+    provided(
+        "com.google.auto.value:auto-value:$v_autovalue"
+    )
+
     debugCompile(
             // Stetho
             "com.facebook.stetho:stetho:$v_stetho",
@@ -335,6 +326,9 @@ dependencies {
 
     testCompile(
             "junit:junit:$v_junit",
+
+            "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
+
             "org.robolectric:robolectric:$v_roboelectric",
             "org.robolectric:shadows-multidex:$v_roboelectric",
     )
@@ -350,8 +344,9 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.github.Raizlabs.DBFlow:dbflow-processor:$v_dbflow",
-            "com.android.databinding:compiler:2.3.3"
+            "com.android.databinding:compiler:2.3.3",
+            "com.google.auto.value:auto-value:$v_autovalue",
+            "io.requery:requery-processor:$v_requery"
     )
 }
 
