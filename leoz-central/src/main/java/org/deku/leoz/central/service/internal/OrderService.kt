@@ -63,6 +63,11 @@ class OrderService : OrderService {
                 ?: throw DefaultProblem(
                 title = "Order not found",
                 status = Response.Status.NOT_FOUND)
+
+        order.parcels = this.orderRepository
+                .findParcelsByOrderId(order.id)
+                .map { it.toParcel() }
+
         return order
     }
 
