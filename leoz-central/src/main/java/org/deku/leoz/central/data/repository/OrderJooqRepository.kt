@@ -50,21 +50,7 @@ open class OrderJooqRepository {
         return findById(rParcel.orderId.toLong()) //null!!!!!!
     }
 
-//    fun findParcelsByOrderId(id: Long) : Result<Record> {
-//        return dslContext.select().from(Tables.TRN_V_ORDER_PARCEL).where(
-//                Tables.TRN_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble())).fetch()
-//    }
-
     fun findParcelsByOrderId(id: Long): List<TadVOrderParcelRecord> {
-
-//    Tables.TRN_V_ORDER_PARCEL,
-//    Tables.TRN_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble()))
-
-//        return dslContext.select()
-//                .from(Tables.MST_USER.innerJoin(Tables.MST_KEY)
-//                        .on(Tables.MST_USER.KEY_ID.eq(Tables.MST_KEY.KEY_ID)))
-//                .where(Tables.MST_KEY.KEY.eq(apiKey))?.fetchOneInto(MstUser.MST_USER)
-//}
         return dslContext.fetch(
                 Tables.TAD_V_ORDER_PARCEL,
                 Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble()))

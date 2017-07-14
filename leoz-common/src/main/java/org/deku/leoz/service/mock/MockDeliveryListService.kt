@@ -64,7 +64,7 @@ class MockDeliveryListService : DeliveryListService {
                 id = 1,
                 info = this.info,
                 orders = listOf(order),
-                stops = listOf(DeliveryListService.Stop(orderId = 1, stopType = DeliveryListService.Stop.Type.Delivery))
+                stops = listOf(DeliveryListService.Stop( listOf() ))
         )
     }
 
