@@ -12,6 +12,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -167,7 +168,13 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    processLabelScan(it.data)
+                    when {
+                        it.data.toLongOrNull() != null && it.data.count() <= 9 -> {
+                            deliveryList.load(it.data.toLong())
+                        }
+                        else -> processLabelScan(it.data)
+                    }
+
                 }
 
 //        this.activity.actionEvent
@@ -192,6 +199,18 @@ class VehicleLoadingScreen : ScreenFragment() {
             0 -> {
                 //Error, order could not be found
                 log.warn("No order with a parcel reference [$data] could be found")
+                if (data.count() <= 9 && data.toLongOrNull() != null) {
+                    log.debug("Check for delivery list with id [$data]")
+                    deliveryList.load(data.toLong())
+                            .bindToLifecycle(this)
+                            .subscribe {
+                                if (it.isEmpty()) {
+                                    tone.errorBeep()
+                                } else {
+
+                                }
+                            }
+                }
                 tone.errorBeep()
                 //Query order from Central services
             }
