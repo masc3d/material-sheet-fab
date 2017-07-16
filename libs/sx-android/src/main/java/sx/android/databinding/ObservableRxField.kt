@@ -10,7 +10,7 @@ import io.reactivex.disposables.Disposable
 import sx.rx.ObservableRxProperty
 
 /**
- * Android data binding field with support for regular Observable (readonly) and ObservableRxProperty (readwrite)
+ * Android data binding field wrapping a regular rx Observable (readonly) or ObservableRxProperty (readwrite)
  */
 class ObservableRxField<T> private constructor(
         source: Observable<T>,
