@@ -9,7 +9,6 @@ import io.requery.Persistable
 import io.requery.android.sqlite.DatabaseSource
 import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.sql.KotlinEntityDataStore
-import org.deku.leoz.mobile.data.requery.Models
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
@@ -43,10 +42,6 @@ class DatabaseConfiguration {
                         context = instance(),
                         name = name,
                         clean = settings.cleanStartup)
-            }
-
-            bind<Database.Migration>() with singleton {
-                instance<Database>().Migration()
             }
         }
     }

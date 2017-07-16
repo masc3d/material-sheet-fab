@@ -3,25 +3,20 @@ package org.deku.leoz.mobile.ui
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
-import android.provider.Settings
 import android.support.design.widget.*
 import android.support.transition.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.text.InputType
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -58,10 +53,8 @@ import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import org.deku.leoz.mobile.model.Delivery
-import org.jetbrains.anko.contentView
 import sx.aidc.SymbologyType
 import sx.android.convertDpToPx
-import sx.android.convertPxToDp
 import sx.android.toBitmap
 import java.util.NoSuchElementException
 
@@ -288,7 +281,7 @@ open class Activity : RxAppCompatActivity(),
             R.id.action_scan_dialog -> {
                 val items = mutableListOf<String>()
 
-                delivery.orderList.flatMap { it.parcel }.forEach { items.add(it.labelRef) }
+                delivery.orderList.flatMap { it.parcel }.forEach { items.add(it.number) }
 
 //                val dialog = MaterialDialog.Builder(this.applicationContext)
 //                        .title("Scan emulation")

@@ -2,8 +2,6 @@ package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
 import org.deku.leoz.mobile.model.Parcel
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * Parcel view model
@@ -12,5 +10,5 @@ import java.util.*
 class ParcelViewModel(val parcel: Parcel) : BaseObservable() {
 
     val number: String
-        get() = this.parcel.labelRef
+        get() = this.parcel.number
 }

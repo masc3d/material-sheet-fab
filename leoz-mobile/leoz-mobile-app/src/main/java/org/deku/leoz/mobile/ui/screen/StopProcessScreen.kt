@@ -232,7 +232,7 @@ class StopProcessScreen :
     private fun processLabelRef(ref: String) {
         val order: Order? = orderList.firstOrNull {
             it.parcel.firstOrNull {
-                it.labelRef == ref
+                it.number == ref
             } != null
         }
 

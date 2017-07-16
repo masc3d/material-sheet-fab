@@ -202,16 +202,13 @@ class Delivery {
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(
                                             Parcel(
-                                                    id = "a",
-                                                    labelRef = "1000000000$i"
+                                                    number = "1000000000$i"
                                             ),
                                             Parcel(
-                                                    id = "b",
-                                                    labelRef = "1000000001$i"
+                                                    number = "1000000001$i"
                                             ),
                                             Parcel(
-                                                    id = "c",
-                                                    labelRef = "1000000002$i"
+                                                    number = "1000000002$i"
                                             )
                                     ),
                                     deliveryAddress = deliveryAddresses[i],
@@ -236,8 +233,7 @@ class Delivery {
                                     state = Order.State.LOADED,
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(Parcel(
-                                            id = "a",
-                                            labelRef = "0200000000$i"
+                                            number = "0200000000$i"
                                     )),
                                     deliveryAddress = deliveryAddresses[i],
                                     pickupAddress = pickupAddresses[i],
@@ -378,7 +374,7 @@ class Delivery {
         return stopList.filter {
             it.orders.filter {
                 it.parcel.filter {
-                    it.labelRef == labelReference
+                    it.number == labelReference
                 }.isNotEmpty()
             }.isNotEmpty()
         }
@@ -387,7 +383,7 @@ class Delivery {
     fun findOrderByLabelReference(labelReference: String): List<Order> {
         return orderList.filter {
             it.parcel.filter {
-                it.labelRef == labelReference
+                it.number == labelReference
             }.isNotEmpty()
         }
     }

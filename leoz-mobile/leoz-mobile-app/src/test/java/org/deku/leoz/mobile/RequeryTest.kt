@@ -5,12 +5,10 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import io.requery.Persistable
-import io.requery.reactivex.ReactiveEntityStore
-import org.deku.leoz.mobile.config.DatabaseConfiguration
-import org.deku.leoz.mobile.data.requery.Models
+import io.requery.reactivex.KotlinReactiveEntityStore
+import org.deku.leoz.mobile.config.DatabaseTestConfiguration
 import org.junit.Test
-import org.deku.leoz.mobile.data.requery.AddressEntity
-import org.deku.leoz.mobile.model.Address
+import org.deku.leoz.mobile.model.*
 import org.junit.Assert
 
 /**
@@ -20,31 +18,29 @@ import org.junit.Assert
 class RequeryTest {
     companion object {
         init {
-            Kodein.global.addImport(DatabaseConfiguration.module)
+            Kodein.global.addImport(DatabaseTestConfiguration.module)
         }
     }
 
-    val store: ReactiveEntityStore<Persistable> by Kodein.global.lazy.instance()
+    val store: KotlinReactiveEntityStore<Persistable> by Kodein.global.lazy.instance()
 
-    private fun newAddress(): Address {
-        val a = Address()
+    private fun newAddress(): TestAddress {
+        val a = TestAddress()
         a.line1 = "1234"
-        store.insert(a.entity).blockingGet()
+        store.insert(a).blockingGet()
         return a
     }
 
     @Test
     fun testSelect() {
-        val r = Models.REQUERY
-
         var observedRecords: Int = 0
 
-        store.delete(AddressEntity::class.java)
+        store.delete(TestAddress::class)
 
         newAddress()
 
         store
-                .select(AddressEntity::class.java)
+                .select(TestAddress::class)
                 .get()
                 .observableResult()
                 .subscribe {
@@ -59,14 +55,21 @@ class RequeryTest {
 
     @Test
     fun testInsert() {
-        store.runInTransaction {
-            store.delete(AddressEntity::class.java)
+
+        store.withTransaction {
+            store.delete(TestAddress::class).get().call()
 
             newAddress()
+//            newAddress()
 
-            Assert.assertEquals(1, store.count(AddressEntity::class.java))
+//            Assert.assertEquals(1, store.count(Address2::class).get().call())
 
-            it.transaction().rollback()
+            //(store.toBlocking() as KotlinEntityDataStore).data.transaction().rollback()
         }.blockingGet()
+    }
+
+    @Test
+    fun testDelete() {
+        store.delete(TestAddress::class)
     }
 }

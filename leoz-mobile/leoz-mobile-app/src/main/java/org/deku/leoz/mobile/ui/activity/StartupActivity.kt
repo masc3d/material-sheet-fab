@@ -64,19 +64,11 @@ class StartupActivity : RxAppCompatActivity() {
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
         Kodein.global.instance<UpdateService>()
-        val dbMigration: Database.Migration = Kodein.global.instance()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
 
         if (!this.started) {
-
-            // Start database migration (async)
-            val ovMigrate = dbMigration.run()
-                    // Ignore this exception here, as StartupActivity is about to finish.
-                    // Migration result will be evaluated in MainActivity
-                    .onErrorReturnItem(0)
-                    .ignoreElements()
 
             // Acquire permissions
             val ovPermissions = RxPermissions(this)
@@ -110,35 +102,34 @@ class StartupActivity : RxAppCompatActivity() {
 
             // Merge and subscribe
             Observable.mergeArray(
-                    ovMigrate.toObservable<Any>(),
                     ovPermissions.cast(Any::class.java),
                     ovAidcReader.cast(Any::class.java)
             )
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
-                        onComplete = {
-                            // Log device info/serial
-                            val device: Device = Kodein.global.instance()
-                            log.info(device.toString())
+                            onComplete = {
+                                // Log device info/serial
+                                val device: Device = Kodein.global.instance()
+                                log.info(device.toString())
 
-                            // Late initialization of singletons which require eg. permissions
-                            Kodein.global.instance<IMqttAsyncClient>()
+                                // Late initialization of singletons which require eg. permissions
+                                Kodein.global.instance<IMqttAsyncClient>()
 
-                            // Initialize location service
-                            this.startService(
-                                    Intent(applicationContext, LocationService::class.java))
+                                // Initialize location service
+                                this.startService(
+                                        Intent(applicationContext, LocationService::class.java))
 
-                            // Start main activity
-                            val handler = Handler()
-                            handler.postDelayed({
-                                this@StartupActivity.startMainActivity(withAnimation = true)
-                            }, 300)
-                            this@StartupActivity.started = true
-                        },
-                        onError = { e ->
-                            log.error(e.message, e)
-                            this@StartupActivity.finishAffinity()
-                        })
+                                // Start main activity
+                                val handler = Handler()
+                                handler.postDelayed({
+                                    this@StartupActivity.startMainActivity(withAnimation = true)
+                                }, 300)
+                                this@StartupActivity.started = true
+                            },
+                            onError = { e ->
+                                log.error(e.message, e)
+                                this@StartupActivity.finishAffinity()
+                            })
         } else {
             this.startMainActivity(withAnimation = false)
         }

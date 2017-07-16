@@ -209,7 +209,7 @@ class Order(
     }
 
     fun findParcelByReference(ref: String): Parcel? {
-        return this.parcel.firstOrNull { it.labelRef == ref }
+        return this.parcel.firstOrNull { it.number == ref }
     }
 
     fun toStop(): Stop {
@@ -275,8 +275,7 @@ fun OrderService.Order.Address.toAddress(): Address {
 
 fun OrderService.Order.Parcel.toParcel(): Parcel {
     return Parcel(
-            id = this.id.toString(),
-            labelRef = this.number,
+            number = this.number,
             length = this.dimension.length?.toDouble() ?: 0.0,
             height = this.dimension.height?.toDouble() ?: 0.0,
             width = this.dimension.width?.toDouble() ?: 0.0,

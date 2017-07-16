@@ -43,21 +43,6 @@ class MainActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Check (asynchronous) database migration result
-        val database: Database.Migration = Kodein.global.instance()
-
-        val migrationResult = database.result
-        if (migrationResult != null) {
-            // Build error message
-            var text = "${this.getText(org.deku.leoz.mobile.R.string.error_database_inconsistent)}"
-            text += if (migrationResult.message != null) " (${migrationResult.message})" else ""
-            text += ". ${this.getText(org.deku.leoz.mobile.R.string.prompt_reinstall)}"
-
-            this.showErrorAlert(text = text, onPositiveButton = {
-                this.app.terminate()
-            })
-        }
-
         this.supportActionBar?.title = getText(R.string.login)
 
         this.showScreen(

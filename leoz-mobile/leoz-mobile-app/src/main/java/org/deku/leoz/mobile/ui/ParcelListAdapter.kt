@@ -20,7 +20,7 @@ class ParcelListAdapter(val context: Context, val data: List<Parcel>, val rootVi
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val vi: View = convertView ?: inflater.inflate(R.layout.item_delivery_process_parcel_list, rootViewGroup)
 
-        vi.uxParcelReference.text = data[position].labelRef
+        vi.uxParcelReference.text = data[position].number
         vi.uxParcelStatus.setImageDrawable(context.resources.getDrawable(R.drawable.ic_cancel_black))
 
         if (readOnly) {

@@ -10,13 +10,5 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class DatabaseTest {
-    @Test
-    fun testFlywayMigrate() {
-        val database = Database(
-                context = InstrumentationRegistry.getTargetContext(),
-                name = "test")
 
-        database.Migration().run()
-                .blockingFirst()
-    }
 }

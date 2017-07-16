@@ -14,7 +14,7 @@ import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
-import org.deku.leoz.mobile.data.requery.UserEntity
+import org.deku.leoz.mobile.model.requery.UserEntity
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
@@ -101,7 +101,7 @@ class Login {
                 )
 
                 // Store user in database
-                val rUser = UserEntity()
+                val rUser = User()
                 rUser.id = user.id
                 rUser.email = user.email
                 rUser.password = hashUserPassword(
@@ -110,7 +110,7 @@ class Login {
                         password = password
                 )
                 rUser.apiKey = authResponse.key
-                db.store.upsert(rUser).blockingGet()
+                db.store.upsert(rUser.entity).blockingGet()
 
                 return user
             }
@@ -129,10 +129,7 @@ class Login {
                 if (rUser == null)
                     throw NoSuchElementException("User [${email}] not found, offline login not applicable")
 
-                return User(
-                        id = rUser.id,
-                        email = rUser.email,
-                        apiKey = rUser.apiKey)
+                return User(rUser)
             }
 
             // Actual authorization logic
