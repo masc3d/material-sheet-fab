@@ -281,6 +281,29 @@ open class Activity : RxAppCompatActivity(),
             R.id.action_scan_dialog -> {
                 val items = mutableListOf<String>()
 
+                // TODO: this should be generic. consumers should be able to define their content per screen, no static references to specific processes
+                //region Suitable structure could look like this:
+
+                /**
+                 * Synthetic barcode content with symbologiy type
+                 */
+                data class SyntheticBarcode(
+                        val symbologyType: SymbologyType,
+                        val content: String)
+
+                val syntheticBarcodes = listOf<SyntheticBarcode>()
+
+                /**
+                 * Specific list of synthetic barcodes
+                 */
+                data class SyntheticBarcodeList(
+                        val name: String,
+                        val barcodes: List<SyntheticBarcode>
+                )
+
+                // TODO: could then define reusable lists of eg. synethtic parcel barcode list, DL barcode list. should be possible to enable one or more at a time, each having their own menu entry
+                //endregion
+
                 delivery.orderList.flatMap { it.parcel }.forEach { items.add(it.number) }
 
 //                val dialog = MaterialDialog.Builder(this.applicationContext)
