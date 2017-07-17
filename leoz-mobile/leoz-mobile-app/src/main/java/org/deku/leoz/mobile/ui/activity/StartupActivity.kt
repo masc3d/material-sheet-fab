@@ -78,7 +78,8 @@ class StartupActivity : RxAppCompatActivity() {
                             Manifest.permission.ACCESS_NETWORK_STATE,
                             Manifest.permission.CALL_PHONE,
                             Manifest.permission.CAMERA,
-                            Manifest.permission.READ_PHONE_STATE
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
                     )
                     .switchMap<Boolean> {
                         when (it) {
