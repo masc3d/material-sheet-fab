@@ -83,34 +83,12 @@ class UnitNumber private constructor(
             if (!value.all { it.isDigit() })
                 return Result(error = IllegalArgumentException("Unit number must be numeric"))
 
-            val number = value.substring(0, 11)
-            val checkDigit = value.substring(11, 12).toInt()
+            val number = CheckDigits.DEKU.verify(value)
 
-            if (calculateCheckDigit(number) != checkDigit)
-                return Result(error = IllegalArgumentException("Unit number has invalid check digit"))
-
-            return Result(UnitNumber(number))
-        }
-
-        /**
-         * Calculate DEKU check digit
-         * @param value The value to calculate check digit for
-         */
-        fun calculateCheckDigit(value: String): Int {
-            val len: Int = value.length
-            var evenSum: Int = 0
-            var oddSum: Int = 0
-
-            for (count in len - 1 downTo 1 step 2) {
-                evenSum += value.substring(count - 1, count).toInt()
+            return when {
+                number != null -> Result(UnitNumber(number))
+                else -> Result(error = IllegalArgumentException("Unit number [${value}] has invalid check digit"))
             }
-
-            for (count in len downTo 1 step 2) {
-                oddSum += value.substring(count - 1, count).toInt()
-            }
-
-            val result = ((10 - (((oddSum * 3) + evenSum) % 10)) % 10)
-            return result
         }
     }
 }
@@ -167,32 +145,12 @@ class GlsUnitNumber private constructor(
             if (!value.all { it.isDigit() })
                 return Result(error = IllegalArgumentException("GLS unit number must be numeric"))
 
-            val number = value.substring(0, 11)
-            val checkDigit = value.substring(11, 12).toInt()
+            val number = CheckDigits.GLS.verify(value)
 
-            if (calculateCheckDigit(number) != checkDigit)
-                return Result(error = IllegalArgumentException("GLS unit number has invalid check digit"))
-
-            return Result(GlsUnitNumber(number))
-        }
-
-        /**
-         * Calculate GLS check digit
-         * @param value The value to calculate check digit for
-         */
-        fun calculateCheckDigit(value: String): Int {
-            val len: Int = value.length
-            var evenSum: Int = 0
-            var oddSum: Int = 0
-
-            for (count in len - 2 downTo 0 step 2) {
-                evenSum += value.substring(count, count + 1).toInt()
+            return when {
+                number != null -> Result(GlsUnitNumber(number))
+                else -> Result(error = IllegalArgumentException("GLS unit number [${value}] has invalid check digit"))
             }
-            for (count in len - 1 downTo 0 step 2) {
-                oddSum += value.substring(count, count + 1).toInt()
-            }
-            val result = ((10 - (((oddSum * 3) + evenSum + 1) % 10)) % 10)
-            return result
         }
     }
 }
