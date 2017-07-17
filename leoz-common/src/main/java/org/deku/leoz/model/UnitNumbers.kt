@@ -70,7 +70,7 @@ class UnitNumber private constructor(
         /** Parse a plain unit number without check digit */
         fun parse(value: String): Result<UnitNumber> {
             if (value.length != 11)
-                return Result(error = IllegalArgumentException("Unit number must have 11 digits"))
+                return Result(error = IllegalArgumentException("Unit number [${value}] must have 11 digits"))
 
             return Result(UnitNumber(value))
         }
@@ -78,10 +78,10 @@ class UnitNumber private constructor(
         /** Parse label unit number, which includes a check digit */
         fun parseLabel(value: String): Result<UnitNumber> {
             if (value.length != 12)
-                return Result(error = IllegalArgumentException("Label based unit number must have 12 digits"))
+                return Result(error = IllegalArgumentException("Label based unit number [${value}] must have 12 digits"))
 
             if (!value.all { it.isDigit() })
-                return Result(error = IllegalArgumentException("Unit number must be numeric"))
+                return Result(error = IllegalArgumentException("Unit number [${value}] must be numeric"))
 
             val number = CheckDigits.DEKU.verify(value)
 
@@ -124,26 +124,24 @@ class GlsUnitNumber private constructor(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(GlsUnitNumber::class.java)
-
         fun parse(value: String): Result<GlsUnitNumber> {
             if (value.length != 11)
-                return Result(error = IllegalArgumentException("GLS unit number must have 11 digits"))
+                return Result(error = IllegalArgumentException("GLS unit number [${value}] must have 11 digits"))
 
             val un = GlsUnitNumber(value)
 
             if (un.serviceType != ServiceType.EXPRESS)
-                return Result(error = IllegalArgumentException("GLS unit number has invalid service type"))
+                return Result(error = IllegalArgumentException("GLS unit number [${value}] has invalid service type"))
 
             return Result(GlsUnitNumber(value))
         }
 
         fun parseLabel(value: String): Result<GlsUnitNumber> {
             if (value.length != 12)
-                return Result(error = IllegalArgumentException("Label based GLS unit number must have 12 digits"))
+                return Result(error = IllegalArgumentException("Label based GLS unit number [${value}] must have 12 digits"))
 
             if (!value.all { it.isDigit() })
-                return Result(error = IllegalArgumentException("GLS unit number must be numeric"))
+                return Result(error = IllegalArgumentException("GLS unit number [${value}] must be numeric"))
 
             val number = CheckDigits.GLS.verify(value)
 
