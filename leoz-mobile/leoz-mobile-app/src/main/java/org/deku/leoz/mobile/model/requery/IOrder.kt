@@ -2,7 +2,9 @@ package org.deku.leoz.mobile.model.requery
 
 import android.databinding.Observable
 import io.requery.*
+import io.requery.converter.EnumStringConverter
 import io.swagger.annotations.ApiModelProperty
+import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.model.Carrier
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.service.internal.OrderService
@@ -18,8 +20,7 @@ interface IOrder : Persistable, Observable {
     var id: Long
     var carrier: Carrier
     var referenceIDToExchangeOrderID: Long
-    // TODO: enum
-    var orderClassification: Int
+    var orderClassification: OrderClassification
 
     @get:ForeignKey @get:OneToOne
     var pickupTask: IOrderTask
@@ -27,5 +28,5 @@ interface IOrder : Persistable, Observable {
     var deliveryTask: IOrderTask
 
     @get:OneToMany
-    var parcels: Set<IParcel>
+    var parcels: List<IParcel>
 }
