@@ -25,7 +25,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.Order
-import org.deku.leoz.mobile.model.Parcel
+import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity

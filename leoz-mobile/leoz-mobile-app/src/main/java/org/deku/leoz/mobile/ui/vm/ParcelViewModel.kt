@@ -1,7 +1,7 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
-import org.deku.leoz.mobile.model.Parcel
+import org.deku.leoz.mobile.model.entity.Parcel
 
 /**
  * Parcel view model

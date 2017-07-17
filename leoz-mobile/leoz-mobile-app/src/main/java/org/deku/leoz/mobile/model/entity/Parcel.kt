@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile.model.entity
 
 import org.deku.leoz.mobile.model.requery.IParcel
 import org.deku.leoz.mobile.model.requery.ParcelEntity
@@ -18,7 +18,7 @@ data class Parcel constructor(
             height: Double = 0.0,
             width: Double = 0.0,
             weight: Double = 0.0,
-            state: Parcel.State = Parcel.State.PENDING
+            state: State = State.PENDING
     )
             : this() {
         this.id = id

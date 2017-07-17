@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile.model.entity
 
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.model.requery.AddressEntity

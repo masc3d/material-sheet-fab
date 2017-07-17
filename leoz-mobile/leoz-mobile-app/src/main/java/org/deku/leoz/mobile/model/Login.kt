@@ -7,13 +7,11 @@ import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import io.requery.Persistable
-import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
+import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.requery.UserEntity
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory

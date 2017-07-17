@@ -1,5 +1,7 @@
 package org.deku.leoz.mobile.model
 
+import org.deku.leoz.mobile.model.entity.Address
+import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.internal.OrderService

@@ -7,7 +7,7 @@ import android.widget.BaseAdapter
 import android.view.LayoutInflater
 import kotlinx.android.synthetic.main.item_delivery_process_parcel_list.view.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Parcel
+import org.deku.leoz.mobile.model.entity.Parcel
 
 
 /**

@@ -1,12 +1,9 @@
 package org.deku.leoz.mobile.ui.fragment
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -17,17 +14,14 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
-import org.deku.leoz.mobile.model.User
+import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.ui.Fragment
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
-import sx.android.aidc.*
 import sx.android.hideSoftInput
 import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException

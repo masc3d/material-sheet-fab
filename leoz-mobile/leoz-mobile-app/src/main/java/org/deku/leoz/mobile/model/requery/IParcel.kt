@@ -2,7 +2,7 @@ package org.deku.leoz.mobile.model.requery
 
 import android.databinding.Observable
 import io.requery.*
-import org.deku.leoz.mobile.model.Parcel
+import org.deku.leoz.mobile.model.entity.Parcel
 
 /**
  * Parcel entity

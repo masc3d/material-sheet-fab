@@ -1,5 +1,7 @@
 package org.deku.leoz.mobile.model
 
+import org.deku.leoz.mobile.model.entity.Address
+
 /**
  * Created by 27694066 on 10.05.2017.
  */

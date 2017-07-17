@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile.model.entity
 
 import org.deku.leoz.mobile.model.requery.IUser
 import org.deku.leoz.mobile.model.requery.UserEntity
