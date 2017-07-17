@@ -127,6 +127,12 @@ class VehicleLoadingScreen : ScreenFragment() {
     })
     private val parcelListAdapter get() = parcelListAdapterInstance.get()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        this.title = "Vehicle loading"
+    }
+
     override fun onCreateView(inflater: android.view.LayoutInflater,
                               container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
@@ -196,8 +202,6 @@ class VehicleLoadingScreen : ScreenFragment() {
 //                        }
 //                    }
 //                }
-
-        this.title = "Vehicle loading"
     }
 
     private fun processLabelScan(data: String) {
