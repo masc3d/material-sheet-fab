@@ -9,6 +9,7 @@ import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader
+import sx.android.aidc.SimulatingAidcReader
 import sx.android.honeywell.aidc.HoneywellAidcReader
 import sx.rx.toHotReplay
 import sx.rx.toSingletonObservable
@@ -29,24 +30,31 @@ class AidcConfiguration {
             }
 
             /**
+             * A simulating aidc reader for synthesizing reads
+             */
+            bind<SimulatingAidcReader>() with singleton {
+                SimulatingAidcReader()
+            }
+
+            /**
              * Observable providing all available aidc readers
              */
             bind<Observable<out AidcReader>>() with eagerSingleton {
                 val device: Device = instance()
 
-                // Observable providing CameraAidcReader
-                val ovCameraReader: Observable<out AidcReader> = instance<CameraAidcReader>()
-                        .toSingletonObservable()
-                        .toHotReplay()
+                val readers = mutableListOf(
+                        Observable.just(instance<CameraAidcReader>()),
+                        Observable.just(instance<SimulatingAidcReader>())
+                )
 
                 when (device.manufacturer.type) {
                     Device.Manufacturer.Type.Honeywell ->
-                        Observable.merge(
-                                HoneywellAidcReader.create(context = instance()),
-                                ovCameraReader
-                        )
-                    else -> ovCameraReader
+                        readers.add(HoneywellAidcReader.create(context = instance()))
+
+                    else -> Unit
                 }
+
+                Observable.merge(readers).toHotReplay()
             }
 
             /**

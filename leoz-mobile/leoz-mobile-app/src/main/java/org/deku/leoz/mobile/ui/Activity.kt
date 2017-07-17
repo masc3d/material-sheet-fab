@@ -54,6 +54,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import org.deku.leoz.mobile.model.Delivery
 import sx.aidc.SymbologyType
+import sx.android.aidc.SimulatingAidcReader
 import sx.android.convertDpToPx
 import sx.android.toBitmap
 import java.util.NoSuchElementException
@@ -72,6 +73,8 @@ open class Activity : RxAppCompatActivity(),
     private var isPaused = false
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
+
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
     private val tone: Tone by Kodein.global.lazy.instance()
     private val updateService: UpdateService by Kodein.global.lazy.instance()
@@ -274,7 +277,7 @@ open class Activity : RxAppCompatActivity(),
             }
 
             R.id.action_scan -> {
-                this.aidcReader.emulateReadEvent(AidcReader.ReadEvent(data = "1001000000", symbologyType = SymbologyType.Interleaved25))
+                this.simulatingAidcReader.emit(data = "1001000000", symbologyType = SymbologyType.Interleaved25)
                 return true
             }
 
