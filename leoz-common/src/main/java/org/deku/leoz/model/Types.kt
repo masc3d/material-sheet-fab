@@ -268,7 +268,15 @@ enum class ParcelService(
             parcelServiceRestriction = ParcelServiceRestriction(
                     alternateDeliveryAllowed = false
             ),
-            validForStop = StopClassification.BOTH)
+            validForStop = StopClassification.BOTH);
+
+    companion object {
+        val byServiceId by lazy {
+            mapOf(
+                    *ParcelService.values().map { Pair(it.serviceId, it) }.toTypedArray()
+            )
+        }
+    }
 }
 
 /**
@@ -294,9 +302,11 @@ enum class ParcelType(val value: Int) {
     VALUABLES(91);
 
     companion object {
-        val valueMap = mapOf(
-                *ParcelType.values().map { Pair(it.value, it) }.toTypedArray()
-        )
+        val valueMap by lazy {
+            mapOf(
+                    *ParcelType.values().map { Pair(it.value, it) }.toTypedArray()
+            )
+        }
     }
 }
 

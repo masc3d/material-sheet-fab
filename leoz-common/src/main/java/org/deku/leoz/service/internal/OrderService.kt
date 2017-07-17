@@ -137,7 +137,6 @@ interface OrderService {
                 @get:ApiModelProperty(example = "10.99", position = 130, required = false, value = "cashAmount")
                 var cashAmount: Double = 0.0,
                 var currency: String = "DE"
-
         )
 
         @ApiModel(value = "Appointment", description = "Apointment")

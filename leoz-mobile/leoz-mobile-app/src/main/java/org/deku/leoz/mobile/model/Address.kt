@@ -6,6 +6,7 @@ import org.deku.leoz.mobile.model.requery.IAddress
 import sx.android.databinding.DelegatingRxObservable
 
 /**
+ * Address
  * Created by masc on 16.07.17.
  */
 class Address(

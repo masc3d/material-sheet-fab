@@ -21,15 +21,18 @@ import org.deku.leoz.mobile.model.Models
  */
 class DatabaseTestConfiguration {
     companion object {
-        val path = File("build/db/leoz-mobile.db")
+        val file = File("build/db/leoz-mobile.db")
 
         /** Path of the flyway generated local database */
         val JDBC_URL = "jdbc:sqlite:build/db/leoz-mobile.db"
 
         val module = Kodein.Module {
-            path.parentFile.mkdirs()
+            file.parentFile.mkdirs()
 
-            val url = "jdbc:sqlite:${path.toURI().path}"
+            if (file.exists())
+                file.delete()
+
+            val url = "jdbc:sqlite:${file.toURI().path}"
 
             bind<DataSource>() with singleton {
                 val ds = SQLiteDataSource()

@@ -5,6 +5,7 @@ import io.requery.*
 import org.deku.leoz.model.VehicleType
 
 /**
+ * User entity
  * Created by masc on 16.07.17.
  */
 @Entity(name = "UserEntity")

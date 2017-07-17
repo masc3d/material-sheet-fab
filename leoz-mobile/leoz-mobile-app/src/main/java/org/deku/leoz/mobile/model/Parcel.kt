@@ -2,11 +2,13 @@ package org.deku.leoz.mobile.model
 
 import org.deku.leoz.mobile.model.requery.IParcel
 import org.deku.leoz.mobile.model.requery.ParcelEntity
+
 /**
- * Mobile parcel
+ * Parcel
  */
 data class Parcel constructor(
-        val entity: ParcelEntity = ParcelEntity()) : IParcel by entity {
+        val entity: ParcelEntity = ParcelEntity())
+    : IParcel by entity {
 
     /** Passthrough c'tor */
     constructor(

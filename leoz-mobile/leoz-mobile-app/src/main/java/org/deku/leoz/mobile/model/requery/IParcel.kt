@@ -5,6 +5,7 @@ import io.requery.*
 import org.deku.leoz.mobile.model.Parcel
 
 /**
+ * Parcel entity
  * Created by masc on 16.07.17.
  */
 @Entity(name = "ParcelEntity")
@@ -18,4 +19,7 @@ interface IParcel : Persistable, Observable {
     var width: Double
     var weight: Double
     var state: Parcel.State
+
+    @get:ManyToOne @get:Column(name = "`order`")
+    var order: IOrder
 }

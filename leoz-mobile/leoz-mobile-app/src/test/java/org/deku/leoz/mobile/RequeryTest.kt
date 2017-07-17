@@ -8,7 +8,7 @@ import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.config.DatabaseTestConfiguration
 import org.junit.Test
-import org.deku.leoz.mobile.model.*
+import org.deku.leoz.mobile.model.requery.AddressEntity
 import org.junit.Assert
 
 /**
@@ -24,8 +24,8 @@ class RequeryTest {
 
     val store: KotlinReactiveEntityStore<Persistable> by Kodein.global.lazy.instance()
 
-    private fun newAddress(): TestAddress {
-        val a = TestAddress()
+    private fun newAddress(): AddressEntity {
+        val a = AddressEntity()
         a.line1 = "1234"
         store.insert(a).blockingGet()
         return a
@@ -35,12 +35,12 @@ class RequeryTest {
     fun testSelect() {
         var observedRecords: Int = 0
 
-        store.delete(TestAddress::class)
+        store.delete(AddressEntity::class)
 
         newAddress()
 
         store
-                .select(TestAddress::class)
+                .select(AddressEntity::class)
                 .get()
                 .observableResult()
                 .subscribe {
@@ -57,7 +57,7 @@ class RequeryTest {
     fun testInsert() {
 
         store.withTransaction {
-            store.delete(TestAddress::class).get().call()
+            store.delete(AddressEntity::class).get().call()
 
             newAddress()
 //            newAddress()
@@ -70,6 +70,6 @@ class RequeryTest {
 
     @Test
     fun testDelete() {
-        store.delete(TestAddress::class)
+        store.delete(AddressEntity::class)
     }
 }
