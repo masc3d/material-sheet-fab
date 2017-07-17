@@ -13,7 +13,7 @@ import org.sqlite.SQLiteDataSource
 import java.io.File
 import javax.sql.CommonDataSource
 import javax.sql.DataSource
-import org.deku.leoz.mobile.model.Models
+import org.deku.leoz.mobile.model.requery.Models
 
 /**
  * Database configuration for local tests

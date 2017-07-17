@@ -47,11 +47,12 @@ class DeliveryList {
 
     /**
      * Loads delivery list data from remote peer into local database
+     * @param deliveryListId Delivery list id
      * @return Hot observable which completes with a list of stops
      */
-    fun load(id: Long): Observable<List<Stop>> {
+    fun load(deliveryListId: Long): Observable<List<Stop>> {
         return Observable.fromCallable {
-            val deliveryList = this.deliveryListServive.getById(id = id)
+            val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
 
             // Map service orders to mobile orders
             val orders = deliveryList.orders.map { it.toOrder() }

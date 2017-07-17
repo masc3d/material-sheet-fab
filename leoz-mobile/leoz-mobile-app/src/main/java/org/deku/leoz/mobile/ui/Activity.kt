@@ -87,7 +87,15 @@ open class Activity : RxAppCompatActivity(),
     private var actionItems by actionItemsProperty
 
     private val actionEventSubject = PublishSubject.create<Int>()
+    /** Action overlay event */
     val actionEvent = this.actionEventSubject.hide()
+
+    /** Additional menu items to add */
+    var menuItems: Menu? = null
+
+    private val menuItemEventSubject = PublishSubject.create<MenuItem>()
+    /** Menu item event */
+    val menuItemEvent = this.menuItemEventSubject.hide()
 
     /**
      * Responsible for controlling header
@@ -239,10 +247,12 @@ open class Activity : RxAppCompatActivity(),
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menuInflater.inflate(R.menu.main, menu)
 
+        val mainSubMenu = menu.getItem(0).subMenu
+
         // Show logout only if there's a user actually logged in
         menu
                 .findItem(R.id.action_logout)
-                .setVisible(this.login.authenticatedUser != null)
+                .isVisible = (this.login.authenticatedUser != null)
 
         menu
                 .findItem(R.id.action_scan).isVisible = debugSettings.enabled
@@ -250,11 +260,30 @@ open class Activity : RxAppCompatActivity(),
         menu
                 .findItem(R.id.action_scan_dialog).isVisible = debugSettings.enabled
 
-        menu.setGroupVisible(0,
-                menu.getItem(0).subMenu.hasVisibleItems()
-        )
+        menu.setGroupVisible(0, mainSubMenu.hasVisibleItems())
 
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val mainSubMenu = menu.getItem(0).subMenu
+
+        val screenMenuItems = this.menuItems
+
+        if (screenMenuItems != null && screenMenuItems.hasVisibleItems()) {
+            for (i in 0..screenMenuItems.size() - 1) {
+                val screenMenuItem = screenMenuItems.getItem(i)
+                val item = mainSubMenu.add(
+                        0,
+                        screenMenuItem.itemId,
+                        screenMenuItem.order,
+                        screenMenuItem.title)
+
+                item.icon = screenMenuItem.icon
+            }
+        }
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -264,6 +293,10 @@ open class Activity : RxAppCompatActivity(),
         val id = item.itemId
 
         when (id) {
+            R.id.action_main -> {
+                /** Main submenu entry, ignore */
+                return true
+            }
             R.id.action_logout -> {
                 login.logout()
 
@@ -325,6 +358,8 @@ open class Activity : RxAppCompatActivity(),
             }
 
             else -> {
+                this.menuItemEventSubject.onNext(item)
+
                 return super.onOptionsItemSelected(item)
             }
         }
@@ -583,6 +618,18 @@ open class Activity : RxAppCompatActivity(),
                 .subscribe {
                     this.actionItems = it.value
                 }
+
+        fragment.menuProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribeBy(
+                        onNext = {
+                            this.menuItems = it.value
+                            this.invalidateOptionsMenu()
+                        },
+                        onComplete = {
+                            this.menuItems = null
+                        }
+                )
 
         // Setup collapsing layout, appbar & header
 

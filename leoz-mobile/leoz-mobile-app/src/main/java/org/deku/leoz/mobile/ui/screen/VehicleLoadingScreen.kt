@@ -6,6 +6,9 @@ import android.databinding.DataBindingUtil
 import android.databinding.ObservableField
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -29,7 +32,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
-import sx.android.Device
+import sx.android.inflateMenu
 import sx.android.ui.flexibleadapter.FlexibleVmHeaderItem
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 
@@ -73,11 +76,10 @@ class VehicleLoadingScreen : ScreenFragment() {
         )
     }
 
+    private val tone: Tone by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
-    private val tone: Tone by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
-    private val loadedParcels: MutableList<Parcel> = mutableListOf()
 
     private val parcelListAdapterInstance = LazyInstance<
             FlexibleAdapter<
@@ -151,12 +153,14 @@ class VehicleLoadingScreen : ScreenFragment() {
 
 //        parcelListAdapter.addListener(onItemClickListener)
 
+        this.menu = this.inflateMenu(R.menu.menu_vehicleloading)
+
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_vehicle_loading_exception,
                         colorRes = R.color.colorRed,
                         iconRes = R.drawable.ic_circle_cancel,
-                        menu = this.activity.inflateMenu(R.menu.menu_vehicle_loading_exception)
+                        menu = this.activity.inflateMenu(R.menu.menu_vehicleloading_exception)
                 )
         )
     }
@@ -177,6 +181,12 @@ class VehicleLoadingScreen : ScreenFragment() {
 
                 }
 
+        this.activity.menuItemEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    log.trace("MENU ITEM SELECTED [${it}]")
+                }
+
 //        this.activity.actionEvent
 //                .bindUntilEvent(this, FragmentEvent.PAUSE)
 //                .subscribe {
@@ -187,7 +197,7 @@ class VehicleLoadingScreen : ScreenFragment() {
 //                    }
 //                }
 
-        this.activity.supportActionBar?.title = "Vehicle loading"
+        this.title = "Vehicle loading"
     }
 
     private fun processLabelScan(data: String) {

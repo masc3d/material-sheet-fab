@@ -3,7 +3,6 @@ package org.deku.leoz.mobile
 import android.databinding.Observable
 import android.databinding.ObservableField
 import org.deku.leoz.mobile.model.Address
-import org.deku.leoz.mobile.model.TestAddress
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.Stopwatch

@@ -22,7 +22,6 @@ interface IOrderTask : Persistable, Observable {
     var notBeforeStart: Boolean
     var notice: String
 
-    @get:Column
     @get:Convert(ServiceConverter::class)
     var services: ArrayList<ParcelService>
 }

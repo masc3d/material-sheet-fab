@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui
 
 import android.content.pm.ActivityInfo
 import android.support.annotation.DrawableRes
+import android.view.Menu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
 
@@ -10,7 +11,17 @@ import sx.rx.ObservableRxProperty
  */
 open class ScreenFragment : Fragment() {
     val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
+    /** Screen action items */
     var actionItems by actionItemsProperty
+
+    val menuProperty by lazy { ObservableRxProperty<Menu?>(null) }
+    /** Screen menu items */
+    var menu: Menu? by menuProperty
+
+    /**
+     * Title
+     */
+    var title: String = ""
 
     enum class ScrollCollapseModeType {
         None,

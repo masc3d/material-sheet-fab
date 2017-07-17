@@ -12,11 +12,6 @@ open class Fragment : RxAppCompatDialogFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
-     * Title
-     */
-    var title: String = ""
-
-    /**
      * Activity
      */
     val activity: Activity
