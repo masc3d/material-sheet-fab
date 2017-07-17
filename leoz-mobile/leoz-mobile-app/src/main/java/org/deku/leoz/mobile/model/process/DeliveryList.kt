@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile.model.process
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -7,6 +7,8 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.toOrder
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory

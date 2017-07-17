@@ -20,6 +20,7 @@ open class ServiceConverter : Converter<ArrayList<ParcelService>, String> {
     override fun getPersistedSize(): Int? {
         return null
     }
+
     override fun convertToMapped(type: Class<out ArrayList<ParcelService>>?, value: String?): ArrayList<ParcelService> {
         return ArrayList((value ?: "")
                 .split(',')

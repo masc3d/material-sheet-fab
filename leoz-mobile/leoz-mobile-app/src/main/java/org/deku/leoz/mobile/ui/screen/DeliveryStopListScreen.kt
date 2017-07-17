@@ -14,7 +14,7 @@ import com.github.salomonbrys.kodein.lazy
 import eu.davidea.flexibleadapter.FlexibleAdapter
 
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.Stop
 import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper

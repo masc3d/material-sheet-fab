@@ -17,7 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.ui.Fragment
 import org.jetbrains.anko.inputMethodManager

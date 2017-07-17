@@ -40,7 +40,7 @@ import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.DebugSettings
-import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -52,7 +52,7 @@ import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.process.Delivery
 import sx.aidc.SymbologyType
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.convertDpToPx

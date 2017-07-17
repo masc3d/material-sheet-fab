@@ -8,24 +8,14 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.app
-import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.ui.AlertButton
 import org.deku.leoz.mobile.ui.screen.MainScreen
-import org.deku.leoz.mobile.ui.showAlert
-import org.deku.leoz.mobile.ui.showErrorAlert
 import org.slf4j.LoggerFactory
-import android.content.DialogInterface
 import android.content.SharedPreferences
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle2.android.ActivityEvent
-import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
-import org.jetbrains.anko.contentView
 import com.afollestad.materialdialogs.MaterialDialog
-import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.device.Tone
 
 

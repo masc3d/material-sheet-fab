@@ -13,7 +13,7 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.model.deliver
+import org.deku.leoz.mobile.model.process.deliver
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu

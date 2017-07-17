@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile.model.process
 
 import android.net.NetworkInfo
 import com.github.salomonbrys.kodein.Kodein

@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_delivery_menu_entry.view.*
 import kotlinx.android.synthetic.main.screen_menu.*
 
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment

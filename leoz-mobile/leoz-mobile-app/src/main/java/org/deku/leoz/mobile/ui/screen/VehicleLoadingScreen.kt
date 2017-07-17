@@ -6,9 +6,6 @@ import android.databinding.DataBindingUtil
 import android.databinding.ObservableField
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -24,7 +21,8 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.device.Tone
-import org.deku.leoz.mobile.model.*
+import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.DeliveryList
 
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu

@@ -23,7 +23,7 @@ import org.deku.leoz.mobile.BR
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
-import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.Stop

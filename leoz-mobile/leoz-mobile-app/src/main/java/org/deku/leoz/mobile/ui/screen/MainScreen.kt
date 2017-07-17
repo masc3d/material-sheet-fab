@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.screen_main.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.inflateMenu

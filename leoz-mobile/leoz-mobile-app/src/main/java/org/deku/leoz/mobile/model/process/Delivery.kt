@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile.model.process
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -12,8 +12,11 @@ import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.model.entity.Address
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.toOrder
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
 import sx.time.toCalendar
