@@ -199,7 +199,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="name">Name</string>
     <string name="street">Street</string>
     <string name="number_short_no">No.</string>
-    <string name="continue">Continue</string>
+    <string name="continue_button">Continue</string>
     <string name="given_cash">Given cash</string>
     <string name="change">Change</string>
 </resources>

@@ -122,7 +122,7 @@
     <string name="cash_service">Nachnahme Service</string>
     <string name="cancel_process">Prozess abbrechen</string>
     <string name="contact">Kontakt</string>
-    <string name="continue">Fortfahren</string>
+    <string name="continue_button">Fortfahren</string>
     <string name="corresponsing_orders">Zugehörige Aufträge</string>
     <string name="delivery_failed">Auftrag fehlgeschlagen</string>
     <string name="delivery_list_number">Rollkartennummer</string>
