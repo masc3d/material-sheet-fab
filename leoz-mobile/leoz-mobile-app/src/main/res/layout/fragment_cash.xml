@@ -28,7 +28,7 @@
                 android:editable="true"
                 android:ems="10"
                 android:enabled="true"
-                android:hint="Given cash (eg. 15,00)"
+                android:hint="@string/given_cash_eg_15_00"
                 android:inputType="textCapCharacters|textNoSuggestions"
                 android:padding="5dp" />
 
@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Cash-Service"
+            android:text="@string/cash_service"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -61,7 +61,7 @@
                 android:id="@+id/textView18"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cash value" />
+                android:text="@string/cash_value" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,8 +76,9 @@
                     android:layout_weight="1"
                     android:editable="false"
                     android:ems="10"
-                    android:inputType="textPersonName"
-                    android:text="10,99" />
+                    android:inputType="numberDecimal"
+                    android:text="10,99"
+                    tools:ignore="HardcodedText"/>
 
                 <ImageView
                     android:id="@+id/imageView5"
@@ -99,7 +100,7 @@
                 android:id="@+id/textView16"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Given cash" />
+                android:text="@string/given_cash" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -115,7 +116,8 @@
                     android:editable="false"
                     android:ems="10"
                     android:hint="00,00"
-                    android:inputType="text" />
+                    android:inputType="numberDecimal"
+                    tools:ignore="HardcodedText"/>
 
                 <ImageView
                     android:id="@+id/imageView6"
@@ -136,7 +138,7 @@
                 android:id="@+id/textView11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Change" />
+                android:text="@string/change" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -152,7 +154,8 @@
                     android:editable="false"
                     android:ems="10"
                     android:hint="00,00"
-                    android:inputType="text" />
+                    android:inputType="numberDecimal"
+                    tools:ignore="HardcodedText" />
 
                 <ImageView
                     android:id="@+id/imageView7"

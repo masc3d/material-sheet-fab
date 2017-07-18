@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Specify a delivery list"
+            android:text="@string/title_specify_deliverylist"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
     </LinearLayout>
@@ -40,7 +40,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:gravity="center"
-                android:hint="Delivery list number"
+                android:hint="@string/delivery_list_number"
                 android:inputType="textCapCharacters|textNoSuggestions"
                 android:padding="5dp"
                 android:textAlignment="center" />

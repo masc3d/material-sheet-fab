@@ -4,7 +4,7 @@
     <item
         android:id="@+id/ux_action_signature_paper"
         android:orderInCategory="100"
-        android:title="Sign on paper"
+        android:title="@string/signed_on_paper"
         app:showAsAction="never" />
     <item
         android:id="@+id/ux_action_signature_cancel"

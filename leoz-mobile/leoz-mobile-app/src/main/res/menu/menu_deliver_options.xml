@@ -4,16 +4,16 @@
     <item
         android:id="@+id/ux_action_deliver_neighbour"
         android:orderInCategory="100"
-        android:title="To neighbour"
+        android:title="@string/to_neighbour"
         app:showAsAction="never" />
     <item
         android:id="@+id/ux_action_deliver_postbox"
         android:orderInCategory="500"
-        android:title="To postbox"
+        android:title="@string/to_postbox"
         app:showAsAction="never" />
     <item
         android:id="@+id/ux_action_deliver_recipient"
         android:orderInCategory="1000"
-        android:title="To recipient"
+        android:title="@string/to_recipient"
         app:showAsAction="never" />
 </menu>

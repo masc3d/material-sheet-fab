@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:paddingBottom="@dimen/vertical_large_margin"
               android:paddingTop="@dimen/vertical_large_margin"
@@ -23,6 +24,7 @@
         android:layout_marginEnd="@dimen/horizontal_xlarge_margin"
         android:textAppearance="@style/AppTheme.ActionOverlay.TextAppearance"
         android:text="Action"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>

@@ -84,7 +84,7 @@ class HoneywellAidcReader private constructor(
         // Default settings
         bc.setProperties(mapOf<String, Any>(
                 Pair(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, false),
-                Pair(BarcodeReader.PROPERTY_TRIGGER_CONTROL_MODE, BarcodeReader.TRIGGER_CONTROL_MODE_CLIENT_CONTROL),
+                Pair(BarcodeReader.PROPERTY_TRIGGER_CONTROL_MODE, BarcodeReader.TRIGGER_CONTROL_MODE_AUTO_CONTROL),
                 Pair(BarcodeReader.PROPERTY_CENTER_DECODE, true),
                 // Disable all symbologies
                 Pair(BarcodeReader.PROPERTY_AZTEC_ENABLED, false),

@@ -18,7 +18,7 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Corresponsing orders"
+            android:text="@string/corresponsing_orders"
             style="@style/TextAppearance.AppCompat.Body2"/>
 
         <android.support.v7.widget.RecyclerView
@@ -33,7 +33,7 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Services"
+            android:text="@string/services"
             style="@style/TextAppearance.AppCompat.Body2"/>
 
         <LinearLayout

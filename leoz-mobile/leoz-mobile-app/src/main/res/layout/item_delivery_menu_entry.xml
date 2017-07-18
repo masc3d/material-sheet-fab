@@ -45,7 +45,8 @@
                 android:layout_marginBottom="@dimen/horizontal_xlarge_margin"
                 android:layout_marginTop="@dimen/horizontal_xlarge_margin"
                 android:text="Menu-Name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                card_view:ignore="HardcodedText" />
 
         </LinearLayout>
 

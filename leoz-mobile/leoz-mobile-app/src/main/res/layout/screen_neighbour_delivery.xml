@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
-                android:hint="Name"
+                android:hint="@string/name"
                 android:nextFocusDown="@+id/uxNeighboursStreet"
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
@@ -64,7 +64,7 @@
                 android:gravity="center_vertical"
                 android:completionThreshold="1"
                 android:maxLines="1"
-                android:hint="Street"
+                android:hint="@string/street"
                 android:nextFocusRight="@+id/uxNeighboursStreetNo"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
-                    android:hint="No."
+                    android:hint="@string/number_short_no"
                     android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
@@ -96,6 +96,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Continue"/>
+        android:text="@string/continue"/>
 
 </LinearLayout>

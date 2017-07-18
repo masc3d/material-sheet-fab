@@ -4,11 +4,11 @@
     <item
         android:id="@+id/ux_action_vehicleloading_damaged"
         android:orderInCategory="100"
-        android:title="Parcel damaged"
+        android:title="@string/parcel_damaged"
         app:showAsAction="never" />
     <item
         android:id="@+id/ux_action_vehicleloading_missing"
         android:orderInCategory="500"
-        android:title="Parcel missing"
+        android:title="@string/parcel_missing"
         app:showAsAction="never" />
 </menu>

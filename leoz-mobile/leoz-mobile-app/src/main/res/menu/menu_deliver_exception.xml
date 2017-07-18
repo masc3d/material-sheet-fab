@@ -4,11 +4,11 @@
     <item
         android:id="@+id/ux_action_cancel"
         android:orderInCategory="100"
-        android:title="Cancel process"
+        android:title="@string/cancel_process"
         app:showAsAction="never" />
     <item
         android:id="@+id/ux_action_fail"
         android:orderInCategory="500"
-        android:title="Delivery failed"
+        android:title="@string/delivery_failed"
         app:showAsAction="never" />
 </menu>

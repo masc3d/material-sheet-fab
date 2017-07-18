@@ -25,7 +25,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="10000000001"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                card_view:ignore="HardcodedText" />
 
         </LinearLayout>
 

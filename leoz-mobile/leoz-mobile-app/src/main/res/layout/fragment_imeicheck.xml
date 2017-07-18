@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Device-Check"
+        android:text="@string/device_check"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:gravity="center"
-        android:text="Please enter last 4 IMEI digits\nof the returned device"
+        android:text="@string/enter_imei_instructions"
         android:textAlignment="center" />
 
     <TableLayout
@@ -46,16 +46,17 @@
                 android:id="@+id/textView18"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="IMEI (last 4)" />
+                android:text="@string/imei_last_4" />
 
             <EditText
-                android:id="@+id/uxDocument"
+                android:id="@+id/uxImei"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Passport/Drivers license" />
+                android:inputType="numberSigned"
+                android:hint="1234"
+                tools:ignore="HardcodedText" />
 
         </TableRow>
 
@@ -69,7 +70,7 @@
         android:gravity="center"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="You have got 3 attempts to enter the correct digits. If all three fail, the devlivery failed."
+        android:text="@string/device_check_instructions"
         android:textAlignment="center" />
 
     <TextView
@@ -80,7 +81,7 @@
         android:gravity="center"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="You are not allowed to continue the delivery without completing this check."
+        android:text="@string/device_check_instruction_to_continue"
         android:textAlignment="center" />
 
     <RelativeLayout
@@ -101,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Back" />
+                android:text="@string/back" />
 
             <Button
                 android:id="@+id/button2"
@@ -110,14 +111,14 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:text="Clear" />
+                android:text="@string/clear" />
 
             <Button
                 android:id="@+id/button3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Submit" />
+                android:text="@string/submit" />
         </LinearLayout>
     </RelativeLayout>
 

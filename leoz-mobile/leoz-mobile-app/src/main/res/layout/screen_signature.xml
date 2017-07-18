@@ -15,7 +15,8 @@
         android:ems="10"
         style="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#000000"
-        android:text="Für was unterschreibe ich..." />
+        android:text="Für was unterschreibe ich..."
+        tools:ignore="HardcodedText" />
 
     <com.github.gcacace.signaturepad.views.SignaturePad xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"

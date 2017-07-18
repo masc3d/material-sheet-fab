@@ -5,7 +5,7 @@
     <item
         android:id="@+id/ux_action_vehicleloading_damaged"
         android:icon="@drawable/ic_file_document"
-        android:title="Load delivery list"
+        android:title="@string/load_delivery_list"
         app:showAsAction="always"/>
 
 </menu>

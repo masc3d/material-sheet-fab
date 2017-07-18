@@ -130,4 +130,76 @@
     <string name="service_packaging_recirculation">Packaging recirculation</string>
     <string name="service_postbox_delivery">Postbox delivery</string>
     <string name="service_no_alternative">No alternative delivery</string>
+    <string name="privacy_disclaimer_text" translatable="false">
+        Datenschutzerklärung
+
+Die Nutzung unserer Seite ist ohne eine Angabe von personenbezogenen Daten möglich. Für die Nutzung einzelner Services unserer Seite können sich hierfür abweichende Regelungen ergeben, die in diesem Falle nachstehend gesondert erläutert werden. Ihre personenbezogenen Daten (z.B. Name, Anschrift, E-Mail, Telefonnummer, u.ä.) werden von uns nur gemäß den Bestimmungen des deutschen Datenschutzrechts verarbeitet. Daten sind dann personenbezogen, wenn sie eindeutig einer bestimmten natürlichen Person zugeordnet werden können. Die rechtlichen Grundlagen des Datenschutzes finden Sie im Bundesdatenschutzgesetz (BDSG) und dem Telemediengesetz (TMG). Nachstehende Regelungen informieren Sie insoweit über die Art, den Umfang und Zweck der Erhebung, die Nutzung und die Verarbeitung von personenbezogenen Daten durch den Anbieter
+
+[Name und Anschrift des Betreibers]
+
+[Telefonnummer des Betreibers]
+
+[E-Mail des Betreibers]
+
+Wir weisen darauf hin, dass die internetbasierte Datenübertragung Sicherheitslücken aufweist, ein lückenloser Schutz vor Zugriffen durch Dritte somit unmöglich ist.
+
+Serverdaten
+
+Aus technischen Gründen werden u.a. folgende Daten, die Ihr Internet-Browser an uns bzw. an unseren Webspace-Provider übermittelt, erfasst (sogenannte Serverlogfiles):
+
+- Browsertyp und -version
+- verwendetes Betriebssystem
+- Webseite, von der aus Sie uns besuchen (Referrer URL)
+- Webseite, die Sie besuchen
+- Datum und Uhrzeit Ihres Zugriffs
+- Ihre Internet Protokoll (IP)-Adresse.
+
+Diese anonymen Daten werden getrennt von Ihren eventuell angegebenen personenbezogenen Daten gespeichert und lassen so keine Rückschlüsse auf eine bestimmte Person zu. Sie werden zu statistischen Zwecken ausgewertet, um unseren Internetauftritt und unsere Angebote optimieren zu können.
+
+Kontaktmöglichkeit
+
+Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder über ein Kontaktformular in Verbindung zu treten. In diesem Fall werden die vom Nutzer gemachten Angaben zum Zwecke der Bearbeitung seiner Kontaktaufnahme gespeichert. Eine Weitergabe an Dritte erfolgt nicht. Ein Abgleich der so erhobenen Daten mit Daten, die möglicherweise durch andere Komponenten unserer Seite erhoben werden, erfolgt ebenfalls nicht.
+    </string>
+    <string name="title_specify_deliverylist">Specify a delivery list</string>
+    <string name="delivery_list_number">Delivery list number</string>
+    <string name="news">News</string>
+    <string name="given_cash_eg_15_00">Given cash (eg. 15,00)</string>
+    <string name="cash_service">Cash-Service</string>
+    <string name="cash_value">Cash value</string>
+    <string name="document_type">Document type</string>
+    <string name="identity_check">Identity-Check</string>
+    <string name="document">Document</string>
+    <string name="passport_drivers_license">Passport/Drivers license</string>
+    <string name="doc_no">Doc.-No.</string>
+    <string name="document_no">Document No.</string>
+    <string name="authority">Authority</string>
+    <string name="expiry">Expiry</string>
+    <string name="name_of_authority">Name of Authority</string>
+    <string name="device_check">Device-Check</string>
+    <string name="enter_imei_instructions">Please enter last 4 IMEI digits of the returned device</string>
+    <string name="imei_last_4">IMEI (last 4)</string>
+    <string name="device_check_instructions">You have got 3 attempts to enter the correct digits. If all three fail, the devlivery failed.</string>
+    <string name="device_check_instruction_to_continue">You are not allowed to continue the delivery without completing this check.</string>
+    <string name="back">Back</string>
+    <string name="clear">Clear</string>
+    <string name="submit">Submit</string>
+    <string name="navigate">Navigate</string>
+    <string name="contact">Contact</string>
+    <string name="cancel_process">Cancel process</string>
+    <string name="delivery_failed">Delivery failed</string>
+    <string name="to_neighbour">To neighbour</string>
+    <string name="to_postbox">To postbox</string>
+    <string name="to_recipient">To recipient</string>
+    <string name="help">Help</string>
+    <string name="load_delivery_list">Load delivery list</string>
+    <string name="parcel_damaged">Parcel damaged</string>
+    <string name="parcel_missing">Parcel missing</string>
+    <string name="corresponsing_orders">Corresponsing orders</string>
+    <string name="services">Services</string>
+    <string name="name">Name</string>
+    <string name="street">Street</string>
+    <string name="number_short_no">No.</string>
+    <string name="continue">Continue</string>
+    <string name="given_cash">Given cash</string>
+    <string name="change">Change</string>
 </resources>
