@@ -5,6 +5,7 @@ import org.deku.leoz.service.entity.ShortDate
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
+
 /**
  * Created by JT on 24.05.17.
  *
@@ -47,21 +48,21 @@ interface DeliveryListService {
     @ApiModel(description = "Delivery list")
     data class DeliveryList(
             @ApiModelProperty(example = "10730061", position = 10, required = true, value = "DeliveryListID")
-            var id: Long,
+            var id: Long = 0,
             @ApiModelProperty(example = "2017-06-20", position = 20, required = true)
-            var info: DeliveryListInfo,
+            var info: DeliveryListInfo = DeliveryListInfo(),
             @ApiModelProperty(position = 30, required = true, value = "Orders within deliverylist")
-            var orders: List<OrderService.Order>,
+            var orders: List<OrderService.Order>?=null,
             @ApiModelProperty(position = 40, required = true, value = "Stoplist")
-            var stops: List<Stop>
+            var stops: List<Stop> = listOf()
     )
 
     @ApiModel(description = "Task")
     data class Task(
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "order id")
-            var orderId: Long,
+            var orderId: Long = 0,
             @ApiModelProperty(example = "Pickup", position = 20, required = true, value = "stoptype")
-            var stopType: Type
+            var stopType: Type = Task.Type.Delivery
     ) {
         enum class Type {
             Pickup,
@@ -78,9 +79,9 @@ interface DeliveryListService {
     @ApiModel(description = "Delivery list info")
     data class DeliveryListInfo(
             @ApiModelProperty(example = "10729637", position = 10, required = true, value = "DeliveryListID")
-            var id: Long,
+            var id: Long = 0,
             @ApiModelProperty(example = "2017-06-20", position = 20, required = true, value = "Date")
-            var date: ShortDate
+            var date: ShortDate = ShortDate()
     )
 
 }

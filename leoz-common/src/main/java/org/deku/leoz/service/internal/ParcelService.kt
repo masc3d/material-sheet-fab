@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Event service")
-interface EventServiceV1 {
+interface ParcelServiceV1 {
     companion object {
         const val EVENT = 1
     }
@@ -27,10 +27,10 @@ interface EventServiceV1 {
      * Event message sent by nodes/devices
      */
     @Serializable(0x25cddba04cdfe0)
-    data class EventMessage(
+    data class ParcelMessage(
             var userId: Int? = null,
             var nodeId: String? = null,
-            var dataPoints: Array<EventServiceV1.Event>? = null
+            var dataPoints: Array<Event>? = null
     )
 
 
@@ -44,6 +44,8 @@ interface EventServiceV1 {
             val event: Int = 0,
             val reason: Int = 0,
             val time: Date = Date(),
+
+            // todo ja! da muss noch was getan werden. ist in disscuss
             val note: String? = null,
             // recipient- / consigner- /etc. name in context of event_reason
             //
