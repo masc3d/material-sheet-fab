@@ -9,11 +9,11 @@ import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.reactivex.ReactiveSupport
 import io.requery.reactivex.ReactiveEntityStore
 import io.requery.sql.*
+import org.deku.leoz.mobile.model.entity.Models
 import org.sqlite.SQLiteDataSource
 import java.io.File
 import javax.sql.CommonDataSource
 import javax.sql.DataSource
-import org.deku.leoz.mobile.model.requery.Models
 
 /**
  * Database configuration for local tests

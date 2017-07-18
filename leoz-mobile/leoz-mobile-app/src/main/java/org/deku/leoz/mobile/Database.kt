@@ -48,7 +48,7 @@ class Database(
         // SqlitexDatabaseSource -> https://github.com/requery/sqlite-android
         val ds = object : SqlitexDatabaseSource(
                 this.context,
-                org.deku.leoz.mobile.model.requery.Models.DEFAULT,
+                org.deku.leoz.mobile.model.entity.Models.DEFAULT,
                 this.name,
                 1) {
 
