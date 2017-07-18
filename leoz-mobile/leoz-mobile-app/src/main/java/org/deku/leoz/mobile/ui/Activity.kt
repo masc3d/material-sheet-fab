@@ -340,7 +340,7 @@ open class Activity : RxAppCompatActivity(),
                 // TODO: could then define reusable lists of eg. synethtic parcel barcode list, DL barcode list. should be possible to enable one or more at a time, each having their own menu entry
                 //endregion
 
-                delivery.orderList.flatMap { it.parcel }.forEach { items.add(it.number) }
+//                delivery.orderList.flatMap { it.parcel }.forEach { items.add(it.number) }
 
 //                val dialog = MaterialDialog.Builder(this.applicationContext)
 //                        .title("Scan emulation")

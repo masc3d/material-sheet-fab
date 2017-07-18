@@ -13,10 +13,18 @@ import sx.android.databinding.BaseRxObservable
 @Table(name = "`order`")
 abstract class Order : BaseRxObservable(), Persistable, Observable {
 
-    companion object
+    companion object {}
 
-    @get:Key @get:Generated
-    abstract val id: Long
+    enum class State {
+        PENDING,
+        LOADED,
+        DONE,
+        FAILED
+    }
+
+    @get:Key
+    abstract var id: Long
+    abstract var state: State
     abstract var carrier: Carrier
     abstract var referenceIDToExchangeOrderID: Long
     abstract var orderClassification: OrderClassification
@@ -31,6 +39,8 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
 }
 
 fun Order.Companion.create(
+        id: Long,
+        state: Order.State,
         carrier: Carrier,
         referenceIDToExchangeOrderID: Long,
         orderClassification: OrderClassification,
@@ -39,6 +49,8 @@ fun Order.Companion.create(
         parcels: List<Parcel>
 ): OrderEntity {
     return OrderEntity().also {
+        it.id = id
+        it.state = state
         it.carrier = carrier
         it.referenceIDToExchangeOrderID = referenceIDToExchangeOrderID
         it.orderClassification = orderClassification

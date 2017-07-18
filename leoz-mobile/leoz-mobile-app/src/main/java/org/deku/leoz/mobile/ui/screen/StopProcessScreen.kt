@@ -24,9 +24,9 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.dialog.EventDialog
@@ -68,8 +68,8 @@ class StopProcessScreen :
 
         val adapter = FlexibleAdapter(
                 // Items
-                stop.orders
-                        .flatMap { it.parcel }
+                stop.stopTasks.map { it.order }
+                        .flatMap { it.parcels }
                         .map {
                             val item = FlexibleVmSectionableItem(
                                     viewRes = R.layout.item_parcel,
@@ -101,25 +101,25 @@ class StopProcessScreen :
         fun create(stop: Stop): StopProcessScreen {
             val f = StopProcessScreen()
             f.stop = stop
-            f.orderList.addAll(f.stop.orders.filter { it.state == Order.State.LOADED })
+            f.orderList.addAll(f.stop.stopTasks.map { it.order }.filter { it.state == Order.State.LOADED })
             f.orderList.forEach {
-                f.parcelList.addAll(it.parcel)
+                f.parcelList.addAll(it.parcels)
             }
             return f
         }
 
-        /**
-         * @param orders List of orders which are supposed to be processed summarized. Note: The list should only contain orders which meet the requirements to be compressed into a single Stop
-         */
-        fun create(orders: List<Order>): StopProcessScreen {
-            val f = StopProcessScreen()
-            f.orderList.addAll(orders)
-            f.orderList.forEach {
-                f.parcelList.addAll(it.parcel)
-            }
-            f.stop = f.orderList.first().toStop()
-            return f
-        }
+//        /**
+//         * @param orders List of orders which are supposed to be processed summarized. Note: The list should only contain orders which meet the requirements to be compressed into a single Stop
+//         */
+//        fun create(orders: List<Order>): StopProcessScreen {
+//            val f = StopProcessScreen()
+//            f.orderList.addAll(orders)
+//            f.orderList.forEach {
+//                f.parcelList.addAll(it.parcels)
+//            }
+//            f.stop = f.orderList.first().toStop()
+//            return f
+//        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -144,7 +144,7 @@ class StopProcessScreen :
         this.uxParcelList.layoutManager = LinearLayoutManager(context)
 
         val deliverMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
-        deliverMenu.findItem(R.id.ux_action_deliver_postbox).isEnabled = this.stop.orders.first().getServiceOfInterest().service.contains(ParcelService.POSTBOX_DELIVERY)
+        deliverMenu.findItem(R.id.ux_action_deliver_postbox).isEnabled = this.stop.stopTasks.map{ it.orderTask}.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
 
         this.actionItems = listOf(
                 ActionItem(
@@ -226,12 +226,12 @@ class StopProcessScreen :
     }
 
     fun startHandOver(event: EventDelivered) {
-        (this.activity as DeliveryActivity).runServiceWorkflow(stop, event.reason)
+//        (this.activity as DeliveryActivity).runServiceWorkflow(stop, event.reason)
     }
 
     private fun processLabelRef(ref: String) {
         val order: Order? = orderList.firstOrNull {
-            it.parcel.firstOrNull {
+            it.parcels.firstOrNull {
                 it.number == ref
             } != null
         }

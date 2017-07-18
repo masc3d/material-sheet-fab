@@ -95,10 +95,8 @@ class VehicleLoadingScreen : ScreenFragment() {
         val adapter = FlexibleAdapter(
                 // Items
                 delivery.stopList
-                        .flatMap {
-                            it.orders
-                                    .flatMap { it.parcel }
-                        }
+                        .flatMap { it.stopTasks }
+                        .flatMap { it.order.parcels }
                         .map {
                             val item = FlexibleVmSectionableItem(
                                     viewRes = R.layout.item_parcel,
@@ -203,11 +201,11 @@ class VehicleLoadingScreen : ScreenFragment() {
     }
 
     private fun processLabelScan(data: String) {
-        val order = delivery.findOrderByLabelReference(data)
+        val orders = delivery.findOrderByLabelReference(data)
 
-        log.debug("VehicleLoading parcel reference [$data] Orders found [${order.size}] ")
+        log.debug("VehicleLoading parcel reference [$data] Orders found [${orders.size}] ")
 
-        when (order.size) {
+        when (orders.size) {
             0 -> {
                 //Error, order could not be found
                 log.warn("No order with a parcel reference [$data] could be found")
@@ -228,8 +226,8 @@ class VehicleLoadingScreen : ScreenFragment() {
             }
             1 -> {
                 //Continue
-                val parcel = order.first().findParcelByReference(data)
-                log.debug("Parcel ID [${parcel!!.id}] Order ID [${order.first().id}] State [${parcel.state}]")
+                val parcel = orders.flatMap { it.parcels }.first { it.number == data }
+                log.debug("Parcel ID [${parcel.id}] Order ID [${orders.first().id}] State [${parcel.state}]")
 //                if (order.first().parcelVehicleLoading(parcel)) {
 //                    updateLoadedParcelList(mutableListOf(parcel))
 //                }

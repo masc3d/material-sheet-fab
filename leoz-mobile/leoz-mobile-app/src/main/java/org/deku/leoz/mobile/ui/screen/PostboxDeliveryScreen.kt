@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.flurgle.camerakit.CameraListener
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.android.fragment.CameraFragment
 import kotlinx.android.synthetic.main.screen_postbox_delivery.*

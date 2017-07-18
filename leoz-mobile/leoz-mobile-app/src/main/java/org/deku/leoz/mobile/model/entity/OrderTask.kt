@@ -14,14 +14,14 @@ import java.util.*
 @Table(name = "order_task")
 abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 
-    companion object
+    companion object {}
 
     @get:Key @get:Generated
     abstract val id: Int
     @get:ForeignKey @get:OneToOne
     abstract var address: Address
-    abstract var dateStart: Date
-    abstract var dateEnd: Date
+    abstract var dateStart: Date?
+    abstract var dateEnd: Date?
     abstract var notBeforeStart: Boolean
     abstract var notice: String
 
@@ -31,8 +31,8 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 
 fun OrderTask.Companion.create(
         address: Address,
-        dateStart: Date,
-        dateEnd: Date,
+        dateStart: Date?,
+        dateEnd: Date?,
         notBeforeStart: Boolean,
         notice: String,
         services: List<ParcelService>

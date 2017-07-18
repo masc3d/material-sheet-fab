@@ -176,20 +176,20 @@ class Order(
      * @param stopList The stopList this method should use to iterate
      * @return If a existing stop has been found, the stop is returned. If not, it will be null
      */
-    fun findSuitableStop(stopList: MutableList<Stop>): Stop? {
-//            return stopList.firstOrNull {
-//                it.address.equals(this.getAddressOfInterest())
-//            }
+//    fun findSuitableStop(stopList: MutableList<Stop>): Stop? {
+////            return stopList.firstOrNull {
+////                it.address.equals(this.getAddressOfInterest())
+////            }
+//
+//        return if (findSuitableStopIndex(stopList) == -1) null else stopList[findSuitableStopIndex(stopList)]
+//    }
 
-        return if (findSuitableStopIndex(stopList) == -1) null else stopList[findSuitableStopIndex(stopList)]
-    }
 
-
-    fun findSuitableStopIndex(stopList: MutableList<Stop>): Int {
-        return stopList.indexOfFirst {
-            it.address == this.getAddressOfInterest()
-        }
-    }
+//    fun findSuitableStopIndex(stopList: MutableList<Stop>): Int {
+//        return stopList.indexOfFirst {
+//            it.address == this.getAddressOfInterest()
+//        }
+//    }
     //data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
 
     fun parcelVehicleLoading(parcel: Parcel): Boolean {
@@ -215,13 +215,13 @@ class Order(
         return this.parcel.firstOrNull { it.number == ref }
     }
 
-    fun toStop(): Stop {
-        return Stop(
-                orders = mutableListOf(this),
-                address = this.getAddressOfInterest(),
-                appointment = this.getAppointmentOfInterest()
-        )
-    }
+//    fun toStop(): Stop {
+//        return Stop(
+//                orders = mutableListOf(this),
+//                address = this.getAddressOfInterest(),
+//                appointment = this.getAppointmentOfInterest()
+//        )
+//    }
 }
 
 /**
