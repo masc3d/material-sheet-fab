@@ -87,7 +87,7 @@ class Delivery {
      * When initiating, check for existing orders stored in the local DB and (re)load them into the variables.
      */
     init {
-        //this.load()
+        this.load()
     }
 
     //region MOCK DATA

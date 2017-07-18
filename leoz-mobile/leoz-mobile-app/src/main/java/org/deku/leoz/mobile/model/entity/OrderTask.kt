@@ -13,6 +13,9 @@ import java.util.*
 @Entity
 @Table(name = "order_task")
 abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
+
+    companion object
+
     @get:Key @get:Generated
     abstract val id: Int
     @get:ForeignKey @get:OneToOne
@@ -24,4 +27,22 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 
     @get:Convert(ServiceConverter::class)
     abstract var services: ArrayList<ParcelService>
+}
+
+fun OrderTask.Companion.create(
+        address: Address,
+        dateStart: Date,
+        dateEnd: Date,
+        notBeforeStart: Boolean,
+        notice: String,
+        services: List<ParcelService>
+): OrderTaskEntity {
+    return OrderTaskEntity().also {
+        it.address = address
+        it.dateStart = dateStart
+        it.dateEnd = dateEnd
+        it.notBeforeStart = notBeforeStart
+        it.notice = notice
+        it.services = ArrayList(services)
+    }
 }

@@ -12,6 +12,9 @@ import sx.android.databinding.BaseRxObservable
 @Entity
 @Table(name = "`order`")
 abstract class Order : BaseRxObservable(), Persistable, Observable {
+
+    companion object
+
     @get:Key @get:Generated
     abstract val id: Long
     abstract var carrier: Carrier
@@ -24,5 +27,23 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     abstract var deliveryTask: OrderTask
 
     @get:OneToMany
-    abstract val parcels: List<Parcel>
+    abstract val parcels: MutableList<Parcel>
+}
+
+fun Order.Companion.create(
+        carrier: Carrier,
+        referenceIDToExchangeOrderID: Long,
+        orderClassification: OrderClassification,
+        pickupTask: OrderTask,
+        deliveryTask: OrderTask,
+        parcels: List<Parcel>
+): OrderEntity {
+    return OrderEntity().also {
+        it.carrier = carrier
+        it.referenceIDToExchangeOrderID = referenceIDToExchangeOrderID
+        it.orderClassification = orderClassification
+        it.pickupTask = pickupTask
+        it.deliveryTask = deliveryTask
+        it.parcels.addAll(parcels)
+    }
 }
