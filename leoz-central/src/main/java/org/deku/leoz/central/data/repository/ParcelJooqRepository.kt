@@ -12,7 +12,7 @@ import javax.persistence.Persistence
  * Created by JT on 18.07.17.
  */
 @Named
-class EventJooqRepository {
+class ParcelJooqRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
 
@@ -20,6 +20,5 @@ class EventJooqRepository {
 
     fun save(eventRecord: TblstatusRecord): Boolean {
         return (eventRecord.store() > 0)
-
     }
 }
