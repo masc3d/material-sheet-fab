@@ -19,12 +19,14 @@ import javax.ws.rs.core.MediaType
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Event service")
 interface EventServiceV1 {
-
+    companion object {
+        const val EVENT = 1
+    }
 
     /**
      * Event message sent by nodes/devices
      */
-    @Serializable(0xd307ea744273ae)
+    @Serializable(0x25cddba04cdfe0)
     data class EventMessage(
             var userId: Int? = null,
             var nodeId: String? = null,
@@ -35,19 +37,24 @@ interface EventServiceV1 {
     /**
      * A Event used in leoz prototols
      */
-    @Serializable(0x5af819e313304e)
+    @Serializable(0x34fd1e3a4992bb)
     data class Event(
-            val event: Double? = null,
-            val reason: Double? = null,
-            val time: Date? = null,
+            val parcelId: Int = 0,
+            val parcelScan: String = "",
+            val event: Int = 0,
+            val reason: Int = 0,
+            val time: Date = Date(),
             val note: String? = null,
+            // recipient- / consigner- /etc. name in context of event_reason
+            //
+
             val xxx: xxx? = null,
             val latitude: Double? = null,
             val longitude: Double? = null
     )
 
-    //todo spezial eventvalues to return
-    @Serializable(0x999)
+    //todo spezial eventreasonvalues to return
+    @Serializable(0x884f7f04a26346)
     data class xxx(
             val xxx: String? = null
     )

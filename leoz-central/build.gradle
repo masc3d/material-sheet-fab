@@ -237,6 +237,7 @@ jooq {
                         'tblhublinien',
                         'tblhublinienplan',
                         'tblsyscollections',
+                        'tblstatus',
                         'usystblzaehler',
                         'tad_.*'
 
