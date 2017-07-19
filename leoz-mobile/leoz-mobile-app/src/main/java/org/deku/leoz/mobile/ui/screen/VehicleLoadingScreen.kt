@@ -30,6 +30,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.android.aidc.*
 import sx.android.inflateMenu
 import sx.android.ui.flexibleadapter.FlexibleVmHeaderItem
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
@@ -127,6 +128,8 @@ class VehicleLoadingScreen : ScreenFragment() {
         super.onCreate(savedInstanceState)
 
         this.title = "Vehicle loading"
+
+        this.aidcEnabled = true
     }
 
     override fun onCreateView(inflater: android.view.LayoutInflater,
@@ -169,6 +172,14 @@ class VehicleLoadingScreen : ScreenFragment() {
 
     override fun onResume() {
         super.onResume()
+
+        aidcReader.decoders.set(
+                Interleaved25Decoder(true, 11, 12),
+                DatamatrixDecoder(true),
+                Ean8Decoder(true),
+                Ean13Decoder(true),
+                Code128Decoder(true)
+        )
 
         aidcReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)

@@ -40,7 +40,7 @@ import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
-import sx.android.aidc.AidcReader
+import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 
 
@@ -173,6 +173,14 @@ class StopProcessScreen :
 
     override fun onResume() {
         super.onResume()
+
+        aidcReader.decoders.set(
+                Interleaved25Decoder(true, 11, 12),
+                DatamatrixDecoder(true),
+                Ean8Decoder(true),
+                Ean13Decoder(true),
+                Code128Decoder(true)
+        )
 
         aidcReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
