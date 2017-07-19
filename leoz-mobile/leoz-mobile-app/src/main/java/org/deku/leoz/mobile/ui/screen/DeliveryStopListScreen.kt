@@ -15,12 +15,12 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.entity.Stop
 import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
-import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.android.ui.flexibleadapter.FlexibleVmItem
@@ -44,8 +44,8 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
                 // Items
                 delivery.stopList
                         .filter {
-                            it.state == Stop.State.PENDING && it.orders.any {
-                                it.state == Order.State.LOADED
+                            it.state == Stop.State.PENDING && it.stopTasks.any {
+                                it.order.state == Order.State.LOADED
                             }
                         }
                         .map {

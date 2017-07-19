@@ -25,8 +25,8 @@ import kotlinx.android.synthetic.main.screen_delivery_detail.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.Order
-import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.entity.Order
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.getServiceText
 import org.deku.leoz.mobile.ui.OrderListItem
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -54,7 +54,7 @@ class StopDetailScreen
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<OrderListItem>>({
         FlexibleAdapter(
                 //Orders to be listed
-                stop.orders
+                stop.stopTasks.map { it.order }.distinct()
                         .filter {
                             it.state == Order.State.LOADED
                         }
@@ -100,9 +100,7 @@ class StopDetailScreen
 
         serviceDescriptions.clear()
 
-        stop.orders
-                .flatMap { it.services }
-                .flatMap { it.service }
+        stop.stopTasks.flatMap { it.services }
                 .forEach { serviceDescriptions.add(context.getServiceText(it)) }
 
         this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, serviceDescriptions)

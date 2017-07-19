@@ -14,25 +14,37 @@ import java.util.*
 @Table(name = "order_task")
 abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 
-    companion object
+    companion object {}
+
+    enum class TaskType {
+        Delivery,
+        Pickup
+    }
 
     @get:Key @get:Generated
     abstract val id: Int
+
+    abstract var type: TaskType
+    @get:ManyToOne @get:Column(name = "`order`")
+    abstract var order: Order
     @get:ForeignKey @get:OneToOne
     abstract var address: Address
-    abstract var dateStart: Date
-    abstract var dateEnd: Date
+    abstract var dateStart: Date?
+    abstract var dateEnd: Date?
     abstract var notBeforeStart: Boolean
     abstract var notice: String
 
     @get:Convert(ServiceConverter::class)
     abstract var services: ArrayList<ParcelService>
+
+    @get:ManyToOne
+    abstract var stop: Stop?
 }
 
 fun OrderTask.Companion.create(
         address: Address,
-        dateStart: Date,
-        dateEnd: Date,
+        dateStart: Date?,
+        dateEnd: Date?,
         notBeforeStart: Boolean,
         notice: String,
         services: List<ParcelService>

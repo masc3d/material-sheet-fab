@@ -12,8 +12,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.model.process.deliver
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
@@ -136,7 +135,8 @@ class SignatureScreen
                                         }
                                 dialog.show()
                             } else {
-                                stop!!.deliver(reason = deliveryReason, recipient = recipient, signature = this.uxSignaturePad.signatureBitmap)
+                                // TODO
+//                                stop!!.deliver(reason = deliveryReason, recipient = recipient, signature = this.uxSignaturePad.signatureBitmap)
                                 this.listener?.onSignatureSubmitted()
                             }
                         }
@@ -153,7 +153,7 @@ class SignatureScreen
     }
 
     private fun setText() {
-        this.descriptionText = "Aufträge: ${stop!!.orders.count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: $recipient"
+        this.descriptionText = "Aufträge: ${stop!!.stopTasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: $recipient"
         this.uxConclusion.text = descriptionText
     }
 

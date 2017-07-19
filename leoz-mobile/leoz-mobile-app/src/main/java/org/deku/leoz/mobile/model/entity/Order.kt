@@ -13,24 +13,40 @@ import sx.android.databinding.BaseRxObservable
 @Table(name = "`order`")
 abstract class Order : BaseRxObservable(), Persistable, Observable {
 
-    companion object
+    companion object {}
 
-    @get:Key @get:Generated
-    abstract val id: Long
+    enum class State {
+        PENDING,
+        LOADED,
+        DONE,
+        FAILED
+    }
+
+    @get:Key
+    abstract var id: Long
+    abstract var state: State
     abstract var carrier: Carrier
     abstract var referenceIDToExchangeOrderID: Long
     abstract var orderClassification: OrderClassification
 
-    @get:ForeignKey @get:OneToOne
-    abstract var pickupTask: OrderTask
-    @get:ForeignKey @get:OneToOne
-    abstract var deliveryTask: OrderTask
+    @get:OneToMany
+    abstract val tasks: MutableList<OrderTask>
+
+    val pickupTask by lazy {
+        this.tasks.first { it.type == OrderTask.TaskType.Pickup }
+    }
+
+    val deliveryTask by lazy {
+        this.tasks.first { it.type == OrderTask.TaskType.Delivery }
+    }
 
     @get:OneToMany
     abstract val parcels: MutableList<Parcel>
 }
 
 fun Order.Companion.create(
+        id: Long,
+        state: Order.State,
         carrier: Carrier,
         referenceIDToExchangeOrderID: Long,
         orderClassification: OrderClassification,
@@ -39,11 +55,13 @@ fun Order.Companion.create(
         parcels: List<Parcel>
 ): OrderEntity {
     return OrderEntity().also {
+        it.id = id
+        it.state = state
         it.carrier = carrier
         it.referenceIDToExchangeOrderID = referenceIDToExchangeOrderID
         it.orderClassification = orderClassification
-        it.pickupTask = pickupTask
-        it.deliveryTask = deliveryTask
+        it.tasks.add(pickupTask)
+        it.tasks.add(deliveryTask)
         it.parcels.addAll(parcels)
     }
 }

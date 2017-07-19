@@ -11,7 +11,7 @@ import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.viewholders.FlexibleViewHolder
 import kotlinx.android.synthetic.main.item_order_short.view.*
-import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.entity.Order
 
 /**
  * Created by phpr on 06.06.2017.
@@ -42,12 +42,12 @@ class OrderListItem(val context: Context, val order: Order, val rootViewGroup: V
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?, holder: ViewHolder?, position: Int,
                                 payloads: List<*>?) {
-        holder!!.recipient.text = order.deliveryAddress.line1
-        holder.sender.text = order.pickupAddress.line1
-        holder.cityTo.text = order.deliveryAddress.city
-        holder.cityFrom.text = order.pickupAddress.city
-        holder.zipTo.text = order.deliveryAddress.zipCode
-        holder.zipFrom.text = order.pickupAddress.zipCode
+        holder!!.recipient.text = order.deliveryTask.address.line1
+        holder.sender.text = order.pickupTask.address.line1
+        holder.cityTo.text = order.deliveryTask.address.city
+        holder.cityFrom.text = order.pickupTask.address.city
+        holder.zipTo.text = order.deliveryTask.address.zipCode
+        holder.zipFrom.text = order.pickupTask.address.zipCode
 
         this.isEnabled = true
         this.isDraggable = false

@@ -7,7 +7,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.SharedPreference
-import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
@@ -69,29 +69,29 @@ class DeliveryActivity : Activity(),
         //this.showScreen(SignatureScreen.create(deliveryReason = reason, stop = stop))
     }
 
-    fun runServiceWorkflow(stop: Stop, reason: EventDeliveredReason) {
-
-        val serviceCheck = stop.orders.first().getNextServiceCheck()
-
-        if (serviceCheck == null) {
-            runSigningProcess(stop = stop, reason = reason)
-        } else {
-            when (serviceCheck.service) {
-                ParcelService.CASH_ON_DELIVERY -> TODO()
-                ParcelService.DOCUMENTED_PERSONAL_DELIVERY -> TODO()
-                ParcelService.IDENT_CONTRACT_SERVICE -> TODO()
-                ParcelService.PACKAGING_RECIRCULATION -> TODO()
-                ParcelService.PHARMACEUTICALS -> TODO()
-                ParcelService.PHONE_RECEIPT -> TODO()
-                ParcelService.RECEIPT_ACKNOWLEDGEMENT -> TODO()
-                ParcelService.SECURITY_RETURN -> TODO()
-                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS -> TODO()
-                ParcelService.SUBMISSION_PARTICIPATION -> TODO()
-                ParcelService.XCHANGE -> TODO()
-            }
-        }
-
-    }
+//    fun runServiceWorkflow(stop: Stop, reason: EventDeliveredReason) {
+//
+//        val serviceCheck = stop.orders.first().getNextServiceCheck()
+//
+//        if (serviceCheck == null) {
+//            runSigningProcess(stop = stop, reason = reason)
+//        } else {
+//            when (serviceCheck.service) {
+//                ParcelService.CASH_ON_DELIVERY -> TODO()
+//                ParcelService.DOCUMENTED_PERSONAL_DELIVERY -> TODO()
+//                ParcelService.IDENT_CONTRACT_SERVICE -> TODO()
+//                ParcelService.PACKAGING_RECIRCULATION -> TODO()
+//                ParcelService.PHARMACEUTICALS -> TODO()
+//                ParcelService.PHONE_RECEIPT -> TODO()
+//                ParcelService.RECEIPT_ACKNOWLEDGEMENT -> TODO()
+//                ParcelService.SECURITY_RETURN -> TODO()
+//                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS -> TODO()
+//                ParcelService.SUBMISSION_PARTICIPATION -> TODO()
+//                ParcelService.XCHANGE -> TODO()
+//            }
+//        }
+//
+//    }
 
     /**
      * Determine if changelog should be displayed automatically e.g. after an APP update.

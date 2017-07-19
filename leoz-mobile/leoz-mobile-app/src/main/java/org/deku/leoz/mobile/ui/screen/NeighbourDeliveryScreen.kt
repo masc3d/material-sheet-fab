@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.screen_neighbour_delivery.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.model.EventDeliveredReason
 

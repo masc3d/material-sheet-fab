@@ -12,12 +12,8 @@ import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Order
-import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.model.entity.Address
+import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.mobile.model.entity.create
-import org.deku.leoz.mobile.model.toOrder
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
 import sx.time.toCalendar
@@ -89,6 +85,38 @@ class Delivery {
     init {
         this.load()
     }
+//
+//    data class ServiceCheck(val service: ParcelService, var done: Boolean = false, var success: Boolean = false)
+//
+//    fun getNextServiceCheck(): ServiceCheck? {
+//        return if (serviceCheckList.isNotEmpty()) serviceCheckList.firstOrNull { !it.done } else null
+//    }
+//
+//    val serviceCheckList: List<ServiceCheck> by lazy {
+//        val list: MutableList<ServiceCheck> = mutableListOf()
+//        val parcelServiceList: List<ParcelService> = this.getServiceOfInterest().service
+//
+//        parcelServiceList.forEach {
+//            when (it) {
+//                ParcelService.CASH_ON_DELIVERY,
+//                ParcelService.RECEIPT_ACKNOWLEDGEMENT,
+//                ParcelService.PHARMACEUTICALS,
+//                ParcelService.IDENT_CONTRACT_SERVICE,
+//                ParcelService.SUBMISSION_PARTICIPATION,
+//                ParcelService.SECURITY_RETURN,
+//                ParcelService.XCHANGE,
+//                ParcelService.PHONE_RECEIPT,
+//                ParcelService.DOCUMENTED_PERSONAL_DELIVERY,
+//                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS,
+//                ParcelService.PACKAGING_RECIRCULATION -> list.add(org.deku.leoz.mobile.model.Order.ServiceCheck(service = it))
+//                else -> {
+//
+//                }
+//            }
+//        }
+//
+//        list.toList()
+//    }
 
     //region MOCK DATA
     /**
@@ -195,71 +223,101 @@ class Delivery {
             dateFrom.set(Calendar.HOUR_OF_DAY, 8 + i * 2)
             dateTo.set(Calendar.HOUR_OF_DAY, 12 + i * 2)
 
-            val deliveryAppointment = Order.Appointment(
-                    dateFrom = Date(dateFrom.timeInMillis),
-                    dateTo = Date(dateTo.timeInMillis)
-            )
+            val dFrom = dateFrom.time
+            val dTo = dateTo.time
 
-            stopList.add(Stop(
-                    orders = mutableListOf(
-                            Order(
-                                    id = "1",
-                                    state = Order.State.LOADED,
-                                    classification = OrderClassification.DELIVERY,
-                                    parcel = listOf(
-                                            Parcel.create(
-                                                    number = "1000000000$i"
-                                            ),
-                                            Parcel.create(
-                                                    number = "1000000001$i"
-                                            ),
-                                            Parcel.create(
-                                                    number = "1000000002$i"
-                                            )
-                                    ),
-                                    deliveryAddress = deliveryAddresses[i],
-                                    pickupAddress = pickupAddresses[i],
-                                    deliveryAppointment = deliveryAppointment,
-                                    carrier = Carrier.DER_KURIER,
-                                    services = listOf(Order.Service(
-                                            classification = Order.Service.Classification.DELIVERY_SERVICE,
-                                            service = listOf(ParcelService.NO_ADDITIONAL_SERVICE))
-                                    )
-                            )
-                    ),
-                    address = deliveryAddresses[i],
-                    appointment = deliveryAppointment,
-                    state = Stop.State.PENDING
-            ))
+            run {
+                val order = Order.create(
+                        id = 1,
+                        state = Order.State.LOADED,
+                        carrier = Carrier.DER_KURIER,
+                        referenceIDToExchangeOrderID = 0,
+                        orderClassification = OrderClassification.DELIVERY,
+                        parcels = listOf(
+                                Parcel.create(
+                                        number = "1000000000$i"
+                                ),
+                                Parcel.create(
+                                        number = "1000000001$i"
+                                ),
+                                Parcel.create(
+                                        number = "1000000002$i"
+                                )
+                        ),
+                        deliveryTask = OrderTask.create(
+                                address = deliveryAddresses[i],
+                                dateStart = dFrom,
+                                dateEnd = dTo,
+                                notice = "",
+                                notBeforeStart = false,
+                                services = listOf()
+                        ),
+                        pickupTask = OrderTask.create(
+                                address = pickupAddresses[i],
+                                dateStart = dFrom,
+                                dateEnd = dTo,
+                                notice = "",
+                                notBeforeStart = false,
+                                services = listOf()
+                        )
+                )
+                stopList.add(
+                        Stop.create(
+                                stopTasks = listOf(
+                                        order.deliveryTask
+                                )
+                        )
+                )
+            }
 
-            stopList.add(Stop(
-                    orders = mutableListOf(
-                            Order(
-                                    id = "2",
-                                    state = Order.State.LOADED,
-                                    classification = OrderClassification.DELIVERY,
-                                    parcel = listOf(Parcel.create(
-                                            number = "0200000000$i"
-                                    )),
-                                    deliveryAddress = deliveryAddresses[i],
-                                    pickupAddress = pickupAddresses[i],
-                                    deliveryAppointment = deliveryAppointment,
-                                    carrier = Carrier.DER_KURIER,
-                                    services = listOf(Order.Service(
-                                            classification = Order.Service.Classification.DELIVERY_SERVICE,
-                                            service = listOf(ParcelService.NO_ADDITIONAL_SERVICE))
-                                    )
-                            )
-                    ),
-                    address = deliveryAddresses[i],
-                    appointment = deliveryAppointment,
-                    state = Stop.State.PENDING
-            ))
+            run {
+                val order = Order.create(
+                        id = 2,
+                        state = Order.State.LOADED,
+                        carrier = Carrier.DER_KURIER,
+                        referenceIDToExchangeOrderID = 0,
+                        orderClassification = OrderClassification.DELIVERY,
+                        parcels = listOf(
+                                Parcel.create(
+                                        number = "0200000000$i"
+                                )
+                        ),
+                        deliveryTask = OrderTask.create(
+                                address = deliveryAddresses[i],
+                                dateStart = dFrom,
+                                dateEnd = dTo,
+                                notice = "",
+                                notBeforeStart = false,
+                                services = listOf()
+                        ),
+                        pickupTask = OrderTask.create(
+                                address = pickupAddresses[i],
+                                dateStart = dFrom,
+                                dateEnd = dTo,
+                                notice = "",
+                                notBeforeStart = false,
+                                services = listOf()
+                        )
+                )
+
+                stopList.add(
+
+                        Stop.create(
+                                stopTasks = listOf(
+                                        order.deliveryTask
+                                )
+                        )
+                )
+            }
         }
 
-        stopList.forEach {
-            orderList.addAll(it.orders)
-        }
+        orderList.addAll(
+                stopList.flatMap {
+                    it.stopTasks
+                }.map {
+                    it.order
+                }
+        )
     }
     //endregion
 
@@ -272,59 +330,59 @@ class Delivery {
      * Clean the existing Delivery.stopList
      * Merge existing orders in Delivery.orderList into the blank Delivery.stopList
      */
-    fun initializeStopList() {
-        stopList.clear()
-
-        for (order in orderList) {
-            integrateOrder(order)
-        }
-    }
+    //    fun initializeStopList() {
+//        stopList.clear()
+//
+//        for (order in orderList) {
+//            integrateOrder(order)
+//        }
+//    }
 
     /**
      *
      */
-    fun queryDeliveryList(listId: Long): List<Order> {
-        try {
-            val deliveryList: DeliveryListService.DeliveryList = deliveryListService.getById(id = listId)
+    //    fun queryDeliveryList(listId: Long): List<Order> {
+//        try {
+//            val deliveryList: DeliveryListService.DeliveryList = deliveryListService.getById(id = listId)
+//
+//            if (deliveryList.orders.isEmpty()) {
+//                return listOf()
+//            }
+//
+//            val mobileOrder = deliveryList.orders.map { it.toOrder() }
+//
+//            orderList.addAll(mobileOrder)
+//
+//            return mobileOrder
+//        } catch (e: Exception) {
+//            log.error(e.message)
+//            return listOf()
+//        }
+//    }
 
-            if (deliveryList.orders.isEmpty()) {
-                return listOf()
-            }
-
-            val mobileOrder = deliveryList.orders.map { it.toOrder() }
-
-            orderList.addAll(mobileOrder)
-
-            return mobileOrder
-        } catch (e: Exception) {
-            log.error(e.message)
-            return listOf()
-        }
-    }
-
-    fun queryOrderServiceByLabel(ref: String): List<Order> {
-        try {
-            val order: List<OrderService.Order> = orderService.get(labelRef = ref)
-
-            val orders = order.map { it.toOrder() }
-
-            when (order.size) {
-                0 -> {
-                    return listOf()
-                }
-                1 -> {
-                    orderList.addAll(orders)
-                    return orders
-                }
-                else -> {
-                    return orders
-                }
-            }
-        } catch (e: Exception) {
-            log.error(e.message)
-            return listOf()
-        }
-    }
+//    fun queryOrderServiceByLabel(ref: String): List<Order> {
+//        try {
+//            val order: List<OrderService.Order> = orderService.get(labelRef = ref)
+//
+//            val orders = order.map { it.toOrder() }
+//
+//            when (order.size) {
+//                0 -> {
+//                    return listOf()
+//                }
+//                1 -> {
+//                    orderList.addAll(orders)
+//                    return orders
+//                }
+//                else -> {
+//                    return orders
+//                }
+//            }
+//        } catch (e: Exception) {
+//            log.error(e.message)
+//            return listOf()
+//        }
+//    }
 
 
     /**
@@ -335,51 +393,51 @@ class Delivery {
         newOrder = order
     }
 
-    /**
-     * @param order: The order which should be integrated into the stopList.
-     * @return The Stop where the order has been integrated.
-     * This method tries to find a stop in the existing stopList where the given order can be integrated.
-     * If no suitable Stop has been found, a new stop with this order will be created.
-     */
-    fun integrateOrder(order: Order): Stop {
-        val existingStopIndex = order.findSuitableStopIndex(stopList)
-
-        if (!orderList.contains(order)) {
-            orderList.add(order)
-        }
-
-        if (existingStopIndex > -1) {
-            val stop = stopList[existingStopIndex]
-            stop.orders.add(order)
-            TODO("To be fixed before use")
-            /* TODO
-            stopList[existingStopIndex].appointment = minOf(order.appointment[order.classification]!!, stopList[existingStopIndex].appointment, Comparator<Order.Appointment> { o1, o2 ->
-                when {
-                    o1.dateStart!!.before(o2.dateStart) -> 1
-                    else -> 2
-                }
-            }) */
-            return stop
-        } else {
-            stopList.add(
-                    Stop(
-                            orders = mutableListOf(order),
-                            address = order.getAddressOfInterest(),
-                            appointment = when (order.classification) {
-                                OrderClassification.PICKUP -> order.pickupAppointment
-                                OrderClassification.DELIVERY -> order.deliveryAppointment
-                                else -> throw IllegalStateException()
-                            } ?: throw IllegalStateException()
-                    )
-            )
-            return stopList.last()
-        }
-    }
+//    /**
+//     * @param order: The order which should be integrated into the stopList.
+//     * @return The Stop where the order has been integrated.
+//     * This method tries to find a stop in the existing stopList where the given order can be integrated.
+//     * If no suitable Stop has been found, a new stop with this order will be created.
+//     */
+//    fun integrateOrder(order: Order): Stop {
+//        val existingStopIndex = order.findSuitableStopIndex(stopList)
+//
+//        if (!orderList.contains(order)) {
+//            orderList.add(order)
+//        }
+//
+//        if (existingStopIndex > -1) {
+//            val stop = stopList[existingStopIndex]
+//            stop.orders.add(order)
+//            TODO("To be fixed before use")
+//            /* TODO
+//            stopList[existingStopIndex].appointment = minOf(order.appointment[order.classification]!!, stopList[existingStopIndex].appointment, Comparator<Order.Appointment> { o1, o2 ->
+//                when {
+//                    o1.dateStart!!.before(o2.dateStart) -> 1
+//                    else -> 2
+//                }
+//            }) */
+//            return stop
+//        } else {
+//            stopList.add(
+//                    Stop(
+//                            orders = mutableListOf(order),
+//                            address = order.getAddressOfInterest(),
+//                            appointment = when (order.classification) {
+//                                OrderClassification.PICKUP -> order.pickupAppointment
+//                                OrderClassification.DELIVERY -> order.deliveryAppointment
+//                                else -> throw IllegalStateException()
+//                            } ?: throw IllegalStateException()
+//                    )
+//            )
+//            return stopList.last()
+//        }
+//    }
 
     fun findStopByLabelReference(labelReference: String): List<Stop> {
         return stopList.filter {
-            it.orders.filter {
-                it.parcel.filter {
+            it.stopTasks.filter {
+                it.order.parcels.filter {
                     it.number == labelReference
                 }.isNotEmpty()
             }.isNotEmpty()
@@ -388,7 +446,7 @@ class Delivery {
 
     fun findOrderByLabelReference(labelReference: String): List<Order> {
         return orderList.filter {
-            it.parcel.filter {
+            it.parcels.filter {
                 it.number == labelReference
             }.isNotEmpty()
         }
@@ -397,7 +455,7 @@ class Delivery {
     fun countParcelsToBeVehicleLoaded(): Int {
         var count = 0
         count += orderList.filter { it.state == Order.State.PENDING }
-                .flatMap { it.parcel }
+                .flatMap { it.parcels }
                 .filter { it.state == Parcel.State.PENDING }.size
         return count
     }
@@ -405,23 +463,23 @@ class Delivery {
     fun countParcelsToBeVehicleUnLoaded(): Int {
         var count = 0
         count += orderList.filter { it.state == Order.State.FAILED || it.state == Order.State.LOADED }
-                .flatMap { it.parcel }
+                .flatMap { it.parcels }
                 .filter { it.state == Parcel.State.FAILED || it.state == Parcel.State.LOADED }.size
         return count
     }
 }
 
-fun Stop.deliver(reason: EventDeliveredReason, recipient: String, signature: Bitmap? = null) {
-    this.orders.forEach {
-        it.state = Order.State.DONE
-        it.parcel.forEach {
-            it.state = Parcel.State.DONE
-        }
-    }
-}
+//fun Stop.deliver(reason: EventDeliveredReason, recipient: String, signature: Bitmap? = null) {
+//    this.orders.forEach {
+//        it.state = Order.State.DONE
+//        it.parcels.forEach {
+//            it.state = Parcel.State.DONE
+//        }
+//    }
+//}
 
 fun Context.getServiceText(service: ParcelService): String {
-    return when(service) {
+    return when (service) {
         ParcelService.SUITCASE_SHIPPING -> getString(R.string.service_suitcase)
         ParcelService.RECEIPT_ACKNOWLEDGEMENT -> getString(R.string.service_receipt_acknowledgement)
         ParcelService.SELF_PICKUP -> getString(R.string.service_selfpickup)

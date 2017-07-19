@@ -18,8 +18,8 @@ import kotlinx.android.synthetic.main.screen_menu.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.Order
-import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.model.entity.Order
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
@@ -121,7 +121,9 @@ class MenuScreen : ScreenFragment() {
                         MenuEntry(
                                 entryType = MenuEntry.Entry.ORDERLIST,
                                 description = "Auftragsliste",
-                                counter = delivery.stopList.filter { it.state == Stop.State.PENDING && it.orders.firstOrNull { it.state == Order.State.LOADED } != null }.size,
+                                counter = delivery.stopList.filter {
+                                    it.state == Stop.State.PENDING &&
+                                            it.stopTasks.map { it.order }.firstOrNull { it.state == Order.State.LOADED } != null }.size,
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_format_list_bulleted)!!
                         )
                 ))
