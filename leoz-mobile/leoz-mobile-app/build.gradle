@@ -52,7 +52,10 @@ def GENERATED_SVG_DIR = new File(GENERATED_DIR,
         'svg')
 
 configurations {
+    // Configurations for libraries using dev/prod product flavors (for improved build performance)
     devDebugCompile
+    devReleaseCompile
+    prodDebugCompile
     prodReleaseCompile
 }
 
@@ -172,13 +175,31 @@ repositories {
 
 dependencies {
     devDebugCompile(
+            project(path: ':sx-android', configuration: 'devDebug'),
+            project(path: ':sx-android-honeywell', configuration: 'devDebug'),
             project(path: ':leoz-mobile-data', configuration: 'devDebug')
+    )
+
+    devReleaseCompile(
+            project(path: ':sx-android', configuration: 'devRelease'),
+            project(path: ':sx-android-honeywell', configuration: 'devRelease'),
+            project(path: ':leoz-mobile-data', configuration: 'devRelease')
+    )
+
+    prodDebugCompile(
+            project(path: ':sx-android', configuration: 'prodDebug'),
+            project(path: ':sx-android-honeywell', configuration: 'prodDebug'),
+            project(path: ':leoz-mobile-data', configuration: 'prodDebug')
+    )
+
+    prodReleaseCompile(
+            project(path: ':sx-android', configuration: 'prodRelease'),
+            project(path: ':sx-android-honeywell', configuration: 'prodRelease'),
+            project(path: ':leoz-mobile-data', configuration: 'prodRelease')
     )
 
     compile(
             project(':sx-common'),
-            project(':sx-android'),
-            project(':sx-android-honeywell'),
             project(':sx-serialization'),
             project(':leoz-common'),
             project(':material-sheet-fab'),
