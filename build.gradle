@@ -25,6 +25,14 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 
+configurations {
+    // Configurations for libraries using dev/prod product flavors (for improved build performance)
+    devDebugCompile
+    devReleaseCompile
+    prodDebugCompile
+    prodReleaseCompile
+}
+
 android {
     publishNonDefault true
     compileSdkVersion 26
@@ -63,9 +71,23 @@ android {
 }
 
 dependencies {
-    compile(
-            project(":sx-android"),
+    devDebugCompile(
+            project(path: ':sx-android', configuration: 'devDebug')
+    )
 
+    devReleaseCompile(
+            project(path: ':sx-android', configuration: 'devRelease')
+    )
+
+    prodDebugCompile(
+            project(path: ':sx-android', configuration: 'prodDebug')
+    )
+
+    prodReleaseCompile(
+            project(path: ':sx-android', configuration: 'prodRelease')
+    )
+
+    compile(
             fileTree(dir: 'libs', include: ['*.jar']),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
