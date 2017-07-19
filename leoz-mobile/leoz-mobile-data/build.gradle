@@ -39,7 +39,10 @@ def KAPT_DST_GENERATED_DIR = new File(GENERATED_DIR, 'kapt')
 //}
 
 configurations {
+    // Configurations for libraries using dev/prod product flavors (for improved build performance)
     devDebugCompile
+    devReleaseCompile
+    prodDebugCompile
     prodReleaseCompile
 }
 
@@ -90,10 +93,25 @@ android {
 }
 
 dependencies {
+    devDebugCompile(
+            project(path: ':sx-android', configuration: 'devDebug')
+    )
+
+    devReleaseCompile(
+            project(path: ':sx-android', configuration: 'devRelease')
+    )
+
+    prodDebugCompile(
+            project(path: ':sx-android', configuration: 'prodDebug')
+    )
+
+    prodReleaseCompile(
+            project(path: ':sx-android', configuration: 'prodRelease')
+    )
+
     compile(
             fileTree(dir: 'libs', include: ['*.jar']),
 
-            project(':sx-android'),
             project(':leoz-common'),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
