@@ -11,7 +11,7 @@ import sx.mq.MqHandler
 import sx.rs.auth.ApiKey
 import javax.inject.Named
 import javax.ws.rs.Path
-import org.deku.leoz.service.internal.EventServiceV1
+import org.deku.leoz.service.internal.ParcelServiceV1
 import org.jooq.DSLContext
 
 import org.slf4j.LoggerFactory
@@ -27,23 +27,21 @@ import javax.ws.rs.core.Response
 @ApiKey(false)
 @Path("internal/v1/event")
 
-
 /**
- * Event service message handler
+ * Parcel service message handler
  */
-open class EventServiceV1 :
-        org.deku.leoz.service.internal.EventServiceV1,
-        MqHandler<EventServiceV1.EventMessage> {
+open class ParcelServiceV1 :
+        org.deku.leoz.service.internal.ParcelServiceV1,
+        MqHandler<ParcelServiceV1.ParcelMessage> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
     @Inject
-    private lateinit var eventRepository: EventJooqRepository
+    private lateinit var parcelRepository: ParcelJooqRepository
 
-    override fun onMessage(message: EventServiceV1.EventMessage, replyChannel: MqChannel?) {
-
+    override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
 
         val events = message.dataPoints?.toList()
                 ?: throw DefaultProblem(
@@ -58,14 +56,14 @@ open class EventServiceV1 :
             r.packstuecknummer = it.parcelScan.toDouble()
             r.datum = it.time.toString()
             r.zeit = it.time.toString()
-            r.infotext = it.note
             r.poslat = it.latitude
             r.poslong = it.longitude
+
+            r.infotext = it.note
             r.kzStatuserzeuger = it.event.toString()
             r.fehlercode = it.reason.toUInteger()
-            eventRepository.save(r)
+            parcelRepository.save(r)
         }
     }
-
 }
 
