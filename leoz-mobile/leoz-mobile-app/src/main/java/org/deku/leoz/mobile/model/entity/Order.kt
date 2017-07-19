@@ -29,10 +29,16 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     abstract var referenceIDToExchangeOrderID: Long
     abstract var orderClassification: OrderClassification
 
-    @get:ForeignKey @get:OneToOne
-    abstract var pickupTask: OrderTask
-    @get:ForeignKey @get:OneToOne
-    abstract var deliveryTask: OrderTask
+    @get:OneToMany
+    abstract val tasks: MutableList<OrderTask>
+
+    val pickupTask by lazy {
+        this.tasks.first { it.type == OrderTask.TaskType.Pickup }
+    }
+
+    val deliveryTask by lazy {
+        this.tasks.first { it.type == OrderTask.TaskType.Delivery }
+    }
 
     @get:OneToMany
     abstract val parcels: MutableList<Parcel>
@@ -54,8 +60,8 @@ fun Order.Companion.create(
         it.carrier = carrier
         it.referenceIDToExchangeOrderID = referenceIDToExchangeOrderID
         it.orderClassification = orderClassification
-        it.pickupTask = pickupTask
-        it.deliveryTask = deliveryTask
+        it.tasks.add(pickupTask)
+        it.tasks.add(deliveryTask)
         it.parcels.addAll(parcels)
     }
 }

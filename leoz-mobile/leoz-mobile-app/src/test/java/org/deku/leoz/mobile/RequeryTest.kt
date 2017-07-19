@@ -10,7 +10,6 @@ import org.deku.leoz.mobile.config.DatabaseTestConfiguration
 import org.deku.leoz.mobile.model.entity.AddressEntity
 import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.mobile.model.entity.create
 import org.junit.Test
 import org.junit.Assert
 

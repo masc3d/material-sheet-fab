@@ -100,7 +100,7 @@ class StopDetailScreen
 
         serviceDescriptions.clear()
 
-        stop.stopTasks.flatMap { it.orderTask.services }
+        stop.stopTasks.flatMap { it.services }
                 .forEach { serviceDescriptions.add(context.getServiceText(it)) }
 
         this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, serviceDescriptions)

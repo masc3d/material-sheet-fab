@@ -233,10 +233,7 @@ class Delivery {
                 stopList.add(
                         Stop.create(
                                 stopTasks = listOf(
-                                        StopTask.create(
-                                                order = order,
-                                                orderTask = order.deliveryTask
-                                        )
+                                        order.deliveryTask
                                 )
                         )
                 )
@@ -276,10 +273,7 @@ class Delivery {
 
                         Stop.create(
                                 stopTasks = listOf(
-                                        StopTask.create(
-                                                order = order,
-                                                orderTask = order.deliveryTask
-                                        )
+                                        order.deliveryTask
                                 )
                         )
                 )

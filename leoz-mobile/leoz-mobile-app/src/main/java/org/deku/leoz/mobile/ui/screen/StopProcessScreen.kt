@@ -144,7 +144,9 @@ class StopProcessScreen :
         this.uxParcelList.layoutManager = LinearLayoutManager(context)
 
         val deliverMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
-        deliverMenu.findItem(R.id.ux_action_deliver_postbox).isEnabled = this.stop.stopTasks.map{ it.orderTask}.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
+
+        deliverMenu.findItem(R.id.ux_action_deliver_postbox).isEnabled =
+                this.stop.stopTasks.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
 
         this.actionItems = listOf(
                 ActionItem(
