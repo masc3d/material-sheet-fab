@@ -26,6 +26,7 @@ repositories {
 }
 
 android {
+    publishNonDefault true
     compileSdkVersion 26
     buildToolsVersion v_android_buildtools
     defaultConfig {
@@ -48,6 +49,16 @@ android {
     }
 
     productFlavors {
+        dev {
+            // Enable pre-dexing to produce an APK that can be tested on
+            // Android 5.0+ without the time-consuming DEX build processes.
+            minSdkVersion 21
+        }
+
+        prod {
+            // The actual minSdkVersion for the production version.
+            minSdkVersion 16
+        }
     }
 }
 
