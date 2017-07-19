@@ -1,36 +1,51 @@
 package org.deku.leoz.mobile.model.entity
 
-import org.deku.leoz.mobile.model.requery.IParcel
-import org.deku.leoz.mobile.model.requery.ParcelEntity
+import android.databinding.Observable
+import io.requery.*
+import sx.android.databinding.BaseRxObservable
 
 /**
- * Parcel
+ * Created by masc on 18.07.17.
  */
-data class Parcel constructor(
-        val entity: ParcelEntity = ParcelEntity())
-    : IParcel by entity {
+@Entity
+@Table(name = "parcel")
+abstract class Parcel : BaseRxObservable(), Persistable, Observable {
 
-    /** Passthrough c'tor */
-    constructor(
-            id: Int = 0,
-            number: String,
-            length: Double = 0.0,
-            height: Double = 0.0,
-            width: Double = 0.0,
-            weight: Double = 0.0,
-            state: State = State.PENDING
-    )
-            : this() {
-        this.id = id
-        this.number = number
-        this.length = length
-        this.height = height
-        this.width = width
-        this.weight = weight
-        this.state = state
-    }
+    companion object
+
+    @get:Key @get:Generated
+    abstract val id: Int
+    abstract var number: String
+    abstract var length: Double
+    abstract var height: Double
+    abstract var width: Double
+    abstract var weight: Double
+    abstract var state: Parcel.State
+
+    @get:ManyToOne @get:Column(name = "`order`", nullable = true)
+    abstract var order: Order?
 
     enum class State {
         PENDING, LOADED, MISSING, DONE, FAILED
+    }
+}
+
+fun Parcel.Companion.create(
+        number: String,
+        length: Double = 0.0,
+        height: Double = 0.0,
+        width: Double = 0.0,
+        weight: Double = 0.0,
+        state: Parcel.State = Parcel.State.PENDING,
+        order: Order? = null
+): ParcelEntity {
+    return ParcelEntity().also {
+        it.number = number
+        it.length = length
+        it.height = height
+        it.width = width
+        it.weight = weight
+        it.state = state
+        it.order = order
     }
 }

@@ -3,6 +3,7 @@ package org.deku.leoz.mobile
 import android.databinding.Observable
 import android.databinding.ObservableField
 import org.deku.leoz.mobile.model.entity.Address
+import org.deku.leoz.mobile.model.entity.AddressEntity
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
@@ -28,7 +29,7 @@ class DataBindingTest {
 
     @Test
     fun testObservableFieldWithEntity() {
-        val a = Address()
+        val a = AddressEntity()
 
         a.line1Field.subscribe {
             log.info("CHANGED! [${it.value}]")
@@ -45,7 +46,7 @@ class DataBindingTest {
     fun testEntityInstantiationTime() {
         val sw = Stopwatch.createStarted()
         for (i in 0..10000000) {
-            Address()
+            AddressEntity()
         }
         log.info("${sw}")
     }

@@ -1,7 +1,6 @@
-package org.deku.leoz.mobile.model.requery
+package org.deku.leoz.mobile.model.entity.converter
 
 import io.requery.Converter
-import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.model.ParcelService
 
 /**

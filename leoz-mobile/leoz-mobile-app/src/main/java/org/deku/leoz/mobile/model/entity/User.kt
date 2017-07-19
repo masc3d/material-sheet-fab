@@ -1,29 +1,40 @@
 package org.deku.leoz.mobile.model.entity
 
-import org.deku.leoz.mobile.model.requery.IUser
-import org.deku.leoz.mobile.model.requery.UserEntity
+import android.databinding.Observable
+import io.requery.*
 import org.deku.leoz.model.VehicleType
+import sx.android.databinding.BaseRxObservable
 
 /**
- * Mobile user model class
- * Created by n3 on 27.04.17.
+ * Created by masc on 18.07.17.
  */
-class User(
-        val entity: UserEntity = UserEntity()
-) : IUser by entity {
+@Entity
+@Table(name = "user")
+abstract class User : BaseRxObservable(), Persistable, Observable {
 
-    constructor(
-            id: Int,
-            email: String,
-            apiKey: String,
-            password: String = "",
-            vehicleType: VehicleType = VehicleType.CAR
-    ): this()
-    {
-        this.id = id
-        this.email = email
-        this.apiKey = apiKey
-        this.password = password
-        this.vehicleType = vehicleType
+    companion object
+
+    @get:Key
+    abstract var id: Int
+    abstract var email: String
+    abstract var password: String
+    abstract var apiKey: String
+    /** The current user's vehicle type. Defaults to CAR */
+    abstract var vehicleType: VehicleType
+}
+
+fun User.Companion.create(
+        id: Int,
+        email: String,
+        password: String,
+        apiKey: String,
+        vehicleType: VehicleType = VehicleType.CAR
+): UserEntity {
+    return UserEntity().also {
+        it.id = id
+        it.email = email
+        it.password = password
+        it.apiKey = apiKey
+        it.vehicleType = vehicleType
     }
 }

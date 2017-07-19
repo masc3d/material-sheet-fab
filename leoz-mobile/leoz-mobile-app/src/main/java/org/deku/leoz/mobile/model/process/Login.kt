@@ -12,7 +12,8 @@ import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.entity.User
-import org.deku.leoz.mobile.model.requery.UserEntity
+import org.deku.leoz.mobile.model.entity.UserEntity
+import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
@@ -92,23 +93,18 @@ class Login {
 
                 val authResponse = authService.authorizeMobile(request)
 
-                val user = User(
+                val user = User.create(
                         id = authResponse.user?.id!!,
                         email = email,
+                        password = hashUserPassword(
+                                salt = SALT,
+                                email = email,
+                                password = password),
                         apiKey = authResponse.key
                 )
 
                 // Store user in database
-                val rUser = User()
-                rUser.id = user.id
-                rUser.email = user.email
-                rUser.password = hashUserPassword(
-                        salt = SALT,
-                        email = email,
-                        password = password
-                )
-                rUser.apiKey = authResponse.key
-                db.store.upsert(rUser.entity).blockingGet()
+                db.store.upsert(user).blockingGet()
 
                 return user
             }
@@ -119,15 +115,15 @@ class Login {
             fun authorizeOffline(): User {
                 log.info("Authorizing user [${email}] offline")
 
-                val rUser = db.store.select(UserEntity::class)
+                val user = db.store.select(UserEntity::class)
                         .where(UserEntity.EMAIL.eq(email))
                         .get()
                         .firstOrNull()
 
-                if (rUser == null)
+                if (user == null)
                     throw NoSuchElementException("User [${email}] not found, offline login not applicable")
 
-                return User(rUser)
+                return user
             }
 
             // Actual authorization logic

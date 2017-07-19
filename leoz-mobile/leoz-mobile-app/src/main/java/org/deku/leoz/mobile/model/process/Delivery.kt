@@ -16,6 +16,7 @@ import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.model.entity.Address
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.toOrder
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
@@ -86,7 +87,7 @@ class Delivery {
      * When initiating, check for existing orders stored in the local DB and (re)load them into the variables.
      */
     init {
-        //this.load()
+        this.load()
     }
 
     //region MOCK DATA
@@ -97,7 +98,7 @@ class Delivery {
         // TODO: move mock data to `MockDeliveryListService`, load data from db
 
         val deliveryAddresses = listOf(
-                Address(
+                Address.create(
                         line1 = "Mathias Friedmannn",
                         line2 = "2. Addresszeile",
                         line3 = "3. Addresszeile",
@@ -107,7 +108,7 @@ class Delivery {
                         city = "Neuenstein-Aua",
                         phone = "+49 6677 9582"
                 ),
-                Address(
+                Address.create(
                         line1 = "Philipp Prangenberg",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -117,7 +118,7 @@ class Delivery {
                         city = "Neuenstein-Obergeiß",
                         phone = "+49 6677 9582"
                 ),
-                Address(
+                Address.create(
                         line1 = "Jannik Trombach",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -127,7 +128,7 @@ class Delivery {
                         city = "Gittersdorf",
                         phone = "+49 6677 9585"
                 ),
-                Address(
+                Address.create(
                         line1 = "Lisa Himmel",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -140,7 +141,7 @@ class Delivery {
         )
 
         val pickupAddresses = listOf(
-                Address(
+                Address.create(
                         line1 = "Lisa Himmel",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -150,7 +151,7 @@ class Delivery {
                         city = "Bad Hersfeld",
                         phone = "+49 6677 9595"
                 ),
-                Address(
+                Address.create(
                         line1 = "Jannik Trombach",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -160,7 +161,7 @@ class Delivery {
                         city = "Gittersdorf",
                         phone = "+49 6677 9585"
                 ),
-                Address(
+                Address.create(
                         line1 = "Philipp Prangenberg",
                         line2 = "2. Adresszeile",
                         line3 = "3. Addresszeile",
@@ -170,7 +171,7 @@ class Delivery {
                         city = "Neuenstein-Obergeiß",
                         phone = "+49 6677 9582"
                 ),
-                Address(
+                Address.create(
                         line1 = "Mathias Friedmannn",
                         line2 = "2. Addresszeile",
                         line3 = "3. Addresszeile",
@@ -206,13 +207,13 @@ class Delivery {
                                     state = Order.State.LOADED,
                                     classification = OrderClassification.DELIVERY,
                                     parcel = listOf(
-                                            Parcel(
+                                            Parcel.create(
                                                     number = "1000000000$i"
                                             ),
-                                            Parcel(
+                                            Parcel.create(
                                                     number = "1000000001$i"
                                             ),
-                                            Parcel(
+                                            Parcel.create(
                                                     number = "1000000002$i"
                                             )
                                     ),
@@ -237,7 +238,7 @@ class Delivery {
                                     id = "2",
                                     state = Order.State.LOADED,
                                     classification = OrderClassification.DELIVERY,
-                                    parcel = listOf(Parcel(
+                                    parcel = listOf(Parcel.create(
                                             number = "0200000000$i"
                                     )),
                                     deliveryAddress = deliveryAddresses[i],

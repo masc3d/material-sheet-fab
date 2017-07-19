@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.model
 
 import org.deku.leoz.mobile.model.entity.Address
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.internal.OrderService
@@ -261,7 +262,7 @@ fun OrderService.Order.Appointment.toOrderAppointment(): Order.Appointment {
 }
 
 fun OrderService.Order.Address.toAddress(): Address {
-    return Address(
+    return Address.create(
             line1 = this.line1,
             line2 = this.line2 ?: "",
             line3 = this.line3 ?: "",
@@ -276,7 +277,7 @@ fun OrderService.Order.Address.toAddress(): Address {
 }
 
 fun OrderService.Order.Parcel.toParcel(): Parcel {
-    return Parcel(
+    return Parcel.create(
             number = this.number,
             length = this.dimension.length?.toDouble() ?: 0.0,
             height = this.dimension.height?.toDouble() ?: 0.0,
