@@ -85,6 +85,38 @@ class Delivery {
     init {
         this.load()
     }
+//
+//    data class ServiceCheck(val service: ParcelService, var done: Boolean = false, var success: Boolean = false)
+//
+//    fun getNextServiceCheck(): ServiceCheck? {
+//        return if (serviceCheckList.isNotEmpty()) serviceCheckList.firstOrNull { !it.done } else null
+//    }
+//
+//    val serviceCheckList: List<ServiceCheck> by lazy {
+//        val list: MutableList<ServiceCheck> = mutableListOf()
+//        val parcelServiceList: List<ParcelService> = this.getServiceOfInterest().service
+//
+//        parcelServiceList.forEach {
+//            when (it) {
+//                ParcelService.CASH_ON_DELIVERY,
+//                ParcelService.RECEIPT_ACKNOWLEDGEMENT,
+//                ParcelService.PHARMACEUTICALS,
+//                ParcelService.IDENT_CONTRACT_SERVICE,
+//                ParcelService.SUBMISSION_PARTICIPATION,
+//                ParcelService.SECURITY_RETURN,
+//                ParcelService.XCHANGE,
+//                ParcelService.PHONE_RECEIPT,
+//                ParcelService.DOCUMENTED_PERSONAL_DELIVERY,
+//                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS,
+//                ParcelService.PACKAGING_RECIRCULATION -> list.add(org.deku.leoz.mobile.model.Order.ServiceCheck(service = it))
+//                else -> {
+//
+//                }
+//            }
+//        }
+//
+//        list.toList()
+//    }
 
     //region MOCK DATA
     /**
@@ -361,13 +393,13 @@ class Delivery {
         newOrder = order
     }
 
-    /**
-     * @param order: The order which should be integrated into the stopList.
-     * @return The Stop where the order has been integrated.
-     * This method tries to find a stop in the existing stopList where the given order can be integrated.
-     * If no suitable Stop has been found, a new stop with this order will be created.
-     */
-    //    fun integrateOrder(order: Order): Stop {
+//    /**
+//     * @param order: The order which should be integrated into the stopList.
+//     * @return The Stop where the order has been integrated.
+//     * This method tries to find a stop in the existing stopList where the given order can be integrated.
+//     * If no suitable Stop has been found, a new stop with this order will be created.
+//     */
+//    fun integrateOrder(order: Order): Stop {
 //        val existingStopIndex = order.findSuitableStopIndex(stopList)
 //
 //        if (!orderList.contains(order)) {
