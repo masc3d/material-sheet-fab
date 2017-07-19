@@ -8,7 +8,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.toOrder
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
@@ -57,7 +56,7 @@ class DeliveryList {
             val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
 
             // Map service orders to mobile orders
-            val orders = deliveryList.orders?.map { it.toOrder() } ?: listOf()
+//            val orders = deliveryList.orders?.map { it.toOrder() } ?: listOf()
 
             // Map orders to stops
             // TODO: needs refinement

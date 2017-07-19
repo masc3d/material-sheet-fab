@@ -14,7 +14,6 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.mobile.model.toOrder
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
 import sx.time.toCalendar
