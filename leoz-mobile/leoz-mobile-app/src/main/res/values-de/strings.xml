@@ -185,4 +185,6 @@
     <string name="version_available">v%s ist verfügbar</string>
 
     <string name="warehouse">Lager</string>
+    <string name="title_stop_detailt">Stop Details</string>
+    <string name="title_stop_process">Stop verarbeitung</string>
 </resources>

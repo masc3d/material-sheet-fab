@@ -81,7 +81,7 @@ class StopDetailScreen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.title = "Delivery Process"
+        this.title = getString(R.string.title_stop_detailt)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

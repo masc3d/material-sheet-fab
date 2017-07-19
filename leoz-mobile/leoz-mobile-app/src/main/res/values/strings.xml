@@ -231,4 +231,6 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="version_available">v%s is available</string>
 
     <string name="warehouse">Warehouse</string>
+    <string name="title_stop_detailt">Stop Details</string>
+    <string name="title_stop_process">Process Stop</string>
 </resources>
