@@ -42,6 +42,7 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 }
 
 fun OrderTask.Companion.create(
+        type: OrderTask.TaskType,
         address: Address,
         dateStart: Date?,
         dateEnd: Date?,
@@ -50,6 +51,7 @@ fun OrderTask.Companion.create(
         services: List<ParcelService>
 ): OrderTaskEntity {
     return OrderTaskEntity().also {
+        it.type = type
         it.address = address
         it.dateStart = dateStart
         it.dateEnd = dateEnd

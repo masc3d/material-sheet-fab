@@ -54,14 +54,21 @@ fun Order.Companion.create(
         deliveryTask: OrderTask,
         parcels: List<Parcel>
 ): OrderEntity {
-    return OrderEntity().also {
+    val entity = OrderEntity().also {
         it.id = id
         it.state = state
         it.carrier = carrier
         it.referenceIDToExchangeOrderID = referenceIDToExchangeOrderID
         it.orderClassification = orderClassification
+        deliveryTask.type = OrderTask.TaskType.Delivery
+        pickupTask.type = OrderTask.TaskType.Pickup
         it.tasks.add(pickupTask)
         it.tasks.add(deliveryTask)
         it.parcels.addAll(parcels)
     }
+
+    deliveryTask.order = entity
+    pickupTask.order = entity
+
+    return entity
 }
