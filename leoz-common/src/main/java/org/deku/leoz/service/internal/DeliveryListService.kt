@@ -52,7 +52,7 @@ interface DeliveryListService {
             @ApiModelProperty(example = "2017-06-20", position = 20, required = true)
             var info: DeliveryListInfo = DeliveryListInfo(),
             @ApiModelProperty(position = 30, required = true, value = "Orders within deliverylist")
-            var orders: List<OrderService.Order>?=null,
+            var orders: List<OrderService.Order> = listOf(),
             @ApiModelProperty(position = 40, required = true, value = "Stoplist")
             var stops: List<Stop> = listOf()
     )
