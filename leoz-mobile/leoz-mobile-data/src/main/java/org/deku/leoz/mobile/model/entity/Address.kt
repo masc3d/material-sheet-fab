@@ -3,7 +3,7 @@ package org.deku.leoz.mobile.model.entity
 import android.databinding.Observable
 import android.databinding.Bindable
 import io.requery.*
-import org.deku.leoz.mobile.BR
+import org.deku.leoz.mobile.data.BR
 import sx.android.databinding.BaseRxObservable
 import sx.android.databinding.DelegatingRxObservable
 

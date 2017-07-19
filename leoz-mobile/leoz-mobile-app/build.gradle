@@ -51,6 +51,11 @@ def GENERATED_DIR = project.projectDir.toPath()
 def GENERATED_SVG_DIR = new File(GENERATED_DIR,
         'svg')
 
+configurations {
+    devDebugCompile
+    prodReleaseCompile
+}
+
 android {
     compileSdkVersion 26
     buildToolsVersion v_android_buildtools
@@ -166,12 +171,16 @@ repositories {
 }
 
 dependencies {
+    devDebugCompile(
+            project(path: ':leoz-mobile-data', configuration: 'devDebug')
+    )
+
     compile(
-            project(':leoz-common'),
             project(':sx-common'),
             project(':sx-android'),
             project(':sx-android-honeywell'),
             project(':sx-serialization'),
+            project(':leoz-common'),
             project(':material-sheet-fab'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
@@ -345,7 +354,6 @@ dependencies {
             "org.parceler:parceler:$v_parceler",
             "com.android.databinding:compiler:2.3.3",
             "com.google.auto.value:auto-value:$v_autovalue",
-            "io.requery:requery-processor:$v_requery"
     )
 }
 
