@@ -21,12 +21,12 @@ fun Context.showErrorAlert(text: CharSequence,
             .setTitle(title)
             .setIcon(org.deku.leoz.mobile.R.drawable.ic_launcher)
     if (onPositiveButton != null) {
-        builder = builder.setPositiveButton(positiveButtonText, { dialogInterface, i ->
+        builder = builder.setPositiveButton(positiveButtonText, { dialogInterface, _ ->
             onPositiveButton(dialogInterface)
         })
     }
     if (onNegativeButton != null) {
-        builder = builder.setNegativeButton(negativeButtonText, { dialogInterface, i ->
+        builder = builder.setNegativeButton(negativeButtonText, { dialogInterface, _ ->
             onNegativeButton(dialogInterface)
         })
     }
@@ -44,12 +44,12 @@ fun Context.showAlert(text: CharSequence,
 
     if (positiveButton != null) {
         builder = builder
-                .setPositiveButton(positiveButton.text, { dialogInterface, i ->
+                .setPositiveButton(positiveButton.text, { dialogInterface, _ ->
             positiveButton.handler(dialogInterface)
         })
     }
     if (negativeButton != null) {
-        builder = builder.setNegativeButton(negativeButton.text, { dialogInterface, i ->
+        builder = builder.setNegativeButton(negativeButton.text, { dialogInterface, _ ->
             negativeButton.handler(dialogInterface)
         })
     }

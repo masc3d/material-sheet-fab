@@ -44,7 +44,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
                 // Items
                 delivery.stopList
                         .filter {
-                            it.state == Stop.State.PENDING && it.stopTasks.any {
+                            it.state == Stop.State.PENDING && it.tasks.any {
                                 it.order.state == Order.State.LOADED
                             }
                         }

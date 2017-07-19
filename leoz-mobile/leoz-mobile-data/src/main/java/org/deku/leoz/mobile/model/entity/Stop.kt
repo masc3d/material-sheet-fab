@@ -25,18 +25,18 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     abstract val id: Int
     abstract var state: State
     @get:OneToMany
-    abstract val stopTasks: MutableList<OrderTask>
+    abstract val tasks: MutableList<OrderTask>
 
     val address by lazy {
-        this.stopTasks.first().address
+        this.tasks.first().address
     }
 
     val dateStart by lazy {
-        this.stopTasks.first().dateStart ?: Date()
+        this.tasks.first().dateStart ?: Date()
     }
 
     val dateEnd by lazy {
-        this.stopTasks.first().dateEnd ?: Date()
+        this.tasks.first().dateEnd ?: Date()
     }
 }
 
@@ -46,6 +46,6 @@ fun Stop.Companion.create(
 ): StopEntity{
     return StopEntity().also {
         it.state = state
-        it.stopTasks.addAll(stopTasks)
+        it.tasks.addAll(stopTasks)
     }
 }

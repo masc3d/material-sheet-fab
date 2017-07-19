@@ -27,7 +27,6 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     abstract var state: State
     abstract var carrier: Carrier
     abstract var referenceIDToExchangeOrderID: Long
-    abstract var orderClassification: OrderClassification
 
     @get:OneToMany
     abstract val tasks: MutableList<OrderTask>
@@ -49,7 +48,6 @@ fun Order.Companion.create(
         state: Order.State,
         carrier: Carrier,
         referenceIDToExchangeOrderID: Long,
-        orderClassification: OrderClassification,
         pickupTask: OrderTask,
         deliveryTask: OrderTask,
         parcels: List<Parcel>
@@ -59,7 +57,6 @@ fun Order.Companion.create(
         it.state = state
         it.carrier = carrier
         it.referenceIDToExchangeOrderID = referenceIDToExchangeOrderID
-        it.orderClassification = orderClassification
         deliveryTask.type = OrderTask.TaskType.Delivery
         pickupTask.type = OrderTask.TaskType.Pickup
         it.tasks.add(pickupTask)

@@ -273,10 +273,10 @@ class ActionOverlayView : RelativeLayout {
                         this.uxActionOverlayDimContainer.addView(dimOverlay)
 
                         // Create matieral sheet fab
-                        val sheetBackgroundColor = resources.getColor(android.R.color.background_light)
+                        val sheetBackgroundColor = ContextCompat.getColor(this.context, android.R.color.background_light)
                         val fabColor =
                                 if (item.colorRes != null)
-                                    resources.getColor(item.colorRes)
+                                    ContextCompat.getColor(this.context, item.colorRes)
                                 else
                                 // Default to fab color
                                     fab.backgroundTintList!!.defaultColor

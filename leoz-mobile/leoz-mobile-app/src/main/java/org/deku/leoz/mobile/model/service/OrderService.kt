@@ -11,7 +11,6 @@ fun OrderService.Order.toOrder(): Order {
             id = this.id,
             state = Order.State.PENDING,
             carrier = this.carrier,
-            orderClassification = this.orderClassification,
             referenceIDToExchangeOrderID = this.referenceIDToExchangeOrderID,
             deliveryTask = OrderTask.create(
                     type = OrderTask.TaskType.Delivery,

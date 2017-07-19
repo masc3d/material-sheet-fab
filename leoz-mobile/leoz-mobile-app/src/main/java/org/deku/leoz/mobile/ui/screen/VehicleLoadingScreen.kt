@@ -96,7 +96,7 @@ class VehicleLoadingScreen : ScreenFragment() {
         val adapter = FlexibleAdapter(
                 // Items
                 delivery.stopList
-                        .flatMap { it.stopTasks }
+                        .flatMap { it.tasks }
                         .flatMap { it.order.parcels }
                         .map {
                             val item = FlexibleVmSectionableItem(

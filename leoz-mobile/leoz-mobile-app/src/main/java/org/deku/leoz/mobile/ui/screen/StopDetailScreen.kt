@@ -54,7 +54,7 @@ class StopDetailScreen
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<OrderListItem>>({
         FlexibleAdapter(
                 //Orders to be listed
-                stop.stopTasks.map { it.order }.distinct()
+                stop.tasks.map { it.order }.distinct()
                         .filter {
                             it.state == Order.State.LOADED
                         }
@@ -100,7 +100,7 @@ class StopDetailScreen
 
         serviceDescriptions.clear()
 
-        stop.stopTasks.flatMap { it.services }
+        stop.tasks.flatMap { it.services }
                 .forEach { serviceDescriptions.add(context.getServiceText(it)) }
 
         this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, serviceDescriptions)

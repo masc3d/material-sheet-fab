@@ -2,12 +2,14 @@ package org.deku.leoz.mobile.model.process
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.service.toOrder
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
@@ -20,6 +22,7 @@ import sx.rx.toHotReplay
 class DeliveryList {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
 
     // TODO: lazily calculate those values when loading state changes
@@ -94,20 +97,16 @@ class DeliveryList {
         return Observable.fromCallable {
             val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
 
-            // Map service orders to mobile orders
-//            val orders = deliveryList.orders?.map { it.toOrder() } ?: listOf()
+            db.store.withTransaction {
+                // Transform orders
+                val orders = deliveryList.orders.map {
+                    it.toOrder()
+                }
 
-            // Map orders to stops
-            // TODO: needs refinement
-//            val stops = orders.map { order ->
-//                Stop(
-//                        orders = mutableListOf(order),
-//                        address = order.deliveryAddress,
-//                        appointment = order.deliveryAppointment ?: TODO()
-//                )
-//            }
-//
-//            stops
+                // Store in db
+                db.store.upsert(orders).blockingGet()
+            }
+
             listOf<Stop>()
         }
                 .subscribeOn(Schedulers.io())

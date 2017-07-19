@@ -13,6 +13,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.jakewharton.rxbinding2.widget.RxAbsListView
 import kotlinx.android.synthetic.main.item_delivery_menu_entry.view.*
 import kotlinx.android.synthetic.main.screen_menu.*
 
@@ -21,6 +22,7 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.getLayoutInflater
@@ -123,7 +125,7 @@ class MenuScreen : ScreenFragment() {
                                 description = "Auftragsliste",
                                 counter = delivery.stopList.filter {
                                     it.state == Stop.State.PENDING &&
-                                            it.stopTasks.map { it.order }.firstOrNull { it.state == Order.State.LOADED } != null }.size,
+                                            it.tasks.map { it.order }.firstOrNull { it.state == Order.State.LOADED } != null }.size,
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_format_list_bulleted)!!
                         )
                 ))

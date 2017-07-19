@@ -28,7 +28,6 @@ import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -68,7 +67,7 @@ class StopProcessScreen :
 
         val adapter = FlexibleAdapter(
                 // Items
-                stop.stopTasks.map { it.order }
+                stop.tasks.map { it.order }
                         .flatMap { it.parcels }
                         .map {
                             val item = FlexibleVmSectionableItem(
@@ -101,7 +100,7 @@ class StopProcessScreen :
         fun create(stop: Stop): StopProcessScreen {
             val f = StopProcessScreen()
             f.stop = stop
-            f.orderList.addAll(f.stop.stopTasks.map { it.order }.filter { it.state == Order.State.LOADED })
+            f.orderList.addAll(f.stop.tasks.map { it.order }.filter { it.state == Order.State.LOADED })
             f.orderList.forEach {
                 f.parcelList.addAll(it.parcels)
             }
@@ -148,7 +147,7 @@ class StopProcessScreen :
         val deliverMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
 
         deliverMenu.findItem(R.id.ux_action_deliver_postbox).isEnabled =
-                this.stop.stopTasks.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
+                this.stop.tasks.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
 
         this.actionItems = listOf(
                 ActionItem(

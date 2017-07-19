@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.model.process
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.support.annotation.DrawableRes
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -232,7 +231,6 @@ class Delivery {
                         state = Order.State.LOADED,
                         carrier = Carrier.DER_KURIER,
                         referenceIDToExchangeOrderID = 0,
-                        orderClassification = OrderClassification.DELIVERY,
                         parcels = listOf(
                                 Parcel.create(
                                         number = "1000000000$i"
@@ -278,7 +276,6 @@ class Delivery {
                         state = Order.State.LOADED,
                         carrier = Carrier.DER_KURIER,
                         referenceIDToExchangeOrderID = 0,
-                        orderClassification = OrderClassification.DELIVERY,
                         parcels = listOf(
                                 Parcel.create(
                                         number = "0200000000$i"
@@ -317,7 +314,7 @@ class Delivery {
 
         orderList.addAll(
                 stopList.flatMap {
-                    it.stopTasks
+                    it.tasks
                 }.map {
                     it.order
                 }
@@ -440,7 +437,7 @@ class Delivery {
 
     fun findStopByLabelReference(labelReference: String): List<Stop> {
         return stopList.filter {
-            it.stopTasks.filter {
+            it.tasks.filter {
                 it.order.parcels.filter {
                     it.number == labelReference
                 }.isNotEmpty()

@@ -153,7 +153,7 @@ class SignatureScreen
     }
 
     private fun setText() {
-        this.descriptionText = "Aufträge: ${stop!!.stopTasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: $recipient"
+        this.descriptionText = "Aufträge: ${stop!!.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: $recipient"
         this.uxConclusion.text = descriptionText
     }
 

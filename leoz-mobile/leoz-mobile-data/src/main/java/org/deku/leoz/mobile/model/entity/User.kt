@@ -9,7 +9,7 @@ import sx.android.databinding.BaseRxObservable
  * Created by masc on 18.07.17.
  */
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 abstract class User : BaseRxObservable(), Persistable, Observable {
 
     companion object

@@ -38,11 +38,11 @@ class StopItemViewModel(val stop: Stop) : BaseObservable() {
         get() = stop.dateEnd.toCalendar().get(Calendar.MINUTE)
 
     val orderCount: String
-        get() = stop.stopTasks.map { it.order }.distinct().count().toString()
+        get() = stop.tasks.map { it.order }.distinct().count().toString()
 
     val parcelCount: String
         get() {
-            return stop.stopTasks.flatMap {
+            return stop.tasks.flatMap {
                 it.order.parcels
             }.count().toString()
         }
