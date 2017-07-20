@@ -128,6 +128,16 @@ subprojects {
     }
 
     plugins.withType(JavaPlugin).whenPluginAdded {
+        //region Since IJ-2017.2, default output path is `out`. Unify so both build toolchains share the same output path
+        // REMARK: possibly a better approach would be to synchronize gradle build output to IJ out directories
+        project.apply plugin: 'idea'
+        project.idea {
+            module {
+                outputDir = project.sourceSets.main.output.classesDirs[0]
+            }
+        }
+        //endregion
+
         project.test {
             ignoreFailures true
         }
