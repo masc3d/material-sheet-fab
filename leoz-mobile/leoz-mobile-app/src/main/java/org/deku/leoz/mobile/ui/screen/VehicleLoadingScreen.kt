@@ -7,6 +7,7 @@ import android.databinding.ObservableField
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -162,9 +163,14 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         this.actionItems = listOf(
                 ActionItem(
+                        id = R.id.action_vehicle_loading_finished,
+                        colorRes = R.color.colorGreen,
+                        iconRes = R.drawable.ic_check_circle
+                ),
+                ActionItem(
                         id = R.id.action_vehicle_loading_exception,
                         colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_circle_cancel,
+                        iconRes = R.drawable.ic_cancel_black,
                         menu = this.activity.inflateMenu(R.menu.menu_vehicleloading_exception)
                 )
         )
@@ -200,15 +206,25 @@ class VehicleLoadingScreen : ScreenFragment() {
                     log.trace("MENU ITEM SELECTED [${it}]")
                 }
 
-//        this.activity.actionEvent
-//                .bindUntilEvent(this, FragmentEvent.PAUSE)
-//                .subscribe {
-//                    when (it) {
-//                        R.id.action_deliver_fail -> {
-//                            showFailureReasons()
-//                        }
-//                    }
-//                }
+        this.activity.actionEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it) {
+                        R.id.action_vehicle_loading_exception -> {
+                            //showFailureReasons()
+                        }
+
+                        R.id.action_vehicle_loading_finished -> {
+                            val dialog = MaterialDialog.Builder(context)
+                                    .title(getString(R.string.question_vehicle_loading_finished))
+                                    .negativeText(getString(R.string.no_go_back))
+                                    .positiveText(getString(R.string.yes_start_tour))
+                                    .show()
+                        }
+
+                        else -> log.warn("Unhandled ActionEvent [$it]")
+                    }
+                }
     }
 
     private fun processLabelScan(data: String) {

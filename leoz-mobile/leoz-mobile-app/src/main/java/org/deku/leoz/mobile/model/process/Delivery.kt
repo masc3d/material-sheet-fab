@@ -6,6 +6,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
@@ -13,6 +14,10 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.screen.NeighbourDeliveryScreen
+import org.deku.leoz.mobile.ui.screen.PostboxDeliveryScreen
+import org.deku.leoz.mobile.ui.screen.SignatureScreen
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
 import sx.time.toCalendar
@@ -34,6 +39,10 @@ class Delivery {
     val activeStopProperty = ObservableRxProperty<Stop?>(null)
     val activeStop: Stop? by activeStopProperty
 
+    val nextDeliveryScreenProperty = ObservableRxProperty<ScreenFragment?>(null)
+    val nextDeliveryScreenSubject = PublishSubject.create<ScreenFragment>()
+    var nextDeliveryScreen: ScreenFragment? by nextDeliveryScreenProperty
+
 //    /**
 //     * Receives the result of a service workflow and publishes it to the subscribers.
 //     * eg. IMEI Check OK/Failed, CASH (didn't) collected, correct/wrong ID-Document
@@ -43,8 +52,6 @@ class Delivery {
 
     val stopList: MutableList<Stop> = mutableListOf()
     val orderList: MutableList<Order> = mutableListOf()
-
-    val deliveryVehicle: Vehicle? = null
 
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         listOf(
@@ -83,6 +90,32 @@ class Delivery {
      */
     init {
         this.load()
+    }
+
+    fun sign(stop: Stop, reason: EventDeliveredReason, recipient: String = "") {
+        when (reason) {
+            EventDeliveredReason.Normal -> {
+                nextDeliveryScreenSubject.onNext(
+                        SignatureScreen.create(
+                                parameters = SignatureScreen.Parameters(
+                                        stopId = stop.id,
+                                        deliveryReason = reason,
+                                        recipient = recipient
+                                )
+                        )
+                )
+            }
+
+            EventDeliveredReason.Neighbor -> {
+                nextDeliveryScreenSubject.onNext(NeighbourDeliveryScreen.create(stop = stop))
+            }
+
+            EventDeliveredReason.Postbox -> {
+                nextDeliveryScreenSubject.onNext(PostboxDeliveryScreen.create(stop))
+            }
+
+            else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")
+        }
     }
 //
 //    data class ServiceCheck(val service: ParcelService, var done: Boolean = false, var success: Boolean = false)

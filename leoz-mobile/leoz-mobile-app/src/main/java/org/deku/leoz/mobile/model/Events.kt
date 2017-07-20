@@ -5,14 +5,14 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.model.EventNotDeliveredReason
 
 /** Get event text */
-fun Context.getEventText(event: EventNotDeliveredReason): String {
+fun Context.getEventText(event: EventNotDeliveredReason): String? {
     return when (event) {
         EventNotDeliveredReason.Absent -> this.getString(R.string.event_reason_absent)
         EventNotDeliveredReason.Refuse -> this.getString(R.string.event_reason_refuse)
         EventNotDeliveredReason.Vacation -> this.getString(R.string.event_reason_vacation)
         EventNotDeliveredReason.AddressWrong -> this.getString(R.string.event_reason_address_wrong)
         EventNotDeliveredReason.Moved -> this.getString(R.string.event_reason_moved)
-        EventNotDeliveredReason.Unknown -> this.getString(R.string.event_reason_unknown)
+        EventNotDeliveredReason.Unknown -> null
         EventNotDeliveredReason.Damaged -> this.getString(R.string.event_reason_damaged)
         EventNotDeliveredReason.XC_CodeWrong -> this.getString(R.string.event_reason_xc_code_wrong)
         EventNotDeliveredReason.XC_ObjectDamaged -> this.getString(R.string.event_reason_xc_damaged)

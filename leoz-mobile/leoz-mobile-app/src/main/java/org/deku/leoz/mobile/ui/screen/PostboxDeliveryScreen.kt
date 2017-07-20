@@ -118,6 +118,7 @@ class PostboxDeliveryScreen: ScreenFragment(), CameraFragment.Listener {
 
                         R.id.action_camera_save -> {
                             state = State.TAKE_PICTURE
+                            this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
                         }
                     }
                 }
