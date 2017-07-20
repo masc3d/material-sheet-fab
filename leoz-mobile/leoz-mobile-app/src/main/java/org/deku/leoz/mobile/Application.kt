@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory
  * Application
  * Created by masc on 10/12/2016.
  */
-open class Application : MultiDexApplication(), android.app.Application.ActivityLifecycleCallbacks {
-    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+open class Application : MultiDexApplication() {
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
@@ -54,6 +54,7 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         })
 
         // Higher level modules
+        Kodein.global.addImport(ApplicationConfiguration.module)
         Kodein.global.addImport(ExecutorConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
         Kodein.global.addImport(ModelConfiguration.module)
@@ -93,8 +94,6 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         // Enable app compat vector support
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        this.registerActivityLifecycleCallbacks(this)
-
         if (!BuildConfig.DEBUG) {
             // FlexibleAdapter logging is currently not compatible with obfuscated builds
             // Internally tries to extract a stack trace element which does not
@@ -107,7 +106,6 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
     }
 
     override fun onTerminate() {
-        this.unregisterActivityLifecycleCallbacks(this)
         super.onTerminate()
     }
 
@@ -130,20 +128,6 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
     val name: String by lazy {
         applicationInfo.loadLabel(this.packageManager).toString();
     }
-
-    private var activityCount: Int = 0
-
-    /**
-     * Application state
-     */
-    enum class StateType {
-        Foreground,
-        Background
-    }
-
-    private val stateChangedEventSubject = PublishSubject.create<StateType>()
-    /** Application state change event */
-    val stateChangedEvent = this.stateChangedEventSubject.hide()
 
     /**
      * Terminate/kill application immediately
@@ -171,101 +155,6 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         super.onTrimMemory(level)
     }
     //endregion
-
-    //region Lifecycle callbacks
-    override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
-        log.trace("ACTIVITY CREATED [${activity}]")
-    }
-
-    override fun onActivityDestroyed(activity: Activity) {
-        log.trace("ACTIVITY DESTROYED [${activity}]")
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        log.trace("ACTIVITY PAUSED [${activity}]")
-    }
-
-    override fun onActivityResumed(activity: Activity) {
-        log.trace("ACTIVITY RESUMED [${activity}]")
-    }
-
-    override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle?) {
-        log.trace("ACTIVITY SAVEINSTANCESTATE [${activity}]")
-    }
-
-    override fun onActivityStarted(activity: Activity) {
-        log.trace("ACTIVITY STARTED [${activity}]")
-
-        if (this.activityCount == 0) {
-            log.trace("APPLICATION FOREGROUND")
-            this.stateChangedEventSubject.onNext(StateType.Foreground)
-            checkDeveloperSettings(activity)
-        }
-        this.activityCount++
-    }
-
-    override fun onActivityStopped(activity: Activity) {
-        log.trace("ACTIVITY STOPPED [${activity}]")
-        this.activityCount--
-
-        if (this.activityCount == 0) {
-            log.trace("APPLICATION BACKGROUND")
-            this.stateChangedEventSubject.onNext(StateType.Background)
-        }
-    }
-    //endregion
-
-    /**
-     * Function for checking if mock locations are allowed in device settings.
-     * Only interesting for devices with API level <18
-     */
-    private fun checkMockLocationSettings(activity: Activity) {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (Settings.Secure.getString(this.contentResolver, Settings.Secure.ALLOW_MOCK_LOCATION) == "1") {
-                log.warn("Mock locations enabled!")
-                val dialog = MaterialDialog.Builder(this.applicationContext)
-                        .title("Mock locations enabled")
-                        .content("Mock locations are enabled on your device. To continue, you must disable mock locations!")
-                        .positiveText("Settings")
-                        .negativeText("Abort")
-                        .onPositive { materialDialog, dialogAction ->
-                            val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
-                            activity.startActivityForResult(intent, 0)
-                        }
-                        .onNegative { materialDialog, dialogAction ->
-                            when (android.os.Build.VERSION.SDK_INT) {
-                                android.os.Build.VERSION_CODES.LOLLIPOP -> activity.finishAndRemoveTask()
-                                else -> activity.finishAffinity()
-                            }
-                        }
-                        .cancelable(false)
-                        .show()
-            }
-        }
-    }
-
-    private fun checkDeveloperSettings(activity: Activity) {
-        if (!debugSettings.enabled && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
-            log.warn("Developer options enabled!")
-            val dialog = MaterialDialog.Builder(this.applicationContext)
-                    .title("Developer options enabled")
-                    .content("Developer options are enabled on your device. To continue, you must disable developer options!")
-                    .positiveText("Settings")
-                    .negativeText("Abort")
-                    .onPositive { materialDialog, dialogAction ->
-                        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
-                        activity.startActivityForResult(intent, 0)
-                    }
-                    .onNegative { materialDialog, dialogAction ->
-                        when (android.os.Build.VERSION.SDK_INT) {
-                            android.os.Build.VERSION_CODES.LOLLIPOP -> activity.finishAndRemoveTask()
-                            else -> activity.finishAffinity()
-                        }
-                    }
-                    .cancelable(false)
-                    .show()
-        }
-    }
 }
 
 val Activity.app: Application get() = this.application as Application

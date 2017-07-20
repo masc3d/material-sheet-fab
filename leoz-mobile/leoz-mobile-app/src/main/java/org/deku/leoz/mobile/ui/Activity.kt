@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
@@ -7,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
+import android.provider.Settings
 import android.support.design.widget.*
 import android.support.transition.*
 import android.support.v4.content.ContextCompat
@@ -17,6 +19,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -27,19 +30,17 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.main.*
-import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
-import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.activity.MainActivity
@@ -52,8 +53,13 @@ import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Delivery
+import org.jetbrains.anko.contentView
 import sx.aidc.SymbologyType
+import sx.android.ApplicationStateMonitor
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.convertDpToPx
 import sx.android.toBitmap
@@ -80,7 +86,7 @@ open class Activity : RxAppCompatActivity(),
     private val updateService: UpdateService by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
 
     /** Action items */
     private val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
@@ -225,6 +231,14 @@ open class Activity : RxAppCompatActivity(),
         this.uxActionOverlay.listener = this
 
         this.cameraAidcFragmentVisible = false
+
+        // Register to the app's state change event in order to detect when application comes to foreground
+        this.applicationStateMonitor.stateChangedEvent
+                .bindToLifecycle(this)
+                .filter { it == ApplicationStateMonitor.StateType.Foreground }
+                .subscribe {
+                    this.onForeground()
+                }
     }
 
     override fun onPause() {
@@ -579,7 +593,7 @@ open class Activity : RxAppCompatActivity(),
         this.aidcReader.bindActivity(this)
 
         this.cameraReader.readEvent
-                .bindToLifecycle(this)
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     this.tone.beep()
@@ -721,4 +735,29 @@ open class Activity : RxAppCompatActivity(),
         this.cameraAidcFragmentVisible = false
     }
 
+    /**
+     * On foreground handler (hooked into ApplicationStateMonitor)
+     */
+    private fun onForeground() {
+        // Check developer settings
+        if (!debugSettings.enabled && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
+            MaterialDialog.Builder(this)
+                    .title("Developer options enabled")
+                    .content("Developer options are enabled on your device. To continue, you must disable developer options!")
+                    .positiveText("Settings")
+                    .negativeText("Abort")
+                    .onPositive { materialDialog, dialogAction ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                        this.startActivityForResult(intent, 0)
+                    }
+                    .onNegative { materialDialog, dialogAction ->
+                        when (android.os.Build.VERSION.SDK_INT) {
+                            android.os.Build.VERSION_CODES.LOLLIPOP -> this.finishAndRemoveTask()
+                            else -> this.finishAffinity()
+                        }
+                    }
+                    .cancelable(false)
+                    .show()
+        }
+    }
 }
