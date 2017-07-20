@@ -276,7 +276,7 @@ class Delivery {
                                 )
                         ),
                         deliveryTask = OrderTask.create(
-                                type = OrderTask.TaskType.Delivery,
+                                type = OrderTask.TaskType.DELIVERY,
                                 address = deliveryAddresses[i],
                                 dateStart = dFrom,
                                 dateEnd = dTo,
@@ -285,7 +285,7 @@ class Delivery {
                                 services = listOf()
                         ),
                         pickupTask = OrderTask.create(
-                                type = OrderTask.TaskType.Pickup,
+                                type = OrderTask.TaskType.PICKUP,
                                 address = pickupAddresses[i],
                                 dateStart = dFrom,
                                 dateEnd = dTo,
@@ -315,7 +315,7 @@ class Delivery {
                                 )
                         ),
                         deliveryTask = OrderTask.create(
-                                type = OrderTask.TaskType.Delivery,
+                                type = OrderTask.TaskType.DELIVERY,
                                 address = deliveryAddresses[i],
                                 dateStart = dFrom,
                                 dateEnd = dTo,
@@ -324,7 +324,7 @@ class Delivery {
                                 services = listOf()
                         ),
                         pickupTask = OrderTask.create(
-                                type = OrderTask.TaskType.Pickup,
+                                type = OrderTask.TaskType.PICKUP,
                                 address = pickupAddresses[i],
                                 dateStart = dFrom,
                                 dateEnd = dTo,

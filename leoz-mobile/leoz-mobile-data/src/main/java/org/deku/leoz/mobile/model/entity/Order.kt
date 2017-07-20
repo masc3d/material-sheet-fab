@@ -3,7 +3,6 @@ package org.deku.leoz.mobile.model.entity
 import android.databinding.Observable
 import io.requery.*
 import org.deku.leoz.model.Carrier
-import org.deku.leoz.model.OrderClassification
 import sx.android.databinding.BaseRxObservable
 
 /**
@@ -28,18 +27,18 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     abstract var carrier: Carrier
     abstract var referenceIDToExchangeOrderID: Long
 
-    @get:OneToMany
+    @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val tasks: MutableList<OrderTask>
 
     val pickupTask by lazy {
-        this.tasks.first { it.type == OrderTask.TaskType.Pickup }
+        this.tasks.first { it.type == OrderTask.TaskType.PICKUP }
     }
 
     val deliveryTask by lazy {
-        this.tasks.first { it.type == OrderTask.TaskType.Delivery }
+        this.tasks.first { it.type == OrderTask.TaskType.DELIVERY }
     }
 
-    @get:OneToMany
+    @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val parcels: MutableList<Parcel>
 }
 
@@ -57,8 +56,8 @@ fun Order.Companion.create(
         it.state = state
         it.carrier = carrier
         it.referenceIDToExchangeOrderID = referenceIDToExchangeOrderID
-        deliveryTask.type = OrderTask.TaskType.Delivery
-        pickupTask.type = OrderTask.TaskType.Pickup
+        deliveryTask.type = OrderTask.TaskType.DELIVERY
+        pickupTask.type = OrderTask.TaskType.PICKUP
         it.tasks.add(pickupTask)
         it.tasks.add(deliveryTask)
         it.parcels.addAll(parcels)

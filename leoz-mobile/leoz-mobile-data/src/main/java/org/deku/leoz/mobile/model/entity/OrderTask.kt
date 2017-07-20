@@ -17,16 +17,18 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
     companion object {}
 
     enum class TaskType {
-        Delivery,
-        Pickup
+        DELIVERY,
+        PICKUP
     }
 
     @get:Key @get:Generated
     abstract val id: Int
 
     abstract var type: TaskType
+
     @get:ManyToOne @get:Column(name = "`order`")
     abstract var order: Order
+
     @get:ForeignKey @get:OneToOne
     abstract var address: Address
     abstract var dateStart: Date?

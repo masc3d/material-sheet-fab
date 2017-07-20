@@ -22,7 +22,8 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var weight: Double
     abstract var state: Parcel.State
 
-    @get:ManyToOne @get:Column(name = "`order`", nullable = true)
+    @get:Column(name = "`order`", nullable = true)
+    @get:ManyToOne
     abstract var order: Order?
 
     enum class State {

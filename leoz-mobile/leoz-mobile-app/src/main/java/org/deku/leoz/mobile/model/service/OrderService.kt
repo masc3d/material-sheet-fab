@@ -13,7 +13,7 @@ fun OrderService.Order.toOrder(): Order {
             carrier = this.carrier,
             referenceIDToExchangeOrderID = this.referenceIDToExchangeOrderID,
             deliveryTask = OrderTask.create(
-                    type = OrderTask.TaskType.Delivery,
+                    type = OrderTask.TaskType.DELIVERY,
                     address = this.deliveryAddress.toAddress(),
                     notBeforeStart = this.deliveryAppointment.notBeforeStart,
                     dateStart = this.deliveryAppointment.dateStart,
@@ -22,7 +22,7 @@ fun OrderService.Order.toOrder(): Order {
                     services = this.deliveryServices ?: listOf()
             ),
             pickupTask = OrderTask.create(
-                    type = OrderTask.TaskType.Pickup,
+                    type = OrderTask.TaskType.PICKUP,
                     address = this.pickupAddress.toAddress(),
                     notBeforeStart = this.pickupAppointment.notBeforeStart,
                     dateStart = this.pickupAppointment.dateStart,
