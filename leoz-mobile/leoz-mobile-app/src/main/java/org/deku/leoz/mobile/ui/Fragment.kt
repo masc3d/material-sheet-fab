@@ -34,9 +34,6 @@ open class Fragment : RxAppCompatDialogFragment() {
         }
     }
 
-    /**
-     * Observes property changes and delegates to rx {@link BehaviourSubject}
-     */
     inline fun <reified T> fragmentParameters() = ParametersProperty<T>()
 
     /**

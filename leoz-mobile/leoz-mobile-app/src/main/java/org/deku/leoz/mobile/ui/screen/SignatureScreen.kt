@@ -83,7 +83,6 @@ class SignatureScreen
 
         this.orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         this.hideActionBar = true
-        this.retainInstance = true
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
