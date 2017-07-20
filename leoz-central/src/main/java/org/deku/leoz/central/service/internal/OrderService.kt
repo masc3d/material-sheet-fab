@@ -81,14 +81,10 @@ class OrderService : OrderService {
         o.id = r.id.toLong()
         o.referenceIDToExchangeOrderID = r.referenceIdToExchangeId.toLong()
         o.carrier = Carrier.DER_KURIER
-
         if (r.pickupStation == r.deliveryStation && r.customerStation == r.deliveryStation)
             o.orderClassification = OrderClassification.PICKUP_DELIVERY
-        else if (r.customerStation == r.deliveryStation)
+        else
             o.orderClassification = OrderClassification.DELIVERY
-        else if (r.customerStation == r.pickupStation)
-            o.orderClassification = OrderClassification.PICKUP
-
         o.pickupAddress.line1 = r.pickupAddressLine1
         o.pickupAddress.line2 = r.pickupAddressLine2
         o.pickupAddress.line3 = r.pickupAddressLine3
@@ -159,7 +155,6 @@ class OrderService : OrderService {
 
         return o
     }
-
 
     /**
      * Order parcel record conversion extension

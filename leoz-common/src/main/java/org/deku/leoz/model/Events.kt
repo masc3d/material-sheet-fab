@@ -5,33 +5,41 @@ package org.deku.leoz.model
  */
 enum class EventType(val id: Int, val reasonType: Class<*>) {
     Delivered(id = 1, reasonType = EventDeliveredReason::class.java),
-    NotDelivered(id = 2, reasonType = EventNotDeliveredReason::class.java)
+    NotDelivered(id = 2, reasonType = EventNotDeliveredReason::class.java),
+    Loaded(id = 3, reasonType = EventLoadedReason::class.java)
 }
 
 /**
  * Event value, consists of an event type and referring reason enum value
  */
 abstract class EventValue<R : Enum<R>>(
-        val event: EventType,
-        val reason: R
+        val event: EventType = EventType.valueOf(value = ""),
+        val reason: R? = null
+
 )
 
 // Event reasons
+enum class EventLoadedReason(val id: Int) {
+    DeliveryTour(1),
+    HUB(2),
+    SmallSort(3)
+}
+
 
 enum class EventDeliveredReason(val id: Int) {
-    Normal(1),
-    Neighbor(2), // nur wenn SKZ 536870912 (Keine Alternativzustellung) nicht gesetzt
-    Postbox(3)                  // nur wenn SKZ 268435456 (Briefkastenzustellung möglich) gesetzt
+    Normal(1), // noticeRecipient  +unterschrift
+    Neighbor(2), // noticeNeighbour + 1 zeile Adresse  + unterschrift    nur wenn SKZ 536870912 (Keine Alternativzustellung) nicht gesetzt
+    Postbox(3)    // kein text + Foto             // nur wenn SKZ 268435456 (Briefkastenzustellung möglich) gesetzt
 }
 
 enum class EventNotDeliveredReason(val id: Int) {
     Absent(500),
-    Refuse(503), // Text : Wer? / Warum?
-    Vacation(504), // Text : Wie lange?
-    AddressWrong(507), // Text : Richtige Adresse?
-    Moved(509), // Text : Neue Adresse?
+    Refuse(503), // 1 Text :                      Wer? / Warum?
+    Vacation(504), //  1Text + shortdate         : Wie lange?
+    AddressWrong(507), // Text               : Richtige Adresse?
+    Moved(509), // Text                       : Neue Adresse?
     Unknown(510),
-    Damaged(513), // Packstück bleibt in der Auswahl
+    Damaged(513), //  Foto + text          Packstück bleibt in der Auswahl
     XC_CodeWrong(516),
     XC_ObjectDamaged(517),
     XC_ObjectWrong(518),
@@ -48,8 +56,9 @@ enum class EventNotDeliveredReason(val id: Int) {
 /**
  * Delivered event
  */
-class EventDelivered(reason: EventDeliveredReason)
-    : EventValue<EventDeliveredReason>(
+class EventDelivered(
+        reason: EventDeliveredReason
+) : EventValue<EventDeliveredReason>(
         event = EventType.Delivered,
         reason = reason
 )

@@ -1,10 +1,7 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
-import org.deku.leoz.model.VehicleType
 import sx.io.serialization.Serializable
-import sx.mq.MqHandler
-import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.Consumes
 import javax.ws.rs.Path
@@ -33,7 +30,6 @@ interface ParcelServiceV1 {
             var dataPoints: Array<Event>? = null
     )
 
-
     /**
      * A Event used in leoz prototols
      */
@@ -41,26 +37,40 @@ interface ParcelServiceV1 {
     data class Event(
             val parcelId: Int = 0,
             val parcelScan: String = "",
-            val event: Int = 0,
-            val reason: Int = 0,
             val time: Date = Date(),
-
-            // todo ja! da muss noch was getan werden. ist in disscuss
-            val note: String? = null,
-            // recipient- / consigner- /etc. name in context of event_reason
-            //
-
-            val xxx: xxx? = null,
             val latitude: Double? = null,
-            val longitude: Double? = null
+            val longitude: Double? = null,
+
+            val evtResDeliverdNormal: EvtResDeliverdNormal? = null,
+            val evtResDeliverdNeighbor: EvtResDeliverdNeighbor? = null,
+            val evtResNotDeliverdAbsend: EvtResNotDeliverdAbsend? = null,
+            val evtResNotDeliverdRefuse: EvtResNotDeliverdRefuse? = null
     )
 
-    //todo spezial eventreasonvalues to return
-    @Serializable(0x884f7f04a26346)
-    data class xxx(
-            val xxx: String? = null
+    data class EvtResDeliverdNormal(
+            val event: Int = 1,
+            val evventReason: Int = 1,
+            val nameRecipient: String? = null,
+            val signatureDelivery: String? = null
     )
 
+    data class EvtResDeliverdNeighbor(
+            val event: Int = 1,
+            val evventReason: Int = 2,
+            val nameNeighbor: String? = null,
+            val addressNeighbor: String? = null,
+            val signatureNeighbor: String? = null
+    )
 
+    data class EvtResNotDeliverdAbsend(
+            val event: Int = 2,
+            val evventReason: Int = 500
+    )
+
+    data class EvtResNotDeliverdRefuse(
+            val event: Int = 2,
+            val evventReason: Int = 503,
+            val inputWhoWhy: String? = null
+    )
 }
 
