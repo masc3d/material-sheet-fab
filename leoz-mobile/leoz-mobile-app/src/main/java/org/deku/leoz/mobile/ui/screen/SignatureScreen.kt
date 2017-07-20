@@ -8,11 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.gcacace.signaturepad.views.SignaturePad
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
@@ -29,23 +35,37 @@ class SignatureScreen
         SignaturePad.OnSignedListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+    private val db: Database by Kodein.global.lazy.instance()
+
     private val listener by lazy { this.activity as? Listener }
-    private var descriptionText: String = ""
     private var recipient: String = ""
     private var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal
-    private var stop: Stop? = null
+    private var stopId: Int? = null
+
+    private val descriptionText: String by lazy {
+        "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: $recipient"
+    }
+
+    private val stop: Stop by lazy {
+        db.store.select(StopEntity::class)
+                .where(StopEntity.ID.eq(this.stopId))
+                .get()
+                .first()
+    }
 
     companion object {
-        fun create(deliveryReason: EventDeliveredReason, stop: Stop, recipient: String = ""): SignatureScreen {
+        fun create(deliveryReason: EventDeliveredReason, stopId: Int, recipient: String = ""): SignatureScreen {
             val s = SignatureScreen()
             s.deliveryReason = deliveryReason
-            s.stop = stop
+            s.stopId = stopId
             s.recipient = recipient
             return s
         }
 
         enum class SaveInstanceBundleKeys(val key: String) {
-            DESCRIPTION_TEXT("DESCRIPTION_TEXT")
+            REASON("reason"),
+            RECIPIENT("recipient"),
+            STOP("stopId")
         }
     }
 
@@ -73,11 +93,13 @@ class SignatureScreen
         super.onViewCreated(view, savedInstanceState)
 
         if (savedInstanceState != null)
-            if (savedInstanceState.containsKey(SaveInstanceBundleKeys.DESCRIPTION_TEXT.key)) {
-                this.descriptionText = savedInstanceState.getString(SaveInstanceBundleKeys.DESCRIPTION_TEXT.key)
+            when {
+                savedInstanceState.containsKey(SaveInstanceBundleKeys.RECIPIENT.key) -> this.recipient = savedInstanceState.getString(SaveInstanceBundleKeys.RECIPIENT.key)
+                savedInstanceState.containsKey(SaveInstanceBundleKeys.STOP.key) -> this.stopId = savedInstanceState.getInt(SaveInstanceBundleKeys.STOP.key)
+                savedInstanceState.containsKey(SaveInstanceBundleKeys.REASON.key) -> this.deliveryReason = EventDeliveredReason.valueOf(savedInstanceState.getString(SaveInstanceBundleKeys.REASON.key))
             }
 
-        setText()
+        this.uxConclusion.text = descriptionText
 
         this.uxSignaturePad.setOnSignedListener(this)
 
@@ -106,9 +128,9 @@ class SignatureScreen
                     .cancelable(false)
                     .content("Wer hat die Sendung(en) angenommen?")
                     .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
-                    .input("Max Mustermann", null, false, MaterialDialog.InputCallback { materialDialog, charSequence ->
+                    .input("Max Mustermann", null, false, { _, charSequence ->
                         this.recipient = charSequence.toString()
-                        this.setText()
+                        this.uxConclusion.text = descriptionText
                     })
                     .show()
         }
@@ -152,14 +174,11 @@ class SignatureScreen
                 }
     }
 
-    private fun setText() {
-        this.descriptionText = "Aufträge: ${stop!!.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: $recipient"
-        this.uxConclusion.text = descriptionText
-    }
-
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState?.putString(SaveInstanceBundleKeys.DESCRIPTION_TEXT.key, this.descriptionText)
+        outState?.putString(SaveInstanceBundleKeys.REASON.key, this.deliveryReason.name)
+        outState?.putString(SaveInstanceBundleKeys.RECIPIENT.key, this.recipient)
+        outState?.putInt(SaveInstanceBundleKeys.STOP.key, this.stopId!!)
     }
 
     // SignaturePad listeners

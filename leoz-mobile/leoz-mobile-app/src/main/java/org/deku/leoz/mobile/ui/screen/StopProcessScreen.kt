@@ -125,8 +125,8 @@ class StopProcessScreen :
         super.onCreate(savedInstanceState)
 
         this.retainInstance = true
-
         this.title = getString(R.string.title_stop_process)
+        this.aidcEnabled = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

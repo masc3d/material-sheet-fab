@@ -18,6 +18,9 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
 import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.model.entity.Order
@@ -26,6 +29,7 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.android.ui.flexibleadapter.FlexibleVmItem
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import sx.LazyInstance
+import sx.android.aidc.*
 
 
 /**
@@ -35,6 +39,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
 
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
@@ -74,6 +79,26 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
         this.title = "Delivery Stops"
         this.headerImage = R.drawable.img_parcels_1a
+        this.aidcEnabled = true
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        aidcReader.decoders.set(
+                Interleaved25Decoder(true, 11, 12),
+                DatamatrixDecoder(true),
+                Ean8Decoder(true),
+                Ean13Decoder(true),
+                Code128Decoder(true)
+        )
+
+        aidcReader.readEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+
+                }
     }
 
     //region Listener interface implementation

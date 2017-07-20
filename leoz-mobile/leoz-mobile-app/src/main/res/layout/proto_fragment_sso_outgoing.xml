@@ -23,7 +23,7 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/uxSSOOutOrderIDText"
         android:hint="000000000000"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textAlignment="center"
         tools:ignore="HardcodedText" />
 
@@ -73,7 +73,7 @@
         android:layout_below="@+id/uxSSOOutBagSealLabel"
         android:layout_alignStart="@+id/uxSSOOutOrderIDText"
         android:textAlignment="center"
-        android:singleLine="true"
+        android:maxLines="1"
         tools:ignore="HardcodedText" />
 
 </RelativeLayout>

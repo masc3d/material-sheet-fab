@@ -37,7 +37,7 @@ import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
-import sx.android.aidc.AidcReader
+import sx.android.aidc.*
 
 class StopDetailScreen
     :
@@ -82,6 +82,7 @@ class StopDetailScreen
         super.onCreate(savedInstanceState)
 
         this.title = getString(R.string.title_stop_detailt)
+        this.aidcEnabled = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -154,6 +155,21 @@ class StopDetailScreen
 
     override fun onResume() {
         super.onResume()
+
+        aidcReader.decoders.set(
+                Interleaved25Decoder(true, 11, 12),
+                DatamatrixDecoder(true),
+                Ean8Decoder(true),
+                Ean13Decoder(true),
+                Code128Decoder(true)
+        )
+
+        aidcReader.readEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+
+                }
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)

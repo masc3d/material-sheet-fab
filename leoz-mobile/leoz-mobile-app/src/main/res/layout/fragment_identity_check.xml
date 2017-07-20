@@ -72,10 +72,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
                     android:hint="@string/passport_drivers_license"
-                    android:inputType="textPersonName" />
+                    android:inputType="none|textPersonName" />
 
                 <ImageView
                     android:id="@+id/imageView5"
@@ -110,10 +109,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
                     android:hint="@string/document_no"
-                    android:inputType="text" />
+                    android:inputType="none|text" />
 
                 <ImageView
                     android:id="@+id/imageView6"
@@ -147,10 +145,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
                     android:hint="@string/name_of_authority"
-                    android:inputType="text" />
+                    android:inputType="none|text" />
 
                 <ImageView
                     android:id="@+id/imageView7"
@@ -183,11 +180,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
                     android:hint="DD.MM.YYYY"
                     android:inputType="date"
-                    tools:ignore="HardcodedText" />
+                    tools:ignore="none|HardcodedText" />
 
                 <ImageView
                     android:id="@+id/imageView8"

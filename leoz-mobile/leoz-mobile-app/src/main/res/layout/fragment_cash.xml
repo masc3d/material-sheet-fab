@@ -25,7 +25,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:background="@drawable/rounded_corner_background_white"
-                android:editable="true"
                 android:ems="10"
                 android:enabled="true"
                 android:hint="@string/given_cash_eg_15_00"
@@ -74,9 +73,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
-                    android:inputType="numberDecimal"
+                    android:inputType="none|number"
                     android:text="10,99"
                     tools:ignore="HardcodedText"/>
 
@@ -113,10 +111,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
                     android:hint="00,00"
-                    android:inputType="numberDecimal"
+                    android:inputType="none|numberDecimal"
                     tools:ignore="HardcodedText"/>
 
                 <ImageView
@@ -151,10 +148,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
                     android:hint="00,00"
-                    android:inputType="numberDecimal"
+                    android:inputType="none|numberDecimal"
                     tools:ignore="HardcodedText" />
 
                 <ImageView

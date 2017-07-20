@@ -4,7 +4,7 @@ package org.deku.leoz.mobile
  * Created by phpr on 11.07.2017.
  */
 @sx.ConfigurationMapPath("location")
-class LocationSettings(private val map: sx.ConfigurationMap) {
+class LocationSettings(map: sx.ConfigurationMap) {
     val enabled: Boolean by map.value(true)
     val minDistance: Int by map.value(500)
     val force: Boolean by map.value(true)
