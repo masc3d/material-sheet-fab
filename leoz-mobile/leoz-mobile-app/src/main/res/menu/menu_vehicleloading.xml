@@ -3,9 +3,9 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/ux_action_vehicleloading_damaged"
+        android:id="@+id/ux_action_vehicleloading_mode"
         android:icon="@drawable/ic_file_document"
         android:title="@string/load_delivery_list"
-        app:showAsAction="always"/>
+        app:showAsAction="never" />
 
 </menu>

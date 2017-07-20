@@ -28,6 +28,7 @@ import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -212,59 +213,16 @@ class StopProcessScreen :
                             dialog.show()
                         }
                         R.id.ux_action_deliver_neighbour -> {
-//                            startHandOver(
-//                                    event = EventDelivered(
-//                                            reason = EventDeliveredReason.Neighbor
-//                                    )
-//                            )
-                            runSigningProcess(this.stop, EventDeliveredReason.Neighbor)
+                            delivery.sign(stop = this.stop, reason = EventDeliveredReason.Neighbor)
                         }
                         R.id.ux_action_deliver_postbox -> {
-                            startHandOver(
-                                    event = EventDelivered(
-                                            reason = EventDeliveredReason.Postbox
-                                    )
-                            )
+                            delivery.sign(stop = this.stop, reason = EventDeliveredReason.Postbox)
                         }
                         R.id.ux_action_deliver_recipient -> {
-                            startHandOver(
-                                    event = EventDelivered(
-                                            reason = EventDeliveredReason.Normal
-                                    )
-                            )
+                            delivery.sign(stop = this.stop, reason = EventDeliveredReason.Normal)
                         }
                     }
                 }
-    }
-
-    fun runSigningProcess(stop: Stop, reason: EventDeliveredReason) {
-        when (reason) {
-            EventDeliveredReason.Normal -> this.activity.showScreen(
-                    SignatureScreen.create(
-                            SignatureScreen.Parameters(
-                                    stopId = stop.id,
-                                    recipient = "",
-                                    deliveryReason = org.deku.leoz.model.EventDeliveredReason.Normal
-                            )
-                    )
-            )
-            EventDeliveredReason.Neighbor -> this.activity.showScreen(
-                    NeighbourDeliveryScreen.create(
-                            stop = stop
-                    )
-            )
-            EventDeliveredReason.Postbox -> this.activity.showScreen(
-                    PostboxDeliveryScreen.create(
-                            stop = stop
-                    )
-            )
-            else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")
-        }
-        //this.showScreen(SignatureScreen.create(deliveryReason = reason, stop = stop))
-    }
-
-    fun startHandOver(event: EventDelivered) {
-//        (this.activity as DeliveryActivity).runServiceWorkflow(stop, event.reason)
     }
 
     private fun processLabelRef(ref: String) {

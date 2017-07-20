@@ -49,14 +49,17 @@ class EventDialog private constructor(
         private var events = listOf<EventNotDeliveredReason>()
             set(value) {
                 value.forEach {
-                    this@Builder.eventAdapter.add(
-                            MaterialSimpleListItem.Builder(this.context)
-                                    .content(this.context.getEventText(it))
-                                    .id(it.id.toLong())
-                                    .tag(it)
-                                    .backgroundColor(Color.WHITE)
-                                    .build()
-                    )
+                    val eventText = this.context.getEventText(it)
+                    if (eventText != null) {
+                        this@Builder.eventAdapter.add(
+                                MaterialSimpleListItem.Builder(this.context)
+                                        .content(eventText)
+                                        .id(it.id.toLong())
+                                        .tag(it)
+                                        .backgroundColor(Color.WHITE)
+                                        .build()
+                        )
+                    }
                 }
                 field = value
             }

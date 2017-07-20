@@ -6,8 +6,11 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
@@ -29,6 +32,7 @@ class DeliveryActivity : Activity(),
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    private val delivery: Delivery by Kodein.global.lazy.instance()
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +61,11 @@ class DeliveryActivity : Activity(),
     override fun onResume() {
         super.onResume()
 
+        delivery.nextDeliveryScreenSubject
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .subscribe {
+                    this.showScreen(it)
+                }
     }
 
 //    fun runServiceWorkflow(stop: Stop, reason: EventDeliveredReason) {
