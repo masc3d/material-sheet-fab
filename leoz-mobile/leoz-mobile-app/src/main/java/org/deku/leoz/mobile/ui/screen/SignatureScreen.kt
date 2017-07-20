@@ -24,7 +24,10 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.model.EventDeliveredReason
+import org.parceler.Parcel
+import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
+import kotlin.properties.Delegates
 
 /**
  * A simple [Fragment] subclass.
@@ -34,46 +37,46 @@ class SignatureScreen
         ScreenFragment(),
         SignaturePad.OnSignedListener {
 
+    @Parcel(Parcel.Serialization.BEAN)
+    class Parameters @ParcelConstructor constructor (
+        var stopId: Int,
+        var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal,
+        var recipient: String
+    )
+
+    companion object {
+        /**
+         * Factory method
+         */
+        fun create(parameters: Parameters): SignatureScreen {
+            val s = SignatureScreen()
+            s.parameters = parameters
+            return s
+        }
+    }
+
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val db: Database by Kodein.global.lazy.instance()
 
     private val listener by lazy { this.activity as? Listener }
-    private var recipient: String = ""
-    private var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal
-    private var stopId: Int? = null
+
+    var parameters by fragmentParameters<Parameters>()
 
     private val descriptionText: String by lazy {
-        "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: $recipient"
+        "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: ${this.parameters.recipient}"
     }
 
     private val stop: Stop by lazy {
         db.store.select(StopEntity::class)
-                .where(StopEntity.ID.eq(this.stopId))
+                .where(StopEntity.ID.eq(this.parameters.stopId))
                 .get()
                 .first()
-    }
-
-    companion object {
-        fun create(deliveryReason: EventDeliveredReason, stopId: Int, recipient: String = ""): SignatureScreen {
-            val s = SignatureScreen()
-            s.deliveryReason = deliveryReason
-            s.stopId = stopId
-            s.recipient = recipient
-            return s
-        }
-
-        enum class SaveInstanceBundleKeys(val key: String) {
-            REASON("reason"),
-            RECIPIENT("recipient"),
-            STOP("stopId")
-        }
     }
 
     interface Listener {
         fun onSignatureCancelled()
         fun onSignatureSubmitted()
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,12 +95,6 @@ class SignatureScreen
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState != null)
-            when {
-                savedInstanceState.containsKey(SaveInstanceBundleKeys.RECIPIENT.key) -> this.recipient = savedInstanceState.getString(SaveInstanceBundleKeys.RECIPIENT.key)
-                savedInstanceState.containsKey(SaveInstanceBundleKeys.STOP.key) -> this.stopId = savedInstanceState.getInt(SaveInstanceBundleKeys.STOP.key)
-                savedInstanceState.containsKey(SaveInstanceBundleKeys.REASON.key) -> this.deliveryReason = EventDeliveredReason.valueOf(savedInstanceState.getString(SaveInstanceBundleKeys.REASON.key))
-            }
 
         this.uxConclusion.text = descriptionText
 
@@ -122,14 +119,14 @@ class SignatureScreen
                 )
         )
 
-        if (recipient.isNullOrEmpty()) {
+        if (this.parameters.recipient.isNullOrEmpty()) {
             val dialog = MaterialDialog.Builder(context)
                     .title("Recipient")
                     .cancelable(false)
                     .content("Wer hat die Sendung(en) angenommen?")
                     .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
                     .input("Max Mustermann", null, false, { _, charSequence ->
-                        this.recipient = charSequence.toString()
+                        this.parameters.recipient = charSequence.toString()
                         this.uxConclusion.text = descriptionText
                     })
                     .show()
@@ -172,13 +169,6 @@ class SignatureScreen
                         }
                     }
                 }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-        outState?.putString(SaveInstanceBundleKeys.REASON.key, this.deliveryReason.name)
-        outState?.putString(SaveInstanceBundleKeys.RECIPIENT.key, this.recipient)
-        outState?.putInt(SaveInstanceBundleKeys.STOP.key, this.stopId!!)
     }
 
     // SignaturePad listeners

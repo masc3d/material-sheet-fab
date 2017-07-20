@@ -212,11 +212,12 @@ class StopProcessScreen :
                             dialog.show()
                         }
                         R.id.ux_action_deliver_neighbour -> {
-                            startHandOver(
-                                    event = EventDelivered(
-                                            reason = EventDeliveredReason.Neighbor
-                                    )
-                            )
+//                            startHandOver(
+//                                    event = EventDelivered(
+//                                            reason = EventDeliveredReason.Neighbor
+//                                    )
+//                            )
+                            runSigningProcess(this.stop, EventDeliveredReason.Neighbor)
                         }
                         R.id.ux_action_deliver_postbox -> {
                             startHandOver(
@@ -234,6 +235,32 @@ class StopProcessScreen :
                         }
                     }
                 }
+    }
+
+    fun runSigningProcess(stop: Stop, reason: EventDeliveredReason) {
+        when (reason) {
+            EventDeliveredReason.Normal -> this.activity.showScreen(
+                    SignatureScreen.create(
+                            SignatureScreen.Parameters(
+                                    stopId = stop.id,
+                                    recipient = "",
+                                    deliveryReason = org.deku.leoz.model.EventDeliveredReason.Normal
+                            )
+                    )
+            )
+            EventDeliveredReason.Neighbor -> this.activity.showScreen(
+                    NeighbourDeliveryScreen.create(
+                            stop = stop
+                    )
+            )
+            EventDeliveredReason.Postbox -> this.activity.showScreen(
+                    PostboxDeliveryScreen.create(
+                            stop = stop
+                    )
+            )
+            else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")
+        }
+        //this.showScreen(SignatureScreen.create(deliveryReason = reason, stop = stop))
     }
 
     fun startHandOver(event: EventDelivered) {

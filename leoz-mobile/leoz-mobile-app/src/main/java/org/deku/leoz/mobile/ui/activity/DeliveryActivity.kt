@@ -59,16 +59,6 @@ class DeliveryActivity : Activity(),
 
     }
 
-    fun runSigningProcess(stop: Stop, reason: EventDeliveredReason) {
-        when (reason) {
-            EventDeliveredReason.Normal -> this.showScreen(SignatureScreen.create(deliveryReason = org.deku.leoz.model.EventDeliveredReason.Normal, stop = stop, recipient = ""))
-            EventDeliveredReason.Neighbor -> this.showScreen(NeighbourDeliveryScreen.create(stop = stop))
-            EventDeliveredReason.Postbox -> this.showScreen(PostboxDeliveryScreen.create(stop = stop))
-            else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")
-        }
-        //this.showScreen(SignatureScreen.create(deliveryReason = reason, stop = stop))
-    }
-
 //    fun runServiceWorkflow(stop: Stop, reason: EventDeliveredReason) {
 //
 //        val serviceCheck = stop.orders.first().getNextServiceCheck()

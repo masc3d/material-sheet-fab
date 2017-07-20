@@ -10,11 +10,12 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.model.EventDeliveredReason
+import org.parceler.Parcel
 
 /**
  * Created by phpr on 10.07.2017.
  */
-class NeighbourDeliveryScreen: ScreenFragment() {
+class NeighbourDeliveryScreen : ScreenFragment() {
 
     private lateinit var stop: Stop
 
@@ -42,7 +43,15 @@ class NeighbourDeliveryScreen: ScreenFragment() {
         this.uxNeighboursStreet.setAdapter(ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, arrayOf(stop.address.street)))
 
         this.uxContinue.setOnClickListener {
-            this.activity.showScreen(fragment = SignatureScreen.create(deliveryReason = EventDeliveredReason.Neighbor, stop = this.stop, recipient = this.uxNeighboursName.text.toString()))
+            this.activity.showScreen(
+                    SignatureScreen.create(
+                            parameters = SignatureScreen.Parameters(
+                                    stopId = this.stop.id,
+                                    deliveryReason = EventDeliveredReason.Neighbor,
+                                    recipient = this.uxNeighboursName.text.toString()
+                            )
+                    )
+            )
         }
     }
 
