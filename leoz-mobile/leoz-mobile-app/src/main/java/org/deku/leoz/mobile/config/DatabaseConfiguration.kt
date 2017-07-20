@@ -11,6 +11,7 @@ import io.requery.reactivex.KotlinReactiveEntityStore
 import io.requery.sql.KotlinEntityDataStore
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.slf4j.LoggerFactory
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath

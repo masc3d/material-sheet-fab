@@ -57,6 +57,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(ApplicationConfiguration.module)
         Kodein.global.addImport(ExecutorConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
+        Kodein.global.addImport(RepositoryConfiguration.module)
         Kodein.global.addImport(ModelConfiguration.module)
         Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(ServiceConfiguration.module)

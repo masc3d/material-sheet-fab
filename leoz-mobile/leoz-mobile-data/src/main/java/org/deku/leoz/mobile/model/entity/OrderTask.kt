@@ -29,7 +29,8 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
     @get:ManyToOne @get:Column(name = "`order`")
     abstract var order: Order
 
-    @get:ForeignKey @get:OneToOne
+    @get:ForeignKey
+    @get:OneToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var address: Address
     abstract var dateStart: Date?
     abstract var dateEnd: Date?

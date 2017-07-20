@@ -204,6 +204,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     log.trace("MENU ITEM SELECTED [${it}]")
+                    this.deliveryList.load(10730061)
                 }
 
         this.activity.actionEvent
