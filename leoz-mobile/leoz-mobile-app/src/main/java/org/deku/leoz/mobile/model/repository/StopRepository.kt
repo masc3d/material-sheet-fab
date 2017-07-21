@@ -65,7 +65,7 @@ class StopRepository(
                     val addressCount = store.count(AddressEntity::class).get().call()
                     val parcelCount = store.count(ParcelEntity::class).get().call()
                     val stopCount = store.count(StopEntity::class).get().call()
-                    log.trace("Saved orders in $sw :: orders [${orderCount}] stops [${stopCount}] tasks [${taskCount}] addresses [${addressCount}] parcels [${parcelCount}]")
+                    log.trace("Saved stops in $sw :: orders [${orderCount}] stops [${stopCount}] tasks [${taskCount}] addresses [${addressCount}] parcels [${parcelCount}]")
                 }
     }
 
