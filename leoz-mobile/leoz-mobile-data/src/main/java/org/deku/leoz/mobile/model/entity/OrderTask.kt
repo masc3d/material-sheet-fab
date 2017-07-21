@@ -40,7 +40,7 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
     @get:Convert(ServiceConverter::class)
     abstract var services: ArrayList<ParcelService>
 
-    @get:ManyToOne
+    @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var stop: Stop?
 }
 
@@ -52,7 +52,7 @@ fun OrderTask.Companion.create(
         notBeforeStart: Boolean,
         notice: String,
         services: List<ParcelService>
-): OrderTaskEntity {
+): OrderTask {
     return OrderTaskEntity().also {
         it.type = type
         it.address = address

@@ -57,7 +57,7 @@ fun Address.Companion.create(
         phone: String,
 
         latitude: Double = 0.0,
-        longitude: Double = 0.0): AddressEntity {
+        longitude: Double = 0.0): Address {
 
    return AddressEntity().also {
       it.line1 = line1

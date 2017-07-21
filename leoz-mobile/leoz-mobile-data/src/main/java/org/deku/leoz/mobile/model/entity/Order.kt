@@ -50,7 +50,7 @@ fun Order.Companion.create(
         pickupTask: OrderTask,
         deliveryTask: OrderTask,
         parcels: List<Parcel>
-): OrderEntity {
+): Order {
     val entity = OrderEntity().also {
         it.id = id
         it.state = state

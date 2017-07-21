@@ -43,7 +43,7 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
 fun Stop.Companion.create(
         state: Stop.State = Stop.State.PENDING,
         stopTasks: List<OrderTask>
-): StopEntity{
+): Stop {
     return StopEntity().also {
         it.state = state
         it.tasks.addAll(stopTasks)

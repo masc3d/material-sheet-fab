@@ -4,13 +4,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.lazy
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.service.internal.DeliveryListService
@@ -27,7 +27,10 @@ class DeliveryList {
 
     private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
+
+    // Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     // TODO: lazily calculate those values when loading state changes
     val stopAmount: Int = 0
@@ -101,31 +104,89 @@ class DeliveryList {
         return Observable.fromCallable {
             val sw = Stopwatch.createStarted()
 
+            // Retrieve delivery list
             val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
-
-            fun logCount() {
-                log.trace("orders [${db.store.count(OrderEntity::class).get().call()}] tasks [${db.store.count(OrderTaskEntity::class).get().call()}] addresses [${db.store.count(AddressEntity::class).get().call()}] parcels [${db.store.count(ParcelEntity::class).get().call()}]")
-            }
-
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
-            sw.restart()
-
-            this.orderRepository.removeAll().blockingGet()
-
-            logCount()
-
-            this.orderRepository.save(
-                    deliveryList.orders.map {
-                        it.toOrder()
+            run {
+                // Post process, filter out duplicates
+                val filteredOrders = deliveryList.orders.groupBy {
+                    it.id
+                }.map {
+                    if (it.value.count() > 1) {
+                        log.warn("Duplicate order id [${it.key}] parcel counts [${it.value.map { it.parcels.count() }.joinToString(", ")}]")
                     }
-            ).blockingGet()
+                    it.value.maxBy {
+                        it.parcels.count()
+                    }
+                }.filterNotNull()
 
-            log.trace("Delivery list transformed and stored in db in $sw")
+                sw.restart()
+                // Save & replace orders
+                this.orderRepository
+                        .removeAll()
+                        .blockingGet()
 
-            logCount()
+                this.orderRepository
+                        .save(filteredOrders.map {
+                            it.toOrder()
+                        })
+                        .blockingGet()
 
-            listOf<Stop>()
+                log.trace("Delivery list transformed and stored in db in $sw")
+            }
+
+            // Convert stops
+            val stops = deliveryList.stops.map {
+                Stop.create(
+                        stopTasks = it.tasks.map {
+                            val order = this.orderRepository.findById(it.orderId)
+
+                            when {
+                                order != null -> {
+                                    when (it.stopType) {
+                                        DeliveryListService.Task.Type.DELIVERY -> order.deliveryTask
+                                        DeliveryListService.Task.Type.PICKUP -> order.pickupTask
+                                    }
+                                }
+                                else -> {
+                                    log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
+                                    null
+                                }
+                            }
+                        }.filterNotNull()
+                )
+            }
+//                when {
+//                    task.stop != null -> {
+//                        log.warn("Skipping stop task [${task.id}]. Already assigned to another stop [${task.stop?.id}]")
+//                        null
+//                    }
+//                    else -> task
+//                }
+
+            // Post process, filter duplicates´
+
+            val filteredStops = stops.flatMap { stop ->
+                // Create a pair of sotp id -> task for all tasks
+                stop.tasks.map { task ->
+                    Pair(stop, task)
+                }
+            }.groupBy {
+                // Group by order task id to find duplicates
+                it.second.id
+            }.map {
+                if (it.value.count() > 1) {
+                    log.warn("Duplicate stop task [${it.key}], filtering all but the last one")
+                }
+                it.value.last().first
+            }
+
+            this.stopRepository
+                    .save(filteredStops)
+                    .blockingGet()
+
+            stops
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

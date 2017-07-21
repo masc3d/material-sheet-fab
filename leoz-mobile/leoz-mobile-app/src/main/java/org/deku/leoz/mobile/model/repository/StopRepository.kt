@@ -11,33 +11,33 @@ import sx.Stopwatch
 import sx.rx.ObservableRxProperty
 
 /**
- * Order repository
+ * Stop repository
  * Created by masc on 20.07.17.
  */
-class OrderRepository(
+class StopRepository(
         private val store: KotlinReactiveEntityStore<Persistable>
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    val ordersProperty = ObservableRxProperty(listOf<OrderEntity>())
-    val orders by ordersProperty
+    val stopsProperty = ObservableRxProperty(listOf<StopEntity>())
+    val stops by stopsProperty
 
     /**
      * Self observable order query
      */
-    private val _orders = store.select(OrderEntity::class)
+    private val _stops = store.select(StopEntity::class)
             .get()
             .observableResult()
             .subscribeBy(
                     onNext = {
-                        val orders = it.toList()
-                        log.trace("ORDERS CHANGED [${orders.count()}]")
-                        this.ordersProperty.set(orders)
+                        val stops = it.toList()
+                        log.trace("STOPS CHANGED [${stops.count()}]")
+                        this.stopsProperty.set(stops)
 
-                        orders.forEach {
+                        stops.forEach {
                             it.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
                                 override fun onPropertyChanged(sender: Observable, propertyId: Int) {
-                                    log.trace("ORDER FIELD CHANGED [${propertyId}]")
+                                    log.trace("STOP FIELD CHANGED [${propertyId}]")
                                 }
                             })
                         }
@@ -48,29 +48,14 @@ class OrderRepository(
             )
 
     /**
-     * Find order by id
-     */
-    fun findById(id: Long): Order? {
-        return store.select(OrderEntity::class).where(OrderEntity.ID.eq(id)).get().firstOrNull()
-    }
-
-    /**
      * Save a batch of orders, replacing existing orders if applicable
      */
-    fun save(orders: List<Order>): Completable {
+    fun save(stops: List<Stop>): Completable {
         val sw = Stopwatch.createStarted()
         return store.withTransaction {
             // Store orders
-            orders.forEach { order ->
-                val existingOrder = this.select(OrderEntity::class)
-                        .where(OrderEntity.ID.eq(order.id))
-                        .get().firstOrNull()
-
-                if (existingOrder != null) {
-                    delete(existingOrder)
-                }
-
-                insert(order)
+            stops.forEach { stop ->
+                insert(stop)
             }
         }
                 .toCompletable()
@@ -79,7 +64,8 @@ class OrderRepository(
                     val taskCount = store.count(OrderTaskEntity::class).get().call()
                     val addressCount = store.count(AddressEntity::class).get().call()
                     val parcelCount = store.count(ParcelEntity::class).get().call()
-                    log.trace("Saved orders in $sw :: orders [${orderCount}] tasks [${taskCount}] addresses [${addressCount}] parcels [${parcelCount}]")
+                    val stopCount = store.count(StopEntity::class).get().call()
+                    log.trace("Saved orders in $sw :: orders [${orderCount}] stops [${stopCount}] tasks [${taskCount}] addresses [${addressCount}] parcels [${parcelCount}]")
                 }
     }
 
@@ -88,7 +74,7 @@ class OrderRepository(
      */
     fun removeAll(): Completable {
         return store.withTransaction {
-            select(OrderEntity::class)
+            select(StopEntity::class)
                     .get()
                     .forEach {
                         delete(it)

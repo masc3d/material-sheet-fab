@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.repository.OrderRepository
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.slf4j.LoggerFactory
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
@@ -24,6 +25,10 @@ class RepositoryConfiguration {
 
             bind<OrderRepository>() with singleton {
                 OrderRepository(instance<Database>().store)
+            }
+
+            bind<StopRepository>() with singleton {
+                StopRepository(instance<Database>().store)
             }
         }
     }

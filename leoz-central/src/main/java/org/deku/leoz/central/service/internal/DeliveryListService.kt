@@ -49,7 +49,7 @@ class DeliveryListService : DeliveryListService {
                     tasks = listOf(
                             DeliveryListService.Task(
                                     orderId = o.id,
-                                    stopType = DeliveryListService.Task.Type.Delivery
+                                    stopType = DeliveryListService.Task.Type.DELIVERY
                             )
                     )
             )
@@ -62,16 +62,16 @@ class DeliveryListService : DeliveryListService {
     }
 
     override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
-        val deliveryList: List<TadVDeliverylistinfoRecord>
+        val dlInfos: List<TadVDeliverylistinfoRecord>
         val listInfos = mutableListOf<DeliveryListService.DeliveryListInfo>()
 
         when {
             deliveryDate != null -> {
-                deliveryList = deliveryListRepository.findInfoByDate(deliveryDate.date)
-                deliveryList.forEach { deliveryList ->
+                dlInfos = deliveryListRepository.findInfoByDate(deliveryDate.date)
+                dlInfos.forEach { dl ->
                     val di: DeliveryListService.DeliveryListInfo = DeliveryListService.DeliveryListInfo(
-                            deliveryList.id.toLong(),
-                            ShortDate(deliveryList.deliveryListDate))
+                            dl.id.toLong(),
+                            ShortDate(dl.deliveryListDate))
                     listInfos.add(di)
                 }
             }

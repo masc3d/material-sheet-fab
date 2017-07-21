@@ -39,7 +39,7 @@ fun Parcel.Companion.create(
         weight: Double = 0.0,
         state: Parcel.State = Parcel.State.PENDING,
         order: Order? = null
-): ParcelEntity {
+): Parcel {
     return ParcelEntity().also {
         it.number = number
         it.length = length
