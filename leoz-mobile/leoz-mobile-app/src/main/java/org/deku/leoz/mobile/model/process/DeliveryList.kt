@@ -108,8 +108,9 @@ class DeliveryList {
             val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
+            // Process orders
             run {
-                // Post process, filter out duplicates
+                //region Post process orders, filter out duplicates
                 val filteredOrders = deliveryList.orders.groupBy {
                     it.id
                 }.map {
@@ -120,8 +121,8 @@ class DeliveryList {
                         it.parcels.count()
                     }
                 }.filterNotNull()
+                //endregion
 
-                sw.restart()
                 // Save & replace orders
                 this.orderRepository
                         .removeAll()
@@ -132,11 +133,9 @@ class DeliveryList {
                             it.toOrder()
                         })
                         .blockingGet()
-
-                log.trace("Delivery list transformed and stored in db in $sw")
             }
 
-            // Convert stops
+            // Process stops
             val stops = deliveryList.stops.map {
                 Stop.create(
                         stopTasks = it.tasks.map {
@@ -157,16 +156,8 @@ class DeliveryList {
                         }.filterNotNull()
                 )
             }
-//                when {
-//                    task.stop != null -> {
-//                        log.warn("Skipping stop task [${task.id}]. Already assigned to another stop [${task.stop?.id}]")
-//                        null
-//                    }
-//                    else -> task
-//                }
 
-            // Post process, filter duplicates´
-
+            //region Post process stops, filter duplicates´
             val filteredStops = stops.flatMap { stop ->
                 // Create a pair of sotp id -> task for all tasks
                 stop.tasks.map { task ->
@@ -181,10 +172,13 @@ class DeliveryList {
                 }
                 it.value.last().first
             }
+            //endregion
 
             this.stopRepository
                     .save(filteredStops)
                     .blockingGet()
+
+            log.trace("Delivery list transformed and stored in db in $sw")
 
             stops
         }
