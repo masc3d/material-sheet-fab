@@ -426,11 +426,12 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 
             var validZip = true
 
-            while (k < this.zipFormat.length && validZip) {
+            while (i < cZip.length && k <= this.zipFormat.length && validZip) {
                 if (i + 1 > cZip.length)
                     csZip = ""
                 else
                     csZip = cZip.get(i).toString()
+
                 csZipFormat = cZipFormat.get(k).toString()
                 csNew = ""
                 when (csZipFormat) {
@@ -445,7 +446,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
                         i++
                         k++
                     } else if (csZip == " ") {
-                        i = i + 1
+                        i++
                     } else if (Ints.tryParse(csZip) == null) {
                         validZip = false
                     } else {
@@ -466,11 +467,13 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
                         csNew = csZip
                     }
                     "L" -> if (csZip == "")
-                    else if (csZip.contains("abcdefghijklmnopqrstuvwxyz0123456789 ")) {
+                        validZip = false
+                    else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ".contains(csZip)) {
                         i++
                         k++
                         csNew = csZip
                     } else {
+                        validZip = false
                         zipConform = ""
                     }
                     "G" -> {
