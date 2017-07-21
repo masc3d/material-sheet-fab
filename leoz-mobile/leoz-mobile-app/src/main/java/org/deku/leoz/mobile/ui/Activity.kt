@@ -78,15 +78,21 @@ open class Activity : RxAppCompatActivity(),
 
     private var isPaused = false
 
-    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
-
-    private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
-    private val tone: Tone by Kodein.global.lazy.instance()
-    private val updateService: UpdateService by Kodein.global.lazy.instance()
-    private val login: Login by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
     private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
+
+    // AIDC readers
+    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
+    private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
+
+    private val tone: Tone by Kodein.global.lazy.instance()
+
+    // Services
+    private val updateService: UpdateService by Kodein.global.lazy.instance()
+
+    // Process models
+    private val login: Login by Kodein.global.lazy.instance()
 
     /** Action items */
     private val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())

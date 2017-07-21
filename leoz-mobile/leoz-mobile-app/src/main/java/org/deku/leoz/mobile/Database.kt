@@ -6,12 +6,16 @@ import com.github.salomonbrys.kodein.erased.instance
 import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import io.requery.EntityCache
 import io.requery.Persistable
 import io.requery.android.sqlite.DatabaseSource
 import io.requery.android.sqlitex.SqlitexDatabaseSource
+import io.requery.cache.EntityCacheBuilder
 import io.requery.reactivex.KotlinReactiveEntityStore
+import io.requery.sql.ConfigurationBuilder
 import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.TableCreationMode
+import org.deku.leoz.mobile.model.entity.Models
 import sx.Stopwatch
 import sx.rx.toHotReplay
 
@@ -48,7 +52,7 @@ class Database(
         // SqlitexDatabaseSource -> https://github.com/requery/sqlite-android
         val ds = object : SqlitexDatabaseSource(
                 this.context,
-                org.deku.leoz.mobile.model.entity.Models.DEFAULT,
+                Models.DEFAULT,
                 this.name,
                 1) {
 
@@ -63,8 +67,18 @@ class Database(
             override fun onUpgrade(db: io.requery.android.database.sqlite.SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
                 super.onUpgrade(db, oldVersion, newVersion)
             }
+
+            override fun onConfigure(builder: ConfigurationBuilder) {
+                builder.setEntityCache(
+                        EntityCacheBuilder(Models.DEFAULT)
+                                .useReferenceCache(true)
+                                .build()
+                )
+                super.onConfigure(builder)
+            }
         }
 
+        ds.setLoggingEnabled(false)
         ds.setTableCreationMode(TableCreationMode.CREATE_NOT_EXISTS)
 
         KotlinReactiveEntityStore(
