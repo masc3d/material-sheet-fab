@@ -13,13 +13,13 @@ import sx.io.serialization.Serializable
  */
 @Serializable(0x20881e385e22b8)
 class LogMessage(
-    var nodeType: String = BundleType.LeozNode.value,
-    var nodeKey: String = "",
-    var logEntries: Array<LogEntry> = arrayOf()) {
+        var nodeType: String = BundleType.LeozNode.value,
+        var nodeUid: String = "",
+        var logEntries: Array<LogEntry> = arrayOf()) {
 
     @Serializable
     class LogEntry {
-        constructor() { }
+        constructor() {}
 
         constructor(loggingEvent: LoggingEvent) {
             val it = loggingEvent

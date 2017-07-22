@@ -28,7 +28,7 @@ class YmlJsonCompatibilityTest {
             var key: String = "Test123",
             var name: String = "Test123") {
 
-        constructor(identity: Identity) : this(identity.key.value, identity.name) {
+        constructor(identity: Identity) : this(identity.uid.value, identity.name) {
         }
     }
 

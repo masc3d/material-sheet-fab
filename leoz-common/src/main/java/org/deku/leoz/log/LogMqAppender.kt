@@ -70,7 +70,7 @@ class LogMqAppender(
                     this@LogMqAppender.channelSupplier().use {
                         it.send(LogMessage(
                                 nodeType = identity.name,
-                                nodeKey = identity.key.value,
+                                nodeUid = identity.uid.value,
                                 logEntries = logMessageBuffer.toTypedArray()))
                     }
                 } catch (e: Exception) {

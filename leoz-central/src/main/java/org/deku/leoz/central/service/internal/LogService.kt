@@ -27,7 +27,7 @@ class LogService
 
     data class LoggerKey(
             val nodeType: String,
-            val nodeKey: String)
+            val nodeUid: String)
 
     /** Loggers by node id */
     private val loggers = java.util.HashMap<LoggerKey, Logger>()
@@ -79,7 +79,7 @@ class LogService
      * @param name Name of the logger and log file
      */
     private fun createLogger(key: LoggerKey): Logger {
-        val logger = LoggerFactory.getLogger(key.nodeKey) as Logger
+        val logger = LoggerFactory.getLogger(key.nodeUid) as Logger
         logger.isAdditive = false
 
         val fileAppender: RollingFileAppender<ILoggingEvent> = RollingFileAppender()
@@ -130,7 +130,7 @@ class LogService
      * @param baseName Base name without extension
      */
     private fun getLogFile(key: LoggerKey): java.io.File {
-        return storage.logDirectory.resolve(key.nodeType).resolve("${key.nodeType}-${key.nodeKey}.log")
+        return storage.logDirectory.resolve(key.nodeType).resolve("${key.nodeType}-${key.nodeUid}.log")
     }
 
     /**
@@ -138,8 +138,8 @@ class LogService
      */
     override fun onMessage(message: LogMessage, replyChannel: MqChannel?) {
         try {
-            val identityKey = Identity.Key(message.nodeKey)
-            log.debug("Received ${message.logEntries.count()} log messages from node [${identityKey}]")
+            val identityUid = Identity.Uid(message.nodeUid)
+            log.debug("Received ${message.logEntries.count()} log messages from node [${identityUid}]")
 
             if (message.logEntries.count() == 0)
                 return
@@ -148,7 +148,7 @@ class LogService
 
             val loggerKey = LoggerKey(
                     nodeType = message.nodeType,
-                    nodeKey = identityKey.short
+                    nodeUid = identityUid.short
             )
 
             synchronized(loggers) {

@@ -25,6 +25,6 @@ class MobileIdentityFactory(
 
         // Calculate digest and format to hex
         val key = m.digest().toHexString()
-        return Identity(key = key, name = this.name)
+        return Identity(uid = key, name = this.name)
     }
 }

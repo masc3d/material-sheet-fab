@@ -6,19 +6,19 @@ import java.io.File
 
 /**
  * Holds all identity information for a leoz node including system information
- * @property key Authorization key
+ * @property uid Authorization key
  * @property name Name
  * @property systemInformation System information
  * Created by masc on 26.06.15.
  */
 class Identity constructor(
-        key: String,
+        uid: String,
         val name: String) {
 
     /**
      * Identity key
      */
-    class Key(val value: String) {
+    class Uid(val value: String) {
         /**
          * Short key
          */
@@ -35,7 +35,7 @@ class Identity constructor(
         }
 
         override fun equals(other: Any?): Boolean {
-            if (other is Key)
+            if (other is Uid)
                 return this.value == other.value
             else
                 return super.equals(other)
@@ -47,11 +47,14 @@ class Identity constructor(
      */
     @Serializable
     class State(
-            // TODO: encrypt/decrypt key
-            var key: String = "",
-            var name: String = "") {
+            /** Legacy key field for backwards cmopat. TODO: phase out */
+            var key: String? = null,
+            var uid: String? = null,
+            var name: String? = null) {
 
-        constructor(identity: Identity) : this(identity.key.value, identity.name)
+        constructor(identity: Identity) : this(
+                uid = identity.uid.value,
+                name = identity.name)
     }
 
     companion object {
@@ -59,25 +62,21 @@ class Identity constructor(
             val state = YamlPersistence.load(State::class.java, file)
 
             return Identity(
-                    key = state.key,
-                    name = state.name)
+                    uid = state.uid ?: state.key ?: "",
+                    name = state.name ?: "")
         }
     }
 
     /**
-     * Identity key
+     * Identity uid
      */
-    val key: Key
+    val uid: Uid = Uid(uid)
 
     /**
      * Id/short key
      */
-    val shortKey: String
-        get() = this.key.short
-
-    init {
-        this.key = Key(key)
-    }
+    val shortUid: String
+        get() = this.uid.short
 
     /**
      * Store identity to file
@@ -86,10 +85,10 @@ class Identity constructor(
      */
     @Synchronized
     fun save(destinationFile: File) {
-        YamlPersistence.save(obj = State(this), toFile = destinationFile)
+        YamlPersistence.save(obj = State(this), toFile = destinationFile, skipNulls = true)
     }
 
     override fun toString(): String {
-        return "Identity name [${this.name}] id [${this.shortKey}]"
+        return "Identity name [${this.name}] uid [${this.shortUid}]"
     }
 }

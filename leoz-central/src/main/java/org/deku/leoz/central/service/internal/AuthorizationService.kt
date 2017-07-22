@@ -45,7 +45,7 @@ class AuthorizationService
 
 
     interface Listener : EventListener {
-        fun onAuthorized(nodeIdentityKey: Identity.Key)
+        fun onAuthorized(nodeIdentityUid: Identity.Uid)
     }
 
     // TODO: replace with rx event
@@ -138,7 +138,7 @@ class AuthorizationService
             val am = AuthorizationService.NodeResponse()
             am.key = message.key
 
-            val identityKey = Identity.Key(message.key)
+            val identityKey = Identity.Uid(message.key)
             var record = nodeJooqRepository.findByKey(message.key)
             if (record == null) {
                 val conflictingRecord = nodeJooqRepository.findByKeyStartingWith(identityKey.short)

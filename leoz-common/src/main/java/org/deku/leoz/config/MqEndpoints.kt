@@ -97,10 +97,10 @@ object MqEndpoints {
     }
 
     object node {
-        fun queue(identityKey: Identity.Key): MqEndpoint {
+        fun queue(identityUid: Identity.Uid): MqEndpoint {
             return MqEndpoint(
                     destinationType = DestinationType.Queue,
-                    destinationName = "leoz.node.queue.${identityKey.short}",
+                    destinationName = "leoz.node.queue.${identityUid.short}",
                     serializer = KryoSerializer().gzip
             )
         }

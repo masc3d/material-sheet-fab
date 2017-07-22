@@ -48,7 +48,7 @@ open class MessageBrokerConfiguration {
 
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")
-        ActiveMQBroker.instance.brokerName = "leoz-aq-${this.application.identity.key.short}"
+        ActiveMQBroker.instance.brokerName = "leoz-aq-${this.application.identity.uid.short}"
         ActiveMQBroker.instance.dataDirectory = storage.activeMqDataDirectory
         ActiveMQBroker.instance.nativeTcpPort = this.settings.nativePort
 

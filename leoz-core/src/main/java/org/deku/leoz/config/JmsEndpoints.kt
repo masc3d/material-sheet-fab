@@ -50,8 +50,8 @@ object JmsEndpoints {
     }
 
     object node {
-        fun queue(identityKey: Identity.Key): JmsEndpoint {
-            return MqEndpoints.node.queue(identityKey)
+        fun queue(identityUid: Identity.Uid): JmsEndpoint {
+            return MqEndpoints.node.queue(identityUid)
                     .toJms(context = context)
         }
 
