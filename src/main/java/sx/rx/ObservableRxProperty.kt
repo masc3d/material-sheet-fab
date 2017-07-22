@@ -7,6 +7,7 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
+import sx.LazyInstance
 import sx.annotationOfType
 import kotlin.properties.ObservableProperty
 import kotlin.properties.ReadOnlyProperty
@@ -19,8 +20,8 @@ import kotlin.reflect.KProperty
  */
 class ObservableRxProperty<T>(
         default: T,
-        private val subject: BehaviorSubject<ObservableRxProperty.Update<T>> = BehaviorSubject.create(),
-        val observable: Observable<Update<T>> = subject.hide())
+        private val subject: BehaviorSubject<Update<T>> = BehaviorSubject.create(),
+        private val observable: Observable<Update<T>> = subject.hide())
     :
         Observable<ObservableRxProperty.Update<T>>(),
         ReadWriteProperty<Any?, T> {
@@ -62,3 +63,47 @@ class ObservableRxProperty<T>(
  */
 inline fun <reified T : Any> observableRx(default: T) = ObservableRxProperty<T>(
         default = default)
+
+/**
+ * RX property delegate implementation
+ * Created by masc on 04/03/2017.
+ */
+class ObservableLazyRxProperty<T>(
+        default: () -> T,
+        private val subject: BehaviorSubject<Unit> = BehaviorSubject.create(),
+        private val observable: Observable<Unit> = subject.hide())
+    :
+        Observable<ObservableLazyRxProperty.Update<T>>(),
+        ReadOnlyProperty<Any?, T> {
+
+    /** Property update container */
+    class Update<T>(val value: T)
+
+    private var value = LazyInstance(default)
+
+    override fun subscribeActual(observer: Observer<in Update<T>>) {
+        this.observable
+                .map { Update(this.value.get()) }
+                .subscribe(observer)
+    }
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return value.get()
+    }
+
+    fun reset() {
+        this.value.reset()
+        this.subject.onNext(Unit)
+    }
+
+    init {
+        this.reset()
+    }
+}
+
+/**
+ * Observes property changes and delegates to rx {@link BehaviourSubject}
+ */
+inline fun <reified T : Any> observableLazyRx(noinline default: () -> T) = ObservableLazyRxProperty<T>(
+        default = default)
+
