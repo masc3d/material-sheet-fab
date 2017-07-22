@@ -23,7 +23,7 @@ class Identity constructor(
          * Short key
          */
         val short: String by lazy {
-            this.value.substring(0, 8)
+            this.value.substring(0, SHORT_UID_LENGTH)
         }
 
         override fun toString(): String {
@@ -58,6 +58,9 @@ class Identity constructor(
     }
 
     companion object {
+        /** The short UID length */
+        val SHORT_UID_LENGTH = 8
+
         fun load(file: File): Identity {
             val state = YamlPersistence.load(State::class.java, file)
 
@@ -77,6 +80,11 @@ class Identity constructor(
      */
     val shortUid: String
         get() = this.uid.short
+
+    init {
+        if (uid.length < SHORT_UID_LENGTH)
+            throw IllegalArgumentException("Identity uid must have at least length > 8 for short uid representation")
+    }
 
     /**
      * Store identity to file

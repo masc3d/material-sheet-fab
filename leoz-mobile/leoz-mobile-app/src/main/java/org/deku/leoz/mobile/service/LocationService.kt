@@ -149,7 +149,7 @@ class LocationService(
             mqttChannels.central.transient.channel().send(
                     message = LocationServiceV1.GpsMessage(
                             userId = this@LocationService.login.authenticatedUser?.id,
-                            nodeId = this@LocationService.identity.key.value,
+                            nodeId = this@LocationService.identity.uid.value,
                             dataPoints = arrayOf(currentPosition)
                     )
             )
