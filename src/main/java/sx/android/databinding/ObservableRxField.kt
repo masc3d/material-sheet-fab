@@ -22,12 +22,14 @@ class ObservableRxField<T> private constructor(
     private val property: ObservableRxProperty<T>?
     private val subscriptions = HashMap<android.databinding.Observable.OnPropertyChangedCallback, Disposable>()
 
+    /** Constructor for regular observable (read-only field) */
     constructor(source: Observable<T>): this(
             source = source,
             property = null)
 
+    /** Constructor for rx property (read-write field) */
     constructor(property: ObservableRxProperty<T>): this(
-            source = property.observable.map { it.value },
+            source = property.map { it.value },
             property = property)
 
     init {
