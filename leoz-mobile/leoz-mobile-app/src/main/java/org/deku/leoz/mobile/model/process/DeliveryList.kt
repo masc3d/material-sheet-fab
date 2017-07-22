@@ -16,6 +16,9 @@ import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.rx.ObservableLazyRxProperty
+import sx.rx.ObservableRxProperty
+import sx.rx.observableLazyRx
 import sx.rx.toHotReplay
 
 /**
@@ -32,22 +35,50 @@ class DeliveryList {
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
-    // TODO: lazily calculate those values when loading state changes
-    val stopAmount: Int = 0
+    // Counters
+    val orderTotalAmountProperty = ObservableLazyRxProperty({
+        this.orderRepository.orders.size
+    })
+    val orderTotalAmount by orderTotalAmountProperty
 
-    val stopTotalAmount: Int = 0
+    val stopTotalAmountProperty = ObservableLazyRxProperty({
+        this.stopRepository.stops.size
+    })
+    val stopTotalAmount by stopTotalAmountProperty
 
-    val orderAmount: Int = 0
+    val parcelTotalAmountProperty = ObservableLazyRxProperty({
+        this.orderRepository.orders.flatMap { it.parcels }.distinctBy { it.number }.count()
+    })
+    val parcelTotalAmount by parcelTotalAmountProperty
 
-    val orderTotalAmount: Int = 0
+    val totalWeightProperty = ObservableLazyRxProperty({
+        this.orderRepository.orders.flatMap { it.parcels }.distinctBy { it.number }.sumByDouble { it.weight }
+    })
+    val totalWeight by totalWeightProperty
 
-    val parcelAmount: Int = 0
+    val orderAmountProperty = ObservableRxProperty(0)
+    val orderAmount by orderAmountProperty
 
-    val parcelTotalAmount: Int = 0
+    val parcelAmountProperty = ObservableRxProperty(0)
+    val parcelAmount by parcelAmountProperty
 
-    val weight: Double = 0.0
+    val stopAmountProperty = ObservableRxProperty(0)
+    val stopAmount by stopAmountProperty
 
-    val totalWeight: Double = 0.0
+    val weightProperty = ObservableRxProperty(0.0)
+    val weight by weightProperty
+
+    init {
+        this.orderRepository.ordersProperty.subscribe {
+            this.orderTotalAmountProperty.reset()
+            this.parcelTotalAmountProperty.reset()
+            this.totalWeightProperty.reset()
+        }
+
+        this.stopRepository.stopsProperty.subscribe {
+            this.stopTotalAmountProperty.reset()
+        }
+    }
 
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         listOf(
@@ -118,15 +149,11 @@ class DeliveryList {
                         log.warn("Duplicate order id [${it.key}] parcel counts [${it.value.map { it.parcels.count() }.joinToString(", ")}]")
                     }
                     it.value.maxBy {
+                        // In case of duplicates, prefer order with most parcels
                         it.parcels.count()
                     }
                 }.filterNotNull()
                 //endregion
-
-                // Save & replace orders
-                this.orderRepository
-                        .removeAll()
-                        .blockingGet()
 
                 this.orderRepository
                         .save(filteredOrders.map {
@@ -159,7 +186,6 @@ class DeliveryList {
 
             //region Post process stops, filter duplicates´
             val filteredStops = stops.flatMap { stop ->
-                // Create a pair of sotp id -> task for all tasks
                 stop.tasks.map { task ->
                     Pair(stop, task)
                 }

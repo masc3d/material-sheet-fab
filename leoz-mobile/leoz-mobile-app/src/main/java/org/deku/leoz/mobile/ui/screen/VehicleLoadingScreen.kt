@@ -32,9 +32,11 @@ import org.deku.leoz.mobile.ui.vm.*
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.*
+import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.ui.flexibleadapter.FlexibleVmHeaderItem
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
+import sx.format.format
 
 /**
  * Vehicle loading screen
@@ -53,26 +55,26 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         val stopCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_location,
-                amount = ObservableField("${this.deliveryList.stopAmount}"),
-                totalAmount = ObservableField("${this.deliveryList.stopTotalAmount}")
+                amount = this.deliveryList.stopAmountProperty.map { it.value.toString() }.toField(),
+                totalAmount = this.deliveryList.stopTotalAmountProperty.map { it.value.toString() }.toField()
         )
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_file_document,
-                amount = ObservableField("${this.deliveryList.orderAmount}"),
-                totalAmount = ObservableField("${this.deliveryList.orderTotalAmount}")
+                amount =  this.deliveryList.orderAmountProperty.map { it.value.toString() }.toField(),
+                totalAmount = this.deliveryList.orderTotalAmountProperty.map { it.value.toString() }.toField()
         )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_closed,
-                amount = ObservableField("${this.deliveryList.parcelAmount}"),
-                totalAmount = ObservableField("${this.deliveryList.parcelTotalAmount}")
+                amount = this.deliveryList.parcelAmountProperty.map { it.value.toString() }.toField(),
+                totalAmount = this.deliveryList.parcelTotalAmountProperty.map { it.value.toString() }.toField()
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_scale,
-                amount = ObservableField("${this.deliveryList.weight}kg"),
-                totalAmount = ObservableField("${this.deliveryList.totalWeight}kg")
+                amount = this.deliveryList.weightProperty.map { "${it.value.format(2)}kg" }.toField(),
+                totalAmount = this.deliveryList.totalWeightProperty.map { "${it.value.format(2)}kg" }.toField()
         )
     }
 
