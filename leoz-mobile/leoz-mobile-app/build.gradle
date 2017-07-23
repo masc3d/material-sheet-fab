@@ -269,7 +269,7 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
-            'com.github.pwittchen:reactivenetwork-rx2:0.9.1',
+            'com.github.pwittchen:reactivenetwork-rx2:0.10.0',
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:4.0.0") {
@@ -278,6 +278,7 @@ dependencies {
 
             // UI
             "eu.davidea:flexible-adapter:5.0.0-rc2",
+            "eu.davidea:flexible-adapter-databinding:1.0.0-b1@aar",
             'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0',
 
             // Dialog

@@ -89,7 +89,7 @@ dependencies {
             // FOR TESTING
 
             // Kalium
-            "org.abstractj.kalium:kalium:0.5.0"
+            "org.abstractj.kalium:kalium:0.6.0"
     )
 
     testCompile(
