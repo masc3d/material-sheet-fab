@@ -16,36 +16,8 @@ import sx.rx.ObservableRxProperty
  */
 class OrderRepository(
         private val store: KotlinReactiveEntityStore<Persistable>
-) {
+) : ObservingRepository<OrderEntity>(OrderEntity::class, store) {
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    val ordersProperty = ObservableRxProperty(listOf<OrderEntity>())
-    val orders by ordersProperty
-
-    /**
-     * Self observable order query
-     */
-    private val _orders = store.select(OrderEntity::class)
-            .get()
-            .observableResult()
-            .subscribeBy(
-                    onNext = {
-                        val orders = it.toList()
-                        log.trace("ORDERS CHANGED [${orders.count()}]")
-                        this.ordersProperty.set(orders)
-
-                        orders.forEach {
-                            it.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
-                                override fun onPropertyChanged(sender: Observable, propertyId: Int) {
-                                    log.trace("ORDER FIELD CHANGED [${propertyId}]")
-                                }
-                            })
-                        }
-                    },
-                    onError = {
-                        log.error(it.message, it)
-                    }
-            )
 
     /**
      * Find order by id

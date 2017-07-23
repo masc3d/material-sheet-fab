@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model.entity
 
+import android.databinding.Bindable
 import android.databinding.Observable
 import io.requery.*
 import org.deku.leoz.model.Carrier
@@ -23,6 +24,7 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
 
     @get:Key
     abstract var id: Long
+    @get:Bindable
     abstract var state: State
     abstract var carrier: Carrier
     abstract var referenceIDToExchangeOrderID: Long

@@ -31,51 +31,46 @@ class DeliveryList {
     private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
 
-    // Repositories
+    //region Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+    //endregion
 
-    // Counters
+    //region Counters
     val orderTotalAmountProperty = ObservableLazyRxProperty({
-        this.orderRepository.orders.size
+        this.orderRepository.entities.size
     })
-    val orderTotalAmount by orderTotalAmountProperty
 
     val stopTotalAmountProperty = ObservableLazyRxProperty({
-        this.stopRepository.stops.size
+        this.stopRepository.entities.size
     })
-    val stopTotalAmount by stopTotalAmountProperty
 
     val parcelTotalAmountProperty = ObservableLazyRxProperty({
-        this.orderRepository.orders.flatMap { it.parcels }.distinctBy { it.number }.count()
+        this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.count()
     })
-    val parcelTotalAmount by parcelTotalAmountProperty
 
     val totalWeightProperty = ObservableLazyRxProperty({
-        this.orderRepository.orders.flatMap { it.parcels }.distinctBy { it.number }.sumByDouble { it.weight }
+        this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.sumByDouble { it.weight }
     })
-    val totalWeight by totalWeightProperty
 
     val orderAmountProperty = ObservableRxProperty(0)
-    val orderAmount by orderAmountProperty
 
     val parcelAmountProperty = ObservableRxProperty(0)
-    val parcelAmount by parcelAmountProperty
 
     val stopAmountProperty = ObservableRxProperty(0)
-    val stopAmount by stopAmountProperty
 
     val weightProperty = ObservableRxProperty(0.0)
-    val weight by weightProperty
+    //endregion
 
     init {
-        this.orderRepository.ordersProperty.subscribe {
+        // Re-evaluate counters reactively
+        this.orderRepository.entitiesProperty.subscribe {
             this.orderTotalAmountProperty.reset()
             this.parcelTotalAmountProperty.reset()
             this.totalWeightProperty.reset()
         }
 
-        this.stopRepository.stopsProperty.subscribe {
+        this.stopRepository.entitiesProperty.subscribe {
             this.stopTotalAmountProperty.reset()
         }
     }
@@ -204,7 +199,7 @@ class DeliveryList {
                     .save(filteredStops)
                     .blockingGet()
 
-            log.trace("Delivery list transformed and stored in db in $sw")
+            log.trace("Delivery list transformed and stored in $sw")
 
             stops
         }

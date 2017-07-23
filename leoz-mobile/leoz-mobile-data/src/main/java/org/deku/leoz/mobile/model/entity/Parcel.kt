@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model.entity
 
+import android.databinding.Bindable
 import android.databinding.Observable
 import io.requery.*
 import sx.android.databinding.BaseRxObservable
@@ -20,6 +21,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var height: Double
     abstract var width: Double
     abstract var weight: Double
+    @get:Bindable
     abstract var state: Parcel.State
 
     @get:Column(name = "`order`", nullable = true)

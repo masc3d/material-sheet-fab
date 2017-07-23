@@ -16,36 +16,8 @@ import sx.rx.ObservableRxProperty
  */
 class StopRepository(
         private val store: KotlinReactiveEntityStore<Persistable>
-) {
+) : ObservingRepository<StopEntity>(StopEntity::class, store) {
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    val stopsProperty = ObservableRxProperty(listOf<StopEntity>())
-    val stops by stopsProperty
-
-    /**
-     * Self observable order query
-     */
-    private val _stops = store.select(StopEntity::class)
-            .get()
-            .observableResult()
-            .subscribeBy(
-                    onNext = {
-                        val stops = it.toList()
-                        log.trace("STOPS CHANGED [${stops.count()}]")
-                        this.stopsProperty.set(stops)
-
-                        stops.forEach {
-                            it.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
-                                override fun onPropertyChanged(sender: Observable, propertyId: Int) {
-                                    log.trace("STOP FIELD CHANGED [${propertyId}]")
-                                }
-                            })
-                        }
-                    },
-                    onError = {
-                        log.error(it.message, it)
-                    }
-            )
 
     /**
      * Save a batch of orders, replacing existing orders if applicable

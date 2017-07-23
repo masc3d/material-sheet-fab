@@ -24,11 +24,13 @@ import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.model.repository.OrderRepository
 
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
+import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.*
@@ -61,7 +63,7 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_file_document,
-                amount =  this.deliveryList.orderAmountProperty.map { it.value.toString() }.toField(),
+                amount = this.deliveryList.orderAmountProperty.map { it.value.toString() }.toField(),
                 totalAmount = this.deliveryList.orderTotalAmountProperty.map { it.value.toString() }.toField()
         )
 
@@ -80,7 +82,9 @@ class VehicleLoadingScreen : ScreenFragment() {
 
     private val tone: Tone by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
+
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
     private val parcelListAdapterInstance = LazyInstance<
@@ -98,9 +102,8 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         val adapter = FlexibleAdapter(
                 // Items
-                delivery.stopList
-                        .flatMap { it.tasks }
-                        .flatMap { it.order.parcels }
+                this.orderRepository.entities
+                        .flatMap { it.parcels }
                         .map {
                             val item = FlexibleVmSectionableItem(
                                     viewRes = R.layout.item_parcel,
@@ -231,41 +234,47 @@ class VehicleLoadingScreen : ScreenFragment() {
     }
 
     private fun processLabelScan(data: String) {
-        val orders = delivery.findOrderByLabelReference(data)
+        val unitNumberParseResult = UnitNumber.parseLabel(data)
 
-        log.debug("VehicleLoading parcel reference [$data] Orders found [${orders.size}] ")
-
-        when (orders.size) {
-            0 -> {
-                //Error, order could not be found
-                log.warn("No order with a parcel reference [$data] could be found")
-                if (data.count() <= 9 && data.toLongOrNull() != null) {
-                    log.debug("Check for delivery list with id [$data]")
-                    deliveryList.load(data.toLong())
-                            .bindToLifecycle(this)
-                            .subscribe {
-                                if (it.isEmpty()) {
-                                    tone.errorBeep()
-                                } else {
-
-                                }
-                            }
-                }
-                tone.errorBeep()
-                //Query order from Central services
+        when {
+            unitNumberParseResult.hasError -> {
+                // TODO: display error
             }
-            1 -> {
-                //Continue
-                val parcel = orders.flatMap { it.parcels }.first { it.number == data }
-                log.debug("Parcel ID [${parcel.id}] Order ID [${orders.first().id}] State [${parcel.state}]")
+            else -> {
+                val unitNumber = unitNumberParseResult.value
+                val order = this.orderRepository.entities.find { it.parcels.any { it.number == unitNumber.value } }
+
+                log.debug("VehicleLoading parcel reference [$data] orders found [${order}] ")
+
+                when {
+                    order != null -> {
+                        //Continue
+                        val parcel = order.parcels.first { it.number == unitNumber.value }
+                        log.debug("Parcel ID [${parcel.id}] Order ID [${order.id}] state [${parcel.state}]")
 //                if (order.first().parcelVehicleLoading(parcel)) {
 //                    updateLoadedParcelList(mutableListOf(parcel))
 //                }
-                log.debug("State after processing [${parcel.state}]")
-            }
-            else -> {
-                //What to do if multiple orders are found?
-                log.warn("Multiple orders found with a parcel reference [$data]")
+                        log.debug("State after processing [${parcel.state}]")
+                    }
+                    else -> {
+                        //Error, order could not be found
+                        log.warn("No order with a parcel reference [$data] could be found")
+                        if (data.count() <= 9 && data.toLongOrNull() != null) {
+                            log.debug("Check for delivery list with id [$data]")
+                            deliveryList.load(data.toLong())
+                                    .bindToLifecycle(this)
+                                    .subscribe {
+                                        if (it.isEmpty()) {
+                                            tone.errorBeep()
+                                        } else {
+
+                                        }
+                                    }
+                        }
+                        tone.errorBeep()
+                        //Query order from Central services
+                    }
+                }
             }
         }
     }
