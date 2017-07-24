@@ -6,6 +6,7 @@ import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
 
 /**
+ * Flexible view model item
  * Created by masc on 26.06.17.
  */
 class FlexibleVmItem<VM>(
