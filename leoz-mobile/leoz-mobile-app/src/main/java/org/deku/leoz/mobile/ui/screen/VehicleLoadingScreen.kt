@@ -36,7 +36,7 @@ import sx.LazyInstance
 import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
-import sx.android.ui.flexibleadapter.FlexibleVmHeaderItem
+import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 import sx.format.format
 
@@ -89,10 +89,10 @@ class VehicleLoadingScreen : ScreenFragment() {
 
     private val parcelListAdapterInstance = LazyInstance<
             FlexibleAdapter<
-                    FlexibleVmSectionableItem<
-                            ParcelViewModel>>>({
+                    FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>
+            >>({
 
-        val header1 = FlexibleVmHeaderItem<ParcelListHeaderViewModel>(
+        val header1 = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
                 viewRes = R.layout.item_parcel_header,
                 variableId = BR.header,
                 viewModel = ParcelListHeaderViewModel(
@@ -100,30 +100,32 @@ class VehicleLoadingScreen : ScreenFragment() {
                 )
         )
 
-        val adapter = FlexibleAdapter(
-                // Items
-                this.orderRepository.entities
-                        .flatMap { it.parcels }
-                        .map {
-                            val item = FlexibleVmSectionableItem(
-                                    viewRes = R.layout.item_parcel,
-                                    variableId = BR.parcel,
-                                    viewModel = ParcelViewModel(it)
-                            )
+        val flexibleItems = this.orderRepository.entities
+                .flatMap { it.parcels }
+                .map {
+                    val item = FlexibleVmSectionableItem(
+                            viewRes = R.layout.item_parcel,
+                            variableId = BR.parcel,
+                            viewModel = ParcelViewModel(it)
+                    )
 
-                            item.header = header1
-                            item.isEnabled = true
-                            item.isDraggable = true
-                            item.isSwipeable = false
+                    item.isEnabled = true
+                    item.isDraggable = true
+                    item.isSwipeable = false
+                    item.header = header1
 
-                            item
-                        },
-                // Listener
-                this)
+                    item
+                }
 
-        adapter.headerItems.add(header1)
-        adapter.setDisplayHeadersAtStartUp(true)
+        header1.isHidden = false
+        header1.subItems = flexibleItems
+
+        val adapter = FlexibleAdapter(listOf(header1),
+                this,
+                true)
+
         adapter.setStickyHeaders(true)
+        adapter.collapseAll()
         adapter.showAllHeaders()
 
         adapter

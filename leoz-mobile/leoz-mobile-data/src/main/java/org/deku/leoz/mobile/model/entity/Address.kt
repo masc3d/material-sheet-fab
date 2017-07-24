@@ -5,7 +5,6 @@ import android.databinding.Bindable
 import io.requery.*
 import org.deku.leoz.mobile.data.BR
 import sx.android.databinding.BaseRxObservable
-import sx.android.databinding.DelegatingRxObservable
 
 /**
  * Address
