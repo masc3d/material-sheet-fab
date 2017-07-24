@@ -19,9 +19,7 @@ import kotlin.reflect.KProperty
  * Created by masc on 04/03/2017.
  */
 class ObservableRxProperty<T>(
-        default: T,
-        private val subject: BehaviorSubject<Update<T>> = BehaviorSubject.create(),
-        private val observable: Observable<Update<T>> = subject.hide())
+        default: T)
     :
         Observable<ObservableRxProperty.Update<T>>(),
         ReadWriteProperty<Any?, T> {
@@ -30,6 +28,8 @@ class ObservableRxProperty<T>(
     class Update<T>(val old: T?, val value: T)
 
     private var value = default
+    private val subject: BehaviorSubject<Update<T>> = BehaviorSubject.create()
+    private val observable: Observable<Update<T>> = subject.hide()
 
     override fun subscribeActual(observer: Observer<in Update<T>>) {
         this.observable.subscribe(observer)
@@ -41,6 +41,10 @@ class ObservableRxProperty<T>(
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         this.set(value)
+    }
+
+    fun get(): T {
+        return value
     }
 
     fun set(value: T) {
@@ -69,9 +73,7 @@ inline fun <reified T : Any> observableRx(default: T) = ObservableRxProperty<T>(
  * Created by masc on 04/03/2017.
  */
 class ObservableLazyRxProperty<T>(
-        default: () -> T,
-        private val subject: BehaviorSubject<Unit> = BehaviorSubject.create(),
-        private val observable: Observable<Unit> = subject.hide())
+        default: () -> T)
     :
         Observable<ObservableLazyRxProperty.Update<T>>(),
         ReadOnlyProperty<Any?, T> {
@@ -80,6 +82,8 @@ class ObservableLazyRxProperty<T>(
     class Update<T>(val value: T)
 
     private var value = LazyInstance(default)
+    private val subject: BehaviorSubject<Unit> = BehaviorSubject.create()
+    private val observable: Observable<Unit> = subject.hide()
 
     override fun subscribeActual(observer: Observer<in Update<T>>) {
         this.observable
@@ -89,6 +93,10 @@ class ObservableLazyRxProperty<T>(
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return value.get()
+    }
+
+    fun get() {
+        this.value.get()
     }
 
     fun reset() {
