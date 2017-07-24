@@ -34,6 +34,8 @@
 
     <string name="corresponsing_orders">Corresponsing orders</string>
 
+    <string name="damaged">Damaged</string>
+
     <string name="delivered">Delivered</string>
 
     <string name="delivery">Delivery</string>
@@ -131,6 +133,8 @@
 
     <string name="news">News</string>
 
+    <string name="no_go_back">No, go back</string>
+
     <string name="number_short_no">No.</string>
 
     <string name="ok" translatable="false">OK</string>
@@ -182,6 +186,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="prototype">Prototype</string>
 
+    <string name="question_vehicle_loading_finished">Vehicle loading finished?</string>
+
     <string name="report_bug">Report bug</string>
 
     <string name="service_cash_delivery">Cash on delivery</string>
@@ -218,6 +224,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="title_activity_delivery">Delivery</string>
     <string name="title_missing_signature">Signature missing</string>
     <string name="title_specify_deliverylist">Specify a delivery list</string>
+    <string name="title_stop_detailt">Stop Details</string>
+    <string name="title_stop_process">Process Stop</string>
 
     <string name="to_neighbour">To neighbour</string>
     <string name="to_postbox">To postbox</string>
@@ -231,9 +239,6 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="version_available">v%s is available</string>
 
     <string name="warehouse">Warehouse</string>
-    <string name="title_stop_detailt">Stop Details</string>
-    <string name="title_stop_process">Process Stop</string>
-    <string name="question_vehicle_loading_finished">Vehicle loading finished?</string>
-    <string name="no_go_back">No, go back</string>
+
     <string name="yes_start_tour">Yes, start tour</string>
 </resources>

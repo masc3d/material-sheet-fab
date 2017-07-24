@@ -64,18 +64,23 @@ class DeliveryList {
     //endregion
 
     /**
-     * Parcels loaded
+     * Loaded parcels
      */
     val parcelsLoaded = this.parcelRepository.entitiesProperty.map {
         it.value.filter {
-            it.loadingState == Parcel.State.LOADED
+            // TODO
+            true
+//            it.loadingState == Parcel.State.LOADED
         }
     }
 
-    enum class GroupType {
-        Loaded,
-        Damaged,
-        Missing
+    /**
+     * Damaged parcels
+     */
+    val parcelsDamaged = this.parcelRepository.entitiesProperty.map {
+        it.value.filter {
+            it.isDamaged
+        }
     }
 
     init {
@@ -105,45 +110,6 @@ class DeliveryList {
                 //TODO "Missing" reason is not present yet
         )
     }
-
-//    fun parcelVehicleLoading(parcel: Parcel): Boolean {
-//        val parcel = this.parcel.firstOrNull { it == parcel }
-//                ?: throw IllegalArgumentException("Parcel [${parcel.id}] is not part of the order [${this.id}]")
-//
-//        parcel.state = Parcel.State.LOADED
-//
-//        var allSet = true
-//        this.parcel.forEach {
-//            if (it.state == Parcel.State.PENDING) {
-//                allSet = false
-//            }
-//        }
-//
-//        if (allSet && this.state == Order.State.PENDING)
-//            this.state = Order.State.LOADED
-//
-//        return true
-//    }
-
-//    /**
-//     * @param stopList The stopList this method should use to iterate
-//     * @return If a existing stop has been found, the stop is returned. If not, it will be null
-//     */
-//    fun findSuitableStop(stopList: MutableList<Stop>): Stop? {
-//            return stopList.firstOrNull {
-//                it.address.equals(this.getAddressOfInterest())
-//            }
-//
-//        return if (findSuitableStopIndex(stopList) == -1) null else stopList[findSuitableStopIndex(stopList)]
-//    }
-
-
-//    fun findSuitableStopIndex(stopList: MutableList<Stop>): Int {
-//        return stopList.indexOfFirst {
-//            it.address == this.getAddressOfInterest()
-//        }
-//    }
-
 
     /**
      * Loads delivery list data from remote peer into local database

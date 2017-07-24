@@ -88,7 +88,7 @@ class VehicleLoadingScreen : ScreenFragment() {
     private val parcelListAdapterInstance = LazyInstance<
             FlexibleAdapter<
                     FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>
-            >>({
+                    >>({
 
         val headerDelivered = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
                 viewRes = R.layout.item_parcel_header,
@@ -100,29 +100,63 @@ class VehicleLoadingScreen : ScreenFragment() {
                 )
         )
 
-        val flexibleItems = this.orderRepository.entities
-                .flatMap { it.parcels }
-                .map {
-                    val item = FlexibleVmSectionableItem(
-                            viewRes = R.layout.item_parcel,
-                            variableId = BR.parcel,
-                            viewModel = ParcelViewModel(it)
-                    )
+        val headerDamaged = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
+                viewRes = R.layout.item_parcel_header,
+                variableId = BR.header,
+                viewModel = ParcelListHeaderViewModel(
+                        title = this.getText(R.string.damaged).toString(),
+                        amountProperty = this.deliveryList.parcelsDamaged.map { it.count() },
+                        totalAmountProperty = this.deliveryList.parcelTotalAmount.map { it.value }
+                )
+        )
 
-                    item.isEnabled = true
-                    item.isDraggable = true
-                    item.isSwipeable = false
-                    item.header = headerDelivered
+        this.deliveryList.parcelsLoaded
+                .bindToLifecycle(this)
+                .subscribe {
+                    headerDelivered.subItems = it.map {
+                        val item = FlexibleVmSectionableItem(
+                                viewRes = R.layout.item_parcel,
+                                variableId = BR.parcel,
+                                viewModel = ParcelViewModel(it)
+                        )
 
-                    item
+                        item.isEnabled = true
+                        item.isDraggable = true
+                        item.isSwipeable = false
+                        item.header = headerDelivered
+
+                        item
+                    }
                 }
 
-        headerDelivered.isHidden = false
-        headerDelivered.subItems = flexibleItems
+        this.deliveryList.parcelsDamaged
+                .bindToLifecycle(this)
+                .subscribe {
+                    headerDamaged.subItems = it.map {
+                        val item = FlexibleVmSectionableItem(
+                                viewRes = R.layout.item_parcel,
+                                variableId = BR.parcel,
+                                viewModel = ParcelViewModel(it)
+                        )
 
-        val adapter = FlexibleAdapter(listOf(headerDelivered),
-                this,
-                true)
+                        item.isEnabled = true
+                        item.isDraggable = true
+                        item.isSwipeable = false
+                        item.header = headerDamaged
+
+                        item
+                    }
+
+                }
+
+        val adapter = FlexibleAdapter(
+                // Items
+                listOf(
+                        headerDelivered,
+                        headerDamaged
+                ),
+                // Listener
+                this)
 
         adapter.setStickyHeaders(true)
         adapter.collapseAll()

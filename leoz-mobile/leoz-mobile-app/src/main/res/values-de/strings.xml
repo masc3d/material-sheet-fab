@@ -30,6 +30,8 @@
 
     <string name="corresponsing_orders">Zugehörige Aufträge</string>
 
+    <string name="damaged">Beschädigt</string>
+
     <string name="delivered">Zugestellt</string>
 
     <string name="delivery">Zustellung</string>
@@ -123,6 +125,8 @@
 
     <string name="news">Neuigkeiten</string>
 
+    <string name="no_go_back">Nein, zurück</string>
+
     <string name="number_short_no">Nr.</string>
 
     <string name="parcel_damaged">Paket beschädigt</string>
@@ -138,6 +142,8 @@
     <string name="prompt_reinstall">Bitte installieren Sie die Anwendung neu</string>
 
     <string name="prototype">Prototyp</string>
+
+    <string name="question_vehicle_loading_finished">Fahrzeugbeladung abgeschlossen?</string>
 
     <string name="report_bug">Report bug</string>
 
@@ -172,6 +178,8 @@
     <string name="title_activity_delivery">Zustellung</string>
     <string name="title_missing_signature">Unterschrift fehlt</string>
     <string name="title_specify_deliverylist">Geben Sie eine Rollkarten an</string>
+    <string name="title_stop_detailt">Stop Details</string>
+    <string name="title_stop_process">Stop verarbeitung</string>
 
     <string name="to_neighbour">An Nachbar</string>
     <string name="to_postbox">An Briefkasten</string>
@@ -185,9 +193,6 @@
     <string name="version_available">v%s ist verfügbar</string>
 
     <string name="warehouse">Lager</string>
-    <string name="title_stop_detailt">Stop Details</string>
-    <string name="title_stop_process">Stop verarbeitung</string>
-    <string name="no_go_back">Nein, zurück</string>
+
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="question_vehicle_loading_finished">Fahrzeugbeladung abgeschlossen?</string>
 </resources>
