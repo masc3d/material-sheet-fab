@@ -16,16 +16,16 @@ class FlexibleVmSectionableItem<VM>(
         val viewModel: VM
 )
     :
-        ISectionable<FlexibleVmHolder, IHeader<FlexibleVmHolder>>,
+        ISectionable<FlexibleVmHolder, IHeader<FlexibleExpandableVmHolder>>,
         IFlexible<FlexibleVmHolder> by FlexibleVmItem(viewRes, variableId, viewModel) {
 
-    var _header: IHeader<FlexibleVmHolder>? = null
+    var _header: IHeader<FlexibleExpandableVmHolder>? = null
 
-    override fun setHeader(header: IHeader<FlexibleVmHolder>?) {
+    override fun setHeader(header: IHeader<FlexibleExpandableVmHolder>?) {
         _header = header
     }
 
-    override fun getHeader(): IHeader<FlexibleVmHolder>? {
+    override fun getHeader(): IHeader<FlexibleExpandableVmHolder>? {
         return _header
     }
 
