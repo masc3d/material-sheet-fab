@@ -43,6 +43,9 @@ class FlexibleExpandableVmItem<EVM, IVM>(
         if (view is BlurView) {
             val rootView = adapter.recyclerView
 
+            // Remove background. it's commonly only set for design preview, as blur view uses custom attribute `blurOverlayColor`
+            view.background = null
+
             view.setupWith(rootView)
                     .windowBackground(adapter.recyclerView.background)
                     .blurAlgorithm(RenderScriptBlur(view.context))
