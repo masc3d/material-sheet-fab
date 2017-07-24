@@ -78,7 +78,6 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
 
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
         this.title = "Delivery Stops"
-        this.headerImage = R.drawable.img_parcels_1a
         this.aidcEnabled = true
     }
 

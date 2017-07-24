@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.model.entity
 import android.databinding.Bindable
 import android.databinding.Observable
 import io.requery.*
+import org.deku.leoz.mobile.data.BR
 import sx.android.databinding.BaseRxObservable
 
 /**
@@ -11,8 +12,15 @@ import sx.android.databinding.BaseRxObservable
 @Entity
 @Table(name = "parcel")
 abstract class Parcel : BaseRxObservable(), Persistable, Observable {
+    companion object {}
 
-    companion object
+    enum class State {
+        PENDING, LOADED, MISSING
+    }
+
+    enum class DeliveryState {
+        PENDING, DELIVERED, NOTDELIVERED
+    }
 
     @get:Key @get:Generated
     abstract val id: Int
@@ -22,15 +30,18 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var width: Double
     abstract var weight: Double
     @get:Bindable
-    abstract var state: Parcel.State
+    abstract var loadingState: State
+    @get:Bindable
+    abstract var deliveryState: DeliveryState
+    @get:Bindable
+    abstract var isDamaged: Boolean
 
     @get:Column(name = "`order`", nullable = true)
     @get:ManyToOne
     abstract var order: Order?
 
-    enum class State {
-        PENDING, LOADED, MISSING, DONE, FAILED
-    }
+
+    val loadingStateProperty by lazy { ObservableRxField<State>(BR.loadingState, { this.loadingState }) }
 }
 
 fun Parcel.Companion.create(
@@ -39,7 +50,6 @@ fun Parcel.Companion.create(
         height: Double = 0.0,
         width: Double = 0.0,
         weight: Double = 0.0,
-        state: Parcel.State = Parcel.State.PENDING,
         order: Order? = null
 ): Parcel {
     return ParcelEntity().also {
@@ -48,7 +58,8 @@ fun Parcel.Companion.create(
         it.height = height
         it.width = width
         it.weight = weight
-        it.state = state
+        it.loadingState = Parcel.State.PENDING
+        it.isDamaged = false
         it.order = order
     }
 }

@@ -13,6 +13,7 @@
         android:id="@+id/uxBlurView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryTransparent"
         app:blurOverlayColor="@color/colorPrimaryTransparent">
 
         <FrameLayout
@@ -24,10 +25,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/parcels"
+                android:text="@{header.title}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
                 />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@{header.amount}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                />
         </FrameLayout>
 
     </eightbitlab.com.blurview.BlurView>

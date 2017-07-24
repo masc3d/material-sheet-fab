@@ -30,14 +30,14 @@ abstract class ObservingRepository<T : Persistable>(
             .subscribeBy(
                     onNext = {
                         val entities = it.toList()
-                        log.trace("ENTITIES CHANGED [${this.entityType.java.simpleName}][${entities.count()}]")
+                        log.trace("ENTITIES CHANGED ${this.entityType.java.simpleName}, amount ${entities.count()}")
                         this.entitiesProperty.set(entities)
 
                         entities.forEach {
                             if (it is Observable) {
                                 it.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
                                     override fun onPropertyChanged(sender: Observable, propertyId: Int) {
-                                        log.trace("ENTITY [${this@ObservingRepository.entityType.java.simpleName}]  FIELD CHANGED [${propertyId}]")
+                                        log.trace("ENTITY ${this@ObservingRepository.entityType.java.simpleName}, FIELD ${propertyId}")
                                     }
                                 })
                             }

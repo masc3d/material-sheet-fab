@@ -490,7 +490,7 @@ class Delivery {
         var count = 0
         count += orderList.filter { it.state == Order.State.PENDING }
                 .flatMap { it.parcels }
-                .filter { it.state == Parcel.State.PENDING }.size
+                .filter { it.deliveryState == Parcel.DeliveryState.PENDING }.size
         return count
     }
 
@@ -498,7 +498,7 @@ class Delivery {
         var count = 0
         count += orderList.filter { it.state == Order.State.FAILED || it.state == Order.State.LOADED }
                 .flatMap { it.parcels }
-                .filter { it.state == Parcel.State.FAILED || it.state == Parcel.State.LOADED }.size
+                .filter { it.deliveryState == Parcel.DeliveryState.NOTDELIVERED }.size
         return count
     }
 }

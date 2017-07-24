@@ -10,6 +10,7 @@ import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
+import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
 import org.deku.leoz.model.EventNotDeliveredReason
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.rx.ObservableLazyRxProperty
 import sx.rx.ObservableRxProperty
-import sx.rx.observableLazyRx
 import sx.rx.toHotReplay
 
 /**
@@ -34,44 +34,68 @@ class DeliveryList {
     //region Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     //endregion
 
     //region Counters
-    val orderTotalAmountProperty = ObservableLazyRxProperty({
+    val orderTotalAmount = ObservableLazyRxProperty({
         this.orderRepository.entities.size
     })
 
-    val stopTotalAmountProperty = ObservableLazyRxProperty({
+    val stopTotalAmount = ObservableLazyRxProperty({
         this.stopRepository.entities.size
     })
 
-    val parcelTotalAmountProperty = ObservableLazyRxProperty({
+    val parcelTotalAmount = ObservableLazyRxProperty({
         this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.count()
     })
 
-    val totalWeightProperty = ObservableLazyRxProperty({
+    val totalWeight = ObservableLazyRxProperty({
         this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.sumByDouble { it.weight }
     })
 
-    val orderAmountProperty = ObservableRxProperty(0)
+    val orderAmount = ObservableRxProperty(0)
 
-    val parcelAmountProperty = ObservableRxProperty(0)
+    val parcelAmount = ObservableRxProperty(0)
 
-    val stopAmountProperty = ObservableRxProperty(0)
+    val stopAmount = ObservableRxProperty(0)
 
-    val weightProperty = ObservableRxProperty(0.0)
+    val weight = ObservableRxProperty(0.0)
     //endregion
+
+    /**
+     * Parcels loaded
+     */
+    val parcelsLoaded = this.parcelRepository.entitiesProperty.map {
+        it.value.filter {
+            it.loadingState == Parcel.State.LOADED
+        }
+    }
+
+    enum class GroupType {
+        Loaded,
+        Damaged,
+        Missing
+    }
 
     init {
         // Re-evaluate counters reactively
         this.orderRepository.entitiesProperty.subscribe {
-            this.orderTotalAmountProperty.reset()
-            this.parcelTotalAmountProperty.reset()
-            this.totalWeightProperty.reset()
+            this.orderTotalAmount.reset()
+            this.parcelTotalAmount.reset()
+            this.totalWeight.reset()
         }
 
         this.stopRepository.entitiesProperty.subscribe {
-            this.stopTotalAmountProperty.reset()
+            this.stopTotalAmount.reset()
+        }
+
+        this.parcelRepository.entitiesProperty.subscribe {
+            it.value.forEach { parcel ->
+                parcel.loadingStateProperty.subscribe {
+                    log.info("Loading state changed ${parcel.number} -> ${it.value}")
+                }
+            }
         }
     }
 

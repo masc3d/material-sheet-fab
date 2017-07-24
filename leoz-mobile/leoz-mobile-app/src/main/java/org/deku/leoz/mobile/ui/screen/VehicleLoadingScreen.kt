@@ -3,7 +3,6 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
-import android.databinding.ObservableField
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -22,7 +21,6 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.device.Tone
-import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 
@@ -57,26 +55,26 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         val stopCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_location,
-                amount = this.deliveryList.stopAmountProperty.map { it.value.toString() }.toField(),
-                totalAmount = this.deliveryList.stopTotalAmountProperty.map { it.value.toString() }.toField()
+                amount = this.deliveryList.stopAmount.map { it.value.toString() }.toField(),
+                totalAmount = this.deliveryList.stopTotalAmount.map { it.value.toString() }.toField()
         )
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_file_document,
-                amount = this.deliveryList.orderAmountProperty.map { it.value.toString() }.toField(),
-                totalAmount = this.deliveryList.orderTotalAmountProperty.map { it.value.toString() }.toField()
+                amount = this.deliveryList.orderAmount.map { it.value.toString() }.toField(),
+                totalAmount = this.deliveryList.orderTotalAmount.map { it.value.toString() }.toField()
         )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_closed,
-                amount = this.deliveryList.parcelAmountProperty.map { it.value.toString() }.toField(),
-                totalAmount = this.deliveryList.parcelTotalAmountProperty.map { it.value.toString() }.toField()
+                amount = this.deliveryList.parcelAmount.map { it.value.toString() }.toField(),
+                totalAmount = this.deliveryList.parcelTotalAmount.map { it.value.toString() }.toField()
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_scale,
-                amount = this.deliveryList.weightProperty.map { "${it.value.format(2)}kg" }.toField(),
-                totalAmount = this.deliveryList.totalWeightProperty.map { "${it.value.format(2)}kg" }.toField()
+                amount = this.deliveryList.weight.map { "${it.value.format(2)}kg" }.toField(),
+                totalAmount = this.deliveryList.totalWeight.map { "${it.value.format(2)}kg" }.toField()
         )
     }
 
@@ -92,11 +90,13 @@ class VehicleLoadingScreen : ScreenFragment() {
                     FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>
             >>({
 
-        val header1 = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
+        val headerDelivered = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
                 viewRes = R.layout.item_parcel_header,
                 variableId = BR.header,
                 viewModel = ParcelListHeaderViewModel(
-                        this.deliveryList
+                        title = this.getText(R.string.delivered).toString(),
+                        amountProperty = this.deliveryList.parcelsLoaded.map { it.count() },
+                        totalAmountProperty = this.deliveryList.parcelTotalAmount.map { it.value }
                 )
         )
 
@@ -112,15 +112,15 @@ class VehicleLoadingScreen : ScreenFragment() {
                     item.isEnabled = true
                     item.isDraggable = true
                     item.isSwipeable = false
-                    item.header = header1
+                    item.header = headerDelivered
 
                     item
                 }
 
-        header1.isHidden = false
-        header1.subItems = flexibleItems
+        headerDelivered.isHidden = false
+        headerDelivered.subItems = flexibleItems
 
-        val adapter = FlexibleAdapter(listOf(header1),
+        val adapter = FlexibleAdapter(listOf(headerDelivered),
                 this,
                 true)
 
@@ -136,6 +136,8 @@ class VehicleLoadingScreen : ScreenFragment() {
         super.onCreate(savedInstanceState)
 
         this.title = "Vehicle loading"
+        this.headerImage = R.drawable.img_parcels_1a
+        this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
 
         this.aidcEnabled = true
     }
@@ -252,11 +254,11 @@ class VehicleLoadingScreen : ScreenFragment() {
                     order != null -> {
                         //Continue
                         val parcel = order.parcels.first { it.number == unitNumber.value }
-                        log.debug("Parcel ID [${parcel.id}] Order ID [${order.id}] state [${parcel.state}]")
+                        log.debug("Parcel ID [${parcel.id}] Order ID [${order.id}] state [${parcel.loadingState}]")
 //                if (order.first().parcelVehicleLoading(parcel)) {
 //                    updateLoadedParcelList(mutableListOf(parcel))
 //                }
-                        log.debug("State after processing [${parcel.state}]")
+                        log.debug("State after processing [${parcel.loadingState}]")
                     }
                     else -> {
                         //Error, order could not be found
