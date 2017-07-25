@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType
 interface DeliveryListService {
     companion object {
         //const val ORDER_ID = "order-id"
-        const val ID = "ID"
+        const val ID = "id"
         //const val DRIVER = "driver"
         const val DELIVERY_DATE = "delivery-date"
     }
@@ -34,7 +34,7 @@ interface DeliveryListService {
     @Path("/{${ID}}")
     @ApiOperation(value = "Get delivery list by id")
     fun getById(
-            @PathParam(ID) @ApiParam(example = "10730061", value = "Delivery list ID", required = true) id: Long
+            @PathParam(ID) @ApiParam(example = "10730061", value = "Delivery list id", required = true) id: Long
     ): DeliveryList
 
     @GET
@@ -47,21 +47,21 @@ interface DeliveryListService {
 
     @ApiModel(description = "Delivery list")
     data class DeliveryList(
-            @ApiModelProperty(example = "10730061", position = 10, required = true, value = "DeliveryListID")
+            @ApiModelProperty(example = "10730061", position = 10, required = true, value = "Delivery list id")
             var id: Long = 0,
             @ApiModelProperty(example = "2017-06-20", position = 20, required = true)
             var info: DeliveryListInfo = DeliveryListInfo(),
-            @ApiModelProperty(position = 30, required = true, value = "Orders within deliverylist")
+            @ApiModelProperty(position = 30, required = true, value = "Orders within delivery list")
             var orders: List<OrderService.Order> = listOf(),
-            @ApiModelProperty(position = 40, required = true, value = "Stoplist")
+            @ApiModelProperty(position = 40, required = true, value = "Stop list")
             var stops: List<Stop> = listOf()
     )
 
     @ApiModel(description = "Task")
     data class Task(
-            @ApiModelProperty(example = "12345678", position = 10, required = true, value = "order id")
+            @ApiModelProperty(example = "12345678", position = 10, required = true, value = "Order id")
             var orderId: Long = 0,
-            @ApiModelProperty(example = "Pickup", position = 20, required = true, value = "stoptype")
+            @ApiModelProperty(example = "Pickup", position = 20, required = true, value = "Stop type")
             var stopType: Type = Task.Type.DELIVERY
     ) {
         enum class Type {
@@ -72,15 +72,14 @@ interface DeliveryListService {
 
     @ApiModel(description = "Stop")
     data class Stop(
-            //@ApiModelProperty-(example = "12345678", position = 10, required = true, value = "order id")
             var tasks: List<Task> = listOf()
     )
 
     @ApiModel(description = "Delivery list info")
     data class DeliveryListInfo(
-            @ApiModelProperty(example = "10729637", position = 10, required = true, value = "DeliveryListID")
+            @ApiModelProperty(example = "10729637", position = 10, required = true, value = "Delivery list id")
             var id: Long = 0,
-            @ApiModelProperty(example = "2017-06-20", position = 20, required = true, value = "Date")
+            @ApiModelProperty(example = "2017-06-20", position = 20, required = true, value = "Delivery list date")
             var date: ShortDate = ShortDate()
     )
 
