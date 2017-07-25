@@ -1,5 +1,6 @@
 package sx.android.ui.flexibleadapter
 
+import android.databinding.DataBindingUtil
 import android.view.View
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -58,6 +59,4 @@ class FlexibleExpandableVmItem<EVM, IVM>(
     override fun getLayoutRes(): Int {
         return this.viewRes
     }
-
-
 }

@@ -22,6 +22,5 @@ class FlexibleVmHolder(
 
     init {
         this.binding = DataBindingUtil.bind(view)
-        this.binding.executePendingBindings()
     }
 }
