@@ -66,7 +66,7 @@ class DeliveryList {
     /**
      * Loaded parcels
      */
-    val parcelsLoaded = this.parcelRepository.entitiesProperty.map {
+    val loadedParcels = parcelRepository.entitiesProperty.map {
         it.value.filter {
             // TODO
             true
@@ -77,7 +77,7 @@ class DeliveryList {
     /**
      * Damaged parcels
      */
-    val parcelsDamaged = this.parcelRepository.entitiesProperty.map {
+    val damagedParcels = parcelRepository.entitiesProperty.map {
         it.value.filter {
             it.isDamaged
         }
@@ -123,6 +123,8 @@ class DeliveryList {
             // Retrieve delivery list
             val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
+
+            this.orderRepository.removeAll().blockingGet()
 
             // Process orders
             run {

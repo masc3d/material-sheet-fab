@@ -15,8 +15,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryTransparent"
-        app:blurOverlayColor="@color/colorPrimaryTransparent"
+        app:blurOverlayColor="@android:color/transparent"
         >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/header_background_selector"
+            android:alpha="0.6"
+            />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -35,15 +42,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{header.title, default=`Parcels`}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:text="@{header.amount, default=`0 / 0`}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
+                android:text="@{header.amountText, default=`00`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 />
         </FrameLayout>
 

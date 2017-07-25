@@ -4,8 +4,8 @@ package org.deku.leoz.mobile.ui.screen
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
@@ -16,6 +16,8 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
+import eu.davidea.flexibleadapter.Payload
+import eu.davidea.flexibleadapter.helpers.ActionModeHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
@@ -97,9 +99,9 @@ class VehicleLoadingScreen : ScreenFragment() {
                 variableId = BR.header,
                 viewModel = ParcelListHeaderViewModel(
                         title = this.getText(R.string.loaded).toString(),
-                        amountProperty = this.deliveryList.parcelsLoaded.map { it.count() },
-                        totalAmountProperty = this.deliveryList.parcelTotalAmount.map { it.value }
-                )
+                        amount = this.deliveryList.loadedParcels.map { it.count() }
+                ),
+                isExpandableOnClick = false
         )
 
         val headerDamaged = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
@@ -107,13 +109,13 @@ class VehicleLoadingScreen : ScreenFragment() {
                 variableId = BR.header,
                 viewModel = ParcelListHeaderViewModel(
                         title = this.getText(R.string.damaged).toString(),
-                        amountProperty = this.deliveryList.parcelsDamaged.map { it.count() },
-                        totalAmountProperty = this.deliveryList.parcelTotalAmount.map { it.value }
-                )
+                        amount = this.deliveryList.damagedParcels.map { it.count() }
+                ),
+                isExpandableOnClick = false
         )
 
-        headerDamaged.isHidden = false
-        headerLoaded.isHidden = false
+        headerDamaged.isSelectable = true
+        headerLoaded.isSelectable = true
 
         val adapter = FlexibleAdapter(
                 // Items
@@ -125,7 +127,13 @@ class VehicleLoadingScreen : ScreenFragment() {
                 this,
                 true)
 
-        this.deliveryList.parcelsLoaded
+        adapter.addListener(FlexibleAdapter.OnItemClickListener { position ->
+            adapter.toggleSelection(position)
+            log.info("ITEM SELECTED [${adapter.isSelected(position)}]")
+            true
+        })
+
+        this.deliveryList.loadedParcels
                 .bindToLifecycle(this)
                 .observeOnMainThread()
                 .subscribe {
@@ -142,6 +150,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                         item.isEnabled = true
                         item.isDraggable = false
                         item.isSwipeable = false
+                        item.isSelectable = false
                         item.header = headerLoaded
 
                         item
@@ -150,7 +159,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                     adapter.updateItem(headerLoaded)
                 }
 
-        this.deliveryList.parcelsDamaged
+        this.deliveryList.damagedParcels
                 .bindToLifecycle(this)
                 .observeOnMainThread()
                 .subscribe {
@@ -167,6 +176,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                         item.isEnabled = true
                         item.isDraggable = false
                         item.isSwipeable = false
+                        item.isSelectable = false
                         item.header = headerDamaged
 
                         item
@@ -175,11 +185,12 @@ class VehicleLoadingScreen : ScreenFragment() {
                     adapter.updateItem(headerDamaged)
                 }
 
-
-
         adapter.setStickyHeaders(true)
         adapter.collapseAll()
         adapter.showAllHeaders()
+
+        adapter.mode = FlexibleAdapter.MODE_SINGLE
+        adapter.toggleSelection(1)
 
         adapter
     })
