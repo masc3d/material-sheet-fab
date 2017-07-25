@@ -5,7 +5,6 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
@@ -16,8 +15,6 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
-import eu.davidea.flexibleadapter.Payload
-import eu.davidea.flexibleadapter.helpers.ActionModeHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
@@ -94,15 +91,13 @@ class VehicleLoadingScreen : ScreenFragment() {
                     FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>
                     >>({
 
-        val headerLoadedVm = ParcelListHeaderViewModel(
-                title = this.getText(R.string.loaded).toString(),
-                amount = this.deliveryList.loadedParcels.map { it.count() }
-        )
-
         val headerLoaded = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
                 viewRes = R.layout.item_parcel_header,
                 variableId = BR.header,
-                viewModel = headerLoadedVm,
+                viewModel = ParcelListHeaderViewModel(
+                        title = this.getText(R.string.loaded).toString(),
+                        amount = this.deliveryList.loadedParcels.map { it.count() }
+                ),
                 isExpandableOnClick = false
         )
 
@@ -116,30 +111,32 @@ class VehicleLoadingScreen : ScreenFragment() {
                 isExpandableOnClick = false
         )
 
-        headerDamaged.isSelectable = true
-        headerLoaded.isSelectable = true
+        val headers = listOf(
+                headerLoaded,
+                headerDamaged
+        )
 
         val adapter = FlexibleAdapter(
                 // Items
-                listOf(
-                        headerLoaded,
-                        headerDamaged
-                ),
+                headers,
                 // Listener
                 this,
                 true)
 
-        headerLoadedVm.clickedEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    // TODO: no toggle and inconsistent overloads in flexibleadpater. add expansion methods to clean this up
-                    val position = adapter.getGlobalPositionOf(headerLoaded)
-                    if (adapter.isExpanded(position)) {
-                        adapter.collapse(position)
-                    } else {
-                        adapter.expand(position)
+        headers.forEach { header ->
+            header.isSelectable = true
+            header.viewModel.expandClickedEvent
+                    .bindUntilEvent(this, FragmentEvent.PAUSE)
+                    .subscribe {
+                        // TODO: no toggle and inconsistent overloads in flexibleadpater. add expansion methods to clean this up
+                        val position = adapter.getGlobalPositionOf(header)
+                        if (adapter.isExpanded(position)) {
+                            adapter.collapse(position)
+                        } else {
+                            adapter.expand(position)
+                        }
                     }
-                }
+        }
 
         // TODO: unreliable. need to override flexibleadapter for proper reactive event
         adapter.addListener(FlexibleAdapter.OnItemClickListener { position ->
@@ -147,7 +144,7 @@ class VehicleLoadingScreen : ScreenFragment() {
 
             // Select & collapse
             adapter.toggleSelection(position)
-            adapter.collapse(position)
+            adapter.collapseAll()
             true
         })
 
@@ -208,6 +205,7 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         adapter.setStickyHeaders(true)
         adapter.showAllHeaders()
+        adapter.setAutoCollapseOnExpand(true)
         adapter.collapseAll()
 
         // TODO: bug preventing expansion of sections when `toggleSelection` is not deferred initially

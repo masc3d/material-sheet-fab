@@ -1,12 +1,9 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
-import android.databinding.ObservableField
 import android.view.View
 import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
-import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
 
 /**
@@ -22,12 +19,12 @@ class ParcelListHeaderViewModel(
 )
     : BaseObservable() {
 
-    private val clickedEventSubject = PublishSubject.create<Unit>()
-    val clickedEvent = clickedEventSubject.hide()
+    private val expandClickedEventSubject = PublishSubject.create<Unit>()
+    val expandClickedEvent = expandClickedEventSubject.hide()
 
     val amountText = amount.map { it.toString() }.toField()
 
     fun onClick(view: View) {
-        clickedEventSubject.onNext(Unit)
+        expandClickedEventSubject.onNext(Unit)
     }
 }

@@ -55,14 +55,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/margin"
                     android:text="@{header.amountText, default=`0`}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/icon_size_large"
+                    android:layout_height="@dimen/icon_size_large"
+                    android:layout_gravity="center_vertical"
                     android:onClick="@{header::onClick}"
                     android:src="@drawable/ic_expand"
                     android:tint="@color/dark_gray"
