@@ -116,6 +116,8 @@
 
     <string name="load_delivery_list">Load delivery list</string>
 
+    <string name="loaded">Loaded</string>
+
     <string name="login" translatable="false">Login</string>
     <string name="login_pending">Authenticating</string>
 
