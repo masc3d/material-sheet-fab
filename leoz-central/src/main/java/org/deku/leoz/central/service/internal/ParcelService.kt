@@ -45,7 +45,7 @@ open class ParcelServiceV1 :
 
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
 
-        val events = message.dataPoints?.toList()
+        val events = message.events?.toList()
                 ?: throw DefaultProblem(
                 detail = "Missing data",
                 status = Response.Status.BAD_REQUEST)
@@ -55,38 +55,39 @@ open class ParcelServiceV1 :
         events.forEach {
             val r: TblstatusRecord
             r = dslContext.newRecord(Tables.TBLSTATUS)
-            r.packstuecknummer = it.parcelScan.toDouble()
+            r.packstuecknummer = it.parcelNumber.toDouble()
 //            r.erzeugerstation = it.eventValue.toString()
             r.datum = SimpleDateFormat("yyyyMMdd").parse(it.time.toLocalDate().toString()).toString()
             r.zeit = SimpleDateFormat("HHmm").parse(it.time.toLocalDate().toString()).toString()
             r.poslat = it.latitude
             r.poslong = it.longitude
 
-            if (it.evtReasonDeliveredNormal != null) {
-                r.text = (it.evtReasonDeliveredNormal as ParcelServiceV1.EvtReasonDeliveredNormal).nameRecipient
+            // TODO: check mainly for event/reason, then check for additional info structures as applicable
+            if (it.deliveredInfo != null) {
+                r.text = (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).recipient
                 r.kzStatuserzeuger = "E"
                 r.kzStatus = 4.toUInteger()
-                saveSignature(it.time, (it.evtReasonDeliveredNormal as ParcelServiceV1.EvtReasonDeliveredNormal).signatureDelivery, it.parcelScan, message.nodeId)
+                saveSignature(it.time, (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).signature, it.parcelNumber, message.nodeId)
             }
-            if (it.evtReasonDeliveredNeighbor != null) {
+            if (it.deliveredAtNeighborInfo != null) {
                 //r.text = (it.evtResDeliverdNeighbor as ParcelServiceV1.EvtResDeliveredNeighbor).nameNeighbor
-                val neighborEvent = it.evtReasonDeliveredNeighbor
-                r.text = neighborEvent?.nameNeighbor ?: "" + " " + neighborEvent?.addressNeighbor ?: ""
+                val neighborEvent = it.deliveredAtNeighborInfo
+                r.text = neighborEvent?.name ?: "" + " " + neighborEvent?.address ?: ""
                 r.kzStatuserzeuger = "E"
                 r.kzStatus = 4.toUInteger()
-                saveSignature(it.time, (it.evtReasonDeliveredNeighbor as ParcelServiceV1.EvtReasonDeliveredNeighbor).signatureNeighbor, it.parcelScan, message.nodeId)
+                saveSignature(it.time, (it.deliveredAtNeighborInfo as ParcelServiceV1.DeliveredAtNeighborInfo).signature, it.parcelNumber, message.nodeId)
             }
-            if (it.evtReasonNotDeliveredRefuse != null) {
-                r.infotext = (it.evtReasonNotDeliveredRefuse as ParcelServiceV1.EvtReasonNotDeliveredRefuse).inputWhoWhy
+            if (it.notDeliveredRefusedInfo != null) {
+                r.infotext = (it.notDeliveredRefusedInfo as ParcelServiceV1.NotDeliveredRefusedInfo).cause
                 r.kzStatuserzeuger = "E"
                 r.kzStatus = 8.toUInteger()
                 r.fehlercode = 99.toUInteger()
             }
-            if (it.evtReasonNotDeliveredWrongAddress != null) {
-                r.kzStatuserzeuger = "E"
-                r.kzStatus = 8.toUInteger()
-                r.fehlercode = it.evtReasonNotDeliveredWrongAddress?.eventReason?.toUInteger() ?: 0.toUInteger()
-            }
+//            if (it.evtReasonNotDeliveredWrongAddress != null) {
+//                r.kzStatuserzeuger = "E"
+//                r.kzStatus = 8.toUInteger()
+//                r.fehlercode = it.evtReasonNotDeliveredWrongAddress?.eventReason?.toUInteger() ?: 0.toUInteger()
+//            }
             parcelRepository.saveEvent(r)
         }
     }

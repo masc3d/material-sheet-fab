@@ -11,10 +11,10 @@ import javax.ws.rs.core.MediaType
 /**
  * Created by JT on 17.07.17.
  */
-@Path("internal/v1/event")
+@Path("internal/v1/parcel")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Event service")
+@Api(value = "Parcel service")
 interface ParcelServiceV1 {
     companion object {
         const val EVENT = 1
@@ -27,7 +27,7 @@ interface ParcelServiceV1 {
     data class ParcelMessage(
             var userId: Int? = null,
             var nodeId: String? = null,
-            var dataPoints: Array<Event>? = null
+            var events: Array<Event>? = null
     )
 
     /**
@@ -35,49 +35,32 @@ interface ParcelServiceV1 {
      */
     @Serializable(0x34fd1e3a4992bb)
     data class Event(
+            val event: Int = 0,
+            val reason: Int = 0,
             val parcelId: Int = 0,
-            val parcelScan: String = "",
+            val parcelNumber: String = "",
             val time: Date = Date(),
             val latitude: Double? = null,
             val longitude: Double? = null,
 
-            val evtReasonDeliveredNormal: EvtReasonDeliveredNormal? = null,
-            val evtReasonDeliveredNeighbor: EvtReasonDeliveredNeighbor? = null,
-            val evtReasonNotDeliveredAbsent: EvtReasonNotDeliveredAbsent? = null,
-            val evtReasonNotDeliveredRefuse: EvtReasonNotDeliveredRefuse? = null,
-            val evtReasonNotDeliveredWrongAddress: EvtReasonNotDeliveredWrongAddress? = null
+            val deliveredInfo: DeliveredInfo? = null,
+            val deliveredAtNeighborInfo: DeliveredAtNeighborInfo? = null,
+            val notDeliveredRefusedInfo: NotDeliveredRefusedInfo? = null
     )
 
-    data class EvtReasonDeliveredNormal(
-            val event: Int = 1,
-            val eventReason: Int = 1,
-            val nameRecipient: String? = null,
-            val signatureDelivery: String? = null
+    data class DeliveredInfo(
+            val recipient: String? = null,
+            val signature: String? = null
     )
 
-    data class EvtReasonDeliveredNeighbor(
-            val event: Int = 1,
-            val eventReason: Int = 2,
-            val nameNeighbor: String? = null,
-            val addressNeighbor: String? = null,
-            val signatureNeighbor: String? = null
+    data class DeliveredAtNeighborInfo(
+            val name: String? = null,
+            val address: String? = null,
+            val signature: String? = null
     )
 
-    data class EvtReasonNotDeliveredAbsent(
-            val event: Int = 2,
-            val eventReason: Int = 500
-    )
-
-    data class EvtReasonNotDeliveredRefuse(
-            val event: Int = 2,
-            val eventReason: Int = 503,
-            val inputWhoWhy: String? = null
-    )
-
-    data class EvtReasonNotDeliveredWrongAddress(
-            val event: Int = 2,
-            val eventReason: Int = 506
-
+    data class NotDeliveredRefusedInfo(
+            val cause: String? = null
     )
 }
 
