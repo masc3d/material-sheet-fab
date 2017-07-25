@@ -1,13 +1,10 @@
 package sx.android.ui.flexibleadapter
 
-import android.databinding.DataBindingUtil
 import android.view.View
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.*
-import eu.davidea.viewholders.ExpandableViewHolder
-import eu.davidea.viewholders.FlexibleViewHolder
 
 /**
  * Flexible expandable view model item
@@ -17,7 +14,8 @@ class FlexibleExpandableVmItem<EVM, IVM>(
         val viewRes: Int,
         val variableId: Int,
         val viewModel: EVM,
-        val blurRadius: Float = 1F
+        val blurRadius: Float = 1F,
+        val isExpandableOnClick: Boolean = true
 )
     : AbstractExpandableHeaderItem<FlexibleExpandableVmHolder, FlexibleVmSectionableItem<IVM>>() {
 
@@ -53,7 +51,11 @@ class FlexibleExpandableVmItem<EVM, IVM>(
                     .blurRadius(this.blurRadius)
         }
 
-        return FlexibleExpandableVmHolder(view, adapter, true)
+        return FlexibleExpandableVmHolder(
+                view = view,
+                adapter = adapter,
+                isStickyHeader = true,
+                isExpandableOnClick = isExpandableOnClick)
     }
 
     override fun getLayoutRes(): Int {
