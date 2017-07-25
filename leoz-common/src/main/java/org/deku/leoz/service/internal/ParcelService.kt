@@ -41,36 +41,43 @@ interface ParcelServiceV1 {
             val latitude: Double? = null,
             val longitude: Double? = null,
 
-            val evtResDeliverdNormal: EvtResDeliverdNormal? = null,
-            val evtResDeliverdNeighbor: EvtResDeliverdNeighbor? = null,
-            val evtResNotDeliverdAbsend: EvtResNotDeliverdAbsend? = null,
-            val evtResNotDeliverdRefuse: EvtResNotDeliverdRefuse? = null
+            val evtReasonDeliveredNormal: EvtReasonDeliveredNormal? = null,
+            val evtReasonDeliveredNeighbor: EvtReasonDeliveredNeighbor? = null,
+            val evtReasonNotDeliveredAbsent: EvtReasonNotDeliveredAbsent? = null,
+            val evtReasonNotDeliveredRefuse: EvtReasonNotDeliveredRefuse? = null,
+            val evtReasonNotDeliveredWrongAddress: EvtReasonNotDeliveredWrongAddress? = null
     )
 
-    data class EvtResDeliverdNormal(
+    data class EvtReasonDeliveredNormal(
             val event: Int = 1,
-            val evventReason: Int = 1,
+            val eventReason: Int = 1,
             val nameRecipient: String? = null,
             val signatureDelivery: String? = null
     )
 
-    data class EvtResDeliverdNeighbor(
+    data class EvtReasonDeliveredNeighbor(
             val event: Int = 1,
-            val evventReason: Int = 2,
+            val eventReason: Int = 2,
             val nameNeighbor: String? = null,
             val addressNeighbor: String? = null,
             val signatureNeighbor: String? = null
     )
 
-    data class EvtResNotDeliverdAbsend(
+    data class EvtReasonNotDeliveredAbsent(
             val event: Int = 2,
-            val evventReason: Int = 500
+            val eventReason: Int = 500
     )
 
-    data class EvtResNotDeliverdRefuse(
+    data class EvtReasonNotDeliveredRefuse(
             val event: Int = 2,
-            val evventReason: Int = 503,
+            val eventReason: Int = 503,
             val inputWhoWhy: String? = null
+    )
+
+    data class EvtReasonNotDeliveredWrongAddress(
+            val event: Int = 2,
+            val eventReason: Int = 506
+
     )
 }
 
