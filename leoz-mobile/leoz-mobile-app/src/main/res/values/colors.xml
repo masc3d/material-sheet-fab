@@ -11,4 +11,5 @@
     <color name="colorRed">#ed4e40</color>
     <color name="colorGreen">#28d228</color>
     <color name="colorYellow">#dede00</color>
+    <color name="colorBlurOverlay">#aacccccc</color>
 </resources>

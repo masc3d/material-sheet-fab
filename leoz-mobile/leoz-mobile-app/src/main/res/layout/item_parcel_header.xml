@@ -14,15 +14,14 @@
         android:id="@+id/uxBlurView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryTransparent"
-        app:blurOverlayColor="@android:color/transparent"
+        app:blurOverlayColor="@color/colorBlurOverlay"
         >
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:alpha="0.75"
             android:background="@drawable/header_background_selector"
-            android:alpha="0.6"
             />
 
         <FrameLayout
@@ -41,17 +40,37 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:text="@{header.title, default=`Parcels`}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:text="@{header.amountText, default=`00`}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                />
+                android:layout_gravity="end|center_vertical"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:text="@{header.amountText, default=`0`}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{header::onClick}"
+                    android:src="@drawable/ic_expand"
+                    android:tint="@color/dark_gray"
+                    >
+
+                </ImageView>
+
+            </LinearLayout>
         </FrameLayout>
 
 

@@ -68,9 +68,8 @@ class DeliveryList {
      */
     val loadedParcels = parcelRepository.entitiesProperty.map {
         it.value.filter {
-            // TODO
             true
-//            it.loadingState == Parcel.State.LOADED
+            //it.loadingState == Parcel.State.LOADED
         }
     }
 
