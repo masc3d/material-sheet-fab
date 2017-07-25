@@ -62,17 +62,30 @@ open class ParcelServiceV1 :
             r.poslat = it.latitude
             r.poslong = it.longitude
 
-            if (it.evtResDeliverdNormal != null) {
-                r.text = (it.evtResDeliverdNormal as ParcelServiceV1.EvtResDeliverdNormal).nameRecipient
-                r.kzStatuserzeuger="E"
-                r.kzStatus=4.toUInteger()
-                saveSignature(it.time,(it.evtResDeliverdNormal as ParcelServiceV1.EvtResDeliverdNormal).signatureDelivery,it.parcelScan,message.nodeId)
+            if (it.evtReasonDeliveredNormal != null) {
+                r.text = (it.evtReasonDeliveredNormal as ParcelServiceV1.EvtReasonDeliveredNormal).nameRecipient
+                r.kzStatuserzeuger = "E"
+                r.kzStatus = 4.toUInteger()
+                saveSignature(it.time, (it.evtReasonDeliveredNormal as ParcelServiceV1.EvtReasonDeliveredNormal).signatureDelivery, it.parcelScan, message.nodeId)
             }
-            if (it.evtResNotDeliverdRefuse != null) {
-                r.infotext = (it.evtResNotDeliverdRefuse as ParcelServiceV1.EvtResNotDeliverdRefuse).inputWhoWhy
-                r.kzStatuserzeuger="E"
-                r.kzStatus=8.toUInteger()
-                r.fehlercode=99.toUInteger()
+            if (it.evtReasonDeliveredNeighbor != null) {
+                //r.text = (it.evtResDeliverdNeighbor as ParcelServiceV1.EvtResDeliveredNeighbor).nameNeighbor
+                val neighborEvent = it.evtReasonDeliveredNeighbor
+                r.text = neighborEvent?.nameNeighbor ?: "" + " " + neighborEvent?.addressNeighbor ?: ""
+                r.kzStatuserzeuger = "E"
+                r.kzStatus = 4.toUInteger()
+                saveSignature(it.time, (it.evtReasonDeliveredNeighbor as ParcelServiceV1.EvtReasonDeliveredNeighbor).signatureNeighbor, it.parcelScan, message.nodeId)
+            }
+            if (it.evtReasonNotDeliveredRefuse != null) {
+                r.infotext = (it.evtReasonNotDeliveredRefuse as ParcelServiceV1.EvtReasonNotDeliveredRefuse).inputWhoWhy
+                r.kzStatuserzeuger = "E"
+                r.kzStatus = 8.toUInteger()
+                r.fehlercode = 99.toUInteger()
+            }
+            if (it.evtReasonNotDeliveredWrongAddress != null) {
+                r.kzStatuserzeuger = "E"
+                r.kzStatus = 8.toUInteger()
+                r.fehlercode = it.evtReasonNotDeliveredWrongAddress?.eventReason?.toUInteger() ?: 0.toUInteger()
             }
             parcelRepository.saveEvent(r)
         }
