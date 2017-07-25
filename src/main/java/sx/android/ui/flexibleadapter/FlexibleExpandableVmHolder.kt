@@ -6,7 +6,6 @@ import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.viewholders.ExpandableViewHolder
-import eu.davidea.viewholders.FlexibleViewHolder
 
 /**
  * Flexible expandable view model holder
@@ -23,6 +22,5 @@ class FlexibleExpandableVmHolder(
 
     init {
         this.binding = DataBindingUtil.bind(view)
-        this.binding.executePendingBindings()
     }
 }
