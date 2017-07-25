@@ -140,6 +140,6 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
 
             // Kryo
-            "com.esotericsoftware:kryo:4.0.0"
+            "com.esotericsoftware:kryo:4.0.1"
     )
 }

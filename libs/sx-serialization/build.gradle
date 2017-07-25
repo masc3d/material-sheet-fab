@@ -37,7 +37,7 @@ dependencies {
 
     compileOnly(
             // Kryo
-            "com.esotericsoftware:kryo:4.0.0",
+            "com.esotericsoftware:kryo:4.0.1",
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
@@ -50,7 +50,7 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "com.esotericsoftware:kryo:4.0.0",
+            "com.esotericsoftware:kryo:4.0.1",
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
             "ch.qos.logback:logback-classic:1.2.3"

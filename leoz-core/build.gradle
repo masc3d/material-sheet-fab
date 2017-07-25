@@ -61,7 +61,7 @@ dependencies {
             // Commons
             "commons-io:commons-io:$v_commons_io",
             // kryo
-            "com.esotericsoftware:kryo:4.0.0",
+            "com.esotericsoftware:kryo:4.0.1",
             "net.java.dev.jna:jna:$v_jna",
             "net.java.dev.jna:jna-platform:$v_jna",
             // YAML
