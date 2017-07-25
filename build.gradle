@@ -43,7 +43,7 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             // Kryo
-            "com.esotericsoftware:kryo:4.0.0"
+            "com.esotericsoftware:kryo:4.0.1"
     )
 
     testCompile(
