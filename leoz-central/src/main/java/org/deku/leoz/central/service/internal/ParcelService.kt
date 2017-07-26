@@ -5,6 +5,8 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.TblstatusRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
+import org.deku.leoz.model.Event
+import org.deku.leoz.model.Reason
 import org.deku.leoz.node.rest.DefaultProblem
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -62,26 +64,36 @@ open class ParcelServiceV1 :
             r.poslat = it.latitude
             r.poslong = it.longitude
 
+            //TODO: Die Werte kz_status und -erzeuger sollten vermutlich über die Enumeration gesetzt werden, damit man die (aktuellen) Primärschlüssel nicht an mehreren Stellen pflegen muss, oder?
+            val eventId = it.event
+            val event = Event.values().find { it.value == eventId }!!
+            r.kzStatuserzeuger = event.creator.toString()
+            r.kzStatus = event.concatId.toUInteger()
+
+            val reasonId = it.reason
+            val reason = Reason.values().find { it.id == reasonId }!!
+            r.fehlercode = reason.oldValue.toUInteger()
+
             // TODO: check mainly for event/reason, then check for additional info structures as applicable
             if (it.deliveredInfo != null) {
                 r.text = (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).recipient
-                r.kzStatuserzeuger = "E"
-                r.kzStatus = 4.toUInteger()
+//                r.kzStatuserzeuger = "E"
+//                r.kzStatus = 4.toUInteger()
                 saveSignature(it.time, (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).signature, it.parcelNumber, message.nodeId)
             }
             if (it.deliveredAtNeighborInfo != null) {
                 //r.text = (it.evtResDeliverdNeighbor as ParcelServiceV1.EvtResDeliveredNeighbor).nameNeighbor
                 val neighborEvent = it.deliveredAtNeighborInfo
                 r.text = neighborEvent?.name ?: "" + " " + neighborEvent?.address ?: ""
-                r.kzStatuserzeuger = "E"
-                r.kzStatus = 4.toUInteger()
+//                r.kzStatuserzeuger = "E"
+//                r.kzStatus = 4.toUInteger()
                 saveSignature(it.time, (it.deliveredAtNeighborInfo as ParcelServiceV1.DeliveredAtNeighborInfo).signature, it.parcelNumber, message.nodeId)
             }
             if (it.notDeliveredRefusedInfo != null) {
                 r.infotext = (it.notDeliveredRefusedInfo as ParcelServiceV1.NotDeliveredRefusedInfo).cause
-                r.kzStatuserzeuger = "E"
-                r.kzStatus = 8.toUInteger()
-                r.fehlercode = 99.toUInteger()
+//                r.kzStatuserzeuger = "E"
+//                r.kzStatus = 8.toUInteger()
+//                r.fehlercode = 99.toUInteger()
             }
 //            if (it.evtReasonNotDeliveredWrongAddress != null) {
 //                r.kzStatuserzeuger = "E"
