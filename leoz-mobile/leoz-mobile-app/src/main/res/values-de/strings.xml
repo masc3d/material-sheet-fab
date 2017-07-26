@@ -196,4 +196,5 @@
 
     <string name="yes_start_tour">Ja, Tour starten</string>
     <string name="loaded">Beladen</string>
+    <string name="reset">Zurücksetzen</string>
 </resources>

@@ -192,6 +192,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="report_bug">Report bug</string>
 
+    <string name="reset">Reset</string>
+
     <string name="service_cash_delivery">Cash on delivery</string>
     <string name="service_department_delivery">Department delivery</string>
     <string name="service_documented_personal">Documented personal delivery</string>

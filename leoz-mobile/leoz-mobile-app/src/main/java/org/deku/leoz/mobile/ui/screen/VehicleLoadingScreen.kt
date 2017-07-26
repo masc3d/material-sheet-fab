@@ -17,12 +17,14 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInputs
 import org.deku.leoz.mobile.device.Tone
+import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -36,6 +38,7 @@ import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
+import sx.Stopwatch
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
@@ -306,8 +309,8 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it.itemId) {
-                        R.id.action_load_deliverylist -> {
-                            this.deliveryList.load(10730061)
+                        R.id.action_reset -> {
+                            this.orderRepository.removeAll()
                         }
                     }
                 }
@@ -341,7 +344,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                                     entries = listOf(
                                             SyntheticInputs.Entry(
                                                     symbologyType = SymbologyType.Interleaved25,
-                                                    data = "10730061"
+                                                    data = DekuDeliveryListNumber.parse("10730061").value.label
                                             )
                                     )
                             ),
@@ -351,7 +354,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                                         val unitNumber = UnitNumber.parse(it.number).value
                                         SyntheticInputs.Entry(
                                                 symbologyType = SymbologyType.Interleaved25,
-                                                data = unitNumber.value
+                                                data = unitNumber.label
                                         )
                                     }
                             )
@@ -363,12 +366,14 @@ class VehicleLoadingScreen : ScreenFragment() {
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         try {
             log.trace("AIDC READ $event")
+
+            val stopwatch = Stopwatch.createStarted()
             val result = Observable.concat(
                     Observable.fromCallable { UnitNumber.parseLabel(event.data) },
                     Observable.fromCallable { DekuDeliveryListNumber.parseLabel(event.data) }
             )
-                    .takeWhile { it.hasError }
-                    .first(Result(error = IllegalArgumentException("Invalid barcode")))
+                    .takeUntil { !it.hasError }
+                    .last(Result(error = IllegalArgumentException("Invalid barcode")))
                     .blockingGet()
 
             when {
@@ -389,44 +394,30 @@ class VehicleLoadingScreen : ScreenFragment() {
                 }
             }
         } catch(e: Exception) {
-            // TODO display error
+            log.error(e.message, e)
         }
     }
 
     fun onDeliveryListNumberInput(deliveryListNumber: DekuDeliveryListNumber) {
-        log.debug("Check for delivery list with id [${deliveryListNumber.value}]")
         deliveryList.load(deliveryListNumber.value.toLong())
                 .bindToLifecycle(this)
-                .subscribe {
-                    if (it.isEmpty()) {
-                        tone.errorBeep()
-                    } else {
+                .subscribeBy(
+                    onNext = {
 
+                    },
+                    onError = {
+                        tone.errorBeep()
                     }
-                }
+                )
     }
 
     fun onUnitNumberInput(unitNumber: UnitNumber) {
-        val order = this.orderRepository.entities.find { it.parcels.any { it.number == unitNumber.value } }
+        log.trace("Unit number input ${unitNumber.value}")
+        val parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
 
-        log.debug("Parcel reference [$unitNumber] orders found [${order}] ")
-
-        when {
-            order != null -> {
-                //Continue
-                val parcel = order.parcels.first { it.number == unitNumber.value }
-                log.debug("Parcel ID [${parcel.id}] Order ID [${order.id}] state [${parcel.loadingState}]")
-                log.debug("State after processing [${parcel.loadingState}]")
-            }
-            else -> {
-                //Error, order could not be found
-                log.warn("No order with a parcel reference [$unitNumber] could be found")
-                if (unitNumber.value.count() <= 9 && unitNumber.value.toLongOrNull() != null) {
-                }
-                tone.errorBeep()
-                //Query order from Central services
-            }
+        if (parcel != null) {
+            parcel.loadingState = Parcel.State.LOADED
+            this.parcelRepository.update(parcel).blockingGet()
         }
     }
-
 }
