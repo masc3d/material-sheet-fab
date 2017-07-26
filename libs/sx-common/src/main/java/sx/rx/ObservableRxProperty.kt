@@ -99,8 +99,8 @@ class ObservableLazyRxProperty<T>(
         this.value.get()
     }
 
-    fun reset() {
-        this.value.reset()
+    fun reset(supplier: (() -> T)? = null) {
+        this.value.reset(supplier)
         this.subject.onNext(Unit)
     }
 
