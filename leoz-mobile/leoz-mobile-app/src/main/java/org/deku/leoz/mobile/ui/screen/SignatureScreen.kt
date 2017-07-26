@@ -27,7 +27,6 @@ import org.deku.leoz.model.EventDeliveredReason
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
-import kotlin.properties.Delegates
 
 /**
  * A simple [Fragment] subclass.
@@ -162,7 +161,7 @@ class SignatureScreen
                             //Clear signature pad
                             this.uxSignaturePad.clear()
                         }
-                        R.id.ux_action_signature_cancel -> {
+                        R.id.action_signature_cancel -> {
                             //Cancel process
                             this.listener?.onSignatureCancelled()
                         }

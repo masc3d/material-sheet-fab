@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
     <item
-        android:id="@+id/ux_action_signature_paper"
+        android:id="@+id/action_signature_paper"
         android:orderInCategory="100"
         android:title="@string/signed_on_paper"
         app:showAsAction="never" />
     <item
-        android:id="@+id/ux_action_signature_cancel"
+        android:id="@+id/action_signature_cancel"
         android:orderInCategory="500"
         android:title="@string/cancel"
         app:showAsAction="never" />

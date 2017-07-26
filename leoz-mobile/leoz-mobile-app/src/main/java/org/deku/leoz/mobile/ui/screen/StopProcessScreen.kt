@@ -28,13 +28,11 @@ import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
-import org.deku.leoz.model.EventDelivered
 import org.deku.leoz.model.EventDeliveredReason
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.ParcelService
@@ -147,7 +145,7 @@ class StopProcessScreen :
 
         val deliverMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
 
-        deliverMenu.findItem(R.id.ux_action_deliver_postbox).isEnabled =
+        deliverMenu.findItem(R.id.action_deliver_postbox).isEnabled =
                 this.stop.tasks.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
 
         this.actionItems = listOf(
@@ -195,10 +193,10 @@ class StopProcessScreen :
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     when (it) {
-                        R.id.ux_action_cancel -> {
+                        R.id.action_cancel -> {
 
                         }
-                        R.id.ux_action_fail -> {
+                        R.id.action_fail -> {
                             val dialog = EventDialog.Builder(this.context)
                                     .events(this.delivery.allowedEvents)
                                     .listener(this)
@@ -212,13 +210,13 @@ class StopProcessScreen :
 
                             dialog.show()
                         }
-                        R.id.ux_action_deliver_neighbour -> {
+                        R.id.action_deliver_neighbour -> {
                             delivery.sign(stop = this.stop, reason = EventDeliveredReason.Neighbor)
                         }
-                        R.id.ux_action_deliver_postbox -> {
+                        R.id.action_deliver_postbox -> {
                             delivery.sign(stop = this.stop, reason = EventDeliveredReason.Postbox)
                         }
-                        R.id.ux_action_deliver_recipient -> {
+                        R.id.action_deliver_recipient -> {
                             delivery.sign(stop = this.stop, reason = EventDeliveredReason.Normal)
                         }
                     }

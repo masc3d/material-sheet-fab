@@ -180,14 +180,14 @@ class StopDetailScreen
                             this.activity.showScreen(StopProcessScreen.create(stop = stop))
                             showDeliverFabButtons()
                         }
-                        R.id.ux_action_navigate -> {
+                        R.id.action_navigate -> {
                             val intent: Intent = Intent(
                                     Intent.ACTION_VIEW,
                                     Uri.parse("google.navigation:q=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}&mode=d")
                             )
                             startActivity(intent)
                         }
-                        R.id.ux_action_contact -> {
+                        R.id.action_contact -> {
                             val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + stop.address.phone))
                             val dialogBuilder = MaterialDialog.Builder(context)
                             dialogBuilder.title("Confirm call")
@@ -200,7 +200,7 @@ class StopDetailScreen
                             }
                             dialogBuilder.build().show()
                         }
-                        R.id.ux_action_fail -> {
+                        R.id.action_fail -> {
                             val dialog = EventDialog.Builder(this.context)
                                     .events(this.delivery.allowedEvents)
                                     .listener(this)
