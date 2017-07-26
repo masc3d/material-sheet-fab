@@ -57,6 +57,13 @@ class UnitNumber private constructor(
         this.value[0] == '8' && this.value[3] == '5'
     }
 
+    /**
+     * Unit number label content including check digit
+     */
+    val label by lazy {
+        "${this.value}${CheckDigits.DEKU.calculate(this.value)}"
+    }
+
     companion object {
         private val log = LoggerFactory.getLogger(UnitNumber::class.java)
 
