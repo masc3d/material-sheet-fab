@@ -96,7 +96,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                 variableId = BR.header,
                 viewModel = ParcelListHeaderViewModel(
                         title = this.getText(R.string.loaded).toString(),
-                        amount = this.deliveryList.loadedParcels.map { it.count() }
+                        amount = this.deliveryList.loadedParcels.map { it.value.count() }
                 ),
                 isExpandableOnClick = false
         )
@@ -106,7 +106,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                 variableId = BR.header,
                 viewModel = ParcelListHeaderViewModel(
                         title = this.getText(R.string.damaged).toString(),
-                        amount = this.deliveryList.damagedParcels.map { it.count() }
+                        amount = this.deliveryList.damagedParcels.map { it.value.count() }
                 ),
                 isExpandableOnClick = false
         )
@@ -164,7 +164,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                     // Need to collapse on complete sublist update to prevent weird glitches
                     adapter.collapseAll()
 
-                    headerLoaded.subItems = it.map {
+                    headerLoaded.subItems = it.value.map {
                         val item = FlexibleVmSectionableItem(
                                 viewRes = R.layout.item_parcel,
                                 variableId = BR.parcel,
@@ -190,7 +190,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                     // Need to collapse on complete sublist update to prevent weird glitches
                     adapter.collapseAll()
 
-                    headerDamaged.subItems = it.map {
+                    headerDamaged.subItems = it.value.map {
                         val item = FlexibleVmSectionableItem(
                                 viewRes = R.layout.item_parcel,
                                 variableId = BR.parcel,

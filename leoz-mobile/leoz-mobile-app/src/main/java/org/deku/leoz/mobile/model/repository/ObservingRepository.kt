@@ -1,12 +1,9 @@
 package org.deku.leoz.mobile.model.repository
 
-import android.databinding.Observable
-import io.reactivex.rxkotlin.subscribeBy
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
-import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.slf4j.LoggerFactory
-import sx.rx.ObservableRxProperty
+import sx.requery.ObservableQuery
 import kotlin.reflect.KClass
 
 /**
@@ -16,35 +13,13 @@ import kotlin.reflect.KClass
 abstract class ObservingRepository<T : Persistable>(
         private val entityType: KClass<T>,
         private val store: KotlinReactiveEntityStore<Persistable>) {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    val entitiesProperty = ObservableRxProperty(listOf<T>())
+    private val query = ObservableQuery<T>(
+            store.select(this.entityType).get()
+    )
+
+    val entitiesProperty = query.result
     val entities by entitiesProperty
-
-    /**
-     * Self observable entity query
-     */
-    private val _entities = store.select(this.entityType)
-            .get()
-            .observableResult()
-            .subscribeBy(
-                    onNext = {
-                        val entities = it.toList()
-                        log.trace("ENTITIES CHANGED ${this.entityType.java.simpleName}, amount ${entities.count()}")
-                        this.entitiesProperty.set(entities)
-
-                        entities.forEach {
-                            if (it is Observable) {
-                                it.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
-                                    override fun onPropertyChanged(sender: Observable, propertyId: Int) {
-                                        log.trace("ENTITY ${this@ObservingRepository.entityType.java.simpleName}, FIELD ${propertyId}")
-                                    }
-                                })
-                            }
-                        }
-                    },
-                    onError = {
-                        log.error(it.message, it)
-                    }
-            )
 }

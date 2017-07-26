@@ -6,6 +6,7 @@ import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
@@ -17,6 +18,7 @@ import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.requery.ObservableQuery
 import sx.rx.ObservableLazyRxProperty
 import sx.rx.ObservableRxProperty
 import sx.rx.toHotReplay
@@ -63,24 +65,29 @@ class DeliveryList {
     val weight = ObservableRxProperty(0.0)
     //endregion
 
-    /**
-     * Loaded parcels
-     */
-    val loadedParcels = parcelRepository.entitiesProperty.map {
-        it.value.filter {
-            true
-            //it.loadingState == Parcel.State.LOADED
-        }
-    }
+    //region Self-observing queries
+    private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
+            db.store.select(ParcelEntity::class)
+                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.LOADED))
+                    .get()
+    )
+
+    private val damagedParcelsQuery = ObservableQuery<ParcelEntity>(
+            db.store.select(ParcelEntity::class)
+                    .where(ParcelEntity.DAMAGED.eq(true))
+                    .get()
+    )
+    //endregion
 
     /**
      * Damaged parcels
      */
-    val damagedParcels = parcelRepository.entitiesProperty.map {
-        it.value.filter {
-            it.isDamaged
-        }
-    }
+    val damagedParcels = damagedParcelsQuery.result
+
+    /**
+     * Loaded parcels
+     */
+    val loadedParcels = loadedParcelsQuery.result
 
     init {
         // Re-evaluate counters reactively
@@ -191,6 +198,14 @@ class DeliveryList {
                     .blockingGet()
 
             log.trace("Delivery list transformed and stored in $sw")
+
+            val parcel = db.store.select(ParcelEntity::class)
+                    .limit(1)
+                    .get().toList().first()
+
+            parcel.loadingState = Parcel.State.LOADED
+
+            db.store.update(parcel).blockingGet()
 
             stops
         }
