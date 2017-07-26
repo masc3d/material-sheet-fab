@@ -125,27 +125,32 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         headers.forEach { header ->
             header.isSelectable = true
-            header.viewModel.expandClickedEvent
-                    .bindUntilEvent(this, FragmentEvent.PAUSE)
-                    .subscribe {
-                        // TODO: no toggle and inconsistent overloads in flexibleadpater. add expansion methods to clean this up
-                        val position = adapter.getGlobalPositionOf(header)
-                        if (adapter.isExpanded(position)) {
-                            adapter.collapse(position)
-                        } else {
-                            adapter.expand(position)
-                        }
-                    }
         }
 
         // TODO: unreliable. need to override flexibleadapter for proper reactive event
-        adapter.addListener(FlexibleAdapter.OnItemClickListener { position ->
-            log.info("ITEM SELECTED [${adapter.isSelected(position)}]")
+        adapter.addListener(object : FlexibleAdapter.OnItemClickListener {
+            private var previousPosition = 0
 
-            // Select & collapse
-            adapter.toggleSelection(position)
-            adapter.collapseAll()
-            true
+            override fun onItemClick(position: Int): Boolean {
+                val changed = (this.previousPosition != position)
+
+                // Select & collapse
+                adapter.toggleSelection(position)
+
+                if (changed) {
+                    adapter.collapseAll()
+                } else {
+                    if (adapter.isExpanded(position)) {
+                        adapter.collapse(position)
+                    } else {
+                        adapter.expand(position)
+                    }
+                }
+
+                this.previousPosition = position
+
+                return true
+            }
         })
 
         this.deliveryList.loadedParcels
@@ -210,7 +215,7 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         // TODO: bug preventing expansion of sections when `toggleSelection` is not deferred initially
         this.view?.post {
-            adapter.toggleSelection(1)
+            adapter.toggleSelection(0)
         }
 
         adapter
