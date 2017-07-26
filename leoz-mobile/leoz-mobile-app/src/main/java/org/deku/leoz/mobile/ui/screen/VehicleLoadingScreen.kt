@@ -65,25 +65,25 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         val stopCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_location,
-                amount = this.deliveryList.stopAmount.map { it.value.toString() }.toField(),
+                amount = this.deliveryList.stopAmount.map { it.toString() }.toField(),
                 totalAmount = this.deliveryList.stopTotalAmount.map { it.value.toString() }.toField()
         )
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_file_document,
-                amount = this.deliveryList.orderAmount.map { it.value.toString() }.toField(),
+                amount = this.deliveryList.orderAmount.map { it.toString() }.toField(),
                 totalAmount = this.deliveryList.orderTotalAmount.map { it.value.toString() }.toField()
         )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_closed,
-                amount = this.deliveryList.parcelAmount.map { it.value.toString() }.toField(),
+                amount = this.deliveryList.parcelAmount.map { it.toString() }.toField(),
                 totalAmount = this.deliveryList.parcelTotalAmount.map { it.value.toString() }.toField()
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_scale,
-                amount = this.deliveryList.weight.map { "${it.value.format(2)}kg" }.toField(),
+                amount = this.deliveryList.weight.map { "${it.format(2)}kg" }.toField(),
                 totalAmount = this.deliveryList.totalWeight.map { "${it.value.format(2)}kg" }.toField()
         )
     }

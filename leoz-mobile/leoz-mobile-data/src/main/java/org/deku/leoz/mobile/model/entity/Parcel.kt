@@ -38,8 +38,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
 
     @get:Column(name = "`order`", nullable = true)
     @get:ManyToOne
-    abstract var order: Order?
-
+    abstract var order: Order
 
     val loadingStateProperty by lazy { ObservableRxField<State>(BR.loadingState, { this.loadingState }) }
 }
@@ -49,8 +48,7 @@ fun Parcel.Companion.create(
         length: Double = 0.0,
         height: Double = 0.0,
         width: Double = 0.0,
-        weight: Double = 0.0,
-        order: Order? = null
+        weight: Double = 0.0
 ): Parcel {
     return ParcelEntity().also {
         it.number = number
@@ -60,6 +58,5 @@ fun Parcel.Companion.create(
         it.weight = weight
         it.loadingState = Parcel.State.PENDING
         it.isDamaged = false
-        it.order = order
     }
 }

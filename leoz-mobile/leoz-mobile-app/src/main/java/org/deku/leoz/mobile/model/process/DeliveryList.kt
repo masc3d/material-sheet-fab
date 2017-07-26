@@ -21,6 +21,7 @@ import sx.Stopwatch
 import sx.requery.ObservableQuery
 import sx.rx.ObservableLazyRxProperty
 import sx.rx.ObservableRxProperty
+import sx.rx.connected
 import sx.rx.toHotReplay
 
 /**
@@ -37,32 +38,6 @@ class DeliveryList {
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
-    //endregion
-
-    //region Counters
-    val orderTotalAmount = ObservableLazyRxProperty({
-        this.orderRepository.entities.size
-    })
-
-    val stopTotalAmount = ObservableLazyRxProperty({
-        this.stopRepository.entities.size
-    })
-
-    val parcelTotalAmount = ObservableLazyRxProperty({
-        this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.count()
-    })
-
-    val totalWeight = ObservableLazyRxProperty({
-        this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.sumByDouble { it.weight }
-    })
-
-    val orderAmount = ObservableRxProperty(0)
-
-    val parcelAmount = ObservableRxProperty(0)
-
-    val stopAmount = ObservableRxProperty(0)
-
-    val weight = ObservableRxProperty(0.0)
     //endregion
 
     //region Self-observing queries
@@ -88,6 +63,32 @@ class DeliveryList {
      * Loaded parcels
      */
     val loadedParcels = loadedParcelsQuery.result
+
+    //region Counters
+    val orderTotalAmount = ObservableLazyRxProperty({
+        this.orderRepository.entities.size
+    })
+
+    val stopTotalAmount = ObservableLazyRxProperty({
+        this.stopRepository.entities.size
+    })
+
+    val parcelTotalAmount = ObservableLazyRxProperty({
+        this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.count()
+    })
+
+    val totalWeight = ObservableLazyRxProperty({
+        this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.sumByDouble { it.weight }
+    })
+
+    val orderAmount = loadedParcels.map { it.value.map { it.order }.distinct().count() }.replay(1).connected()
+
+    val parcelAmount = loadedParcels.map { it.value.count() }.replay(1).connected()
+
+    val stopAmount = loadedParcels.map { it.value.flatMap { it.order.tasks }.map { it.stop }.distinct().count() }.replay(1).connected()
+
+    val weight = loadedParcels.map { it.value.sumByDouble { it.weight } }.replay(1).connected()
+    //endregion
 
     init {
         // Re-evaluate counters reactively
