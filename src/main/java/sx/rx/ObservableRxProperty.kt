@@ -15,7 +15,10 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
- * RX property delegate implementation
+ * Observable rx read-write property.
+ *
+ * Instance members are supposed to be thread-safe.
+ *
  * Created by masc on 04/03/2017.
  */
 class ObservableRxProperty<T>(
@@ -47,7 +50,7 @@ class ObservableRxProperty<T>(
         return value
     }
 
-    fun set(value: T) {
+    @Synchronized fun set(value: T) {
         val old = this.value
 
         this.value = value
@@ -61,57 +64,3 @@ class ObservableRxProperty<T>(
         subject.onNext(Update(null, default))
     }
 }
-
-/**
- * Observes property changes and delegates to rx {@link BehaviourSubject}
- */
-inline fun <reified T : Any> observableRx(default: T) = ObservableRxProperty<T>(
-        default = default)
-
-/**
- * RX property delegate implementation
- * Created by masc on 04/03/2017.
- */
-class ObservableLazyRxProperty<T>(
-        default: () -> T)
-    :
-        Observable<ObservableLazyRxProperty.Update<T>>(),
-        ReadOnlyProperty<Any?, T> {
-
-    /** Property update container */
-    class Update<T>(val value: T)
-
-    private var value = LazyInstance(default)
-    private val subject: BehaviorSubject<Unit> = BehaviorSubject.create()
-    private val observable: Observable<Unit> = subject.hide()
-
-    override fun subscribeActual(observer: Observer<in Update<T>>) {
-        this.observable
-                .map { Update(this.value.get()) }
-                .subscribe(observer)
-    }
-
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return value.get()
-    }
-
-    fun get() {
-        this.value.get()
-    }
-
-    fun reset(supplier: (() -> T)? = null) {
-        this.value.reset(supplier)
-        this.subject.onNext(Unit)
-    }
-
-    init {
-        this.reset()
-    }
-}
-
-/**
- * Observes property changes and delegates to rx {@link BehaviourSubject}
- */
-inline fun <reified T : Any> observableLazyRx(noinline default: () -> T) = ObservableLazyRxProperty<T>(
-        default = default)
-
