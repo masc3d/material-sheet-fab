@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
@@ -15,6 +14,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.text.InputType
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -35,7 +35,6 @@ import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.view.*
@@ -56,8 +55,8 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.process.Delivery
-import org.jetbrains.anko.contentView
+import org.deku.leoz.mobile.dev.SyntheticInputs
+import org.jetbrains.anko.doAsync
 import sx.aidc.SymbologyType
 import sx.android.ApplicationStateMonitor
 import sx.android.aidc.SimulatingAidcReader
@@ -76,6 +75,13 @@ open class Activity : RxAppCompatActivity(),
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    companion object {
+        /** Base menu id for dynamically generated synthetic input entries */
+        val MENU_ID_DEV_BASE = 0x5000
+        val MENU_ID_DEV_MAX = 0x5100
+    }
+
+    /** Indicates the activity has been paused */
     private var isPaused = false
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
@@ -103,11 +109,15 @@ open class Activity : RxAppCompatActivity(),
     val actionEvent = this.actionEventSubject.hide()
 
     /** Additional menu items to add */
-    var menuItems: Menu? = null
+    var screenMenuItems: Menu? = null
 
     private val menuItemEventSubject = PublishSubject.create<MenuItem>()
     /** Menu item event */
     val menuItemEvent = this.menuItemEventSubject.hide()
+
+    /** Currently active synthetic inputs */
+    private var syntheticInputsProperty = ObservableRxProperty<List<SyntheticInputs>>(listOf())
+    var syntheticInputs by syntheticInputsProperty
 
     /**
      * Responsible for controlling header
@@ -274,12 +284,6 @@ open class Activity : RxAppCompatActivity(),
                 .findItem(R.id.action_logout)
                 .isVisible = (this.login.authenticatedUser != null)
 
-        menu
-                .findItem(R.id.action_scan).isVisible = debugSettings.enabled
-
-        menu
-                .findItem(R.id.action_scan_dialog).isVisible = debugSettings.enabled
-
         menu.setGroupVisible(0, mainSubMenu.hasVisibleItems())
 
         return true
@@ -288,8 +292,8 @@ open class Activity : RxAppCompatActivity(),
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val mainSubMenu = menu.getItem(0).subMenu
 
-        val screenMenuItems = this.menuItems
-
+        //region Add screen fragment menu items
+        val screenMenuItems = this.screenMenuItems
         if (screenMenuItems != null && screenMenuItems.hasVisibleItems()) {
             for (i in 0..screenMenuItems.size() - 1) {
                 val screenMenuItem = screenMenuItems.getItem(i)
@@ -297,11 +301,29 @@ open class Activity : RxAppCompatActivity(),
                         0,
                         screenMenuItem.itemId,
                         screenMenuItem.order,
-                        screenMenuItem.title)
+                        screenMenuItem.title
+                )
 
                 item.icon = screenMenuItem.icon
             }
         }
+        //endregion
+
+        //region Add synthetic input entries
+        if (this.debugSettings.enabled) {
+            for (i in 0..this.syntheticInputs.size - 1) {
+                val syntheticInputs = this.syntheticInputs.get(i)
+                val item = mainSubMenu.add(
+                        0,
+                        MENU_ID_DEV_BASE + i,
+                        0,
+                        syntheticInputs.name
+                )
+
+                item.icon = this.getDrawable(R.drawable.ic_barcode_scan)
+            }
+        }
+        //endregion
 
         return super.onPrepareOptionsMenu(menu)
     }
@@ -312,6 +334,24 @@ open class Activity : RxAppCompatActivity(),
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
+        // Handle dynamically generated ids
+        if (id >= MENU_ID_DEV_BASE && id < MENU_ID_DEV_MAX) {
+            val syntheticInputs = this.syntheticInputs.get(id - MENU_ID_DEV_BASE)
+
+            MaterialDialog.Builder(this)
+                    .title(syntheticInputs.name)
+                    .inputType(InputType.TYPE_CLASS_TEXT)
+                    .items(*syntheticInputs.entries.map { it.data }.toTypedArray())
+                    .itemsCallback { materialDialog, view, i, charSequence ->
+                        simulatingAidcReader.emit(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25)
+                    }
+                    .cancelable(true)
+                    .show()
+
+            return true
+        }
+
+        // Handle regular menu entries
         when (id) {
             R.id.action_main -> {
                 /** Main submenu entry, ignore */
@@ -326,54 +366,6 @@ open class Activity : RxAppCompatActivity(),
                                         Intent.FLAG_ACTIVITY_NEW_TASK))
                 finish()
 
-                return true
-            }
-
-            R.id.action_scan -> {
-                this.simulatingAidcReader.emit(data = "1001000000", symbologyType = SymbologyType.Interleaved25)
-                return true
-            }
-
-            R.id.action_scan_dialog -> {
-                val items = mutableListOf<String>()
-
-                // TODO: this should be generic. consumers should be able to define their content per screen, no static references to specific processes
-                //region Suitable structure could look like this:
-
-                /**
-                 * Synthetic barcode content with symbologiy type
-                 */
-                data class SyntheticBarcode(
-                        val symbologyType: SymbologyType,
-                        val content: String)
-
-                val syntheticBarcodes = listOf<SyntheticBarcode>()
-
-                /**
-                 * Specific list of synthetic barcodes
-                 */
-                data class SyntheticBarcodeList(
-                        val name: String,
-                        val barcodes: List<SyntheticBarcode>
-                )
-
-                // TODO: could then define reusable lists of eg. synethtic parcel barcode list, DL barcode list. should be possible to enable one or more at a time, each having their own menu entry
-                //endregion
-
-//                delivery.orderList.flatMap { it.parcel }.forEach { items.add(it.number) }
-
-//                val dialog = MaterialDialog.Builder(this.applicationContext)
-//                        .title("Scan emulation")
-//                        .inputType(InputType.TYPE_CLASS_TEXT)
-//                        .input("123456789012", null, true, MaterialDialog.InputCallback { materialDialog, charSequence ->
-//                            aidcReader.emulateReadEvent(event = AidcReader.ReadEvent(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25))
-//                        })
-//                        .items(items)
-//                        .itemsCallback { materialDialog, view, i, charSequence ->
-//                            aidcReader.emulateReadEvent(event = AidcReader.ReadEvent(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25))
-//                        }
-//                        .cancelable(true)
-//                        .show()
                 return true
             }
 
@@ -528,20 +520,6 @@ open class Activity : RxAppCompatActivity(),
                     this.uxActionOverlay.items = items
                 }
 
-        this.aidcReader.enabledProperty
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { enabled ->
-                    val aidcActionItem = this.uxActionOverlay.items
-                            .filter { it.id == R.id.action_aidc_camera && it.visible != enabled.value }
-                            .firstOrNull()
-
-                    if (aidcActionItem != null) {
-                        aidcActionItem.visible = enabled.value
-                        this.uxActionOverlay.update()
-                    }
-                }
-
         this.updateService.availableUpdateEvent
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -596,6 +574,21 @@ open class Activity : RxAppCompatActivity(),
                     }
                 }
 
+        //region AIDC
+        this.aidcReader.enabledProperty
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { enabled ->
+                    val aidcActionItem = this.uxActionOverlay.items
+                            .filter { it.id == R.id.action_aidc_camera && it.visible != enabled.value }
+                            .firstOrNull()
+
+                    if (aidcActionItem != null) {
+                        aidcActionItem.visible = enabled.value
+                        this.uxActionOverlay.update()
+                    }
+                }
+
         this.aidcReader.bindActivity(this)
 
         this.cameraReader.readEvent
@@ -605,7 +598,7 @@ open class Activity : RxAppCompatActivity(),
                     this.tone.beep()
                     this.cameraAidcFragmentVisible = false
                 }
-
+        //endregion
     }
 
     /**
@@ -643,11 +636,23 @@ open class Activity : RxAppCompatActivity(),
                 .bindUntilEvent(fragment, FragmentEvent.PAUSE)
                 .subscribeBy(
                         onNext = {
-                            this.menuItems = it.value
+                            this.screenMenuItems = it.value
                             this.invalidateOptionsMenu()
                         },
                         onComplete = {
-                            this.menuItems = null
+                            this.screenMenuItems = null
+                        }
+                )
+
+        fragment.syntheticInputsProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribeBy(
+                        onNext = {
+                            this.syntheticInputs = it.value
+                            this.invalidateOptionsMenu()
+                        },
+                        onComplete = {
+                            this.syntheticInputs = listOf()
                         }
                 )
 
@@ -734,6 +739,7 @@ open class Activity : RxAppCompatActivity(),
         // Enforce orientation on every fragment resume
             else -> fragment.orientation
         }
+
         this.aidcReader.enabled = fragment.aidcEnabled
     }
 

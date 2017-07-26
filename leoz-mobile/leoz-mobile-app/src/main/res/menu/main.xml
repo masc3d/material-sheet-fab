@@ -12,24 +12,6 @@
 
         <menu>
             <item
-                android:id="@+id/action_scan"
-                android:icon="@drawable/ic_barcode_scan"
-                android:title="Scan (DEV)"
-                android:visible="false"
-                android:orderInCategory="1000"
-                app:showAsAction="never"
-                tools:ignore="HardcodedText" />
-
-            <item
-                android:id="@+id/action_scan_dialog"
-                android:icon="@drawable/ic_barcode_scan"
-                android:title="Scan Dialog (DEV)"
-                android:visible="false"
-                android:orderInCategory="1000"
-                app:showAsAction="never"
-                tools:ignore="HardcodedText" />
-
-            <item
                 android:id="@+id/action_logout"
                 android:icon="@drawable/ic_logout"
                 android:title="@string/logout"

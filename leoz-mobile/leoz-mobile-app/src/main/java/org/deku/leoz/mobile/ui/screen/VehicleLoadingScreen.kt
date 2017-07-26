@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
+import org.deku.leoz.mobile.dev.SyntheticInputs
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
@@ -35,6 +36,7 @@ import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
+import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
@@ -307,12 +309,6 @@ class VehicleLoadingScreen : ScreenFragment() {
                         R.id.action_load_deliverylist -> {
                             this.deliveryList.load(10730061)
                         }
-
-                        R.id.action_test -> {
-                            val parcel = this.parcelRepository.entities.first { it.isDamaged == false }
-                            parcel.isDamaged = true
-                            this.parcelRepository.update(parcel)
-                        }
                     }
                 }
 
@@ -335,10 +331,38 @@ class VehicleLoadingScreen : ScreenFragment() {
                         else -> log.warn("Unhandled ActionEvent [$it]")
                     }
                 }
+
+        this.parcelRepository.entitiesProperty
+                .map { it.value }
+                .subscribe { parcels ->
+                    this.syntheticInputs = listOf(
+                            SyntheticInputs(
+                                    name = "Delivery lists",
+                                    entries = listOf(
+                                            SyntheticInputs.Entry(
+                                                    symbologyType = SymbologyType.Interleaved25,
+                                                    data = "10730061"
+                                            )
+                                    )
+                            ),
+                            SyntheticInputs(
+                                    name = "Parcels",
+                                    entries = parcels.map {
+                                        val unitNumber = UnitNumber.parse(it.number).value
+                                        SyntheticInputs.Entry(
+                                                symbologyType = SymbologyType.Interleaved25,
+                                                data = unitNumber.value
+                                        )
+                                    }
+                            )
+                    )
+
+                }
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         try {
+            log.trace("AIDC READ $event")
             val result = Observable.concat(
                     Observable.fromCallable { UnitNumber.parseLabel(event.data) },
                     Observable.fromCallable { DekuDeliveryListNumber.parseLabel(event.data) }
@@ -370,7 +394,16 @@ class VehicleLoadingScreen : ScreenFragment() {
     }
 
     fun onDeliveryListNumberInput(deliveryListNumber: DekuDeliveryListNumber) {
+        log.debug("Check for delivery list with id [${deliveryListNumber.value}]")
+        deliveryList.load(deliveryListNumber.value.toLong())
+                .bindToLifecycle(this)
+                .subscribe {
+                    if (it.isEmpty()) {
+                        tone.errorBeep()
+                    } else {
 
+                    }
+                }
     }
 
     fun onUnitNumberInput(unitNumber: UnitNumber) {
@@ -389,16 +422,6 @@ class VehicleLoadingScreen : ScreenFragment() {
                 //Error, order could not be found
                 log.warn("No order with a parcel reference [$unitNumber] could be found")
                 if (unitNumber.value.count() <= 9 && unitNumber.value.toLongOrNull() != null) {
-                    log.debug("Check for delivery list with id [$unitNumber]")
-                    deliveryList.load(unitNumber.value.toLong())
-                            .bindToLifecycle(this)
-                            .subscribe {
-                                if (it.isEmpty()) {
-                                    tone.errorBeep()
-                                } else {
-
-                                }
-                            }
                 }
                 tone.errorBeep()
                 //Query order from Central services
