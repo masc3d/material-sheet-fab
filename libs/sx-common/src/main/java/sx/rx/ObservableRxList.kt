@@ -1,9 +1,14 @@
 package sx.rx
 
+import io.reactivex.Observable
+import io.reactivex.Observer
 import io.reactivex.subjects.BehaviorSubject
 
 /**
  * Decorates a mutable list and emits changed events
+ *
+ * As with most regular list classes, this implementation is NOT thread-safe
+ *
  * Created by masc on 26.07.17.
  */
 class ObservableRxList<T>(val list: MutableList<T>)
@@ -11,8 +16,7 @@ class ObservableRxList<T>(val list: MutableList<T>)
 
     enum class UpdateType {
         ADDED,
-        REMOVED,
-        UPDATED
+        REMOVED
     }
 
     inner class Update<T>(
@@ -24,6 +28,13 @@ class ObservableRxList<T>(val list: MutableList<T>)
             Update(type = UpdateType.ADDED, items = this.list))
 
     val updatedEvent = updatedEventSubject.hide()
+
+    /**
+     * Transforms observable list to a plain observable emitting updates
+     */
+    fun toObservable(): Observable<Update<T>> {
+        return this.updatedEvent
+    }
 
     override fun add(element: T): Boolean {
         val changed = this.list.add(element)
