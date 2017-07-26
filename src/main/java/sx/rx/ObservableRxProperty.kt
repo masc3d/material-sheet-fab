@@ -17,8 +17,6 @@ import kotlin.reflect.KProperty
 /**
  * Observable rx read-write property.
  *
- * Instance members are supposed to be thread-safe.
- *
  * Created by masc on 04/03/2017.
  */
 class ObservableRxProperty<T>(
@@ -50,7 +48,7 @@ class ObservableRxProperty<T>(
         return value
     }
 
-    @Synchronized fun set(value: T) {
+    fun set(value: T) {
         val old = this.value
 
         this.value = value

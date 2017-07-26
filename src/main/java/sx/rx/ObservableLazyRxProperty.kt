@@ -10,8 +10,6 @@ import kotlin.reflect.KProperty
 /**
  * Lazy observable rx property.
  *
- * Instance members are supposed to be thread-safe
- *
  * Created by masc on 04/03/2017.
  */
 class ObservableLazyRxProperty<T>(
@@ -23,7 +21,7 @@ class ObservableLazyRxProperty<T>(
     /** Property update container */
     class Update<T>(val value: T)
 
-    private var value = LazyInstance(default)
+    private var value = LazyInstance(default, LazyInstance.ThreadSafetyMode.None)
     private val subject: BehaviorSubject<Unit> = BehaviorSubject.create()
     private val observable: Observable<Unit> = subject.hide()
 
