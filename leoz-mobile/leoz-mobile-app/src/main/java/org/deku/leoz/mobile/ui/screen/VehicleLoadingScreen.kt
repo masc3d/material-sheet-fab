@@ -310,7 +310,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .subscribe {
                     when (it.itemId) {
                         R.id.action_reset -> {
-                            this.orderRepository.removeAll()
+                            this.orderRepository.removeAll().blockingGet()
                         }
                     }
                 }
