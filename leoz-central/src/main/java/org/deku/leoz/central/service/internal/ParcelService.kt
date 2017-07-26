@@ -74,13 +74,30 @@ open class ParcelServiceV1 :
             val reason = Reason.values().find { it.id == reasonId }!!
             r.fehlercode = reason.oldValue.toUInteger()
 
-            // TODO: check mainly for event/reason, then check for additional info structures as applicable
-            if (it.deliveredInfo != null) {
-                r.text = (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).recipient
-//                r.kzStatuserzeuger = "E"
-//                r.kzStatus = 4.toUInteger()
-                saveSignature(it.time, (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).signature, it.parcelNumber, message.nodeId)
+            when (event) {
+                Event.AUSGELIEFERT -> {
+                    when (reason) {
+                        Reason.NORMAL -> {
+                            if (it.deliveredInfo == null)
+                                throw DefaultProblem(
+                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                )
+
+                            r.text = (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).recipient
+            //                r.kzStatuserzeuger = "E"
+            //                r.kzStatus = 4.toUInteger()
+                            saveSignature(it.time, (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).signature, it.parcelNumber, message.nodeId)
+                        }
+
+                    }
+                }
+
+                Event.ZUSTELLHINDERNIS -> {
+
+                }
             }
+
+            // TODO: check mainly for event/reason, then check for additional info structures as applicable
             if (it.deliveredAtNeighborInfo != null) {
                 //r.text = (it.evtResDeliverdNeighbor as ParcelServiceV1.EvtResDeliveredNeighbor).nameNeighbor
                 val neighborEvent = it.deliveredAtNeighborInfo

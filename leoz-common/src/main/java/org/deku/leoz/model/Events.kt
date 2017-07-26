@@ -26,10 +26,10 @@ enum class EventLoadedReason(val id: Int) {
 }
 
 
-enum class EventDeliveredReason(val id: Int) {
-    Normal(1), // noticeRecipient  +unterschrift
-    Neighbor(2), // noticeNeighbour + 1 zeile Adresse  + unterschrift    nur wenn SKZ 536870912 (Keine Alternativzustellung) nicht gesetzt
-    Postbox(3)    // kein text + Foto             // nur wenn SKZ 268435456 (Briefkastenzustellung möglich) gesetzt
+enum class EventDeliveredReason(val reason: Reason) {
+    Normal(Reason.NORMAL), // noticeRecipient  +unterschrift
+    Neighbor(Reason.NEIGHBOUR), // noticeNeighbour + 1 zeile Adresse  + unterschrift    nur wenn SKZ 536870912 (Keine Alternativzustellung) nicht gesetzt
+    Postbox(Reason.POSTBOX)    // kein text + Foto             // nur wenn SKZ 268435456 (Briefkastenzustellung möglich) gesetzt
 }
 
 enum class EventNotDeliveredReason(val id: Int) {
