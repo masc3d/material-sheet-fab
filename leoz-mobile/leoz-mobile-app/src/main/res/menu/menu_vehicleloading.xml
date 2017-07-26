@@ -8,4 +8,10 @@
         android:title="@string/load_delivery_list"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_test"
+        android:icon="@drawable/ic_file_document"
+        android:title="Test"
+        app:showAsAction="never" />
+
 </menu>

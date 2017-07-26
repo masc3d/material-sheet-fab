@@ -130,8 +130,6 @@ class DeliveryList {
             val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
-            this.orderRepository.removeAll().blockingGet()
-
             // Process orders
             run {
                 //region Post process orders, filter out duplicates
@@ -198,14 +196,6 @@ class DeliveryList {
                     .blockingGet()
 
             log.trace("Delivery list transformed and stored in $sw")
-
-            val parcel = db.store.select(ParcelEntity::class)
-                    .limit(1)
-                    .get().toList().first()
-
-            parcel.loadingState = Parcel.State.LOADED
-
-            db.store.update(parcel).blockingGet()
 
             stops
         }

@@ -9,6 +9,6 @@
 
     <item>
         <bitmap android:src="@drawable/img_parcels_1"
-                android:alpha="0.5" />
+                android:alpha="0.3" />
     </item>
 </layer-list>

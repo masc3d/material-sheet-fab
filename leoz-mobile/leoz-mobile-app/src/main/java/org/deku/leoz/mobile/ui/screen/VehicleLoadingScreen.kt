@@ -15,6 +15,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
@@ -23,14 +24,17 @@ import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
+import org.deku.leoz.mobile.model.repository.ParcelRepository
 
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
+import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.Result
 import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
@@ -83,6 +87,7 @@ class VehicleLoadingScreen : ScreenFragment() {
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
 
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
@@ -260,8 +265,6 @@ class VehicleLoadingScreen : ScreenFragment() {
         this.uxParcelList.adapter = parcelListAdapter
         this.uxParcelList.layoutManager = LinearLayoutManager(context)
 
-//        parcelListAdapter.addListener(onItemClickListener)
-
         this.menu = this.inflateMenu(R.menu.menu_vehicleloading)
 
         this.actionItems = listOf(
@@ -294,20 +297,23 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    when {
-                        it.data.toLongOrNull() != null && it.data.count() <= 9 -> {
-                            deliveryList.load(it.data.toLong())
-                        }
-                        else -> processLabelScan(it.data)
-                    }
-
+                    this.onAidcRead(it)
                 }
 
         this.activity.menuItemEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
-                    log.trace("MENU ITEM SELECTED [${it}]")
-                    this.deliveryList.load(10730061)
+                    when (it.itemId) {
+                        R.id.action_load_deliverylist -> {
+                            this.deliveryList.load(10730061)
+                        }
+
+                        R.id.action_test -> {
+                            val parcel = this.parcelRepository.entities.first { it.isDamaged == false }
+                            parcel.isDamaged = true
+                            this.parcelRepository.update(parcel)
+                        }
+                    }
                 }
 
         this.activity.actionEvent
@@ -331,53 +337,73 @@ class VehicleLoadingScreen : ScreenFragment() {
                 }
     }
 
-    private fun processLabelScan(data: String) {
+    private fun onAidcRead(event: AidcReader.ReadEvent) {
         try {
-            val unitNumberParseResult = UnitNumber.parseLabel(data)
+            val result = Observable.concat(
+                    Observable.fromCallable { UnitNumber.parseLabel(event.data) },
+                    Observable.fromCallable { DekuDeliveryListNumber.parseLabel(event.data) }
+            )
+                    .takeWhile { it.hasError }
+                    .first(Result(error = IllegalArgumentException("Invalid barcode")))
+                    .blockingGet()
 
             when {
-                unitNumberParseResult.hasError -> {
+                result.hasError -> {
                     // TODO: display error
                 }
                 else -> {
-                    val unitNumber = unitNumberParseResult.value
-                    val order = this.orderRepository.entities.find { it.parcels.any { it.number == unitNumber.value } }
+                    val resultValue = result.value
 
-                    log.debug("VehicleLoading parcel reference [$data] orders found [${order}] ")
-
-                    when {
-                        order != null -> {
-                            //Continue
-                            val parcel = order.parcels.first { it.number == unitNumber.value }
-                            log.debug("Parcel ID [${parcel.id}] Order ID [${order.id}] state [${parcel.loadingState}]")
-//                if (order.first().parcelVehicleLoading(parcel)) {
-//                    updateLoadedParcelList(mutableListOf(parcel))
-//                }
-                            log.debug("State after processing [${parcel.loadingState}]")
+                    when (resultValue) {
+                        is UnitNumber -> {
+                            this.onUnitNumberInput(resultValue)
                         }
-                        else -> {
-                            //Error, order could not be found
-                            log.warn("No order with a parcel reference [$data] could be found")
-                            if (data.count() <= 9 && data.toLongOrNull() != null) {
-                                log.debug("Check for delivery list with id [$data]")
-                                deliveryList.load(data.toLong())
-                                        .bindToLifecycle(this)
-                                        .subscribe {
-                                            if (it.isEmpty()) {
-                                                tone.errorBeep()
-                                            } else {
-
-                                            }
-                                        }
-                            }
-                            tone.errorBeep()
-                            //Query order from Central services
+                        is DekuDeliveryListNumber -> {
+                            this.onDeliveryListNumberInput(resultValue)
                         }
                     }
                 }
             }
         } catch(e: Exception) {
-            // TODO show error
+            // TODO display error
         }
     }
+
+    fun onDeliveryListNumberInput(deliveryListNumber: DekuDeliveryListNumber) {
+
+    }
+
+    fun onUnitNumberInput(unitNumber: UnitNumber) {
+        val order = this.orderRepository.entities.find { it.parcels.any { it.number == unitNumber.value } }
+
+        log.debug("Parcel reference [$unitNumber] orders found [${order}] ")
+
+        when {
+            order != null -> {
+                //Continue
+                val parcel = order.parcels.first { it.number == unitNumber.value }
+                log.debug("Parcel ID [${parcel.id}] Order ID [${order.id}] state [${parcel.loadingState}]")
+                log.debug("State after processing [${parcel.loadingState}]")
+            }
+            else -> {
+                //Error, order could not be found
+                log.warn("No order with a parcel reference [$unitNumber] could be found")
+                if (unitNumber.value.count() <= 9 && unitNumber.value.toLongOrNull() != null) {
+                    log.debug("Check for delivery list with id [$unitNumber]")
+                    deliveryList.load(unitNumber.value.toLong())
+                            .bindToLifecycle(this)
+                            .subscribe {
+                                if (it.isEmpty()) {
+                                    tone.errorBeep()
+                                } else {
+
+                                }
+                            }
+                }
+                tone.errorBeep()
+                //Query order from Central services
+            }
+        }
+    }
+
 }
