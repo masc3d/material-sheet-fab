@@ -129,25 +129,29 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         // TODO: unreliable. need to override flexibleadapter for proper reactive event
         adapter.addListener(object : FlexibleAdapter.OnItemClickListener {
-            private var previousPosition = 0
+            private var previousHeaderItem: Any? = headerLoaded
 
             override fun onItemClick(position: Int): Boolean {
-                val changed = (this.previousPosition != position)
+                val item: Any? = adapter.getItem(position)
 
-                // Select & collapse
-                adapter.toggleSelection(position)
+                if (item != null && headers.contains(item)) {
+                    val changed = (item != this.previousHeaderItem)
 
-                if (changed) {
-                    adapter.collapseAll()
-                } else {
-                    if (adapter.isExpanded(position)) {
-                        adapter.collapse(position)
+                    // Select & collapse
+                    adapter.toggleSelection(position)
+
+                    if (changed) {
+                        adapter.collapseAll()
                     } else {
-                        adapter.expand(position)
+                        if (adapter.isExpanded(position)) {
+                            adapter.collapse(position)
+                        } else {
+                            adapter.expand(position)
+                        }
                     }
-                }
 
-                this.previousPosition = position
+                    this.previousHeaderItem = item
+                }
 
                 return true
             }
