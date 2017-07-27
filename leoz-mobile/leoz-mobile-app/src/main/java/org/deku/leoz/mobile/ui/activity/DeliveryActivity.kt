@@ -138,7 +138,7 @@ class DeliveryActivity : Activity(),
      * Fragment listener
      */
 
-    override fun onDeliveryMenuChoosed(entryType: MenuScreen.MenuEntry.Entry) {
+    override fun onDeliveryMenuSelection(entryType: MenuScreen.MenuEntry.Entry) {
         when (entryType) {
             MenuScreen.MenuEntry.Entry.LOADING -> {
                 this.showScreen(VehicleLoadingScreen())

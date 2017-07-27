@@ -239,7 +239,7 @@ class VehicleLoadingScreen : ScreenFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.title = "Vehicle loading"
+        this.title = this.getText(R.string.vehicle_loading).toString()
         this.headerImage = R.drawable.img_parcels_1a
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
 
