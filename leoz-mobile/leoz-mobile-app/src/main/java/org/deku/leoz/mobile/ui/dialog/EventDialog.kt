@@ -10,7 +10,6 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.Observable
 import org.deku.leoz.mobile.model.getEventText
 import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.EventValue
 import org.slf4j.LoggerFactory
 
 
@@ -54,7 +53,7 @@ class EventDialog private constructor(
                         this@Builder.eventAdapter.add(
                                 MaterialSimpleListItem.Builder(this.context)
                                         .content(eventText)
-                                        .id(it.id.toLong())
+                                        .id(it.reason.id.toLong())
                                         .tag(it)
                                         .backgroundColor(Color.WHITE)
                                         .build()

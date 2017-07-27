@@ -12,7 +12,6 @@ fun Context.getEventText(event: EventNotDeliveredReason): String? {
         EventNotDeliveredReason.Vacation -> this.getString(R.string.event_reason_vacation)
         EventNotDeliveredReason.AddressWrong -> this.getString(R.string.event_reason_address_wrong)
         EventNotDeliveredReason.Moved -> this.getString(R.string.event_reason_moved)
-        EventNotDeliveredReason.Unknown -> null
         EventNotDeliveredReason.Damaged -> this.getString(R.string.event_reason_damaged)
         EventNotDeliveredReason.XC_CodeWrong -> this.getString(R.string.event_reason_xc_code_wrong)
         EventNotDeliveredReason.XC_ObjectDamaged -> this.getString(R.string.event_reason_xc_damaged)
