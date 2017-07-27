@@ -5,6 +5,7 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.TblstatusRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
+import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.Reason
 import org.deku.leoz.node.rest.DefaultProblem
@@ -78,15 +79,46 @@ open class ParcelServiceV1 :
                 Event.DELIVERED -> {
                     when (reason) {
                         Reason.NORMAL -> {
-                            if (it.deliveredInfo == null)
+                            //if (it.deliveredInfo == null)
+                            if (it.additionalInfo == null)
                                 throw DefaultProblem(
                                         title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
                                 )
 
-                            r.text = (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).recipient
-            //                r.kzStatuserzeuger = "E"
-            //                r.kzStatus = 4.toUInteger()
-                            saveSignature(it.time, (it.deliveredInfo as ParcelServiceV1.DeliveredInfo).signature, it.parcelNumber, message.nodeId)
+                            val addInfo = it.additionalInfo
+                            when (addInfo) {
+                                is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                )
+                                is AdditionalInfo.DeliveredInfo -> {
+
+                                    r.text = addInfo.recipient ?: ""
+                                    saveSignature(it.time, addInfo.signature, it.parcelNumber, message.nodeId)
+                                }
+                            }
+                        }
+                        Reason.NEIGHBOUR -> {
+                            val addInfo = it.additionalInfo
+                            when (addInfo) {
+                                is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                )
+                                is AdditionalInfo.DeliveredAtNeighborInfo -> {
+                                    r.text = addInfo.name ?: "" + ";adr " + addInfo.address ?: ""
+                                    saveSignature(it.time, addInfo.signature, it.parcelNumber, message.nodeId)
+                                }
+                            }
+                        }
+                        Reason.CUSTOMER_REFUSED -> {
+                            val addInfo = it.additionalInfo
+                            when (addInfo) {
+                                is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                )
+                                is AdditionalInfo.NotDeliveredRefusedInfo -> {
+                                    r.infotext = addInfo.cause ?: ""
+                                }
+                            }
                         }
 
                     }
@@ -96,27 +128,28 @@ open class ParcelServiceV1 :
 
                 }
             }
-
+            /**
             // TODO: check mainly for event/reason, then check for additional info structures as applicable
             if (it.deliveredAtNeighborInfo != null) {
-                //r.text = (it.evtResDeliverdNeighbor as ParcelServiceV1.EvtResDeliveredNeighbor).nameNeighbor
-                val neighborEvent = it.deliveredAtNeighborInfo
-                r.text = neighborEvent?.name ?: "" + " " + neighborEvent?.address ?: ""
-//                r.kzStatuserzeuger = "E"
-//                r.kzStatus = 4.toUInteger()
-                saveSignature(it.time, (it.deliveredAtNeighborInfo as ParcelServiceV1.DeliveredAtNeighborInfo).signature, it.parcelNumber, message.nodeId)
+            //r.text = (it.evtResDeliverdNeighbor as ParcelServiceV1.EvtResDeliveredNeighbor).nameNeighbor
+            val neighborEvent = it.deliveredAtNeighborInfo
+            r.text = neighborEvent?.name ?: "" + ";adr " + neighborEvent?.address ?: ""
+            //                r.kzStatuserzeuger = "E"
+            //                r.kzStatus = 4.toUInteger()
+            saveSignature(it.time, (it.deliveredAtNeighborInfo as ParcelServiceV1.DeliveredAtNeighborInfo).signature, it.parcelNumber, message.nodeId)
             }
             if (it.notDeliveredRefusedInfo != null) {
-                r.infotext = (it.notDeliveredRefusedInfo as ParcelServiceV1.NotDeliveredRefusedInfo).cause
-//                r.kzStatuserzeuger = "E"
-//                r.kzStatus = 8.toUInteger()
-//                r.fehlercode = 99.toUInteger()
+            r.infotext = (it.notDeliveredRefusedInfo as ParcelServiceV1.NotDeliveredRefusedInfo).cause
+            //                r.kzStatuserzeuger = "E"
+            //                r.kzStatus = 8.toUInteger()
+            //                r.fehlercode = 99.toUInteger()
             }
-//            if (it.evtReasonNotDeliveredWrongAddress != null) {
-//                r.kzStatuserzeuger = "E"
-//                r.kzStatus = 8.toUInteger()
-//                r.fehlercode = it.evtReasonNotDeliveredWrongAddress?.eventReason?.toUInteger() ?: 0.toUInteger()
-//            }
+            //            if (it.evtReasonNotDeliveredWrongAddress != null) {
+            //                r.kzStatuserzeuger = "E"
+            //                r.kzStatus = 8.toUInteger()
+            //                r.fehlercode = it.evtReasonNotDeliveredWrongAddress?.eventReason?.toUInteger() ?: 0.toUInteger()
+            //            }
+             **/
             parcelRepository.saveEvent(r)
         }
     }
