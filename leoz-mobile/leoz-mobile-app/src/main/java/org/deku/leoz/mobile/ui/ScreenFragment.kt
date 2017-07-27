@@ -3,7 +3,7 @@ package org.deku.leoz.mobile.ui
 import android.content.pm.ActivityInfo
 import android.support.annotation.DrawableRes
 import android.view.Menu
-import org.deku.leoz.mobile.dev.SyntheticInputs
+import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
 
@@ -60,7 +60,7 @@ open class ScreenFragment : Fragment() {
     /** The initial aidc reader setting for this screen */
     var aidcEnabled: Boolean = false
 
-    var syntheticInputsProperty = ObservableRxProperty<List<SyntheticInputs>>(listOf())
+    var syntheticInputsProperty = ObservableRxProperty<List<SyntheticInput>>(listOf())
     /**
      * A list of synthetic input specifications.
      */

@@ -55,8 +55,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.dev.SyntheticInputs
-import org.jetbrains.anko.doAsync
+import org.deku.leoz.mobile.dev.SyntheticInput
 import sx.aidc.SymbologyType
 import sx.android.ApplicationStateMonitor
 import sx.android.aidc.SimulatingAidcReader
@@ -116,7 +115,7 @@ open class Activity : RxAppCompatActivity(),
     val menuItemEvent = this.menuItemEventSubject.hide()
 
     /** Currently active synthetic inputs */
-    private var syntheticInputsProperty = ObservableRxProperty<List<SyntheticInputs>>(listOf())
+    private var syntheticInputsProperty = ObservableRxProperty<List<SyntheticInput>>(listOf())
     var syntheticInputs by syntheticInputsProperty
 
     /**

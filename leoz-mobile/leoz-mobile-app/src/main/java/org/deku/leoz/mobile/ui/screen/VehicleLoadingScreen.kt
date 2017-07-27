@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
-import org.deku.leoz.mobile.dev.SyntheticInputs
+import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.process.DeliveryList
@@ -66,25 +66,25 @@ class VehicleLoadingScreen : ScreenFragment() {
         val stopCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_location,
                 amount = this.deliveryList.stopAmount.map { it.toString() }.toField(),
-                totalAmount = this.deliveryList.stopTotalAmount.map { it.value.toString() }.toField()
+                totalAmount = this.deliveryList.stopTotalAmount.map { it.toString() }.toField()
         )
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_file_document,
                 amount = this.deliveryList.orderAmount.map { it.toString() }.toField(),
-                totalAmount = this.deliveryList.orderTotalAmount.map { it.value.toString() }.toField()
+                totalAmount = this.deliveryList.orderTotalAmount.map { it.toString() }.toField()
         )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_closed,
                 amount = this.deliveryList.parcelAmount.map { it.toString() }.toField(),
-                totalAmount = this.deliveryList.parcelTotalAmount.map { it.value.toString() }.toField()
+                totalAmount = this.deliveryList.parcelTotalAmount.map { it.toString() }.toField()
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_scale,
                 amount = this.deliveryList.weight.map { "${it.format(2)}kg" }.toField(),
-                totalAmount = this.deliveryList.totalWeight.map { "${it.value.format(2)}kg" }.toField()
+                totalAmount = this.deliveryList.totalWeight.map { "${it.format(2)}kg" }.toField()
         )
     }
 
@@ -339,20 +339,20 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .map { it.value }
                 .subscribe { parcels ->
                     this.syntheticInputs = listOf(
-                            SyntheticInputs(
+                            SyntheticInput(
                                     name = "Delivery lists",
                                     entries = listOf(
-                                            SyntheticInputs.Entry(
+                                            SyntheticInput.Entry(
                                                     symbologyType = SymbologyType.Interleaved25,
                                                     data = DekuDeliveryListNumber.parse("10730061").value.label
                                             )
                                     )
                             ),
-                            SyntheticInputs(
+                            SyntheticInput(
                                     name = "Parcels",
                                     entries = parcels.map {
                                         val unitNumber = UnitNumber.parse(it.number).value
-                                        SyntheticInputs.Entry(
+                                        SyntheticInput.Entry(
                                                 symbologyType = SymbologyType.Interleaved25,
                                                 data = unitNumber.label
                                         )

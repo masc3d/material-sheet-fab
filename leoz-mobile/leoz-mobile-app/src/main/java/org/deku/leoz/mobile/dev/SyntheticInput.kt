@@ -5,7 +5,7 @@ import sx.aidc.SymbologyType
 /**
  * Collection of synthetic inputs
  */
-class SyntheticInputs(
+class SyntheticInput(
         val name: String,
         val entries: List<Entry>) {
 

@@ -6,7 +6,7 @@ import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
@@ -19,17 +19,17 @@ import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.requery.ObservableQuery
-import sx.rx.ObservableLazyRxProperty
-import sx.rx.ObservableRxProperty
-import sx.rx.connected
-import sx.rx.toHotReplay
+import sx.rx.*
 
 /**
  * Delivery list model
  * Created by masc on 18.06.17.
  */
-class DeliveryList {
+class DeliveryList : CompositeDisposableSupplier {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    override val compositeDisposable by lazy { CompositeDisposable() }
 
     private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
@@ -65,43 +65,32 @@ class DeliveryList {
     val loadedParcels = loadedParcelsQuery.result
 
     //region Counters
-    val orderTotalAmount = ObservableLazyRxProperty({
-        this.orderRepository.entities.size
-    })
+    val orderTotalAmount = orderRepository.entitiesProperty.map { it.value.count() }
+            .behave(this)
 
-    val stopTotalAmount = ObservableLazyRxProperty({
-        this.stopRepository.entities.size
-    })
+    val stopTotalAmount = stopRepository.entitiesProperty.map { it.value.count() }
+            .behave(this)
 
-    val parcelTotalAmount = ObservableLazyRxProperty({
-        this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.count()
-    })
+    val parcelTotalAmount = parcelRepository.entitiesProperty.map { it.value.count() }
+            .behave(this)
 
-    val totalWeight = ObservableLazyRxProperty({
-        this.orderRepository.entities.flatMap { it.parcels }.distinctBy { it.number }.sumByDouble { it.weight }
-    })
+    val totalWeight = parcelRepository.entitiesProperty.map { it.value.sumByDouble { it.weight } }
+            .behave(this)
 
-    val orderAmount = loadedParcels.map { it.value.map { it.order }.distinct().count() }.replay(1).connected()
+    val orderAmount = loadedParcels.map { it.value.map { it.order }.distinct().count() }
+            .behave(this)
 
-    val parcelAmount = loadedParcels.map { it.value.count() }.replay(1).connected()
+    val parcelAmount = loadedParcels.map { it.value.count() }
+            .behave(this)
 
-    val stopAmount = loadedParcels.map { it.value.flatMap { it.order.tasks }.map { it.stop }.distinct().count() }.replay(1).connected()
+    val stopAmount = loadedParcels.map { it.value.flatMap { it.order.tasks }.map { it.stop }.distinct().count() }
+            .behave(this)
 
-    val weight = loadedParcels.map { it.value.sumByDouble { it.weight } }.replay(1).connected()
+    val weight = loadedParcels.map { it.value.sumByDouble { it.weight } }
+            .behave(this)
     //endregion
 
     init {
-        // Re-evaluate counters reactively
-        this.orderRepository.entitiesProperty.subscribe {
-            this.orderTotalAmount.reset()
-            this.parcelTotalAmount.reset()
-            this.totalWeight.reset()
-        }
-
-        this.stopRepository.entitiesProperty.subscribe {
-            this.stopTotalAmount.reset()
-        }
-
         this.parcelRepository.entitiesProperty.subscribe {
             it.value.forEach { parcel ->
                 parcel.loadingStateProperty.subscribe {
@@ -109,6 +98,8 @@ class DeliveryList {
                 }
             }
         }
+
+        log.info("COMPOSITES ${compositeDisposable.size()}")
     }
 
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
