@@ -89,7 +89,7 @@ class MenuScreen : ScreenFragment() {
         }
     }
 
-    private var listener: Listener? = this.activity as? Listener
+    private val listener by lazy { this.activity as? Listener }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
