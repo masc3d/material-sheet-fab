@@ -45,7 +45,7 @@ interface ParcelServiceV1 {
             val longitude: Double? = null,
             //proposal/experimental for other events in future...
             val fromStation: Boolean = true, //maybe there will be a new app for line... and there are events for both e.g. damaged & photo
-            val from: String,//lineNo or StationNo
+            val from: String?=null,//lineNo or StationNo
             val additionalInfo: AdditionalInfo = AdditionalInfo.EmptyInfo
             /** proposal/experimental for other events in future...
             val deliveredInfo: DeliveredInfo? = null,
