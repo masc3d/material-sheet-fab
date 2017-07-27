@@ -1,4 +1,4 @@
-import { Component, Inject, Renderer2 } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 
 import { MenuItem } from 'primeng/primeng';
@@ -16,7 +16,7 @@ import { AbstractTranslateComponent } from 'app/core/translate/abstract-translat
   `
 
 } )
-export class LeftMenuComponent extends AbstractTranslateComponent {
+export class LeftMenuComponent extends AbstractTranslateComponent implements OnInit {
 
   items: MenuItem[];
 
