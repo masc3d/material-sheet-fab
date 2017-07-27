@@ -58,7 +58,13 @@ open class ParcelServiceV1 :
         events.forEach {
             val r: TblstatusRecord
             r = dslContext.newRecord(Tables.TBLSTATUS)
-            r.packstuecknummer = it.parcelNumber.toDouble()
+            val parcelNo=parcelRepository.getUnitNo(it.parcelId)
+            parcelNo ?:
+                throw DefaultProblem(
+                        title = "Missing parcelNo"
+                )
+            r.packstuecknummer=parcelNo
+            //r.packstuecknummer = it.parcelScancode.toDouble()
 //            r.erzeugerstation = it.eventValue.toString()
             r.datum = SimpleDateFormat("yyyyMMdd").parse(it.time.toLocalDate().toString()).toString()
             r.zeit = SimpleDateFormat("HHmm").parse(it.time.toLocalDate().toString()).toString()
@@ -93,7 +99,8 @@ open class ParcelServiceV1 :
                                 is AdditionalInfo.DeliveredInfo -> {
 
                                     r.text = addInfo.recipient ?: ""
-                                    saveSignature(it.time, addInfo.signature, it.parcelNumber, message.nodeId)
+                                    //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
+                                    saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
                                 }
                             }
                         }
@@ -105,7 +112,8 @@ open class ParcelServiceV1 :
                                 )
                                 is AdditionalInfo.DeliveredAtNeighborInfo -> {
                                     r.text = addInfo.name ?: "" + ";adr " + addInfo.address ?: ""
-                                    saveSignature(it.time, addInfo.signature, it.parcelNumber, message.nodeId)
+                                    //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
+                                    saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
                                 }
                             }
                         }
