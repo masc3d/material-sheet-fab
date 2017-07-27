@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn } from '@angular/forms';
 import { Response } from '@angular/http';
-import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
 import { SelectItem } from 'primeng/primeng';
@@ -18,9 +17,7 @@ import { AbstractTranslateComponent } from 'app/core/translate/abstract-translat
   selector: 'app-user-form',
   templateUrl: './user-form.component.html'
 } )
-export class UserFormComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
-
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+export class UserFormComponent extends AbstractTranslateComponent implements OnInit {
 
   dateFormatPrimeng: string;
 
@@ -96,12 +93,6 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
         expiresOn: activeUser.expiresOn ? new Date(activeUser.expiresOn) : activeUser.expiresOn
       } );
     } );
-  }
-
-  ngOnDestroy() {
-    super.ngOnDestroy();
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
   }
 
   private createStateOptions(): SelectItem[] {

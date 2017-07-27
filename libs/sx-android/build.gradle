@@ -3,8 +3,9 @@ buildscript {
         jcenter()
     }
     ext {
-        v_android_buildtools = '26.0.0'
-        v_android_support = '25.4.0'
+        v_android_buildtools = '26.0.1'
+        v_android_support = '26.0.0'
+        v_android_test = '1.0.0'
         v_anko = '0.10.1'
         v_javamail = '1.6.0'
         v_junit = '4.12'
@@ -138,8 +139,8 @@ dependencies {
             "junit:junit:$v_junit",
 
             "com.android.support:support-annotations:$v_android_support",
-            "com.android.support.test:runner:0.5",
-            "com.android.support.test:rules:0.5",
+            "com.android.support.test:runner:$v_android_test",
+            "com.android.support.test:rules:$v_android_test",
 
             // Logging
             dependencies.create("com.github.tony19:logback-android-classic:1.1.1-6") {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
@@ -45,7 +45,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
     </p-dataTable>
   `
 } )
-export class UserListComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
+export class UserListComponent extends AbstractTranslateComponent implements OnInit {
 
   users: Observable<User[]>;
   dateFormat: string;
@@ -63,10 +63,6 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
     this.selected( <User> {} );
     this.users = this.userService.users;
     this.userService.getUsers();
-  }
-
-  ngOnDestroy() {
-    super.ngOnDestroy();
   }
 
   selected( selectedUser: User ) {

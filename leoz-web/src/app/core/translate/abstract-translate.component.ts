@@ -6,7 +6,7 @@ import { TranslateService } from './translate.service';
 
 export class AbstractTranslateComponent implements OnInit, OnDestroy {
 
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  protected ngUnsubscribe: Subject<void> = new Subject<void>();
 
   dateFormat: string;
   dateFormatPrimeng: string;

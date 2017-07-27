@@ -13,7 +13,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.jakewharton.rxbinding2.widget.RxAbsListView
 import kotlinx.android.synthetic.main.item_delivery_menu_entry.view.*
 import kotlinx.android.synthetic.main.screen_menu.*
 
@@ -22,7 +21,6 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.getLayoutInflater
@@ -91,7 +89,7 @@ class MenuScreen : ScreenFragment() {
         }
     }
 
-    private var listener: Listener? = null
+    private val listener by lazy { this.activity as? Listener }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,14 +113,14 @@ class MenuScreen : ScreenFragment() {
                 entries = mutableListOf(
                         MenuEntry(
                                 entryType = MenuEntry.Entry.LOADING,
-                                description = "Fahrzeugbeladung",
+                                description = this.getText(R.string.vehicle_loading).toString(),
                                 counter = delivery.countParcelsToBeVehicleLoaded(),
                                 counter2 = delivery.countParcelsToBeVehicleUnLoaded(),
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
                         ),
                         MenuEntry(
                                 entryType = MenuEntry.Entry.ORDERLIST,
-                                description = "Auftragsliste",
+                                description = this.getText(R.string.order_list).toString(),
                                 counter = delivery.stopList.filter {
                                     it.state == Stop.State.PENDING &&
                                             it.tasks.map { it.order }.firstOrNull { it.state == Order.State.LOADED } != null }.size,
@@ -130,7 +128,7 @@ class MenuScreen : ScreenFragment() {
                         )
                 ))
 
-        this.uxMenuList.setOnItemClickListener { parent, view, position, id ->
+        this.uxMenuList.setOnItemClickListener { _, _, position, _ ->
             onEntryPressed(
                     entry = (this.uxMenuList.getItemAtPosition(position) as MenuEntry)
             )
@@ -138,27 +136,11 @@ class MenuScreen : ScreenFragment() {
     }
 
     fun onEntryPressed(entry: MenuEntry) {
-        if (listener != null) {
-            listener!!.onDeliveryMenuChoosed(entry.entryType)
-        }
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context is Listener) {
-            listener = context as Listener?
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement Listener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+        listener?.onDeliveryMenuSelection(entry.entryType)
     }
 
     interface Listener {
         // TODO: Update argument type and name
-        fun onDeliveryMenuChoosed(entryType: MenuEntry.Entry)
+        fun onDeliveryMenuSelection(entryType: MenuEntry.Entry)
     }
 }

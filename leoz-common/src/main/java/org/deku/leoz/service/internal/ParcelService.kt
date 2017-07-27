@@ -1,6 +1,7 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
+import org.deku.leoz.model.AdditionalInfo
 import sx.io.serialization.Serializable
 import java.util.*
 import javax.ws.rs.Consumes
@@ -42,25 +43,16 @@ interface ParcelServiceV1 {
             val time: Date = Date(),
             val latitude: Double? = null,
             val longitude: Double? = null,
-
+            //proposal/experimental for other events in future...
+            val fromStation: Boolean = true, //maybe there will be a new app for line... and there are events for both e.g. damaged & photo
+            val additionalInfo: AdditionalInfo = AdditionalInfo.EmptyInfo
+            /** proposal/experimental for other events in future...
             val deliveredInfo: DeliveredInfo? = null,
             val deliveredAtNeighborInfo: DeliveredAtNeighborInfo? = null,
             val notDeliveredRefusedInfo: NotDeliveredRefusedInfo? = null
+             **/
     )
 
-    data class DeliveredInfo(
-            val recipient: String? = null,
-            val signature: String? = null
-    )
 
-    data class DeliveredAtNeighborInfo(
-            val name: String? = null,
-            val address: String? = null,
-            val signature: String? = null
-    )
-
-    data class NotDeliveredRefusedInfo(
-            val cause: String? = null
-    )
 }
 

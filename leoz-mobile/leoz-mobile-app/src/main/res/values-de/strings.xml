@@ -198,4 +198,6 @@
     <string name="loaded">Beladen</string>
     <string name="reset">Zurücksetzen</string>
     <string name="authentication_failed">Authentifizierung fehlgeschglagen</string>
+    <string name="vehicle_loading">Fahrzeugbeladung</string>
+    <string name="order_list">Auftragsliste</string>
 </resources>
