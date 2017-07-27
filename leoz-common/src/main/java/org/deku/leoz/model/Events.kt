@@ -32,23 +32,23 @@ enum class EventDeliveredReason(val reason: Reason) {
     Postbox(Reason.POSTBOX)    // kein text + Foto             // nur wenn SKZ 268435456 (Briefkastenzustellung möglich) gesetzt
 }
 
-enum class EventNotDeliveredReason(val id: Int) {
-    Absent(500),
-    Refuse(503), // 1 Text :                      Wer? / Warum?
-    Vacation(504), //  1Text + shortdate         : Wie lange?
-    AddressWrong(507), // Text               : Richtige Adresse?
-    Moved(509), // Text                       : Neue Adresse?
-    Unknown(510),
-    Damaged(513), //  Foto + text          Packstück bleibt in der Auswahl
-    XC_CodeWrong(516),
-    XC_ObjectDamaged(517),
-    XC_ObjectWrong(518),
-    SignatureRefused(519), // Text : Warum?
-    CouldWantNotPay(521),
-    IdentDocNotPresent(524),
-    XC_ObjectNotReady(529),
-    PIN_IMEI_Wrong(532),
-    WaitTime(555)               // Text : Wartezeit (min)?   // Packstück bleibt in der Auswahl   // Unterschrift nach eingabe anfordern  // Kyboard auf Num stellen
+enum class EventNotDeliveredReason(val reason: Reason) {
+    Absent(Reason.CUSTOMER_ABSENT),
+    Refuse(Reason.CUSTOMER_REFUSED), // 1 Text :                      Wer? / Warum?
+    Vacation(Reason.CUSTOMER_VACATION), //  1Text + shortdate         : Wie lange?
+    AddressWrong(Reason.ADDRESS_WRONG), // Text               : Richtige Adresse?
+    Moved(Reason.CUSTOMER_MOVED), // Text                       : Neue Adresse?
+    //TODO Unknown(510),
+    Damaged(Reason.PARCEL_DAMAGED), //  Foto + text          Packstück bleibt in der Auswahl
+    XC_CodeWrong(Reason.EXCHANGE_CODE_CHECK_FAILED),
+    XC_ObjectDamaged(Reason.EXCHANGE_OBJECT_DAMAGED),
+    XC_ObjectWrong(Reason.EXCHANGE_OBJECT_WRONG),
+    SignatureRefused(Reason.SIGNATURE_REFUSED), // Text : Warum?
+    CouldWantNotPay(Reason.CUSTOMER_DID_OR_COULD_NOT_PAY),
+    IdentDocNotPresent(Reason.IDENT_DOCUMENT_NOT_THERE),
+    XC_ObjectNotReady(Reason.EXCHANGE_OBJECT_NOT_READY),
+    PIN_IMEI_Wrong(Reason.PIN_IMEI_CHECK_FAILED)
+    //TODO WaitTime(555)               // Text : Wartezeit (min)?   // Packstück bleibt in der Auswahl   // Unterschrift nach eingabe anfordern  // Kyboard auf Num stellen
 }
 
 // Events
