@@ -11,6 +11,8 @@
 
     <string name="authority">Authority</string>
 
+    <string name="authentication_failed">Authentication failed</string>
+
     <string name="back">Back</string>
 
     <string name="cancel">Cancel</string>

@@ -197,4 +197,5 @@
     <string name="yes_start_tour">Ja, Tour starten</string>
     <string name="loaded">Beladen</string>
     <string name="reset">Zurücksetzen</string>
+    <string name="authentication_failed">Authentifizierung fehlgeschglagen</string>
 </resources>
