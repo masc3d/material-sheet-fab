@@ -86,8 +86,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # information on available options.
 
   # masc20140721. virtual box specific machine changes
-  config.vm.provider "virtualbox" do |v|
+  config.vm.provider "hyperv" do |v, override|
+    override.vm.box = "hashicorp/precise64"
+    v.memory = 2048
+    v.cpus = 1
+  end
+  
+  config.vm.provider "virtualbox" do |v, override|
     # Don't boot with headless mode
+	override.vm.box = "masc/ubuntu-16.04"
     v.name = "leoz-dev"
     v.gui = true
     v.memory = 2048

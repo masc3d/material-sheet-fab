@@ -75,7 +75,7 @@ open class ParcelServiceV1 :
             r.fehlercode = reason.oldValue.toUInteger()
 
             when (event) {
-                Event.AUSGELIEFERT -> {
+                Event.DELIVERED -> {
                     when (reason) {
                         Reason.NORMAL -> {
                             if (it.deliveredInfo == null)
@@ -92,7 +92,7 @@ open class ParcelServiceV1 :
                     }
                 }
 
-                Event.ZUSTELLHINDERNIS -> {
+                Event.DELIVERY_FAIL -> {
 
                 }
             }
