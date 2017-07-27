@@ -3,8 +3,8 @@ buildscript {
         jcenter()
     }
     ext {
-        v_android_buildtools = '26.0.0'
-        v_android_support = '25.4.0'
+        v_android_buildtools = '26.0.1'
+        v_android_support = '26.0.0'
         v_anko = '0.10.1'
         v_javamail = '1.6.0'
         v_junit = '4.12'
