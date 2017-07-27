@@ -71,3 +71,40 @@ class EventNotDelivered(reason: EventNotDeliveredReason
         event = EventType.NotDelivered,
         reason = reason
 )
+
+/**
+ * TODO: Just a draft/experiment (PHPR)
+ */
+class EventReasonAssosiation {
+    val eventReasonMap = mapOf(
+            Pair(
+                    Event.DELIVERED,
+                    listOf(
+                            Reason.NORMAL,
+                            Reason.NEIGHBOUR,
+                            Reason.POSTBOX
+                    )
+            ),
+
+            Pair(
+                    Event.DELIVERY_FAIL,
+                    listOf(
+                            Reason.CUSTOMER_ABSENT,
+                            Reason.CUSTOMER_REFUSED, // 1 Text :                      Wer? / Warum?
+                            Reason.CUSTOMER_VACATION, //  1Text + shortdate         : Wie lange?
+                            Reason.ADDRESS_WRONG, // Text               : Richtige Adresse?
+                            Reason.CUSTOMER_MOVED, // Text                       : Neue Adresse?
+                            //TODO Unknown(510),
+                            Reason.PARCEL_DAMAGED, //  Foto + text          Packstück bleibt in der Auswahl
+                            Reason.EXCHANGE_CODE_CHECK_FAILED,
+                            Reason.EXCHANGE_OBJECT_DAMAGED,
+                            Reason.EXCHANGE_OBJECT_WRONG,
+                            Reason.SIGNATURE_REFUSED, // Text : Warum?
+                            Reason.CUSTOMER_DID_OR_COULD_NOT_PAY,
+                            Reason.IDENT_DOCUMENT_NOT_THERE,
+                            Reason.EXCHANGE_OBJECT_NOT_READY,
+                            Reason.PIN_IMEI_CHECK_FAILED
+                    )
+            )
+    )
+}
