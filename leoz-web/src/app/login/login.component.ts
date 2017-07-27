@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Response } from '@angular/http';
 import { AuthenticationService } from '../core/auth/authentication.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/takeUntil';
+
 import { Msg } from '../shared/msg/msg.model';
 import { MsgService } from '../shared/msg/msg.service';
 
@@ -12,8 +14,8 @@ import { MsgService } from '../shared/msg/msg.service';
   templateUrl: './login.component.html'
 } )
 export class LoginComponent implements OnInit, OnDestroy {
-  subscription: Subscription;
-  subscriptionMsg: Subscription;
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   loading = false;
 
@@ -28,7 +30,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.msgService.clear();
-    this.subscriptionMsg = this.msgService.msg.subscribe((msg: Msg) => this.errMsg = msg);
+    this.msgService.msg
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( msg: Msg ) => this.errMsg = msg );
+
     // reset login status
     this.authenticationService.logout();
 
@@ -39,17 +44,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-    if (this.subscriptionMsg) {
-      this.subscriptionMsg.unsubscribe();
-    }
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   login() {
     this.loading = true;
-    this.subscription = this.authenticationService.login( this.loginForm.value.username, this.loginForm.value.password )
+    this.authenticationService.login( this.loginForm.value.username, this.loginForm.value.password )
       .subscribe(
         ( resp: Response ) => {
           if (resp.status === 200) {
@@ -57,12 +58,12 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate( [ 'dashboard/home' ] );
           } else {
             this.loading = false;
-            this.msgService.handleResponse(resp);
+            this.msgService.handleResponse( resp );
           }
         },
         ( error: Response ) => {
           this.loading = false;
-          this.msgService.handleResponse(error);
+          this.msgService.handleResponse( error );
         } );
   }
 

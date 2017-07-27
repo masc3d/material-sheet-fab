@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Response } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+
 import { UserService } from '../user.service';
 import { User } from '../user.model';
-import { Subscription } from 'rxjs/Subscription';
-import { Response } from '@angular/http';
 import { MsgService } from '../../../shared/msg/msg.service';
-import { Observable } from 'rxjs/Observable';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 
@@ -50,8 +50,6 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
   users: Observable<User[]>;
   dateFormat: string;
 
-  private subscriptionCRUD: Subscription;
-
   constructor( private userService: UserService,
                private msgService: MsgService,
                public translate: TranslateService ) {
@@ -69,9 +67,6 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
 
   ngOnDestroy() {
     super.ngOnDestroy();
-    if (this.subscriptionCRUD) {
-      this.subscriptionCRUD.unsubscribe();
-    }
   }
 
   selected( selectedUser: User ) {
@@ -84,7 +79,7 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
 
   protected deactivateUser( originEmail: string ) {
     if (originEmail && originEmail.length > 0) {
-      this.subscriptionCRUD = this.userService.update( { active: false }, originEmail )
+      this.userService.update( { active: false }, originEmail )
         .subscribe(
           ( resp: Response ) => {
             if (resp.status === 204) {

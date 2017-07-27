@@ -37,18 +37,10 @@ export class TourDriverListComponent implements OnInit {
                private roleGuard: RoleGuard ) {
   }
 
-  private showButtons(): boolean {
-    this.isPermitted = false;
-    if (this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
-      this.isPermitted = true;
-    }
-    return this.isPermitted;
-  }
-
   ngOnInit() {
     this.drivers = this.driverService.drivers;
     this.driverService.getDrivers();
-    this.showButtons();
+    this.isPermitted =  (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.filterName = 'driverfilter';
   }
 

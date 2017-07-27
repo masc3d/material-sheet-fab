@@ -1,9 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { TourService } from '../tour.service';
-import { Position } from '../position.model';
 import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/takeUntil';
+
 import { MapComponent } from '@yaga/leaflet-ng2';
 import Point = L.Point;
+
+import { TourService } from '../tour.service';
+import { Position } from '../position.model';
 
 @Component( {
   selector: 'app-tour-map',
@@ -30,6 +34,8 @@ import Point = L.Point;
 } )
 export class TourMapComponent implements OnInit, OnDestroy {
 
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   markerLat: number;
   markerLng: number;
   displayMarker: boolean;
@@ -41,30 +47,30 @@ export class TourMapComponent implements OnInit, OnDestroy {
   @ViewChild( 'yagaMap' )
   yagaMap: MapComponent;
 
-  private subscriptionDisplay: Subscription;
-  private subscriptionMarker: Subscription;
-
-  private subscriptionDisplayRoute: Subscription;
-  private subscriptionRoute: Subscription;
   private bbox: L.LatLngBounds;
 
   constructor( private tourService: TourService ) {
   }
 
   ngOnInit(): void {
-    // console.log( 'yagaMap', this.yagaMap );
 
-    this.subscriptionDisplay = this.tourService.displayMarker.subscribe( ( displayMarker: boolean ) => {
+    this.tourService.displayMarker
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe( ( displayMarker: boolean ) => {
       this.displayMarker = displayMarker;
     } );
 
-    this.subscriptionDisplayRoute = this.tourService.displayRoute.subscribe( ( displayRoute: boolean ) => {
+    this.tourService.displayRoute
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe( ( displayRoute: boolean ) => {
       if (!displayRoute) {
         this.routeGeoJson = this.createGeoJson( [] );
       }
     } );
 
-    this.subscriptionMarker = this.tourService.activeMarker.subscribe( ( activeMarker: Position ) => {
+    this.tourService.activeMarker
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe( ( activeMarker: Position ) => {
       switch (activeMarker.vehicleType) {
         case Position.VehicleType.BIKE:
           this.iconUrl = 'assets/css/images/bike-icon.png';
@@ -92,7 +98,9 @@ export class TourMapComponent implements OnInit, OnDestroy {
       this.yagaMap.flyTo( L.latLng( activeMarker.latitude, activeMarker.longitude ) );
     } );
 
-    this.subscriptionRoute = this.tourService.activeRoute.subscribe( ( activeRoute: Position[] ) => {
+    this.tourService.activeRoute
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe( ( activeRoute: Position[] ) => {
       this.routeGeoJson = this.createGeoJson( activeRoute );
       if (this.bbox) {
         this.yagaMap.fitBounds( this.bbox );
@@ -101,12 +109,8 @@ export class TourMapComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.subscriptionDisplay) {
-      this.subscriptionDisplay.unsubscribe();
-    }
-    if (this.subscriptionMarker) {
-      this.subscriptionMarker.unsubscribe();
-    }
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private createGeoJson( activeRoute: Position[] ): any {

@@ -8,7 +8,6 @@ import 'rxjs/add/observable/of';
 import { environment } from '../../../environments/environment';
 import { Driver } from './driver.model';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
-import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 export class DriverService {
@@ -17,11 +16,6 @@ export class DriverService {
 
   private driversSubject = new BehaviorSubject<Driver[]>( [] );
   public drivers = this.driversSubject.asObservable().distinctUntilChanged();
-
-  private activeDriverSubject = new BehaviorSubject<Driver>( <Driver> {} );
-  public activeDriver = this.activeDriverSubject.asObservable().distinctUntilChanged();
-
-  private subscription: Subscription;
 
   constructor( private http: Http ) {
   }
@@ -34,7 +28,7 @@ export class DriverService {
       search: new URLSearchParams()
     } );
 
-    this.subscription = this.http.get( this.driverListUrl, options )
+    this.http.get( this.driverListUrl, options )
       .subscribe( ( response: Response ) => this.driversSubject.next( <Driver[]> response.json() ),
         ( error: Response ) => {
           console.log( error );

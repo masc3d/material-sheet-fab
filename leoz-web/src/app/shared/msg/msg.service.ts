@@ -23,7 +23,6 @@ export class MsgService {
   }
 
   handleResponse( resp: Response ): void {
-    console.log( resp );
     this.msgSubject.next( <Msg> {
       text: resp.json().title || 'webservice not available',
       alertStyle: 'ui-messages-error'

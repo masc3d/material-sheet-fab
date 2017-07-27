@@ -2,15 +2,10 @@ import { Injectable } from '@angular/core';
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/observable/of';
 
 import { User } from './user.model';
 import { environment } from '../../../environments/environment';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
-import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 export class UserService {
@@ -22,8 +17,6 @@ export class UserService {
 
   private activeUserSubject = new BehaviorSubject<User>( <User> {} );
   public activeUser = this.activeUserSubject.asObservable().distinctUntilChanged();
-
-  private subscription: Subscription;
 
   constructor( private http: Http ) {
   }
@@ -57,7 +50,7 @@ export class UserService {
       search: new URLSearchParams()
     } );
 
-    this.subscription = this.http.get( this.userListUrl, options )
+    this.http.get( this.userListUrl, options )
       .subscribe( ( response: Response ) => this.usersSubject.next( <User[]> response.json() ),
         ( error: Response ) => {
           console.log( error );
