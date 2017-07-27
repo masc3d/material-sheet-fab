@@ -25,6 +25,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 apply from: 'versions.gradle'
+apply from: 'common.gradle'
 
 def assertJvmVersion(String vmVersion) {
     def jvm = ManagementFactory.getRuntimeMXBean()
