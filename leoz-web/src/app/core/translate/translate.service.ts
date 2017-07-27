@@ -1,4 +1,6 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
+
 import { DATEFORMATS } from './dateformats';
 import { Translation } from './translation';
 import { environment } from '../../../environments/environment';
@@ -8,7 +10,7 @@ import { User } from '../../dashboard/user/user.model';
 @Injectable()
 export class TranslateService {
 
-  public onLangChanged: EventEmitter<string> = new EventEmitter<string>();
+  public onLangChanged: Subject<string> = new Subject<string>();
   private curLang: string;
 
   constructor( private transl: Translation ) {
@@ -17,7 +19,7 @@ export class TranslateService {
   public use( lang: string ): void {
     // set current language
     this.curLang = lang;
-    this.onLangChanged.emit( lang );
+    this.onLangChanged.next( lang );
   }
 
   public setDateformat( flavor?: string ): string {

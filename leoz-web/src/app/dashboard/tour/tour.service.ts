@@ -4,7 +4,6 @@ import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { environment } from '../../../environments/environment';
 import { Position } from './position.model';
-import { Subscription } from 'rxjs/Subscription';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 import { MsgService } from '../../shared/msg/msg.service';
 import { Driver } from './driver.model';
@@ -26,12 +25,11 @@ export class TourService {
 
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
   private routeUrl = `${environment.apiUrl}/internal/v2/location`;
-  private subscription: Subscription;
 
   constructor( private http: Http, private msgService: MsgService ) {
   }
 
-  getLocation( userId: number ): Observable<Response> {
+  private getLocation( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
@@ -45,7 +43,7 @@ export class TourService {
     return this.http.get( this.locationUrl, options );
   }
 
-  getRoute( userId: number ): Observable<Response> {
+  private getRoute( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
@@ -61,7 +59,7 @@ export class TourService {
   }
 
   changeActiveMarker( selectedDriver: Driver ) {
-    this.subscription = this.getLocation( selectedDriver.id )
+    this.getLocation( selectedDriver.id )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
@@ -82,7 +80,7 @@ export class TourService {
   }
 
   changeActiveRoute( selectedDriver ) {
-    this.subscription = this.getRoute( selectedDriver.id )
+    this.getRoute( selectedDriver.id )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {

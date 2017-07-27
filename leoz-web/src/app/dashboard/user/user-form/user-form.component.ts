@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn } from '@angular/forms';
 import { Response } from '@angular/http';
-import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/takeUntil';
 
 import { SelectItem } from 'primeng/primeng';
 
@@ -18,6 +19,9 @@ import { AbstractTranslateComponent } from 'app/core/translate/abstract-translat
   templateUrl: './user-form.component.html'
 } )
 export class UserFormComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+
   dateFormatPrimeng: string;
 
   locale: any;
@@ -26,9 +30,6 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
   activeUser: User;
 
   userForm: FormGroup;
-  private subscriptionCRUD: Subscription;
-  private subscriptionMsg: Subscription;
-  private subscriptionActiveUser: Subscription;
   private loading = false;
   public errMsg: Msg;
 
@@ -51,7 +52,9 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
     this.roleOptions = this.createRoleOptions();
     this.stateOptions = this.createStateOptions();
 
-    this.subscriptionMsg = this.msgService.msg.subscribe( ( msg: Msg ) => this.errMsg = msg );
+    this.msgService.msg
+      .takeUntil(this.ngUnsubscribe).
+      subscribe( ( msg: Msg ) => this.errMsg = msg );
     this.msgService.clear();
     this.userForm = this.fb.group( {
       emailOrigin: [ null ],
@@ -64,10 +67,11 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
       expiresOn: [ null ]
-      // "expiresOn": "2017-03-16T17:00:00.000Z"
     } );
 
-    this.subscriptionActiveUser = this.userService.activeUser.subscribe( ( activeUser: User ) => {
+    this.userService.activeUser
+      .takeUntil(this.ngUnsubscribe)
+      .subscribe( ( activeUser: User ) => {
       this.activeUser = activeUser;
       const passwordControl = this.userForm.get( 'password' );
       const validators = <ValidatorFn[]> [];
@@ -96,15 +100,8 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   ngOnDestroy() {
     super.ngOnDestroy();
-    if (this.subscriptionCRUD) {
-      this.subscriptionCRUD.unsubscribe();
-    }
-    if (this.subscriptionActiveUser) {
-      this.subscriptionActiveUser.unsubscribe();
-    }
-    if (this.subscriptionMsg) {
-      this.subscriptionMsg.unsubscribe();
-    }
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   private createStateOptions(): SelectItem[] {
@@ -154,13 +151,12 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
   }
 
   protected createUser( userData: any ) {
-    this.subscriptionCRUD = this.userService.insert( userData )
+    this.userService.insert( userData )
       .subscribe(
         ( resp: Response ) => {
           if (resp.status === 204) {
             this.loading = false;
             this.msgService.success( this.translate.instant('UserInsertSuccessful') )
-            // this.msgService.success( 'User insert successful' );
             this.clearActiveUser();
             this.userService.getUsers();
           } else {
@@ -175,7 +171,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
   }
 
   protected updateUser( userData: any, originEmail: string ) {
-    this.subscriptionCRUD = this.userService.update( userData, originEmail )
+    this.userService.update( userData, originEmail )
       .subscribe(
         ( resp: Response ) => {
           if (resp.status === 204) {

@@ -26,7 +26,7 @@ export class AuthenticationService {
     this.router.navigate( [ 'login' ] );
   }
 
-  login( username: string, password: string ): Observable<any> {
+  login( username: string, password: string ): Observable<Response> {
 
     const options = new RequestOptions( { headers: ApiKeyHeaderFactory.headers() } );
 
