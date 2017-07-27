@@ -241,10 +241,13 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="user">User</string>
 
+    <string name="vehicle_loading">Vehicle loading</string>
+
     <string name="version">Version</string>
     <string name="version_available">v%s is available</string>
 
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
+    <string name="order_list">Order list</string>
 </resources>
