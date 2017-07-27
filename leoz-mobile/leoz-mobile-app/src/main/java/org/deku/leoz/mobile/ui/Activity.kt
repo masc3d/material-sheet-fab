@@ -20,6 +20,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
+import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -117,6 +118,11 @@ open class Activity : RxAppCompatActivity(),
     /** Currently active synthetic inputs */
     private var syntheticInputsProperty = ObservableRxProperty<List<SyntheticInput>>(listOf())
     var syntheticInputs by syntheticInputsProperty
+
+    /** Snackbar builder to use with this activity */
+    val snackbarBuilder by lazy {
+        SnackbarBuilder(this.uxCoordinatorLayout)
+    }
 
     /**
      * Responsible for controlling header
@@ -524,14 +530,14 @@ open class Activity : RxAppCompatActivity(),
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onNext = { event ->
-                            val sb = Snackbar.make(
-                                    this.uxCoordinatorLayout,
-                                    this@Activity.getString(R.string.version_available, event.version),
-                                    Snackbar.LENGTH_INDEFINITE)
-                            sb.setAction(R.string.update, {
-                                event.apk.install(this@Activity)
-                            })
-                            sb.show()
+                            this.snackbarBuilder
+                                    .message(this@Activity.getString(R.string.version_available, event.version))
+                                    .duration(Snackbar.LENGTH_INDEFINITE)
+                                    .actionText(R.string.update)
+                                    .actionClickListener {
+                                        event.apk.install(this@Activity)
+                                    }
+                                    .build().show()
                         })
 
 

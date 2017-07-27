@@ -91,10 +91,10 @@ class MainActivity
 
         tone.errorBeep()
 
-        Snackbar.make(this.snackbarParentView,
-                "Login failed",
-                Snackbar.LENGTH_SHORT
-        )
+        this.snackbarBuilder
+                .message(R.string.authentication_failed)
+                .duration(Snackbar.LENGTH_SHORT)
+                .build()
                 .show()
     }
     //endregion
