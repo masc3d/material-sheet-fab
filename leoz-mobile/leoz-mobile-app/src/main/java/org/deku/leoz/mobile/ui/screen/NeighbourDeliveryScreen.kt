@@ -5,12 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.screen_neighbour_delivery.*
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.model.EventDeliveredReason
-import org.parceler.Parcel
 
 /**
  * Created by phpr on 10.07.2017.
@@ -20,9 +25,14 @@ class NeighbourDeliveryScreen : ScreenFragment() {
     private lateinit var stop: Stop
 
     companion object {
-        fun create(stop: Stop): NeighbourDeliveryScreen {
+        private val db: Database by Kodein.global.lazy.instance()
+
+        fun create(stopId: Int): NeighbourDeliveryScreen {
             val s = NeighbourDeliveryScreen()
-            s.stop = stop
+            s.stop = db.store.select(StopEntity::class)
+                        .where(StopEntity.ID.eq(stopId))
+                        .get()
+                        .first()
             return s
         }
     }

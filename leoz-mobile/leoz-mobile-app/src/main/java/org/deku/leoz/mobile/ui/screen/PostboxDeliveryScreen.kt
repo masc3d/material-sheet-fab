@@ -13,8 +13,14 @@ import sx.android.fragment.CameraFragment
 import kotlinx.android.synthetic.main.screen_postbox_delivery.*
 import android.graphics.BitmapFactory
 import com.flurgle.camerakit.CameraKit
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
@@ -52,12 +58,16 @@ class PostboxDeliveryScreen: ScreenFragment(), CameraFragment.Listener {
 
 
     companion object {
+        private val db: Database by Kodein.global.lazy.instance()
         val stateProperty = ObservableRxProperty<State>(State.TAKE_PICTURE)
         var state by stateProperty
 
-        fun create(stop: Stop): PostboxDeliveryScreen {
+        fun create(stopId: Int): PostboxDeliveryScreen {
             val f = PostboxDeliveryScreen()
-            f.stop = stop
+            f.stop = db.store.select(StopEntity::class)
+                    .where(StopEntity.ID.eq(stopId))
+                    .get()
+                    .first()
             return f
         }
 
