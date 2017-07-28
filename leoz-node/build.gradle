@@ -64,7 +64,7 @@ apply plugin: 'sx-packager'
 
 group = 'org.deku.leoz'
 sourceCompatibility = 1.8
-version = '0.66-SNAPSHOT'
+version = '0.67-SNAPSHOT'
 mainClassName = 'org.deku.leoz.node.Main'
 
 //region Constants

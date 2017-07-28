@@ -333,8 +333,10 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
         participant.island = (rRoute.island != 0)
         participant.earliestTimeOfDelivery = rRoute.etod!!.toShortTime()
         participant.term = rRoute.term!!
-        if (rRoute.ltodsa != null)
-            participant.sundayDeliveryUntil = rRoute.ltodsa.toShortTime()
+        if (rRoute.saturdayOk != 0 && rRoute.ltodsa.toShortTime() != ShortTime(localTime = "00:00"))
+            participant.saturdayDeliveryUntil = rRoute.ltodsa.toShortTime()
+        if (rRoute.ltodholiday.toShortTime() != ShortTime(localTime = "00:00"))
+            participant.sundayDeliveryUntil = rRoute.ltodholiday.toShortTime()
 
         return participant
     }
