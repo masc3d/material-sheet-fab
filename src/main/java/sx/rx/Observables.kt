@@ -2,6 +2,7 @@ package sx.rx
 
 import io.reactivex.*
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.observables.ConnectableObservable
 import io.reactivex.rxkotlin.subscribeBy
@@ -125,6 +126,14 @@ fun <T> Observable<T>.retryWith(
             }
         }
     }
+}
+
+/**
+ * Bind disposable to a composite disposable
+ */
+fun <T : Disposable> T.bind(supplier: CompositeDisposableSupplier): T {
+    supplier.compositeDisposable.add(this)
+    return this
 }
 
 /**
