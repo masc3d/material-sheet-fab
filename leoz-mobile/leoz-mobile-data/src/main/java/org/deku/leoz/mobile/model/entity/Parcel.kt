@@ -5,6 +5,7 @@ import android.databinding.Observable
 import io.requery.*
 import org.deku.leoz.mobile.data.BR
 import sx.android.databinding.BaseRxObservable
+import java.util.*
 
 /**
  * Created by masc on 18.07.17.
@@ -35,6 +36,9 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var deliveryState: DeliveryState
     @get:Bindable
     abstract var isDamaged: Boolean
+    @get:Bindable
+    @get:Column(nullable = true)
+    abstract var modificationTime: Date?
 
     @get:Column(name = "`order`", nullable = true)
     @get:ManyToOne

@@ -5,7 +5,8 @@
     <color name="colorPrimaryDark">#214066</color>
     <color name="colorAccent">#f8ae18</color>
     <color name="colorDarkGrey">#494949</color>
-    <color name="colorGrey">#a9a9a9</color>
+    <color name="colorGrey">#797979</color>
+    <color name="colorLightGrey">#a9a9a9</color>
     <color name="colorDarkIcon">#777777</color>
     <color name="colorWhiteSmoke">#f5f5f5</color>
     <color name="colorRed">#ed4e40</color>

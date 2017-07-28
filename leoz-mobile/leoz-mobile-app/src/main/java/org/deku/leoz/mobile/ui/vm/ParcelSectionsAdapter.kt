@@ -11,6 +11,7 @@ import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 
 /**
+ * Parcel sections adapter
  * Created by masc on 28.07.17.
  */
 class ParcelSectionsAdapter
@@ -20,9 +21,6 @@ class ParcelSectionsAdapter
                 >(listOf(), null, true) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    private val _headerItems = mutableListOf<FlexibleExpandableVmItem<
-            ParcelSectionViewModel, ParcelViewModel>>()
 
     init {
         FlexibleAdapter.enableLogs(Log.Level.VERBOSE)
@@ -35,7 +33,9 @@ class ParcelSectionsAdapter
                 val adapter = this@ParcelSectionsAdapter
                 val item: Any? = adapter.getItem(position)
 
-                if (item != null && _headerItems.contains(item)) {
+                log.trace("HEADER ITEMS ${this@ParcelSectionsAdapter.headerItems.count()}")
+
+                if (item != null && this@ParcelSectionsAdapter.headerItems.contains(item)) {
                     val changed = (item != this.previousHeaderItem)
 
                     // Select & collapse
@@ -62,7 +62,7 @@ class ParcelSectionsAdapter
 
         this.setStickyHeaders(true)
         this.showAllHeaders()
-//        this.setAutoCollapseOnExpand(true)
+        this.setAutoCollapseOnExpand(true)
         this.collapseAll()
     }
 
@@ -114,8 +114,6 @@ class ParcelSectionsAdapter
 
         headerItem.isSelectable = true
 
-        // Store expandable/header item in our own list, as expanding will
-        _headerItems.add(headerItem)
         this.addItem(headerItem)
 
         this.collapseAll()

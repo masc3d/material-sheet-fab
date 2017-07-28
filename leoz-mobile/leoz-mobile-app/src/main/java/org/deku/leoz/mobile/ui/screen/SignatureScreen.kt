@@ -106,7 +106,7 @@ class SignatureScreen
                 ),
                 ActionItem(
                         id = R.id.action_signature_clear,
-                        colorRes = R.color.colorGrey,
+                        colorRes = R.color.colorLightGrey,
                         iconRes = R.drawable.ic_circle_cancel
                 ),
                 ActionItem(
