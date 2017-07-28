@@ -45,13 +45,19 @@ class DeliveryList : CompositeDisposableSupplier {
             db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.LOADED))
                     .get()
-    )
+    ).bind(this)
 
     private val damagedParcelsQuery = ObservableQuery<ParcelEntity>(
             db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.DAMAGED.eq(true))
                     .get()
-    )
+    ).bind(this)
+
+    private val pendingParcelsQuery = ObservableQuery<ParcelEntity>(
+            db.store.select(ParcelEntity::class)
+                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.PENDING))
+                    .get()
+    ).bind(this)
     //endregion
 
     /**
@@ -63,6 +69,8 @@ class DeliveryList : CompositeDisposableSupplier {
      * Loaded parcels
      */
     val loadedParcels = loadedParcelsQuery.result
+
+    val pendingParcels = pendingParcelsQuery.result
 
     //region Counters
     val orderTotalAmount = orderRepository.entitiesProperty.map { it.value.count() }

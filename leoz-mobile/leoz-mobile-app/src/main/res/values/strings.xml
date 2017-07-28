@@ -150,6 +150,8 @@
 
     <string name="passport_drivers_license">Passport/Drivers license</string>
 
+    <string name="pending">Pending</string>
+
     <string name="please_wait">Please wait</string>
 
     <string name="privacy_disclaimer_text" translatable="false">

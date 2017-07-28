@@ -4,6 +4,7 @@ import android.databinding.BaseObservable
 import android.view.View
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.mobile.model.entity.ParcelEntity
 import sx.android.databinding.toField
 
 /**
@@ -13,16 +14,16 @@ import sx.android.databinding.toField
  * @param amount Observable amount
  * @param totalAmount Observable total amount
  */
-class ParcelListHeaderViewModel(
+class ParcelSectionViewModel(
         val title: String,
-        private val amount: Observable<Int>
+        val parcels: Observable<List<ParcelEntity>>
 )
     : BaseObservable() {
 
     private val expandClickedEventSubject = PublishSubject.create<Unit>()
     val expandClickedEvent = expandClickedEventSubject.hide()
 
-    val amountText = amount.map { it.toString() }.toField()
+    val amountText = parcels.map { it.count().toString() }.toField()
 
     fun onClick(view: View) {
         expandClickedEventSubject.onNext(Unit)

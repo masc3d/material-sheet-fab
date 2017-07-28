@@ -14,12 +14,10 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
-import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -43,9 +41,6 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
-import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
-import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 import sx.format.format
 
 /**
@@ -101,19 +96,24 @@ class VehicleLoadingScreen : ScreenFragment() {
         val adapter = ParcelSectionsAdapter()
 
         adapter.addParcelSection(
-                header = ParcelListHeaderViewModel(
+                header = ParcelSectionViewModel(
                         title = this.getText(R.string.loaded).toString(),
-                        amount = this.deliveryList.loadedParcels.map { it.value.count() }
-                ),
-                items = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
+                        parcels = this.deliveryList.loadedParcels.map { it.value }.bindToLifecycle(this)
+                )
         )
 
         adapter.addParcelSection(
-                header = ParcelListHeaderViewModel(
+                header = ParcelSectionViewModel(
                         title = this.getText(R.string.damaged).toString(),
-                        amount = this.deliveryList.damagedParcels.map { it.value.count() }
-                ),
-                items = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
+                        parcels = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
+                )
+        )
+
+        adapter.addParcelSection(
+                header = ParcelSectionViewModel(
+                        title = this.getText(R.string.pending).toString(),
+                        parcels = this.deliveryList.pendingParcels.map { it.value }.bindToLifecycle(this)
+                )
         )
 
         // TODO: bug preventing expansion of sections when `toggleSelection` is not deferred initially

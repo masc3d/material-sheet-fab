@@ -200,4 +200,5 @@
     <string name="authentication_failed">Authentifizierung fehlgeschglagen</string>
     <string name="vehicle_loading">Fahrzeugbeladung</string>
     <string name="order_list">Auftragsliste</string>
+    <string name="pending">Ausstehend</string>
 </resources>

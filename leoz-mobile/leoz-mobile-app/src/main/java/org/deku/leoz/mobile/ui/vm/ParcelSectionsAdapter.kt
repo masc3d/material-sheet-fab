@@ -1,14 +1,10 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.support.v7.widget.RecyclerView
-import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.utils.Log
-import io.reactivex.Observable
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
@@ -20,13 +16,13 @@ import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 class ParcelSectionsAdapter
     :
         FlexibleAdapter<
-                FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>
+                FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel>
                 >(listOf(), null, true) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val _headerItems = mutableListOf<FlexibleExpandableVmItem<
-            ParcelListHeaderViewModel, ParcelViewModel>>()
+            ParcelSectionViewModel, ParcelViewModel>>()
 
     init {
         FlexibleAdapter.enableLogs(Log.Level.VERBOSE)
@@ -66,7 +62,7 @@ class ParcelSectionsAdapter
 
         this.setStickyHeaders(true)
         this.showAllHeaders()
-        this.setAutoCollapseOnExpand(true)
+//        this.setAutoCollapseOnExpand(true)
         this.collapseAll()
     }
 
@@ -81,19 +77,19 @@ class ParcelSectionsAdapter
     }
 
     fun addParcelSection(
-            header: ParcelListHeaderViewModel,
-            items: Observable<List<ParcelEntity>>) {
+            header: ParcelSectionViewModel) {
 
-        val headerItem = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
+        val headerItem = FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel>(
                 viewRes = R.layout.item_parcel_header,
                 variableId = BR.header,
                 viewModel = header,
                 isExpandableOnClick = false
         )
 
-        items
+        header.parcels
                 .observeOnMainThread()
                 .subscribe {
+                    log.trace("UPDATING ITEMS [${it.count()}]")
                     // Need to collapse on complete sublist update to prevent weird glitches
                     this.collapseAll()
 
@@ -120,7 +116,8 @@ class ParcelSectionsAdapter
 
         // Store expandable/header item in our own list, as expanding will
         _headerItems.add(headerItem)
-
         this.addItem(headerItem)
+
+        this.collapseAll()
     }
 }
