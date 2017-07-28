@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.support.v7.widget.RecyclerView
+import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.utils.Log
 import org.deku.leoz.mobile.BR
@@ -23,7 +24,10 @@ class ParcelSectionsAdapter
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
-        FlexibleAdapter.enableLogs(Log.Level.VERBOSE)
+        if (BuildConfig.DEBUG) {
+            // Only in DBEUG, as flexible adapter logging is broken when classes in stacktrace is obfuscated
+            FlexibleAdapter.enableLogs(Log.Level.VERBOSE)
+        }
 
         // TODO: unreliable. need to override flexibleadapter for proper reactive event
         this.addListener(object : FlexibleAdapter.OnItemClickListener {
