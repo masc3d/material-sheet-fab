@@ -282,7 +282,7 @@ dependencies {
             // UI
             "eu.davidea:flexible-adapter:5.0.0-rc2",
             "eu.davidea:flexible-adapter-databinding:1.0.0-b1@aar",
-            'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0',
+            "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",
 
             // Dialog
             "com.afollestad.material-dialogs:core:$v_material_dialogs",
