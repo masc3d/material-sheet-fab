@@ -22,7 +22,7 @@ import java.util.*
 
 class LocationService(
         var period: Duration = Duration.ofSeconds(30),
-        var minDistance: Int = 250,
+        var minDistance: Float = 250F,
         var enabled: Boolean = true
 )
     : Service() {
@@ -36,7 +36,7 @@ class LocationService(
 
     init {
         this.period = Duration.ofSeconds(locationSettings.period)
-        this.minDistance = locationSettings.minDistance
+        this.minDistance = locationSettings.minDistance.toFloat()
     }
 
     override fun onBind(intent: Intent?) = null
@@ -60,7 +60,7 @@ class LocationService(
 //        }
 
         try {
-            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, INTERVAL, DISTANCE, locationListeners[1])
+            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, period.toMillis(), minDistance, locationListeners[1])
         } catch (e: SecurityException) {
             log.error("Fail to request location update", e)
         } catch (e: IllegalArgumentException) {
@@ -68,7 +68,7 @@ class LocationService(
         }
 
         try {
-            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL, DISTANCE, locationListeners[0])
+            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, period.toMillis(), minDistance, locationListeners[0])
         } catch (e: SecurityException) {
             log.error("Fail to request location update", e)
         } catch (e: IllegalArgumentException) {
@@ -87,9 +87,6 @@ class LocationService(
                 }
             }
     }
-
-    val INTERVAL = period.toMillis() // In milliseconds
-    val DISTANCE = minDistance.toFloat() // In meters
 
     val locationListeners = arrayOf(
             LTRLocationListener(LocationManager.GPS_PROVIDER),
