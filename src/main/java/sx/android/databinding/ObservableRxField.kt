@@ -7,6 +7,7 @@ import java.util.HashMap
 
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
 
 /**
@@ -29,7 +30,7 @@ class ObservableRxField<T> private constructor(
 
     /** Constructor for rx property (read-write field) */
     constructor(property: ObservableRxProperty<T>): this(
-            source = property.map { it.value },
+            source = property.map { it.value }.observeOnMainThread(),
             property = property)
 
     init {
