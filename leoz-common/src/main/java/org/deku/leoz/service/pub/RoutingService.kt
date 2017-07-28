@@ -133,10 +133,10 @@ interface RoutingService {
             var earliestTimeOfDelivery: ShortTime? = ShortTime()
 
             @ApiModelProperty(dataType = "string", example = "12:00", position = 120, required = true, value = "Delivery time until on saturday", allowableValues = "00:00 - 23:59")
-            var saturdayDeliveryUntil: ShortTime = ShortTime()
+            var saturdayDeliveryUntil: ShortTime = ShortTime(localTime = "00:00")
 
             @ApiModelProperty(dataType = "string", example = "12:00", position = 130, required = true, value = "Delivery time until on sunday", allowableValues = "00:00 - 23:59")
-            var sundayDeliveryUntil: ShortTime = ShortTime()
+            var sundayDeliveryUntil: ShortTime = ShortTime(localTime = "00:00")
 
             @ApiModelProperty(dataType = "string", example = "16:00", position = 140, required = true, value = "Pick up time until", allowableValues = "00:00 - 23:59")
             var pickupUntil: ShortTime = ShortTime()
