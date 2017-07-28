@@ -58,12 +58,19 @@ open class ParcelServiceV1 :
         events.forEach {
             val r: TblstatusRecord
             r = dslContext.newRecord(Tables.TBLSTATUS)
-            val parcelNo=parcelRepository.getUnitNo(it.parcelId)
+            val parcelScan = it.parcelScancode
+            val parcelNo: Double?
+            if (!parcelScan.all { it.isDigit() })
+                parcelNo = parcelRepository.getUnitNo(it.parcelId)
+            else {
+                parcelNo = parcelScan.toDouble()
+            }
+
             parcelNo ?:
-                throw DefaultProblem(
-                        title = "Missing parcelNo"
-                )
-            r.packstuecknummer=parcelNo
+                    throw DefaultProblem(
+                            title = "Missing parcelNo"
+                    )
+            r.packstuecknummer = parcelNo
             //r.packstuecknummer = it.parcelScancode.toDouble()
 //            r.erzeugerstation = it.eventValue.toString()
             r.datum = SimpleDateFormat("yyyyMMdd").parse(it.time.toLocalDate().toString()).toString()
@@ -80,6 +87,17 @@ open class ParcelServiceV1 :
             val reasonId = it.reason
             val reason = Reason.values().find { it.id == reasonId }!!
             r.fehlercode = reason.oldValue.toUInteger()
+
+            val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo.toDouble())
+            parcelRecord ?:
+                    throw DefaultProblem(
+                            title = "Missing parcelRecord"
+                    )
+            val orderRecord = parcelRepository.findOrderByUnitNumber(parcelRecord.orderid)
+            orderRecord ?:
+                    throw DefaultProblem(
+                            title = "Missing orderRecord"
+                    )
 
             when (event) {
                 Event.DELIVERED -> {
@@ -101,6 +119,12 @@ open class ParcelServiceV1 :
                                     r.text = addInfo.recipient ?: ""
                                     //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
                                     saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
+                                    //TODO in Feldhistorie eintragen
+                                    parcelRecord.lieferstatus = 4
+                                    parcelRecord.store()
+                                    orderRecord.empfaenger = r.text
+                                    orderRecord.store()
+
                                 }
                             }
                         }
@@ -114,6 +138,9 @@ open class ParcelServiceV1 :
                                     r.text = addInfo.name ?: "" + ";adr " + addInfo.address ?: ""
                                     //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
                                     saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
+                                    //TODO in Feldhistorie eintragen
+                                    parcelRecord.lieferstatus = 4
+                                    parcelRecord.store()
                                 }
                             }
                         }

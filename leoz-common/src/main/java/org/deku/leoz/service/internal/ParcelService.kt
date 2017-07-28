@@ -39,13 +39,13 @@ interface ParcelServiceV1 {
             val event: Int = 0,
             val reason: Int = 0,
             val parcelId: Int = 0,
-            val parcelScancode: String = "",//possibly alphanumeric
+            val parcelScancode: String = "", //possibly alphanumeric
             val time: Date = Date(),
             val latitude: Double? = null,
             val longitude: Double? = null,
             //proposal/experimental for other events in future...
             val fromStation: Boolean = true, //maybe there will be a new app for line... and there are events for both e.g. damaged & photo
-            val from: String?=null,//lineNo or StationNo
+            val from: String? = null, //lineNo or StationNo
             val additionalInfo: AdditionalInfo = AdditionalInfo.EmptyInfo
             /** proposal/experimental for other events in future...
             val deliveredInfo: DeliveredInfo? = null,
