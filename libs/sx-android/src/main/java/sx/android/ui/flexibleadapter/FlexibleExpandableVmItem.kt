@@ -7,7 +7,8 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.*
 
 /**
- * Flexible expandable view model item
+ * Flexible expandable view model header/item.
+ * Can be used as both an expandable item or header.
  * Created by masc on 26.06.17.
  */
 class FlexibleExpandableVmItem<EVM, IVM>(
