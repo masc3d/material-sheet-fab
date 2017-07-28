@@ -96,136 +96,25 @@ class VehicleLoadingScreen : ScreenFragment() {
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
-    private val parcelListAdapterInstance = LazyInstance<
-            FlexibleAdapter<
-                    FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>
-                    >>({
+    private val parcelListAdapterInstance = LazyInstance<ParcelSectionsAdapter>({
 
-        val headerLoaded = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
-                viewRes = R.layout.item_parcel_header,
-                variableId = BR.header,
-                viewModel = ParcelListHeaderViewModel(
+        val adapter = ParcelSectionsAdapter()
+
+        adapter.addParcelSection(
+                header = ParcelListHeaderViewModel(
                         title = this.getText(R.string.loaded).toString(),
                         amount = this.deliveryList.loadedParcels.map { it.value.count() }
                 ),
-                isExpandableOnClick = false
+                items = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
         )
 
-        val headerDamaged = FlexibleExpandableVmItem<ParcelListHeaderViewModel, ParcelViewModel>(
-                viewRes = R.layout.item_parcel_header,
-                variableId = BR.header,
-                viewModel = ParcelListHeaderViewModel(
+        adapter.addParcelSection(
+                header = ParcelListHeaderViewModel(
                         title = this.getText(R.string.damaged).toString(),
                         amount = this.deliveryList.damagedParcels.map { it.value.count() }
                 ),
-                isExpandableOnClick = false
+                items = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
         )
-
-        val headers = listOf(
-                headerLoaded,
-                headerDamaged
-        )
-
-        val adapter = FlexibleAdapter(
-                // Items
-                headers,
-                // Listener
-                this,
-                true)
-
-        headers.forEach { header ->
-            header.isSelectable = true
-        }
-
-        // TODO: unreliable. need to override flexibleadapter for proper reactive event
-        adapter.addListener(object : FlexibleAdapter.OnItemClickListener {
-            private var previousHeaderItem: Any? = headerLoaded
-
-            override fun onItemClick(position: Int): Boolean {
-                val item: Any? = adapter.getItem(position)
-
-                if (item != null && headers.contains(item)) {
-                    val changed = (item != this.previousHeaderItem)
-
-                    // Select & collapse
-                    adapter.toggleSelection(position)
-
-                    if (changed) {
-                        adapter.collapseAll()
-                    } else {
-                        if (adapter.isExpanded(position)) {
-                            adapter.collapse(position)
-                        } else {
-                            adapter.expand(position)
-                        }
-                    }
-
-                    this.previousHeaderItem = item
-                }
-
-                return true
-            }
-        })
-
-        this.deliveryList.loadedParcels
-                .bindToLifecycle(this)
-                .observeOnMainThread()
-                .subscribe {
-                    // Need to collapse on complete sublist update to prevent weird glitches
-                    adapter.collapseAll()
-
-                    headerLoaded.subItems = it.value.map {
-                        val item = FlexibleVmSectionableItem(
-                                viewRes = R.layout.item_parcel,
-                                variableId = BR.parcel,
-                                viewModel = ParcelViewModel(it)
-                        )
-
-                        item.isEnabled = true
-                        item.isDraggable = false
-                        item.isSwipeable = false
-                        item.isSelectable = false
-                        item.header = headerLoaded
-
-                        item
-                    }
-
-                    adapter.updateItem(headerLoaded)
-                }
-
-        this.deliveryList.damagedParcels
-                .bindToLifecycle(this)
-                .observeOnMainThread()
-                .subscribe {
-                    // Need to collapse on complete sublist update to prevent weird glitches
-                    adapter.collapseAll()
-
-                    headerDamaged.subItems = it.value.map {
-                        val item = FlexibleVmSectionableItem(
-                                viewRes = R.layout.item_parcel,
-                                variableId = BR.parcel,
-                                viewModel = ParcelViewModel(it)
-                        )
-
-                        item.isEnabled = true
-                        item.isDraggable = false
-                        item.isSwipeable = false
-                        item.isSelectable = false
-                        item.header = headerDamaged
-
-                        item
-                    }
-
-                    adapter.updateItem(headerDamaged)
-                }
-
-
-        adapter.mode = FlexibleAdapter.MODE_SINGLE
-
-        adapter.setStickyHeaders(true)
-        adapter.showAllHeaders()
-        adapter.setAutoCollapseOnExpand(true)
-        adapter.collapseAll()
 
         // TODO: bug preventing expansion of sections when `toggleSelection` is not deferred initially
         this.view?.post {
@@ -285,6 +174,11 @@ class VehicleLoadingScreen : ScreenFragment() {
                         menu = this.activity.inflateMenu(R.menu.menu_vehicleloading_exception)
                 )
         )
+    }
+
+    override fun onDestroy() {
+        this.parcelListAdapterInstance.reset()
+        super.onDestroy()
     }
 
     override fun onResume() {
@@ -402,12 +296,12 @@ class VehicleLoadingScreen : ScreenFragment() {
         deliveryList.load(deliveryListNumber.value.toLong())
                 .bindToLifecycle(this)
                 .subscribeBy(
-                    onNext = {
+                        onNext = {
 
-                    },
-                    onError = {
-                        tone.errorBeep()
-                    }
+                        },
+                        onError = {
+                            tone.errorBeep()
+                        }
                 )
     }
 
