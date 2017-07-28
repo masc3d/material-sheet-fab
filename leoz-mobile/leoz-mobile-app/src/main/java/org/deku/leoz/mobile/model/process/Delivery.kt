@@ -92,13 +92,13 @@ class Delivery {
         this.load()
     }
 
-    fun sign(stop: Stop, reason: EventDeliveredReason, recipient: String = "") {
+    fun sign(stopId: Int, reason: EventDeliveredReason, recipient: String = "") {
         when (reason) {
             EventDeliveredReason.Normal -> {
                 nextDeliveryScreenSubject.onNext(
                         SignatureScreen.create(
                                 parameters = SignatureScreen.Parameters(
-                                        stopId = stop.id,
+                                        stopId = stopId,
                                         deliveryReason = reason,
                                         recipient = recipient
                                 )
@@ -107,11 +107,11 @@ class Delivery {
             }
 
             EventDeliveredReason.Neighbor -> {
-                nextDeliveryScreenSubject.onNext(NeighbourDeliveryScreen.create(stop = stop))
+                nextDeliveryScreenSubject.onNext(NeighbourDeliveryScreen.create(stopId = stopId))
             }
 
             EventDeliveredReason.Postbox -> {
-                nextDeliveryScreenSubject.onNext(PostboxDeliveryScreen.create(stop))
+                nextDeliveryScreenSubject.onNext(PostboxDeliveryScreen.create(stopId))
             }
 
             else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")

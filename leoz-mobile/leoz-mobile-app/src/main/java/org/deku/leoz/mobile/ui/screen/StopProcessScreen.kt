@@ -211,13 +211,13 @@ class StopProcessScreen :
                             dialog.show()
                         }
                         R.id.action_deliver_neighbour -> {
-                            delivery.sign(stop = this.stop, reason = EventDeliveredReason.Neighbor)
+                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Neighbor)
                         }
                         R.id.action_deliver_postbox -> {
-                            delivery.sign(stop = this.stop, reason = EventDeliveredReason.Postbox)
+                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Postbox)
                         }
                         R.id.action_deliver_recipient -> {
-                            delivery.sign(stop = this.stop, reason = EventDeliveredReason.Normal)
+                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Normal)
                         }
                     }
                 }
