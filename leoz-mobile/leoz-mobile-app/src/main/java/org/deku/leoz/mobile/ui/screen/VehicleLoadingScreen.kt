@@ -95,6 +95,8 @@ class VehicleLoadingScreen : ScreenFragment() {
     val loadedSection by lazy {
         ParcelSectionViewModel(
                 icon = R.drawable.ic_truck,
+                color = R.color.colorGreen,
+                background = R.drawable.section_background_green,
                 title = this.getText(R.string.loaded).toString(),
                 parcels = this.deliveryList.loadedParcels.map { it.value }.bindToLifecycle(this)
         )
@@ -103,6 +105,8 @@ class VehicleLoadingScreen : ScreenFragment() {
     val damagedSection by lazy {
         ParcelSectionViewModel(
                 icon = R.drawable.ic_damaged,
+                color = R.color.colorAccent,
+                background = R.drawable.section_background_accent,
                 title = this.getText(R.string.damaged).toString(),
                 parcels = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
         )
@@ -111,6 +115,9 @@ class VehicleLoadingScreen : ScreenFragment() {
     val pendingSection by lazy {
         ParcelSectionViewModel(
                 icon = R.drawable.ic_format_list_bulleted,
+                color = R.color.colorGrey,
+                background = R.drawable.section_background_grey,
+                isSelectable = false,
                 title = this.getText(R.string.pending).toString(),
                 parcels = this.deliveryList.pendingParcels.map { it.value }.bindToLifecycle(this)
         )
@@ -282,8 +289,12 @@ class VehicleLoadingScreen : ScreenFragment() {
         this.parcelListAdapter.selectedSectionProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
-                    when {
-                        it.value == this.loadedSection -> {
+                    val section = it.value as ParcelSectionViewModel?
+
+                    this.accentColor = section?.color ?: R.color.colorGrey
+
+                    when (section) {
+                        this.loadedSection -> {
                             this.actionItems = this.actionItems.apply {
                                 first { it.id == R.id.action_vehicle_loading_load }
                                         .visible = false
@@ -292,7 +303,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                                         .visible = true
                             }
                         }
-                        it.value == this.damagedSection -> {
+                        else -> {
                             this.actionItems = this.actionItems.apply {
                                 first { it.id == R.id.action_vehicle_loading_load }
                                         .visible = true
@@ -358,8 +369,27 @@ class VehicleLoadingScreen : ScreenFragment() {
         val parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
 
         if (parcel != null) {
-            parcel.loadingState = Parcel.State.LOADED
+            when (parcelListAdapter.selectedSection) {
+                damagedSection -> {
+                    if (parcel.isDamaged) {
+                        // TODO ask to remove damaged status
+                    } else {
+                        parcel.isDamaged = true
+
+                        // TODO take phozo
+                    }
+                }
+                else -> {
+                    if (parcel.loadingState == Parcel.State.LOADED) {
+                        // TODO ask to remove loaded status
+                    } else {
+                        parcel.loadingState = Parcel.State.LOADED
+                    }
+                }
+            }
             this.parcelRepository.update(parcel).blockingGet()
+        } else {
+            // TODO show error
         }
     }
 }

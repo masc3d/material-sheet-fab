@@ -1,8 +1,12 @@
 package org.deku.leoz.mobile.ui
 
 import android.content.pm.ActivityInfo
+import android.graphics.Color
+import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
+import android.support.v4.content.ContextCompat
 import android.view.Menu
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
@@ -12,13 +16,16 @@ import sx.rx.ObservableRxProperty
  */
 open class ScreenFragment : Fragment() {
     val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(default = listOf())
-
     /** Screen action items */
     var actionItems by actionItemsProperty
 
     val menuProperty by lazy { ObservableRxProperty<Menu?>(null) }
     /** Screen menu items */
     var menu: Menu? by menuProperty
+
+    val accentColorProperty by lazy { ObservableRxProperty<Int>(R.color.colorAccent) }
+    var accentColor by accentColorProperty
+        @ColorRes get
 
     /**
      * Title

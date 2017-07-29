@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
+import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.view.View
 import io.reactivex.Observable
@@ -18,6 +19,9 @@ import sx.android.databinding.toField
  */
 class ParcelSectionViewModel(
         @DrawableRes val icon: Int = R.drawable.ic_truck,
+        @ColorRes val color: Int = R.color.colorAccent,
+        @DrawableRes val background: Int = R.drawable.section_background_accent,
+        val isSelectable: Boolean = true,
         val title: String,
         val parcels: Observable<List<ParcelEntity>>
 )

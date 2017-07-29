@@ -7,11 +7,14 @@
     <color name="colorAccentTransparent">#ddffb525</color>
     <color name="colorDarkGrey">#494949</color>
     <color name="colorGrey">#797979</color>
+    <color name="colorGreyTransparent">#dd797979</color>
     <color name="colorLightGrey">#b9b9b9</color>
+    <color name="colorLightGreyTransparent">#ddb9b9b9</color>
     <color name="colorDarkIcon">#777777</color>
     <color name="colorWhiteSmoke">#f5f5f5</color>
     <color name="colorRed">#ed4e40</color>
     <color name="colorGreen">#28d228</color>
+    <color name="colorGreenTransparent">#dd28d228</color>
     <color name="colorYellow">#dede00</color>
     <color name="colorBlurOverlay">#aacccccc</color>
     <color name="colorAccentOverlay">#aaf8ae18</color>

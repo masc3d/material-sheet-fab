@@ -44,18 +44,21 @@ class DeliveryList : CompositeDisposableSupplier {
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
             db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.LOADED))
+                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
 
     private val damagedParcelsQuery = ObservableQuery<ParcelEntity>(
             db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.DAMAGED.eq(true))
+                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
 
     private val pendingParcelsQuery = ObservableQuery<ParcelEntity>(
             db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.PENDING))
+                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
     //endregion
@@ -99,14 +102,6 @@ class DeliveryList : CompositeDisposableSupplier {
     //endregion
 
     init {
-        this.parcelRepository.entitiesProperty.subscribe {
-            it.value.forEach { parcel ->
-                parcel.loadingStateProperty.subscribe {
-                    log.info("Loading state changed ${parcel.number} -> ${it.value}")
-                }
-            }
-        }
-
         log.info("COMPOSITES ${compositeDisposable.size()}")
     }
 

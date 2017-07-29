@@ -57,6 +57,7 @@ import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.dev.SyntheticInput
+import org.jetbrains.anko.backgroundColor
 import sx.aidc.SymbologyType
 import sx.android.ApplicationStateMonitor
 import sx.android.aidc.SimulatingAidcReader
@@ -665,6 +666,12 @@ open class Activity : RxAppCompatActivity(),
                             this.syntheticInputs = listOf()
                         }
                 )
+
+        fragment.accentColorProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    this.uxHeaderAccentBar.backgroundColor = ContextCompat.getColor(this, it.value)
+                }
 
         // Setup collapsing layout, appbar & header
 

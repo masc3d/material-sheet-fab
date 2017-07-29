@@ -59,6 +59,7 @@
 
             <!-- Header bottom accent bar -->
             <FrameLayout
+                android:id="@+id/uxHeaderAccentBar"
                 android:layout_width="match_parent"
                 android:layout_gravity="bottom"
                 android:layout_height="4dp"

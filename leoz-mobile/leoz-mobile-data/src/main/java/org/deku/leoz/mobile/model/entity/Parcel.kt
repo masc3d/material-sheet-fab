@@ -37,6 +37,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     @get:Bindable
     abstract var isDamaged: Boolean
     @get:Bindable
+    @get:Index
     @get:Column(nullable = true)
     abstract var modificationTime: Date?
 
@@ -45,6 +46,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var order: Order
 
     val loadingStateProperty by lazy { ObservableRxField<State>(BR.loadingState, { this.loadingState }) }
+    val modificationTimeProperty by lazy { ObservableRxField<Date?>(BR.modificationTime, { this.modificationTime }) }
 }
 
 fun Parcel.Companion.create(

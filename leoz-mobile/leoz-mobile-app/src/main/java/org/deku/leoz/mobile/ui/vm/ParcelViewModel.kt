@@ -10,7 +10,8 @@ import java.util.*
  * Parcel view model
  * Created by masc on 26.06.17.
  */
-class ParcelViewModel(val parcel: Parcel) : BaseObservable() {
+class ParcelViewModel(
+        val parcel: Parcel) : BaseObservable() {
 
     private fun Double.toDimensionFormat(): String {
         return this.format(1)

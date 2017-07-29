@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.ui
 import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.view.View
 import android.widget.ImageView
 
 /**
@@ -37,6 +38,11 @@ class DataBindingAdatpers {
         @BindingAdapter("android:src")
         @JvmStatic fun setImageResource(imageView: ImageView, resource: Int){
             imageView.setImageResource(resource);
+        }
+
+        @BindingAdapter("android:background")
+        @JvmStatic fun setBackground(view: View, resource: Int){
+            view.setBackgroundResource(resource)
         }
     }
 }
