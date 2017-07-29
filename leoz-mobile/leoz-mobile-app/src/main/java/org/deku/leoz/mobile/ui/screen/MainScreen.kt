@@ -66,7 +66,7 @@ class MainScreen : ScreenFragment() {
             this.actionItems = listOf(
                     ActionItem(
                             id = R.id.action_dev,
-                            colorRes = R.color.colorPrimary,
+                            colorRes = R.color.colorDev,
                             iconRes = R.drawable.ic_dev,
                             iconTintRes = android.R.color.white,
                             menu = this.activity.inflateMenu(R.menu.menu_dev)

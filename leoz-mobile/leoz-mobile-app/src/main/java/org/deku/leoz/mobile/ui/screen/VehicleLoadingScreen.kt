@@ -91,35 +91,39 @@ class VehicleLoadingScreen : ScreenFragment() {
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
+    // region Sections
+    val loadedSection by lazy {
+        ParcelSectionViewModel(
+                icon = R.drawable.ic_truck,
+                title = this.getText(R.string.loaded).toString(),
+                parcels = this.deliveryList.loadedParcels.map { it.value }.bindToLifecycle(this)
+        )
+    }
+
+    val damagedSection by lazy {
+        ParcelSectionViewModel(
+                icon = R.drawable.ic_damaged,
+                title = this.getText(R.string.damaged).toString(),
+                parcels = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
+        )
+    }
+
+    val pendingSection by lazy {
+        ParcelSectionViewModel(
+                icon = R.drawable.ic_format_list_bulleted,
+                title = this.getText(R.string.pending).toString(),
+                parcels = this.deliveryList.pendingParcels.map { it.value }.bindToLifecycle(this)
+        )
+    }
+    //endregion
+
     private val parcelListAdapterInstance = LazyInstance<ParcelSectionsAdapter>({
 
         val adapter = ParcelSectionsAdapter()
 
-        adapter.addParcelSection(
-                header = ParcelSectionViewModel(
-                        title = this.getText(R.string.loaded).toString(),
-                        parcels = this.deliveryList.loadedParcels.map { it.value }.bindToLifecycle(this)
-                )
-        )
-
-        adapter.addParcelSection(
-                header = ParcelSectionViewModel(
-                        title = this.getText(R.string.damaged).toString(),
-                        parcels = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
-                )
-        )
-
-        adapter.addParcelSection(
-                header = ParcelSectionViewModel(
-                        title = this.getText(R.string.pending).toString(),
-                        parcels = this.deliveryList.pendingParcels.map { it.value }.bindToLifecycle(this)
-                )
-        )
-
-        // TODO: bug preventing expansion of sections when `toggleSelection` is not deferred initially
-        this.view?.post {
-            adapter.toggleSelection(0)
-        }
+        adapter.addParcelSection(this.loadedSection)
+        adapter.addParcelSection(this.damagedSection)
+        adapter.addParcelSection(this.pendingSection)
 
         adapter
     })
@@ -150,7 +154,7 @@ class VehicleLoadingScreen : ScreenFragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Flexible adapter needs to be re-created with views
@@ -163,17 +167,28 @@ class VehicleLoadingScreen : ScreenFragment() {
 
         this.actionItems = listOf(
                 ActionItem(
-                        id = R.id.action_vehicle_loading_finished,
+                        id = R.id.action_vehicle_loading_load,
                         colorRes = R.color.colorGreen,
-                        iconRes = R.drawable.ic_check_circle
+                        iconRes = R.drawable.ic_truck,
+                        visible = false
                 ),
                 ActionItem(
-                        id = R.id.action_vehicle_loading_exception,
-                        colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_cancel_black,
-                        menu = this.activity.inflateMenu(R.menu.menu_vehicleloading_exception)
+                        id = R.id.action_vehicle_loading_damaged,
+                        colorRes = R.color.colorAccent,
+                        iconRes = R.drawable.ic_damaged,
+                        visible = true
+                ),
+                ActionItem(
+                        id = R.id.action_vehicle_loading_finished,
+                        colorRes = R.color.colorPrimary,
+                        iconRes = R.drawable.ic_done_black,
+                        iconTintRes = android.R.color.white
                 )
         )
+
+        view.post {
+            this.parcelListAdapter.selectedSection = this.loadedSection
+        }
     }
 
     override fun onDestroy() {
@@ -213,8 +228,12 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it) {
-                        R.id.action_vehicle_loading_exception -> {
-                            //showFailureReasons()
+                        R.id.action_vehicle_loading_damaged -> {
+                            this.parcelListAdapter.selectedSection = this.damagedSection
+                        }
+
+                        R.id.action_vehicle_loading_load -> {
+                            this.parcelListAdapter.selectedSection = this.loadedSection
                         }
 
                         R.id.action_vehicle_loading_finished -> {
@@ -258,6 +277,31 @@ class VehicleLoadingScreen : ScreenFragment() {
                             )
                     )
 
+                }
+
+        this.parcelListAdapter.selectedSectionProperty
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when {
+                        it.value == this.loadedSection -> {
+                            this.actionItems = this.actionItems.apply {
+                                first { it.id == R.id.action_vehicle_loading_load }
+                                        .visible = false
+
+                                first { it.id == R.id.action_vehicle_loading_damaged }
+                                        .visible = true
+                            }
+                        }
+                        it.value == this.damagedSection -> {
+                            this.actionItems = this.actionItems.apply {
+                                first { it.id == R.id.action_vehicle_loading_load }
+                                        .visible = true
+
+                                first { it.id == R.id.action_vehicle_loading_damaged }
+                                        .visible = false
+                            }
+                        }
+                    }
                 }
     }
 

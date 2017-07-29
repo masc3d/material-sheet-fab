@@ -37,6 +37,21 @@
             android:layout_height="match_parent"
             >
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                >
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_gravity="center_vertical"
+                android:src="@{header.icon, default=@drawable/ic_truck}"
+                android:layout_marginEnd="@dimen/large_margin"
+                />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -44,6 +59,8 @@
                 android:text="@{header.title, default=`Parcels`}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"

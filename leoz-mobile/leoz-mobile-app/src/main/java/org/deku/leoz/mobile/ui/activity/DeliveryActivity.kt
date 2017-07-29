@@ -9,17 +9,13 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.SharedPreference
-import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
-import org.deku.leoz.model.EventDeliveredReason
-import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
-import sx.android.fragment.CameraFragment
 import java.util.*
 
 /**
@@ -144,7 +140,7 @@ class DeliveryActivity : Activity(),
                 this.showScreen(VehicleLoadingScreen())
             }
 
-            MenuScreen.MenuEntry.Entry.ORDERLIST -> {
+            MenuScreen.MenuEntry.Entry.DELIVERY -> {
                 this.showScreen(DeliveryStopListScreen())
             }
         }

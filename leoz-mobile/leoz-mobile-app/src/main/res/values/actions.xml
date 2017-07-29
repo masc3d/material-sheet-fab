@@ -17,6 +17,7 @@
     <item name="action_signature_submit" type="id"/>
     <item name="action_signature_clear" type="id"/>
     <item name="action_signature_cancel" type="id"/>
-    <item name="action_vehicle_loading_exception" type="id"/>
+    <item name="action_vehicle_loading_load" type="id"/>
+    <item name="action_vehicle_loading_damaged" type="id"/>
     <item name="action_vehicle_loading_finished" type="id"/>
 </resources>

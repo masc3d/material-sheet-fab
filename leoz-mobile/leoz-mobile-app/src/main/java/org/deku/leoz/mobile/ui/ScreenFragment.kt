@@ -11,7 +11,8 @@ import sx.rx.ObservableRxProperty
  * Created by masc on 14.06.17.
  */
 open class ScreenFragment : Fragment() {
-    val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
+    val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(default = listOf())
+
     /** Screen action items */
     var actionItems by actionItemsProperty
 

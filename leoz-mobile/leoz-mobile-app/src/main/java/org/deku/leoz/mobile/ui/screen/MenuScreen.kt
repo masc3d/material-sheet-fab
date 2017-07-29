@@ -38,7 +38,7 @@ class MenuScreen : ScreenFragment() {
 
     data class MenuEntry(val entryType: Entry, val description: String, var counter: Int, var counter2: Int, val icon: Drawable) {
         enum class Entry(val value: Long) {
-            ORDERLIST(0),
+            DELIVERY(0),
             LOADING(1)
         }
 
@@ -119,8 +119,8 @@ class MenuScreen : ScreenFragment() {
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
                         ),
                         MenuEntry(
-                                entryType = MenuEntry.Entry.ORDERLIST,
-                                description = this.getText(R.string.order_list).toString(),
+                                entryType = MenuEntry.Entry.DELIVERY,
+                                description = this.getText(R.string.delivery).toString(),
                                 counter = delivery.stopList.filter {
                                     it.state == Stop.State.PENDING &&
                                             it.tasks.map { it.order }.firstOrNull { it.state == Order.State.LOADED } != null }.size,

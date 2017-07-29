@@ -249,7 +249,7 @@ open class Activity : RxAppCompatActivity(),
         this.uxActionOverlay.fabStyle = R.style.AppTheme_Fab
         this.uxActionOverlay.defaultIcon = R.drawable.ic_chevron_right
         this.uxActionOverlay.defaultIcon = R.drawable.ic_chevron_right
-        this.uxActionOverlay.buttonAlpha = 0.8F
+        this.uxActionOverlay.buttonAlpha = 0.87F
         this.uxActionOverlay.listener = this
 
         this.cameraAidcFragmentVisible = false
@@ -452,7 +452,7 @@ open class Activity : RxAppCompatActivity(),
                         aidcFab.alpha = 0.6F
                     }
                     false -> {
-                        aidcFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
+                        aidcFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = android.R.color.white)
                         aidcFab.alpha = 0.85F
                     }
                 }
@@ -512,12 +512,14 @@ open class Activity : RxAppCompatActivity(),
         this.actionItemsProperty
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
+                    log.info("ACTION ITEMS CAHNGED")
                     val items = mutableListOf(*it.value.toTypedArray())
                     items.add(
                             0,
                             ActionItem(
                                     id = R.id.action_aidc_camera,
-                                    colorRes = R.color.colorAccent,
+                                    colorRes = R.color.colorDarkGrey,
+                                    iconTintRes = android.R.color.white,
                                     iconRes = R.drawable.ic_barcode,
                                     visible = this.aidcReader.enabled
                             )
@@ -545,6 +547,7 @@ open class Activity : RxAppCompatActivity(),
         // Authentication changes
 
         this.login.authenticatedUserProperty
+                .distinctUntilChanged()
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
                     this@Activity.invalidateOptionsMenu()
@@ -582,6 +585,7 @@ open class Activity : RxAppCompatActivity(),
 
         //region AIDC
         this.aidcReader.enabledProperty
+                .distinctUntilChanged()
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { enabled ->
@@ -692,7 +696,7 @@ open class Activity : RxAppCompatActivity(),
             // Make sure app bar is visible (eg. when screen changes)
             // otherwise transitioning from a scrolling to a static content screen
             // may leave the app bar hidden.
-            log.trace("EXPAND ${expandAppBar}")
+            log.trace("APPBAR EXPAND ${expandAppBar}")
 
             this.uxAppBarLayout.setExpanded(expandAppBar, true)
         }

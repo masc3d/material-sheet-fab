@@ -1,9 +1,11 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
+import android.support.annotation.DrawableRes
 import android.view.View
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import sx.android.databinding.toField
 
@@ -15,6 +17,7 @@ import sx.android.databinding.toField
  * @param totalAmount Observable total amount
  */
 class ParcelSectionViewModel(
+        @DrawableRes val icon: Int = R.drawable.ic_truck,
         val title: String,
         val parcels: Observable<List<ParcelEntity>>
 )
