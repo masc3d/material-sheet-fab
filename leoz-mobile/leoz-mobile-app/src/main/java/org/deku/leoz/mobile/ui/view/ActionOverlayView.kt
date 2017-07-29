@@ -16,6 +16,7 @@ import org.deku.leoz.mobile.R
 import android.view.Gravity
 import android.support.v7.view.ContextThemeWrapper
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import com.gordonwong.materialsheetfab.DimOverlayFrameLayout
 import com.gordonwong.materialsheetfab.MaterialSheetFab
@@ -38,6 +39,7 @@ import sx.android.view.setIconTint
  * @property colorRes Item color (fab background color eg.)
  * @property iconRes Icon
  * @property iconTintRes Color resource for tinting the icon
+ * @property alpha Action item alpha
  * @property menu Menu reflecting subitems
  */
 data class ActionItem(
@@ -45,6 +47,7 @@ data class ActionItem(
         @ColorRes val colorRes: Int? = null,
         @DrawableRes val iconRes: Int? = null,
         @ColorRes val iconTintRes: Int? = null,
+        val alpha: Float? = null,
         val menu: Menu? = null,
         var visible: Boolean = true
 )
@@ -107,6 +110,9 @@ class ActionOverlayView : RelativeLayout {
     lateinit var overlayView: View
 
     var listener: Listener? = null
+
+    /** Default button alpha */
+    var buttonAlpha: Float = 1.0F
 
     /**
      * Action items
@@ -213,125 +219,131 @@ class ActionOverlayView : RelativeLayout {
 
             this.materialSheetFabs.clear()
 
+            var imageButton: ImageButton
             this.items
                     .filter { it.visible }
                     .reversed()
                     .forEach { item ->
 
-                when {
-                    item.menu == null -> {
-                        // Create regular fab
+                        when {
+                            item.menu == null -> {
+                                // Create regular fab
 
-                        val fab = this.createFab()
-                        fab.id = item.id
+                                val fab = this.createFab()
+                                imageButton = fab
 
-                        if (item.colorRes != null)
-                            fab.setBackgroundTint(item.colorRes)
+                                fab.id = item.id
 
-                        if (item.iconRes != null)
-                            fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
-
-                        if (item.iconTintRes != null)
-                            fab.setIconTint(item.iconTintRes)
-
-                        fab.setOnClickListener {
-                            this.listener?.onActionItem(item.id)
-                        }
-
-                        this.uxActionOverlayContainer.addView(fab)
-                    }
-                    else -> {
-                        // Create animated fab and material sheet
-
-                        val fab = this.createAnimatedFab()
-
-                        fab.id = item.id
-
-                        if (item.colorRes != null)
-                            fab.setBackgroundTint(item.colorRes)
-
-                        if (item.iconRes != null)
-                            fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
-
-                        if (item.iconTintRes != null)
-                            fab.setIconTint(item.iconTintRes)
-
-                        val sheet = this.context.layoutInflater.inflate(
-                                R.layout.view_actionoverlay_sheet,
-                                this.uxActionOverlaySheetContainer,
-                                false)
-
-                        this.uxActionOverlaySheetContainer.addView(sheet)
-
-                        // Create dedicated dim overlay for this sheet
-                        val dimOverlay = DimOverlayFrameLayout(this.context)
-
-                        dimOverlay.layoutParams = FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.MATCH_PARENT,
-                                FrameLayout.LayoutParams.MATCH_PARENT)
-
-                        this.uxActionOverlayDimContainer.addView(dimOverlay)
-
-                        // Create matieral sheet fab
-                        val sheetBackgroundColor = ContextCompat.getColor(this.context, android.R.color.background_light)
-                        val fabColor =
                                 if (item.colorRes != null)
-                                    ContextCompat.getColor(this.context, item.colorRes)
-                                else
-                                // Default to fab color
-                                    fab.backgroundTintList!!.defaultColor
+                                    fab.setBackgroundTint(item.colorRes)
 
-                        val sheetFab = SheetFab(
-                                MaterialSheetFab<AnimatedFloatingActionButton>(
-                                        fab,
-                                        sheet.uxActionOverlaySheet,
-                                        dimOverlay,
-                                        sheetBackgroundColor,
-                                        fabColor)
-                        )
+                                if (item.iconRes != null)
+                                    fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
 
-                        // Material sheet fabs are not directly added to view hierarchy,
-                        // but used for controlling behavior. Storing internally.
-                        this.materialSheetFabs.put(item.id, sheetFab)
+                                if (item.iconTintRes != null)
+                                    fab.setIconTint(item.iconTintRes)
 
-                        // Set sheet color
-                        sheet.uxAtionOverlaySheetBar.setBackgroundColor(fabColor)
+                                fab.setOnClickListener {
+                                    this.listener?.onActionItem(item.id)
+                                }
 
-                        // Create sheet items
-                        item.menu.itemsSequence().forEach { menuItem ->
-                            val sheetItem = this.context.layoutInflater.inflate(
-                                    R.layout.view_actionoverlay_sheet_item,
-                                    sheet.uxActionOverlaySheetItemContainer,
-                                    false)
-
-                            sheetItem.uxActionOverlaySheetItemIcon.setImageDrawable(
-                                    menuItem.icon
-                                            // Set default icon if applicable
-                                            ?: (if (this.defaultIcon != 0) ContextCompat.getDrawable(context, this.defaultIcon) else null)
-                            )
-
-                            sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
-
-                            sheetItem.setOnClickListener {
-                                sheetFab.value.hideSheet()
-                                this.listener?.onActionItem(menuItem.itemId)
+                                this.uxActionOverlayContainer.addView(fab)
                             }
+                            else -> {
+                                // Create animated fab and material sheet
 
-                            sheet.uxActionOverlaySheetItemContainer.addView(sheetItem)
+                                val fab = this.createAnimatedFab()
+                                imageButton = fab
+
+                                fab.id = item.id
+
+                                if (item.colorRes != null)
+                                    fab.setBackgroundTint(item.colorRes)
+
+                                if (item.iconRes != null)
+                                    fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
+
+                                if (item.iconTintRes != null)
+                                    fab.setIconTint(item.iconTintRes)
+
+                                val sheet = this.context.layoutInflater.inflate(
+                                        R.layout.view_actionoverlay_sheet,
+                                        this.uxActionOverlaySheetContainer,
+                                        false)
+
+                                this.uxActionOverlaySheetContainer.addView(sheet)
+
+                                // Create dedicated dim overlay for this sheet
+                                val dimOverlay = DimOverlayFrameLayout(this.context)
+
+                                dimOverlay.layoutParams = FrameLayout.LayoutParams(
+                                        FrameLayout.LayoutParams.MATCH_PARENT,
+                                        FrameLayout.LayoutParams.MATCH_PARENT)
+
+                                this.uxActionOverlayDimContainer.addView(dimOverlay)
+
+                                // Create matieral sheet fab
+                                val sheetBackgroundColor = ContextCompat.getColor(this.context, android.R.color.background_light)
+                                val fabColor =
+                                        if (item.colorRes != null)
+                                            ContextCompat.getColor(this.context, item.colorRes)
+                                        else
+                                        // Default to fab color
+                                            fab.backgroundTintList!!.defaultColor
+
+                                val sheetFab = SheetFab(
+                                        MaterialSheetFab<AnimatedFloatingActionButton>(
+                                                fab,
+                                                sheet.uxActionOverlaySheet,
+                                                dimOverlay,
+                                                sheetBackgroundColor,
+                                                fabColor)
+                                )
+
+                                // Material sheet fabs are not directly added to view hierarchy,
+                                // but used for controlling behavior. Storing internally.
+                                this.materialSheetFabs.put(item.id, sheetFab)
+
+                                // Set sheet color
+                                sheet.uxAtionOverlaySheetBar.setBackgroundColor(fabColor)
+
+                                // Create sheet items
+                                item.menu.itemsSequence().forEach { menuItem ->
+                                    val sheetItem = this.context.layoutInflater.inflate(
+                                            R.layout.view_actionoverlay_sheet_item,
+                                            sheet.uxActionOverlaySheetItemContainer,
+                                            false)
+
+                                    sheetItem.uxActionOverlaySheetItemIcon.setImageDrawable(
+                                            menuItem.icon
+                                                    // Set default icon if applicable
+                                                    ?: (if (this.defaultIcon != 0) ContextCompat.getDrawable(context, this.defaultIcon) else null)
+                                    )
+
+                                    sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
+
+                                    sheetItem.setOnClickListener {
+                                        sheetFab.value.hideSheet()
+                                        this.listener?.onActionItem(menuItem.itemId)
+                                    }
+
+                                    sheet.uxActionOverlaySheetItemContainer.addView(sheetItem)
+                                }
+
+                                fab.setOnClickListener {
+                                    this.materialSheetFabs.values
+                                            .filter { it.value != sheetFab.value && it.value.isSheetVisible }
+                                            .forEach { it.value.hideSheet() }
+
+                                    sheetFab.value.showSheet()
+                                }
+
+                                this.uxActionOverlayContainer.addView(fab)
+                            }
                         }
 
-                        fab.setOnClickListener {
-                            this.materialSheetFabs.values
-                                    .filter { it.value != sheetFab.value && it.value.isSheetVisible }
-                                    .forEach { it.value.hideSheet() }
-
-                            sheetFab.value.showSheet()
-                        }
-
-                        this.uxActionOverlayContainer.addView(fab)
+                        imageButton.alpha = item.alpha ?: this.buttonAlpha
                     }
-                }
-            }
         }
 
         // Prevent clearing out views which have animations in-flight

@@ -25,7 +25,7 @@ class ParcelSectionsAdapter
 
     init {
         if (BuildConfig.DEBUG) {
-            // Only in DBEUG, as flexible adapter logging is broken when classes in stacktrace is obfuscated
+            // Only in DBEUG, as flexible adapter logging is broken when classes in stacktrace are obfuscated
             FlexibleAdapter.enableLogs(Log.Level.VERBOSE)
         }
 

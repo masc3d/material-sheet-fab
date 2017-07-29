@@ -37,6 +37,7 @@
                     android:layout_width="@dimen/icon_size_large"
                     android:layout_height="@dimen/icon_size_large"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginStart="-4dp"
                     android:layout_marginEnd="@dimen/large_margin"
                     android:src="@drawable/ic_package_closed"
                     android:tint="@color/colorGrey"

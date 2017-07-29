@@ -239,6 +239,10 @@ class VehicleLoadingScreen : ScreenFragment() {
                                             SyntheticInput.Entry(
                                                     symbologyType = SymbologyType.Interleaved25,
                                                     data = DekuDeliveryListNumber.parse("10730061").value.label
+                                            ),
+                                            SyntheticInput.Entry(
+                                                    symbologyType = SymbologyType.Interleaved25,
+                                                    data = DekuDeliveryListNumber.parse("28725713").value.label
                                             )
                                     )
                             ),
