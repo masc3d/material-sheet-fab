@@ -71,6 +71,26 @@ class OrderService : OrderService {
         return order
     }
 
+    fun getByIds(ids: List<Long>): List<OrderService.Order> {
+        val rOrders = this.orderRepository.findByIds(ids)
+
+        val rParcelsByOrderId = mapOf(*this.orderRepository
+                .findParcelsByOrderIds(rOrders.map { it.id.toLong() })
+                .map {
+                    Pair(it.orderId.toLong(), it)
+                }
+                .toTypedArray()
+        )
+
+        return rOrders.map {
+            it.toOrder().also { order ->
+                order.parcels = rParcelsByOrderId
+                        .filter { it.key == order.id }
+                        .map { it.value.toParcel() }
+            }
+        }
+    }
+
     /**
      * Order record conversion extension
      */

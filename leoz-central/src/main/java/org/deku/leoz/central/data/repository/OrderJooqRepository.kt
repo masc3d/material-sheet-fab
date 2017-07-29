@@ -6,11 +6,16 @@ import org.deku.leoz.central.data.jooq.tables.MstUser
 import org.deku.leoz.central.data.jooq.tables.TadVOrder
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
+import org.deku.leoz.central.data.prepared
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.RecordMapper
 import org.jooq.Result
+import org.jooq.ResultQuery
+import org.jooq.impl.DSL
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import sx.Stopwatch
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -21,6 +26,8 @@ import javax.inject.Named
 @Named
 open class OrderJooqRepository {
 
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
@@ -29,6 +36,13 @@ open class OrderJooqRepository {
         return dslContext.fetchOne(
                 Tables.TAD_V_ORDER,
                 Tables.TAD_V_ORDER.ID.eq(id.toDouble()))
+    }
+
+    fun findByIds(id: List<Long>): List<TadVOrderRecord> {
+        return dslContext.fetch(
+                Tables.TAD_V_ORDER,
+                Tables.TAD_V_ORDER.ID.`in`(id.map { it.toDouble() })
+        )
     }
 
     fun findByIdJoined(id: Long): Map<TadVOrderRecord, List<TadVOrderParcelRecord>> {
@@ -54,6 +68,12 @@ open class OrderJooqRepository {
         return dslContext.fetch(
                 Tables.TAD_V_ORDER_PARCEL,
                 Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble()))
+    }
 
+    fun findParcelsByOrderIds(ids: List<Long>): List<TadVOrderParcelRecord> {
+        return dslContext.fetch(
+                Tables.TAD_V_ORDER_PARCEL,
+                Tables.TAD_V_ORDER_PARCEL.ORDER_ID.`in`(ids.map { it.toDouble() })
+        )
     }
 }
