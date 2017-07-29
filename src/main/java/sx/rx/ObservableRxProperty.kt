@@ -53,8 +53,7 @@ class ObservableRxProperty<T>(
 
         this.value = value
 
-        if (old != value)
-            subject.onNext(Update(old, value))
+        subject.onNext(Update(old, value))
     }
 
     init {
