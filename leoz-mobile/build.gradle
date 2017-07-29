@@ -13,7 +13,7 @@ apply from: '../common.gradle'
 buildscript {
     ext {
         v_android_buildtools = '26.0.1'
-        v_android_support = '25.4.0'
+        v_android_support = '26.0.0'
         v_android_test = '1.0.0'
         v_xerial_sqlite = '3.19.3'
     }
