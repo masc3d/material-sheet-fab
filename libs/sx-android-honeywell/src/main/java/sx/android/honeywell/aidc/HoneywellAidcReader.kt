@@ -49,7 +49,9 @@ class HoneywellAidcReader private constructor(
         this.honeywellReader.claim()
 
         this.subscriptions.add(
-                this.enabledProperty.subscribe {
+                this.enabledProperty
+                        .distinctUntilChanged()
+                        .subscribe {
                     when(it.value) {
                         false -> {
                             log.debug("Closing")
