@@ -40,6 +40,8 @@ import sx.android.view.setIconTint
  * @property iconRes Icon
  * @property iconTintRes Color resource for tinting the icon
  * @property alpha Action item alpha
+ * @property alignEnd Align action item at end of parent. Defaults to true.
+ * @property visible Visibility of action item
  * @property menu Menu reflecting subitems
  */
 data class ActionItem(
@@ -48,8 +50,10 @@ data class ActionItem(
         @DrawableRes val iconRes: Int? = null,
         @ColorRes val iconTintRes: Int? = null,
         val alpha: Float? = null,
-        val menu: Menu? = null,
-        var visible: Boolean = true
+        val alignEnd: Boolean = true,
+        var visible: Boolean = true,
+
+        val menu: Menu? = null
 )
 
 /**
@@ -213,58 +217,32 @@ class ActionOverlayView : RelativeLayout {
     fun update() {
         val updateImpl = {
             // Remove fabs
-            this.uxActionOverlayContainer.removeAllViews()
+            this.uxActionOverlayContainerStart.removeAllViews()
+            this.uxActionOverlayContainerEnd.removeAllViews()
             // Remove fab sheets
             this.uxActionOverlaySheetContainer.removeAllViews()
 
             this.materialSheetFabs.clear()
 
-            var imageButton: ImageButton
             this.items
                     .filter { it.visible }
                     .reversed()
                     .forEach { item ->
 
+                        val fab: FloatingActionButton
                         when {
                             item.menu == null -> {
                                 // Create regular fab
-
-                                val fab = this.createFab()
-                                imageButton = fab
-
-                                fab.id = item.id
-
-                                if (item.colorRes != null)
-                                    fab.setBackgroundTint(item.colorRes)
-
-                                if (item.iconRes != null)
-                                    fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
-
-                                if (item.iconTintRes != null)
-                                    fab.setIconTint(item.iconTintRes)
+                                fab = this.createFab()
 
                                 fab.setOnClickListener {
                                     this.listener?.onActionItem(item.id)
                                 }
-
-                                this.uxActionOverlayContainer.addView(fab)
                             }
                             else -> {
                                 // Create animated fab and material sheet
-
-                                val fab = this.createAnimatedFab()
-                                imageButton = fab
-
-                                fab.id = item.id
-
-                                if (item.colorRes != null)
-                                    fab.setBackgroundTint(item.colorRes)
-
-                                if (item.iconRes != null)
-                                    fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
-
-                                if (item.iconTintRes != null)
-                                    fab.setIconTint(item.iconTintRes)
+                                val animatedFab = this.createAnimatedFab()
+                                fab = animatedFab
 
                                 val sheet = this.context.layoutInflater.inflate(
                                         R.layout.view_actionoverlay_sheet,
@@ -337,12 +315,26 @@ class ActionOverlayView : RelativeLayout {
 
                                     sheetFab.value.showSheet()
                                 }
-
-                                this.uxActionOverlayContainer.addView(fab)
                             }
                         }
 
-                        imageButton.alpha = item.alpha ?: this.buttonAlpha
+                        fab.id = item.id
+
+                        if (item.colorRes != null)
+                            fab.setBackgroundTint(item.colorRes)
+
+                        if (item.iconRes != null)
+                            fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
+
+                        if (item.iconTintRes != null)
+                            fab.setIconTint(item.iconTintRes)
+
+                        fab.alpha = item.alpha ?: this.buttonAlpha
+
+                        if (item.alignEnd)
+                            this.uxActionOverlayContainerEnd.addView(fab)
+                        else
+                            this.uxActionOverlayContainerStart.addView(fab)
                     }
         }
 

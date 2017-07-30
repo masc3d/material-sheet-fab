@@ -31,7 +31,7 @@ class ParcelViewModel(
 
     val modificationTime: String
         get() = if (this.parcel.modificationTime != null)
-            SimpleDateFormat("dd.MM HH:mm:ss", Locale.getDefault()).format(this.parcel.modificationTime)
+            SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(this.parcel.modificationTime)
         else ""
 
     val number: String

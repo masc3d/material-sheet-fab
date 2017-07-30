@@ -189,13 +189,10 @@ class VehicleLoadingScreen : ScreenFragment() {
                         id = R.id.action_vehicle_loading_finished,
                         colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_done_black,
-                        iconTintRes = android.R.color.white
+                        iconTintRes = android.R.color.white,
+                        alignEnd = false
                 )
         )
-
-        view.post {
-            this.parcelListAdapter.selectedSection = this.loadedSection
-        }
     }
 
     override fun onDestroy() {
@@ -255,6 +252,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                     }
                 }
 
+        this.parcelListAdapter.selectedSection = this.loadedSection
         this.parcelRepository.entitiesProperty
                 .map { it.value }
                 .subscribe { parcels ->
