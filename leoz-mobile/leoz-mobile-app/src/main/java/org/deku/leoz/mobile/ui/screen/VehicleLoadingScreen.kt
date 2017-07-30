@@ -28,7 +28,6 @@ import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.DekuDeliveryListNumber
@@ -84,7 +83,7 @@ class VehicleLoadingScreen : ScreenFragment() {
     }
 
     private val tone: Tone by Kodein.global.lazy.instance()
-    private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
+    private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
 
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
@@ -315,41 +314,39 @@ class VehicleLoadingScreen : ScreenFragment() {
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
-        try {
-            log.trace("AIDC READ $event")
+        log.trace("AIDC READ $event")
 
-            val stopwatch = Stopwatch.createStarted()
-            val result = Observable.concat(
-                    Observable.fromCallable { UnitNumber.parseLabel(event.data) },
-                    Observable.fromCallable { DekuDeliveryListNumber.parseLabel(event.data) }
-            )
-                    .takeUntil { !it.hasError }
-                    .last(Result(error = IllegalArgumentException("Invalid barcode")))
-                    .blockingGet()
+        val stopwatch = Stopwatch.createStarted()
+        val result = Observable.concat(
+                Observable.fromCallable { UnitNumber.parseLabel(event.data) },
+                Observable.fromCallable { DekuDeliveryListNumber.parseLabel(event.data) }
+        )
+                .takeUntil { !it.hasError }
+                .last(Result(error = IllegalArgumentException("Invalid barcode")))
+                .blockingGet()
 
-            when {
-                result.hasError -> {
-                    // TODO: display error
-                }
-                else -> {
-                    val resultValue = result.value
+        when {
+            result.hasError -> {
+                this.activity.snackbarBuilder
+                        .message(R.string.error_invalid_barcode)
+                        .build().show()
+            }
+            else -> {
+                val resultValue = result.value
 
-                    when (resultValue) {
-                        is UnitNumber -> {
-                            this.onUnitNumberInput(resultValue)
-                        }
-                        is DekuDeliveryListNumber -> {
-                            this.onDeliveryListNumberInput(resultValue)
-                        }
+                when (resultValue) {
+                    is UnitNumber -> {
+                        this.onInput(resultValue)
+                    }
+                    is DekuDeliveryListNumber -> {
+                        this.onInput(resultValue)
                     }
                 }
             }
-        } catch(e: Exception) {
-            log.error(e.message, e)
         }
     }
 
-    fun onDeliveryListNumberInput(deliveryListNumber: DekuDeliveryListNumber) {
+    fun onInput(deliveryListNumber: DekuDeliveryListNumber) {
         deliveryList.load(deliveryListNumber.value.toLong())
                 .bindToLifecycle(this)
                 .subscribeBy(
@@ -362,7 +359,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                 )
     }
 
-    fun onUnitNumberInput(unitNumber: UnitNumber) {
+    fun onInput(unitNumber: UnitNumber) {
         log.trace("Unit number input ${unitNumber.value}")
         val parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
 
@@ -370,22 +367,53 @@ class VehicleLoadingScreen : ScreenFragment() {
             when (parcelListAdapter.selectedSection) {
                 damagedSection -> {
                     if (parcel.isDamaged) {
-                        // TODO ask to remove damaged status
+                        this.tone.warningBeep()
+                        this.aidcReader.enabled = false
+
+                        MaterialDialog.Builder(this.context)
+                                .title(R.string.question_remove_damaged_status_title)
+                                .content(R.string.question_remove_damaged_status)
+                                .negativeText(getString(android.R.string.no))
+                                .positiveText(getString(android.R.string.yes))
+                                .dismissListener {
+                                    this.aidcReader.enabled = true
+                                }
+                                .onPositive { _, _ ->
+                                    parcel.isDamaged = false
+                                    this.parcelRepository.update(parcel).blockingGet()
+                                }
+                                .show()
                     } else {
+                        // TODO take photo
                         parcel.isDamaged = true
 
-                        // TODO take phozo
+                        this.parcelRepository.update(parcel).blockingGet()
                     }
                 }
                 else -> {
                     if (parcel.loadingState == Parcel.State.LOADED) {
-                        // TODO ask to remove loaded status
+                        this.tone.warningBeep()
+                        this.aidcReader.enabled = false
+
+                        MaterialDialog.Builder(this.context)
+                                .title(R.string.question_unload_parcel_title)
+                                .content(R.string.question_unload_parcel)
+                                .negativeText(getString(android.R.string.no))
+                                .positiveText(getString(android.R.string.yes))
+                                .dismissListener {
+                                    this.aidcReader.enabled = true
+                                }
+                                .onPositive { _, _ ->
+                                    parcel.loadingState = Parcel.State.PENDING
+                                    this.parcelRepository.update(parcel).blockingGet()
+                                }
+                                .show()
                     } else {
                         parcel.loadingState = Parcel.State.LOADED
+                        this.parcelRepository.update(parcel).blockingGet()
                     }
                 }
             }
-            this.parcelRepository.update(parcel).blockingGet()
         } else {
             // TODO show error
         }

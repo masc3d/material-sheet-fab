@@ -201,4 +201,9 @@
     <string name="vehicle_loading">Fahrzeugbeladung</string>
     <string name="order_list">Auftragsliste</string>
     <string name="pending">Ausstehend</string>
+    <string name="question_remove_damaged_status">Beschädigt-Status entfernen?</string>
+    <string name="error_invalid_barcode">Ungültiger barcode</string>
+    <string name="question_remove_damaged_status_title">Paket wurde als beschädigt gekennzeichnet</string>
+    <string name="question_unload_parcel">Paket entladen?</string>
+    <string name="question_unload_parcel_title">Paket wurde beladen</string>
 </resources>

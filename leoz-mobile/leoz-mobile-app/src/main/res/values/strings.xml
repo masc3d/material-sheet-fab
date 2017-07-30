@@ -69,6 +69,7 @@
     <string name="error_format_mail">This is not a valid email format</string>
     <string name="error_imager_scan_failed">Incomplete or failed scan</string>
     <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_barcode">Invalid barcode</string>
     <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
@@ -193,6 +194,12 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="prototype">Prototype</string>
 
     <string name="question_vehicle_loading_finished">Vehicle loading finished?</string>
+
+    <string name="question_unload_parcel_title">Parcel has been loaded</string>
+    <string name="question_unload_parcel">Unload parcel?</string>
+
+    <string name="question_remove_damaged_status_title">Parcel has been declared damaged</string>
+    <string name="question_remove_damaged_status">Remove damaged status?</string>
 
     <string name="report_bug">Report bug</string>
 

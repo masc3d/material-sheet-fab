@@ -7,6 +7,7 @@ import android.media.AudioTrack.MODE_STATIC
 import android.media.AudioFormat.ENCODING_PCM_16BIT
 import android.media.AudioFormat.CHANNEL_CONFIGURATION_MONO
 import android.media.AudioTrack
+import sx.Stopwatch
 import kotlin.experimental.and
 
 
@@ -16,6 +17,7 @@ import kotlin.experimental.and
  */
 class Tone {
     val SAMPLE_RATE = 8000
+
     /**
      * EXPERIMNTAL. create sample for custom beep. This code needs verification & refinement.
      * @param duration Duration in milliseconds
@@ -65,6 +67,10 @@ class Tone {
 
     fun beep() {
         this.toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
+    }
+
+    fun warningBeep() {
+        this.toneGenerator.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK, 400)
     }
 
     fun errorBeep() {
