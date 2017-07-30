@@ -16,7 +16,7 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import com.afollestad.materialdialogs.MaterialDialog
-import org.deku.leoz.mobile.device.Tone
+import org.deku.leoz.mobile.device.Tones
 
 
 class MainActivity
@@ -28,7 +28,7 @@ class MainActivity
     private val login: Login by Kodein.global.lazy.instance()
 
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
-    private val tone: Tone by Kodein.global.lazy.instance()
+    private val tones: Tones by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +89,7 @@ class MainActivity
     override fun onLoginFailed() {
         this.loginPendingDialog.dismiss()
 
-        tone.errorBeep()
+        tones.errorBeep()
 
         this.snackbarBuilder
                 .message(R.string.authentication_failed)

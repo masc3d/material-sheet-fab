@@ -10,12 +10,21 @@ import android.media.AudioTrack
 import sx.Stopwatch
 import kotlin.experimental.and
 
+/**
+ * Tones, generic interface
+ */
+interface Tones {
+    fun beep()
+    fun warningBeep()
+    fun errorBeep()
+}
+
 
 /**
- * Tone
+ * A tones implementation using the internal hardware tone generator
  * Created by masc on 06/03/2017.
  */
-class Tone {
+class HardwareTones : Tones {
     val SAMPLE_RATE = 8000
 
     /**
@@ -65,15 +74,29 @@ class Tone {
         this.createSample(250, 1400.0)
     }
 
-    fun beep() {
+    override fun beep() {
         this.toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
     }
 
-    fun warningBeep() {
+    override fun warningBeep() {
         this.toneGenerator.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK, 400)
     }
 
-    fun errorBeep() {
+    override fun errorBeep() {
         this.toneGenerator.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK, 400)
+    }
+}
+
+/**
+ * Tones implementation which doesn't emit tones at all
+ */
+class MutedTones : Tones {
+    override fun beep() {
+    }
+
+    override fun warningBeep() {
+    }
+
+    override fun errorBeep() {
     }
 }

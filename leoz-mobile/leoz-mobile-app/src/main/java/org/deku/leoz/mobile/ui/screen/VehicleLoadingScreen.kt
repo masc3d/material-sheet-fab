@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Tone
+import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
@@ -82,7 +82,7 @@ class VehicleLoadingScreen : ScreenFragment() {
         )
     }
 
-    private val tone: Tone by Kodein.global.lazy.instance()
+    private val tones: Tones by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
 
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -354,20 +354,21 @@ class VehicleLoadingScreen : ScreenFragment() {
 
                         },
                         onError = {
-                            tone.errorBeep()
+                            tones.errorBeep()
                         }
                 )
     }
 
     fun onInput(unitNumber: UnitNumber) {
         log.trace("Unit number input ${unitNumber.value}")
+
         val parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
 
         if (parcel != null) {
             when (parcelListAdapter.selectedSection) {
                 damagedSection -> {
                     if (parcel.isDamaged) {
-                        this.tone.warningBeep()
+                        this.tones.warningBeep()
                         this.aidcReader.enabled = false
 
                         MaterialDialog.Builder(this.context)
@@ -392,7 +393,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                 }
                 else -> {
                     if (parcel.loadingState == Parcel.State.LOADED) {
-                        this.tone.warningBeep()
+                        this.tones.warningBeep()
                         this.aidcReader.enabled = false
 
                         MaterialDialog.Builder(this.context)

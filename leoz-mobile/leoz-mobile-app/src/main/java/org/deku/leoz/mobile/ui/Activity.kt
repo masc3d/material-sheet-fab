@@ -31,7 +31,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.main.*
-import org.deku.leoz.mobile.device.Tone
+import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
@@ -93,7 +93,7 @@ open class Activity : RxAppCompatActivity(),
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
     private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
 
-    private val tone: Tone by Kodein.global.lazy.instance()
+    private val tones: Tones by Kodein.global.lazy.instance()
 
     // Services
     private val updateService: UpdateService by Kodein.global.lazy.instance()
@@ -606,7 +606,7 @@ open class Activity : RxAppCompatActivity(),
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    this.tone.beep()
+                    this.tones.beep()
                     this.cameraAidcFragmentVisible = false
                 }
         //endregion
