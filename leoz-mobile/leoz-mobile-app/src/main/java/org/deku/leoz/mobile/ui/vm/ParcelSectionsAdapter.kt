@@ -3,13 +3,16 @@ package org.deku.leoz.mobile.ui.vm
 import android.support.v7.widget.RecyclerView
 import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
+import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.utils.Log
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
+import sx.android.ui.flexibleadapter.FlexibleExpandableVmHolder
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
+import sx.android.ui.flexibleadapter.FlexibleVmHolder
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
 import sx.rx.ObservableRxProperty
 
@@ -20,8 +23,12 @@ import sx.rx.ObservableRxProperty
 class ParcelSectionsAdapter
     :
         FlexibleAdapter<
-                FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel>
-                >(listOf(), null, true) {
+                FlexibleExpandableVmItem<
+                        ParcelSectionViewModel,
+                        ParcelViewModel
+                        >
+                >
+        (listOf(), null, true) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -131,7 +138,7 @@ class ParcelSectionsAdapter
         this.collapseAll()
     }
 
-    private fun selectParcelSection(item: FlexibleExpandableVmItem<*, *>) {
+    private fun selectParcelSection(item: IFlexible<FlexibleExpandableVmHolder>) {
         val adapter = this
 
         val position = this.getGlobalPositionOf(item)
@@ -149,9 +156,9 @@ class ParcelSectionsAdapter
             // TODO: after expanding and fast scrolling to bottom, item click event doesn't fire unless the list is nudged a second time. glitchy, needs investigation
             adapter.collapseAll()
             adapter.moveItem(adapter.getGlobalPositionOf(item), 0)
-            adapter.recyclerView.post {
-                adapter.expand(0)
-            }
+            adapter.recyclerView.postDelayed({
+                adapter.expand(adapter.getGlobalPositionOf(item))
+            }, 200)
         }
     }
 }

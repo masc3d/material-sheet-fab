@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui.screen
 
-
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -17,19 +16,22 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.composeAsRest
+import org.deku.leoz.mobile.ui.composeWithActivityProgress
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.DekuDeliveryListNumber
@@ -44,7 +46,6 @@ import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.isConnectivityException
 import sx.format.format
-import sx.rx.subscribeOn
 import java.util.concurrent.ExecutorService
 
 /**
@@ -259,7 +260,6 @@ class VehicleLoadingScreen : ScreenFragment() {
                     }
                 }
 
-        this.parcelListAdapter.selectedSection = this.loadedSection
         this.parcelRepository.entitiesProperty
                 .map { it.value }
                 .subscribe { parcels ->
@@ -291,6 +291,7 @@ class VehicleLoadingScreen : ScreenFragment() {
 
                 }
 
+        this.parcelListAdapter.selectedSection = this.loadedSection
         this.parcelListAdapter.selectedSectionProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
@@ -354,90 +355,118 @@ class VehicleLoadingScreen : ScreenFragment() {
         }
     }
 
+    /**
+     * On delivery list input
+     */
     fun onInput(deliveryListNumber: DekuDeliveryListNumber) {
+        var loaded = false
         deliveryList.load(deliveryListNumber)
                 .bindToLifecycle(this)
-                .doOnSubscribe {
-                    this.activity.progressIndicator.show()
-                }
-                .doOnTerminate {
-                    this.activity.progressIndicator.hide()
-                }
+                .composeAsRest(this.activity, R.string.error_invalid_delivery_list)
                 .subscribeBy(
+                        onNext = {
+                            loaded = true
+                            log.info("Delivery lists [${this.deliveryList.ids.joinToString(", ")}")
+                        },
+                        onComplete = {
+                            // Can't rely on complete alone due to rxlifecycle
+                            if (loaded) {
+                                tones.beep()
+                            }
+                        },
                         onError = {
-                            this.activity.snackbarBuilder
-                                    .message(
-                                            if (it.isConnectivityException)
-                                                R.string.error_connectivity
-                                            else
-                                                R.string.error_invalid_delivery_list
-                                    )
-                                    .duration(Snackbar.LENGTH_LONG)
-                                    .build().show()
-
                             tones.errorBeep()
                         }
                 )
     }
 
+    /**
+     * On unit number input
+     */
     fun onInput(unitNumber: UnitNumber) {
         log.trace("Unit number input ${unitNumber.value}")
 
         val parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
 
-        if (parcel != null) {
-            when (parcelListAdapter.selectedSection) {
-                damagedSection -> {
-                    if (parcel.isDamaged) {
-                        this.tones.warningBeep()
-                        this.aidcReader.enabled = false
+        when {
+            parcel != null -> {
+                // Parcel fonud -> process
+                this.onParcel(parcel)
+            }
+            else -> {
+                // TODO: complete implementation. fetch order for unit,
+                // No corresponding order (yet)
+                this.deliveryList.load(unitNumber)
+                        .bindToLifecycle(this)
+                        .composeAsRest(this.activity, 0)
+                        .subscribeBy(
+                                onNext = {
+                                },
+                                onComplete = {
+                                    tones.beep()
+                                },
+                                onError = {
+                                    tones.errorBeep()
+                                }
+                        )
 
-                        MaterialDialog.Builder(this.context)
-                                .title(R.string.question_remove_damaged_status_title)
-                                .content(R.string.question_remove_damaged_status)
-                                .negativeText(getString(android.R.string.no))
-                                .positiveText(getString(android.R.string.yes))
-                                .dismissListener {
-                                    this.aidcReader.enabled = true
-                                }
-                                .onPositive { _, _ ->
-                                    parcel.isDamaged = false
-                                    this.parcelRepository.update(parcel).blockingGet()
-                                }
-                                .show()
-                    } else {
-                        // TODO take photo
-                        parcel.isDamaged = true
+            }
+        }
+    }
 
-                        this.parcelRepository.update(parcel).blockingGet()
-                    }
-                }
-                else -> {
-                    if (parcel.loadingState == Parcel.State.LOADED) {
-                        this.tones.warningBeep()
-                        this.aidcReader.enabled = false
+    /**
+     * On valid parcel entry
+     */
+    fun onParcel(parcel: ParcelEntity) {
+        when (parcelListAdapter.selectedSection) {
+            damagedSection -> {
+                if (parcel.isDamaged) {
+                    this.tones.warningBeep()
+                    this.aidcReader.enabled = false
 
-                        MaterialDialog.Builder(this.context)
-                                .title(R.string.question_unload_parcel_title)
-                                .content(R.string.question_unload_parcel)
-                                .negativeText(getString(android.R.string.no))
-                                .positiveText(getString(android.R.string.yes))
-                                .dismissListener {
-                                    this.aidcReader.enabled = true
-                                }
-                                .onPositive { _, _ ->
-                                    parcel.loadingState = Parcel.State.PENDING
-                                    this.parcelRepository.update(parcel).blockingGet()
-                                }
-                                .show()
-                    } else {
-                        parcel.loadingState = Parcel.State.LOADED
-                        this.parcelRepository.update(parcel).blockingGet()
-                    }
+                    MaterialDialog.Builder(this.context)
+                            .title(R.string.question_remove_damaged_status_title)
+                            .content(R.string.question_remove_damaged_status)
+                            .negativeText(getString(android.R.string.no))
+                            .positiveText(getString(android.R.string.yes))
+                            .dismissListener {
+                                this.aidcReader.enabled = true
+                            }
+                            .onPositive { _, _ ->
+                                parcel.isDamaged = false
+                                this.parcelRepository.update(parcel).blockingGet()
+                            }
+                            .show()
+                } else {
+                    // TODO take photo
+                    parcel.isDamaged = true
+
+                    this.parcelRepository.update(parcel).blockingGet()
                 }
             }
-        } else {
-            // TODO show error
+            else -> {
+                if (parcel.loadingState == Parcel.State.LOADED) {
+                    this.tones.warningBeep()
+                    this.aidcReader.enabled = false
+
+                    MaterialDialog.Builder(this.context)
+                            .title(R.string.question_unload_parcel_title)
+                            .content(R.string.question_unload_parcel)
+                            .negativeText(getString(android.R.string.no))
+                            .positiveText(getString(android.R.string.yes))
+                            .dismissListener {
+                                this.aidcReader.enabled = true
+                            }
+                            .onPositive { _, _ ->
+                                parcel.loadingState = Parcel.State.PENDING
+                                this.parcelRepository.update(parcel).blockingGet()
+                            }
+                            .show()
+                } else {
+                    parcel.loadingState = Parcel.State.LOADED
+                    this.parcelRepository.update(parcel).blockingGet()
+                }
+            }
         }
     }
 }

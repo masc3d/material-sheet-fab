@@ -206,4 +206,6 @@
     <string name="question_remove_damaged_status_title">Paket wurde als beschädigt gekennzeichnet</string>
     <string name="question_unload_parcel">Paket entladen?</string>
     <string name="question_unload_parcel_title">Paket wurde beladen</string>
+    <string name="error_invalid_delivery_list">Ungültige Rollkarte</string>
+    <string name="error_connectivity">Verbindung konnte nicht hergestellt werden</string>
 </resources>

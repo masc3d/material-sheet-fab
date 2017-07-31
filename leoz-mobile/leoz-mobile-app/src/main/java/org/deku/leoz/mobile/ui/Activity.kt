@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.provider.Settings
+import android.support.annotation.StringRes
 import android.support.design.widget.*
 import android.support.transition.*
 import android.support.v4.content.ContextCompat
@@ -32,6 +33,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.main.*
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.service.UpdateService
@@ -64,6 +66,8 @@ import sx.aidc.SymbologyType
 import sx.android.ApplicationStateMonitor
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.convertDpToPx
+import sx.android.isConnectivityException
+import sx.android.rx.observeOnMainThread
 import sx.android.toBitmap
 import java.util.NoSuchElementException
 
@@ -132,12 +136,12 @@ open class Activity : RxAppCompatActivity(),
      */
     class ProgressIndicator(
             val progressBar: ProgressBar
-    ){
+    ) {
         private var refCount = 0
 
         fun show() {
             refCount++
-            this.progressBar.visibility = View.VISIBLE
+            this.progressBar.post { this.progressBar.visibility = View.VISIBLE }
         }
 
         fun hide() {
@@ -146,7 +150,7 @@ open class Activity : RxAppCompatActivity(),
 
             refCount--
             if (refCount == 0)
-                this.progressBar.visibility = View.GONE
+                this.progressBar.post { this.progressBar.visibility = View.GONE }
         }
     }
 
@@ -296,7 +300,6 @@ open class Activity : RxAppCompatActivity(),
                     this.onForeground()
                 }
     }
-
 
 
     override fun onPause() {
@@ -824,4 +827,34 @@ open class Activity : RxAppCompatActivity(),
                     .show()
         }
     }
+}
+
+/**
+ * Extension method for easily binding observable lifecycle to activity progress indicator
+ */
+fun <T> Observable<T>.composeWithActivityProgress(activity: Activity): Observable<T> {
+    return this
+            .doOnSubscribe {
+                activity.progressIndicator.show()
+            }
+            .doOnTerminate {
+                activity.progressIndicator.hide()
+            }
+}
+
+fun <T> Observable<T>.composeAsRest(activity: Activity, @StringRes errorMessage: Int): Observable<T> {
+    return this
+            .observeOnMainThread()
+            .composeWithActivityProgress(activity)
+            .doOnError {
+                activity.snackbarBuilder
+                        .message(
+                                if (it.isConnectivityException)
+                                    R.string.error_connectivity
+                                else
+                                    errorMessage
+                        )
+                        .duration(Snackbar.LENGTH_LONG)
+                        .build().show()
+            }
 }

@@ -8,12 +8,14 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import io.requery.query.Tuple
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
+import org.deku.leoz.mobile.toHotRestObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.UnitNumber
@@ -22,6 +24,7 @@ import org.deku.leoz.service.internal.OrderService
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.requery.ObservableQuery
+import sx.requery.ObservableTupleQuery
 import sx.rx.*
 
 /**
@@ -65,7 +68,21 @@ class DeliveryList : CompositeDisposableSupplier {
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
+
+    private val deliveryListIdQuery = ObservableTupleQuery<Long>(
+            query = db.store.select(OrderEntity.DELIVERY_LIST_ID)
+                    .distinct()
+                    .from(OrderEntity::class)
+                    .where(OrderEntity.DELIVERY_LIST_ID.notNull())
+                    .get(),
+            transform = { it.get<Long>(0) }
+    ).bind(this)
     //endregion
+
+    /**
+     * Behavioral observable list of delivery list ids
+     */
+    val ids = deliveryListIdQuery.result
 
     /**
      * Damaged parcels
@@ -77,6 +94,9 @@ class DeliveryList : CompositeDisposableSupplier {
      */
     val loadedParcels = loadedParcelsQuery.result
 
+    /**
+     * Pending parcels
+     */
     val pendingParcels = pendingParcelsQuery.result
 
     //region Counters
@@ -168,6 +188,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
             orders
         }
+                .toHotRestObservable(log)
     }
 
     /**
