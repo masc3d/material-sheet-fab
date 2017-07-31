@@ -144,6 +144,9 @@ class ParcelSectionsAdapter
         val position = this.getGlobalPositionOf(item)
 
         // When re-establishing selection when item is selected, flexible adapter may behave erratically. thus checking
+
+        val firstSelection = adapter.selectedItemCount == 0
+
         if (!adapter.selectedPositions.contains(position)) {
             adapter.clearSelection()
             adapter.addSelection(position)
@@ -156,9 +159,16 @@ class ParcelSectionsAdapter
             // TODO: after expanding and fast scrolling to bottom, item click event doesn't fire unless the list is nudged a second time. glitchy, needs investigation
             adapter.collapseAll()
             adapter.moveItem(adapter.getGlobalPositionOf(item), 0)
-            adapter.recyclerView.postDelayed({
+
+            val expand = Runnable {
                 adapter.expand(adapter.getGlobalPositionOf(item))
-            }, 200)
+            }
+
+            if (firstSelection)
+                // Add delay on first selection to avoid drawing glitches
+                adapter.recyclerView.postDelayed(expand, 200)
+            else
+                adapter.recyclerView.post(expand)
         }
     }
 }
