@@ -4,7 +4,7 @@ version = '0.1'
 buildscript {
     ext {
         v_feign = '9.5.0'
-        v_jackson = '2.8.7'
+        v_jackson = '2.9.0'
         v_javax_persistence = '2.1.1'
         v_jersey = '2.25'
         v_jgit = '4.8.0.201706111038-r'
