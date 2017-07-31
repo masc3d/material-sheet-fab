@@ -76,8 +76,8 @@ class StartupActivity : RxAppCompatActivity() {
 
             try {
                 Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { sw, log ->
-                    // Simply opening and closing database will perform (requery) migration
-                    database.dataSource.writableDatabase.close()
+                    // Simply getting a writable database reference will perform (requery) migration
+                    database.dataSource.writableDatabase
                 })
             } catch(e: Throwable) {
                 // Build error message
