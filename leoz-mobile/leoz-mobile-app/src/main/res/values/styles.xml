@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppThemeBase" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppThemeBase" parent="Base.Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -10,17 +10,14 @@
         <item name="textAppearanceLargePopupMenu">@style/TextAppearance.AppCompat.Button</item>
     </style>
 
-    <!-- Application theme for API Levels below 21 (no native material design support) -->
-    <style name="AppTheme" parent="AppThemeBase"/>
-
-    <style name="AppTheme.NoActionBar" parent="AppTheme">
+    <style name="AppTheme" parent="AppThemeBase">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
     <!-- Startup theme, tailored for immediate display of img_splash screen (before activity is even loaded)
     by overriding window background -->
-    <style name="StartupTheme" parent="AppTheme.NoActionBar">
+    <style name="StartupTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
@@ -36,7 +33,8 @@
 
     <!-- Collapsing toolbar title style -->
     <style name="AppTheme.AppBarOverlay.TextAppearance"/>
-    <style name="AppTheme.AppBarOverlay.TextAppearance.Title" parent="@style/TextAppearance.AppCompat.Display1" >
+
+    <style name="AppTheme.AppBarOverlay.TextAppearance.Title" parent="@style/TextAppearance.AppCompat.Display1">
         <item name="android:shadowDy">0</item>
         <item name="android:shadowDx">0</item>
         <item name="android:shadowRadius">4</item>
