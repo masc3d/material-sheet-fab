@@ -462,3 +462,7 @@ packager {
         productFlavor 'prod'
     }
 }
+
+// masc20170731. workaround for release builds failing
+// (when switching between product flavors, as we usually work in `dev` but native bundle is `prod`
+tasks.releaseNativeBundle.dependsOn(tasks.cleanBuildCache)
