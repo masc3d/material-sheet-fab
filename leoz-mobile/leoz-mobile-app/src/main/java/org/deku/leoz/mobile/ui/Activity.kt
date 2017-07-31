@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.ui
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
+import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
@@ -19,6 +20,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
 import com.github.salomonbrys.kodein.Kodein
@@ -126,6 +128,31 @@ open class Activity : RxAppCompatActivity(),
     }
 
     /**
+     * Ref counting progress indicator, wrapping a progress bar
+     */
+    class ProgressIndicator(
+            val progressBar: ProgressBar
+    ){
+        private var refCount = 0
+
+        fun show() {
+            refCount++
+            this.progressBar.visibility = View.VISIBLE
+        }
+
+        fun hide() {
+            if (refCount == 0)
+                throw IllegalStateException("Inconsistent show/hide invocations (.hide has been called more often than .show)")
+
+            refCount--
+            if (refCount == 0)
+                this.progressBar.visibility = View.GONE
+        }
+    }
+
+    val progressIndicator by lazy { ProgressIndicator(this.uxProgressBar) }
+
+    /**
      * Responsible for controlling header
      */
     private inner class Header {
@@ -193,15 +220,21 @@ open class Activity : RxAppCompatActivity(),
 
     // Views
 
-    /** Snackbar parent view. To be used in derived activities with Snackbar.make */
-    val snackbarParentView by lazy { this.uxCoordinatorLayout }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         this.setContentView(R.layout.main)
 
         this.uxNavView.setNavigationItemSelectedListener(this)
+
+        //region Progress bar / activity indicator
+
+        // Change progress bar color, as this is apparently not themable and there's no proper
+        // way to do this in xml layout that is compatible down to 4.x
+        this.uxProgressBar.indeterminateDrawable.setColorFilter(
+                ContextCompat.getColor(this, R.color.colorDarkGrey),
+                PorterDuff.Mode.SRC_IN);
+        //endregion
 
         //region Action bar
         this.setSupportActionBar(this.uxToolbar)
@@ -263,6 +296,8 @@ open class Activity : RxAppCompatActivity(),
                     this.onForeground()
                 }
     }
+
+
 
     override fun onPause() {
         this.isPaused = true

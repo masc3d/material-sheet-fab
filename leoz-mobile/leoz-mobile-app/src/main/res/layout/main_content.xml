@@ -61,8 +61,8 @@
             <FrameLayout
                 android:id="@+id/uxHeaderAccentBar"
                 android:layout_width="match_parent"
-                android:layout_gravity="bottom"
                 android:layout_height="4dp"
+                android:layout_gravity="bottom"
                 android:alpha="0.5"
                 android:background="@color/colorAccent"
                 app:layout_collapseMode="pin"
@@ -74,7 +74,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                >
+
+                <ProgressBar
+                    android:id="@+id/uxProgressBar"
+                    android:visibility="gone"
+                    android:layout_width="@dimen/progress_size_medium"
+                    android:layout_height="@dimen/progress_size_medium"
+                    android:layout_gravity="top|end"
+                    android:layout_marginEnd="@dimen/margin"
+                    />
+
+            </android.support.v7.widget.Toolbar>
+
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -83,9 +96,9 @@
     <!-- Main content fragment container -->
     <FrameLayout
         android:id="@+id/uxContainer"
-        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
 

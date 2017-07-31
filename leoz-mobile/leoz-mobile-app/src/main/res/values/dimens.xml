@@ -13,6 +13,8 @@
     <dimen name="medium_margin">12dp</dimen>
     <dimen name="large_margin">16dp</dimen>
 
+    <!-- Progress -->
+    <dimen name="progress_size_medium">32dp</dimen>
     <!-- FAB -->
     <dimen name="fab_margin">0dp</dimen>
     <dimen name="fab_elevate">6dp</dimen>

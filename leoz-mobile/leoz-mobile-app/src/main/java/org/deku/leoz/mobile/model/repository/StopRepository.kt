@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.model.repository
 import android.databinding.Observable
 import io.reactivex.Completable
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.model.entity.*
@@ -47,6 +48,7 @@ class StopRepository(
                     val stopCount = store.count(StopEntity::class).get().call()
                     log.trace("Saved stops in $sw :: orders [${orderCount}] stops [${stopCount}] tasks [${taskCount}] addresses [${addressCount}] parcels [${parcelCount}]")
                 }
+                .subscribeOn(Schedulers.computation())
     }
 
     /**
@@ -59,6 +61,8 @@ class StopRepository(
                     .forEach {
                         delete(it)
                     }
-        }.toCompletable()
+        }
+                .toCompletable()
+                .subscribeOn(Schedulers.computation())
     }
 }

@@ -4,6 +4,7 @@ import android.databinding.Observable
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.model.entity.*
@@ -24,6 +25,8 @@ class ParcelRepository(
 
     override fun update(entity: ParcelEntity): Single<ParcelEntity> {
         entity.modificationTime = Date()
-        return super.update(entity)
+        return super
+                .update(entity)
+                .subscribeOn(Schedulers.computation())
     }
 }

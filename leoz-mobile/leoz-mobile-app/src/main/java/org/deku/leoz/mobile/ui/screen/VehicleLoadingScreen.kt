@@ -4,6 +4,7 @@ package org.deku.leoz.mobile.ui.screen
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
@@ -17,6 +18,7 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
@@ -40,7 +42,10 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
+import sx.android.isConnectivityException
 import sx.format.format
+import sx.rx.subscribeOn
+import java.util.concurrent.ExecutorService
 
 /**
  * Vehicle loading screen
@@ -81,6 +86,8 @@ class VehicleLoadingScreen : ScreenFragment() {
                 totalAmount = this.deliveryList.totalWeight.map { "${it.format(2)}kg" }.toField()
         )
     }
+
+    private val executorService: ExecutorService by Kodein.global.lazy.instance()
 
     private val tones: Tones by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
@@ -222,7 +229,8 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .subscribe {
                     when (it.itemId) {
                         R.id.action_reset -> {
-                            this.orderRepository.removeAll().blockingGet()
+                            this.orderRepository.removeAll()
+                                    .subscribe()
                         }
                     }
                 }
@@ -349,11 +357,24 @@ class VehicleLoadingScreen : ScreenFragment() {
     fun onInput(deliveryListNumber: DekuDeliveryListNumber) {
         deliveryList.load(deliveryListNumber)
                 .bindToLifecycle(this)
+                .doOnSubscribe {
+                    this.activity.progressIndicator.show()
+                }
+                .doOnTerminate {
+                    this.activity.progressIndicator.hide()
+                }
                 .subscribeBy(
-                        onNext = {
-
-                        },
                         onError = {
+                            this.activity.snackbarBuilder
+                                    .message(
+                                            if (it.isConnectivityException)
+                                                R.string.error_connectivity
+                                            else
+                                                R.string.error_invalid_delivery_list
+                                    )
+                                    .duration(Snackbar.LENGTH_LONG)
+                                    .build().show()
+
                             tones.errorBeep()
                         }
                 )
