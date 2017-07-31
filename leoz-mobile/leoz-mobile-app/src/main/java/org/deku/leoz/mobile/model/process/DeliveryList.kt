@@ -49,27 +49,31 @@ class DeliveryList : CompositeDisposableSupplier {
 
     //region Self-observing queries
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
-            db.store.select(ParcelEntity::class)
+            name = "Loaded parcels",
+            query = db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.LOADED))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
 
     private val damagedParcelsQuery = ObservableQuery<ParcelEntity>(
-            db.store.select(ParcelEntity::class)
+            name = "Damaged parcels",
+            query = db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.DAMAGED.eq(true))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
 
     private val pendingParcelsQuery = ObservableQuery<ParcelEntity>(
-            db.store.select(ParcelEntity::class)
+            name = "Pending parcels",
+            query = db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.PENDING))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
 
     private val deliveryListIdQuery = ObservableTupleQuery<Long>(
+            name = "Delivery list ids",
             query = db.store.select(OrderEntity.DELIVERY_LIST_ID)
                     .distinct()
                     .from(OrderEntity::class)

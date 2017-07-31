@@ -10,11 +10,14 @@ import sx.rx.ObservableLazyRxProperty
  * Observable query
  * Created by masc on 26.07.17.
  * @param query Reactive query
+ * @param transform Transformation lambda
+ * @param name Option name for the query. Used for logging
  */
 abstract class BaseObservableQuery<Q, T>(
         private val query: ReactiveResult<Q>,
-        private val transform: (queryType: Q) -> T
-): Disposable {
+        private val transform: (queryType: Q) -> T,
+        val name: String = ""
+) : Disposable {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val subscription: Disposable
 
@@ -28,7 +31,7 @@ abstract class BaseObservableQuery<Q, T>(
                 .observableResult()
                 .subscribe {
                     val records = it.toList()
-                    log.trace("RECORDS CHANGED ${this.result.count()}")
+                    log.trace("RECORDS CHANGED [${name}] new size ${records.size}")
                     this.result.reset { records.map { transform(it) } }
                 }
     }
@@ -46,10 +49,13 @@ abstract class BaseObservableQuery<Q, T>(
  * Observable query
  * Created by masc on 26.07.17.
  * @param query Reactive query
+ * @param name Option name for the query. Used for logging
  */
 class ObservableQuery<E>(
-        query: ReactiveResult<E>
-): BaseObservableQuery<E, E>(
+        query: ReactiveResult<E>,
+        name: String = ""
+) : BaseObservableQuery<E, E>(
+        name = name,
         query = query,
         transform = { it }
 )
@@ -58,11 +64,14 @@ class ObservableQuery<E>(
  * Observable tuple query
  * @param query Reactive query
  * @param transform Lambda transforming the tuple into a specific type
+ * @param name Option name for the query. Used for loggin
  */
 class ObservableTupleQuery<T>(
-        private val query: ReactiveResult<Tuple>,
-        private val transform: (tuple: Tuple) -> T
-): BaseObservableQuery<Tuple, T>(
+        query: ReactiveResult<Tuple>,
+        transform: (tuple: Tuple) -> T,
+        name: String = ""
+) : BaseObservableQuery<Tuple, T>(
+        name = name,
         query = query,
         transform = transform
 )

@@ -14,6 +14,7 @@ import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.entity.UserEntity
 import org.deku.leoz.mobile.model.entity.create
+import org.deku.leoz.mobile.toHotRestObservable
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
@@ -146,16 +147,12 @@ class Login {
                 authorizeOffline()
             }
         }
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
                     // Store authenticated user in property
                     this.authenticatedUser = it
                 }
-                .doOnError {
-                    log.error(it.message, it)
-                }
-                .toHotReplay()
+                .toHotRestObservable(this.log)
 
         // Return task to consumer for optionally subscribing to running authentication task as well
         return task
