@@ -12,14 +12,18 @@ import javax.persistence.Persistence
 import org.deku.leoz.central.data.jooq.tables.Tblauftragcollies
 import org.deku.leoz.central.data.jooq.tables.Tblauftrag
 import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.records.TblfeldhistorieRecord
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.Reason
 import org.deku.leoz.node.rest.DefaultProblem
 import org.jooq.Field
+import sx.time.toLocalDate
 import sx.time.toTimestamp
+import java.text.SimpleDateFormat
 import java.util.*
+
 
 /**
  * Created by JT on 18.07.17.
@@ -35,11 +39,13 @@ class ParcelJooqRepository {
         return (eventRecord.store() > 0)
     }
 
+    /**
     fun setSignaturePath(parcelNumber: String, path: String): Boolean {
         //update parcel
         //TblauftragcolliesRecord: bmpFileName = path
         return true
     }
+    **/
 
     fun getUnitNo(parcelId: Int): Double? {
         if (parcelId == 0) return null
@@ -77,4 +83,18 @@ class ParcelJooqRepository {
     }
 
 
+    fun findBagsByUnitNumber(unitNo: Double): List<TblauftragcolliesRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRABC.eq(unitNo))
+                .fetchInto(TblauftragcolliesRecord::class.java)
+    }
+
+}
+
+fun TblstatusRecord.setDate(date:Date){
+    this.datum= SimpleDateFormat("yyyyMMdd").parse(date.toLocalDate().toString()).toString()
+}
+fun TblstatusRecord.setTime(date:Date){
+    this.zeit= SimpleDateFormat("HHmm").parse(date.toLocalDate().toString()).toString()
 }

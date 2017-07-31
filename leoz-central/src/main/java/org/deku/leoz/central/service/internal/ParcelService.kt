@@ -88,7 +88,9 @@ open class ParcelServiceV1 :
             val reason = Reason.values().find { it.id == reasonId }!!
             r.fehlercode = reason.oldValue.toUInteger()
 
-            val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo.toDouble())
+            r.erzeugerstation="002"
+
+            val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
             parcelRecord ?:
                     throw DefaultProblem(
                             title = "Missing parcelRecord"
@@ -98,6 +100,13 @@ open class ParcelServiceV1 :
                     throw DefaultProblem(
                             title = "Missing orderRecord"
                     )
+            val pasClearingartmaster=orderRecord.clearingartmaster
+            val pasCleared: Boolean
+            if (pasClearingartmaster!=null){
+                pasCleared=(4096.and(pasClearingartmaster.toInt()))==4096
+            }
+            else
+                pasCleared=false
 
             when (event) {
                 Event.DELIVERED -> {
@@ -116,15 +125,64 @@ open class ParcelServiceV1 :
                                 )
                                 is AdditionalInfo.DeliveredInfo -> {
 
+                                    if (pasCleared){
+                                        //TODO WLtransfer Auslieferdaten nach Abrechnung
+                                    }
+
                                     r.text = addInfo.recipient ?: ""
                                     //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
-                                    saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
-                                    //TODO in Feldhistorie eintragen
-                                    parcelRecord.lieferstatus = 4
-                                    parcelRecord.store()
-                                    orderRecord.empfaenger = r.text
-                                    orderRecord.store()
+                                    val sigPath=saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
+                                    parcelRecord.bmpfilename=sigPath
 
+                                    val oldValue = parcelRecord.lieferstatus
+                                    parcelRecord.lieferstatus = 4
+                                    if (parcelRecord.store() > 0) {
+                                        val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                        fieldHistoryRecord.orderid = parcelRecord.orderid
+                                        fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                                        fieldHistoryRecord.feldname = "lieferstatus"
+                                        fieldHistoryRecord.oldvalue = oldValue?.toString() ?: ""
+                                        fieldHistoryRecord.newvalue = "4"
+                                        fieldHistoryRecord.changer = "SP"
+                                        fieldHistoryRecord.point = "IM"
+                                        fieldHistoryRecord.store()
+                                    }
+
+                                    val oldRecipient=orderRecord.empfaenger ?:""
+                                    orderRecord.empfaenger = r.text
+                                    if(orderRecord.store()>0 && !oldRecipient.equals(r.text)){
+                                        val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                        fieldHistoryRecord.orderid = parcelRecord.orderid
+                                        fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                                        fieldHistoryRecord.feldname ="empfaenger"
+                                        fieldHistoryRecord.oldvalue=oldRecipient
+                                        fieldHistoryRecord.newvalue=r.text
+                                        fieldHistoryRecord.changer="I"
+                                        fieldHistoryRecord.point="IM"
+                                        fieldHistoryRecord.store()
+                                    }
+                                    if(!orderRecord.empfaenger.equals(r.text)){
+                                        //TODO WLtransfer ASD D in Auftrag gescheitert
+                                    }
+
+                                    val oldDeliveryDate=orderRecord.dtauslieferdatum
+                                    val oldDeliveryTime=orderRecord.dtauslieferzeit
+
+
+                                    //
+                                    val from = it.from
+                                    if (from != null) {
+                                        if (from.equals("956") || from.equals("935"))
+                                            if (parcelNo.toString().startsWith("10071")) {
+                                                val bagRecords = parcelRepository.findBagsByUnitNumber(parcelNo)
+                                                if (bagRecords != null) {
+                                                    bagRecords.forEach {
+
+                                                    }
+                                                }
+
+                                            }
+                                    }
                                 }
                             }
                         }
@@ -135,12 +193,44 @@ open class ParcelServiceV1 :
                                         title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
                                 )
                                 is AdditionalInfo.DeliveredAtNeighborInfo -> {
+                                    if (pasCleared){
+                                        //TODO WLtransfer
+                                    }
+
                                     r.text = addInfo.name ?: "" + ";adr " + addInfo.address ?: ""
                                     //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
-                                    saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
-                                    //TODO in Feldhistorie eintragen
+                                    val sigPath=saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
+                                    parcelRecord.bmpfilename=sigPath
+
+                                    val oldValue = parcelRecord.lieferstatus
                                     parcelRecord.lieferstatus = 4
-                                    parcelRecord.store()
+                                    if (parcelRecord.store() > 0) {
+                                        val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                        fieldHistoryRecord.orderid = parcelRecord.orderid
+                                        fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                                        fieldHistoryRecord.feldname = "lieferstatus"
+                                        fieldHistoryRecord.oldvalue = oldValue?.toString() ?: ""
+                                        fieldHistoryRecord.newvalue = "4"
+                                        fieldHistoryRecord.changer = "SP"
+                                        fieldHistoryRecord.point = "IM"
+                                        fieldHistoryRecord.store()
+                                    }
+
+                                    val oldRecipient=orderRecord.empfaenger ?:""
+                                    orderRecord.empfaenger = r.text
+                                    if(orderRecord.store()>0 && !oldRecipient.equals(r.text)){
+                                        val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                        fieldHistoryRecord.orderid = parcelRecord.orderid
+                                        fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                                        fieldHistoryRecord.feldname ="empfaenger"
+                                        fieldHistoryRecord.oldvalue=oldRecipient
+                                        fieldHistoryRecord.newvalue=r.text
+                                        fieldHistoryRecord.changer="I"
+                                        fieldHistoryRecord.point="IM"
+                                        fieldHistoryRecord.store()
+                                    }
+
+
                                 }
                             }
                         }
@@ -189,7 +279,7 @@ open class ParcelServiceV1 :
         }
     }
 
-    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?) {
+    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?): String {
 
         var path = "c:\\deku2004\\SynchToSaveServer\\" +
                 SimpleDateFormat("yyyy").parse(date.toLocalDate().toString()) + "\\SB\\" +
@@ -206,11 +296,11 @@ open class ParcelServiceV1 :
         // .save file
 
         // Set Reference in parcelrecord
-        parcelRepository.setSignaturePath(number, file)
+        //parcelRepository.setSignaturePath(number, file)
 
         //false -> log
 
-        return
+        return file
 
     }
 }

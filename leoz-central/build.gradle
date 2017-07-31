@@ -239,7 +239,8 @@ jooq {
                         'tblsyscollections',
                         'tblstatus',
                         'usystblzaehler',
-                        'tad_.*'
+                        'tad_.*',
+                        'tblfeldhistorie'
 
                 ].join('|')
             }
