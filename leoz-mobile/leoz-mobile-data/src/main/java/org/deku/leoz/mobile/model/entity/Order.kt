@@ -32,6 +32,9 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val tasks: MutableList<OrderTask>
 
+    /** The delivery list id this order is attached to */
+    abstract var deliveryListId: Long?
+
     val pickupTask by lazy {
         this.tasks.first { it.type == OrderTask.TaskType.PICKUP }
     }
@@ -51,7 +54,8 @@ fun Order.Companion.create(
         referenceIDToExchangeOrderID: Long,
         pickupTask: OrderTask,
         deliveryTask: OrderTask,
-        parcels: List<Parcel>
+        parcels: List<Parcel>,
+        deliveryListId: Long? = null
 ): Order {
     val entity = OrderEntity().also {
         it.id = id
@@ -63,6 +67,7 @@ fun Order.Companion.create(
         it.tasks.add(pickupTask)
         it.tasks.add(deliveryTask)
         it.parcels.addAll(parcels)
+        it.deliveryListId = deliveryListId
     }
 
     deliveryTask.order = entity

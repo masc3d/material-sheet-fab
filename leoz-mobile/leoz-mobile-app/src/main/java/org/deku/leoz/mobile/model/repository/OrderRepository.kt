@@ -30,7 +30,7 @@ class OrderRepository(
      * Merge a batch of orders into the database.
      * Existing orders will have their parcel lists merged accordingly.
      */
-    fun save(orders: List<Order>): Completable {
+    fun merge(orders: List<Order>): Completable {
         val sw = Stopwatch.createStarted()
         return store.withTransaction {
             // Store orders

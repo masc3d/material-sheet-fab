@@ -119,7 +119,7 @@ class DeliveryList : CompositeDisposableSupplier {
     /**
      * Extension method for filtering distinct service orders
      */
-    fun List<OrderService.Order>.filterDistinctOrders(): List<OrderService.Order> {
+    fun List<OrderService.Order>.distinctOrders(): List<OrderService.Order> {
         return this.groupBy {
             it.id
         }.map {
@@ -136,7 +136,7 @@ class DeliveryList : CompositeDisposableSupplier {
     /**
      * Extension method for filtering distinct stops
      */
-    fun List<Stop>.filterDistinctStops(): List<Stop> {
+    fun List<Stop>.distinctStops(): List<Stop> {
         return this.flatMap { stop ->
             stop.tasks.map { task ->
                 Pair(stop, task)
@@ -152,18 +152,27 @@ class DeliveryList : CompositeDisposableSupplier {
         }
     }
 
+    /**
+     * Load order based on unit number
+     * @param unitNumber Unit number
+     */
     fun load(unitNumber: UnitNumber): Observable<List<Order>> {
         return Observable.fromCallable {
-            this.orderService.get(parcelScan = unitNumber.value)
-                    .filterDistinctOrders()
+            val orders = this.orderService.get(parcelScan = unitNumber.value)
+                    .distinctOrders()
+                    .map { it.toOrder() }
 
-            listOf<Order>()
+            this.orderRepository
+                    .merge(orders)
+                    .blockingGet()
+
+            orders
         }
     }
 
     /**
      * Loads delivery list data from remote peer into local database
-     * @param deliveryListId Delivery list id
+     * @param deliveryListNumber Delivery list id
      * @return Hot observable which completes with a list of stops
      */
     fun load(deliveryListNumber: DekuDeliveryListNumber): Observable<List<Stop>> {
@@ -171,17 +180,18 @@ class DeliveryList : CompositeDisposableSupplier {
             val sw = Stopwatch.createStarted()
 
             // Retrieve delivery list
-            val deliveryList = this.deliveryListServive.getById(id = deliveryListNumber.value.toLong())
+            val deliveryListId = deliveryListNumber.value.toLong()
+            val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
             // Process orders
             run {
                 val orders = deliveryList.orders
-                        .filterDistinctOrders()
+                        .distinctOrders()
 
                 this.orderRepository
-                        .save(orders.map {
-                            it.toOrder()
+                        .merge(orders.map {
+                            it.toOrder(deliveryListId)
                         })
                         .blockingGet()
             }
@@ -207,7 +217,7 @@ class DeliveryList : CompositeDisposableSupplier {
                         }.filterNotNull()
                 )
             }
-                    .filterDistinctStops()
+                    .distinctStops()
 
             this.stopRepository
                     .merge(stops)

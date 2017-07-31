@@ -5,13 +5,16 @@ import org.deku.leoz.service.internal.OrderService
 
 // Order service to mobile model conversions
 
-fun OrderService.Order.toOrder(): Order {
+fun OrderService.Order.toOrder(
+        deliveryListId: Long? = null
+): Order {
     return Order.create(
             //TODO
             id = this.id,
             state = Order.State.PENDING,
             carrier = this.carrier,
             referenceIDToExchangeOrderID = this.referenceIDToExchangeOrderID,
+            deliveryListId = deliveryListId,
             deliveryTask = OrderTask.create(
                     type = OrderTask.TaskType.DELIVERY,
                     address = this.deliveryAddress.toAddress(),
