@@ -22,7 +22,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.ui.showErrorAlert
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
+import sx.Stopwatch
 import sx.android.Device
 import sx.android.aidc.AidcReader
 import java.util.concurrent.TimeUnit
@@ -69,6 +71,24 @@ class StartupActivity : RxAppCompatActivity() {
         log.trace("Intent action ${this.intent.action}")
 
         if (!this.started) {
+            // Prepare database
+            val database: Database = Kodein.global.instance()
+
+            try {
+                Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { sw, log ->
+                    // Simply opening and closing database will perform (requery) migration
+                    database.dataSource.writableDatabase.close()
+                })
+            } catch(e: Throwable) {
+                // Build error message
+                var text = "${this.getText(org.deku.leoz.mobile.R.string.error_database_inconsistent)}"
+                text += if (e.message != null) " (${e.message})" else ""
+                text += ". ${this.getText(org.deku.leoz.mobile.R.string.prompt_reinstall)}"
+
+                this.showErrorAlert(text = text, onPositiveButton = {
+                    this.app.terminate()
+                })
+            }
 
             // Acquire permissions
             val ovPermissions = RxPermissions(this)

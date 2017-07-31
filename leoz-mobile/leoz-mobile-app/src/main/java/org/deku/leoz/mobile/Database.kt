@@ -45,9 +45,9 @@ class Database(
     }
 
     /**
-     * Requery entity store
+     * Requery data source
      */
-    val store by lazy {
+    val dataSource: SqlitexDatabaseSource by lazy {
         // Using requery's more current sqlite implementation
         // SqlitexDatabaseSource -> https://github.com/requery/sqlite-android
         val ds = object : SqlitexDatabaseSource(
@@ -81,9 +81,16 @@ class Database(
         ds.setLoggingEnabled(false)
         ds.setTableCreationMode(TableCreationMode.CREATE_NOT_EXISTS)
 
+        ds
+    }
+
+    /**
+     * Requery entity store
+     */
+    val store by lazy {
         KotlinReactiveEntityStore(
                 store = KotlinEntityDataStore<Persistable>(
-                        configuration = ds.configuration))
+                        configuration = this.dataSource.configuration))
     }
 
     init {
