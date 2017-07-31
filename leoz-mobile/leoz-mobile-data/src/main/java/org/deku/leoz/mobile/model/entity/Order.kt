@@ -10,7 +10,7 @@ import sx.android.databinding.BaseRxObservable
  * Created by masc on 18.07.17.
  */
 @Entity
-@Table(name = "`order`")
+@Table(name = "order_")
 abstract class Order : BaseRxObservable(), Persistable, Observable {
 
     companion object {}

@@ -26,7 +26,7 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 
     abstract var type: TaskType
 
-    @get:ManyToOne @get:Column(name = "`order`")
+    @get:ManyToOne @get:Column(name = "order_")
     abstract var order: Order
 
     @get:ForeignKey
