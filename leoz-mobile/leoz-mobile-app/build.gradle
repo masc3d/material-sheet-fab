@@ -349,7 +349,7 @@ dependencies {
     )
 
     provided(
-        "com.google.auto.value:auto-value:$v_autovalue"
+            "com.google.auto.value:auto-value:$v_autovalue"
     )
 
     debugCompile(
@@ -440,6 +440,14 @@ afterEvaluate {
     tasks.packageDevRelease.doFirst {
         removeSqliteLibs()
     }
+
+    // masc20170731. workaround for release builds failing
+    // (when switching between product flavors, as we usually work in `dev` but native bundle is `prod`
+    android.applicationVariants.findAll {
+        it.buildType.name == 'release'
+    }.forEach {
+        it.assemble.dependsOn(tasks.cleanBuildCache)
+    }
 }
 
 /**
@@ -462,7 +470,3 @@ packager {
         productFlavor 'prod'
     }
 }
-
-// masc20170731. workaround for release builds failing
-// (when switching between product flavors, as we usually work in `dev` but native bundle is `prod`
-tasks.releaseNativeBundle.dependsOn(tasks.cleanBuildCache)
