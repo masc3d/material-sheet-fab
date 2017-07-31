@@ -141,7 +141,7 @@
                             android:layout_height="@dimen/icon_size"
                             android:layout_gravity="center_vertical"
                             android:layout_marginEnd="@dimen/margin"
-                            android:src="@drawable/ic_file_document"/>
+                            android:src="@{stop.taskTypeIcon, default = `@drawable/ic_truck_delivery`}"/>
 
                         <TextView
                             android:id="@+id/uxOrderCount"

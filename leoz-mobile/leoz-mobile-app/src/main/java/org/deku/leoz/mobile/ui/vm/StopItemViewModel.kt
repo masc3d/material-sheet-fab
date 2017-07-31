@@ -1,6 +1,9 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
+import android.support.annotation.DrawableRes
+import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.entity.OrderTask
 import org.deku.leoz.mobile.model.entity.Stop
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
@@ -45,5 +48,13 @@ class StopItemViewModel(val stop: Stop) : BaseObservable() {
             return stop.tasks.flatMap {
                 it.order.parcels
             }.count().toString()
+        }
+
+    val taskTypeIcon: Int
+        get() {
+            return when(stop.tasks.first().type) {
+                OrderTask.TaskType.DELIVERY -> R.drawable.ic_truck_delivery
+                OrderTask.TaskType.PICKUP -> R.drawable.ic_truck_pickup
+            }
         }
 }
