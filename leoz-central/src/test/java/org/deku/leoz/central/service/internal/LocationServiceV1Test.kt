@@ -7,6 +7,7 @@ import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
 import sx.time.toTimestamp
@@ -22,7 +23,7 @@ import javax.inject.Inject
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
-        LocationServiceV1::class
+        org.deku.leoz.central.service.internal.LocationServiceV1::class
 ))
 class LocationServiceV1Test {
 
