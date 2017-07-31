@@ -27,7 +27,8 @@ class OrderRepository(
     }
 
     /**
-     * Save a batch of orders, replacing existing orders if applicable
+     * Merge a batch of orders into the database.
+     * Existing orders will have their parcel lists merged accordingly.
      */
     fun save(orders: List<Order>): Completable {
         val sw = Stopwatch.createStarted()
@@ -39,10 +40,22 @@ class OrderRepository(
                         .get().firstOrNull()
 
                 if (existingOrder != null) {
-                    delete(existingOrder)
-                }
+                    val orderParcelNumbers = order.parcels.map { it.number }.toHashSet()
+                    val existingOrderParcelNumbers = existingOrder.parcels.map { it.number }.toHashSet()
 
-                insert(order)
+                    val addedParcels = order.parcels.filter {
+                        !existingOrderParcelNumbers.contains(it.number)
+                    }
+
+                    val removedParcels= existingOrder.parcels.filter {
+                        !orderParcelNumbers.contains(it.number)
+                    }
+
+                    delete(removedParcels)
+                    insert(addedParcels)
+                } else {
+                    insert(order)
+                }
             }
         }
                 .toCompletable()

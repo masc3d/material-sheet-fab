@@ -347,7 +347,7 @@ class VehicleLoadingScreen : ScreenFragment() {
     }
 
     fun onInput(deliveryListNumber: DekuDeliveryListNumber) {
-        deliveryList.load(deliveryListNumber.value.toLong())
+        deliveryList.load(deliveryListNumber)
                 .bindToLifecycle(this)
                 .subscribeBy(
                         onNext = {

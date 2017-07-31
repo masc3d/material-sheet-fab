@@ -14,8 +14,11 @@ import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
+import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.EventNotDeliveredReason
+import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.service.internal.DeliveryListService
+import org.deku.leoz.service.internal.OrderService
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.requery.ObservableQuery
@@ -33,6 +36,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
     private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
+    private val orderService: OrderService by Kodein.global.lazy.instance()
 
     //region Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -113,36 +117,70 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
+     * Extension method for filtering distinct service orders
+     */
+    fun List<OrderService.Order>.filterDistinctOrders(): List<OrderService.Order> {
+        return this.groupBy {
+            it.id
+        }.map {
+            if (it.value.count() > 1) {
+                log.warn("Duplicate order id [${it.key}] parcel counts [${it.value.map { it.parcels.count() }.joinToString(", ")}]")
+            }
+            it.value.maxBy {
+                // In case of duplicates, prefer order with most parcels
+                it.parcels.count()
+            }
+        }.filterNotNull()
+    }
+
+    /**
+     * Extension method for filtering distinct stops
+     */
+    fun List<Stop>.filterDistinctStops(): List<Stop> {
+        return this.flatMap { stop ->
+            stop.tasks.map { task ->
+                Pair(stop, task)
+            }
+        }.groupBy {
+            // Group by order task id to find duplicates
+            it.second.id
+        }.map {
+            if (it.value.count() > 1) {
+                log.warn("Duplicate stop task [${it.key}], filtering all but the last one")
+            }
+            it.value.last().first
+        }
+    }
+
+    fun load(unitNumber: UnitNumber): Observable<List<Order>> {
+        return Observable.fromCallable {
+            this.orderService.get(parcelScan = unitNumber.value)
+                    .filterDistinctOrders()
+
+            listOf<Order>()
+        }
+    }
+
+    /**
      * Loads delivery list data from remote peer into local database
      * @param deliveryListId Delivery list id
      * @return Hot observable which completes with a list of stops
      */
-    fun load(deliveryListId: Long): Observable<List<Stop>> {
+    fun load(deliveryListNumber: DekuDeliveryListNumber): Observable<List<Stop>> {
         return Observable.fromCallable {
             val sw = Stopwatch.createStarted()
 
             // Retrieve delivery list
-            val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
+            val deliveryList = this.deliveryListServive.getById(id = deliveryListNumber.value.toLong())
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
             // Process orders
             run {
-                //region Post process orders, filter out duplicates
-                val filteredOrders = deliveryList.orders.groupBy {
-                    it.id
-                }.map {
-                    if (it.value.count() > 1) {
-                        log.warn("Duplicate order id [${it.key}] parcel counts [${it.value.map { it.parcels.count() }.joinToString(", ")}]")
-                    }
-                    it.value.maxBy {
-                        // In case of duplicates, prefer order with most parcels
-                        it.parcels.count()
-                    }
-                }.filterNotNull()
-                //endregion
+                val orders = deliveryList.orders
+                        .filterDistinctOrders()
 
                 this.orderRepository
-                        .save(filteredOrders.map {
+                        .save(orders.map {
                             it.toOrder()
                         })
                         .blockingGet()
@@ -169,25 +207,10 @@ class DeliveryList : CompositeDisposableSupplier {
                         }.filterNotNull()
                 )
             }
-
-            //region Post process stops, filter duplicates´
-            val filteredStops = stops.flatMap { stop ->
-                stop.tasks.map { task ->
-                    Pair(stop, task)
-                }
-            }.groupBy {
-                // Group by order task id to find duplicates
-                it.second.id
-            }.map {
-                if (it.value.count() > 1) {
-                    log.warn("Duplicate stop task [${it.key}], filtering all but the last one")
-                }
-                it.value.last().first
-            }
-            //endregion
+                    .filterDistinctStops()
 
             this.stopRepository
-                    .save(filteredStops)
+                    .merge(stops)
                     .blockingGet()
 
             log.trace("Delivery list transformed and stored in $sw")

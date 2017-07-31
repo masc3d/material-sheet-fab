@@ -20,13 +20,21 @@ class StopRepository(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
-     * Save a batch of orders, replacing existing orders if applicable
+     * Merge a batch of stops into the database.
+     * Stops which reference the same order tasks will be removed in order to avoid duplicates.
      */
-    fun save(stops: List<Stop>): Completable {
+    fun merge(stops: List<Stop>): Completable {
         val sw = Stopwatch.createStarted()
         return store.withTransaction {
             // Store orders
             stops.forEach { stop ->
+                // Remove stops which reference the same order tasks to avoid duplicates
+                delete(stop.tasks
+                        .map { it.stop }
+                        .distinct()
+                        .filterNotNull()
+                )
+
                 insert(stop)
             }
         }
