@@ -48,6 +48,7 @@ open class ParcelServiceV1 :
 
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
 
+        //val events = message.events?.toList()
         val events = message.events?.toList()
                 ?: throw DefaultProblem(
                 detail = "Missing data",
@@ -56,9 +57,12 @@ open class ParcelServiceV1 :
         log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
 
         events.forEach {
-            val r: TblstatusRecord
-            r = dslContext.newRecord(Tables.TBLSTATUS)
+            val r = dslContext.newRecord(Tables.TBLSTATUS)
             val parcelScan = it.parcelScancode
+            if (parcelScan.isEmpty())
+                throw DefaultProblem(
+                        title = "Missing parcelScan"
+                )
             val parcelNo: Double?
             if (!parcelScan.all { it.isDigit() })
                 parcelNo = parcelRepository.getUnitNo(it.parcelId)
@@ -73,8 +77,10 @@ open class ParcelServiceV1 :
             r.packstuecknummer = parcelNo
             //r.packstuecknummer = it.parcelScancode.toDouble()
 //            r.erzeugerstation = it.eventValue.toString()
-            r.datum = SimpleDateFormat("yyyyMMdd").parse(it.time.toLocalDate().toString()).toString()
-            r.zeit = SimpleDateFormat("HHmm").parse(it.time.toLocalDate().toString()).toString()
+            //r.datum = SimpleDateFormat("yyyyMMdd").parse(it.time.toLocalDate().toString()).toString()
+            r.setDate(it.time)
+            //r.zeit = SimpleDateFormat("HHmm").parse(it.time.toLocalDate().toString()).toString()
+            r.setTime(it.time)
             r.poslat = it.latitude
             r.poslong = it.longitude
 
@@ -88,25 +94,24 @@ open class ParcelServiceV1 :
             val reason = Reason.values().find { it.id == reasonId }!!
             r.fehlercode = reason.oldValue.toUInteger()
 
-            r.erzeugerstation="002"
+            r.erzeugerstation = "002"
 
             val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
             parcelRecord ?:
                     throw DefaultProblem(
                             title = "Missing parcelRecord"
                     )
-            val orderRecord = parcelRepository.findOrderByUnitNumber(parcelRecord.orderid)
+            val orderRecord = parcelRepository.findOrderByOrderNumber(parcelRecord.orderid)
             orderRecord ?:
                     throw DefaultProblem(
                             title = "Missing orderRecord"
                     )
-            val pasClearingartmaster=orderRecord.clearingartmaster
+            val pasClearingartmaster = orderRecord.clearingartmaster
             val pasCleared: Boolean
-            if (pasClearingartmaster!=null){
-                pasCleared=(4096.and(pasClearingartmaster.toInt()))==4096
-            }
-            else
-                pasCleared=false
+            if (pasClearingartmaster != null) {
+                pasCleared = (4096.and(pasClearingartmaster.toInt())) == 4096
+            } else
+                pasCleared = false
 
             when (event) {
                 Event.DELIVERED -> {
@@ -125,48 +130,48 @@ open class ParcelServiceV1 :
                                 )
                                 is AdditionalInfo.DeliveredInfo -> {
 
-                                    if (pasCleared){
+                                    if (pasCleared) {
                                         //TODO WLtransfer Auslieferdaten nach Abrechnung
                                     }
 
                                     r.text = addInfo.recipient ?: ""
                                     //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
-                                    val sigPath=saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
-                                    parcelRecord.bmpfilename=sigPath
+                                    val sigPath = saveSignature(it.time, addInfo.signature, parcelScan, message.nodeId)
+                                    parcelRecord.bmpfilename = sigPath
 
                                     val oldValue = parcelRecord.lieferstatus
-                                    parcelRecord.lieferstatus = 4
+                                    parcelRecord.lieferstatus = r.kzStatus.toShort() //4
                                     if (parcelRecord.store() > 0) {
                                         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
                                         fieldHistoryRecord.orderid = parcelRecord.orderid
                                         fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
                                         fieldHistoryRecord.feldname = "lieferstatus"
                                         fieldHistoryRecord.oldvalue = oldValue?.toString() ?: ""
-                                        fieldHistoryRecord.newvalue = "4"
+                                        fieldHistoryRecord.newvalue = r.kzStatus.toString()//"4"
                                         fieldHistoryRecord.changer = "SP"
                                         fieldHistoryRecord.point = "IM"
                                         fieldHistoryRecord.store()
                                     }
 
-                                    val oldRecipient=orderRecord.empfaenger ?:""
+                                    val oldRecipient = orderRecord.empfaenger ?: ""
                                     orderRecord.empfaenger = r.text
-                                    if(orderRecord.store()>0 && !oldRecipient.equals(r.text)){
+                                    if (orderRecord.store() > 0 && !oldRecipient.equals(r.text)) {
                                         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
                                         fieldHistoryRecord.orderid = parcelRecord.orderid
                                         fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
-                                        fieldHistoryRecord.feldname ="empfaenger"
-                                        fieldHistoryRecord.oldvalue=oldRecipient
-                                        fieldHistoryRecord.newvalue=r.text
-                                        fieldHistoryRecord.changer="I"
-                                        fieldHistoryRecord.point="IM"
+                                        fieldHistoryRecord.feldname = "empfaenger"
+                                        fieldHistoryRecord.oldvalue = oldRecipient
+                                        fieldHistoryRecord.newvalue = r.text
+                                        fieldHistoryRecord.changer = "I"
+                                        fieldHistoryRecord.point = "IM"
                                         fieldHistoryRecord.store()
                                     }
-                                    if(!orderRecord.empfaenger.equals(r.text)){
+                                    if (!orderRecord.empfaenger.equals(r.text)) {
                                         //TODO WLtransfer ASD D in Auftrag gescheitert
                                     }
 
-                                    val oldDeliveryDate=orderRecord.dtauslieferdatum
-                                    val oldDeliveryTime=orderRecord.dtauslieferzeit
+                                    val oldDeliveryDate = orderRecord.dtauslieferdatum
+                                    val oldDeliveryTime = orderRecord.dtauslieferzeit
 
 
                                     //
@@ -193,40 +198,42 @@ open class ParcelServiceV1 :
                                         title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
                                 )
                                 is AdditionalInfo.DeliveredAtNeighborInfo -> {
-                                    if (pasCleared){
+                                    if (pasCleared) {
                                         //TODO WLtransfer
                                     }
 
                                     r.text = addInfo.name ?: "" + ";adr " + addInfo.address ?: ""
                                     //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
-                                    val sigPath=saveSignature(it.time, addInfo.signature, parcelNo.toString(), message.nodeId)
-                                    parcelRecord.bmpfilename=sigPath
+                                    val sigPath = saveSignature(it.time, addInfo.signature, parcelScan, message.nodeId)
+                                    parcelRecord.bmpfilename = sigPath
 
                                     val oldValue = parcelRecord.lieferstatus
-                                    parcelRecord.lieferstatus = 4
+                                    parcelRecord.lieferstatus = r.kzStatus.toShort()//4
                                     if (parcelRecord.store() > 0) {
                                         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
                                         fieldHistoryRecord.orderid = parcelRecord.orderid
                                         fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
                                         fieldHistoryRecord.feldname = "lieferstatus"
                                         fieldHistoryRecord.oldvalue = oldValue?.toString() ?: ""
-                                        fieldHistoryRecord.newvalue = "4"
+                                        fieldHistoryRecord.newvalue = r.kzStatus.toString()//"4"
                                         fieldHistoryRecord.changer = "SP"
                                         fieldHistoryRecord.point = "IM"
+                                        //getTan
+                                        // fieldHistoryRecord.id=
                                         fieldHistoryRecord.store()
                                     }
 
-                                    val oldRecipient=orderRecord.empfaenger ?:""
+                                    val oldRecipient = orderRecord.empfaenger ?: ""
                                     orderRecord.empfaenger = r.text
-                                    if(orderRecord.store()>0 && !oldRecipient.equals(r.text)){
+                                    if (orderRecord.store() > 0 && !oldRecipient.equals(r.text)) {
                                         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
                                         fieldHistoryRecord.orderid = parcelRecord.orderid
                                         fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
-                                        fieldHistoryRecord.feldname ="empfaenger"
-                                        fieldHistoryRecord.oldvalue=oldRecipient
-                                        fieldHistoryRecord.newvalue=r.text
-                                        fieldHistoryRecord.changer="I"
-                                        fieldHistoryRecord.point="IM"
+                                        fieldHistoryRecord.feldname = "empfaenger"
+                                        fieldHistoryRecord.oldvalue = oldRecipient
+                                        fieldHistoryRecord.newvalue = r.text
+                                        fieldHistoryRecord.changer = "I"
+                                        fieldHistoryRecord.point = "IM"
                                         fieldHistoryRecord.store()
                                     }
 
@@ -282,16 +289,16 @@ open class ParcelServiceV1 :
     fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?): String {
 
         var path = "c:\\deku2004\\SynchToSaveServer\\" +
-                SimpleDateFormat("yyyy").parse(date.toLocalDate().toString()) + "\\SB\\" +
-                SimpleDateFormat("MM").parse(date.toString()) + "\\" +
-                SimpleDateFormat("dd").parse(date.toString())
+                SimpleDateFormat("yyyy").format(date) + "\\SB\\" +
+                SimpleDateFormat("MM").format(date) + "\\" +
+                SimpleDateFormat("dd").format(date)
 
         //create path if not exsists
 
         //  signatureBase64.decode64
         //  convert to .bmp
 
-        var file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").parse(date.toLocalDate().toString()) + "_MOB.bmp"
+        var file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.bmp"
         // 2017\SB\06\09\83352287467_1804_2017060908550500_sca.bmp
         // .save file
 

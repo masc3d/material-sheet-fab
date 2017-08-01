@@ -41,11 +41,11 @@ class ParcelJooqRepository {
 
     /**
     fun setSignaturePath(parcelNumber: String, path: String): Boolean {
-        //update parcel
-        //TblauftragcolliesRecord: bmpFileName = path
-        return true
+    //update parcel
+    //TblauftragcolliesRecord: bmpFileName = path
+    return true
     }
-    **/
+     **/
 
     fun getUnitNo(parcelId: Int): Double? {
         if (parcelId == 0) return null
@@ -74,11 +74,11 @@ class ParcelJooqRepository {
                 ?.fetchOneInto(Tblauftragcollies.TBLAUFTRAGCOLLIES)
     }
 
-    fun findOrderByUnitNumber(orderNo: Double): TblauftragRecord? {
+    fun findOrderByOrderNumber(orderNo: Double): TblauftragRecord? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAG)
                 .where(Tables.TBLAUFTRAG.ORDERID.eq(orderNo))
-                .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.greaterThan(0.0))
+                .and(Tables.TBLAUFTRAG.ORDERID.greaterThan(0.0))
                 ?.fetchOneInto(Tblauftrag.TBLAUFTRAG)
     }
 
@@ -90,11 +90,18 @@ class ParcelJooqRepository {
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 
+    /*
+    fun getTan(countertyp:Int):Long{
+        return dslContext.select()
+                .from()
+    }
+*/
 }
 
-fun TblstatusRecord.setDate(date:Date){
-    this.datum= SimpleDateFormat("yyyyMMdd").parse(date.toLocalDate().toString()).toString()
+fun TblstatusRecord.setDate(date: Date) {
+    this.datum = SimpleDateFormat("yyyyMMdd").format(date)
 }
-fun TblstatusRecord.setTime(date:Date){
-    this.zeit= SimpleDateFormat("HHmm").parse(date.toLocalDate().toString()).toString()
+
+fun TblstatusRecord.setTime(date: Date) {
+    this.zeit = SimpleDateFormat("HHmm").format(date)
 }
