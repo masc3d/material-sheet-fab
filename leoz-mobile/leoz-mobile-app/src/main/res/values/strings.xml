@@ -14,6 +14,7 @@
     <string name="authentication_failed">Authentication failed</string>
 
     <string name="back">Back</string>
+    <string name="barcode_label">Barcode label</string>
 
     <string name="cancel">Cancel</string>
     <string name="cancel_process">Cancel process</string>
@@ -128,6 +129,7 @@
 
     <string name="logout">Logout</string>
 
+    <string name="manual_label_input">Manual barcode label input</string>
     <string name="menu">Menu</string>
 
     <string name="name">Name</string>

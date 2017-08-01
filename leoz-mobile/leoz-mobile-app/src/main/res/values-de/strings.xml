@@ -208,4 +208,6 @@
     <string name="question_unload_parcel_title">Paket wurde beladen</string>
     <string name="error_invalid_delivery_list">Ungültige Rollkarte</string>
     <string name="error_connectivity">Verbindung konnte nicht hergestellt werden</string>
+    <string name="manual_label_input">Manuelle Barcode Eingabe</string>
+    <string name="barcode_label">Barcode label</string>
 </resources>

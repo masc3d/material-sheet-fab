@@ -63,12 +63,10 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.jetbrains.anko.backgroundColor
 import sx.aidc.SymbologyType
-import sx.android.ApplicationStateMonitor
+import sx.android.*
 import sx.android.aidc.SimulatingAidcReader
-import sx.android.convertDpToPx
-import sx.android.isConnectivityException
 import sx.android.rx.observeOnMainThread
-import sx.android.toBitmap
+import sx.android.view.setIconTint
 import java.util.NoSuchElementException
 
 /**
@@ -86,6 +84,9 @@ open class Activity : RxAppCompatActivity(),
         /** Base menu id for dynamically generated synthetic input entries */
         val MENU_ID_DEV_BASE = 0x5000
         val MENU_ID_DEV_MAX = 0x5100
+
+        val AIDC_ACTION_ITEM_COLOR = R.color.colorDarkGrey
+        val AIDC_ACTION_ITEM_TINT = android.R.color.white
     }
 
     /** Indicates the activity has been paused */
@@ -93,6 +94,8 @@ open class Activity : RxAppCompatActivity(),
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
     private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
+
+    private val device: Device by Kodein.global.lazy.instance()
 
     // AIDC readers
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -428,6 +431,22 @@ open class Activity : RxAppCompatActivity(),
             R.id.action_aidc_camera -> {
                 this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
             }
+
+            R.id.action_aidc_keyboard -> {
+                this.cameraAidcFragmentVisible = false
+
+                MaterialDialog.Builder(this)
+                        .title(R.string.manual_label_input)
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .input(R.string.barcode_label, 0, object : MaterialDialog.InputCallback {
+                            override fun onInput(dialog: MaterialDialog, input: CharSequence?) {
+                                log.trace("INPUT ${input}")
+                            }
+                        })
+                        .build()
+                        .show()
+            }
+
         }
 
         // Emit action event
@@ -482,56 +501,87 @@ open class Activity : RxAppCompatActivity(),
             return fragment != null
         }
         set(value) {
-            // Lookup dynamically created fab with action overlay for applying translucency effect
-            val aidcFab = this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_camera)
-            if (aidcFab != null) {
-                when (value) {
-                    true -> {
-                        aidcFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = R.color.colorAccent)
-                        aidcFab.alpha = 0.6F
-                    }
-                    false -> {
-                        aidcFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = android.R.color.white)
-                        aidcFab.alpha = 0.85F
-                    }
-                }
-            }
-
             if (value == this.cameraAidcFragmentVisible)
                 return
 
-            if (!value) {
-                val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
+            when (value) {
+                true -> {
+                    // Show camera fragment
+                    this.supportFragmentManager.withTransaction {
+                        it.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
+                        it.replace(R.id.uxScannerContainer, AidcCameraFragment(), AidcCameraFragment::class.java.canonicalName)
+                    }
 
-                if (fragment != null) {
-                    if (isPaused) {
-                        // If activitiy is about to pause, avoid animation as they will fail/throw in case activity is detroyed afterwards
-                        this@Activity.supportFragmentManager.withTransaction {
-                            it.remove(fragment)
-                        }
-                    } else {
-                        val view = fragment.view
-                        if (view != null) {
-                            // Fragment removal cannot be animated, thus doing it manually
-                            ViewCompat.animate(view)
-                                    .translationY(view.height.toFloat())
-                                    .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
-                                    .withEndAction {
-                                        this@Activity.supportFragmentManager.withTransaction {
-                                            it.remove(fragment)
+                    // Remove action items,add aidc keyboard button whie camera fragment is visilble
+                    this.actionItems = listOf(
+                            ActionItem(
+                                    id = R.id.action_aidc_keyboard,
+                                    colorRes = AIDC_ACTION_ITEM_COLOR,
+                                    iconTintRes = AIDC_ACTION_ITEM_TINT,
+                                    iconRes = R.drawable.ic_keyboard
+                            )
+                    )
+                }
+
+                false -> {
+                    val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
+
+                    if (fragment != null) {
+                        if (isPaused) {
+                            // If activitiy is about to pause, avoid animation as they will fail/throw in case activity is detroyed afterwards
+                            this@Activity.supportFragmentManager.withTransaction {
+                                it.remove(fragment)
+                            }
+                        } else {
+                            val view = fragment.view
+                            if (view != null) {
+                                // Fragment removal cannot be animated with custom animation, thus doing it manually
+                                ViewCompat.animate(view)
+                                        .translationY(view.height.toFloat())
+                                        .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
+                                        .withEndAction {
+                                            this@Activity.supportFragmentManager.withTransaction {
+                                                it.remove(fragment)
+                                            }
                                         }
-                                    }
-                                    .start()
+                                        .start()
+                            }
+                        }
+
+                        // Find top-most screen fragment and restore action items
+                        val screenFragment = this.supportFragmentManager.fragments
+                                .firstOrNull {
+                                    it is ScreenFragment
+                                } as? ScreenFragment
+
+                        if (screenFragment != null)
+                            this.actionItems = screenFragment.actionItems
+                    }
+                }
+            }
+
+            // Lookup dynamically created fab with action overlay for applying translucency effect
+            listOf(
+                    this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_camera),
+                    this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_keyboard)
+            )
+                    .filterNotNull()
+                    .forEach {
+
+                        when (value) {
+                            true -> {
+                                if (it.id == R.id.action_aidc_camera)
+                                    it.setIconTint(R.color.colorAccent)
+
+                                it.alpha = 0.6F
+                            }
+                            false -> {
+                                it.setIconTint(AIDC_ACTION_ITEM_TINT)
+                                it.alpha = this.uxActionOverlay.buttonAlpha
+                            }
                         }
 
                     }
-                }
-            } else {
-                this.supportFragmentManager.withTransaction {
-                    it.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
-                    it.replace(R.id.uxScannerContainer, AidcCameraFragment(), AidcCameraFragment::class.java.canonicalName)
-                }
-            }
         }
 
     override fun onResume() {
@@ -553,16 +603,30 @@ open class Activity : RxAppCompatActivity(),
                 .subscribe {
                     log.info("ACTION ITEMS CAHNGED")
                     val items = mutableListOf(*it.value.toTypedArray())
-                    items.add(
-                            0,
-                            ActionItem(
-                                    id = R.id.action_aidc_camera,
-                                    colorRes = R.color.colorDarkGrey,
-                                    iconTintRes = android.R.color.white,
-                                    iconRes = R.drawable.ic_barcode,
-                                    visible = this.aidcReader.enabled
-                            )
-                    )
+
+                    if (this.device.manufacturer.type == Device.Manufacturer.Type.Generic) {
+                        items.add(
+                                0,
+                                ActionItem(
+                                        id = R.id.action_aidc_camera,
+                                        colorRes = AIDC_ACTION_ITEM_COLOR,
+                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
+                                        iconRes = R.drawable.ic_barcode,
+                                        visible =  this.aidcReader.enabled
+                                )
+                        )
+                    } else {
+                        items.add(
+                                0,
+                                ActionItem(
+                                        id = R.id.action_aidc_keyboard,
+                                        colorRes = AIDC_ACTION_ITEM_COLOR,
+                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
+                                        iconRes = R.drawable.ic_keyboard,
+                                        visible = this.aidcReader.enabled
+                                )
+                        )
+                    }
 
                     this.uxActionOverlay.items = items
                 }
@@ -628,8 +692,13 @@ open class Activity : RxAppCompatActivity(),
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { enabled ->
+                    log.info("AIDC reader ${if (enabled.value) "enabled" else "disabled"}")
                     val aidcActionItem = this.uxActionOverlay.items
-                            .filter { it.id == R.id.action_aidc_camera && it.visible != enabled.value }
+                            .filter {
+                                (it.id == R.id.action_aidc_camera || it.id == R.id.action_aidc_keyboard)
+                                        &&
+                                        it.visible != enabled.value
+                            }
                             .firstOrNull()
 
                     if (aidcActionItem != null) {
@@ -674,6 +743,8 @@ open class Activity : RxAppCompatActivity(),
     }
 
     override fun onScreenFragmentResume(fragment: ScreenFragment) {
+        this.aidcReader.enabled = fragment.aidcEnabled
+
         // Take over action items from screen fragment when it resumes
         fragment.actionItemsProperty
                 .bindUntilEvent(fragment, FragmentEvent.PAUSE)
@@ -795,7 +866,6 @@ open class Activity : RxAppCompatActivity(),
             else -> fragment.orientation
         }
 
-        this.aidcReader.enabled = fragment.aidcEnabled
     }
 
     override fun onScreenFragmentPause(fragment: ScreenFragment) {

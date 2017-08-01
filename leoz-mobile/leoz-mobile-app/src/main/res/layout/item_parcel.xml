@@ -57,8 +57,7 @@
                                 android:layout_height="@dimen/icon_size"
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginEnd="@dimen/medium_margin"
-                                android:layout_marginTop="2dp"
-                                android:src="@drawable/ic_package_closed"
+                                android:src="@drawable/ic_package_variant_closed"
                                 android:tint="@color/colorGrey"
                                 />
 
