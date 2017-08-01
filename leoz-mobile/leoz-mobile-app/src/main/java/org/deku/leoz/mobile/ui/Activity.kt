@@ -876,8 +876,8 @@ open class Activity : RxAppCompatActivity(),
      * On foreground handler (hooked into ApplicationStateMonitor)
      */
     private fun onForeground() {
-        // Check developer settings TODO: Disabled temporally to be able to view logs via ADB on devices with release/prod installations
-        if (false && !debugSettings.enabled && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
+        // Check developer settings
+        if (!debugSettings.enabled && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
             MaterialDialog.Builder(this)
                     .title("Developer options enabled")
                     .content("Developer options are enabled on your device. To continue, you must disable developer options!")
