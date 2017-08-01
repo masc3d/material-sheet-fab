@@ -38,7 +38,7 @@ class PostboxDeliveryScreen: ScreenFragment(), CameraFragment.Listener {
     val actionItemCapture = listOf(
             ActionItem(
                     id = R.id.action_camera_trigger,
-                    iconRes = R.drawable.ic_menu_camera,
+                    iconRes = android.R.drawable.ic_menu_camera,
                     colorRes = R.color.colorAccent
             )
     )

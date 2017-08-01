@@ -76,7 +76,7 @@ class VehicleLoadingScreen : ScreenFragment() {
         )
 
         val parcelCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_package_closed,
+                drawableRes = R.drawable.ic_package_variant_closed,
                 amount = this.deliveryList.parcelAmount.map { it.toString() }.toField(),
                 totalAmount = this.deliveryList.parcelTotalAmount.map { it.toString() }.toField()
         )
