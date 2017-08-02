@@ -5,6 +5,7 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
+import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.entity.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.BundleServiceV1
@@ -15,6 +16,7 @@ import sx.packager.BundleRepository
 import sx.platform.OperatingSystem
 import sx.rs.auth.ApiKey
 import java.io.File
+import java.net.URLDecoder
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -127,7 +129,9 @@ open class BundleServiceV1 : BundleServiceV1 {
                 .resolve("${bundleName}-${version}.apk")
 
         if (!downloadFile.exists())
-            throw WebApplicationException("No such file")
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    detail = "No such file")
 
         return Response
                 .ok(downloadFile, MediaType.APPLICATION_OCTET_STREAM)
