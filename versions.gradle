@@ -18,7 +18,8 @@ buildscript {
         v_guava = '22.0'
         v_h2 = '1.4.196'
         v_ini4j = '0.5.4'
-        v_jackson = '2.9.0'
+        // masc20170802. jackson-2.9.0 is not compatible with swagger 1.5.16
+        v_jackson = '2.8.7'
         v_javassist = '3.20.0-GA'
         v_javax_servlet = '3.1.0'
         v_javax_persistence = '2.1.1'
