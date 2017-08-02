@@ -9,11 +9,11 @@ import android.util.DisplayMetrics
 import android.util.TypedValue
 
 /** Convert dp to pixels */
-fun Context.convertDpToPx(dp: Float): Float {
-    return dp * this.resources.displayMetrics.density;
+fun Context.convertDpToPx(dp: Float): Int {
+    return (dp * this.resources.displayMetrics.density).toInt();
 }
 
-fun Context.convertPxToDp(px: Float): Float {
+fun Context.convertPxToDp(px: Int): Float {
     return px / this.resources.displayMetrics.density;
 }
 
