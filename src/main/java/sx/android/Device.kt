@@ -1,9 +1,6 @@
 package sx.android
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkInfo
 import android.os.Build
 import android.provider.Settings
 
@@ -68,11 +65,15 @@ open class Device(private val context: Context) {
         Settings.Secure.getString(this.context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
+    val vmHeapSize: Long by lazy {
+        Runtime.getRuntime().maxMemory()
+    }
+
     val serial: String = Build.SERIAL
     val manufacturer: Manufacturer = Manufacturer()
     val model: Model = Model()
 
     override fun toString(): String {
-        return "Device(imei=${imei}, androidId=${androidId}) serial=${serial} manufacturer=${manufacturer} model=${model}"
+        return "Device(imei=${imei}, androidId=${androidId}) serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"
     }
 }
