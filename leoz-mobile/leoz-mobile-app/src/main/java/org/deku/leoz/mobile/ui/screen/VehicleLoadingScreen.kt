@@ -219,7 +219,7 @@ class VehicleLoadingScreen : ScreenFragment() {
         super.onResume()
 
         aidcReader.decoders.set(
-                Interleaved25Decoder(true, 11, 12),
+                Interleaved25Decoder(true, 10, 12),
                 DatamatrixDecoder(true),
                 Ean8Decoder(true),
                 Ean13Decoder(true),
