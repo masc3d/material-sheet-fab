@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -143,7 +144,7 @@ class DeliveryList : CompositeDisposableSupplier {
     /**
      * Extension method for filtering distinct service orders
      */
-    fun List<OrderService.Order>.distinctOrders(): List<OrderService.Order> {
+    private fun List<OrderService.Order>.distinctOrders(): List<OrderService.Order> {
         return this.groupBy {
             it.id
         }.map {
@@ -160,7 +161,7 @@ class DeliveryList : CompositeDisposableSupplier {
     /**
      * Extension method for filtering distinct stops
      */
-    fun List<Stop>.distinctStops(): List<Stop> {
+    private fun List<Stop>.distinctStops(): List<Stop> {
         return this.flatMap { stop ->
             stop.tasks.map { task ->
                 Pair(stop, task)
@@ -177,26 +178,7 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
-     * Load order based on unit number
-     * @param unitNumber Unit number
-     */
-    fun load(unitNumber: UnitNumber): Observable<List<Order>> {
-        return Observable.fromCallable {
-            val orders = this.orderService.get(parcelScan = unitNumber.value)
-                    .distinctOrders()
-                    .map { it.toOrder() }
-
-            this.orderRepository
-                    .merge(orders)
-                    .blockingGet()
-
-            orders
-        }
-                .toHotRestObservable(log)
-    }
-
-    /**
-     * Loads delivery list data from remote peer into local database
+     * Loads delivery list data from remote peer and merge into local database
      * @param deliveryListNumber Delivery list id
      * @return Hot observable which completes with a list of stops
      */
@@ -252,11 +234,48 @@ class DeliveryList : CompositeDisposableSupplier {
 
             stops
         }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError {
-                    log.error(it.message)
-                }
-                .toHotReplay()
+                .toHotRestObservable(log)
+    }
+
+    /**
+     * Retrieve order for a single unit
+     * @param unitNumber Unit number
+     */
+    fun retrieveOrder(unitNumber: UnitNumber): Observable<Order> {
+        return Observable.fromCallable {
+            val orders = this.orderService.get(parcelScan = unitNumber.value)
+                    .distinctOrders()
+                    .map { it.toOrder() }
+
+            orders.first()
+        }
+                .toHotRestObservable(log)
+    }
+
+    /**
+     * Merge a single order into the database
+     */
+    fun mergeOrder(order: Order): Completable {
+        return this.orderRepository
+                .merge(listOf(order))
+    }
+
+    /**
+     * Load order based on unit number and merge orders into local database
+     * @param unitNumber Unit number
+     */
+    fun load(unitNumber: UnitNumber): Observable<Order> {
+        return Observable.fromCallable {
+            val orders = this.orderService.get(parcelScan = unitNumber.value)
+                    .distinctOrders()
+                    .map { it.toOrder() }
+
+            this.orderRepository
+                    .merge(orders)
+                    .blockingGet()
+
+            orders.first()
+        }
+                .toHotRestObservable(log)
     }
 }

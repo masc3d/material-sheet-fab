@@ -16,8 +16,10 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toObservable
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
@@ -28,6 +30,7 @@ import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.toHotRestObservable
 
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.composeAsRest
@@ -36,6 +39,8 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
@@ -45,7 +50,9 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.isConnectivityException
+import sx.android.rx.observeOnMainThread
 import sx.format.format
+import java.util.*
 import java.util.concurrent.ExecutorService
 
 /**
@@ -97,6 +104,7 @@ class VehicleLoadingScreen : ScreenFragment() {
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
 
     // region Sections
     val loadedSection by lazy {
@@ -225,6 +233,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                     this.onAidcRead(it)
                 }
 
+        //region Activity events
         this.activity.menuItemEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
@@ -259,37 +268,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                         else -> log.warn("Unhandled ActionEvent [$it]")
                     }
                 }
-
-        this.parcelRepository.entitiesProperty
-                .map { it.value }
-                .subscribe { parcels ->
-                    this.syntheticInputs = listOf(
-                            SyntheticInput(
-                                    name = "Delivery lists",
-                                    entries = listOf(
-                                            SyntheticInput.Entry(
-                                                    symbologyType = SymbologyType.Interleaved25,
-                                                    data = DekuDeliveryListNumber.parse("10730061").value.label
-                                            ),
-                                            SyntheticInput.Entry(
-                                                    symbologyType = SymbologyType.Interleaved25,
-                                                    data = DekuDeliveryListNumber.parse("28725713").value.label
-                                            )
-                                    )
-                            ),
-                            SyntheticInput(
-                                    name = "Parcels",
-                                    entries = parcels.map {
-                                        val unitNumber = UnitNumber.parse(it.number).value
-                                        SyntheticInput.Entry(
-                                                symbologyType = SymbologyType.Interleaved25,
-                                                data = unitNumber.label
-                                        )
-                                    }
-                            )
-                    )
-
-                }
+        //endregion
 
         this.parcelListAdapter.selectedSection = this.loadedSection
         this.parcelListAdapter.selectedSectionProperty
@@ -320,6 +299,62 @@ class VehicleLoadingScreen : ScreenFragment() {
                         }
                     }
                 }
+
+        //region Synthetic inputs
+        run {
+            // Synthetic inputs for parcels translated live from entity store
+            val ovParcels = this.parcelRepository.entitiesProperty
+                    .map {
+                        SyntheticInput(
+                                name = "Parcels",
+                                entries = it.value.map {
+                                    val unitNumber = UnitNumber.parse(it.number).value
+                                    SyntheticInput.Entry(
+                                            symbologyType = SymbologyType.Interleaved25,
+                                            data = unitNumber.label
+                                    )
+                                }
+                        )
+                    }
+
+            // Synthetic inputs for delivery lists, retrieved via online service
+            val ovDeliveryLists = Observable.fromCallable {
+                this.deliveryListService.get(ShortDate("2017-06-20"))
+            }
+                    .toHotRestObservable()
+                    .composeAsRest(this.activity)
+                    .doOnError {
+                        log.error(it.message, it)
+                    }
+                    .map {
+                        SyntheticInput(
+                                name = "Delivery lists",
+                                entries = it.map {
+                                    SyntheticInput.Entry(
+                                            symbologyType = SymbologyType.Interleaved25,
+                                            data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
+                                    )
+                                }
+                        )
+                    }
+                    .onErrorResumeNext(Observable.empty())
+
+            // Final synthetic inputs observable
+            Observable.combineLatest(
+                    ovParcels,
+                    ovDeliveryLists,
+
+                    BiFunction { a: SyntheticInput, b: SyntheticInput ->
+                        listOf<SyntheticInput>(a, b)
+                    }
+            )
+                    .bindUntilEvent(this, FragmentEvent.PAUSE)
+                    .subscribe {
+                        this.syntheticInputs = it
+                    }
+
+        }
+        //endregion
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
@@ -366,7 +401,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .subscribeBy(
                         onNext = {
                             loaded = true
-                            log.info("Delivery lists [${this.deliveryList.ids.joinToString(", ")}")
+                            log.info("Current delivery lists [${this.deliveryList.ids.joinToString(", ")}")
                         },
                         onComplete = {
                             // Can't rely on complete alone due to rxlifecycle
@@ -394,16 +429,39 @@ class VehicleLoadingScreen : ScreenFragment() {
                 this.onParcel(parcel)
             }
             else -> {
-                // TODO: complete implementation. fetch order for unit,
                 // No corresponding order (yet)
-                this.deliveryList.load(unitNumber)
+                this.deliveryList.retrieveOrder(unitNumber)
                         .bindToLifecycle(this)
-                        .composeAsRest(this.activity, 0)
+                        .composeAsRest(this.activity, R.string.error_no_corresponding_order)
                         .subscribeBy(
-                                onNext = {
-                                },
-                                onComplete = {
+                                onNext = { order ->
                                     tones.beep()
+
+                                    fun onConfirmed() {
+                                        this.deliveryList
+                                                .mergeOrder(order)
+                                                .observeOnMainThread()
+                                                .subscribeBy(onComplete = {
+                                                    this.onParcel(
+                                                            parcel = this.parcelRepository.entities.first { it.number == unitNumber.value }
+                                                    )
+                                                })
+                                    }
+
+                                    if (this.deliveryList.ids.get().isEmpty()) {
+                                        onConfirmed()
+                                    } else {
+                                        MaterialDialog.Builder(this.activity)
+                                                .title(R.string.order_not_on_delivery_list)
+                                                .content(R.string.order_not_on_delivery_list_confirmation)
+                                                .positiveText(android.R.string.yes)
+                                                .negativeText(android.R.string.no)
+                                                .onPositive { _, _ ->
+                                                    onConfirmed()
+                                                }
+                                                .build().show()
+                                    }
+
                                 },
                                 onError = {
                                     tones.errorBeep()

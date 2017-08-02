@@ -443,7 +443,11 @@ open class Activity : RxAppCompatActivity(),
                         .inputType(InputType.TYPE_CLASS_TEXT)
                         .input(R.string.barcode_label, 0, object : MaterialDialog.InputCallback {
                             override fun onInput(dialog: MaterialDialog, input: CharSequence?) {
-                                log.trace("INPUT ${input}")
+                                log.trace("MANUAL INPUT ${input}")
+                                this@Activity.simulatingAidcReader.emit(
+                                        input.toString(),
+                                        SymbologyType.Unknown
+                                )
                             }
                         })
                         .build()
@@ -915,19 +919,21 @@ fun <T> Observable<T>.composeWithActivityProgress(activity: Activity): Observabl
             }
 }
 
-fun <T> Observable<T>.composeAsRest(activity: Activity, @StringRes errorMessage: Int): Observable<T> {
+fun <T> Observable<T>.composeAsRest(activity: Activity, @StringRes errorMessage: Int = 0): Observable<T> {
     return this
             .observeOnMainThread()
             .composeWithActivityProgress(activity)
             .doOnError {
-                activity.snackbarBuilder
-                        .message(
-                                if (it.isConnectivityException)
-                                    R.string.error_connectivity
-                                else
-                                    errorMessage
-                        )
-                        .duration(Snackbar.LENGTH_LONG)
-                        .build().show()
+                if (errorMessage != 0) {
+                    activity.snackbarBuilder
+                            .message(
+                                    if (it.isConnectivityException)
+                                        R.string.error_connectivity
+                                    else
+                                        errorMessage
+                            )
+                            .duration(Snackbar.LENGTH_LONG)
+                            .build().show()
+                }
             }
 }

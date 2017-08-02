@@ -218,4 +218,7 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
+    <string name="error_no_corresponding_order">Kein zugehöriger Auftrag gefunden</string>
+    <string name="order_not_on_delivery_list">Auftrag nicht auf Rollkarte</string>
+    <string name="order_not_on_delivery_list_confirmation">Zugehörigen Auftrag speichern?</string>
 </resources>

@@ -77,6 +77,7 @@
     <string name="error_invalid_delivery_list">Invalid delivery list</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
+    <string name="error_no_corresponding_order">No corresponding order</string>
 
     <string name="event_reason_absent">Consignee absent</string>
     <string name="event_reason_address_wrong">Wrong address</string>
@@ -151,6 +152,8 @@
     <string name="ok" translatable="false">OK</string>
 
     <string name="order_list">Order list</string>
+    <string name="order_not_on_delivery_list">Order not on delivery list</string>
+    <string name="order_not_on_delivery_list_confirmation">Do you want to store the corresponding order?</string>
 
     <string name="parcel_damaged">Parcel damaged</string>
     <string name="parcel_missing">Parcel missing</string>
