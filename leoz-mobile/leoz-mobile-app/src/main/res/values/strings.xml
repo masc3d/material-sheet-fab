@@ -9,11 +9,12 @@
     <string name="app_name_long" translatable="false">mobileX</string>
     <string name="app_project_name" translatable="false">leoz-mobile</string>
 
-    <string name="authority">Authority</string>
-
     <string name="authentication_failed">Authentication failed</string>
 
+    <string name="authority">Authority</string>
+
     <string name="back">Back</string>
+
     <string name="barcode_label">Barcode label</string>
 
     <string name="cancel">Cancel</string>
@@ -63,6 +64,7 @@
 
     <string name="enter_imei_instructions">Please enter last 4 IMEI digits of the returned device</string>
 
+    <string name="error_connectivity">Could not connect to remote server</string>
     <string name="error_database_inconsistent">Inconsistent database state</string>
     <string name="error_empty_field">Field cannot be empty.</string>
     <string name="error_fatal">Fatal error</string>
@@ -72,10 +74,9 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_invalid_barcode">Invalid barcode</string>
     <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
+    <string name="error_invalid_delivery_list">Invalid delivery list</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
-    <string name="error_invalid_delivery_list">Invalid delivery list</string>
-    <string name="error_connectivity">Could not connect to remote server</string>
 
     <string name="event_reason_absent">Consignee absent</string>
     <string name="event_reason_address_wrong">Wrong address</string>
@@ -130,6 +131,7 @@
     <string name="logout">Logout</string>
 
     <string name="manual_label_input">Manual barcode label input</string>
+
     <string name="menu">Menu</string>
 
     <string name="name">Name</string>
@@ -147,6 +149,8 @@
     <string name="number_short_no">No.</string>
 
     <string name="ok" translatable="false">OK</string>
+
+    <string name="order_list">Order list</string>
 
     <string name="parcel_damaged">Parcel damaged</string>
     <string name="parcel_missing">Parcel missing</string>
@@ -197,13 +201,11 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="prototype">Prototype</string>
 
-    <string name="question_vehicle_loading_finished">Vehicle loading finished?</string>
-
-    <string name="question_unload_parcel_title">Parcel has been loaded</string>
-    <string name="question_unload_parcel">Unload parcel?</string>
-
-    <string name="question_remove_damaged_status_title">Parcel has been declared damaged</string>
     <string name="question_remove_damaged_status">Remove damaged status?</string>
+    <string name="question_remove_damaged_status_title">Parcel has been declared damaged</string>
+    <string name="question_unload_parcel">Unload parcel?</string>
+    <string name="question_unload_parcel_title">Parcel has been loaded</string>
+    <string name="question_vehicle_loading_finished">Vehicle loading finished?</string>
 
     <string name="report_bug">Report bug</string>
 
@@ -262,5 +264,4 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
-    <string name="order_list">Order list</string>
 </resources>
