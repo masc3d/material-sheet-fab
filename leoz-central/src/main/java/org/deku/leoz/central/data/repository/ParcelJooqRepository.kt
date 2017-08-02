@@ -89,13 +89,6 @@ class ParcelJooqRepository {
                 .where(Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRABC.eq(unitNo))
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
-
-    /*
-    fun getTan(countertyp:Int):Long{
-        return dslContext.select()
-                .from()
-    }
-*/
 }
 
 fun TblstatusRecord.setDate(date: Date) {

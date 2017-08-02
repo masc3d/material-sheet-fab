@@ -23,7 +23,7 @@ import sx.time.toLocalDate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 import javax.ws.rs.core.Response
-
+import org.deku.leoz.central.data.jooq.Routines
 
 /**
  * Created by JT on 17.07.17.
@@ -150,6 +150,15 @@ open class ParcelServiceV1 :
                                         fieldHistoryRecord.newvalue = r.kzStatus.toString()//"4"
                                         fieldHistoryRecord.changer = "SP"
                                         fieldHistoryRecord.point = "IM"
+                                        //val procTan = Routines.fTan(19)
+
+                                        val config = dslContext.configuration()
+                                        //Routines.fTan(dslContext.configuration(), 19).toInt().toUInteger()
+                                        //val tan=Routines.fSyncIncrement(dslContext.configuration(),"tblfeldhistorie")
+
+                                        val tan=Routines.fSyncIncrement(config,"tblfeldhistorie")
+
+                                        fieldHistoryRecord.id = tan.toInt().toUInteger()
                                         fieldHistoryRecord.store()
                                     }
 
@@ -164,6 +173,7 @@ open class ParcelServiceV1 :
                                         fieldHistoryRecord.newvalue = r.text
                                         fieldHistoryRecord.changer = "I"
                                         fieldHistoryRecord.point = "IM"
+                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), 19).toInt().toUInteger()
                                         fieldHistoryRecord.store()
                                     }
                                     if (!orderRecord.empfaenger.equals(r.text)) {
@@ -219,7 +229,7 @@ open class ParcelServiceV1 :
                                         fieldHistoryRecord.changer = "SP"
                                         fieldHistoryRecord.point = "IM"
                                         //getTan
-                                        // fieldHistoryRecord.id=
+                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), 19).toInt().toUInteger()
                                         fieldHistoryRecord.store()
                                     }
 
@@ -234,6 +244,7 @@ open class ParcelServiceV1 :
                                         fieldHistoryRecord.newvalue = r.text
                                         fieldHistoryRecord.changer = "I"
                                         fieldHistoryRecord.point = "IM"
+                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), 19).toInt().toUInteger()
                                         fieldHistoryRecord.store()
                                     }
 
