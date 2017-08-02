@@ -5,9 +5,13 @@
     <string name="action_sign_in">Anmelden / Registrieren</string>
     <string name="action_sign_in_short">Anmelden</string>
 
+    <string name="authentication_failed">Authentifizierung fehlgeschglagen</string>
+
     <string name="authority">Behörde</string>
 
     <string name="back">Zurück</string>
+
+    <string name="barcode_label">Barcode label</string>
 
     <string name="cancel">Abbrechen</string>
     <string name="cancel_process">Prozess abbrechen</string>
@@ -56,6 +60,7 @@
 
     <string name="enter_imei_instructions">Bitte geben Sie die letzten 4 IMEI Ziffern ein (des retournierten Gerätes)</string>
 
+    <string name="error_connectivity">Verbindung konnte nicht hergestellt werden</string>
     <string name="error_database_inconsistent">Inkonsistente Datenbank</string>
     <string name="error_empty_field">Feld darf nicht leer sein.</string>
     <string name="error_fatal">Kritischer Fehler</string>
@@ -63,7 +68,9 @@
     <string name="error_format_mail">This is not a valid email format</string>
     <string name="error_imager_scan_failed">Unvollständiger oder fehlerhafter Scan</string>
     <string name="error_incorrect_password">Das Passwort ist falsch</string>
+    <string name="error_invalid_barcode">Ungültiger barcode</string>
     <string name="error_invalid_credentials">Email &amp; Passwort Kombination konnte nicht gefunden werden.</string>
+    <string name="error_invalid_delivery_list">Ungültige Rollkarte</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
     <string name="error_invalid_password">Das Passwort ist zu kurz</string>
 
@@ -109,9 +116,13 @@
 
     <string name="load_delivery_list">Lade Rollkarte</string>
 
+    <string name="loaded">Beladen</string>
+
     <string name="login_pending">Anmeldung</string>
 
     <string name="logout">Abmelden</string>
+
+    <string name="manual_label_input">Manuelle Barcode Eingabe</string>
 
     <string name="menu">Menü</string>
 
@@ -129,12 +140,16 @@
 
     <string name="number_short_no">Nr.</string>
 
+    <string name="order_list">Auftragsliste</string>
+
     <string name="parcel_damaged">Paket beschädigt</string>
     <string name="parcel_missing">Paket fehlt</string>
 
     <string name="parcels">Pakete</string>
 
     <string name="passport_drivers_license">Ausweis/Führerschein</string>
+
+    <string name="pending">Ausstehend</string>
 
     <string name="please_wait">Bitte warten</string>
 
@@ -143,9 +158,15 @@
 
     <string name="prototype">Prototyp</string>
 
+    <string name="question_remove_damaged_status">Beschädigt-Status entfernen?</string>
+    <string name="question_remove_damaged_status_title">Paket wurde als beschädigt gekennzeichnet</string>
+    <string name="question_unload_parcel">Paket entladen?</string>
+    <string name="question_unload_parcel_title">Paket wurde beladen</string>
     <string name="question_vehicle_loading_finished">Fahrzeugbeladung abgeschlossen?</string>
 
     <string name="report_bug">Report bug</string>
+
+    <string name="reset">Zurücksetzen</string>
 
     <string name="service_cash_delivery">Nachnahme</string>
     <string name="service_department_delivery">Bereichszustellung</string>
@@ -189,25 +210,12 @@
 
     <string name="user">Benutzer:</string>
 
+    <string name="vehicle_loading">Fahrzeugbeladung</string>
+
     <string name="version">App-Version:</string>
     <string name="version_available">v%s ist verfügbar</string>
 
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="loaded">Beladen</string>
-    <string name="reset">Zurücksetzen</string>
-    <string name="authentication_failed">Authentifizierung fehlgeschglagen</string>
-    <string name="vehicle_loading">Fahrzeugbeladung</string>
-    <string name="order_list">Auftragsliste</string>
-    <string name="pending">Ausstehend</string>
-    <string name="question_remove_damaged_status">Beschädigt-Status entfernen?</string>
-    <string name="error_invalid_barcode">Ungültiger barcode</string>
-    <string name="question_remove_damaged_status_title">Paket wurde als beschädigt gekennzeichnet</string>
-    <string name="question_unload_parcel">Paket entladen?</string>
-    <string name="question_unload_parcel_title">Paket wurde beladen</string>
-    <string name="error_invalid_delivery_list">Ungültige Rollkarte</string>
-    <string name="error_connectivity">Verbindung konnte nicht hergestellt werden</string>
-    <string name="manual_label_input">Manuelle Barcode Eingabe</string>
-    <string name="barcode_label">Barcode label</string>
 </resources>
