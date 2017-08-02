@@ -154,7 +154,7 @@ interface LocationServiceV2 {
     fun getRecent(
             @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @QueryParam(DURATION) @ApiParam(value = "Duration") duration: Int? = null,
+            @QueryParam(DURATION) @ApiParam(value = "Duration in Minutes") duration: Int? = null,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
     ): List<GpsData>
 }
