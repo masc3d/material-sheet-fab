@@ -12,7 +12,7 @@ class DekuDeliveryListNumber(
 
     companion object {
         fun parseLabel(value: String): Result<DekuDeliveryListNumber> {
-            if (value.length != 9)
+            if (value.length != 10)
                 return Result(error = IllegalArgumentException("DEKU delivery list label [${value}] must have 9 digits"))
 
             if (!value.all { it.isDigit() })
@@ -26,7 +26,7 @@ class DekuDeliveryListNumber(
         }
 
         fun parse(value: String): Result<DekuDeliveryListNumber> {
-            if (value.length != 8)
+            if (value.length != 9)
                 return Result(error = IllegalArgumentException("DEKU delivery list number [${value}] must have 8 digits"))
 
             return Result(DekuDeliveryListNumber(value))
