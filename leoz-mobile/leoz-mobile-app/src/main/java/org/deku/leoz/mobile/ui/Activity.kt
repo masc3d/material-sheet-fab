@@ -180,14 +180,17 @@ open class Activity : RxAppCompatActivity(),
         /** The default header drawable */
         val defaultDrawable by lazy {
             // Prepare default image
-            val sourceImage = this@Activity.baseContext.getDrawable(R.drawable.img_street_1a).toBitmap()
+            val sourceImage = this@Activity.getDrawable(R.drawable.img_street_1a).toBitmap()
+
+            val ydp = this@Activity.convertPxToDp(sourceImage.height)
+            val xdp = this@Activity.convertPxToDp(sourceImage.width)
 
             val bitmap = Bitmap.createBitmap(
                     sourceImage,
                     0,
-                    this@Activity.baseContext.convertDpToPx(75F).toInt(),
+                    this@Activity.convertDpToPx(20F).toInt(),
                     sourceImage.width,
-                    this@Activity.baseContext.convertDpToPx(400F).toInt()
+                    this@Activity.convertDpToPx(110F).toInt()
             )
 
             val drawable = BitmapDrawable(this@Activity.resources, bitmap)
