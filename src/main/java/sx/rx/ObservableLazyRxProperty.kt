@@ -35,8 +35,8 @@ class ObservableLazyRxProperty<T>(
         return value.get()
     }
 
-    fun get() {
-        this.value.get()
+    fun get(): T {
+        return this.value.get()
     }
 
     fun reset(supplier: (() -> T)? = null) {
