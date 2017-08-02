@@ -10,6 +10,32 @@ import sx.junit.StandardTest
  */
 @Category(StandardTest::class)
 class DeliveryListNumberTests {
+    val DEKU_DELIVERYLIST_IDS = listOf(
+            "10768797",
+            "10768792",
+            "10769796",
+            "10769988",
+            "10769828",
+            "10769820",
+            "10769813",
+            "10769811",
+            "10769799",
+            "10769797",
+            "367750221",
+            "367754101",
+            "367754095",
+            "367752849",
+            "367752845",
+            "367752816",
+            "367752762",
+            "367752757",
+            "367752552",
+            "367752536",
+            "367752519",
+            "367751694",
+            "367751693"
+    )
+
     val DEKU_DELIVERYLIST_LABELS = listOf(
             "0107687890",
             "0107701497",
@@ -109,6 +135,17 @@ class DeliveryListNumberTests {
             val result = DekuDeliveryListNumber.parseLabel(it)
 
             if (result.hasError || result.value.value != it.substring(0, it.length - 1)) {
+                Assert.fail()
+            }
+        }
+    }
+
+    @Test
+    fun testDEKUDeliveryListIDs() {
+        DEKU_DELIVERYLIST_IDS.forEach {
+            val result = DekuDeliveryListNumber.parse(it)
+
+            if (result.hasError) {
                 Assert.fail()
             }
         }

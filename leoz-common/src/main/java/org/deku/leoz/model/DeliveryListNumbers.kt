@@ -26,10 +26,15 @@ class DekuDeliveryListNumber(
         }
 
         fun parse(value: String): Result<DekuDeliveryListNumber> {
-            if (value.length != 9)
-                return Result(error = IllegalArgumentException("DEKU delivery list number [${value}] must have 8 digits"))
+            var str = value
+            if (str.length == 8) {
+                //TODO: This is supposed to be removed if the "LEO" frontend is able to omit the leading "0" in the delivery list barcode
+                str = "0" + value
+            }
+            if (str.length != 9)
+                return Result(error = IllegalArgumentException("DEKU delivery list number [$str] must have 8 digits"))
 
-            return Result(DekuDeliveryListNumber(value))
+            return Result(DekuDeliveryListNumber(str))
         }
     }
 
