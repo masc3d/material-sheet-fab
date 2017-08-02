@@ -188,9 +188,9 @@ open class Activity : RxAppCompatActivity(),
             val bitmap = Bitmap.createBitmap(
                     sourceImage,
                     0,
-                    this@Activity.convertDpToPx(20F).toInt(),
+                    this@Activity.convertDpToPx(ydp / 10).toInt(),
                     sourceImage.width,
-                    this@Activity.convertDpToPx(110F).toInt()
+                    this@Activity.convertDpToPx(ydp / 2.1F).toInt()
             )
 
             val drawable = BitmapDrawable(this@Activity.resources, bitmap)
