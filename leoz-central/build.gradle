@@ -223,6 +223,7 @@ jooq {
 
                 includes = [
                         // Sorted alphanumerically
+                        'f_.*',
                         'hubfahrzeugbeladung',
                         'mst_.*',
                         'scaerror',
