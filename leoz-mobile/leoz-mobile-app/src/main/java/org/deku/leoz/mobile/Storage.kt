@@ -35,4 +35,10 @@ class Storage(val context: Context) {
         d.mkdirs()
         d
     }
+
+    val imageDir: File by lazy {
+        val d = this.dataDir.resolve("image")
+        d.mkdirs()
+        d
+    }
 }

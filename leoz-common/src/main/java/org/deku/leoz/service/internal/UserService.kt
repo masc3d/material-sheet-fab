@@ -4,6 +4,7 @@ import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
+import org.deku.leoz.model.UserPreferenceKey
 
 /**
  * User service
@@ -16,8 +17,10 @@ import io.swagger.annotations.*
 interface UserService {
     companion object {
         //const val ID = "id"
+        const val USER_ID = "user-id"
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
+        const val PREF_TYPE = "preference-type"
         //const val DEBITOR_NO = "debitor-no"
         //const val HEADERPARAM_APIKEY = "x-api-key"
     }
@@ -63,6 +66,18 @@ interface UserService {
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
             var expiresOn: java.sql.Date? = null
     )
+
+    @ApiModel(description = "User preference object")
+    data class Preferences(
+            val type: Type,
+            val prefs: Map<UserPreferenceKey, Any>
+    ) {
+        enum class Type(val value: String) {
+            WEB_UI("WEB_UI_PREFERENCE"),
+            MOBILE("MOBILE_PREFERENCE")
+        }
+    }
+
     val User.isActive: Int
         get() = if (this.active == null || this.active == false) 0 else -1
 
@@ -81,6 +96,25 @@ interface UserService {
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
     ): List<User>
+
+    @GET
+    @Path("/{$USER_ID}")
+    @ApiOperation(value = "Get user by ID")
+    fun getById(@QueryParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): User
+
+    @GET
+    @Path("/{$USER_ID}/preferences")
+    @ApiOperation(value = "Get preferences of a user")
+    fun getPreferences(
+            @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
+            @QueryParam(PREF_TYPE) @ApiParam(value = "Type of desired preferences", required = false, allowMultiple = true) type: UserPreferenceKey
+    ): List<Preferences>
+
+    @GET
+    @Path("/{$USER_ID}/mobilePermission")
+    @ApiOperation(value = "Get app-permission for user")
+    fun getMobilePermission(
+            @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): Int
 
     /**
      * Create user

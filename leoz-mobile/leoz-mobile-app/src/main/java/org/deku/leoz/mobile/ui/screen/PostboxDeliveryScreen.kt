@@ -29,7 +29,7 @@ import sx.rx.ObservableRxProperty
 /**
  * Created by phpr on 14.07.2017.
  */
-class PostboxDeliveryScreen: ScreenFragment(), CameraFragment.Listener {
+class PostboxDeliveryScreen: ScreenFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     var stop: Stop? = null
@@ -157,17 +157,5 @@ class PostboxDeliveryScreen: ScreenFragment(), CameraFragment.Listener {
     override fun onPause() {
         super.onPause()
         this.uxCameraView.stop()
-    }
-
-    override fun onCameraFragmentPictureTaken(data: ByteArray?) {
-
-    }
-
-    override fun onCameraFragmentDiscarded() {
-
-    }
-
-    override fun onCameraFragmentShutter() {
-
     }
 }
