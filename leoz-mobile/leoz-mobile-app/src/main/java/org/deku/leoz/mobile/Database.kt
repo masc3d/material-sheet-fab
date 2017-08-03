@@ -30,6 +30,13 @@ class Database(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    companion object {
+        /**
+         * Schema version. Must be increased on entity model changes.
+         */
+        val SCHEMA_VERSION = 1
+    }
+
     /**
      * Database file
      */
@@ -54,7 +61,8 @@ class Database(
                 this.context,
                 Models.DEFAULT,
                 this.name,
-                1) {
+                SCHEMA_VERSION
+        ) {
 
             override fun onDowngrade(db: io.requery.android.database.sqlite.SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
                 throw IllegalStateException("Downgrade not allowed")
