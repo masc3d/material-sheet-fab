@@ -24,6 +24,11 @@ import java.text.SimpleDateFormat
 import javax.inject.Inject
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.jooq.Routines
+import org.deku.leoz.model.counter
+import org.deku.leoz.time.toShortTime
+import sx.time.toSqlDate
+import sx.time.toTimestamp
+import java.sql.Timestamp
 
 /**
  * Created by JT on 17.07.17.
@@ -45,6 +50,9 @@ open class ParcelServiceV1 :
     private lateinit var dslContext: DSLContext
     @Inject
     private lateinit var parcelRepository: ParcelJooqRepository
+
+    @Inject
+    private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
 
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
 
@@ -142,6 +150,7 @@ open class ParcelServiceV1 :
                                     val oldValue = parcelRecord.lieferstatus
                                     parcelRecord.lieferstatus = r.kzStatus.toShort() //4
                                     if (parcelRecord.store() > 0) {
+                                        /*
                                         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
                                         fieldHistoryRecord.orderid = parcelRecord.orderid
                                         fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
@@ -150,21 +159,24 @@ open class ParcelServiceV1 :
                                         fieldHistoryRecord.newvalue = r.kzStatus.toString()//"4"
                                         fieldHistoryRecord.changer = "SP"
                                         fieldHistoryRecord.point = "IM"
-                                        //val procTan = Routines.fTan(19)
-
-                                        val config = dslContext.configuration()
-                                        //Routines.fTan(dslContext.configuration(), 19).toInt().toUInteger()
-                                        //val tan=Routines.fSyncIncrement(dslContext.configuration(),"tblfeldhistorie")
-
-                                        val tan=Routines.fSyncIncrement(config,"tblfeldhistorie")
-
-                                        fieldHistoryRecord.id = tan.toInt().toUInteger()
+                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
                                         fieldHistoryRecord.store()
+                                        */
+                                        fieldHistoryRepository.addEntry(
+                                                orderId = parcelRecord.orderid,
+                                                unitNo = parcelRecord.colliebelegnr,
+                                                fieldName = "lieferstatus",
+                                                oldValue = oldValue?.toString() ?: "",
+                                                newValue = r.kzStatus.toString(),
+                                                changer = "SP",
+                                                point = "IM"
+                                        )
                                     }
 
                                     val oldRecipient = orderRecord.empfaenger ?: ""
                                     orderRecord.empfaenger = r.text
                                     if (orderRecord.store() > 0 && !oldRecipient.equals(r.text)) {
+                                        /*
                                         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
                                         fieldHistoryRecord.orderid = parcelRecord.orderid
                                         fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
@@ -173,26 +185,244 @@ open class ParcelServiceV1 :
                                         fieldHistoryRecord.newvalue = r.text
                                         fieldHistoryRecord.changer = "I"
                                         fieldHistoryRecord.point = "IM"
-                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), 19).toInt().toUInteger()
+                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
                                         fieldHistoryRecord.store()
+                                        */
+
+                                        fieldHistoryRepository.addEntry(
+                                                orderId = parcelRecord.orderid,
+                                                unitNo = parcelRecord.colliebelegnr,
+                                                fieldName = "empfaenger",
+                                                oldValue = oldRecipient,
+                                                newValue = r.text,
+                                                changer = "I",
+                                                point = "IM"
+                                        )
                                     }
                                     if (!orderRecord.empfaenger.equals(r.text)) {
                                         //TODO WLtransfer ASD D in Auftrag gescheitert
                                     }
 
-                                    val oldDeliveryDate = orderRecord.dtauslieferdatum
-                                    val oldDeliveryTime = orderRecord.dtauslieferzeit
+                                    val oldDeliveryDate: String //= orderRecord.dtauslieferdatum?.toLocalDate().toString() ?: ""
+                                    if (orderRecord.dtauslieferdatum == null) {
+                                        oldDeliveryDate = ""
+                                    } else {
+                                        oldDeliveryDate = SimpleDateFormat("dd.MM.yyyy").format(orderRecord.dtauslieferdatum)
+                                    }
+                                    val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+                                    val deliveryTime = SimpleDateFormat("yyyy-MM-dd HH:mm").parse("1899-12-30 " + (it.time.toShortTime().toString()))
+                                    val deliveryDate = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
 
+                                    orderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
+                                    orderRecord.dtauslieferzeit = deliveryTime.toTimestamp()
+                                    if (orderRecord.store() > 0) {
+                                        if (oldDeliveryTime != it.time.toTimestamp().toShortTime().toString()) {
+                                            /*
+                                            val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                            fieldHistoryRecord.orderid = parcelRecord.orderid
+                                            fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                                            fieldHistoryRecord.feldname = "dtauslieferzeit"
+                                            fieldHistoryRecord.oldvalue = oldDeliveryTime
+                                            fieldHistoryRecord.newvalue = it.time.toTimestamp().toShortTime().toString()
+                                            fieldHistoryRecord.changer = "I"
+                                            fieldHistoryRecord.point = "IM"
+                                            fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                                            fieldHistoryRecord.store()
+                                            */
+                                            fieldHistoryRepository.addEntry(
+                                                    orderId = parcelRecord.orderid,
+                                                    unitNo = parcelRecord.colliebelegnr,
+                                                    fieldName = "dtauslieferzeit",
+                                                    oldValue = oldDeliveryTime,
+                                                    newValue = it.time.toTimestamp().toShortTime().toString(),
+                                                    changer = "I",
+                                                    point = "IM"
+                                            )
 
+                                        }
+                                        //if (oldDeliveryDate != it.time.toTimestamp().toLocalDate().toString()) {
+                                        if (oldDeliveryDate != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                                            /*
+                                            val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                            fieldHistoryRecord.orderid = parcelRecord.orderid
+                                            fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                                            fieldHistoryRecord.feldname = "dtauslieferdatum"
+                                            fieldHistoryRecord.oldvalue = oldDeliveryDate
+                                            fieldHistoryRecord.newvalue = SimpleDateFormat("dd.MM.yyyy").format(it.time)//it.time.toTimestamp().toLocalDate().toString()
+                                            fieldHistoryRecord.changer = "I"
+                                            fieldHistoryRecord.point = "IM"
+                                            fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                                            fieldHistoryRecord.store()
+                                            */
+
+                                            fieldHistoryRepository.addEntry(
+                                                    orderId = parcelRecord.orderid,
+                                                    unitNo = parcelRecord.colliebelegnr,
+                                                    fieldName = "dtauslieferdatum",
+                                                    oldValue = oldDeliveryDate,
+                                                    newValue = SimpleDateFormat("dd.MM.yyyy").format(it.time),
+                                                    changer = "I",
+                                                    point = "IM"
+                                            )
+                                        }
+
+                                    }
                                     //
                                     val from = it.from
                                     if (from != null) {
                                         if (from.equals("956") || from.equals("935"))
-                                            if (parcelNo.toString().startsWith("10071")) {
-                                                val bagRecords = parcelRepository.findBagsByUnitNumber(parcelNo)
-                                                if (bagRecords != null) {
-                                                    bagRecords.forEach {
+                                            if (parcelScan.toString().startsWith("10071")) {
+                                                val unitInBagUnitRecords = parcelRepository.findUnitsInBagByBagUnitNumber(parcelNo)
+                                                if (unitInBagUnitRecords != null) {
+                                                    unitInBagUnitRecords.forEach {
+                                                        val unitInBagStatusRecord = dslContext.newRecord(Tables.TBLSTATUS)
+                                                        unitInBagStatusRecord.packstuecknummer = it.colliebelegnr
+                                                        unitInBagStatusRecord.datum = r.datum
+                                                        unitInBagStatusRecord.zeit = r.zeit
+                                                        unitInBagStatusRecord.poslat = r.poslat
+                                                        unitInBagStatusRecord.poslong = r.poslong
+                                                        unitInBagStatusRecord.kzStatuserzeuger = r.kzStatuserzeuger
+                                                        unitInBagStatusRecord.kzStatus = r.kzStatus
+                                                        unitInBagStatusRecord.erzeugerstation = r.erzeugerstation
+                                                        unitInBagStatusRecord.fehlercode = r.fehlercode
+                                                        unitInBagStatusRecord.text = r.text
+                                                        r.store()
 
+                                                        val unitInBagOrderRecord = parcelRepository.findOrderByOrderNumber(it.orderid)
+                                                        if (unitInBagOrderRecord != null) {
+                                                            val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
+                                                            val unitInBagPasCleared: Boolean
+                                                            if (unitInBagPasClearingartmaster != null) {
+                                                                unitInBagPasCleared = (4096.and(unitInBagPasClearingartmaster.toInt())) == 4096
+                                                            } else
+                                                                unitInBagPasCleared = false
+                                                            if (unitInBagPasCleared) {
+                                                                //TODO WLtransfer Auslieferdaten nach Abrechnung
+                                                            }
+                                                            it.bmpfilename = parcelRecord.bmpfilename
+                                                            val unitInBagOldValue = it.lieferstatus
+                                                            it.lieferstatus = r.kzStatus.toShort() //4
+                                                            if (it.store() > 0) {
+                                                                /*
+                                                                val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                                                fieldHistoryRecord.orderid = it.orderid
+                                                                fieldHistoryRecord.belegnummer = it.colliebelegnr
+                                                                fieldHistoryRecord.feldname = "lieferstatus"
+                                                                fieldHistoryRecord.oldvalue = unitInBagOldValue?.toString() ?: ""
+                                                                fieldHistoryRecord.newvalue = r.kzStatus.toString()//"4"
+                                                                fieldHistoryRecord.changer = "SP"
+                                                                fieldHistoryRecord.point = "IM"
+                                                                fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                                                                fieldHistoryRecord.store()
+                                                                */
+
+                                                                fieldHistoryRepository.addEntry(
+                                                                        orderId = it.orderid,
+                                                                        unitNo = it.colliebelegnr,
+                                                                        fieldName = "lieferstatus",
+                                                                        oldValue = unitInBagOldValue?.toString() ?: "",
+                                                                        newValue = r.kzStatus.toString(),
+                                                                        changer = "SP",
+                                                                        point = "IM"
+                                                                )
+                                                            }
+
+                                                            val unitInBagOldRecipient = unitInBagOrderRecord.empfaenger ?: ""
+                                                            unitInBagOrderRecord.empfaenger = r.text
+                                                            if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(r.text)) {
+                                                                /*
+                                                                val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                                                fieldHistoryRecord.orderid = it.orderid
+                                                                fieldHistoryRecord.belegnummer = it.colliebelegnr
+                                                                fieldHistoryRecord.feldname = "empfaenger"
+                                                                fieldHistoryRecord.oldvalue = unitInBagOldRecipient
+                                                                fieldHistoryRecord.newvalue = r.text
+                                                                fieldHistoryRecord.changer = "I"
+                                                                fieldHistoryRecord.point = "IM"
+                                                                fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                                                                fieldHistoryRecord.store()
+                                                                */
+
+                                                                fieldHistoryRepository.addEntry(
+                                                                        orderId = it.orderid,
+                                                                        unitNo = it.colliebelegnr,
+                                                                        fieldName = "empfaenger",
+                                                                        oldValue = unitInBagOldRecipient,
+                                                                        newValue = r.text,
+                                                                        changer = "I",
+                                                                        point = "IM"
+                                                                )
+                                                            }
+                                                            if (!unitInBagOrderRecord.empfaenger.equals(r.text)) {
+                                                                //TODO WLtransfer ASD D in Auftrag gescheitert
+                                                            }
+
+                                                            //val unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum?.toLocalDate().toString() ?: ""
+                                                            val unitInBagOldDeliveryDate: String
+                                                            if (unitInBagOrderRecord.dtauslieferdatum == null) {
+                                                                unitInBagOldDeliveryDate = ""
+                                                            } else {
+                                                                unitInBagOldDeliveryDate = SimpleDateFormat("dd.MM.yyyy").format(unitInBagOrderRecord.dtauslieferdatum)
+                                                            }
+                                                            val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+
+
+                                                            unitInBagOrderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
+                                                            unitInBagOrderRecord.dtauslieferzeit = deliveryTime.toTimestamp()
+                                                            if (unitInBagOrderRecord.store() > 0) {
+                                                                if (unitInBagOldDeliveryTime != deliveryTime.toTimestamp().toShortTime().toString()) {
+                                                                    /*
+                                                                    val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                                                    fieldHistoryRecord.orderid = it.orderid
+                                                                    fieldHistoryRecord.belegnummer = it.colliebelegnr
+                                                                    fieldHistoryRecord.feldname = "dtauslieferzeit"
+                                                                    fieldHistoryRecord.oldvalue = unitInBagOldDeliveryTime
+                                                                    fieldHistoryRecord.newvalue = deliveryTime.toTimestamp().toShortTime().toString()
+                                                                    fieldHistoryRecord.changer = "I"
+                                                                    fieldHistoryRecord.point = "IM"
+                                                                    fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                                                                    fieldHistoryRecord.store()
+                                                                    */
+
+                                                                    fieldHistoryRepository.addEntry(
+                                                                            orderId = it.orderid,
+                                                                            unitNo = it.colliebelegnr,
+                                                                            fieldName = "dtauslieferzeit",
+                                                                            oldValue = unitInBagOldDeliveryTime,
+                                                                            newValue = deliveryTime.toTimestamp().toShortTime().toString(),
+                                                                            changer = "I",
+                                                                            point = "IM"
+                                                                    )
+                                                                }
+                                                                //if (unitInBagOldDeliveryDate != deliveryDate.toTimestamp().toLocalDate().toString()) {
+                                                                if (unitInBagOldDeliveryDate != SimpleDateFormat("dd.MM.yyyy").format(deliveryDate)) {
+                                                                    /*
+                                                                    val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                                                    fieldHistoryRecord.orderid = it.orderid
+                                                                    fieldHistoryRecord.belegnummer = it.colliebelegnr
+                                                                    fieldHistoryRecord.feldname = "dtauslieferdatum"
+                                                                    fieldHistoryRecord.oldvalue = unitInBagOldDeliveryDate
+                                                                    fieldHistoryRecord.newvalue = SimpleDateFormat("dd.MM.yyyy").format(deliveryDate)//deliveryDate.toTimestamp().toLocalDate().toString()
+                                                                    fieldHistoryRecord.changer = "I"
+                                                                    fieldHistoryRecord.point = "IM"
+                                                                    fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                                                                    fieldHistoryRecord.store()
+                                                                    */
+
+                                                                    fieldHistoryRepository.addEntry(
+                                                                            orderId = it.orderid,
+                                                                            unitNo = it.colliebelegnr,
+                                                                            fieldName = "dtauslieferdatum",
+                                                                            oldValue = unitInBagOldDeliveryDate,
+                                                                            newValue = SimpleDateFormat("dd.MM.yyyy").format(deliveryDate),
+                                                                            changer = "I",
+                                                                            point = "IM"
+                                                                    )
+                                                                }
+
+                                                            }
+
+                                                        }
                                                     }
                                                 }
 
@@ -211,8 +441,9 @@ open class ParcelServiceV1 :
                                     if (pasCleared) {
                                         //TODO WLtransfer
                                     }
-
-                                    r.text = addInfo.name ?: "" + ";adr " + addInfo.address ?: ""
+                                    val recipientInfo = StringBuilder()
+                                    recipientInfo.append(addInfo.name ?: "").append(";adr ").append(addInfo.address ?: "")
+                                    r.text = recipientInfo.toString()
                                     //saveSignature(it.time, addInfo.signature, it.parcelScancode, message.nodeId)
                                     val sigPath = saveSignature(it.time, addInfo.signature, parcelScan, message.nodeId)
                                     parcelRecord.bmpfilename = sigPath
@@ -220,6 +451,7 @@ open class ParcelServiceV1 :
                                     val oldValue = parcelRecord.lieferstatus
                                     parcelRecord.lieferstatus = r.kzStatus.toShort()//4
                                     if (parcelRecord.store() > 0) {
+                                        /*
                                         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
                                         fieldHistoryRecord.orderid = parcelRecord.orderid
                                         fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
@@ -229,13 +461,25 @@ open class ParcelServiceV1 :
                                         fieldHistoryRecord.changer = "SP"
                                         fieldHistoryRecord.point = "IM"
                                         //getTan
-                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), 19).toInt().toUInteger()
+                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
                                         fieldHistoryRecord.store()
+                                        */
+
+                                        fieldHistoryRepository.addEntry(
+                                                orderId = parcelRecord.orderid,
+                                                unitNo = parcelRecord.colliebelegnr,
+                                                fieldName = "lieferstatus",
+                                                oldValue = oldValue?.toString() ?: "",
+                                                newValue = r.kzStatus.toString(),
+                                                changer = "SP",
+                                                point = "IM"
+                                        )
                                     }
 
                                     val oldRecipient = orderRecord.empfaenger ?: ""
                                     orderRecord.empfaenger = r.text
                                     if (orderRecord.store() > 0 && !oldRecipient.equals(r.text)) {
+                                        /*
                                         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
                                         fieldHistoryRecord.orderid = parcelRecord.orderid
                                         fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
@@ -244,14 +488,97 @@ open class ParcelServiceV1 :
                                         fieldHistoryRecord.newvalue = r.text
                                         fieldHistoryRecord.changer = "I"
                                         fieldHistoryRecord.point = "IM"
-                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), 19).toInt().toUInteger()
+                                        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
                                         fieldHistoryRecord.store()
+                                        */
+                                        fieldHistoryRepository.addEntry(
+                                                orderId = parcelRecord.orderid,
+                                                unitNo = parcelRecord.colliebelegnr,
+                                                fieldName = "empfaenger",
+                                                oldValue = oldRecipient,
+                                                newValue = r.text,
+                                                changer = "I",
+                                                point = "IM"
+                                        )
+                                    }
+                                    if (!orderRecord.empfaenger.equals(r.text)) {
+                                        //TODO WLtransfer ASD D in Auftrag gescheitert
                                     }
 
+                                    //val oldDeliveryDate = orderRecord.dtauslieferdatum?.toLocalDate().toString() ?: ""
+                                    val oldDeliveryDate: String
+                                    if (orderRecord.dtauslieferdatum == null) {
+                                        oldDeliveryDate = ""
+                                    } else {
+                                        oldDeliveryDate = SimpleDateFormat("dd.MM.yyyy").format(orderRecord.dtauslieferdatum)
+                                    }
+                                    val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+                                    val deliveryTime = SimpleDateFormat("yyyy-MM-dd HH:mm").parse("1899-12-30 " + (it.time.toShortTime().toString()))
+                                    val deliveryDate = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
+
+                                    orderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
+                                    orderRecord.dtauslieferzeit = deliveryTime.toTimestamp()
+                                    if (orderRecord.store() > 0) {
+                                        if (oldDeliveryTime != it.time.toTimestamp().toShortTime().toString()) {
+                                            /*
+                                            val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                            fieldHistoryRecord.orderid = parcelRecord.orderid
+                                            fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                                            fieldHistoryRecord.feldname = "dtauslieferzeit"
+                                            fieldHistoryRecord.oldvalue = oldDeliveryTime
+                                            fieldHistoryRecord.newvalue = it.time.toTimestamp().toShortTime().toString()
+                                            fieldHistoryRecord.changer = "I"
+                                            fieldHistoryRecord.point = "IM"
+                                            fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                                            fieldHistoryRecord.store()
+                                            */
+                                            fieldHistoryRepository.addEntry(
+                                                    orderId = parcelRecord.orderid,
+                                                    unitNo = parcelRecord.colliebelegnr,
+                                                    fieldName = "dtauslieferzeit",
+                                                    oldValue = oldDeliveryTime,
+                                                    newValue = it.time.toTimestamp().toShortTime().toString(),
+                                                    changer = "I",
+                                                    point = "IM"
+                                            )
+                                        }
+                                        //if (oldDeliveryDate != it.time.toTimestamp().toLocalDate().toString()) {
+                                        if (oldDeliveryDate != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                                            /*
+                                            val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                                            fieldHistoryRecord.orderid = parcelRecord.orderid
+                                            fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                                            fieldHistoryRecord.feldname = "dtauslieferdatum"
+                                            fieldHistoryRecord.oldvalue = oldDeliveryDate
+                                            fieldHistoryRecord.newvalue = SimpleDateFormat("dd.MM.yyyy").format(it.time)//it.time.toTimestamp().toLocalDate().toString()
+                                            fieldHistoryRecord.changer = "I"
+                                            fieldHistoryRecord.point = "IM"
+                                            fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                                            fieldHistoryRecord.store()
+                                            */
+                                            fieldHistoryRepository.addEntry(
+                                                    orderId = parcelRecord.orderid,
+                                                    unitNo = parcelRecord.colliebelegnr,
+                                                    fieldName = "dtauslieferdatum",
+                                                    oldValue = oldDeliveryDate,
+                                                    newValue = SimpleDateFormat("dd.MM.yyyy").format(it.time),
+                                                    changer = "I",
+                                                    point = "IM"
+                                            )
+                                        }
+
+                                    }
 
                                 }
                             }
                         }
+
+
+                    }
+                }
+
+                Event.DELIVERY_FAIL -> {
+                    when (reason) {
                         Reason.CUSTOMER_REFUSED -> {
                             val addInfo = it.additionalInfo
                             when (addInfo) {
@@ -263,12 +590,46 @@ open class ParcelServiceV1 :
                                 }
                             }
                         }
-
                     }
+
                 }
+                Event.IMPORT_RECEIVE -> {
+                    //r.infotext =ScannerXY
 
-                Event.DELIVERY_FAIL -> {
-
+                    val oldValue: String//= parcelRecord.dteingangdepot2
+                    if (parcelRecord.dteingangdepot2 == null) {
+                        oldValue = ""
+                    } else {
+                        oldValue = SimpleDateFormat("dd.MM.yyyy").format(parcelRecord.dteingangdepot2)
+                    }
+                    val importDate = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
+                    parcelRecord.dteingangdepot2 = importDate.toTimestamp()// it.time.toTimestamp()
+                    if (parcelRecord.store() > 0) {
+                        if (oldValue != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                            /*
+                            val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+                            fieldHistoryRecord.orderid = parcelRecord.orderid
+                            fieldHistoryRecord.belegnummer = parcelRecord.colliebelegnr
+                            fieldHistoryRecord.feldname = "dteingangdepot2"
+                            fieldHistoryRecord.oldvalue = oldValue
+                            fieldHistoryRecord.newvalue = SimpleDateFormat("dd.MM.yyyy").format(it.time)
+                            fieldHistoryRecord.changer = "SP"
+                            fieldHistoryRecord.point = "IM"
+                            //getTan
+                            fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                            fieldHistoryRecord.store()
+                            */
+                            fieldHistoryRepository.addEntry(
+                                    orderId = parcelRecord.orderid,
+                                    unitNo = parcelRecord.colliebelegnr,
+                                    fieldName = "dteingangdepot2",
+                                    oldValue = oldValue,
+                                    newValue = SimpleDateFormat("dd.MM.yyyy").format(it.time),
+                                    changer = "SP",
+                                    point = "IM"
+                            )
+                        }
+                    }
                 }
             }
             /**

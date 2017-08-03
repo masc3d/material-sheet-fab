@@ -29,7 +29,10 @@ class ParcelServiceTest {
 
     @Test
     fun testOnMessage() {
-        val event = ParcelServiceV1.Event(event = 106, reason = 0, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müller", signature = "abc"))
+        //val event = ParcelServiceV1.Event(event = 106, reason = 0, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müller", signature = "abc"))
+        //val event = ParcelServiceV1.Event(event = 106, reason = 0, time = Date().toTimestamp(), parcelScancode = "10071321554",from="956", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müller", signature = "abc"))
+        //val event = ParcelServiceV1.Event(event = 106, reason = 100, time = Date().toTimestamp(), parcelScancode = "7280464561",from="956", additionalInfo = AdditionalInfo.DeliveredAtNeighborInfo(name = "schulz", signature = "abc",address = "str nr 6"))
+        val event = ParcelServiceV1.Event(event = 103, reason = 0, time = Date().toTimestamp(), parcelScancode = "63407133663", from = "956", additionalInfo = AdditionalInfo.EmptyInfo)
         val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event))
 
 
