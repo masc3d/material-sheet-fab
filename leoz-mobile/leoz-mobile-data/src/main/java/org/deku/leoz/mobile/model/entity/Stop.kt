@@ -8,9 +8,6 @@ import java.util.*
 /**
  * Created by masc on 18.07.17.
  */
-/**
- * Created by masc on 18.07.17.
- */
 @Entity
 @Table(name = "stop")
 abstract class Stop : BaseRxObservable(), Persistable, Observable {
@@ -26,18 +23,6 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     abstract var state: State
     @get:OneToMany
     abstract val tasks: MutableList<OrderTask>
-
-    val address by lazy {
-        this.tasks.first().address
-    }
-
-    val dateStart by lazy {
-        this.tasks.first().dateStart ?: Date()
-    }
-
-    val dateEnd by lazy {
-        this.tasks.first().dateEnd ?: Date()
-    }
 }
 
 fun Stop.Companion.create(

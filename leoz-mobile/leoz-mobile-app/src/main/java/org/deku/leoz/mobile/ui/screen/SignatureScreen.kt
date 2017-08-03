@@ -17,11 +17,12 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.inflateMenu
+import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.model.EventDeliveredReason
 import org.parceler.Parcel
@@ -62,7 +63,7 @@ class SignatureScreen
     var parameters by fragmentParameters<Parameters>()
 
     private val descriptionText: String by lazy {
-        "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop!!.address.line1}\nAngenommen von: ${this.parameters.recipient}"
+        "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${this.parameters.recipient}"
     }
 
     private val stop: Stop by lazy {

@@ -22,7 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.service.LocationService
-import org.deku.leoz.mobile.ui.showErrorAlert
+import org.deku.leoz.mobile.ui.extension.showErrorAlert
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import sx.Stopwatch
 import sx.android.Device

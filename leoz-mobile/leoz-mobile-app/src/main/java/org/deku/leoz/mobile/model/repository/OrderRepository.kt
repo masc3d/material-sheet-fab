@@ -2,7 +2,9 @@ package org.deku.leoz.mobile.model.repository
 
 import android.databinding.Observable
 import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
@@ -31,9 +33,11 @@ class OrderRepository(
      * Merge a batch of orders into the database.
      * Existing orders will have their parcel lists merged accordingly.
      */
-    fun merge(orders: List<Order>): Completable {
+    fun merge(orders: List<Order>): Single<Int> {
         val sw = Stopwatch.createStarted()
         return store.withTransaction {
+            var created = 0
+
             // Store orders
             orders.forEach { order ->
                 val existingOrder = this.select(OrderEntity::class)
@@ -56,11 +60,13 @@ class OrderRepository(
                     insert(addedParcels)
                 } else {
                     insert(order)
+                    created++
                 }
             }
+
+            created
         }
-                .toCompletable()
-                .doOnComplete {
+                .doOnSuccess {
                     val orderCount = store.count(OrderEntity::class).get().call()
                     val taskCount = store.count(OrderTaskEntity::class).get().call()
                     val addressCount = store.count(AddressEntity::class).get().call()

@@ -1,8 +1,9 @@
-package org.deku.leoz.mobile.ui
+package org.deku.leoz.mobile.ui.extension
 
 import android.support.annotation.MenuRes
 import android.support.v7.view.menu.MenuBuilder
 import android.view.Menu
+import org.deku.leoz.mobile.ui.Activity
 
 /**
  * Helper for inflating menu on the fly

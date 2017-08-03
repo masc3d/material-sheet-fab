@@ -13,7 +13,7 @@ import sx.android.databinding.BaseRxObservable
 @Entity
 @Table(name = "address")
 abstract class Address
- : BaseRxObservable(), Persistable, Observable {
+    : BaseRxObservable(), Persistable, Observable {
 
     companion object
 
@@ -58,16 +58,16 @@ fun Address.Companion.create(
         latitude: Double = 0.0,
         longitude: Double = 0.0): Address {
 
-   return AddressEntity().also {
-      it.line1 = line1
-      it.line2 = line2
-      it.line3 = line3
-      it.street = street
-      it.streetNo = streetNo
-      it.zipCode = zipCode
-      it.city = city
-      it.phone = phone
-      it.latitude = latitude
-      it.longitude = longitude
-   }
+    return AddressEntity().also {
+        it.line1 = line1
+        it.line2 = line2
+        it.line3 = line3
+        it.street = street
+        it.streetNo = streetNo
+        it.zipCode = zipCode
+        it.city = city
+        it.phone = phone
+        it.latitude = latitude
+        it.longitude = longitude
+    }
 }

@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui
+package org.deku.leoz.mobile.ui.extension
 
 import android.R
 import android.content.Context

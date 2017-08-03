@@ -28,7 +28,7 @@ import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
-import org.deku.leoz.mobile.toHotRestObservable
+import org.deku.leoz.mobile.rx.toHotRestObservable
 
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.composeAsRest

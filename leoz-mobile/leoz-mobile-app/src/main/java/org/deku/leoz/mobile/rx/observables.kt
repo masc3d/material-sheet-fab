@@ -1,7 +1,6 @@
-package org.deku.leoz.mobile
+package org.deku.leoz.mobile.rx
 
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.slf4j.Logger
 import sx.rx.toHotReplay

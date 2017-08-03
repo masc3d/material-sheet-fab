@@ -8,7 +8,7 @@ import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.Observable
-import org.deku.leoz.mobile.model.getEventText
+import org.deku.leoz.mobile.model.entity.getEventText
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 

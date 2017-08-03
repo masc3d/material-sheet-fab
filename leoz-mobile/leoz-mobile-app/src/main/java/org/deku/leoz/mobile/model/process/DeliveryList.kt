@@ -6,17 +6,15 @@ import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import io.requery.query.Tuple
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
-import org.deku.leoz.mobile.toHotRestObservable
+import org.deku.leoz.mobile.rx.toHotRestObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.UnitNumber
@@ -191,7 +189,7 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
-     * Loads delivery list data from remote peer and merge into local database
+     * Loads delivery list data from remote peer and save into local database
      * @param deliveryListNumber Delivery list id
      * @return Hot observable which completes with a list of stops
      */
@@ -240,7 +238,7 @@ class DeliveryList : CompositeDisposableSupplier {
                     .distinctStops()
 
             this.stopRepository
-                    .merge(stops)
+                    .save(stops)
                     .blockingGet()
 
             log.trace("Delivery list transformed and stored in $sw")
@@ -269,12 +267,32 @@ class DeliveryList : CompositeDisposableSupplier {
      * Merge a single order into the database
      */
     fun mergeOrder(order: Order): Completable {
-        return this.orderRepository
-                .merge(listOf(order))
+        return db.store.withTransaction {
+            val createdOrderCount = orderRepository
+                    .merge(listOf(order))
+                    .blockingGet()
+
+            // If this order existed already, we're done
+            if (createdOrderCount == 0)
+                return@withTransaction
+
+            order.tasks.forEach { task ->
+                var stop = stopRepository.findStopForTask(task)
+
+                if (stop != null) {
+                    stop.tasks.add(task)
+                    update(stop)
+                } else {
+                    stop = Stop.create(stopTasks = listOf(task))
+                    insert(stop)
+                }
+            }
+        }
+                .toCompletable()
     }
 
     /**
-     * Load order based on unit number and merge orders into local database
+     * Load order based on unit number and save orders into local database
      * @param unitNumber Unit number
      */
     fun load(unitNumber: UnitNumber): Observable<Order> {

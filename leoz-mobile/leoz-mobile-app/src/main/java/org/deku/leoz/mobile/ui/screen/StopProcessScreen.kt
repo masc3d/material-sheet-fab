@@ -29,7 +29,7 @@ import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
-import org.deku.leoz.mobile.ui.inflateMenu
+import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel

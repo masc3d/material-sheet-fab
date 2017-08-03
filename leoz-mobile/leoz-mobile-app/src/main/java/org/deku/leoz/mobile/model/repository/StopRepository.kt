@@ -21,13 +21,36 @@ class StopRepository(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
+     * Finds a suitabtle existing stop compatible with this task
+     * @param task Order task
+     */
+    fun findStopForTask(task: OrderTask): Stop? {
+        return entities
+                .flatMap { it.tasks }
+                .firstOrNull {
+                    it.services.size == task.services.size &&
+                            it.services.containsAll(task.services) &&
+                            it.hasCompatibleAppointmentsWith(task) &&
+                            it.address.isCompatibleStopAddressFor(task.address)
+                }
+                ?.stop
+    }
+
+    /**
+     * Merges order task into existing stop or creates a new one
+     * @param orderTask Order task
+     */
+    fun save(orderTask: OrderTask) {
+
+    }
+
+    /**
      * Merge a batch of stops into the database.
      * Stops which reference the same order tasks will be removed in order to avoid duplicates.
      */
-    fun merge(stops: List<Stop>): Completable {
+    fun save(stops: List<Stop>): Completable {
         val sw = Stopwatch.createStarted()
         return store.withTransaction {
-            // Store orders
             stops.forEach { stop ->
                 // Remove stops which reference the same order tasks to avoid duplicates
                 delete(stop.tasks

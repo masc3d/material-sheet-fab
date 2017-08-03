@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile.model.entity
 
 import android.content.Context
 import org.deku.leoz.mobile.R

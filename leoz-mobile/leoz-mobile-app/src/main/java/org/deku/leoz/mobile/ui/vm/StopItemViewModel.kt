@@ -1,8 +1,10 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
-import android.support.annotation.DrawableRes
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.entity.address
+import org.deku.leoz.mobile.model.entity.dateEnd
+import org.deku.leoz.mobile.model.entity.dateStart
 import org.deku.leoz.mobile.model.entity.OrderTask
 import org.deku.leoz.mobile.model.entity.Stop
 import sx.time.toCalendar
@@ -35,10 +37,10 @@ class StopItemViewModel(val stop: Stop) : BaseObservable() {
         get() = simpleDateFormat.format(stop.dateEnd)
 
     val appointmentHour: Int
-        get() = stop.dateStart.toCalendar().get(Calendar.HOUR)
+        get() = stop.dateStart?.toCalendar()?.get(Calendar.HOUR) ?: 0
 
     val appointmentMinute: Int
-        get() = stop.dateEnd.toCalendar().get(Calendar.MINUTE)
+        get() = stop.dateEnd?.toCalendar()?.get(Calendar.MINUTE) ?: 0
 
     val orderCount: String
         get() = stop.tasks.map { it.order }.distinct().count().toString()

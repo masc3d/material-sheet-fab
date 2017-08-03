@@ -12,6 +12,7 @@ import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.screen_neighbour_delivery.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.ui.ScreenFragment

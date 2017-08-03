@@ -1,14 +1,10 @@
-package org.deku.leoz.mobile.ui
+package org.deku.leoz.mobile.ui.extension
 
 import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.view.View
 import android.widget.ImageView
-
-/**
- * Created by masc on 11.07.17.
- */
 
 /**
  * Data binding adatpers

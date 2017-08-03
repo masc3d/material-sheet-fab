@@ -17,7 +17,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
-import org.deku.leoz.mobile.ui.inflateMenu
+import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.android.fragment.util.withTransaction
 
