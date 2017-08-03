@@ -6,14 +6,18 @@ import sx.Result
  * DEKU delivery list number
  * Created by masc on 17.07.17.
  */
-class DekuDeliveryListNumber(
+class DekuDeliveryListNumber private constructor(
         /** Delivery list number */
         val value: String) {
 
     companion object {
+        /**
+         * Parse delivery list barcode/label content
+         * @param value Barcode/label content including check-digit
+         */
         fun parseLabel(value: String): Result<DekuDeliveryListNumber> {
             if (value.length != 10)
-                return Result(error = IllegalArgumentException("DEKU delivery list label [${value}] must have 9 digits"))
+                return Result(error = IllegalArgumentException("DEKU delivery list label [${value}] has invalid length"))
 
             if (!value.all { it.isDigit() })
                 return Result(error = IllegalArgumentException("DEKU delivery list number [${value}] must be numeric"))
@@ -25,20 +29,25 @@ class DekuDeliveryListNumber(
             }
         }
 
+        /**
+         * Parse delivery list number
+         * @param value Delivery list number without check-digit
+         */
         fun parse(value: String): Result<DekuDeliveryListNumber> {
-            var str = value
-            if (str.length == 8) {
-                //TODO: This is supposed to be removed if the "LEO" frontend is able to omit the leading "0" in the delivery list barcode
-                str = "0" + value
-            }
-            if (str.length != 9)
-                return Result(error = IllegalArgumentException("DEKU delivery list number [$str] must have 8 digits"))
+            if (value.length < 7 || value.length > 9)
+                return Result(error = IllegalArgumentException("DEKU delivery list number [${value}] has invalid length"))
 
-            return Result(DekuDeliveryListNumber(str))
+            if (!value.all { it.isDigit() })
+                return Result(error = IllegalArgumentException("DEKU delivery list number [${value}] must be numeric"))
+
+            return Result(DekuDeliveryListNumber(value.padStart(9, '0')))
         }
     }
 
-    val location: Int by lazy {
+    /**
+     * The location/station number
+     */
+    val station: Int by lazy {
         this.value.substring(0, 3).toInt()
     }
 

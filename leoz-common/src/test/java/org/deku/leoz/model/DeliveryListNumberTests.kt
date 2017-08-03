@@ -130,24 +130,21 @@ class DeliveryListNumberTests {
     )
 
     @Test
-    fun testDEKUDeliveryListLabels() {
-        DEKU_DELIVERYLIST_LABELS.forEach {
-            val result = DekuDeliveryListNumber.parseLabel(it)
+    fun testParseLabel() {
+        DEKU_DELIVERYLIST_LABELS.forEach { label ->
+            val result = DekuDeliveryListNumber.parseLabel(label)
 
-            if (result.hasError || result.value.value != it.substring(0, it.length - 1)) {
-                Assert.fail()
-            }
+            Assert.assertFalse(result.hasError)
+            Assert.assertEquals(result.value.label, label)
         }
     }
 
     @Test
-    fun testDEKUDeliveryListIDs() {
+    fun testParse() {
         DEKU_DELIVERYLIST_IDS.forEach {
             val result = DekuDeliveryListNumber.parse(it)
 
-            if (result.hasError) {
-                Assert.fail()
-            }
+            Assert.assertFalse(result.hasError)
         }
     }
 }

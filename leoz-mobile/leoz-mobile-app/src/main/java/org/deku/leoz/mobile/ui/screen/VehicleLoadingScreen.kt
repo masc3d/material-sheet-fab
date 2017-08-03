@@ -3,7 +3,6 @@ package org.deku.leoz.mobile.ui.screen
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
@@ -19,7 +18,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.toObservable
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
@@ -34,7 +32,6 @@ import org.deku.leoz.mobile.toHotRestObservable
 
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.composeAsRest
-import org.deku.leoz.mobile.ui.composeWithActivityProgress
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.DekuDeliveryListNumber
@@ -44,15 +41,12 @@ import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
-import sx.Stopwatch
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
-import sx.android.isConnectivityException
 import sx.android.rx.observeOnMainThread
 import sx.format.format
-import java.util.*
 import java.util.concurrent.ExecutorService
 
 /**
@@ -113,7 +107,8 @@ class VehicleLoadingScreen : ScreenFragment() {
                 color = R.color.colorGreen,
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.loaded).toString(),
-                parcels = this.deliveryList.loadedParcels.map { it.value }.bindToLifecycle(this)
+                parcels = this.deliveryList.loadedParcels.map { it.value }
+                        .bindToLifecycle(this)
         )
     }
 
@@ -123,7 +118,8 @@ class VehicleLoadingScreen : ScreenFragment() {
                 color = R.color.colorAccent,
                 background = R.drawable.section_background_accent,
                 title = this.getText(R.string.damaged).toString(),
-                parcels = this.deliveryList.damagedParcels.map { it.value }.bindToLifecycle(this)
+                parcels = this.deliveryList.damagedParcels.map { it.value }
+                        .bindToLifecycle(this)
         )
     }
 
@@ -133,8 +129,23 @@ class VehicleLoadingScreen : ScreenFragment() {
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 isSelectable = false,
+                showIfEmpty = false,
                 title = this.getText(R.string.pending).toString(),
-                parcels = this.deliveryList.pendingParcels.map { it.value }.bindToLifecycle(this)
+                parcels = this.deliveryList.pendingParcels.map { it.value }
+                        .bindToLifecycle(this)
+        )
+    }
+
+    val missingSection by lazy {
+        ParcelSectionViewModel(
+                icon = R.drawable.ic_missing,
+                color = R.color.colorGrey,
+                background = R.drawable.section_background_grey,
+                isSelectable = false,
+                showIfEmpty = false,
+                title = this.getText(R.string.missing).toString(),
+                parcels = this.deliveryList.missingParcels.map { it.value }
+                        .bindToLifecycle(this)
         )
     }
     //endregion
@@ -146,6 +157,7 @@ class VehicleLoadingScreen : ScreenFragment() {
         adapter.addParcelSection(this.loadedSection)
         adapter.addParcelSection(this.damagedSection)
         adapter.addParcelSection(this.pendingSection)
+        adapter.addParcelSection(this.missingSection)
 
         adapter
     })
@@ -258,10 +270,20 @@ class VehicleLoadingScreen : ScreenFragment() {
                         }
 
                         R.id.action_vehicle_loading_finished -> {
-                            val dialog = MaterialDialog.Builder(context)
-                                    .title(getString(R.string.question_vehicle_loading_finished))
-                                    .negativeText(getString(R.string.no_go_back))
-                                    .positiveText(getString(R.string.yes_start_tour))
+                            MaterialDialog.Builder(context)
+                                    .title(R.string.vehicle_loading_finalize_dialog_title)
+                                    .content(R.string.vehicle_loading_finalize_dialog)
+                                    .negativeText(R.string.no_go_back)
+                                    .positiveText(R.string.yes_start_tour)
+                                    .onPositive { _, _ ->
+                                        this.deliveryList
+                                                .finalize()
+                                                .observeOnMainThread()
+                                                .subscribeBy(onComplete = {
+                                                    this.fragmentManager.popBackStack()
+                                                })
+
+                                    }
                                     .show()
                         }
 
@@ -360,7 +382,6 @@ class VehicleLoadingScreen : ScreenFragment() {
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val stopwatch = Stopwatch.createStarted()
         val result = Observable.concat(
                 Observable.fromCallable { UnitNumber.parseLabel(event.data) },
                 Observable.fromCallable { DekuDeliveryListNumber.parseLabel(event.data) }
@@ -508,8 +529,8 @@ class VehicleLoadingScreen : ScreenFragment() {
                     this.aidcReader.enabled = false
 
                     MaterialDialog.Builder(this.context)
-                            .title(R.string.question_unload_parcel_title)
-                            .content(R.string.question_unload_parcel)
+                            .title(R.string.vehicle_loading_unload_parcel_dialog_title)
+                            .content(R.string.vehicle_loading_unload_parcel_dialog)
                             .negativeText(getString(android.R.string.no))
                             .positiveText(getString(android.R.string.yes))
                             .dismissListener {
