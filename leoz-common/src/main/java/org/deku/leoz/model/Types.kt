@@ -344,6 +344,17 @@ enum class UserRole(val value: Int) {
     CUSTOMER(2)
 }
 
+enum class UserAppPermission(val value: Int, val internal: Boolean = false) {
+    MOBILE_TOUR(value = 1),
+    MOBILE_STATION(value = 2),
+    MOBILE_LINE(value = 4),
+    MOBILE_OPS(value = 8, internal = true)
+}
+
+enum class UserPreferenceKey {
+    MAP_REFRESH_RATE
+}
+
 /**
  * Enumeration for possible types of vehicles, provided by the mobile app.
  */
