@@ -118,6 +118,9 @@ class ParcelSectionsAdapter
                 .subscribe { parcels ->
                     log.trace("UPDATING ITEMS [${parcels.count()}]")
 
+                    // Need to collapse before updating subitems to prevent weird glitches, eg expanded items remaining visible
+                    this.collapseAll()
+
                     sectionItem.subItems = parcels.map { parcel ->
                         val item = FlexibleVmSectionableItem(
                                 viewRes = R.layout.item_parcel,
@@ -145,8 +148,7 @@ class ParcelSectionsAdapter
                         }
                     }
 
-                    // Need to collapse on complete sublist update to prevent weird glitches
-                    this.collapseAll()
+                    this.updateItem(sectionItem)
                 }
 
         sectionItem.isSelectable = true
