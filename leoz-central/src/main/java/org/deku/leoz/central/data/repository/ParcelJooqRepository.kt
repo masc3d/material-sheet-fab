@@ -83,10 +83,10 @@ class ParcelJooqRepository {
     }
 
 
-    fun findBagsByUnitNumber(unitNo: Double): List<TblauftragcolliesRecord>? {
+    fun findUnitsInBagByBagUnitNumber(bagUnitNo: Double): List<TblauftragcolliesRecord>? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
-                .where(Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRABC.eq(unitNo))
+                .where(Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRABC.eq(bagUnitNo))
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 }
