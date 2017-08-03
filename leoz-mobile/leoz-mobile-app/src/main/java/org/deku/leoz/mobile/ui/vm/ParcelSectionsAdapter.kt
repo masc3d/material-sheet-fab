@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.ui.vm
 import android.support.v7.widget.RecyclerView
 import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
+import eu.davidea.flexibleadapter.items.IFilterable
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.utils.Log
 import io.reactivex.subjects.PublishSubject
@@ -92,8 +93,18 @@ class ParcelSectionsAdapter
         log.trace("ADAPTER DETACHED")
     }
 
+    /**
+     * Add parcel section
+     * @param sectionViewModel Parcel section view model
+     */
     fun addParcelSection(
             sectionViewModel: ParcelSectionViewModel) {
+
+        // Don't add if section exists already
+        if (this.currentItems.any {
+            it.viewModel == sectionViewModel
+        })
+            return
 
         val sectionItem = FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel>(
                 viewRes = R.layout.item_parcel_header,
@@ -104,17 +115,14 @@ class ParcelSectionsAdapter
 
         sectionViewModel.parcels
                 .observeOnMainThread()
-                .subscribe {
-                    log.trace("UPDATING ITEMS [${it.count()}]")
+                .subscribe { parcels ->
+                    log.trace("UPDATING ITEMS [${parcels.count()}]")
 
-                    // Need to collapse on complete sublist update to prevent weird glitches
-                    this.collapseAll()
-
-                    sectionItem.subItems = it.map {
+                    sectionItem.subItems = parcels.map { parcel ->
                         val item = FlexibleVmSectionableItem(
                                 viewRes = R.layout.item_parcel,
                                 variableId = BR.parcel,
-                                viewModel = ParcelViewModel(it)
+                                viewModel = ParcelViewModel(parcel)
                         )
 
                         item.isEnabled = true
@@ -126,18 +134,49 @@ class ParcelSectionsAdapter
                         item
                     }
 
-                    this.updateItem(sectionItem)
+                    if (!sectionViewModel.showIfEmpty) {
+                        val position = this.getGlobalPositionOf(sectionItem)
+                        if (parcels.isEmpty()) {
+                            if (position >= 0)
+                                this.removeItem(position)
+                        } else {
+                            if (position < 0)
+                                this.addItem(sectionItem)
+                        }
+                    }
+
+                    // Need to collapse on complete sublist update to prevent weird glitches
+                    this.collapseAll()
                 }
 
         sectionItem.isSelectable = true
         sectionItem.isExpanded = false
 
         this.sections.add(sectionItem)
-        this.addItem(sectionItem)
+
+        if (sectionViewModel.showIfEmpty || sectionViewModel.parcels.blockingFirst().isNotEmpty())
+            this.addItem(sectionItem)
 
         this.collapseAll()
     }
 
+    /**
+     * Remove parcel section
+     * @param sectionViewModel Parcel section view model
+     */
+    fun removeParcelSection(sectionViewModel: ParcelSectionViewModel) {
+        val item = this.currentItems.firstOrNull {
+            it.viewModel == sectionViewModel
+        }
+
+        if (item != null) {
+            this.removeItem(this.getGlobalPositionOf(item))
+        }
+    }
+
+    /**
+     * Select parcel section
+     */
     private fun selectParcelSection(item: IFlexible<FlexibleExpandableVmHolder>) {
         val adapter = this
 
@@ -165,7 +204,7 @@ class ParcelSectionsAdapter
             }
 
             if (firstSelection)
-                // Add delay on first selection to avoid drawing glitches
+            // Add delay on first selection to avoid drawing glitches
                 adapter.recyclerView.postDelayed(expand, 200)
             else
                 adapter.recyclerView.post(expand)

@@ -22,6 +22,7 @@ class ParcelSectionViewModel(
         @ColorRes val color: Int = R.color.colorAccent,
         @DrawableRes val background: Int = R.drawable.section_background_accent,
         val isSelectable: Boolean = true,
+        val showIfEmpty: Boolean = true,
         val title: String,
         val parcels: Observable<List<ParcelEntity>>
 )
