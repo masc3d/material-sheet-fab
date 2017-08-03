@@ -5,9 +5,6 @@ import eu.davidea.flexibleadapter.items.IHeader
 import eu.davidea.flexibleadapter.items.ISectionable
 
 /**
- * Created by masc on 07.07.17.
- */
-/**
  * Created by masc on 06.07.17.
  */
 class FlexibleVmSectionableItem<VM>(
