@@ -73,6 +73,14 @@ class DeliveryList : CompositeDisposableSupplier {
                     .get()
     ).bind(this)
 
+    private val missingParcelsQuery = ObservableQuery<ParcelEntity>(
+            name = "Missing parcels",
+            query = db.store.select(ParcelEntity::class)
+                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.MISSING))
+                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
+                    .get()
+    ).bind(this)
+
     private val deliveryListIdQuery = ObservableTupleQuery<Long>(
             name = "Delivery list ids",
             query = db.store.select(OrderEntity.DELIVERY_LIST_ID)
@@ -103,6 +111,11 @@ class DeliveryList : CompositeDisposableSupplier {
      * Pending parcels
      */
     val pendingParcels = pendingParcelsQuery.result
+
+    /**
+     * Missing parcels
+     */
+    val missingParcels = missingParcelsQuery.result
 
     //region Counters
     val orderTotalAmount = orderRepository.entitiesProperty.map { it.value.count() }
@@ -277,5 +290,21 @@ class DeliveryList : CompositeDisposableSupplier {
             orders.first()
         }
                 .toHotRestObservable(log)
+    }
+
+    /**
+     * Finalizes the loading process, marking all pending parcels as missing
+     */
+    fun finalize(): Completable {
+        return db.store.withTransaction {
+            val parcels = parcelRepository.entities.filter { it.loadingState == Parcel.State.PENDING }
+
+            parcels.forEach {
+                it.loadingState = Parcel.State.MISSING
+                update(it)
+            }
+        }
+                .toCompletable()
+                .subscribeOn(Schedulers.computation())
     }
 }

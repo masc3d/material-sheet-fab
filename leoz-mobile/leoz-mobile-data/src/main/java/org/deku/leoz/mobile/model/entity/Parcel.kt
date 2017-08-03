@@ -37,9 +37,6 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     @get:Bindable
     abstract var isDamaged: Boolean
     @get:Bindable
-    @get:Column(value = "0")
-    abstract var isMissing: Boolean
-    @get:Bindable
     @get:Index
     @get:Column(nullable = true)
     abstract var modificationTime: Date?

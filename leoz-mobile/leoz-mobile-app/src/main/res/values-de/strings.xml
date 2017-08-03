@@ -73,6 +73,7 @@
     <string name="error_invalid_delivery_list">Ungültige Rollkarte</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
     <string name="error_invalid_password">Das Passwort ist zu kurz</string>
+    <string name="error_no_corresponding_order">Kein zugehöriger Auftrag gefunden</string>
 
     <string name="event_reason_absent">Kunde abwesend</string>
     <string name="event_reason_address_wrong">Falsche adresse</string>
@@ -126,6 +127,8 @@
 
     <string name="menu">Menü</string>
 
+    <string name="missing">Fehlend</string>
+
     <string name="name">Name</string>
     <string name="name_of_authority">Behördenname</string>
 
@@ -141,6 +144,8 @@
     <string name="number_short_no">Nr.</string>
 
     <string name="order_list">Auftragsliste</string>
+    <string name="order_not_on_delivery_list">Auftrag nicht auf Rollkarte</string>
+    <string name="order_not_on_delivery_list_confirmation">Zugehörigen Auftrag speichern?</string>
 
     <string name="parcel_damaged">Paket beschädigt</string>
     <string name="parcel_missing">Paket fehlt</string>
@@ -160,9 +165,6 @@
 
     <string name="question_remove_damaged_status">Beschädigt-Status entfernen?</string>
     <string name="question_remove_damaged_status_title">Paket wurde als beschädigt gekennzeichnet</string>
-    <string name="question_unload_parcel">Paket entladen?</string>
-    <string name="question_unload_parcel_title">Paket wurde beladen</string>
-    <string name="question_vehicle_loading_finished">Fahrzeugbeladung abgeschlossen?</string>
 
     <string name="report_bug">Report bug</string>
 
@@ -211,6 +213,10 @@
     <string name="user">Benutzer:</string>
 
     <string name="vehicle_loading">Fahrzeugbeladung</string>
+    <string name="vehicle_loading_finalize_dialog">Alle ausstehenden Pakete werden als fehlend markiert.</string>
+    <string name="vehicle_loading_finalize_dialog_title">Fahrzeugbeladung abgeschlossen?</string>
+    <string name="vehicle_loading_unload_parcel_dialog">Paket entladen?</string>
+    <string name="vehicle_loading_unload_parcel_dialog_title">Paket wurde beladen</string>
 
     <string name="version">App-Version:</string>
     <string name="version_available">v%s ist verfügbar</string>
@@ -218,7 +224,4 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="error_no_corresponding_order">Kein zugehöriger Auftrag gefunden</string>
-    <string name="order_not_on_delivery_list">Auftrag nicht auf Rollkarte</string>
-    <string name="order_not_on_delivery_list_confirmation">Zugehörigen Auftrag speichern?</string>
 </resources>

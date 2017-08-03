@@ -135,6 +135,8 @@
 
     <string name="menu">Menu</string>
 
+    <string name="missing">Missing</string>
+
     <string name="name">Name</string>
     <string name="name_of_authority">Name of Authority</string>
 
@@ -206,9 +208,6 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="question_remove_damaged_status">Remove damaged status?</string>
     <string name="question_remove_damaged_status_title">Parcel has been declared damaged</string>
-    <string name="question_unload_parcel">Unload parcel?</string>
-    <string name="question_unload_parcel_title">Parcel has been loaded</string>
-    <string name="question_vehicle_loading_finished">Vehicle loading finished?</string>
 
     <string name="report_bug">Report bug</string>
 
@@ -260,6 +259,10 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="user">User</string>
 
     <string name="vehicle_loading">Vehicle loading</string>
+    <string name="vehicle_loading_finalize_dialog">All pending parcels will be marked missing.</string>
+    <string name="vehicle_loading_finalize_dialog_title">Finalize vehicle loading</string>
+    <string name="vehicle_loading_unload_parcel_dialog">Unload parcel?</string>
+    <string name="vehicle_loading_unload_parcel_dialog_title">Parcel has been loaded</string>
 
     <string name="version">Version</string>
     <string name="version_available">v%s is available</string>
