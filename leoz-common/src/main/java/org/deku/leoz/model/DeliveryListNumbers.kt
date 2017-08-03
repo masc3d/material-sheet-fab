@@ -6,7 +6,7 @@ import sx.Result
  * DEKU delivery list number
  * Created by masc on 17.07.17.
  */
-class DekuDeliveryListNumber(
+class DekuDeliveryListNumber private constructor(
         /** Delivery list number */
         val value: String) {
 
