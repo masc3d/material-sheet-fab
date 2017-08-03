@@ -13,7 +13,7 @@ class DekuDeliveryListNumber(
     companion object {
         fun parseLabel(value: String): Result<DekuDeliveryListNumber> {
             if (value.length != 10)
-                return Result(error = IllegalArgumentException("DEKU delivery list label [${value}] must have 9 digits"))
+                return Result(error = IllegalArgumentException("DEKU delivery list label [${value}] has invalid length"))
 
             if (!value.all { it.isDigit() })
                 return Result(error = IllegalArgumentException("DEKU delivery list number [${value}] must be numeric"))
@@ -26,15 +26,11 @@ class DekuDeliveryListNumber(
         }
 
         fun parse(value: String): Result<DekuDeliveryListNumber> {
-            var str = value
-            if (str.length == 8) {
-                //TODO: This is supposed to be removed if the "LEO" frontend is able to omit the leading "0" in the delivery list barcode
-                str = "0" + value
+            if (value.length < 7 || value.length > 9) {
+                return Result(error = IllegalArgumentException("DEKU delivery list number [${value}] has invalid length"))
             }
-            if (str.length != 9)
-                return Result(error = IllegalArgumentException("DEKU delivery list number [$str] must have 8 digits"))
 
-            return Result(DekuDeliveryListNumber(str))
+            return Result(DekuDeliveryListNumber(value.padStart(9, '0')))
         }
     }
 
