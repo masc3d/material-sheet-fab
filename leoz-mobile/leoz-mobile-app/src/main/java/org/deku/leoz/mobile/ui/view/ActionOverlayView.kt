@@ -301,7 +301,9 @@ class ActionOverlayView : RelativeLayout {
                                     sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
 
                                     sheetItem.setOnClickListener {
+                                        // TODO: when listener/activity is destroyed while hide sheet/animation has not finished, the view hierarchy including context/activity will leak. Commenting this. Commenting .hideSheet avoids the leak
                                         sheetFab.value.hideSheet()
+
                                         this.listener?.onActionItem(menuItem.itemId)
                                     }
 
