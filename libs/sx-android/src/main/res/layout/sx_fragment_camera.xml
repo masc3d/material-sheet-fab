@@ -15,12 +15,12 @@
             android:layout_height="match_parent">
 
             <include
-                layout="@layout/view_camera_controls"
+                layout="@layout/sx_view_camera_controls"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></include>
+                android:layout_height="match_parent"/>
 
             <include
-                layout="@layout/view_camera_confirm"
+                layout="@layout/sx_view_camera_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </ViewSwitcher>
