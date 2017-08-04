@@ -50,7 +50,6 @@ class LogConfiguration {
                 appender.flushPeriod = Duration.ofMinutes(5)
                 appender.flushBufferThreshold = 20
                 appender.flushOnError = true
-                appender.dispatcher.start()
 
                 appender
             }

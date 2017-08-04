@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
@@ -135,6 +136,9 @@ class StartupActivity : RxAppCompatActivity() {
 
                                 // Late initialization of singletons which require eg. permissions
                                 Kodein.global.instance<IMqttAsyncClient>()
+                                Kodein.global.instance<LogMqAppender>().also {
+                                    it.dispatcher.start()
+                                }
 
                                 // Initialize location service
                                 this.startService(
