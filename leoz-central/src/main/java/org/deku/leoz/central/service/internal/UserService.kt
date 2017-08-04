@@ -6,6 +6,7 @@ import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.isActive
 import org.deku.leoz.central.data.repository.toUser
+import org.deku.leoz.model.UserPreferenceKey
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.UserService.User
 import org.jooq.DSLContext
@@ -319,6 +320,18 @@ class UserService : UserService {
                     status = Response.Status.BAD_REQUEST,
                     title = "Problem on update")
 
+    }
+
+    override fun getById(userId: Int): User {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getMobilePermission(userId: Int): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getPreferences(userId: Int, type: UserPreferenceKey): List<UserService.Preferences> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }
