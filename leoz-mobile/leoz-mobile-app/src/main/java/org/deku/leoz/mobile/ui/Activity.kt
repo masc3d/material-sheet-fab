@@ -619,7 +619,7 @@ open class Activity : RxAppCompatActivity(),
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
                                         iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         iconRes = R.drawable.ic_barcode,
-                                        visible =  this.aidcReader.enabled
+                                        visible = this.aidcReader.enabled
                                 )
                         )
                     } else {
@@ -914,7 +914,7 @@ fun <T> Observable<T>.composeWithActivityProgress(activity: Activity): Observabl
             .doOnSubscribe {
                 activity.progressIndicator.show()
             }
-            .doOnTerminate {
+            .doFinally {
                 activity.progressIndicator.hide()
             }
 }
