@@ -12,6 +12,7 @@ import javax.persistence.Persistence
 import org.deku.leoz.central.data.jooq.tables.Tblauftragcollies
 import org.deku.leoz.central.data.jooq.tables.Tblauftrag
 import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.Tblstatus
 import org.deku.leoz.central.data.jooq.tables.records.TblfeldhistorieRecord
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.AdditionalInfo
@@ -37,6 +38,15 @@ class ParcelJooqRepository {
 
     fun saveEvent(eventRecord: TblstatusRecord): Boolean {
         return (eventRecord.store() > 0)
+    }
+
+    fun statusExist(unitNo:Double,creator:String,status:Int):Boolean{
+        val exist =dslContext.selectCount().from(Tblstatus.TBLSTATUS)
+                .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo))
+                        .and(Tables.TBLSTATUS.KZ_STATUSERZEUGER.eq(creator))
+                        .and(Tables.TBLSTATUS.KZ_STATUS.eq(status.toUInteger()))
+                .fetchOne(0,Int::class.java)
+        return exist!=0
     }
 
     /**

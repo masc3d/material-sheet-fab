@@ -29,10 +29,13 @@ class ParcelServiceTest {
 
     @Test
     fun testOnMessage() {
-        //val event = ParcelServiceV1.Event(event = 106, reason = 0, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müller", signature = "abc"))
-        //val event = ParcelServiceV1.Event(event = 106, reason = 0, time = Date().toTimestamp(), parcelScancode = "10071321554",from="956", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müller", signature = "abc"))
-        //val event = ParcelServiceV1.Event(event = 106, reason = 100, time = Date().toTimestamp(), parcelScancode = "7280464561",from="956", additionalInfo = AdditionalInfo.DeliveredAtNeighborInfo(name = "schulz", signature = "abc",address = "str nr 6"))
-        val event = ParcelServiceV1.Event(event = 103, reason = 0, time = Date().toTimestamp(), parcelScancode = "63407133663", from = "956", additionalInfo = AdditionalInfo.EmptyInfo)
+        //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = "abc"))
+        //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelScancode = "10071321554",from="956", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerMeier", signature = "abc"))
+        //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NEIGHBOUR.id, time = Date().toTimestamp(), parcelScancode = "7280464561",from="956", additionalInfo = AdditionalInfo.DeliveredAtNeighborInfo(name = "schulz", signature = "abc",address = "str nr 6"))
+        //event 106,reason=0
+        //val event = ParcelServiceV1.Event(event = Event.IMPORT_RECEIVE.value, reason=Reason.NORMAL.id, time = Date().toTimestamp(), parcelScancode = "63407133663", from = "956", additionalInfo = AdditionalInfo.EmptyInfo)
+        //event 107,reason 510
+        val event = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.WRONG_ROUTING.id, time = Date().toTimestamp(), parcelScancode = "51520039870", from = "956", additionalInfo = AdditionalInfo.EmptyInfo)
         val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event))
 
 
