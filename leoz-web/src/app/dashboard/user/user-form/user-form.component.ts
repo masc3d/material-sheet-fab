@@ -104,11 +104,15 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   private createRoleOptions(): SelectItem[] {
     const roleOptions = [];
-    if (this.roleGuard.isPoweruser()) {
+    /*if (this.roleGuard.isPoweruser()) {
       roleOptions.push( { label: this.translate.instant( 'Poweruser' ), value: 'POWERUSER' } );
-    }
-    if (this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
+    }*/
+    if (this.roleGuard.isPoweruser()) {
       roleOptions.push( { label: this.translate.instant( 'User' ), value: 'USER' } );
+      roleOptions.push( { label: this.translate.instant( 'Driver' ), value: 'DRIVER' } );
+      roleOptions.push( { label: this.translate.instant( 'Customer' ), value: 'CUSTOMER' } );
+    }
+    if (this.roleGuard.isUser()) {
       roleOptions.push( { label: this.translate.instant( 'Driver' ), value: 'DRIVER' } );
       roleOptions.push( { label: this.translate.instant( 'Customer' ), value: 'CUSTOMER' } );
     }

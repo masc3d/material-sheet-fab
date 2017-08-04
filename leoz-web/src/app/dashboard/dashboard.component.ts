@@ -23,7 +23,6 @@ export class DashboardComponent {
 
   @HostListener( 'window:keyup', [ '$event' ] )
   onKeyUp( ev: KeyboardEvent ): void {
-    // do something meaningful with it
     this.keyUpService.nextEvent(ev);
   }
 }
