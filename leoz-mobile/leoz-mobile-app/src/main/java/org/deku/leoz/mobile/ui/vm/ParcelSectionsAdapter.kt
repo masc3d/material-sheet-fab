@@ -34,7 +34,7 @@ class ParcelSectionsAdapter
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Sections in their original order */
-    private val sections = mutableListOf<FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel>>()
+    private val sections = mutableListOf<ParcelSectionViewModel>()
 
     val selectedSectionProperty = ObservableRxProperty<ParcelSectionViewModel?>(null)
     var selectedSection by selectedSectionProperty
@@ -94,6 +94,21 @@ class ParcelSectionsAdapter
     }
 
     /**
+     * Extension method to create flexible item from view model
+     */
+    private fun ParcelSectionViewModel.createSectionItem(): FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel> {
+        return FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel>(
+                viewRes = R.layout.item_parcel_header,
+                variableId = BR.header,
+                viewModel = this,
+                isExpandableOnClick = false
+        ).also {
+            it.isSelectable = true
+            it.isExpanded = false
+        }
+    }
+
+    /**
      * Add parcel section
      * @param sectionViewModel Parcel section view model
      */
@@ -101,17 +116,10 @@ class ParcelSectionsAdapter
             sectionViewModel: ParcelSectionViewModel) {
 
         // Don't add if section exists already
-        if (this.currentItems.any {
-            it.viewModel == sectionViewModel
-        })
+        if (this.sections.contains(sectionViewModel))
             return
 
-        val sectionItem = FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel>(
-                viewRes = R.layout.item_parcel_header,
-                variableId = BR.header,
-                viewModel = sectionViewModel,
-                isExpandableOnClick = false
-        )
+        this.sections.add(sectionViewModel)
 
         sectionViewModel.parcels
                 .observeOnMainThread()
@@ -121,43 +129,46 @@ class ParcelSectionsAdapter
                     // Need to collapse before updating subitems to prevent weird glitches, eg expanded items remaining visible
                     this.collapseAll()
 
-                    sectionItem.subItems = parcels.map { parcel ->
-                        val item = FlexibleVmSectionableItem(
-                                viewRes = R.layout.item_parcel,
-                                variableId = BR.parcel,
-                                viewModel = ParcelViewModel(parcel)
-                        )
-
-                        item.isEnabled = true
-                        item.isDraggable = false
-                        item.isSwipeable = false
-                        item.isSelectable = false
-                        item.header = sectionItem
-
-                        item
+                    // Check if flexible item for this section exists
+                    var sectionItem = this.currentItems.firstOrNull {
+                        it.viewModel == sectionViewModel
                     }
 
-                    if (!sectionViewModel.showIfEmpty) {
-                        val position = this.getGlobalPositionOf(sectionItem)
-                        if (parcels.isEmpty()) {
-                            if (position >= 0)
-                                this.removeItem(position)
-                        } else {
-                            if (position < 0)
-                                this.addItem(sectionItem)
+                    if (sectionItem != null) {
+                        if (!sectionViewModel.showIfEmpty && parcels.isEmpty()) {
+                            this.removeItem(this.getGlobalPositionOf(sectionItem))
+                            sectionItem = null
+                        }
+                    } else {
+                        if (sectionViewModel.showIfEmpty || !parcels.isEmpty()) {
+                            sectionItem = sectionViewModel.createSectionItem()
+                            this.addItem(sectionItem)
                         }
                     }
 
-                    this.updateItem(sectionItem)
+                    if (sectionItem != null) {
+                        sectionItem.subItems = parcels.map { parcel ->
+                            val item = FlexibleVmSectionableItem(
+                                    viewRes = R.layout.item_parcel,
+                                    variableId = BR.parcel,
+                                    viewModel = ParcelViewModel(parcel)
+                            )
+
+                            item.isEnabled = true
+                            item.isDraggable = false
+                            item.isSwipeable = false
+                            item.isSelectable = false
+                            item.header = sectionItem
+
+                            item
+                        }
+
+                        this.updateItem(sectionItem)
+                    }
                 }
 
-        sectionItem.isSelectable = true
-        sectionItem.isExpanded = false
-
-        this.sections.add(sectionItem)
-
         if (sectionViewModel.showIfEmpty || sectionViewModel.parcels.blockingFirst().isNotEmpty())
-            this.addItem(sectionItem)
+            this.addItem(sectionViewModel.createSectionItem())
 
         this.collapseAll()
     }
@@ -174,6 +185,8 @@ class ParcelSectionsAdapter
         if (item != null) {
             this.removeItem(this.getGlobalPositionOf(item))
         }
+
+        this.sections.remove(sectionViewModel)
     }
 
     /**
