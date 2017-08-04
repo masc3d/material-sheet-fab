@@ -134,7 +134,7 @@ class DeliveryList : CompositeDisposableSupplier {
     val parcelAmount = loadedParcels.map { it.value.count() }
             .behave(this)
 
-    val stopAmount = loadedParcels.map { it.value.flatMap { it.order.tasks }.map { it.stop }.distinct().count() }
+    val stopAmount = loadedParcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct().count() }
             .behave(this)
 
     val weight = loadedParcels.map { it.value.sumByDouble { it.weight } }
