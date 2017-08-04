@@ -142,7 +142,6 @@ class DeliveryList : CompositeDisposableSupplier {
     //endregion
 
     init {
-        log.info("COMPOSITES ${compositeDisposable.size()}")
     }
 
     val allowedEvents: List<EventNotDeliveredReason> by lazy {

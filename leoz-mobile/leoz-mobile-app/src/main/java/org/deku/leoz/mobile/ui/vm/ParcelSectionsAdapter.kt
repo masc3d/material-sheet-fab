@@ -49,7 +49,6 @@ class ParcelSectionsAdapter
         this.addListener(object : FlexibleAdapter.OnItemClickListener {
 
             override fun onItemClick(position: Int): Boolean {
-                log.trace("ON ITEM CLICK")
                 val adapter = this@ParcelSectionsAdapter
                 val item: Any? = adapter.getItem(position)
 
@@ -124,8 +123,6 @@ class ParcelSectionsAdapter
         sectionViewModel.parcels
                 .observeOnMainThread()
                 .subscribe { parcels ->
-                    log.trace("UPDATING ITEMS [${parcels.count()}]")
-
                     // Need to collapse before updating subitems to prevent weird glitches, eg expanded items remaining visible
                     this.collapseAll()
 
@@ -206,7 +203,6 @@ class ParcelSectionsAdapter
             adapter.addSelection(position)
         }
 
-        log.info("EXPANDED ${adapter.isExpanded(position)}")
         if (adapter.isExpanded(position)) {
             adapter.collapse(position)
         } else {
