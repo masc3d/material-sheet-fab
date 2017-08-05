@@ -18,7 +18,7 @@ import java.util.*
 abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     companion object {}
 
-    enum class State {
+    enum class LoadingState {
         PENDING, LOADED, MISSING
     }
 
@@ -38,7 +38,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var isDamaged: Boolean
 
     @get:Bindable
-    abstract var loadingState: State
+    abstract var loadingState: LoadingState
 
     @get:Bindable
     abstract var deliveryState: DeliveryState
@@ -61,7 +61,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     @get:ManyToOne
     abstract var order: Order
 
-    val loadingStateProperty by lazy { ObservableRxField<State>(BR.loadingState, { this.loadingState }) }
+    val loadingStateProperty by lazy { ObservableRxField<LoadingState>(BR.loadingState, { this.loadingState }) }
     val modificationTimeProperty by lazy { ObservableRxField<Date?>(BR.modificationTime, { this.modificationTime }) }
 }
 
@@ -80,7 +80,7 @@ fun Parcel.Companion.create(
         it.height = height
         it.width = width
         it.weight = weight
-        it.loadingState = Parcel.State.PENDING
+        it.loadingState = Parcel.LoadingState.PENDING
         it.isDamaged = false
     }
 }

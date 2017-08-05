@@ -31,10 +31,10 @@ import sx.rx.*
  * Created by masc on 18.06.17.
  */
 class DeliveryList : CompositeDisposableSupplier {
+    override val compositeDisposable by lazy { CompositeDisposable() }
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    override val compositeDisposable by lazy { CompositeDisposable() }
 
     private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
@@ -50,7 +50,7 @@ class DeliveryList : CompositeDisposableSupplier {
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Loaded parcels",
             query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.LOADED))
+                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.LoadingState.LOADED))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
@@ -66,7 +66,7 @@ class DeliveryList : CompositeDisposableSupplier {
     private val pendingParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Pending parcels",
             query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.PENDING))
+                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.LoadingState.PENDING))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
@@ -74,7 +74,7 @@ class DeliveryList : CompositeDisposableSupplier {
     private val missingParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Missing parcels",
             query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.State.MISSING))
+                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.LoadingState.MISSING))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
@@ -115,6 +115,12 @@ class DeliveryList : CompositeDisposableSupplier {
      */
     val missingParcels = missingParcelsQuery.result
 
+    /**
+     * Stops with loaded parcels
+     */
+    val stops = loadedParcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct() }
+            .behave(this)
+
     //region Counters
     val orderTotalAmount = orderRepository.entitiesProperty.map { it.value.count() }
             .behave(this)
@@ -134,7 +140,7 @@ class DeliveryList : CompositeDisposableSupplier {
     val parcelAmount = loadedParcels.map { it.value.count() }
             .behave(this)
 
-    val stopAmount = loadedParcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct().count() }
+    val stopAmount = this.stops.map { it.count() }
             .behave(this)
 
     val weight = loadedParcels.map { it.value.sumByDouble { it.weight } }
@@ -314,10 +320,10 @@ class DeliveryList : CompositeDisposableSupplier {
      */
     fun finalize(): Completable {
         return db.store.withTransaction {
-            val parcels = parcelRepository.entities.filter { it.loadingState == Parcel.State.PENDING }
+            val parcels = parcelRepository.entities.filter { it.loadingState == Parcel.LoadingState.PENDING }
 
             parcels.forEach {
-                it.loadingState = Parcel.State.MISSING
+                it.loadingState = Parcel.LoadingState.MISSING
                 update(it)
             }
         }

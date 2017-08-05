@@ -47,12 +47,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
                             StopItemViewModel>>>({
         val adapter = FlexibleAdapter(
                 // Items
-                delivery.stopList
-                        .filter {
-                            it.state == Stop.State.PENDING && it.tasks.any {
-                                it.order.state == Order.State.LOADED
-                            }
-                        }
+                delivery.pendingStops.blockingFirst()
                         .map {
                             val item = FlexibleVmItem(
                                     R.layout.item_stop,

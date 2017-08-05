@@ -18,7 +18,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
+import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -90,6 +93,9 @@ class VehicleLoadingScreen : ScreenFragment() {
     }
 
     private val executorService: ExecutorService by Kodein.global.lazy.instance()
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+
+    private val db: Database by Kodein.global.lazy.instance()
 
     private val tones: Tones by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
@@ -197,7 +203,13 @@ class VehicleLoadingScreen : ScreenFragment() {
         this.uxParcelList.adapter = parcelListAdapter
         this.uxParcelList.layoutManager = LinearLayoutManager(context)
 
-        this.menu = this.inflateMenu(R.menu.menu_vehicleloading)
+        this.menu = this.inflateMenu(R.menu.menu_vehicleloading).also {
+            if (this.debugSettings.enabled) {
+                it.add(0, R.id.action_vehicle_loading_dev_mark_all_loaded, 0, "Mark all as loaded").also {
+                    it.setIcon(R.drawable.ic_dev)
+                }
+            }
+        }
 
         this.actionItems = listOf(
                 ActionItem(
@@ -252,6 +264,19 @@ class VehicleLoadingScreen : ScreenFragment() {
                     when (it.itemId) {
                         R.id.action_reset -> {
                             this.orderRepository.removeAll()
+                                    .subscribe()
+                        }
+                        R.id.action_vehicle_loading_dev_mark_all_loaded -> {
+                            db.store.withTransaction {
+                                select(ParcelEntity::class)
+                                        .where(ParcelEntity.LOADING_STATE.eq(Parcel.LoadingState.PENDING))
+                                        .get()
+                                        .forEach {
+                                            it.loadingState = Parcel.LoadingState.LOADED
+                                            update(it)
+                                        }
+                            }
+                                    .subscribeOn(Schedulers.computation())
                                     .subscribe()
                         }
                     }
@@ -524,7 +549,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                 }
             }
             else -> {
-                if (parcel.loadingState == Parcel.State.LOADED) {
+                if (parcel.loadingState == Parcel.LoadingState.LOADED) {
                     this.tones.warningBeep()
                     this.aidcReader.enabled = false
 
@@ -537,12 +562,12 @@ class VehicleLoadingScreen : ScreenFragment() {
                                 this.aidcReader.enabled = true
                             }
                             .onPositive { _, _ ->
-                                parcel.loadingState = Parcel.State.PENDING
+                                parcel.loadingState = Parcel.LoadingState.PENDING
                                 this.parcelRepository.update(parcel).blockingGet()
                             }
                             .show()
                 } else {
-                    parcel.loadingState = Parcel.State.LOADED
+                    parcel.loadingState = Parcel.LoadingState.LOADED
                     this.parcelRepository.update(parcel).blockingGet()
                 }
             }
