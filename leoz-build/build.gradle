@@ -18,6 +18,13 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
+subprojects {
+    // Global repositories
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
 
 // Find subprojects outside the root folder (shared) and use dedicated build dir to avoid build/cache clashes
 subprojects.findAll {
