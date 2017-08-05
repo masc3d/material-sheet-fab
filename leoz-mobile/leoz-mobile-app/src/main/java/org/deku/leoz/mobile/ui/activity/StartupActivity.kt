@@ -72,23 +72,7 @@ class StartupActivity : RxAppCompatActivity() {
         log.trace("Intent action ${this.intent.action}")
 
         if (!this.started) {
-            // Prepare database
-            val database: Database = Kodein.global.instance()
-
-            try {
-                Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { sw, log ->
-                    // Simply getting a writable database reference will perform (requery) migration
-                    database.dataSource.writableDatabase
-                })
-            } catch(e: Throwable) {
-                // Build error message
-                var text = "${this.getText(org.deku.leoz.mobile.R.string.error_database_inconsistent)}"
-                text += if (e.message != null) " (${e.message})" else ""
-                text += ". ${this.getText(org.deku.leoz.mobile.R.string.prompt_reinstall)}"
-
-                this.showErrorAlert(text = text, onPositiveButton = {
-                    this.app.terminate()
-                })
+            val ovDatabase = Observable.fromCallable {
             }
 
             // Acquire permissions
@@ -130,29 +114,58 @@ class StartupActivity : RxAppCompatActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onComplete = {
-                                // Log device info/serial
-                                val device: Device = Kodein.global.instance()
-                                log.info(device.toString())
+                                try {
+                                    // Any exceptions thrown in this block will result in a error message
+                                    // dialog to be shown including the exception message
 
-                                // Late initialization of singletons which require eg. permissions
-                                Kodein.global.instance<IMqttAsyncClient>()
-                                Kodein.global.instance<LogMqAppender>().also {
-                                    it.dispatcher.start()
+                                    // Log device info/serial
+                                    val device: Device = Kodein.global.instance()
+                                    log.info(device.toString())
+
+                                    // Prepare database
+                                    val database: Database = Kodein.global.instance()
+
+                                    try {
+                                        Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { sw, log ->
+                                            // Simply getting a writable database reference will perform (requery) migration
+                                            database.dataSource.writableDatabase
+                                        })
+                                    } catch(e: Throwable) {
+                                        // Build error message
+                                        var text = "${this.getText(org.deku.leoz.mobile.R.string.error_database_inconsistent)}"
+                                        text += if (e.message != null) " (${e.message})" else ""
+                                        text += ". ${this.getText(org.deku.leoz.mobile.R.string.prompt_reinstall)}"
+
+                                        throw RuntimeException(text, e)
+                                    }
+
+                                    // Late initialization of singletons which require eg. permissions
+                                    Kodein.global.instance<IMqttAsyncClient>()
+                                    Kodein.global.instance<LogMqAppender>().also {
+                                        it.dispatcher.start()
+                                    }
+
+                                    // Initialize location service
+                                    this.startService(
+                                            Intent(applicationContext, LocationService::class.java))
+
+                                    // Start main activity
+                                    val handler = Handler()
+                                    handler.postDelayed({
+                                        this@StartupActivity.startMainActivity(withAnimation = true)
+                                    }, 300)
+                                    this@StartupActivity.started = true
+                                } catch(e: Throwable) {
+                                    log.error(e.message, e)
+
+                                    this.showErrorAlert(text = e.message ?: e.javaClass.simpleName, onPositiveButton = {
+                                        this.app.terminate()
+                                    })
                                 }
-
-                                // Initialize location service
-                                this.startService(
-                                        Intent(applicationContext, LocationService::class.java))
-
-                                // Start main activity
-                                val handler = Handler()
-                                handler.postDelayed({
-                                    this@StartupActivity.startMainActivity(withAnimation = true)
-                                }, 300)
-                                this@StartupActivity.started = true
                             },
                             onError = { e ->
                                 log.error(e.message, e)
+
                                 this@StartupActivity.finishAffinity()
                             })
         } else {
