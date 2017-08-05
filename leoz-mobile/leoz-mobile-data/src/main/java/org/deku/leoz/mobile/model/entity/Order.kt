@@ -7,6 +7,7 @@ import org.deku.leoz.model.Carrier
 import sx.android.databinding.BaseRxObservable
 
 /**
+ * Mobile order entity
  * Created by masc on 18.07.17.
  */
 @Entity
@@ -24,16 +25,18 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
 
     @get:Key
     abstract var id: Long
+
     @get:Bindable
     abstract var state: State
     abstract var carrier: Carrier
-    abstract var referenceIDToExchangeOrderID: Long
+    abstract var exchangeOrderId: Long
 
+    /** The (optional) delivery list id this order is attached to */
+    abstract var deliveryListId: Long?
+
+    @get:Lazy
     @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val tasks: MutableList<OrderTask>
-
-    /** The delivery list id this order is attached to */
-    abstract var deliveryListId: Long?
 
     val pickupTask by lazy {
         this.tasks.first { it.type == OrderTask.TaskType.PICKUP }
@@ -43,6 +46,7 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
         this.tasks.first { it.type == OrderTask.TaskType.DELIVERY }
     }
 
+    @get:Lazy
     @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val parcels: MutableList<Parcel>
 }
@@ -51,7 +55,7 @@ fun Order.Companion.create(
         id: Long,
         state: Order.State,
         carrier: Carrier,
-        referenceIDToExchangeOrderID: Long,
+        exchangeOrderId: Long,
         pickupTask: OrderTask,
         deliveryTask: OrderTask,
         parcels: List<Parcel>,
@@ -61,7 +65,7 @@ fun Order.Companion.create(
         it.id = id
         it.state = state
         it.carrier = carrier
-        it.referenceIDToExchangeOrderID = referenceIDToExchangeOrderID
+        it.exchangeOrderId = exchangeOrderId
         deliveryTask.type = OrderTask.TaskType.DELIVERY
         pickupTask.type = OrderTask.TaskType.PICKUP
         it.tasks.add(pickupTask)

@@ -13,23 +13,23 @@ fun OrderService.Order.toOrder(
             id = this.id,
             state = Order.State.PENDING,
             carrier = this.carrier,
-            referenceIDToExchangeOrderID = this.referenceIDToExchangeOrderID,
+            exchangeOrderId = this.referenceIDToExchangeOrderID,
             deliveryListId = deliveryListId,
             deliveryTask = OrderTask.create(
                     type = OrderTask.TaskType.DELIVERY,
                     address = this.deliveryAddress.toAddress(),
-                    notBeforeStart = this.deliveryAppointment.notBeforeStart,
-                    dateStart = this.deliveryAppointment.dateStart,
-                    dateEnd = this.deliveryAppointment.dateEnd,
+                    isFixedAppointment = this.deliveryAppointment.notBeforeStart,
+                    appointmentStart = this.deliveryAppointment.dateStart,
+                    appointmentEnd = this.deliveryAppointment.dateEnd,
                     notice = this.deliveryNotice ?: "",
                     services = this.deliveryServices ?: listOf()
             ),
             pickupTask = OrderTask.create(
                     type = OrderTask.TaskType.PICKUP,
                     address = this.pickupAddress.toAddress(),
-                    notBeforeStart = this.pickupAppointment.notBeforeStart,
-                    dateStart = this.pickupAppointment.dateStart,
-                    dateEnd = this.pickupAppointment.dateEnd,
+                    isFixedAppointment = this.pickupAppointment.notBeforeStart,
+                    appointmentStart = this.pickupAppointment.dateStart,
+                    appointmentEnd = this.pickupAppointment.dateEnd,
                     notice = this.pickupNotice ?: "",
                     services = this.pickupServices ?: listOf()
             ),
@@ -54,6 +54,7 @@ fun OrderService.Order.Address.toAddress(): Address {
 
 fun OrderService.Order.Parcel.toParcel(): Parcel {
     return Parcel.create(
+            id = this.id,
             number = this.number,
             length = this.dimension.length?.toDouble() ?: 0.0,
             height = this.dimension.height?.toDouble() ?: 0.0,

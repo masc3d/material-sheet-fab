@@ -4,10 +4,13 @@ import android.databinding.Bindable
 import android.databinding.Observable
 import io.requery.*
 import org.deku.leoz.mobile.data.BR
+import org.deku.leoz.model.Event
+import org.deku.leoz.model.Reason
 import sx.android.databinding.BaseRxObservable
 import java.util.*
 
 /**
+ * Mobile parcel entity
  * Created by masc on 18.07.17.
  */
 @Entity
@@ -23,25 +26,38 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
         PENDING, DELIVERED, NOTDELIVERED
     }
 
-    @get:Key @get:Generated
-    abstract val id: Int
+    @get:Key
+    abstract var id: Long
     abstract var number: String
     abstract var length: Double
     abstract var height: Double
     abstract var width: Double
     abstract var weight: Double
-    @get:Bindable
-    abstract var loadingState: State
-    @get:Bindable
-    abstract var deliveryState: DeliveryState
+
     @get:Bindable
     abstract var isDamaged: Boolean
+
+    @get:Bindable
+    abstract var loadingState: State
+
+    @get:Bindable
+    abstract var deliveryState: DeliveryState
+
+    @get:Bindable
+    abstract var event: Event?
+    @get:Bindable
+    abstract var reason: Reason?
+
     @get:Bindable
     @get:Index
-    @get:Column(nullable = true)
     abstract var modificationTime: Date?
 
-    @get:Column(name = "order_", nullable = true)
+    @get:Lazy
+    @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
+    abstract val meta: MutableList<ParcelMeta>
+
+    @get:Lazy
+    @get:Column(name = "order_")
     @get:ManyToOne
     abstract var order: Order
 
@@ -50,6 +66,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
 }
 
 fun Parcel.Companion.create(
+        id: Long,
         number: String,
         length: Double = 0.0,
         height: Double = 0.0,
@@ -57,6 +74,7 @@ fun Parcel.Companion.create(
         weight: Double = 0.0
 ): Parcel {
     return ParcelEntity().also {
+        it.id = id
         it.number = number
         it.length = length
         it.height = height

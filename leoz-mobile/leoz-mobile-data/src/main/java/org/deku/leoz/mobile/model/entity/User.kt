@@ -6,6 +6,7 @@ import org.deku.leoz.model.VehicleType
 import sx.android.databinding.BaseRxObservable
 
 /**
+ * Mobile user entity
  * Created by masc on 18.07.17.
  */
 @Entity

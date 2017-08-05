@@ -7,10 +7,10 @@ import java.util.*
  * Created by masc on 03.08.17.
  */
 fun OrderTask.hasCompatibleAppointmentsWith(other: OrderTask): Boolean {
-    val tDateStart = this.dateStart
-    val tDateEnd = this.dateEnd
-    val oDateStart = this.dateEnd
-    val oDateEnd = this.dateEnd
+    val tDateStart = this.appointmentStart
+    val tDateEnd = this.appointmentEnd
+    val oDateStart = this.appointmentEnd
+    val oDateEnd = this.appointmentEnd
 
     // If any has no appointment they are compatible
     if ((tDateStart == null && tDateEnd == null) ||
@@ -18,7 +18,7 @@ fun OrderTask.hasCompatibleAppointmentsWith(other: OrderTask): Boolean {
         return true
 
     // If any has fixed appointpents, times have to match precisely
-    if (this.notBeforeStart || other.notBeforeStart) {
+    if (this.isFixedAppointment || other.isFixedAppointment) {
         return (tDateStart == oDateStart && tDateEnd == oDateEnd)
     }
 

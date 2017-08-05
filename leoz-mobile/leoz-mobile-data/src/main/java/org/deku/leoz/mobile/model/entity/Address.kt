@@ -7,7 +7,7 @@ import org.deku.leoz.mobile.data.BR
 import sx.android.databinding.BaseRxObservable
 
 /**
- * Address
+ * Mobile address entity
  * Created by masc on 16.07.17.
  */
 @Entity
@@ -15,7 +15,7 @@ import sx.android.databinding.BaseRxObservable
 abstract class Address
     : BaseRxObservable(), Persistable, Observable {
 
-    companion object
+    companion object {}
 
     @get:Key @get:Generated
     abstract val id: Int

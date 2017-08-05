@@ -10,7 +10,7 @@ val Stop.address: Address
     get() = this.tasks.first().address
 
 val Stop.dateStart: Date?
-    get() = this.tasks.map { it.dateStart }.filterNotNull().max()
+    get() = this.tasks.map { it.appointmentStart }.filterNotNull().max()
 
 val Stop.dateEnd: Date?
-    get() = this.tasks.map { it.dateEnd }.filterNotNull().min()
+    get() = this.tasks.map { it.appointmentEnd }.filterNotNull().min()

@@ -16,6 +16,9 @@ import org.deku.leoz.mobile.model.entity.Models
 /**
  * Database
  * Created by n3 on 17/02/2017.
+ * @param context
+ * @param name Database name
+ * @param clean Remove database prior to initialization
  */
 class Database(
         val context: Context,
@@ -25,7 +28,7 @@ class Database(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
-     * Database schema version (encoding)
+     * Database schema version
      */
     data class SchemaVersion(
             val major: Int,
@@ -34,6 +37,7 @@ class Database(
         val sqliteVersion by lazy { major * MAJOR_BASE + minor }
 
         companion object {
+            /** Number base for major version updates */
             val MAJOR_BASE = 1000
 
             fun parse(sqliteVersion: Int): SchemaVersion {
@@ -55,7 +59,7 @@ class Database(
          * Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
          * Major increases indicate breaking changes and will reset the database on migration
          */
-        val SCHEMA_VERSION = SchemaVersion(major = 9, minor = 0)
+        val SCHEMA_VERSION = SchemaVersion(major = 2, minor = 1)
     }
 
     /**
@@ -86,7 +90,7 @@ class Database(
 
             log.info("Current database schema version [${schemaVersion}]")
 
-            if (schemaVersion != SCHEMA_VERSION) {
+            if (schemaVersion.major != SCHEMA_VERSION.major) {
                 log.warn("Major schema update ${schemaVersion} -> ${SCHEMA_VERSION}, removing database file")
                 this.file.delete()
             }
@@ -146,7 +150,7 @@ class Database(
         if (this.clean) {
             // Remove database file in debug builds
             if (this.file.exists()) {
-                log.warn("Deleting database file")
+                log.warn("Clean initialization, removing database file")
                 this.file.delete()
             }
         }

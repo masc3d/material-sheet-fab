@@ -263,40 +263,40 @@ class Delivery {
                         id = 1,
                         state = Order.State.LOADED,
                         carrier = Carrier.DER_KURIER,
-                        referenceIDToExchangeOrderID = 0,
+                        exchangeOrderId = 0,
                         parcels = listOf(
-                                Parcel.create(
-                                        number = "1000000000$i"
-                                ),
-                                Parcel.create(
-                                        number = "1000000001$i"
-                                ),
-                                Parcel.create(
-                                        number = "1000000002$i"
-                                )
-                        ),
+                                "1000000000$i",
+                                "1000000001$i",
+                                "1000000001$i"
+                        )
+                                .map {
+                                    Parcel.create(
+                                            id = it.toLong(),
+                                            number = it
+                                    )
+                                },
                         deliveryTask = OrderTask.create(
                                 type = OrderTask.TaskType.DELIVERY,
                                 address = deliveryAddresses[i],
-                                dateStart = dFrom,
-                                dateEnd = dTo,
+                                appointmentStart = dFrom,
+                                appointmentEnd = dTo,
                                 notice = "",
-                                notBeforeStart = false,
+                                isFixedAppointment = false,
                                 services = listOf()
                         ),
                         pickupTask = OrderTask.create(
                                 type = OrderTask.TaskType.PICKUP,
                                 address = pickupAddresses[i],
-                                dateStart = dFrom,
-                                dateEnd = dTo,
+                                appointmentStart = dFrom,
+                                appointmentEnd = dTo,
                                 notice = "",
-                                notBeforeStart = false,
+                                isFixedAppointment = false,
                                 services = listOf()
                         )
                 )
                 stopList.add(
                         Stop.create(
-                                stopTasks = listOf(
+                                tasks = listOf(
                                         order.deliveryTask
                                 )
                         )
@@ -308,28 +308,32 @@ class Delivery {
                         id = 2,
                         state = Order.State.LOADED,
                         carrier = Carrier.DER_KURIER,
-                        referenceIDToExchangeOrderID = 0,
+                        exchangeOrderId = 0,
                         parcels = listOf(
-                                Parcel.create(
-                                        number = "0200000000$i"
-                                )
-                        ),
+                                "0200000000$i"
+                        )
+                                .map {
+                                    Parcel.create(
+                                            id = it.toLong(),
+                                            number = it
+                                    )
+                                },
                         deliveryTask = OrderTask.create(
                                 type = OrderTask.TaskType.DELIVERY,
                                 address = deliveryAddresses[i],
-                                dateStart = dFrom,
-                                dateEnd = dTo,
+                                appointmentStart = dFrom,
+                                appointmentEnd = dTo,
                                 notice = "",
-                                notBeforeStart = false,
+                                isFixedAppointment = false,
                                 services = listOf()
                         ),
                         pickupTask = OrderTask.create(
                                 type = OrderTask.TaskType.PICKUP,
                                 address = pickupAddresses[i],
-                                dateStart = dFrom,
-                                dateEnd = dTo,
+                                appointmentStart = dFrom,
+                                appointmentEnd = dTo,
                                 notice = "",
-                                notBeforeStart = false,
+                                isFixedAppointment = false,
                                 services = listOf()
                         )
                 )
@@ -337,7 +341,7 @@ class Delivery {
                 stopList.add(
 
                         Stop.create(
-                                stopTasks = listOf(
+                                tasks = listOf(
                                         order.deliveryTask
                                 )
                         )

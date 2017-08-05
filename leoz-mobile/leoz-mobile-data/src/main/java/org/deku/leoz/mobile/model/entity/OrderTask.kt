@@ -8,6 +8,7 @@ import sx.android.databinding.BaseRxObservable
 import java.util.*
 
 /**
+ * Mobile order task entity
  * Created by masc on 18.07.17.
  */
 @Entity
@@ -26,20 +27,24 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 
     abstract var type: TaskType
 
+    @get:Lazy
     @get:ManyToOne @get:Column(name = "order_")
     abstract var order: Order
 
+    @get:Lazy
     @get:ForeignKey
     @get:OneToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var address: Address
-    abstract var dateStart: Date?
-    abstract var dateEnd: Date?
-    abstract var notBeforeStart: Boolean
+    abstract var appointmentStart: Date?
+    abstract var appointmentEnd: Date?
+    abstract var isFixedAppointment: Boolean
     abstract var notice: String
 
+    @get:Lazy
     @get:Convert(ServiceConverter::class)
     abstract var services: ArrayList<ParcelService>
 
+    @get:Lazy
     @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var stop: Stop?
 }
@@ -47,18 +52,18 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
 fun OrderTask.Companion.create(
         type: OrderTask.TaskType,
         address: Address,
-        dateStart: Date?,
-        dateEnd: Date?,
-        notBeforeStart: Boolean,
+        appointmentStart: Date?,
+        appointmentEnd: Date?,
+        isFixedAppointment: Boolean,
         notice: String,
         services: List<ParcelService>
 ): OrderTask {
     return OrderTaskEntity().also {
         it.type = type
         it.address = address
-        it.dateStart = dateStart
-        it.dateEnd = dateEnd
-        it.notBeforeStart = notBeforeStart
+        it.appointmentStart = appointmentStart
+        it.appointmentEnd = appointmentEnd
+        it.isFixedAppointment = isFixedAppointment
         it.notice = notice
         it.services = ArrayList(services)
     }

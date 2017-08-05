@@ -216,7 +216,7 @@ class DeliveryList : CompositeDisposableSupplier {
             // Process stops
             val stops = deliveryList.stops.map {
                 Stop.create(
-                        stopTasks = it.tasks.map {
+                        tasks = it.tasks.map {
                             val order = this.orderRepository.findById(it.orderId)
 
                             when {
@@ -282,7 +282,7 @@ class DeliveryList : CompositeDisposableSupplier {
                     stop.tasks.add(task)
                     update(stop)
                 } else {
-                    stop = Stop.create(stopTasks = listOf(task))
+                    stop = Stop.create(tasks = listOf(task))
                     insert(stop)
                 }
             }
