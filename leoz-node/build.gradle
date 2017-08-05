@@ -12,6 +12,7 @@ import org.jooq.util.GenerationTool
 import org.jooq.util.GeneratorStrategy
 import org.jooq.util.h2.H2Database
 import org.jooq.util.jaxb.*
+import sx.platform.OperatingSystem
 
 buildscript {
     ext {
@@ -384,6 +385,7 @@ tasks.compileKotlin.dependsOn(wsdl2java)
 
 packager {
     title = "Leoz Node"
+    operatingSystems = [ OperatingSystem.WINDOWS, OperatingSystem.LINUX ]
 }
 
 //region Custom tasks
