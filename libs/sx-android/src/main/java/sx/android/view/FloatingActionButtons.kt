@@ -17,7 +17,7 @@ fun FloatingActionButton.setBackgroundTint(@ColorRes colorRes: Int) {
  */
 fun FloatingActionButton.setIconTint(@ColorRes colorRes: Int) {
     DrawableCompat.setTint(
-            DrawableCompat.wrap(this.drawable),
+            DrawableCompat.wrap(this.drawable.mutate()),
             ContextCompat.getColor(this.context, colorRes))
 }
 
