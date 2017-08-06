@@ -53,7 +53,6 @@ import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
-import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
