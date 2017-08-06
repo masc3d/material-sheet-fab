@@ -6,11 +6,11 @@ import org.slf4j.Logger
 import sx.rx.toHotReplay
 
 /**
- * Transforms obsevable into tailored hot observable for REST services
+ * Transforms obsevable into tailored hot observable for IO operations
  * which subscribes on IO scheduler, observes on main android thread.
  * @param log Optional logger for logging errors
  */
-fun <T> Observable<T>.toHotRestObservable(log: Logger? = null): Observable<T> {
+fun <T> Observable<T>.toHotIoObservable(log: Logger? = null): Observable<T> {
     return this
             .subscribeOn(Schedulers.io())
             .doOnError {

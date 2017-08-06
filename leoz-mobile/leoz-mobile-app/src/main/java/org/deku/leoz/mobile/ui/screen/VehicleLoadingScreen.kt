@@ -31,7 +31,7 @@ import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
-import org.deku.leoz.mobile.rx.toHotRestObservable
+import org.deku.leoz.mobile.rx.toHotIoObservable
 
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.composeAsRest
@@ -263,7 +263,10 @@ class VehicleLoadingScreen : ScreenFragment() {
                 .subscribe {
                     when (it.itemId) {
                         R.id.action_reset -> {
-                            this.orderRepository.removeAll()
+                            db.store.withTransaction {
+                                orderRepository.removeAll().blockingAwait()
+                            }
+                                    .subscribeOn(Schedulers.computation())
                                     .subscribe()
                         }
                         R.id.action_vehicle_loading_dev_mark_all_loaded -> {
@@ -368,7 +371,7 @@ class VehicleLoadingScreen : ScreenFragment() {
             val ovDeliveryLists = Observable.fromCallable {
                 this.deliveryListService.get(ShortDate("2017-06-20"))
             }
-                    .toHotRestObservable()
+                    .toHotIoObservable()
                     .composeAsRest(this.activity)
                     .doOnError {
                         log.error(it.message, it)
@@ -456,6 +459,7 @@ class VehicleLoadingScreen : ScreenFragment() {
                             }
                         },
                         onError = {
+                            log.error(it.message, it)
                             tones.errorBeep()
                         }
                 )

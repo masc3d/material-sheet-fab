@@ -13,7 +13,7 @@ import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.entity.UserEntity
 import org.deku.leoz.mobile.model.entity.create
-import org.deku.leoz.mobile.rx.toHotRestObservable
+import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
@@ -150,7 +150,7 @@ class Login {
                     // Store authenticated user in property
                     this.authenticatedUser = it
                 }
-                .toHotRestObservable(this.log)
+                .toHotIoObservable(this.log)
 
         // Return task to consumer for optionally subscribing to running authentication task as well
         return task

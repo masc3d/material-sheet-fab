@@ -6,7 +6,9 @@ import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
@@ -14,7 +16,7 @@ import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
-import org.deku.leoz.mobile.rx.toHotRestObservable
+import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.UnitNumber
@@ -34,7 +36,6 @@ class DeliveryList : CompositeDisposableSupplier {
     override val compositeDisposable by lazy { CompositeDisposable() }
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-
 
     private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
@@ -194,13 +195,14 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
-     * Loads delivery list data from remote peer and save into local database
+     * Loads delivery list data from remote peer and merge into local database
      * @param deliveryListNumber Delivery list id
      * @return Hot observable which completes with a list of stops
      */
     fun load(deliveryListNumber: DekuDeliveryListNumber): Observable<List<Stop>> {
+        val sw = Stopwatch.createStarted()
+
         return Observable.fromCallable {
-            val sw = Stopwatch.createStarted()
 
             // Retrieve delivery list
             val deliveryListId = deliveryListNumber.value.toLong()
@@ -208,49 +210,53 @@ class DeliveryList : CompositeDisposableSupplier {
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
             // Process orders
-            run {
-                val orders = deliveryList.orders
-                        .distinctOrders()
+            db.store.withTransaction {
+                run {
+                    val orders = deliveryList.orders
+                            .distinctOrders()
 
-                this.orderRepository
-                        .merge(orders.map {
-                            it.toOrder(deliveryListId)
-                        })
-                        .blockingGet()
-            }
+                    orderRepository
+                            .merge(orders.map {
+                                it.toOrder(deliveryListId)
+                            })
+                            .blockingGet()
+                }
 
-            // Process stops
-            val stops = deliveryList.stops.map {
-                Stop.create(
-                        tasks = it.tasks.map {
-                            val order = this.orderRepository.findById(it.orderId)
+                // Process stops
+                val stops = deliveryList.stops.map {
+                    Stop.create(
+                            tasks = it.tasks.map {
+                                val order = orderRepository.findById(it.orderId)
 
-                            when {
-                                order != null -> {
-                                    when (it.stopType) {
-                                        DeliveryListService.Task.Type.DELIVERY -> order.deliveryTask
-                                        DeliveryListService.Task.Type.PICKUP -> order.pickupTask
+                                when {
+                                    order != null -> {
+                                        when (it.stopType) {
+                                            DeliveryListService.Task.Type.DELIVERY -> order.deliveryTask
+                                            DeliveryListService.Task.Type.PICKUP -> order.pickupTask
+                                        }
+                                    }
+                                    else -> {
+                                        log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
+                                        null
                                     }
                                 }
-                                else -> {
-                                    log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
-                                    null
-                                }
-                            }
-                        }.filterNotNull()
-                )
+                            }.filterNotNull()
+                    )
+                }
+                        .distinctStops()
+
+                stopRepository
+                        .merge(stops)
+                        .blockingAwait()
+
+                log.trace("Delivery list transformed and stored in $sw")
+
+                stops
             }
-                    .distinctStops()
-
-            this.stopRepository
-                    .save(stops)
+                    .subscribeOn(Schedulers.computation())
                     .blockingGet()
-
-            log.trace("Delivery list transformed and stored in $sw")
-
-            stops
         }
-                .toHotRestObservable(log)
+                .toHotIoObservable(log)
     }
 
     /**
@@ -265,39 +271,39 @@ class DeliveryList : CompositeDisposableSupplier {
 
             orders.first()
         }
-                .toHotRestObservable(log)
+                .toHotIoObservable(log)
     }
 
     /**
      * Merge a single order into the database
      */
     fun mergeOrder(order: Order): Completable {
-        return db.store.withTransaction {
+        return Completable.fromCallable {
             val createdOrderCount = orderRepository
                     .merge(listOf(order))
                     .blockingGet()
 
             // If this order existed already, we're done
             if (createdOrderCount == 0)
-                return@withTransaction
+                return@fromCallable Unit
 
             order.tasks.forEach { task ->
                 var stop = stopRepository.findStopForTask(task)
 
                 if (stop != null) {
                     stop.tasks.add(task)
-                    update(stop)
+                    db.store.update(stop).blockingGet()
                 } else {
                     stop = Stop.create(tasks = listOf(task))
-                    insert(stop)
+                    db.store.insert(stop).blockingGet()
                 }
             }
         }
-                .toCompletable()
+                .subscribeOn(Schedulers.computation())
     }
 
     /**
-     * Load order based on unit number and save orders into local database
+     * Load order based on unit number and merge orders into local database
      * @param unitNumber Unit number
      */
     fun load(unitNumber: UnitNumber): Observable<Order> {
@@ -306,13 +312,17 @@ class DeliveryList : CompositeDisposableSupplier {
                     .distinctOrders()
                     .map { it.toOrder() }
 
-            this.orderRepository
-                    .merge(orders)
-                    .blockingGet()
+            db.store.withTransaction {
+                orderRepository
+                        .merge(orders)
+                        .blockingGet()
 
-            orders.first()
+                orders.first()
+            }
+                    .subscribeOn(Schedulers.computation())
+                    .blockingGet()
         }
-                .toHotRestObservable(log)
+                .toHotIoObservable(log)
     }
 
     /**

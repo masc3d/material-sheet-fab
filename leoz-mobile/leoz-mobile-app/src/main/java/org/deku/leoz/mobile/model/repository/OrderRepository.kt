@@ -20,6 +20,7 @@ import sx.rx.ObservableRxProperty
 class OrderRepository(
         private val store: KotlinReactiveEntityStore<Persistable>
 ) : ObservingRepository<OrderEntity>(OrderEntity::class, store) {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
@@ -35,12 +36,12 @@ class OrderRepository(
      */
     fun merge(orders: List<Order>): Single<Int> {
         val sw = Stopwatch.createStarted()
-        return store.withTransaction {
+        return Single.fromCallable {
             var created = 0
 
             // Store orders
             orders.forEach { order ->
-                val existingOrder = this.select(OrderEntity::class)
+                val existingOrder = store.select(OrderEntity::class)
                         .where(OrderEntity.ID.eq(order.id))
                         .get().firstOrNull()
 
@@ -56,38 +57,28 @@ class OrderRepository(
                         !orderParcelNumbers.contains(it.number)
                     }
 
-                    delete(removedParcels)
-                    insert(addedParcels)
+                    store.delete(removedParcels).blockingAwait()
+                    store.insert(addedParcels).blockingGet()
                 } else {
-                    insert(order)
+                    store.insert(order).blockingGet()
                     created++
                 }
             }
 
             created
         }
-                .doOnSuccess {
-                    val orderCount = store.count(OrderEntity::class).get().call()
-                    val taskCount = store.count(OrderTaskEntity::class).get().call()
-                    val addressCount = store.count(AddressEntity::class).get().call()
-                    val parcelCount = store.count(ParcelEntity::class).get().call()
-                    log.trace("Saved orders in $sw :: orders [${orderCount}] tasks [${taskCount}] addresses [${addressCount}] parcels [${parcelCount}]")
-                }
-                .subscribeOn(Schedulers.computation())
     }
 
     /**
      * Remove all orders
      */
     fun removeAll(): Completable {
-        return store.withTransaction {
-            select(OrderEntity::class)
+        return Completable.fromCallable{
+            store.select(OrderEntity::class)
                     .get()
                     .forEach {
-                        delete(it)
+                        store.delete(it).blockingAwait()
                     }
         }
-                .toCompletable()
-                .subscribeOn(Schedulers.computation())
     }
 }

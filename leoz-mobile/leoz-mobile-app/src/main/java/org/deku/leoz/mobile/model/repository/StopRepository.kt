@@ -9,6 +9,7 @@ import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.model.entity.*
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.requery.scalarOr
 import sx.rx.ObservableRxProperty
 
 /**
@@ -37,41 +38,33 @@ class StopRepository(
     }
 
     /**
-     * Merges order task into existing stop or creates a new one
-     * @param orderTask Order task
-     */
-    fun save(orderTask: OrderTask) {
-
-    }
-
-    /**
-     * Merge a batch of stops into the database.
+     * Merge a batch of stops into the database and initialize positions appropriately
      * Stops which reference the same order tasks will be removed in order to avoid duplicates.
      */
-    fun save(stops: List<Stop>): Completable {
+    fun merge(stops: List<Stop>): Completable {
         val sw = Stopwatch.createStarted()
-        return store.withTransaction {
+        return Completable.fromCallable {
+            var position = store.select(StopEntity.POSITION.max())
+                    .get()
+                    .scalarOr(0.0)
+                    .let {
+                        Math.floor(it + 1.0)
+                    }
+
             stops.forEach { stop ->
                 // Remove stops which reference the same order tasks to avoid duplicates
-                delete(stop.tasks
+                store.delete(stop.tasks
                         .map { it.stop }
                         .distinct()
                         .filterNotNull()
-                )
+                ).blockingAwait()
 
-                insert(stop)
+                stop.position = position
+                position += 1.0
+
+                store.insert(stop).blockingGet()
             }
         }
-                .toCompletable()
-                .doOnComplete {
-                    val orderCount = store.count(OrderEntity::class).get().call()
-                    val taskCount = store.count(OrderTaskEntity::class).get().call()
-                    val addressCount = store.count(AddressEntity::class).get().call()
-                    val parcelCount = store.count(ParcelEntity::class).get().call()
-                    val stopCount = store.count(StopEntity::class).get().call()
-                    log.trace("Saved stops in $sw :: orders [${orderCount}] stops [${stopCount}] tasks [${taskCount}] addresses [${addressCount}] parcels [${parcelCount}]")
-                }
-                .subscribeOn(Schedulers.computation())
     }
 
     /**

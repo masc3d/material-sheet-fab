@@ -27,13 +27,15 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     @get:OneToMany
     abstract val tasks: MutableList<OrderTask>
 
+    @get:Index
     /** Stop position as a decimal. Insertions or position changes require calculation of average */
     abstract var position: Double
 }
 
 fun Stop.Companion.create(
         state: Stop.State = Stop.State.PENDING,
-        tasks: List<OrderTask>
+        tasks: List<OrderTask>,
+        position: Double = 0.0
 ): Stop {
     return StopEntity().also {
         it.state = state
