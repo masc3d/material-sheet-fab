@@ -16,18 +16,10 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
 
     companion object {}
 
-    enum class State {
-        PENDING,
-        LOADED,
-        DONE,
-        FAILED
-    }
-
     @get:Key
     abstract var id: Long
 
     @get:Bindable
-    abstract var state: State
     abstract var carrier: Carrier
     abstract var exchangeOrderId: Long
 
@@ -53,7 +45,6 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
 
 fun Order.Companion.create(
         id: Long,
-        state: Order.State,
         carrier: Carrier,
         exchangeOrderId: Long,
         pickupTask: OrderTask,
@@ -63,7 +54,6 @@ fun Order.Companion.create(
 ): Order {
     val entity = OrderEntity().also {
         it.id = id
-        it.state = state
         it.carrier = carrier
         it.exchangeOrderId = exchangeOrderId
         deliveryTask.type = OrderTask.TaskType.DELIVERY

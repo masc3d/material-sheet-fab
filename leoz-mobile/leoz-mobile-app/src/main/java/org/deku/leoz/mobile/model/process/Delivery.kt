@@ -15,6 +15,7 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.screen.NeighbourDeliveryScreen
 import org.deku.leoz.mobile.ui.screen.PostboxDeliveryScreen
@@ -38,14 +39,16 @@ class Delivery : CompositeDisposableSupplier {
     private val db: Database by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
+
     val pendingStops = this.deliveryList.stops.map { it.filter { it.state == Stop.State.PENDING } }
             .behave(this)
 
     val closedStops = this.deliveryList.stops.map { it.filter { it.state == Stop.State.CLOSED } }
             .behave(this)
 
-    val newOrderProperty = ObservableRxProperty<Order?>(null)
-    var newOrder: Order? by newOrderProperty
+    val undeliveredParcels = parcelRepository.entitiesProperty.map { it.value.filter { it.deliveryState == Parcel.DeliveryState.NOTDELIVERED } }
+            .behave(this)
 
     val activeStopProperty = ObservableRxProperty<Stop?>(null)
     val activeStop: Stop? by activeStopProperty
@@ -217,15 +220,6 @@ class Delivery : CompositeDisposableSupplier {
 //        }
 //    }
 
-
-    /**
-     * Should be called from the receiver of the order.
-     * @param order Stop.Order
-     */
-    fun addOrder(order: Order) {
-        newOrder = order
-    }
-
 //    /**
 //     * @param order: The order which should be integrated into the stopList.
 //     * @return The Stop where the order has been integrated.
@@ -266,30 +260,6 @@ class Delivery : CompositeDisposableSupplier {
 //            return stopList.last()
 //        }
 //    }
-
-    fun findOrderByLabelReference(labelReference: String): List<Order> {
-        return orderList.filter {
-            it.parcels.filter {
-                it.number == labelReference
-            }.isNotEmpty()
-        }
-    }
-
-    fun countParcelsToBeVehicleLoaded(): Int {
-        var count = 0
-        count += orderList.filter { it.state == Order.State.PENDING }
-                .flatMap { it.parcels }
-                .filter { it.deliveryState == Parcel.DeliveryState.PENDING }.size
-        return count
-    }
-
-    fun countParcelsToBeVehicleUnLoaded(): Int {
-        var count = 0
-        count += orderList.filter { it.state == Order.State.FAILED || it.state == Order.State.LOADED }
-                .flatMap { it.parcels }
-                .filter { it.deliveryState == Parcel.DeliveryState.NOTDELIVERED }.size
-        return count
-    }
 }
 
 //fun Stop.deliver(reason: EventDeliveredReason, recipient: String, signature: Bitmap? = null) {

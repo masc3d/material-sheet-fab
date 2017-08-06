@@ -20,6 +20,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
@@ -34,6 +35,8 @@ class MenuScreen : ScreenFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     data class MenuEntry(val entryType: Entry, val description: String, var counter: Int, var counter2: Int, val icon: Drawable) {
@@ -114,8 +117,8 @@ class MenuScreen : ScreenFragment() {
                         MenuEntry(
                                 entryType = MenuEntry.Entry.LOADING,
                                 description = this.getText(R.string.vehicle_loading).toString(),
-                                counter = delivery.countParcelsToBeVehicleLoaded(),
-                                counter2 = delivery.countParcelsToBeVehicleUnLoaded(),
+                                counter = deliveryList.pendingParcels.get().count(),
+                                counter2 = delivery.undeliveredParcels.blockingFirst().count(),
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
                         ),
                         MenuEntry(

@@ -11,7 +11,6 @@ fun OrderService.Order.toOrder(
     return Order.create(
             //TODO
             id = this.id,
-            state = Order.State.PENDING,
             carrier = this.carrier,
             exchangeOrderId = this.referenceIDToExchangeOrderID,
             deliveryListId = deliveryListId,

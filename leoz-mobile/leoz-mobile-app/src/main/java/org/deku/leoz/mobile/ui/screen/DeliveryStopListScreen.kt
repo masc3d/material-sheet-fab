@@ -118,7 +118,7 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
 
         if (stop != null) {
             activity.showScreen(
-                    StopDetailScreen.create(
+                    StopProcessScreen.create(
                             stop = stop
                     )
             )

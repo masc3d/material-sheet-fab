@@ -99,7 +99,7 @@ class StopProcessScreen :
         fun create(stop: Stop): StopProcessScreen {
             val f = StopProcessScreen()
             f.stop = stop
-            f.orderList.addAll(f.stop.tasks.map { it.order }.filter { it.state == Order.State.LOADED })
+            f.orderList.addAll(f.stop.tasks.map { it.order }.distinct())
             f.orderList.forEach {
                 f.parcelList.addAll(it.parcels)
             }
@@ -162,8 +162,6 @@ class StopProcessScreen :
                         menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
                 )
         )
-
-        this
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
         binding.stop = StopItemViewModel(this.stop)

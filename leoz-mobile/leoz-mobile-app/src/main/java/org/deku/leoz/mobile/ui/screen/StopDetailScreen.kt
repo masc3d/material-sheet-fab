@@ -56,9 +56,6 @@ class StopDetailScreen
         FlexibleAdapter(
                 //Orders to be listed
                 stop.tasks.map { it.order }.distinct()
-                        .filter {
-                            it.state == Order.State.LOADED
-                        }
                         .map {
                             OrderListItem(context, it)
                         },
