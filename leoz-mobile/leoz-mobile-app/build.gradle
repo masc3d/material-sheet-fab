@@ -248,7 +248,7 @@ dependencies {
             "io.requery:requery:$v_requery",
             "io.requery:requery-kotlin:$v_requery",
             "io.requery:requery-android:$v_requery",
-            "io.requery:sqlite-android:3.19.3",
+            "io.requery:sqlite-android:3.20.0",
 
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
@@ -269,10 +269,10 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
-            'com.github.pwittchen:reactivenetwork-rx2:0.10.0',
+            'com.github.pwittchen:reactivenetwork-rx2:0.11.0',
 
             // Android (multipart) upload service
-            'net.gotev:uploadservice:3.3',
+            'net.gotev:uploadservice:3.3.1',
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:4.0.1") {
