@@ -129,4 +129,13 @@ sealed class AdditionalInfo {
     data class NotDeliveredRefusedInfo(
             val cause: String? = null
     ) : AdditionalInfo()
+
+    data class NotDeliveredInfo(
+            val text: String? = null
+    ) : AdditionalInfo()
+
+    data class DamagedInfo(
+            val description:String? =null,
+            val photo: String? =null
+    ) : AdditionalInfo()
 }

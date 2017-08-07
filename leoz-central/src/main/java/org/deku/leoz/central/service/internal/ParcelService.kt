@@ -107,7 +107,7 @@ open class ParcelServiceV1 :
 
             val from = it.from
             r.erzeugerstation = "002"
-            if(it.fromStation) {
+            if (it.fromStation) {
                 if (from != null) {
                     r.erzeugerstation = from
                 }
@@ -129,14 +129,17 @@ open class ParcelServiceV1 :
                 pasCleared = (4096.and(pasClearingartmaster.toInt())) == 4096
             } else
                 pasCleared = false
-            var pasReset=false
+            var pasReset = false
 
             when (event) {
                 Event.DELIVERED -> {
-                    pasReset=true
+                    pasReset = true
                     val recipientInfo = StringBuilder()
                     var signature: String? = null
                     when (reason) {
+                        Reason.POSTBOX -> {
+                            recipientInfo.append("Postbox")
+                        }
                         Reason.NORMAL -> {
                             //if (it.deliveredInfo == null)
                             if (it.additionalInfo == null)
@@ -180,8 +183,10 @@ open class ParcelServiceV1 :
 
                     }
                     r.text = recipientInfo.toString()
-                    val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId)
-                    parcelRecord.bmpfilename = sigPath
+                    if (signature != null) {
+                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId)
+                        parcelRecord.bmpfilename = sigPath
+                    }
 
                     val oldValue = parcelRecord.lieferstatus
                     parcelRecord.lieferstatus = r.kzStatus.toShort() //4
@@ -383,7 +388,7 @@ open class ParcelServiceV1 :
 
                     val firstDeliveryStatus = parcelRecord.erstlieferstatus ?: 0
                     if (firstDeliveryStatus.toInt() != (4)) {
-                        pasReset=true
+                        pasReset = true
                         if (pasCleared) {
                             //TODO WLtransfer Auslieferung nach Abrechnung
                         }
@@ -418,16 +423,34 @@ open class ParcelServiceV1 :
                             }
                         }
                     }
-
+                    val addInfo = it.additionalInfo
+                    if (addInfo != null) {
+                        when (addInfo) {
+                            is AdditionalInfo.NotDeliveredInfo -> {
+                                r.infotext = addInfo.text ?: ""
+                            }
+                        }
+                    }
                     when (reason) {
                         Reason.CUSTOMER_REFUSED -> {
-                            val addInfo = it.additionalInfo
+
                             when (addInfo) {
                                 is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
                                         title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
                                 )
                                 is AdditionalInfo.NotDeliveredRefusedInfo -> {
                                     r.infotext = addInfo.cause ?: ""
+                                }
+
+                            }
+                        }
+                        Reason.PARCEL_DAMAGED -> {
+                            when (addInfo) {
+                                is AdditionalInfo.DamagedInfo -> {
+                                    r.infotext = addInfo.description ?: ""
+                                    if (addInfo.photo != null) {
+                                        //TODO savePhoto
+                                    }
                                 }
                             }
                         }
@@ -469,7 +492,7 @@ open class ParcelServiceV1 :
                     if (!existStatus)
                         existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 1)
                     if (!existStatus)
-                        insertStatus=false
+                        insertStatus = false
                 }
                 Event.EXPORT_LOADED -> {
                     if (it.additionalInfo == null)
@@ -483,9 +506,9 @@ open class ParcelServiceV1 :
                                 title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
                         )
                         is AdditionalInfo.LoadingListInfo -> {
-                            r.text=addInfo.loadingListNo.toString()
-                            val oldSend=orderRecord.dtsendad2z?.toString() ?: ""
-                            orderRecord.dtsendad2z=it.time.toTimestamp()
+                            r.text = addInfo.loadingListNo.toString()
+                            val oldSend = orderRecord.dtsendad2z?.toString() ?: ""
+                            orderRecord.dtsendad2z = it.time.toTimestamp()
                             if (orderRecord.store() > 0) {
                                 if (!oldSend.equals(orderRecord.dtsendad2z.toString())) {
                                     fieldHistoryRepository.addEntry(
@@ -507,7 +530,7 @@ open class ParcelServiceV1 :
                             } else {
                                 oldDepotOut = SimpleDateFormat("dd.MM.yyyy").format(parcelRecord.dtausgangdepot2)
                             }
-                            parcelRecord.dtausgangdepot2=depotOutDate.toTimestamp()
+                            parcelRecord.dtausgangdepot2 = depotOutDate.toTimestamp()
                             if (parcelRecord.store() > 0) {
                                 if (oldDepotOut != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
 
@@ -522,10 +545,10 @@ open class ParcelServiceV1 :
                                     )
                                 }
                             }
-                            val oldLoadingNo=parcelRecord.ladelistennummerd?.toString() ?:""
-                            parcelRecord.ladelistennummerd=addInfo.loadingListNo.toDouble()
+                            val oldLoadingNo = parcelRecord.ladelistennummerd?.toString() ?: ""
+                            parcelRecord.ladelistennummerd = addInfo.loadingListNo.toDouble()
                             if (parcelRecord.store() > 0) {
-                                if(!oldLoadingNo.equals(addInfo.loadingListNo.toString())){
+                                if (!oldLoadingNo.equals(addInfo.loadingListNo.toString())) {
                                     fieldHistoryRepository.addEntry(
                                             orderId = parcelRecord.orderid,
                                             unitNo = parcelRecord.colliebelegnr,
