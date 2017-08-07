@@ -82,7 +82,6 @@
                     android:layout_width="@dimen/icon_size_large"
                     android:layout_height="@dimen/icon_size_large"
                     android:layout_gravity="center_vertical"
-                    android:onClick="@{header::onClick}"
                     android:src="@drawable/ic_expand"
                     android:tint="@color/dark_gray"
                     >

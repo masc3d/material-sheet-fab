@@ -28,12 +28,5 @@ class ParcelSectionViewModel(
 )
     : BaseObservable() {
 
-    private val expandClickedEventSubject = PublishSubject.create<Unit>()
-    val expandClickedEvent = expandClickedEventSubject.hide()
-
     val amountText = parcels.map { it.count().toString() }.toField()
-
-    fun onClick(view: View) {
-        expandClickedEventSubject.onNext(Unit)
-    }
 }
