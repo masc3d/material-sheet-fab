@@ -30,11 +30,12 @@ class ObservableRxField<T> private constructor(
 
     /** Constructor for rx property (read-write field) */
     constructor(property: ObservableRxProperty<T>): this(
-            source = property.map { it.value }.observeOnMainThread(),
+            source = property.map { it.value },
             property = property)
 
     init {
         this.source = source
+                .observeOnMainThread()
                 .doOnNext { t -> super@ObservableRxField.set(t) }
                 .onErrorResumeNext(Observable.empty<T>())
                 .share()
@@ -48,7 +49,7 @@ class ObservableRxField<T> private constructor(
             throw IllegalStateException("Field is not backed by rx property, thus read-only")
 
         property.set(value)
-
+        super.set(value)
     }
 
     @Synchronized override fun addOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback) {
