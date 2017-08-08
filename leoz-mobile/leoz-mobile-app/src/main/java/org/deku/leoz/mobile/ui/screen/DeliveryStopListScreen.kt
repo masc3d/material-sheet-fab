@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import eu.davidea.flexibleadapter.helpers.ItemTouchHelperCallback
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
@@ -30,6 +31,7 @@ import sx.android.ui.flexibleadapter.FlexibleVmItem
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import sx.LazyInstance
 import sx.android.aidc.*
+import sx.android.ui.flexibleadapter.customizeScrollBehavior
 
 
 /**
@@ -143,9 +145,14 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
         this.uxStopList.adapter = flexibleAdapter
         this.uxStopList.layoutManager = LinearLayoutManager(context)
 
+        flexibleAdapter.customizeScrollBehavior(
+                scrollSpeed = 30.0F
+        )
+
         flexibleAdapter.isLongPressDragEnabled = true
         flexibleAdapter.isHandleDragEnabled = true
         flexibleAdapter.isSwipeEnabled = true
+
         flexibleAdapter.addListener(onItemClickListener)
     }
 }
