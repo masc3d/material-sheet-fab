@@ -119,7 +119,7 @@ class MenuScreen : ScreenFragment() {
                                 description = this.getText(R.string.vehicle_loading).toString(),
                                 counter = deliveryList.pendingParcels.get().count(),
                                 counter2 = delivery.undeliveredParcels.blockingFirst().count(),
-                                icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
+                                icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_pickup)!!
                         ),
                         MenuEntry(
                                 entryType = MenuEntry.Entry.DELIVERY,
