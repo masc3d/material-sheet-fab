@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
@@ -7,6 +8,7 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
+import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.support.annotation.StringRes
@@ -891,6 +893,27 @@ open class Activity : RxAppCompatActivity(),
                     .negativeText("Abort")
                     .onPositive { materialDialog, dialogAction ->
                         val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                        this.startActivityForResult(intent, 0)
+                    }
+                    .onNegative { materialDialog, dialogAction ->
+                        when (android.os.Build.VERSION.SDK_INT) {
+                            android.os.Build.VERSION_CODES.LOLLIPOP -> this.finishAndRemoveTask()
+                            else -> this.finishAffinity()
+                        }
+                    }
+                    .cancelable(false)
+                    .show()
+        }
+
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            MaterialDialog.Builder(this)
+                    .title("GPS location provider is not enabled")
+                    .content("The GPS location on your device is disabled. To continue, you must enable GPS location!")
+                    .positiveText("Settings")
+                    .negativeText("Abort")
+                    .onPositive { materialDialog, dialogAction ->
+                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                         this.startActivityForResult(intent, 0)
                     }
                     .onNegative { materialDialog, dialogAction ->
