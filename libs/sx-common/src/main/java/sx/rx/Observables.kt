@@ -15,8 +15,16 @@ import java.util.concurrent.TimeUnit
 fun <T> T.toSingletonObservable(): Observable<T> = Observable.just(this)
 fun <T> Throwable.toObservable(): Observable<T> = Observable.error(this)
 
-interface CompositeDisposableSupplier {
+interface CompositeDisposableSupplier : Disposable {
     val compositeDisposable: CompositeDisposable
+
+    override fun isDisposed(): Boolean {
+        return this.compositeDisposable.isDisposed
+    }
+
+    override fun dispose() {
+        this.compositeDisposable.dispose()
+    }
 }
 
 /**
