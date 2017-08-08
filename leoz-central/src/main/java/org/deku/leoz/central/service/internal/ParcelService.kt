@@ -28,7 +28,10 @@ import org.deku.leoz.model.counter
 import org.deku.leoz.time.toShortTime
 import sx.time.toSqlDate
 import sx.time.toTimestamp
+import java.io.ByteArrayInputStream
+import java.io.File
 import java.sql.Timestamp
+import javax.imageio.ImageIO
 
 /**
  * Created by JT on 17.07.17.
@@ -449,7 +452,12 @@ open class ParcelServiceV1 :
                                 is AdditionalInfo.DamagedInfo -> {
                                     r.infotext = addInfo.description ?: ""
                                     if (addInfo.photo != null) {
-                                        //TODO savePhoto
+                                        val path="/Users/helke/Pictures/" +
+                                                SimpleDateFormat("yyyy").format(it.time) + "/sca_pic/" +
+                                                SimpleDateFormat("MM").format(it.time) + "/" +
+                                                SimpleDateFormat("dd").format(it.time) + "/"
+
+                                         saveImage(it.time,addInfo.photo,parcelScan,message.nodeId,path)
                                     }
                                 }
                             }
@@ -592,6 +600,22 @@ open class ParcelServiceV1 :
         }
     }
 
+    fun saveImage(date: Date, imageBase64: String?, number: String, nodeId: String?, path: String): String {
+        if (imageBase64 != null) {
+            val img = Base64.getDecoder().decode(imageBase64)
+            val bufferedImage = ImageIO.read(ByteArrayInputStream(img))
+            val file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.bmp"
+            val fileObj = File(path + file)
+            fileObj.mkdirs()
+            if (ImageIO.write(bufferedImage, "bmp", fileObj)) {
+                return file
+            } else
+                return ""
+        } else
+            return ""
+
+    }
+
     fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?): String {
 
         var path = "c:\\deku2004\\SynchToSaveServer\\" +
@@ -599,12 +623,20 @@ open class ParcelServiceV1 :
                 SimpleDateFormat("MM").format(date) + "\\" +
                 SimpleDateFormat("dd").format(date)
 
+        path = "/Users/helke/Pictures/" +
+                SimpleDateFormat("yyyy").format(date) + "/SB/" +
+                SimpleDateFormat("MM").format(date) + "/" +
+                SimpleDateFormat("dd").format(date) + "/"
+
+        return saveImage(date,signatureBase64,number,nodeId,path)
+
+
         //create path if not exsists
 
         //  signatureBase64.decode64
         //  convert to .bmp
 
-        var file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.bmp"
+        //var file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.bmp"
         // 2017\SB\06\09\83352287467_1804_2017060908550500_sca.bmp
         // .save file
 
@@ -613,7 +645,7 @@ open class ParcelServiceV1 :
 
         //false -> log
 
-        return file
+        //return file
 
     }
 }

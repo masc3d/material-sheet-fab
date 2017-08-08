@@ -16,6 +16,8 @@ import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
 import org.springframework.context.annotation.ComponentScan
+import java.io.File
+import java.util.Base64
 
 @Category(StandardTest::class)
 @RunWith(SpringRunner::class)
@@ -29,13 +31,18 @@ class ParcelServiceTest {
 
     @Test
     fun testOnMessage() {
-        //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = "abc"))
+        val img= File("/Users/helke/Documents/outOfMemory.jpg").readBytes()
+        val encoder=Base64.getEncoder()
+        val img64:String= encoder.encodeToString(img)
+        //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = img64))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelScancode = "10071321554",from="956", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerMeier", signature = "abc"))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NEIGHBOUR.id, time = Date().toTimestamp(), parcelScancode = "7280464561",from="956", additionalInfo = AdditionalInfo.DeliveredAtNeighborInfo(name = "schulz", signature = "abc",address = "str nr 6"))
         //event 106,reason=0
         //val event = ParcelServiceV1.Event(event = Event.IMPORT_RECEIVE.value, reason=Reason.NORMAL.id, time = Date().toTimestamp(), parcelScancode = "63407133663", from = "956", additionalInfo = AdditionalInfo.EmptyInfo)
         //event 107,reason 510
-        val event = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.WRONG_ROUTING.id, time = Date().toTimestamp(), parcelScancode = "51520039870", from = "956", additionalInfo = AdditionalInfo.EmptyInfo)
+        //val event = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.WRONG_ROUTING.id, time = Date().toTimestamp(), parcelScancode = "51520039870", from = "956", additionalInfo = AdditionalInfo.EmptyInfo)
+
+        val event = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.PARCEL_DAMAGED.id, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DamagedInfo(description = "aufgerissen", photo = img64))
         val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event))
 
 
