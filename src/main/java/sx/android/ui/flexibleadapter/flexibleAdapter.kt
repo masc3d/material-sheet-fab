@@ -16,8 +16,14 @@ fun <T : IFlexible<*>> FlexibleAdapter<T>.customizeScrollBehavior(
     // must be done early.
     this.itemTouchHelperCallback = object : ItemTouchHelperCallback(this) {
         override fun interpolateOutOfBoundsScroll(recyclerView: RecyclerView?, viewSize: Int, viewSizeOutOfBounds: Int, totalSize: Int, msSinceStartScroll: Long): Int {
+            val accelTimeFrameMs = 2000
+            val timeRatio: Float = when {
+                msSinceStartScroll > accelTimeFrameMs -> 1.0F
+                else -> 0.3F + (0.7F * (msSinceStartScroll.toFloat() / accelTimeFrameMs))
+            }
+
             val direction = java.lang.Math.signum(viewSizeOutOfBounds.toDouble()).toInt()
-            return (scrollSpeed * direction).toInt()
+            return (scrollSpeed * direction * timeRatio).toInt()
         }
     }
 }
