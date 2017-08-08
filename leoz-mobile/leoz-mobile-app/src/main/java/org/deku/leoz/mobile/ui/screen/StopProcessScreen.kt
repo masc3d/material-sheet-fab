@@ -29,6 +29,7 @@ import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
@@ -89,8 +90,12 @@ class StopProcessScreen :
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
-    private lateinit var stop: Stop
+    private val stop: Stop by lazy {
+        this.stopRepository.entities.first { it.id == this.parameters.stopId }
+    }
+
     private val orderList: MutableList<Order> = mutableListOf()
     private val parcelList: MutableList<Parcel> = mutableListOf()
     private var lastRef: String? = null
@@ -132,7 +137,6 @@ class StopProcessScreen :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.retainInstance = true
         this.title = getString(R.string.title_stop_process)
         this.aidcEnabled = true
     }
