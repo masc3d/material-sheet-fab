@@ -44,6 +44,7 @@ interface BundleServiceV1 {
     @GET
     @Path("/download/{${BUNDLE}}/{${VERSION}}")
     @ApiOperation(value = "Download bundle. Only supported for android bundles (for now)")
+    @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
     fun download(
             @PathParam(BUNDLE) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,
             @PathParam(VERSION) version: String
@@ -92,6 +93,7 @@ interface BundleServiceV2 {
     @GET
     @Path("/{${NAME}}/{${VERSION}}/download")
     @ApiOperation(value = "Download bundle. Only supported for android bundles (for now)")
+    @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
     fun download(
             @PathParam(NAME) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,
             @PathParam(VERSION) version: String
