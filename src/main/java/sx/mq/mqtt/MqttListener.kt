@@ -43,7 +43,7 @@ class MqttListener(
     @Synchronized override fun stop() {
         if (this.isStarted) {
             this.mqttClient.unsubscribe(this.mqttEndpoint.topicName)
-                    .blockingGet()
+                    .blockingAwait()
 
             this.isStarted = false
         }
