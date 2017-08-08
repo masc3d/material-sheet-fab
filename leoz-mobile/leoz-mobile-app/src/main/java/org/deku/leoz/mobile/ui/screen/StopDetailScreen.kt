@@ -113,7 +113,7 @@ class StopDetailScreen
 
         flexibleAdapter.isLongPressDragEnabled = true
         flexibleAdapter.isHandleDragEnabled = true
-        flexibleAdapter.isSwipeEnabled  = false
+        flexibleAdapter.isSwipeEnabled = false
 
         showInitFabButtons()
 
@@ -175,7 +175,12 @@ class StopDetailScreen
                 .subscribe {
                     when (it) {
                         R.id.action_deliver_continue -> {
-                            this.activity.showScreen(StopProcessScreen.create(stop = stop))
+                            this.activity.showScreen(
+                                    StopProcessScreen().also {
+                                        it.parameters = StopProcessScreen.Parameters(
+                                                stopId = stop.id
+                                        )
+                                    })
                             showDeliverFabButtons()
                         }
                         R.id.action_navigate -> {
@@ -208,8 +213,8 @@ class StopDetailScreen
                             dialog.selectedItemEvent
                                     .bindToLifecycle(this)
                                     .subscribe {
-                                log.trace("SELECTEDITEAM VIA RX")
-                            }
+                                        log.trace("SELECTEDITEAM VIA RX")
+                                    }
 
                             dialog.show()
                         }
