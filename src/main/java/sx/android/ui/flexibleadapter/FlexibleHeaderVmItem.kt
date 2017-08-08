@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory
  * @param viewModel The view model
  * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
  */
-class FlexibleVmHeaderItem<VM>(
+class FlexibleHeaderVmItem<VM>(
         val viewRes: Int,
         val variableId: Int,
         val viewModel: VM,
