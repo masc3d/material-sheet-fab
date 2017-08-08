@@ -28,13 +28,11 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
-import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import org.deku.leoz.model.EventDeliveredReason
@@ -44,9 +42,7 @@ import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.*
-import sx.android.databinding.toField
-import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
-import sx.format.format
+import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 
 
 /**
@@ -103,7 +99,7 @@ class StopProcessScreen :
 
     private val parcelListAdapterInstance = LazyInstance<
             FlexibleAdapter<
-                    FlexibleVmSectionableItem<
+                    FlexibleSectionableVmItem<
                             ParcelViewModel>>>({
 
         val adapter = FlexibleAdapter(
@@ -111,7 +107,7 @@ class StopProcessScreen :
                 stop.tasks.map { it.order }
                         .flatMap { it.parcels }
                         .map {
-                            val item = FlexibleVmSectionableItem(
+                            val item = FlexibleSectionableVmItem(
                                     viewRes = R.layout.item_parcel,
                                     variableId = BR.parcel,
                                     viewModel = ParcelViewModel(it)

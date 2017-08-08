@@ -3,9 +3,7 @@ package org.deku.leoz.mobile.ui.vm
 import android.databinding.BaseObservable
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
-import android.view.View
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import sx.android.databinding.toField
@@ -22,11 +20,11 @@ class ParcelSectionViewModel(
         @ColorRes val color: Int = R.color.colorAccent,
         @DrawableRes val background: Int = R.drawable.section_background_accent,
         val isSelectable: Boolean = true,
-        val showIfEmpty: Boolean = true,
         val title: String,
-        val parcels: Observable<List<ParcelEntity>>
+        override val showIfEmpty: Boolean = true,
+        override val items: Observable<List<ParcelEntity>>
 )
-    : BaseObservable() {
+    : BaseObservable(), SectionViewModel<ParcelEntity> {
 
-    val amountText = parcels.map { it.count().toString() }.toField()
+    val amountText = items.map { it.count().toString() }.toField()
 }

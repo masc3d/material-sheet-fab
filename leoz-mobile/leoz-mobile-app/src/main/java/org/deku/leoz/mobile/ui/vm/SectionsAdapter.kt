@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui.vm
 
+import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
 import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
@@ -15,25 +16,22 @@ import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.rx.ObservableRxProperty
 
 /**
- * Parcel sections adapter
+ * Sections adapter
  * Created by masc on 28.07.17.
  */
-class ParcelSectionsAdapter
+class SectionsAdapter
     :
         FlexibleAdapter<
-                FlexibleExpandableVmItem<
-                        ParcelSectionViewModel,
-                        ParcelViewModel
-                        >
+                FlexibleExpandableVmItem<*, *>
                 >
         (listOf(), null, true) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Sections in their original order */
-    private val sections = mutableListOf<ParcelSectionViewModel>()
+    private val sections = mutableListOf<Any>()
 
-    val selectedSectionProperty = ObservableRxProperty<ParcelSectionViewModel?>(null)
+    val selectedSectionProperty = ObservableRxProperty<SectionViewModel<*>?>(null)
     var selectedSection by selectedSectionProperty
 
     init {
@@ -46,13 +44,13 @@ class ParcelSectionsAdapter
         this.addListener(object : FlexibleAdapter.OnItemClickListener {
 
             override fun onItemClick(position: Int): Boolean {
-                val adapter = this@ParcelSectionsAdapter
+                val adapter = this@SectionsAdapter
                 val item: Any? = adapter.getItem(position)
 
                 if (item != null &&
-                        item is FlexibleExpandableVmItem<*, *>) {
+                        item is FlexibleExpandableVmItem<*, *> && item.viewModel is SectionViewModel<*>) {
 
-                    this@ParcelSectionsAdapter.selectedSection = item.viewModel as ParcelSectionViewModel
+                    this@SectionsAdapter.selectedSection = item.viewModel as SectionViewModel<*>
                 }
 
                 return true
@@ -73,7 +71,7 @@ class ParcelSectionsAdapter
                                 .map { it as FlexibleExpandableVmItem<*, *> }
                                 .first { it.viewModel == section.value }
 
-                        this.selectParcelSection(item)
+                        this.selectSection(item)
                     }
                 }
     }
@@ -90,26 +88,24 @@ class ParcelSectionsAdapter
     }
 
     /**
-     * Extension method to create flexible item from view model
-     */
-    private fun ParcelSectionViewModel.createSectionItem(): FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel> {
-        return FlexibleExpandableVmItem<ParcelSectionViewModel, ParcelViewModel>(
-                viewRes = R.layout.item_parcel_header,
-                variableId = BR.header,
-                viewModel = this,
-                isExpandableOnClick = false
-        ).also {
-            it.isSelectable = true
-            it.isExpanded = false
-        }
-    }
-
-    /**
-     * Add parcel section
+     * Add section
      * @param sectionViewModel Parcel section view model
      */
-    fun addParcelSection(
-            sectionViewModel: ParcelSectionViewModel) {
+    fun <T, S : SectionViewModel<T>> addSection(
+            sectionVmItemProvider: () -> FlexibleExpandableVmItem<SectionViewModel<T>, *>,
+            vmItemProvider: (item: T) -> FlexibleSectionableVmItem<*>) {
+
+        fun createSectionItem(): FlexibleExpandableVmItem<SectionViewModel<T>, *> {
+            return sectionVmItemProvider.invoke()
+                    .also {
+                        it.isExpanded = false
+                        it.isSelectable = true
+                        it.isExpandableOnClick = false
+                    }
+        }
+
+        val sectionItem = createSectionItem()
+        val sectionViewModel = sectionItem.viewModel
 
         // Don't add if section exists already
         if (this.sections.contains(sectionViewModel))
@@ -119,7 +115,7 @@ class ParcelSectionsAdapter
 
         sectionViewModel.items
                 .observeOnMainThread()
-                .subscribe { parcels ->
+                .subscribe { items ->
                     // Need to collapse before updating subitems to prevent weird glitches, eg expanded items remaining visible
                     this.collapseAll()
 
@@ -129,24 +125,20 @@ class ParcelSectionsAdapter
                     }
 
                     if (sectionItem != null) {
-                        if (!sectionViewModel.showIfEmpty && parcels.isEmpty()) {
+                        if (!sectionViewModel.showIfEmpty && items.isEmpty()) {
                             this.removeItem(this.getGlobalPositionOf(sectionItem))
                             sectionItem = null
                         }
                     } else {
-                        if (sectionViewModel.showIfEmpty || !parcels.isEmpty()) {
-                            sectionItem = sectionViewModel.createSectionItem()
+                        if (sectionViewModel.showIfEmpty || !items.isEmpty()) {
+                            sectionItem = createSectionItem()
                             this.addItem(sectionItem)
                         }
                     }
 
                     if (sectionItem != null) {
-                        sectionItem.subItems = parcels.map { parcel ->
-                            val item = FlexibleSectionableVmItem(
-                                    viewRes = R.layout.item_parcel,
-                                    variableId = BR.parcel,
-                                    viewModel = ParcelViewModel(parcel)
-                            )
+                        sectionItem.subItems = items.map {
+                            val item = vmItemProvider.invoke(it)
 
                             item.isEnabled = true
                             item.isDraggable = false
@@ -162,16 +154,16 @@ class ParcelSectionsAdapter
                 }
 
         if (sectionViewModel.showIfEmpty || sectionViewModel.items.blockingFirst().isNotEmpty())
-            this.addItem(sectionViewModel.createSectionItem())
+            this.addItem(createSectionItem())
 
         this.collapseAll()
     }
 
     /**
-     * Remove parcel section
-     * @param sectionViewModel Parcel section view model
+     * Remove section
+     * @param sectionViewModel Section view model
      */
-    fun removeParcelSection(sectionViewModel: ParcelSectionViewModel) {
+    fun removeSectino(sectionViewModel: SectionViewModel<*>) {
         val item = this.currentItems.firstOrNull {
             it.viewModel == sectionViewModel
         }
@@ -184,9 +176,9 @@ class ParcelSectionsAdapter
     }
 
     /**
-     * Select parcel section
+     * Select section
      */
-    private fun selectParcelSection(item: IFlexible<FlexibleExpandableVmHolder>) {
+    private fun selectSection(item: IFlexible<FlexibleExpandableVmHolder>) {
         val adapter = this
 
         val position = this.getGlobalPositionOf(item)

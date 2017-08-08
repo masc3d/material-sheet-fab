@@ -18,8 +18,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
+import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
@@ -49,6 +51,8 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
+import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
+import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
 import java.util.concurrent.ExecutorService
 
@@ -113,7 +117,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 color = R.color.colorGreen,
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.loaded).toString(),
-                parcels = this.deliveryList.loadedParcels.map { it.value }
+                items = this.deliveryList.loadedParcels.map { it.value }
                         .bindToLifecycle(this)
         )
     }
@@ -124,7 +128,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 color = R.color.colorAccent,
                 background = R.drawable.section_background_accent,
                 title = this.getText(R.string.damaged).toString(),
-                parcels = this.deliveryList.damagedParcels.map { it.value }
+                items = this.deliveryList.damagedParcels.map { it.value }
                         .bindToLifecycle(this)
         )
     }
@@ -137,7 +141,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 isSelectable = false,
                 showIfEmpty = false,
                 title = this.getText(R.string.pending).toString(),
-                parcels = this.deliveryList.pendingParcels.map { it.value }
+                items = this.deliveryList.pendingParcels.map { it.value }
                         .bindToLifecycle(this)
         )
     }
@@ -150,20 +154,51 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 isSelectable = false,
                 showIfEmpty = false,
                 title = this.getText(R.string.missing).toString(),
-                parcels = this.deliveryList.missingParcels.map { it.value }
+                items = this.deliveryList.missingParcels.map { it.value }
                         .bindToLifecycle(this)
         )
     }
     //endregion
 
-    private val parcelListAdapterInstance = LazyInstance<ParcelSectionsAdapter>({
+    fun ParcelSectionViewModel.toFlexibleItem(): FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any> {
+        return FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any>(
+                viewRes = R.layout.item_parcel_header,
+                variableId = BR.header,
+                viewModel = this
+        )
+    }
 
-        val adapter = ParcelSectionsAdapter()
+    fun ParcelEntity.toFlexibleItem(): FlexibleSectionableVmItem<ParcelViewModel> {
+        return FlexibleSectionableVmItem(
+                viewRes = R.layout.item_parcel,
+                variableId = BR.parcel,
+                viewModel = ParcelViewModel(this)
+        )
+    }
 
-        adapter.addParcelSection(this.loadedSection)
-        adapter.addParcelSection(this.damagedSection)
-        adapter.addParcelSection(this.pendingSection)
-        adapter.addParcelSection(this.missingSection)
+    private val parcelListAdapterInstance = LazyInstance<SectionsAdapter>({
+
+        val adapter = SectionsAdapter()
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.loadedSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.pendingSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.missingSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
 
         adapter
     })
