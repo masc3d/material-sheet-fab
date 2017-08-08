@@ -20,6 +20,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.extension.inflateMenu
@@ -46,6 +47,7 @@ class SignatureScreen
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val db: Database by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val listener by lazy { this.activity as? Listener }
 
@@ -53,12 +55,8 @@ class SignatureScreen
         "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${this.parameters.recipient}"
     }
 
-    private val stop: Stop by lazy {
-        db.store.select(StopEntity::class)
-                .where(StopEntity.ID.eq(this.parameters.stopId))
-                .get()
-                .first()
-    }
+    private val stop: Stop by lazy { stopRepository.findById(this.parameters.stopId)
+            ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]") }
 
     interface Listener {
         fun onSignatureCancelled()

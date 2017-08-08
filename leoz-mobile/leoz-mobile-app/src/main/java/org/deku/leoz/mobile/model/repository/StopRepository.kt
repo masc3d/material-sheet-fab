@@ -22,6 +22,17 @@ class StopRepository(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
+     * Find stop by id
+     * @param id Stop id
+     */
+    fun findById(id: Int): Stop? {
+        return store.select(StopEntity::class)
+                .where(StopEntity.ID.eq(id))
+                .get()
+                .firstOrNull()
+    }
+
+    /**
      * Finds a suitabtle existing stop compatible with this task
      * @param task Order task
      */

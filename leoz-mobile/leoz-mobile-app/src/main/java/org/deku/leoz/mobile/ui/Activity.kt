@@ -836,7 +836,7 @@ open class Activity : RxAppCompatActivity(),
         }
 
         // Apply collapsing toolbar settings
-        this.uxCollapsingToolbarLayout.post {
+        run {
             // EXIT_UNTIL_COLLAPSED should always be the default, so title and appbar expansion works properly
             val collapsingScrollFlag = when (scrollCollapseMode) {
                 ScreenFragment.ScrollCollapseModeType.ExitUntilCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
