@@ -7,7 +7,7 @@ import eu.davidea.flexibleadapter.items.ISectionable
 /**
  * Created by masc on 06.07.17.
  */
-class FlexibleVmSectionableItem<VM>(
+class FlexibleSectionableVmItem<VM>(
         val viewRes: Int,
         val variableId: Int,
         val viewModel: VM

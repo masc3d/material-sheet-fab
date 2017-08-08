@@ -16,9 +16,9 @@ class FlexibleExpandableVmItem<EVM, IVM>(
         val variableId: Int,
         val viewModel: EVM,
         val blurRadius: Float = 1F,
-        val isExpandableOnClick: Boolean = true
+        var isExpandableOnClick: Boolean = true
 )
-    : AbstractExpandableHeaderItem<FlexibleExpandableVmHolder, FlexibleVmSectionableItem<IVM>>() {
+    : AbstractExpandableHeaderItem<FlexibleExpandableVmHolder, FlexibleSectionableVmItem<IVM>>() {
 
     override fun equals(other: Any?): Boolean {
         return this === other
