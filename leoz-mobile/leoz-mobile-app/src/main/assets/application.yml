@@ -1,6 +1,6 @@
 # Peer connectivity settings
 remote:
-   host: 'leox.derkurier.de'
+   host: 'leoz.derkurier.de'
 
    # Http related settings
    http:
@@ -28,14 +28,15 @@ update:
 location:
    enabled: true
    # Minimum distance in meters
-   minDistance: 500
+   minDistance: 100
    force: true
    # Period in seconds
-   period: 600
+   period: 30
    allow-mock-location: false
 
 # Developer/debug settings
 debug:
    enabled: false
+   allow-developer-options: true
    # By default free screen rotation is not allowed and controlled per screen
    user-screen-rotation: false

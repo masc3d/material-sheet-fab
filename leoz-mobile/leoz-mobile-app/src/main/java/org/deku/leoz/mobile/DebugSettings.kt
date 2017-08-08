@@ -11,5 +11,6 @@ import sx.ConfigurationMapPath
 @sx.ConfigurationMapPath("debug")
 class DebugSettings(map: sx.ConfigurationMap) {
     val enabled: Boolean by map.value(org.deku.leoz.mobile.BuildConfig.DEBUG)
+    val allowDeveloperOptions: Boolean by map.value(enabled)
     val userScreenRotation: Boolean by map.value(false)
 }
