@@ -330,12 +330,32 @@ class DeliveryList : CompositeDisposableSupplier {
      */
     fun finalize(): Completable {
         return db.store.withTransaction {
-            val parcels = parcelRepository.entities.filter { it.loadingState == Parcel.LoadingState.PENDING }
+            // Set all pending parcels to MISSING
+            val pendingParcels = parcelRepository.entities.filter { it.loadingState == Parcel.LoadingState.PENDING }
 
-            parcels.forEach {
+            pendingParcels.forEach {
                 it.loadingState = Parcel.LoadingState.MISSING
                 update(it)
             }
+
+            // Set all stops which contain LOADED parcels to PENDING
+            val pendingStops = parcelRepository.entities
+                    .filter { it.loadingState == Parcel.LoadingState.LOADED }
+                    .flatMap { it.order.tasks.mapNotNull { it.stop } }
+                    .distinct()
+
+            pendingStops.forEach {
+                it.state = Stop.State.PENDING
+                update(it)
+            }
+
+            // Reset state for remaining stops
+            stopRepository.entities
+                    .subtract(pendingStops)
+                    .forEach {
+                        it.state = Stop.State.NONE
+                        update(it)
+                    }
         }
                 .toCompletable()
                 .subscribeOn(Schedulers.computation())

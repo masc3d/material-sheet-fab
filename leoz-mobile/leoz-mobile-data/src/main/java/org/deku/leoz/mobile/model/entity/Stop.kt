@@ -15,12 +15,18 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     companion object {}
 
     enum class State {
-        PENDING, CLOSED
+        /** Stop has no state */
+        NONE,
+        /** Stop is pending for delivery */
+        PENDING,
+        /** Stop is closed */
+        CLOSED
     }
 
     @get:Key @get:Generated
     abstract val id: Int
 
+    @get:Index
     abstract var state: State
 
     @get:Lazy
@@ -33,7 +39,7 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
 }
 
 fun Stop.Companion.create(
-        state: Stop.State = Stop.State.PENDING,
+        state: Stop.State = Stop.State.NONE,
         tasks: List<OrderTask>,
         position: Double = 0.0
 ): Stop {

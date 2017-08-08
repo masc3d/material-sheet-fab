@@ -49,7 +49,7 @@ class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMove
                             StopItemViewModel>>>({
         val adapter = FlexibleAdapter(
                 // Items
-                delivery.pendingStops.blockingFirst()
+                delivery.pendingStops.blockingFirst().value
                         .map {
                             val item = FlexibleVmItem(
                                     R.layout.item_stop,

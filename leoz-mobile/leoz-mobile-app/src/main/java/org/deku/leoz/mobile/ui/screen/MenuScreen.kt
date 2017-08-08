@@ -124,7 +124,7 @@ class MenuScreen : ScreenFragment<Any>() {
                         MenuEntry(
                                 entryType = MenuEntry.Entry.DELIVERY,
                                 description = this.getText(R.string.delivery).toString(),
-                                counter = delivery.pendingStops.blockingFirst().count(),
+                                counter = delivery.pendingStops.blockingFirst().value.count(),
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_format_list_bulleted)!!
                         )
                 ))

@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.model.process
 
-import android.content.Context
 import android.support.annotation.DrawableRes
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -9,24 +8,20 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.model.*
-import org.deku.leoz.service.internal.DeliveryListService
-import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.ParcelRepository
-import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.screen.NeighbourDeliveryScreen
 import org.deku.leoz.mobile.ui.screen.PostboxDeliveryScreen
 import org.deku.leoz.mobile.ui.screen.SignatureScreen
 import org.slf4j.LoggerFactory
+import sx.requery.ObservableQuery
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.ObservableRxProperty
 import sx.rx.behave
-import sx.time.toCalendar
-import java.util.*
+import sx.rx.bind
 
 /**
  * Delivery process model
@@ -42,8 +37,18 @@ class Delivery : CompositeDisposableSupplier {
 
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
-    val pendingStops = this.deliveryList.stops.map { it.filter { it.state == Stop.State.PENDING } }
-            .behave(this)
+    //region Self-observable queries
+    private val pendingStopsQuery = ObservableQuery<StopEntity>(
+            name = "Pending stops",
+            query = db.store.select(StopEntity::class)
+                    .where(StopEntity.STATE.eq(Stop.State.PENDING))
+                    .orderBy(StopEntity.POSITION.asc())
+                    .get()
+    )
+            .bind(this)
+    //endregion
+
+    val pendingStops = this.pendingStopsQuery.result
 
     val closedStops = this.deliveryList.stops.map { it.filter { it.state == Stop.State.CLOSED } }
             .behave(this)
