@@ -14,7 +14,7 @@ import sx.rx.ObservableRxProperty
 /**
  * Created by masc on 14.06.17.
  */
-open class ScreenFragment : Fragment() {
+open class ScreenFragment<P> : Fragment<P>() {
     val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(default = listOf())
     /** Screen action items */
     var actionItems by actionItemsProperty
@@ -75,8 +75,8 @@ open class ScreenFragment : Fragment() {
     var syntheticInputs by syntheticInputsProperty
 
     interface Listener {
-        fun onScreenFragmentResume(fragment: ScreenFragment) {}
-        fun onScreenFragmentPause(fragment: ScreenFragment) {}
+        fun onScreenFragmentResume(fragment: ScreenFragment<*>) {}
+        fun onScreenFragmentPause(fragment: ScreenFragment<*>) {}
     }
 
     private val listener get() = this.activity

@@ -24,7 +24,7 @@ import sx.android.fragment.util.withTransaction
 /**
  * Created by n3 on 26/02/2017.
  */
-class MainScreen : ScreenFragment() {
+class MainScreen : ScreenFragment<Any>() {
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 

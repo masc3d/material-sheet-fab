@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory
  * Use the [ProtoStatusFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ProtoStatusFragment : Fragment() {
+class ProtoStatusFragment : Fragment<Any>() {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     // TODO: Rename and change types of parameters

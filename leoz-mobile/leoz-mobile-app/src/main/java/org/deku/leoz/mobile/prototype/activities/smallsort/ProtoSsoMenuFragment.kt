@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory
  * Use the [ProtoSsoMenuFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ProtoSsoMenuFragment : Fragment(), View.OnClickListener {
+class ProtoSsoMenuFragment : Fragment<Any>(), View.OnClickListener {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     private var listener: OnFragmentInteractionListener? = null

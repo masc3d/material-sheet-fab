@@ -21,7 +21,7 @@ import org.deku.leoz.model.EventDeliveredReason
 /**
  * Created by phpr on 10.07.2017.
  */
-class NeighbourDeliveryScreen : ScreenFragment() {
+class NeighbourDeliveryScreen : ScreenFragment<Any>() {
 
     private lateinit var stop: Stop
 
@@ -55,13 +55,13 @@ class NeighbourDeliveryScreen : ScreenFragment() {
 
         this.uxContinue.setOnClickListener {
             this.activity.showScreen(
-                    SignatureScreen.create(
-                            parameters = SignatureScreen.Parameters(
-                                    stopId = this.stop.id,
-                                    deliveryReason = EventDeliveredReason.Neighbor,
-                                    recipient = this.uxNeighboursName.text.toString()
-                            )
-                    )
+                    SignatureScreen().also {
+                        it.parameters = SignatureScreen.Parameters(
+                                stopId = this.stop.id,
+                                deliveryReason = EventDeliveredReason.Neighbor,
+                                recipient = this.uxNeighboursName.text.toString()
+                        )
+                    }
             )
         }
     }

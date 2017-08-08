@@ -16,6 +16,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.screen.NeighbourDeliveryScreen
 import org.deku.leoz.mobile.ui.screen.PostboxDeliveryScreen
@@ -53,9 +54,9 @@ class Delivery : CompositeDisposableSupplier {
     val activeStopProperty = ObservableRxProperty<Stop?>(null)
     val activeStop: Stop? by activeStopProperty
 
-    val nextDeliveryScreenProperty = ObservableRxProperty<ScreenFragment?>(null)
-    val nextDeliveryScreenSubject = PublishSubject.create<ScreenFragment>()
-    var nextDeliveryScreen: ScreenFragment? by nextDeliveryScreenProperty
+    val nextDeliveryScreenProperty = ObservableRxProperty<ScreenFragment<*>?>(null)
+    val nextDeliveryScreenSubject = PublishSubject.create<ScreenFragment<*>>()
+    var nextDeliveryScreen: ScreenFragment<*>? by nextDeliveryScreenProperty
 
 //    /**
 //     * Receives the result of a service workflow and publishes it to the subscribers.
@@ -102,14 +103,13 @@ class Delivery : CompositeDisposableSupplier {
         when (reason) {
             EventDeliveredReason.Normal -> {
                 nextDeliveryScreenSubject.onNext(
-                        SignatureScreen.create(
-                                parameters = SignatureScreen.Parameters(
-                                        stopId = stopId,
-                                        deliveryReason = reason,
-                                        recipient = recipient
-                                )
-                        )
-                )
+                        SignatureScreen().also {
+                            it.parameters = SignatureScreen.Parameters(
+                                    stopId = stopId,
+                                    deliveryReason = reason,
+                                    recipient = recipient
+                            )
+                        })
             }
 
             EventDeliveredReason.Neighbor -> {
@@ -271,26 +271,3 @@ class Delivery : CompositeDisposableSupplier {
 //    }
 //}
 
-fun Context.getServiceText(service: ParcelService): String {
-    return when (service) {
-        ParcelService.SUITCASE_SHIPPING -> getString(R.string.service_suitcase)
-        ParcelService.RECEIPT_ACKNOWLEDGEMENT -> getString(R.string.service_receipt_acknowledgement)
-        ParcelService.SELF_PICKUP -> getString(R.string.service_selfpickup)
-        ParcelService.CASH_ON_DELIVERY -> getString(R.string.service_cash_delivery)
-        ParcelService.PHARMACEUTICALS -> getString(R.string.service_pharmaceuticals)
-        ParcelService.IDENT_CONTRACT_SERVICE -> getString(R.string.service_ident_contract)
-        ParcelService.SUBMISSION_PARTICIPATION -> getString(R.string.service_submission)
-        ParcelService.SECURITY_RETURN -> getString(R.string.service_security_return)
-        ParcelService.XCHANGE -> getString(R.string.service_xchange)
-        ParcelService.PHONE_RECEIPT -> getString(R.string.service_phone_receipt)
-        ParcelService.DOCUMENTED_PERSONAL_DELIVERY -> getString(R.string.service_documented_personal)
-        ParcelService.DEPARTMENT_DELIVERY -> getString(R.string.service_department_delivery)
-        ParcelService.FIXED_APPOINTMENT -> getString(R.string.service_fixed)
-        ParcelService.FAIR_SERVICE -> getString(R.string.service_fair)
-        ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS -> getString(R.string.service_self_completion_duty)
-        ParcelService.PACKAGING_RECIRCULATION -> getString(R.string.service_packaging_recirculation)
-        ParcelService.POSTBOX_DELIVERY -> getString(R.string.service_postbox_delivery)
-        ParcelService.NO_ALTERNATIVE_DELIVERY -> getString(R.string.service_no_alternative)
-        else -> return ""
-    }
-}

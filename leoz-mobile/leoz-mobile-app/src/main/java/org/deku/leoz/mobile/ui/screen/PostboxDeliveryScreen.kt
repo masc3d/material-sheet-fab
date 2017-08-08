@@ -29,7 +29,7 @@ import sx.rx.ObservableRxProperty
 /**
  * Created by phpr on 14.07.2017.
  */
-class PostboxDeliveryScreen: ScreenFragment() {
+class PostboxDeliveryScreen: ScreenFragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     var stop: Stop? = null

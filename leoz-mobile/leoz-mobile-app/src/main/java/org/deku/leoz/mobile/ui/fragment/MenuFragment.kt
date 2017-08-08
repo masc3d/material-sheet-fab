@@ -13,7 +13,7 @@ import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 
 
-class MenuFragment : Fragment() {
+class MenuFragment : Fragment<Any>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

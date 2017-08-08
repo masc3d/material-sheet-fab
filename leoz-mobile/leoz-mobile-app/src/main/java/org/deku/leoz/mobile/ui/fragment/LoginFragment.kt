@@ -31,7 +31,7 @@ import javax.mail.internet.InternetAddress
  * Login fragment
  * Created by n3 on 26/02/2017.
  */
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")

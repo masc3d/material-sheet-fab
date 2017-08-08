@@ -37,7 +37,7 @@ import sx.android.ui.flexibleadapter.customizeScrollBehavior
 /**
  * A simple [Fragment] subclass.
  */
-class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListener {
+class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMoveListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val delivery: Delivery by Kodein.global.lazy.instance()
@@ -120,9 +120,11 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
 
         if (stop != null) {
             activity.showScreen(
-                    StopProcessScreen.create(
-                            stop = stop
-                    )
+                    StopProcessScreen().also {
+                        it.parameters = StopProcessScreen.Parameters(
+                                stopId = stop.id
+                        )
+                    }
             )
         }
 

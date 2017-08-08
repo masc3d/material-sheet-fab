@@ -8,33 +8,46 @@ import org.parceler.Parcels
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
 import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 /**
  * Created by n3 on 01/03/2017.
  */
-open class Fragment : RxAppCompatDialogFragment() {
+open class Fragment<P> : RxAppCompatDialogFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
         val BUNDLE_PARAMETERS = "parameters"
+
+        /**
+         * Factory method
+         */
+        inline fun <F : Fragment<P>, reified P> create(c: KClass<F>, parameters: P): F {
+            val f = c.java.newInstance()
+            f.parameters = parameters
+            return f
+        }
     }
 
     /**
      * Kotlin property for wrapping/unwrapping parameter parcels
      */
-    class ParametersProperty<T> : ReadWriteProperty<Fragment, T> {
-        override fun getValue(thisRef: Fragment, property: KProperty<*>): T {
-            return Parcels.unwrap<T>(thisRef.arguments.getParcelable<Parcelable>(BUNDLE_PARAMETERS))
+    private class ParametersProperty<P> : ReadWriteProperty<Fragment<P>, P> {
+        override fun getValue(thisRef: Fragment<P>, property: KProperty<*>): P {
+            return Parcels.unwrap<P>(thisRef.arguments.getParcelable<Parcelable>(BUNDLE_PARAMETERS))
         }
 
-        override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T) {
+        override fun setValue(thisRef: Fragment<P>, property: KProperty<*>, value: P) {
             thisRef.arguments = Bundle()
             thisRef.arguments.putParcelable(BUNDLE_PARAMETERS, Parcels.wrap(value))
         }
     }
 
-    inline fun <reified T> fragmentParameters() = ParametersProperty<T>()
+    /**
+     * Fragment parameters
+     */
+    var parameters by ParametersProperty()
 
     /**
      * Activity

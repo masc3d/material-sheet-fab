@@ -29,7 +29,7 @@ import java.util.*
 /**
  * Created by phpr on 03.08.2017.
  */
-class CameraFragment: ScreenFragment() {
+class CameraFragment : ScreenFragment<Any>() {
 
     val storage: Storage by Kodein.global.lazy.instance()
 
@@ -72,7 +72,7 @@ class CameraFragment: ScreenFragment() {
             return f
         }
 
-        enum class PictureType{
+        enum class PictureType {
             PARCEL_DAMAGED,
             PARCEL_OTHER,
             POSTBOX

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory
  */
 class SignatureScreen
     :
-        ScreenFragment(),
+        ScreenFragment<SignatureScreen.Parameters>(),
         SignaturePad.OnSignedListener {
 
     @Parcel(Parcel.Serialization.BEAN)
@@ -44,23 +44,10 @@ class SignatureScreen
         var recipient: String
     )
 
-    companion object {
-        /**
-         * Factory method
-         */
-        fun create(parameters: Parameters): SignatureScreen {
-            val s = SignatureScreen()
-            s.parameters = parameters
-            return s
-        }
-    }
-
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val db: Database by Kodein.global.lazy.instance()
 
     private val listener by lazy { this.activity as? Listener }
-
-    var parameters by fragmentParameters<Parameters>()
 
     private val descriptionText: String by lazy {
         "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${this.parameters.recipient}"

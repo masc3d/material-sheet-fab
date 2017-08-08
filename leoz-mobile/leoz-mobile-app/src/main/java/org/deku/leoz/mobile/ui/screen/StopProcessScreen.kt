@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.screen
 
 
+import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -27,29 +28,65 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
+import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.StopItemViewModel
 import org.deku.leoz.model.EventDeliveredReason
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.ParcelService
+import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.*
+import sx.android.databinding.toField
 import sx.android.ui.flexibleadapter.FlexibleVmSectionableItem
+import sx.format.format
 
 
 /**
  * A simple [Fragment] subclass.
  */
 class StopProcessScreen :
-        ScreenFragment(),
-        EventDialog.Listener    {
+        ScreenFragment<StopProcessScreen.Parameters>(),
+        EventDialog.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    /**
+     * Created by masc on 10.07.17.
+     */
+    inner class StatsViewModel
+        : BaseObservable() {
+
+//        val orderCounter = CounterViewModel(
+//                drawableRes = R.drawable.ic_truck,
+//                amount = this.deliveryList.orderAmount.map { it.toString() }.toField(),
+//                totalAmount = this.deliveryList.orderTotalAmount.map { it.toString() }.toField()
+//        )
+//
+//        val parcelCounter = CounterViewModel(
+//                drawableRes = R.drawable.ic_package_variant_closed,
+//                amount = this.deliveryList.parcelAmount.map { it.toString() }.toField(),
+//                totalAmount = this.deliveryList.parcelTotalAmount.map { it.toString() }.toField()
+//        )
+//
+//        val weightCounter = CounterViewModel(
+//                drawableRes = R.drawable.ic_scale,
+//                amount = this.deliveryList.weight.map { "${it.format(2)}kg" }.toField(),
+//                totalAmount = this.deliveryList.totalWeight.map { "${it.format(2)}kg" }.toField()
+//        )
+    }
+
+    @org.parceler.Parcel(org.parceler.Parcel.Serialization.BEAN)
+    class Parameters @ParcelConstructor constructor(
+            var stopId: Int
+    )
+
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
 
@@ -92,34 +129,6 @@ class StopProcessScreen :
     })
     private val parcelListAdapter get() = parcelListAdapterInstance.get()
 
-    companion object {
-        /**
-         * Create instance with parameters. This pattern requires `retainInstance` to be set in `onCreate`!
-         */
-        fun create(stop: Stop): StopProcessScreen {
-            val f = StopProcessScreen()
-            f.stop = stop
-            f.orderList.addAll(f.stop.tasks.map { it.order }.distinct())
-            f.orderList.forEach {
-                f.parcelList.addAll(it.parcels)
-            }
-            return f
-        }
-
-//        /**
-//         * @param orders List of orders which are supposed to be processed summarized. Note: The list should only contain orders which meet the requirements to be compressed into a single Stop
-//         */
-//        fun create(orders: List<Order>): StopProcessScreen {
-//            val f = StopProcessScreen()
-//            f.orderList.addAll(orders)
-//            f.orderList.forEach {
-//                f.parcelList.addAll(it.parcels)
-//            }
-//            f.stop = f.orderList.first().toStop()
-//            return f
-//        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -143,23 +152,29 @@ class StopProcessScreen :
         this.uxParcelList.adapter = parcelListAdapter
         this.uxParcelList.layoutManager = LinearLayoutManager(context)
 
-        val deliverMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
+        val closeStopMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
 
-        deliverMenu.findItem(R.id.action_deliver_postbox).isEnabled =
+        closeStopMenu.findItem(R.id.action_deliver_postbox).isEnabled =
                 this.stop.tasks.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
 
         this.actionItems = listOf(
                 ActionItem(
-                        id = R.id.action_deliver_ok,
+                        id = R.id.action_delivery_select_regular,
                         colorRes = R.color.colorGreen,
-                        iconRes = R.drawable.ic_check_circle,
-                        menu = deliverMenu
+                        iconRes = R.drawable.ic_truck_delivery
                 ),
                 ActionItem(
-                        id = R.id.action_deliver_fail,
-                        colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_cancel_black,
-                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
+                        id = R.id.action_delivery_select_event,
+                        colorRes = R.color.colorAccent,
+                        iconRes = R.drawable.ic_exclamation
+                ),
+                ActionItem(
+                        id = R.id.action_delivery_close_stop,
+                        colorRes = R.color.colorPrimary,
+                        iconRes = R.drawable.ic_done_black,
+                        iconTintRes = android.R.color.white,
+                        menu = closeStopMenu,
+                        alignEnd = false
                 )
         )
 
@@ -194,7 +209,7 @@ class StopProcessScreen :
                         R.id.action_cancel -> {
 
                         }
-                        R.id.action_fail -> {
+                        R.id.action_delivery_select_event -> {
                             val dialog = EventDialog.Builder(this.context)
                                     .events(this.delivery.allowedEvents)
                                     .listener(this)
@@ -215,7 +230,13 @@ class StopProcessScreen :
                             delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Postbox)
                         }
                         R.id.action_deliver_recipient -> {
-                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Normal)
+                            this.activity.showScreen(SignatureScreen().also {
+                                it.parameters = SignatureScreen.Parameters(
+                                        stopId = this.stop.id,
+                                        deliveryReason = EventDeliveredReason.Normal,
+                                        recipient = ""
+                                )
+                            })
                         }
                     }
                 }
@@ -248,7 +269,7 @@ class StopProcessScreen :
     private fun showResult(backgroundResource: Int) {
         hideResultImages()
 
-        val view =  if (resultCount%2 == 0) this.uxResultLeft else this.uxResultRight
+        val view = if (resultCount % 2 == 0) this.uxResultLeft else this.uxResultRight
 
         //view.setBackgroundResource(backgroundResource)
         view.setImageDrawable(ContextCompat.getDrawable(this.context, backgroundResource))

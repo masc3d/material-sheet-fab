@@ -24,7 +24,7 @@ import sx.android.view.setIconTint
  * Aidc camera fragment
  * Created by masc on 14.04.15.
  */
-class AidcCameraFragment : Fragment() {
+class AidcCameraFragment : Fragment<Any>() {
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     /**

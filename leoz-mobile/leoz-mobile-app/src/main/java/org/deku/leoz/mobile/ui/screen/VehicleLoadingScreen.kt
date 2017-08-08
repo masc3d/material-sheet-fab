@@ -55,7 +55,7 @@ import java.util.concurrent.ExecutorService
 /**
  * Vehicle loading screen
  */
-class VehicleLoadingScreen : ScreenFragment() {
+class VehicleLoadingScreen : ScreenFragment<Any>() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

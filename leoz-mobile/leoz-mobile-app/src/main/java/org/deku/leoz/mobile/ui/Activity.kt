@@ -266,7 +266,7 @@ open class Activity : RxAppCompatActivity(),
 
         //region Backstack listener
         this.supportFragmentManager.addOnBackStackChangedListener {
-            val fragments = this.supportFragmentManager.fragments ?: listOf<Fragment>()
+            val fragments = this.supportFragmentManager.fragments ?: listOf<Fragment<*>>()
                     .filterNotNull()
                     .map { it.javaClass.simpleName }
 
@@ -559,8 +559,8 @@ open class Activity : RxAppCompatActivity(),
                         // Find top-most screen fragment and restore action items
                         val screenFragment = this.supportFragmentManager.fragments
                                 .firstOrNull {
-                                    it is ScreenFragment
-                                } as? ScreenFragment
+                                    it is ScreenFragment<*>
+                                } as? ScreenFragment<*>
 
                         if (screenFragment != null)
                             this.actionItems = screenFragment.actionItems
@@ -599,7 +599,7 @@ open class Activity : RxAppCompatActivity(),
 
         // Customize navigation drawer
 
-        val navHeaderView = this.drawer_layout.uxNavView.getHeaderView(0)
+        val navHeaderView = this.uxNavView.getHeaderView(0)
         navHeaderView.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
 
         if (this.debugSettings.enabled) {
@@ -732,7 +732,7 @@ open class Activity : RxAppCompatActivity(),
      * @param fragment Screen fragment to show
      * @param addToBackStack If the fragment should be added to the backstack
      */
-    fun showScreen(fragment: ScreenFragment, addToBackStack: Boolean = true): Int {
+    fun showScreen(fragment: ScreenFragment<*>, addToBackStack: Boolean = true): Int {
         log.trace("SHOW SCREEN [${fragment.javaClass.simpleName}]")
 
         return supportFragmentManager.withTransaction {
@@ -750,7 +750,7 @@ open class Activity : RxAppCompatActivity(),
         }
     }
 
-    override fun onScreenFragmentResume(fragment: ScreenFragment) {
+    override fun onScreenFragmentResume(fragment: ScreenFragment<*>) {
         this.aidcReader.enabled = fragment.aidcEnabled
 
         // Take over action items from screen fragment when it resumes
@@ -876,7 +876,7 @@ open class Activity : RxAppCompatActivity(),
 
     }
 
-    override fun onScreenFragmentPause(fragment: ScreenFragment) {
+    override fun onScreenFragmentPause(fragment: ScreenFragment<*>) {
         this.cameraAidcFragmentVisible = false
     }
 

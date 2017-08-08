@@ -10,7 +10,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.Fragment
 
 
-class DeliveryFailureScreen : Fragment() {
+class DeliveryFailureScreen : Fragment<Any>() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment

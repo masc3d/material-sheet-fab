@@ -42,7 +42,7 @@ import sx.android.aidc.*
 
 class StopDetailScreen
     :
-        ScreenFragment(),
+        ScreenFragment<Any>(),
         EventDialog.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)

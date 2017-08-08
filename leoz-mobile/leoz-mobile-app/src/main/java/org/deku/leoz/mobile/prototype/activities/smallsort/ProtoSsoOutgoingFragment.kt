@@ -30,7 +30,7 @@ import java.util.*
  * Use the [ProtoSsoOutgoingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ProtoSsoOutgoingFragment : Fragment() {
+class ProtoSsoOutgoingFragment : Fragment<Any>() {
 
     private var listener: OnFragmentInteractionListener? = null
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
