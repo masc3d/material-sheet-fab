@@ -19,7 +19,6 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -67,7 +66,7 @@ class SignatureScreen
         super.onCreate(savedInstanceState)
 
         this.orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        this.hideActionBar = true
+        this.toolbarHidden = true
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,

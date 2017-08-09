@@ -81,6 +81,7 @@ class DeliveryStopListScreen
         this.aidcEnabled = true
         this.headerImage = R.drawable.img_street_1a
 
+        this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
 

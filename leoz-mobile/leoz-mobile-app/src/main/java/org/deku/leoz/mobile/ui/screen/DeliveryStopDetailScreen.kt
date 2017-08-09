@@ -191,6 +191,8 @@ class DeliveryStopDetailScreen
         )
         //endregion
 
+        flexibleAdapter.setStickyHeaders(true)
+        flexibleAdapter.showAllHeaders()
         flexibleAdapter.collapseAll()
         flexibleAdapter.expandAll()
 

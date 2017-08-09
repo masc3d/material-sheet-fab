@@ -57,7 +57,12 @@ open class ScreenFragment<P> : Fragment<P>() {
     /**
      * Screen should hide action bar
      */
-    var hideActionBar: Boolean = false
+    var toolbarHidden: Boolean = false
+
+    /**
+     * Screen should have collapsed toolbar (initially)
+     */
+    var toolbarCollapsed: Boolean = false
 
     /**
      * Header image

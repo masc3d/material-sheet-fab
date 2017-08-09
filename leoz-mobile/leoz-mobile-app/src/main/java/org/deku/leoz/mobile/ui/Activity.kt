@@ -802,7 +802,12 @@ open class Activity : RxAppCompatActivity(),
 
         log.trace("HEADER HEIGHT ${this.uxHeader.layoutParams.height}")
 
-        if (fragment.hideActionBar) {
+        if (fragment.toolbarCollapsed) {
+            expandAppBar = false
+            scroll = true
+        }
+
+        if (fragment.toolbarHidden) {
             // Workaround for supportActionBar not adjusting content area
 
             // Hiding the entire appbar via expanded flag only works in conjunction
