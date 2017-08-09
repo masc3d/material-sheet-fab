@@ -62,6 +62,10 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    companion object {
+        val SUPPORT_UNLOAD_ON_SCAN = false
+    }
+
     /**
      * Created by masc on 10.07.17.
      */
@@ -592,22 +596,24 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
             }
             else -> {
                 if (parcel.loadingState == Parcel.LoadingState.LOADED) {
-                    this.tones.warningBeep()
-                    this.aidcReader.enabled = false
+                    if (SUPPORT_UNLOAD_ON_SCAN) {
+                        this.tones.warningBeep()
+                        this.aidcReader.enabled = false
 
-                    MaterialDialog.Builder(this.context)
-                            .title(R.string.vehicle_loading_unload_parcel_dialog_title)
-                            .content(R.string.vehicle_loading_unload_parcel_dialog)
-                            .negativeText(getString(android.R.string.no))
-                            .positiveText(getString(android.R.string.yes))
-                            .dismissListener {
-                                this.aidcReader.enabled = true
-                            }
-                            .onPositive { _, _ ->
-                                parcel.loadingState = Parcel.LoadingState.PENDING
-                                this.parcelRepository.update(parcel).blockingGet()
-                            }
-                            .show()
+                        MaterialDialog.Builder(this.context)
+                                .title(R.string.vehicle_loading_unload_parcel_dialog_title)
+                                .content(R.string.vehicle_loading_unload_parcel_dialog)
+                                .negativeText(getString(android.R.string.no))
+                                .positiveText(getString(android.R.string.yes))
+                                .dismissListener {
+                                    this.aidcReader.enabled = true
+                                }
+                                .onPositive { _, _ ->
+                                    parcel.loadingState = Parcel.LoadingState.PENDING
+                                    this.parcelRepository.update(parcel).blockingGet()
+                                }
+                                .show()
+                    }
                 } else {
                     parcel.loadingState = Parcel.LoadingState.LOADED
                     this.parcelRepository.update(parcel).blockingGet()
