@@ -28,7 +28,7 @@ import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.process.getServiceText
+import org.deku.leoz.mobile.model.process.mobile
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
@@ -102,14 +102,17 @@ class DeliveryStopDetailScreen
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //val arrayAdapter: ArrayAdapter<String> = ArrayAdapter(context, android.R.layout.simple_list_item_1, parcelRefList)
-
-        //endregion
-
         serviceDescriptions.clear()
 
-        stop.tasks.flatMap { it.services }
-                .forEach { serviceDescriptions.add(context.getServiceText(it)) }
+        val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
+        binding.stop = StopViewModel(this.stop)
+
+        stop.tasks
+                .flatMap { it.services }
+                .distinct()
+                .forEach {
+                    it.mobile.text
+                }
 
         this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, serviceDescriptions)
 
@@ -120,20 +123,10 @@ class DeliveryStopDetailScreen
         this.uxOrderList.layoutManager = LinearLayoutManager(context)
         //this.uxStopList.addItemDecoration(dividerItemDecoration)
 
-        flexibleAdapter.isLongPressDragEnabled = true
-        flexibleAdapter.isHandleDragEnabled = true
+        flexibleAdapter.isLongPressDragEnabled = false
+        flexibleAdapter.isHandleDragEnabled = false
         flexibleAdapter.isSwipeEnabled = false
 
-        showInitFabButtons()
-
-        val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
-        binding.stop = StopViewModel(this.stop)
-
-        this.retainInstance = true
-    }
-
-    fun showInitFabButtons() {
-        log.debug("Show initial FAB buttons")
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_deliver_continue,
@@ -149,11 +142,6 @@ class DeliveryStopDetailScreen
                         menu = this.activity.inflateMenu(R.menu.menu_deliver_actions)
                 )
         )
-    }
-
-    fun showDeliverFabButtons() {
-        log.debug("Show deliver FAB buttons")
-
     }
 
     override fun onResume() {
@@ -186,8 +174,8 @@ class DeliveryStopDetailScreen
                                                 stopId = stop.id
                                         )
                                     })
-                            showDeliverFabButtons()
                         }
+
                         R.id.action_navigate -> {
                             val intent: Intent = Intent(
                                     Intent.ACTION_VIEW,
@@ -196,6 +184,7 @@ class DeliveryStopDetailScreen
                             )
                             startActivity(intent)
                         }
+
                         R.id.action_contact -> {
                             val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + stop.address.phone))
                             val dialogBuilder = MaterialDialog.Builder(context)
@@ -209,6 +198,7 @@ class DeliveryStopDetailScreen
                             }
                             dialogBuilder.build().show()
                         }
+
                         R.id.action_fail -> {
                             val dialog = EventDialog.Builder(this.context)
                                     .events(this.delivery.allowedEvents)
@@ -230,5 +220,4 @@ class DeliveryStopDetailScreen
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
         log.trace("SELECTEDITEAM VIA LISTENER")
     }
-
 }

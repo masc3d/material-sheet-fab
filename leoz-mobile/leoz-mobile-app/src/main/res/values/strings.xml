@@ -258,6 +258,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="update">Update</string>
 
     <string name="user">User</string>
+    <string name="unknown">Unknown</string>
 
     <string name="vehicle_loading">Vehicle loading</string>
     <string name="vehicle_loading_finalize_dialog">All pending parcels will be marked missing.</string>
