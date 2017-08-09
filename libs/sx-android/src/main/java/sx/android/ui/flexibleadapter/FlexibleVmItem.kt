@@ -1,5 +1,7 @@
 package sx.android.ui.flexibleadapter
 
+import android.support.annotation.AnyRes
+import android.support.annotation.LayoutRes
 import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
@@ -10,8 +12,8 @@ import eu.davidea.flexibleadapter.items.IFlexible
  * Created by masc on 26.06.17.
  */
 class FlexibleVmItem<VM>(
-        val viewRes: Int,
-        val variableId: Int,
+        @LayoutRes val view: Int,
+        @AnyRes val variable: Int,
         val viewModel: VM
 )
     : AbstractFlexibleItem<FlexibleVmHolder>() {
@@ -30,7 +32,7 @@ class FlexibleVmItem<VM>(
             position: Int,
             payloads: MutableList<Any?>) {
 
-        viewHolder.binding.setVariable(this.variableId, this.viewModel)
+        viewHolder.binding.setVariable(this.variable, this.viewModel)
         viewHolder.binding.executePendingBindings()
     }
 
@@ -39,6 +41,6 @@ class FlexibleVmItem<VM>(
     }
 
     override fun getLayoutRes(): Int {
-        return this.viewRes
+        return this.view
     }
 }
