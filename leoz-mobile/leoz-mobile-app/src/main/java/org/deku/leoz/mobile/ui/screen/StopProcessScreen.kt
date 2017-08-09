@@ -19,7 +19,7 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.item_stop.*
-import kotlinx.android.synthetic.main.screen_stop_process.*
+import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.BR
 
 import org.deku.leoz.mobile.R
@@ -140,7 +140,7 @@ class StopProcessScreen :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.screen_stop_process, container, false)
+        return inflater.inflate(R.layout.screen_delivery_process, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {

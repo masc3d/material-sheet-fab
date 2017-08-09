@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="@{header.title, default=`Parcels`}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 />
 
             </LinearLayout>
@@ -75,7 +75,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/margin"
                     android:text="@{header.amountText, default=`0`}"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     />
 
                 <ImageView

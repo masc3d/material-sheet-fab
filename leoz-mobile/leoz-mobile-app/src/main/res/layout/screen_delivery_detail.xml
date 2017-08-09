@@ -1,13 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
-              tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen"
               style="@style/AppTheme.Layout.Screen"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical" >
+              android:orientation="vertical"
+              tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
 
-    <include layout="@layout/item_stop" />
+    <include layout="@layout/item_stop"/>
 
     <LinearLayout
         style="@style/AppTheme.Layout.List"
@@ -16,25 +16,11 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.AppCompatTextView
+            style="@style/TextAppearance.AppCompat.Large"
+            android:alpha="0.8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/corresponsing_orders"
-            style="@style/TextAppearance.AppCompat.Body2"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/uxOrderList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-
-        </android.support.v7.widget.RecyclerView>
-
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/services"
-            style="@style/TextAppearance.AppCompat.Body2"/>
+            android:text="@string/services"/>
 
         <LinearLayout
             android:id="@+id/uxServiceIconContainer"
@@ -46,9 +32,23 @@
 
         <ListView
             android:id="@+id/uxServiceList"
+            style="@style/AppTheme.ListView"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            style="@style/TextAppearance.AppCompat.Large"
+            android:alpha="0.8"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.ListView" />
+            android:text="@string/orders"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/uxOrderList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
 

@@ -1,12 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_height="match_parent"
-    tools:context="org.deku.leoz.mobile.ui.screen.StopProcessScreen">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              style="@style/AppTheme.Layout.Screen"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="org.deku.leoz.mobile.ui.screen.StopProcessScreen">
 
-    <include layout="@layout/item_stop" />
+    <include layout="@layout/item_stop"/>
 
     <FrameLayout
         style="@style/AppTheme.Layout.List"
@@ -20,17 +21,15 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:longClickable="false"
-            android:scrollbars="none" />
+            android:scrollbars="none"/>
 
     </FrameLayout>
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="bottom">
+        android:gravity="bottom"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"

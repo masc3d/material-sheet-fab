@@ -117,8 +117,8 @@ class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMove
 
         if (stop != null) {
             activity.showScreen(
-                    StopProcessScreen().also {
-                        it.parameters = StopProcessScreen.Parameters(
+                    StopDetailScreen().also {
+                        it.parameters = StopDetailScreen.Parameters(
                                 stopId = stop.id
                         )
                     }

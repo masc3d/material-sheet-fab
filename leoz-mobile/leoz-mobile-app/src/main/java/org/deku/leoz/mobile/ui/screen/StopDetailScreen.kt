@@ -22,58 +22,68 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_detail.*
+import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.getServiceText
-import org.deku.leoz.mobile.ui.OrderListItem
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
+import org.deku.leoz.mobile.ui.vm.OrderViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
 import org.deku.leoz.model.EventNotDeliveredReason
+import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.*
+import sx.android.ui.flexibleadapter.FlexibleVmItem
 
 class StopDetailScreen
     :
-        ScreenFragment<Any>(),
+        ScreenFragment<StopDetailScreen.Parameters>(),
         EventDialog.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val delivery: Delivery by Kodein.global.lazy.instance()
 
-    private lateinit var stop: Stop
+    @org.parceler.Parcel(org.parceler.Parcel.Serialization.BEAN)
+    class Parameters @ParcelConstructor constructor(
+            var stopId: Int
+    )
+
+    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+
+    // Model classes
+    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+
+    private val stop: Stop by lazy {
+        this.stopRepository.entities.first { it.id == this.parameters.stopId }
+    }
+
     private var serviceDescriptions: MutableList<String> = mutableListOf()
 
-    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<OrderListItem>>({
+    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<FlexibleVmItem<OrderViewModel>>>({
         FlexibleAdapter(
                 //Orders to be listed
                 stop.tasks.map { it.order }.distinct()
                         .map {
-                            OrderListItem(context, it)
+                            FlexibleVmItem(
+                                    view = R.layout.item_order_short,
+                                    variable = BR.order,
+                                    viewModel = OrderViewModel(it)
+                            )
                         },
+
                 //Listener
                 this
         )
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
-
-    companion object {
-        /**
-         * Create instance with parameters. This pattern requires `retainInstance` to be set in `onCreate`!
-         */
-        fun create(stop: Stop): StopDetailScreen {
-            val f = StopDetailScreen()
-            f.stop = stop
-            return f
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,20 +137,16 @@ class StopDetailScreen
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_deliver_continue,
-                        colorRes = R.color.colorGreen,
-                        iconRes = R.drawable.ic_check_circle
+                        colorRes = R.color.colorPrimary,
+                        iconTintRes = android.R.color.white,
+                        iconRes = R.drawable.ic_truck_delivery,
+                        alignEnd = false
                 ),
                 ActionItem(
                         id = R.id.action_deliver_action,
                         colorRes = R.color.colorAccent,
                         iconRes = R.drawable.ic_information_outline,
                         menu = this.activity.inflateMenu(R.menu.menu_deliver_actions)
-                ),
-                ActionItem(
-                        id = R.id.action_deliver_fail,
-                        colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_cancel_black,
-                        menu = this.activity.inflateMenu(R.menu.menu_deliver_exception)
                 )
         )
     }

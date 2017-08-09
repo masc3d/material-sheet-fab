@@ -1,116 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v7.widget.CardView
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/AppTheme.CardView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackground"
     >
 
-    <FrameLayout
-        style="@style/AppTheme.Layout.List"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <data>
 
-        <LinearLayout
+        <variable
+            name="order"
+            type="org.deku.leoz.mobile.ui.vm.OrderViewModel"/>
+    </data>
+
+    <android.support.v7.widget.CardView
+        style="@style/AppTheme.CardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="0dp"
+        >
+
+        <FrameLayout
+            style="@style/AppTheme.Layout.Content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginBottom="@dimen/margin"
+            android:layout_marginTop="@dimen/margin"
+            >
 
             <LinearLayout
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="start"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/uxSender"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Philipp Prangenberg"
-                    android:layout_marginBottom="@dimen/margin"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    tools:ignore="HardcodedText" />
+                android:orientation="horizontal"
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    >
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            >
+
+                            <ImageView
+                                android:layout_width="@dimen/icon_size"
+                                android:layout_height="@dimen/icon_size"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:src="@drawable/ic_order"
+                                android:tint="@color/colorGrey"
+                                />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:text="@{order.id, default=000000000}"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                                />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            >
+
+                            <ImageView
+                                android:layout_width="@dimen/icon_size"
+                                android:layout_height="@dimen/icon_size"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:src="@drawable/ic_package_variant_closed"
+                                android:tint="@color/colorGrey"
+                                />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:text="@{order.parcelAmount, default=0}"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                                />
+
+                        </LinearLayout>
+
+
+                    </FrameLayout>
 
                     <TextView
-                        android:id="@+id/uxZipFrom"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:text="36251"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        tools:ignore="HardcodedText" />
+                        android:text="@{order.senderAddress.line1, default=`Line1`}"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+                        />
 
                     <TextView
-                        android:id="@+id/uxCityFrom"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/small_margin"
-                        android:text="Bad Hersfeld"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        tools:ignore="HardcodedText" />
+                        android:text="@{order.senderAddress.city , default=`12345 Some Place`}"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                        />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:layout_weight="1"
-                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/uxRecipient"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Philipp Prangenberg"
-                    android:layout_marginBottom="@dimen/margin"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    tools:ignore="HardcodedText" />
+        </FrameLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="end"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/uxZipTo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textAlignment="center"
-                        android:text="36251"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        tools:ignore="HardcodedText" />
-
-                    <TextView
-                        android:id="@+id/uxCityTo"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/small_margin"
-                        android:text="Bad Hersfeld"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        tools:ignore="HardcodedText" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </FrameLayout>
-
-</android.support.v7.widget.CardView>
+    </android.support.v7.widget.CardView>
+</layout>
