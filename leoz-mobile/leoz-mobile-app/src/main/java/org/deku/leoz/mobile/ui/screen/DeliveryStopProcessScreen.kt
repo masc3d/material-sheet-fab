@@ -4,7 +4,6 @@ package org.deku.leoz.mobile.ui.screen
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -24,17 +23,18 @@ import org.deku.leoz.mobile.BR
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
-import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.entity.Order
+import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
 import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.ParcelEntity
+import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
-import org.deku.leoz.mobile.ui.vm.ParcelViewModel
-import org.deku.leoz.mobile.ui.vm.StopViewModel
+import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.EventDeliveredReason
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.ParcelService
@@ -42,7 +42,10 @@ import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.*
+import sx.android.databinding.toField
+import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
+import sx.format.format
 
 
 /**
@@ -54,77 +57,104 @@ class DeliveryStopProcessScreen :
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    @org.parceler.Parcel(org.parceler.Parcel.Serialization.BEAN)
+    class Parameters @ParcelConstructor constructor(
+            var stopId: Int
+    )
+
     /**
      * Created by masc on 10.07.17.
      */
     inner class StatsViewModel
         : BaseObservable() {
 
-//        val orderCounter = CounterViewModel(
-//                drawableRes = R.drawable.ic_truck,
-//                amount = this.deliveryList.orderAmount.map { it.toString() }.toField(),
-//                totalAmount = this.deliveryList.orderTotalAmount.map { it.toString() }.toField()
-//        )
-//
-//        val parcelCounter = CounterViewModel(
-//                drawableRes = R.drawable.ic_package_variant_closed,
-//                amount = this.deliveryList.parcelAmount.map { it.toString() }.toField(),
-//                totalAmount = this.deliveryList.parcelTotalAmount.map { it.toString() }.toField()
-//        )
-//
-//        val weightCounter = CounterViewModel(
-//                drawableRes = R.drawable.ic_scale,
-//                amount = this.deliveryList.weight.map { "${it.format(2)}kg" }.toField(),
-//                totalAmount = this.deliveryList.totalWeight.map { "${it.format(2)}kg" }.toField()
-//        )
-    }
+        val orderCounter = CounterViewModel(
+                drawableRes = R.drawable.ic_order,
+                amount = deliveryStop.orderAmount.map { it.toString() }.toField(),
+                totalAmount = deliveryStop.orderTotalAmount.map { it.toString() }.toField()
+        )
 
-    @org.parceler.Parcel(org.parceler.Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var stopId: Int
-    )
+        val parcelCounter = CounterViewModel(
+                drawableRes = R.drawable.ic_package_variant_closed,
+                amount = deliveryStop.parcelAmount.map { it.toString() }.toField(),
+                totalAmount = deliveryStop.parcelTotalAmount.map { it.toString() }.toField()
+        )
+
+        val weightCounter = CounterViewModel(
+                drawableRes = R.drawable.ic_weight_scale,
+                amount = deliveryStop.weight.map { "${it.format(2)}kg" }.toField(),
+                totalAmount = deliveryStop.totalWeight.map { "${it.format(2)}kg" }.toField()
+        )
+    }
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
-    private val stop: Stop by lazy {
+    private val stop: StopEntity by lazy {
         this.stopRepository.entities.first { it.id == this.parameters.stopId }
     }
 
-    private val orderList: MutableList<Order> = mutableListOf()
-    private val parcelList: MutableList<Parcel> = mutableListOf()
-    private var lastRef: String? = null
-    private var resultCount: Int = 0
+    private val deliveryStop: DeliveryStop by lazy { DeliveryStop(this.stop) }
 
-    private val parcelListAdapterInstance = LazyInstance<
-            FlexibleAdapter<
-                    FlexibleSectionableVmItem<
-                            ParcelViewModel>>>({
+    // region Sections
+    val deliveredSection by lazy {
+        SectionViewModel<Parcel>(
+                icon = R.drawable.ic_truck_delivery,
+                color = R.color.colorGreen,
+                background = R.drawable.section_background_green,
+                title = this.getText(R.string.delivered).toString(),
+                items = this.deliveryStop.deliveredParcels
+                        .bindToLifecycle(this)
+        )
+    }
 
-        val adapter = FlexibleAdapter(
-                // Items
-                stop.tasks.map { it.order }
-                        .flatMap { it.parcels }
-                        .map {
-                            val item = FlexibleSectionableVmItem(
-                                    view = R.layout.item_parcel,
-                                    variable = BR.parcel,
-                                    viewModel = ParcelViewModel(it)
-                            )
+    val pendingSection by lazy {
+        SectionViewModel<Parcel>(
+                icon = R.drawable.ic_format_list_bulleted,
+                color = R.color.colorGrey,
+                background = R.drawable.section_background_grey,
+                showIfEmpty = true,
+                title = this.getText(R.string.pending).toString(),
+                items = this.deliveryStop.pendingParcels
+                        .bindToLifecycle(this)
+        )
+    }
+    //endregion
 
-                            item.isEnabled = true
-                            item.isDraggable = true
-                            item.isSwipeable = false
 
-                            item
-                        },
-                // Listener
-                this)
+    fun SectionViewModel<Parcel>.toFlexibleItem()
+            : FlexibleExpandableVmItem<SectionViewModel<Parcel>, Any> {
 
-        adapter.setDisplayHeadersAtStartUp(true)
-        adapter.setStickyHeaders(true)
-        adapter.showAllHeaders()
+        return FlexibleExpandableVmItem<SectionViewModel<Parcel>, Any>(
+                view = R.layout.item_section_header,
+                variable = BR.header,
+                viewModel = this
+        )
+    }
+
+    fun Parcel.toFlexibleItem()
+            : FlexibleSectionableVmItem<ParcelViewModel> {
+
+        return FlexibleSectionableVmItem(
+                view = R.layout.item_parcel,
+                variable = BR.parcel,
+                viewModel = ParcelViewModel(this)
+        )
+    }
+
+    private val parcelListAdapterInstance = LazyInstance<SectionsAdapter>({
+        val adapter = SectionsAdapter()
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.deliveredSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.pendingSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
 
         adapter
     })
@@ -136,12 +166,22 @@ class DeliveryStopProcessScreen :
         this.title = getString(R.string.title_stop_process)
         this.aidcEnabled = true
         this.headerImage = R.drawable.img_parcels_1a
+        this.toolbarCollapsed = true
+        this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.screen_delivery_process, container, false)
+
+        val binding: ScreenDeliveryProcessBinding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.screen_delivery_process,
+                container, false)
+
+        // Setup bindings
+        binding.stats = StatsViewModel()
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -150,8 +190,8 @@ class DeliveryStopProcessScreen :
         // Flexible adapter needs to be re-created with views
         this.parcelListAdapterInstance.reset()
 
-        this.uxParcelList.adapter = parcelListAdapter
-        this.uxParcelList.layoutManager = LinearLayoutManager(context)
+        this.uxRecyclerView.adapter = parcelListAdapter
+        this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
         val closeStopMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
 
@@ -172,7 +212,7 @@ class DeliveryStopProcessScreen :
                 ActionItem(
                         id = R.id.action_delivery_close_stop,
                         colorRes = R.color.colorPrimary,
-                        iconRes = R.drawable.ic_done_black,
+                        iconRes = R.drawable.ic_finish,
                         iconTintRes = android.R.color.white,
                         menu = closeStopMenu,
                         alignEnd = false
@@ -198,8 +238,7 @@ class DeliveryStopProcessScreen :
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    log.info("Barcode scanned ${it.data}")
-                    processLabelRef(ref = it.data)
+                    this.onAidcRead(it)
                 }
 
         this.activity.actionEvent
@@ -207,9 +246,10 @@ class DeliveryStopProcessScreen :
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     when (it) {
-                        R.id.action_cancel -> {
-
+                        R.id.action_delivery_select_regular -> {
+                            this.parcelListAdapter.selectedSection = this.deliveredSection
                         }
+
                         R.id.action_delivery_select_event -> {
                             val dialog = EventDialog.Builder(this.context)
                                     .events(this.delivery.allowedEvents)
@@ -224,12 +264,15 @@ class DeliveryStopProcessScreen :
 
                             dialog.show()
                         }
+
                         R.id.action_deliver_neighbour -> {
                             delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Neighbor)
                         }
+
                         R.id.action_deliver_postbox -> {
                             delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Postbox)
                         }
+
                         R.id.action_deliver_recipient -> {
                             this.activity.showScreen(SignatureScreen().also {
                                 it.parameters = SignatureScreen.Parameters(
@@ -241,48 +284,82 @@ class DeliveryStopProcessScreen :
                         }
                     }
                 }
+
+        this.parcelListAdapter.selectedSection = this.deliveredSection
+        this.parcelListAdapter.selectedSectionProperty
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    val section = it.value
+
+                    this.accentColor = section?.color ?: R.color.colorGrey
+
+                    when (section) {
+                        this.deliveredSection -> {
+                            this.actionItems = this.actionItems.apply {
+                                first { it.id == R.id.action_delivery_select_regular }
+                                        .visible = false
+
+                                first { it.id == R.id.action_delivery_select_event }
+                                        .visible = true
+                            }
+                        }
+                        else -> {
+                            this.actionItems = this.actionItems.apply {
+                                first { it.id == R.id.action_delivery_select_regular }
+                                        .visible = true
+
+                                first { it.id == R.id.action_delivery_select_event }
+                                        .visible = false
+                            }
+                        }
+                    }
+                }
     }
 
-    private fun processLabelRef(ref: String) {
-        val order: Order? = orderList.firstOrNull {
-            it.parcels.firstOrNull {
-                it.number == ref
-            } != null
-        }
+    private fun onAidcRead(event: AidcReader.ReadEvent) {
+        log.trace("AIDC READ ${event}")
 
-        hideResultImages()
-
-        if (order != null) {
-            showResult(R.drawable.green)
-        } else {
-            //Parcel is not part of this stop
-            if (lastRef.isNullOrBlank() || lastRef != ref) {
-                //No (similar) reference scanned previously
-                showResult(R.drawable.red)
-            } else {
-                showResult(R.drawable.red)
-            }
-        }
-
-        lastRef = ref
+        //    private fun processLabelRef(ref: String) {
     }
+//        val order: Order? = orderList.firstOrNull {
+//            it.parcels.firstOrNull {
+//                it.number == ref
+//            } != null
+//        }
+//
+//        hideResultImages()
+//
+//        if (order != null) {
+//            showResult(R.drawable.green)
+//        } else {
+//            //Parcel is not part of this stop
+//            if (lastRef.isNullOrBlank() || lastRef != ref) {
+//                //No (similar) reference scanned previously
+//                showResult(R.drawable.red)
+//            } else {
+//                showResult(R.drawable.red)
+//            }
+//        }
+//
+//        lastRef = ref
+//    }
 
-    private fun showResult(backgroundResource: Int) {
-        hideResultImages()
-
-        val view = if (resultCount % 2 == 0) this.uxResultLeft else this.uxResultRight
-
-        //view.setBackgroundResource(backgroundResource)
-        view.setImageDrawable(ContextCompat.getDrawable(this.context, backgroundResource))
-        view.visibility = View.VISIBLE
-
-        resultCount++
-    }
-
-    private fun hideResultImages() {
-        this.uxResultLeft.visibility = View.INVISIBLE
-        this.uxResultRight.visibility = View.INVISIBLE
-    }
+//    private fun showResult(backgroundResource: Int) {
+//        hideResultImages()
+//
+//        val view = if (resultCount % 2 == 0) this.uxResultLeft else this.uxResultRight
+//
+//        //view.setBackgroundResource(backgroundResource)
+//        view.setImageDrawable(ContextCompat.getDrawable(this.context, backgroundResource))
+//        view.visibility = View.VISIBLE
+//
+//        resultCount++
+//    }
+//
+//    private fun hideResultImages() {
+//        this.uxResultLeft.visibility = View.INVISIBLE
+//        this.uxResultRight.visibility = View.INVISIBLE
+//    }
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
         log.trace("SELECTEDITEAM VIA LISTENER")

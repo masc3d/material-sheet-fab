@@ -4,7 +4,6 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="stats"
             type="org.deku.leoz.mobile.ui.screen.VehicleLoadingScreen.StatsViewModel"/>
@@ -27,7 +26,7 @@
             android:layout_height="match_parent">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/uxParcelList"
+                android:id="@+id/uxRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clickable="true"

@@ -53,7 +53,7 @@ class Delivery : CompositeDisposableSupplier {
     val closedStops = this.deliveryList.stops.map { it.filter { it.state == Stop.State.CLOSED } }
             .behave(this)
 
-    val undeliveredParcels = parcelRepository.entitiesProperty.map { it.value.filter { it.deliveryState == Parcel.DeliveryState.NOTDELIVERED } }
+    val undeliveredParcels = parcelRepository.entitiesProperty.map { it.value.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
             .behave(this)
 
     val activeStopProperty = ObservableRxProperty<Stop?>(null)

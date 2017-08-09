@@ -23,24 +23,34 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     }
 
     enum class DeliveryState {
-        PENDING, DELIVERED, NOTDELIVERED
+        PENDING, DELIVERED, UNDELIVERED
     }
 
     @get:Key
     abstract var id: Long
+    @get:Column(nullable = false)
     abstract var number: String
+    @get:Column(nullable = false)
     abstract var length: Double
+    @get:Column(nullable = false)
     abstract var height: Double
+    @get:Column(nullable = false)
     abstract var width: Double
+    @get:Column(nullable = false)
     abstract var weight: Double
 
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var isDamaged: Boolean
 
     @get:Bindable
+    @get:Column(nullable = false)
+    @get:Index
     abstract var loadingState: LoadingState
 
     @get:Bindable
+    @get:Column(nullable = false)
+    @get:Index
     abstract var deliveryState: DeliveryState
 
     @get:Bindable
@@ -57,7 +67,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract val meta: MutableList<ParcelMeta>
 
     @get:Lazy
-    @get:Column(name = "order_")
+    @get:Column(name = "order_", nullable = false)
     @get:ManyToOne
     abstract var order: Order
 
@@ -81,6 +91,7 @@ fun Parcel.Companion.create(
         it.width = width
         it.weight = weight
         it.loadingState = Parcel.LoadingState.PENDING
+        it.deliveryState = Parcel.DeliveryState.PENDING
         it.isDamaged = false
     }
 }

@@ -17,10 +17,14 @@ abstract class User : BaseRxObservable(), Persistable, Observable {
 
     @get:Key
     abstract var id: Int
+    @get:Column(nullable = false)
     abstract var email: String
+    @get:Column(nullable = false)
     abstract var password: String
+    @get:Column(nullable = false)
     abstract var apiKey: String
     /** The current user's vehicle type. Defaults to CAR */
+    @get:Column(nullable = false)
     abstract var vehicleType: VehicleType
 }
 

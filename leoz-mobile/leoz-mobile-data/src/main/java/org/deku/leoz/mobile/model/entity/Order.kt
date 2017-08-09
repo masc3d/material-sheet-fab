@@ -20,7 +20,9 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     abstract var id: Long
 
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var carrier: Carrier
+    @get:Column(nullable = false)
     abstract var exchangeOrderId: Long
 
     /** The (optional) delivery list id this order is attached to */

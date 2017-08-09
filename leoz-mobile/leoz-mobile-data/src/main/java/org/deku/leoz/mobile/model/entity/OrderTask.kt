@@ -25,19 +25,24 @@ abstract class OrderTask : BaseRxObservable(), Persistable, Observable {
     @get:Key @get:Generated
     abstract val id: Int
 
+    @get:Column(nullable = false)
     abstract var type: TaskType
 
     @get:Lazy
-    @get:ManyToOne @get:Column(name = "order_")
+    @get:ManyToOne
+    @get:Column(name = "order_", nullable = false)
     abstract var order: Order
 
     @get:Lazy
+    @get:Column(nullable = false)
     @get:ForeignKey
     @get:OneToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var address: Address
     abstract var appointmentStart: Date?
     abstract var appointmentEnd: Date?
+    @get:Column(nullable = false)
     abstract var isFixedAppointment: Boolean
+    @get:Column(nullable = false)
     abstract var notice: String
 
     @get:Lazy

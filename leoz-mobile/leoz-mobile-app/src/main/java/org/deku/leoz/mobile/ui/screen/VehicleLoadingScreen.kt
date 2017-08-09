@@ -75,13 +75,13 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
         : BaseObservable() {
 
         val stopCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_location,
+                drawableRes = R.drawable.ic_stop,
                 amount = this.deliveryList.stopAmount.map { it.toString() }.toField(),
                 totalAmount = this.deliveryList.stopTotalAmount.map { it.toString() }.toField()
         )
 
         val orderCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_truck,
+                drawableRes = R.drawable.ic_order,
                 amount = this.deliveryList.orderAmount.map { it.toString() }.toField(),
                 totalAmount = this.deliveryList.orderTotalAmount.map { it.toString() }.toField()
         )
@@ -93,7 +93,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
         )
 
         val weightCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_scale,
+                drawableRes = R.drawable.ic_weight_scale,
                 amount = this.deliveryList.weight.map { "${it.format(2)}kg" }.toField(),
                 totalAmount = this.deliveryList.totalWeight.map { "${it.format(2)}kg" }.toField()
         )
@@ -182,7 +182,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
     }
 
     private val parcelListAdapterInstance = LazyInstance<SectionsAdapter>({
-
         val adapter = SectionsAdapter()
 
         adapter.addSection(
@@ -240,8 +239,8 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
         // Flexible adapter needs to be re-created with views
         this.parcelListAdapterInstance.reset()
 
-        this.uxParcelList.adapter = parcelListAdapter
-        this.uxParcelList.layoutManager = LinearLayoutManager(context)
+        this.uxRecyclerView.adapter = parcelListAdapter
+        this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
         this.menu = this.inflateMenu(R.menu.menu_vehicleloading).also {
             if (this.debugSettings.enabled) {
@@ -267,7 +266,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 ActionItem(
                         id = R.id.action_vehicle_loading_finished,
                         colorRes = R.color.colorPrimary,
-                        iconRes = R.drawable.ic_done_black,
+                        iconRes = R.drawable.ic_finish,
                         iconTintRes = android.R.color.white,
                         alignEnd = false
                 )

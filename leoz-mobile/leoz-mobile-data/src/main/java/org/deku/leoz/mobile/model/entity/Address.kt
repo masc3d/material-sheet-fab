@@ -21,25 +21,35 @@ abstract class Address
     abstract val id: Int
 
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var line1: String
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var line2: String
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var line3: String
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var street: String
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var streetNo: String
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var zipCode: String
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var city: String
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var phone: String
 
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var latitude: Double
     @get:Bindable
+    @get:Column(nullable = false)
     abstract var longitude: Double
 
     val line1Field by lazy { ObservableRxField(BR.line1, { this.line1 }) }

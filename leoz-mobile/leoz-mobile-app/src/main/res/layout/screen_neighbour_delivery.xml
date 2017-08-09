@@ -15,7 +15,7 @@
             android:layout_height="@dimen/icon_size"
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_marginEnd="@dimen/margin"
-            app:srcCompat="@drawable/ic_location" />
+            app:srcCompat="@drawable/ic_stop" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -44,7 +44,7 @@
             android:layout_height="@dimen/icon_size"
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_marginEnd="@dimen/margin"
-            app:srcCompat="@drawable/ic_location" />
+            app:srcCompat="@drawable/ic_stop" />
 
         <LinearLayout
             android:orientation="horizontal"

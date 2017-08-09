@@ -26,6 +26,7 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     @get:Key @get:Generated
     abstract val id: Int
 
+    @get:Column(nullable = false)
     @get:Index
     abstract var state: State
 
@@ -34,6 +35,7 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     abstract val tasks: MutableList<OrderTask>
 
     @get:Index
+    @get:Column(nullable = false)
     /** Stop position as a decimal. Insertions or position changes require calculation of average */
     abstract var position: Double
 }

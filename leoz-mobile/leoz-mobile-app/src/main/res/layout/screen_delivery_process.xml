@@ -1,63 +1,43 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              style="@style/AppTheme.Layout.Screen"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context="org.deku.leoz.mobile.ui.screen.DeliveryStopProcessScreen">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:bind="http://schemas.android.com/tools"
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <include layout="@layout/item_stop"/>
-
-    <FrameLayout
-        style="@style/AppTheme.Layout.List"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/uxParcelList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:longClickable="false"
-            android:scrollbars="none"/>
-
-    </FrameLayout>
+    <data>
+        <variable
+            name="stats"
+            type="org.deku.leoz.mobile.ui.screen.DeliveryStopProcessScreen.StatsViewModel"/>
+    </data>
 
     <LinearLayout
+        style="@style/AppTheme.Layout.Screen"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="org.deku.leoz.mobile.ui.screen.DeliveryStopProcessScreen">
 
-        <LinearLayout
+        <include layout="@layout/item_stop"/>
+
+        <include
+            layout="@layout/view_delivery_stop_stats"
+            bind:stats="@{stats}"
+            />
+
+        <!-- FlexibleAdapter/RecyclerView wrapper layout for sticky headers -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/uxResultLeft"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/uxRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/green"/>
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:longClickable="false"
+                android:scrollbars="none"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        </FrameLayout>
 
-            <ImageView
-                android:id="@+id/uxResultRight"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/red"/>
-        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</layout>

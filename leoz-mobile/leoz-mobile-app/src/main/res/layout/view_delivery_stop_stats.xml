@@ -4,10 +4,9 @@
         xmlns:bind="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="stats"
-            type="org.deku.leoz.mobile.ui.screen.VehicleLoadingScreen.StatsViewModel"/>
+            type="org.deku.leoz.mobile.ui.screen.DeliveryStopProcessScreen.StatsViewModel"/>
     </data>
 
     <LinearLayout
