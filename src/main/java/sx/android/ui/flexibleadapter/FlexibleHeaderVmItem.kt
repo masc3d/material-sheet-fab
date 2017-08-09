@@ -1,5 +1,7 @@
 package sx.android.ui.flexibleadapter
 
+import android.support.annotation.AnyRes
+import android.support.annotation.LayoutRes
 import android.view.View
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -12,20 +14,20 @@ import org.slf4j.LoggerFactory
  * Flexible view model header item.
  * Supports blur view as root layout of the header view and will set it up accordingly.
  * Created by masc on 06.07.17.
- * @param viewRes The view layout resource ID
- * @param variableId View model binding ID
+ * @param view The view layout resource ID
+ * @param variable View model binding ID
  * @param viewModel The view model
  * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
  */
 class FlexibleHeaderVmItem<VM>(
-        val viewRes: Int,
-        val variableId: Int,
+        @LayoutRes val view: Int,
+        @AnyRes val variable: Int,
         val viewModel: VM,
         val blurRadius: Float = 1F
 )
     :
         IHeader<FlexibleVmHolder>,
-        IFlexible<FlexibleVmHolder> by FlexibleVmItem(viewRes, variableId, viewModel) {
+        IFlexible<FlexibleVmHolder> by FlexibleVmItem(view, variable, viewModel) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
