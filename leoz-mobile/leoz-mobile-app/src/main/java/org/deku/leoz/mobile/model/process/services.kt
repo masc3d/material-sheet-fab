@@ -95,4 +95,5 @@ private val metaByService = mapOf<ParcelService, ParcelServiceMeta>(
  * Extension property to provide mobile meta structure
  */
 val ParcelService.mobile: ParcelServiceMeta
-    get() = metaByService.getOrDefault(this, ParcelServiceMeta(R.string.unknown, R.drawable.ic_service))
+    get() = metaByService.withDefault { ParcelServiceMeta(R.string.unknown, R.drawable.ic_service) }.getValue(this)
+
