@@ -38,13 +38,13 @@ fun OrderService.Order.toOrder(
 
 fun OrderService.Order.Address.toAddress(): Address {
     return Address.create(
-            line1 = this.line1,
+            line1 = this.line1 ?: "",
             line2 = this.line2 ?: "",
             line3 = this.line3 ?: "",
-            street = this.street,
+            street = this.street ?: "",
             streetNo = this.streetNo ?: "",
             zipCode = this.zipCode,
-            city = this.city,
+            city = this.city ?: "",
             latitude = this.geoLocation?.latitude ?: 0.0,
             longitude = this.geoLocation?.longitude ?: 0.0,
             phone = this.phoneNumber ?: ""
