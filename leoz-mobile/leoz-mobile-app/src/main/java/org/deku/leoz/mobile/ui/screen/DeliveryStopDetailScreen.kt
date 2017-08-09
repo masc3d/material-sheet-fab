@@ -43,9 +43,9 @@ import sx.LazyInstance
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.FlexibleVmItem
 
-class StopDetailScreen
+class DeliveryStopDetailScreen
     :
-        ScreenFragment<StopDetailScreen.Parameters>(),
+        ScreenFragment<DeliveryStopDetailScreen.Parameters>(),
         EventDialog.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -181,8 +181,8 @@ class StopDetailScreen
                     when (it) {
                         R.id.action_deliver_continue -> {
                             this.activity.showScreen(
-                                    StopProcessScreen().also {
-                                        it.parameters = StopProcessScreen.Parameters(
+                                    DeliveryStopProcessScreen().also {
+                                        it.parameters = DeliveryStopProcessScreen.Parameters(
                                                 stopId = stop.id
                                         )
                                     })

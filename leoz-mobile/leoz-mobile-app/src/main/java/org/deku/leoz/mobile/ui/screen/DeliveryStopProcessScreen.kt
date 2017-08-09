@@ -48,8 +48,8 @@ import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 /**
  * A simple [Fragment] subclass.
  */
-class StopProcessScreen :
-        ScreenFragment<StopProcessScreen.Parameters>(),
+class DeliveryStopProcessScreen :
+        ScreenFragment<DeliveryStopProcessScreen.Parameters>(),
         EventDialog.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)

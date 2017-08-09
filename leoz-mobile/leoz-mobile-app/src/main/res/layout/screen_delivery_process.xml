@@ -5,7 +5,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              tools:context="org.deku.leoz.mobile.ui.screen.StopProcessScreen">
+              tools:context="org.deku.leoz.mobile.ui.screen.DeliveryStopProcessScreen">
 
     <include layout="@layout/item_stop"/>
 

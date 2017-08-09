@@ -18,21 +18,17 @@ import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.DeliveryList
-import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.android.ui.flexibleadapter.FlexibleVmItem
 import org.deku.leoz.mobile.ui.vm.StopViewModel
-import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
 import sx.LazyInstance
-import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.customizeScrollBehavior
@@ -127,6 +123,7 @@ class DeliveryStopListScreen
     @CallSuper
     override fun onItemMove(p0: Int, p1: Int) {
         log.debug("ONITEMMOVE value [$p0] value [$p1]")
+        // TODO: implement position change/persistence
     }
 
     override fun shouldMoveItem(p0: Int, p1: Int): Boolean {
@@ -141,8 +138,8 @@ class DeliveryStopListScreen
 
         if (stop != null) {
             activity.showScreen(
-                    StopDetailScreen().also {
-                        it.parameters = StopDetailScreen.Parameters(
+                    DeliveryStopDetailScreen().also {
+                        it.parameters = DeliveryStopDetailScreen.Parameters(
                                 stopId = stop.id
                         )
                     }
@@ -217,8 +214,8 @@ class DeliveryStopListScreen
         }
 
         this.activity.showScreen(
-                StopDetailScreen().also {
-                    it.parameters = StopDetailScreen.Parameters(stopId = stop.id)
+                DeliveryStopDetailScreen().also {
+                    it.parameters = DeliveryStopDetailScreen.Parameters(stopId = stop.id)
                 }
         )
     }
