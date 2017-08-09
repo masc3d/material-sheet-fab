@@ -66,6 +66,12 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
         val SUPPORT_UNLOAD_ON_SCAN = false
     }
 
+    interface Listener {
+        fun onVehicleLoadingFinalized()
+    }
+
+    val listener by lazy { this.activity as? Listener }
+
     /**
      * Created by masc on 10.07.17.
      */
@@ -348,7 +354,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                                 .finalize()
                                                 .observeOnMainThread()
                                                 .subscribeBy(onComplete = {
-                                                    this.fragmentManager.popBackStack()
+                                                    this.listener?.onVehicleLoadingFinalized()
                                                 })
 
                                     }

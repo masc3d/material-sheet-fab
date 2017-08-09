@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.activity
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.support.v4.app.FragmentManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -24,6 +25,7 @@ import java.util.*
 class DeliveryActivity : Activity(),
         MenuScreen.Listener,
         SignatureScreen.Listener,
+        VehicleLoadingScreen.Listener,
         VehicleLoadingDialog.OnDialogResultListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -151,6 +153,14 @@ class DeliveryActivity : Activity(),
 
     override fun onSignatureSubmitted() {
         this@DeliveryActivity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
+    }
+
+    override fun onVehicleLoadingFinalized() {
+        this.supportFragmentManager.popBackStack(
+                VehicleLoadingScreen::class.java.canonicalName,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+        this.showScreen(DeliveryStopListScreen())
     }
 
     /**
