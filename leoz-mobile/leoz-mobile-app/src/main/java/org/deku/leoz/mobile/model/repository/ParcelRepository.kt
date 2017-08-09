@@ -25,8 +25,6 @@ class ParcelRepository(
 
     override fun update(entity: ParcelEntity): Single<ParcelEntity> {
         entity.modificationTime = Date()
-        return super
-                .update(entity)
-                .subscribeOn(Schedulers.computation())
+        return super.update(entity)
     }
 }

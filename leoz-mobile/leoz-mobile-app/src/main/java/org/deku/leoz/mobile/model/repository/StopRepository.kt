@@ -82,14 +82,14 @@ class StopRepository(
      * Remove all orders
      */
     fun removeAll(): Completable {
-        return store.withTransaction {
-            select(StopEntity::class)
+        return Completable.fromCallable {
+            val store = this.store.toBlocking()
+
+            store.select(StopEntity::class)
                     .get()
                     .forEach {
-                        delete(it)
+                        store.delete(it)
                     }
         }
-                .toCompletable()
-                .subscribeOn(Schedulers.computation())
     }
 }

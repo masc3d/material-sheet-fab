@@ -311,6 +311,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                     .subscribeOn(Schedulers.computation())
                                     .subscribe()
                         }
+
                         R.id.action_vehicle_loading_dev_mark_all_loaded -> {
                             db.store.withTransaction {
                                 select(ParcelEntity::class)
@@ -318,7 +319,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                         .get()
                                         .forEach {
                                             it.loadingState = Parcel.LoadingState.LOADED
-                                            update(it)
+                                            parcelRepository.update(it).blockingGet()
                                         }
                             }
                                     .subscribeOn(Schedulers.computation())
@@ -584,14 +585,18 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                             }
                             .onPositive { _, _ ->
                                 parcel.isDamaged = false
-                                this.parcelRepository.update(parcel).blockingGet()
+                                this.parcelRepository.update(parcel)
+                                        .subscribeOn(Schedulers.computation())
+                                        .subscribe()
                             }
                             .show()
                 } else {
                     // TODO take photo
                     parcel.isDamaged = true
 
-                    this.parcelRepository.update(parcel).blockingGet()
+                    this.parcelRepository.update(parcel)
+                            .subscribeOn(Schedulers.computation())
+                            .subscribe()
                 }
             }
             else -> {
@@ -610,13 +615,17 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                 }
                                 .onPositive { _, _ ->
                                     parcel.loadingState = Parcel.LoadingState.PENDING
-                                    this.parcelRepository.update(parcel).blockingGet()
+                                    this.parcelRepository.update(parcel)
+                                            .subscribeOn(Schedulers.computation())
+                                            .subscribe()
                                 }
                                 .show()
                     }
                 } else {
                     parcel.loadingState = Parcel.LoadingState.LOADED
-                    this.parcelRepository.update(parcel).blockingGet()
+                    this.parcelRepository.update(parcel)
+                            .subscribeOn(Schedulers.computation())
+                            .subscribe()
                 }
             }
         }

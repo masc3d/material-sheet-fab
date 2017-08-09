@@ -53,7 +53,7 @@ class OrderRepository(
                         !existingOrderParcelNumbers.contains(it.number)
                     }
 
-                    val removedParcels= existingOrder.parcels.filter {
+                    val removedParcels = existingOrder.parcels.filter {
                         !orderParcelNumbers.contains(it.number)
                     }
 
@@ -73,11 +73,12 @@ class OrderRepository(
      * Remove all orders
      */
     fun removeAll(): Completable {
-        return Completable.fromCallable{
+        return Completable.fromCallable {
+            val store = store.toBlocking()
             store.select(OrderEntity::class)
                     .get()
                     .forEach {
-                        store.delete(it).blockingAwait()
+                        store.delete(it)
                     }
         }
     }
