@@ -30,6 +30,7 @@ import sx.time.toSqlDate
 import sx.time.toTimestamp
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.nio.file.Files
 import java.sql.Timestamp
 import javax.imageio.ImageIO
 
@@ -139,6 +140,7 @@ open class ParcelServiceV1 :
                     pasReset = true
                     val recipientInfo = StringBuilder()
                     var signature: String? = null
+                    var mimetype="svg"
                     when (reason) {
                         Reason.POSTBOX -> {
                             recipientInfo.append("Postbox")
@@ -162,6 +164,7 @@ open class ParcelServiceV1 :
                                     }
                                     recipientInfo.append(addInfo.recipient ?: "")
                                     signature = addInfo.signature
+                                    mimetype=addInfo.mimetype
                                 }
                             }
                         }
@@ -178,7 +181,7 @@ open class ParcelServiceV1 :
                                     //val recipientInfo = StringBuilder()
                                     recipientInfo.append(addInfo.name ?: "").append(";adr ").append(addInfo.address ?: "")
                                     signature = addInfo.signature
-
+                                    mimetype=addInfo.mimetype
                                 }
                             }
                         }
@@ -187,7 +190,7 @@ open class ParcelServiceV1 :
                     }
                     r.text = recipientInfo.toString()
                     if (signature != null) {
-                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId)
+                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId,mimetype)
                         parcelRecord.bmpfilename = sigPath
                     }
 
@@ -457,7 +460,7 @@ open class ParcelServiceV1 :
                                                 SimpleDateFormat("MM").format(it.time) + "/" +
                                                 SimpleDateFormat("dd").format(it.time) + "/"
 
-                                         saveImage(it.time,addInfo.photo,parcelScan,message.nodeId,path)
+                                         saveImage(it.time,addInfo.photo,parcelScan,message.nodeId,path,addInfo.mimetype)
                                     }
                                 }
                             }
@@ -600,23 +603,34 @@ open class ParcelServiceV1 :
         }
     }
 
-    fun saveImage(date: Date, imageBase64: String?, number: String, nodeId: String?, path: String): String {
+    fun saveImage(date: Date, imageBase64: String?, number: String, nodeId: String?, path: String,mimetype: String): String {
         if (imageBase64 != null) {
             val img = Base64.getDecoder().decode(imageBase64)
             val bufferedImage = ImageIO.read(ByteArrayInputStream(img))
-            val file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.bmp"
+            val fileWithoutExt=number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB."
+
+
+
+            val file = fileWithoutExt + "bmp"
             val fileObj = File(path + file)
-            fileObj.mkdirs()
+
+            fileObj.parentFile.mkdirs()
+
+            Files.write(File(path+fileWithoutExt+mimetype).toPath(),img)
+
+            /*
             if (ImageIO.write(bufferedImage, "bmp", fileObj)) {
                 return file
             } else
                 return ""
+                */
+            return path+fileWithoutExt+mimetype
         } else
             return ""
 
     }
 
-    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?): String {
+    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?,mimetype: String): String {
 
         var path = "c:\\deku2004\\SynchToSaveServer\\" +
                 SimpleDateFormat("yyyy").format(date) + "\\SB\\" +
@@ -628,7 +642,7 @@ open class ParcelServiceV1 :
                 SimpleDateFormat("MM").format(date) + "/" +
                 SimpleDateFormat("dd").format(date) + "/"
 
-        return saveImage(date,signatureBase64,number,nodeId,path)
+        return saveImage(date,signatureBase64,number,nodeId,path,mimetype)
 
 
         //create path if not exsists

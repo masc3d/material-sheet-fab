@@ -117,13 +117,15 @@ sealed class AdditionalInfo {
 
     data class DeliveredInfo(
             val recipient: String? = null,
-            val signature: String? = null
+            val signature: String? = null,
+            val mimetype: String = "svg"
     ) : AdditionalInfo()
 
     data class DeliveredAtNeighborInfo(
             val name: String? = null,
             val address: String? = null,
-            val signature: String? = null
+            val signature: String? = null,
+            val mimetype: String = "svg"
     ) : AdditionalInfo()
 
     data class NotDeliveredRefusedInfo(
@@ -135,7 +137,8 @@ sealed class AdditionalInfo {
     ) : AdditionalInfo()
 
     data class DamagedInfo(
-            val description:String? =null,
-            val photo: String? =null
+            val description: String? = null,
+            val photo: String? = null,
+            val mimetype: String = "jpg"
     ) : AdditionalInfo()
 }
