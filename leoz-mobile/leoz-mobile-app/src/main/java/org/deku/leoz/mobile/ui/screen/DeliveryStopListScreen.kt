@@ -15,20 +15,17 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.entity.Stop
 import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import eu.davidea.flexibleadapter.helpers.ItemTouchHelperCallback
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
-import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.android.ui.flexibleadapter.FlexibleVmItem
-import org.deku.leoz.mobile.ui.vm.StopItemViewModel
+import org.deku.leoz.mobile.ui.vm.StopViewModel
 import sx.LazyInstance
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.customizeScrollBehavior
@@ -46,7 +43,7 @@ class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMove
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
                     FlexibleVmItem<
-                            StopItemViewModel>>>({
+                            StopViewModel>>>({
         val adapter = FlexibleAdapter(
                 // Items
                 delivery.pendingStops.blockingFirst().value
@@ -54,7 +51,7 @@ class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMove
                             val item = FlexibleVmItem(
                                     view = R.layout.item_stop,
                                     variable = BR.stop,
-                                    viewModel = StopItemViewModel(it)
+                                    viewModel = StopViewModel(it)
                             )
 
                             item.isEnabled = true

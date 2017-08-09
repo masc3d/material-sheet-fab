@@ -12,23 +12,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
+ * Stop view model
  * Created by masc on 26.06.17.
  */
-class StopItemViewModel(val stop: Stop) : BaseObservable() {
+class StopViewModel(val stop: Stop) : BaseObservable() {
 
     val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-    val line1: String
-        get() = this.stop.address.line1
-
-    val line2: String
-        get() = this.stop.address.line2
-
-    val street: String
-        get() = "${this.stop.address.street} ${this.stop.address.streetNo}"
-
-    val city: String
-        get() = "${this.stop.address.zipCode} ${this.stop.address.city}"
+    val address = AddressViewModel(stop.address)
 
     val appointmentFrom: String
         get() = simpleDateFormat.format(stop.dateStart)
@@ -42,10 +33,10 @@ class StopItemViewModel(val stop: Stop) : BaseObservable() {
     val appointmentMinute: Int
         get() = stop.dateEnd?.toCalendar()?.get(Calendar.MINUTE) ?: 0
 
-    val orderCount: String
+    val orderAmount: String
         get() = stop.tasks.map { it.order }.distinct().count().toString()
 
-    val parcelCount: String
+    val parcelAmount: String
         get() {
             return stop.tasks.flatMap {
                 it.order.parcels

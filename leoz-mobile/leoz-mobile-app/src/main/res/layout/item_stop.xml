@@ -5,7 +5,7 @@
     >
 
     <data>
-        <variable name="stop" type="org.deku.leoz.mobile.ui.vm.StopItemViewModel"/>
+        <variable name="stop" type="org.deku.leoz.mobile.ui.vm.StopViewModel"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -33,7 +33,7 @@
                     android:id="@+id/uxRecipient"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{stop.line1, default = `Recipient`}"
+                    android:text="@{stop.address.line1, default = `Recipient`}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     />
 
@@ -41,7 +41,7 @@
                     android:id="@+id/uxAddressLine2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{stop.line2, default = `Address Line 2`}"
+                    android:text="@{stop.address.line2, default = `Address Line 2`}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_marginBottom="@dimen/horizontal_large_margin"
                     />
@@ -50,7 +50,7 @@
                     android:id="@+id/uxStreet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{stop.street, default = `Street`}"
+                    android:text="@{stop.address.street, default = `Street`}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     />
 
@@ -58,7 +58,7 @@
                     android:id="@+id/uxCity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{stop.city, default = `City`}"
+                    android:text="@{stop.address.city, default = `City`}"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     />
@@ -148,7 +148,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:text="@{stop.orderCount, default = `1`}"
+                            android:text="@{stop.orderAmount, default = `1`}"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             />
 
@@ -173,7 +173,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:text="@{stop.parcelCount, default = `1`}"
+                            android:text="@{stop.parcelAmount, default = `1`}"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             />
 

@@ -26,7 +26,6 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.getServiceText
 import org.deku.leoz.mobile.ui.OrderListItem
@@ -34,7 +33,7 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
-import org.deku.leoz.mobile.ui.vm.StopItemViewModel
+import org.deku.leoz.mobile.ui.vm.StopViewModel
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
@@ -118,7 +117,7 @@ class StopDetailScreen
         showInitFabButtons()
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
-        binding.stop = StopItemViewModel(this.stop)
+        binding.stop = StopViewModel(this.stop)
 
         this.retainInstance = true
     }

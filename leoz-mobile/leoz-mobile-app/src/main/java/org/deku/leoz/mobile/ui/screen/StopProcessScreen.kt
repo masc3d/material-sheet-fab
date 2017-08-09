@@ -34,7 +34,7 @@ import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
-import org.deku.leoz.mobile.ui.vm.StopItemViewModel
+import org.deku.leoz.mobile.ui.vm.StopViewModel
 import org.deku.leoz.model.EventDeliveredReason
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.ParcelService
@@ -179,7 +179,7 @@ class StopProcessScreen :
         )
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
-        binding.stop = StopItemViewModel(this.stop)
+        binding.stop = StopViewModel(this.stop)
     }
 
     override fun onResume() {
