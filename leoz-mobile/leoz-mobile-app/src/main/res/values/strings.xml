@@ -78,6 +78,7 @@
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_no_corresponding_order">No corresponding order</string>
+    <string name="error_no_corresponding_stop">No corresponding stop</string>
 
     <string name="event_reason_absent">Consignee absent</string>
     <string name="event_reason_address_wrong">Wrong address</string>

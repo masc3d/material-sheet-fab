@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui.screen
 
-
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -19,26 +18,38 @@ import org.slf4j.LoggerFactory
 import android.support.annotation.CallSuper
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
+import org.deku.leoz.mobile.dev.SyntheticInput
+import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.android.ui.flexibleadapter.FlexibleVmItem
 import org.deku.leoz.mobile.ui.vm.StopViewModel
+import org.deku.leoz.model.DekuDeliveryListNumber
+import org.deku.leoz.model.UnitNumber
 import sx.LazyInstance
+import sx.Result
+import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.customizeScrollBehavior
 
-
 /**
- * A simple [Fragment] subclass.
+ * Delivery stop list screen
  */
-class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMoveListener {
+class DeliveryStopListScreen
+    :
+        ScreenFragment<Any>(),
+        FlexibleAdapter.OnItemMoveListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
-    private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
+    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val tones: Tones by Kodein.global.lazy.instance()
 
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
@@ -90,8 +101,21 @@ class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMove
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-
+                    this.onAidcRead(it)
                 }
+
+        this.syntheticInputs = listOf(
+                SyntheticInput(
+                        name = "Parcels",
+                        entries = this.deliveryList.loadedParcels.blockingFirst().value.map {
+                            val unitNumber = UnitNumber.parse(it.number).value
+                            SyntheticInput.Entry(
+                                    symbologyType = SymbologyType.Interleaved25,
+                                    data = unitNumber.label
+                            )
+                        }
+                )
+        )
     }
 
     //region Listener interface implementation
@@ -153,5 +177,49 @@ class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMove
         flexibleAdapter.isSwipeEnabled = true
 
         flexibleAdapter.addListener(onItemClickListener)
+    }
+
+    private fun onAidcRead(event: AidcReader.ReadEvent) {
+        log.trace("AIDC READ $event")
+
+        val result = UnitNumber.parseLabel(event.data)
+
+        when {
+            result.hasError -> {
+                tones.warningBeep()
+
+                this.activity.snackbarBuilder
+                        .message(R.string.error_invalid_barcode)
+                        .build().show()
+            }
+            else -> {
+                this.onInput(result.value)
+            }
+        }
+    }
+
+    private fun onInput(unitNumber: UnitNumber) {
+        val stop = this.delivery.pendingStops.blockingFirst().value
+                .flatMap { it.tasks }
+                .firstOrNull {
+                    it.order.parcels.any { it.number == unitNumber.value }
+                }
+                ?.stop
+
+        if (stop == null) {
+            tones.warningBeep()
+
+            this.activity.snackbarBuilder
+                    .message(R.string.error_no_corresponding_stop)
+                    .build().show()
+
+            return
+        }
+
+        this.activity.showScreen(
+                StopDetailScreen().also {
+                    it.parameters = StopDetailScreen.Parameters(stopId = stop.id)
+                }
+        )
     }
 }

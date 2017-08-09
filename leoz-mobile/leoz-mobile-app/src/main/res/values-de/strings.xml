@@ -224,4 +224,5 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
+    <string name="error_no_corresponding_stop">Kein zugehöriger Stop gefunden</string>
 </resources>
