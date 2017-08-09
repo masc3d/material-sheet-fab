@@ -1,6 +1,6 @@
 # Peer connectivity settings
 remote:
-   host: 'leoz.derkurier.de'
+   host: 'leox.derkurier.de'
 
    # Http related settings
    http:
