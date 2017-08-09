@@ -42,12 +42,4 @@ class StopViewModel(val stop: Stop) : BaseObservable() {
                 it.order.parcels
             }.count().toString()
         }
-
-    val taskTypeIcon: Int
-        get() {
-            return when(stop.tasks.first().type) {
-                OrderTask.TaskType.DELIVERY -> R.drawable.ic_truck_delivery
-                OrderTask.TaskType.PICKUP -> R.drawable.ic_truck_pickup
-            }
-        }
 }

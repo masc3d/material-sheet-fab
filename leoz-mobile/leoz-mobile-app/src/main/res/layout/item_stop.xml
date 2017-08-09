@@ -143,7 +143,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginEnd="@dimen/margin"
                             android:tint="@color/colorGrey"
-                            android:src="@{stop.taskTypeIcon, default = `@drawable/ic_truck_delivery`}"/>
+                            android:src="@drawable/ic_order"/>
 
                         <TextView
                             android:id="@+id/uxOrderCount"
