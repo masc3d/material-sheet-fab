@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.model.process.Login
@@ -58,6 +57,7 @@ import sx.android.fragment.util.withTransaction
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
@@ -97,6 +97,7 @@ open class Activity : RxAppCompatActivity(),
     private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
 
     private val device: Device by Kodein.global.lazy.instance()
+    private val identity: Identity by Kodein.global.lazy.instance()
 
     // AIDC readers
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -601,6 +602,7 @@ open class Activity : RxAppCompatActivity(),
 
         val navHeaderView = this.uxNavView.getHeaderView(0)
         navHeaderView.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
+        navHeaderView.uxDeviceId.text = this.identity.shortUid.toString()
 
         if (this.debugSettings.enabled) {
             this.uxNavView.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
@@ -677,7 +679,7 @@ open class Activity : RxAppCompatActivity(),
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
                             navHeaderView.uxActiveUser.text = user.email
-                            navHeaderView.uxStationID.text = "-_-"
+                            navHeaderView.uxStationId.text = "-_-"
                         }
                         else -> {
                             this.uxNavView.menu
