@@ -52,9 +52,9 @@ class DeliveryStopListScreen : ScreenFragment<Any>(), FlexibleAdapter.OnItemMove
                 delivery.pendingStops.blockingFirst().value
                         .map {
                             val item = FlexibleVmItem(
-                                    R.layout.item_stop,
-                                    BR.stop,
-                                    StopItemViewModel(it)
+                                    view = R.layout.item_stop,
+                                    variable = BR.stop,
+                                    viewModel = StopItemViewModel(it)
                             )
 
                             item.isEnabled = true

@@ -163,7 +163,7 @@ class SectionsAdapter
      * Remove section
      * @param sectionViewModel Section view model
      */
-    fun removeSectino(sectionViewModel: SectionViewModel<*>) {
+    fun removeSection(sectionViewModel: SectionViewModel<*>) {
         val item = this.currentItems.firstOrNull {
             it.viewModel == sectionViewModel
         }

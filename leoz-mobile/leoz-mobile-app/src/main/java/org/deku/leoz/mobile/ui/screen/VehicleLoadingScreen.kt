@@ -18,7 +18,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
@@ -112,7 +111,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
 
     // region Sections
     val loadedSection by lazy {
-        ParcelSectionViewModel(
+        SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_truck,
                 color = R.color.colorGreen,
                 background = R.drawable.section_background_green,
@@ -123,7 +122,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
     }
 
     val damagedSection by lazy {
-        ParcelSectionViewModel(
+        SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_damaged,
                 color = R.color.colorAccent,
                 background = R.drawable.section_background_accent,
@@ -134,7 +133,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
     }
 
     val pendingSection by lazy {
-        ParcelSectionViewModel(
+        SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -147,7 +146,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
     }
 
     val missingSection by lazy {
-        ParcelSectionViewModel(
+        SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_missing,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -160,18 +159,22 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
     }
     //endregion
 
-    fun ParcelSectionViewModel.toFlexibleItem(): FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any> {
+    fun SectionViewModel<ParcelEntity>.toFlexibleItem()
+            : FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any> {
+
         return FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any>(
-                viewRes = R.layout.item_parcel_header,
-                variableId = BR.header,
+                view = R.layout.item_parcel_header,
+                variable = BR.header,
                 viewModel = this
         )
     }
 
-    fun ParcelEntity.toFlexibleItem(): FlexibleSectionableVmItem<ParcelViewModel> {
+    fun ParcelEntity.toFlexibleItem()
+            : FlexibleSectionableVmItem<ParcelViewModel> {
+
         return FlexibleSectionableVmItem(
-                viewRes = R.layout.item_parcel,
-                variableId = BR.parcel,
+                view = R.layout.item_parcel,
+                variable = BR.parcel,
                 viewModel = ParcelViewModel(this)
         )
     }
@@ -359,7 +362,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
         this.parcelListAdapter.selectedSectionProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
-                    val section = it.value as ParcelSectionViewModel?
+                    val section = it.value
 
                     this.accentColor = section?.color ?: R.color.colorGrey
 

@@ -108,8 +108,8 @@ class StopProcessScreen :
                         .flatMap { it.parcels }
                         .map {
                             val item = FlexibleSectionableVmItem(
-                                    viewRes = R.layout.item_parcel,
-                                    variableId = BR.parcel,
+                                    view = R.layout.item_parcel,
+                                    variable = BR.parcel,
                                     viewModel = ParcelViewModel(it)
                             )
 
