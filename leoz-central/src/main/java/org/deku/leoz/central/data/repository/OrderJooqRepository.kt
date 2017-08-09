@@ -67,7 +67,7 @@ open class OrderJooqRepository {
     fun findParcelsByOrderId(id: Long): List<TadVOrderParcelRecord> {
         return dslContext.fetch(
                 Tables.TAD_V_ORDER_PARCEL,
-                Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble()))
+                Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble())).sortAsc(Tables.TAD_V_ORDER_PARCEL.ID)
     }
 
     fun findParcelsByOrderIds(ids: List<Long>): List<TadVOrderParcelRecord> {

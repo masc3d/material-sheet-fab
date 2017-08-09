@@ -1,5 +1,7 @@
 package org.deku.leoz.central.service.internal
 
+import javafx.scene.paint.Stop
+import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistDetailsRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistinfoRecord
 import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
@@ -31,30 +33,31 @@ class DeliveryListService : DeliveryListService {
         val deliveryListInfo: TadVDeliverylistRecord?
 
         deliveryListInfo = this.deliveryListRepository.findById(id)
-        deliveryList = deliveryListInfo     //this.deliveryListRepository.findById(id)
+        deliveryList = deliveryListInfo
                 ?.toDeliveryList()
                 ?:
                 throw DefaultProblem(
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
-
         val deliveryListOrders = this.deliveryListRepository.findDetailsById(id)
-
         deliveryList.orders = orderService.getByIds(
                 deliveryListOrders.map { it.orderId.toLong() })
 
-        deliveryList.stops = deliveryList.orders.map { order ->
-            DeliveryListService.Stop(
+        val stops = mutableListOf<DeliveryListService.Stop>()
+        val deliveryListOrder = this.deliveryListRepository.findDetailsById(id)
+        deliveryListOrder.forEach { orderId ->
+            val s = DeliveryListService.Stop(
                     tasks = listOf(
                             DeliveryListService.Task(
-                                    orderId = order.id,
-                                    stopType = DeliveryListService.Task.Type.DELIVERY
+                                    orderId = orderId.orderId.toLong(),
+                                    stopType = DeliveryListService.Task.Type.DELIVERY // orderId.stoptype
                             )
-                    ))
+                    )
+            )
+            stops.add(element = s)
         }
-
+        deliveryList.stops = stops.toList()
         return deliveryList
-
     }
 
     override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
@@ -90,7 +93,6 @@ class DeliveryListService : DeliveryListService {
                 orders = listOf(),
                 stops = listOf()
         )
-
         return l
     }
 }

@@ -95,8 +95,8 @@ interface OrderService {
 
         @ApiModel(value = "Address", description = "pickup or delivery address")
         data class Address(
-                @ApiModelProperty(dataType = "string", example = "Hans Mustermann", position = 10, required = true, value = "addressLine1")
-                var line1: String = "",
+                @ApiModelProperty(dataType = "string", example = "Hans Mustermann", position = 10, required = false, value = "addressLine1")
+                var line1: String? = null,
                 @get:ApiModelProperty(dataType = "string", example = "c/o Schuster", position = 20, required = false, value = "addressLine2")
                 var line2: String? = null,
                 @get:ApiModelProperty(dataType = "string", example = "Bitte bei S klingeln", position = 30, required = false, value = "addressLine3")
@@ -107,10 +107,10 @@ interface OrderService {
                 var countryCode: String = "",
                 @get:ApiModelProperty(dataType = "string", example = "648450", position = 70, required = true, value = "Zip")
                 var zipCode: String = "",
-                @get:ApiModelProperty(dataType = "string", example = "Schaafheim", position = 80, required = true, value = "Citty")
-                var city: String = "",
-                @get:ApiModelProperty(dataType = "string", example = "Hauptstrasse", position = 90, required = true, value = "Street")
-                var street: String = "",
+                @get:ApiModelProperty(dataType = "string", example = "Schaafheim", position = 80, required = false, value = "Citty")
+                var city: String? = null,
+                @get:ApiModelProperty(dataType = "string", example = "Hauptstrasse", position = 90, required = false, value = "Street")
+                var street: String? = null,
                 @get:ApiModelProperty(dataType = "string", example = "HH 2", position = 100, required = false, value = "StreetNo")
                 var streetNo: String? = null,
                 @get:ApiModelProperty(position = 110, required = false, value = "Geo Location")

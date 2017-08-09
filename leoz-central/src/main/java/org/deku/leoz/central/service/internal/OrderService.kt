@@ -73,20 +73,15 @@ class OrderService : OrderService {
 
     fun getByIds(ids: List<Long>): List<OrderService.Order> {
         val rOrders = this.orderRepository.findByIds(ids)
-
-        val rParcelsByOrderId = mapOf(*this.orderRepository
+        val rParcelsByOrderId = this.orderRepository
                 .findParcelsByOrderIds(rOrders.map { it.id.toLong() })
-                .map {
-                    Pair(it.orderId.toLong(), it)
-                }
-                .toTypedArray()
-        )
+                .groupBy { it.orderId.toLong() }
 
         return rOrders.map {
             it.toOrder().also { order ->
                 order.parcels = rParcelsByOrderId
-                        .filter { it.key == order.id }
-                        .map { it.value.toParcel() }
+                        .getOrDefault(order.id, listOf())
+                        .map { it.toParcel() }
             }
         }
     }
@@ -124,9 +119,12 @@ class OrderService : OrderService {
                 if (((it.serviceId and pickupServiceValue.toLong()) == it.serviceId) && it.serviceId > 0)
                     ps.add(ParcelService.valueOf(it.name))
             }
-        } else {
+        }
+/*
+        else {
             ps.add(ParcelService.valueOf(ParcelService.NO_ADDITIONAL_SERVICE.name))
         }
+*/
         o.pickupServices = ps
 
         o.pickupAppointment.dateStart = r.appointmentPickupStart
@@ -152,9 +150,12 @@ class OrderService : OrderService {
                 if (((it.serviceId and r.service.toLong()) == it.serviceId) && it.serviceId > 0)
                     ds.add(ParcelService.valueOf(it.name))
             }
-        } else {
+        }
+/*
+        else {
             ds.add(ParcelService.valueOf(ParcelService.NO_ADDITIONAL_SERVICE.name))
         }
+*/
         o.deliveryServices = ds
 
         if (r.cashAmount > 0 && (r.service.toLong() and ParcelService.CASH_ON_DELIVERY.serviceId) == ParcelService.CASH_ON_DELIVERY.serviceId) {
