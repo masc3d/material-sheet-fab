@@ -77,9 +77,11 @@ class DeliveryStopListScreen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
         this.title = "Delivery Stops"
         this.aidcEnabled = true
+        this.headerImage = R.drawable.img_street_1a
+
+        this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
 
     override fun onResume() {

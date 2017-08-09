@@ -141,7 +141,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 icon = R.drawable.ic_format_list_bulleted,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
-                isSelectable = false,
                 showIfEmpty = false,
                 title = this.getText(R.string.pending).toString(),
                 items = this.deliveryList.pendingParcels.map { it.value }
@@ -154,7 +153,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 icon = R.drawable.ic_missing,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
-                isSelectable = false,
                 showIfEmpty = false,
                 title = this.getText(R.string.missing).toString(),
                 items = this.deliveryList.missingParcels.map { it.value }
@@ -167,7 +165,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
             : FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any> {
 
         return FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any>(
-                view = R.layout.item_parcel_header,
+                view = R.layout.item_section_header,
                 variable = BR.header,
                 viewModel = this
         )

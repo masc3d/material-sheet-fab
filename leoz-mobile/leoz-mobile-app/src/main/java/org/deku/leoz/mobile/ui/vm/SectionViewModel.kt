@@ -19,10 +19,9 @@ open class SectionViewModel<T>(
         @DrawableRes val icon: Int = R.drawable.ic_truck,
         @ColorRes val color: Int = R.color.colorAccent,
         @DrawableRes val background: Int = R.drawable.section_background_accent,
-        val isSelectable: Boolean = true,
         val title: String,
         val showIfEmpty: Boolean = true,
-        val items: Observable<List<T>>
+        val items: Observable<List<T>> = Observable.empty()
 )
     : BaseObservable() {
 

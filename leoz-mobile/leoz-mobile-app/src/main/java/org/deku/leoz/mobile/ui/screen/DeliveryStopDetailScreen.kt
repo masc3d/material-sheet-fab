@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -19,6 +18,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_detail.*
@@ -28,20 +28,20 @@ import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.process.mobile
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
-import org.deku.leoz.mobile.ui.vm.OrderViewModel
-import org.deku.leoz.mobile.ui.vm.StopViewModel
+import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.EventNotDeliveredReason
+import org.deku.leoz.model.ParcelService
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.aidc.*
-import sx.android.ui.flexibleadapter.FlexibleVmItem
+import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
+import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 
 class DeliveryStopDetailScreen
     :
@@ -65,20 +65,12 @@ class DeliveryStopDetailScreen
         this.stopRepository.entities.first { it.id == this.parameters.stopId }
     }
 
-    private var serviceDescriptions: MutableList<String> = mutableListOf()
-
-    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<FlexibleVmItem<OrderViewModel>>>({
+    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
+            FlexibleExpandableVmItem<
+                    SectionViewModel<Any>, *>
+            >>({
         FlexibleAdapter(
-                //Orders to be listed
-                stop.tasks.map { it.order }.distinct()
-                        .map {
-                            FlexibleVmItem(
-                                    view = R.layout.item_order_short,
-                                    variable = BR.order,
-                                    viewModel = OrderViewModel(it)
-                            )
-                        },
-
+                listOf(),
                 //Listener
                 this
         )
@@ -90,6 +82,7 @@ class DeliveryStopDetailScreen
 
         this.title = getString(R.string.title_stop_detailt)
         this.aidcEnabled = true
+        this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -102,30 +95,104 @@ class DeliveryStopDetailScreen
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        serviceDescriptions.clear()
-
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
         binding.stop = StopViewModel(this.stop)
-
-        stop.tasks
-                .flatMap { it.services }
-                .distinct()
-                .forEach {
-                    it.mobile.text
-                }
-
-        this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, serviceDescriptions)
 
         // Flexible adapter needs to be re-created with views
         flexibleAdapterInstance.reset()
 
-        this.uxOrderList.adapter = flexibleAdapter
-        this.uxOrderList.layoutManager = LinearLayoutManager(context)
+        this.uxDetailList.adapter = flexibleAdapter
+        this.uxDetailList.layoutManager = LinearLayoutManager(context)
         //this.uxStopList.addItemDecoration(dividerItemDecoration)
 
         flexibleAdapter.isLongPressDragEnabled = false
         flexibleAdapter.isHandleDragEnabled = false
         flexibleAdapter.isSwipeEnabled = false
+
+        // Build detail list
+
+        //region Services
+        val services = stop.tasks.flatMap { it.services }.filter { it != ParcelService.NO_ADDITIONAL_SERVICE }.distinct()
+
+        if (services.count() > 0) {
+            flexibleAdapter.addItem(
+                    FlexibleExpandableVmItem<SectionViewModel<Any>, Any>(
+                            view = R.layout.item_section_header,
+                            variable = BR.header,
+                            viewModel = SectionViewModel<Any>(
+                                    icon = R.drawable.ic_service,
+                                    color = R.color.colorGrey,
+                                    background = R.drawable.section_background_grey,
+                                    title = this.getText(R.string.services).toString(),
+                                    items = Observable.fromIterable(listOf(services))
+                            )
+                    ).also {
+                        it.subItems = services.map {
+                            FlexibleSectionableVmItem<Any>(
+                                    view = R.layout.item_service,
+                                    variable = BR.service,
+                                    viewModel = ServiceViewModel(it)
+                            )
+                        }
+                    }
+            )
+        }
+        //endregion
+
+        //region Orders
+        val orders = stop.tasks.map { it.order }.distinct()
+
+        flexibleAdapter.addItem(
+                FlexibleExpandableVmItem<SectionViewModel<Any>, Any>(
+                        view = R.layout.item_section_header,
+                        variable = BR.header,
+                        viewModel = SectionViewModel<Any>(
+                                icon = R.drawable.ic_order,
+                                color = R.color.colorGrey,
+                                background = R.drawable.section_background_grey,
+                                title = this.getText(R.string.orders).toString(),
+                                items = Observable.fromIterable(listOf(orders))
+                        )
+                ).also {
+                    it.subItems = orders.map {
+                        FlexibleSectionableVmItem<Any>(
+                                view = R.layout.item_order_compact,
+                                variable = BR.order,
+                                viewModel = OrderViewModel(it)
+                        )
+                    }
+                }
+        )
+        //endregion
+
+        //region Parcels
+        val parcels = stop.tasks.flatMap { it.order.parcels }
+
+        flexibleAdapter.addItem(
+                FlexibleExpandableVmItem<SectionViewModel<Any>, Any>(
+                        view = R.layout.item_section_header,
+                        variable = BR.header,
+                        viewModel = SectionViewModel<Any>(
+                                icon = R.drawable.ic_package_variant_closed,
+                                color = R.color.colorGrey,
+                                background = R.drawable.section_background_grey,
+                                title = this.getText(R.string.parcels).toString(),
+                                items = Observable.fromIterable(listOf(parcels))
+                        )
+                ).also {
+                    it.subItems = parcels.map {
+                        FlexibleSectionableVmItem<Any>(
+                                view = R.layout.item_parcel,
+                                variable = BR.parcel,
+                                viewModel = ParcelViewModel(it)
+                        )
+                    }
+                }
+        )
+        //endregion
+
+        flexibleAdapter.collapseAll()
+        flexibleAdapter.expandAll()
 
         this.actionItems = listOf(
                 ActionItem(

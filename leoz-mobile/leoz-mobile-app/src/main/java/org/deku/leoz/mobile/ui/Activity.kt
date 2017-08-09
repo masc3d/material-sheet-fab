@@ -800,11 +800,6 @@ open class Activity : RxAppCompatActivity(),
         var scrollCollapseMode = fragment.scrollCollapseMode
         var scroll = (scrollCollapseMode != ScreenFragment.ScrollCollapseModeType.None)
 
-        if (fragment.headerImage == 0) {
-            expandAppBar = false
-            scroll = true
-        }
-
         log.trace("HEADER HEIGHT ${this.uxHeader.layoutParams.height}")
 
         if (fragment.hideActionBar) {

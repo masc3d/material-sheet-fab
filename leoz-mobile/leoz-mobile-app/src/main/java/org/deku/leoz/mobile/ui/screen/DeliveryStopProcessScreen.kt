@@ -135,6 +135,7 @@ class DeliveryStopProcessScreen :
 
         this.title = getString(R.string.title_stop_process)
         this.aidcEnabled = true
+        this.headerImage = R.drawable.img_parcels_1a
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

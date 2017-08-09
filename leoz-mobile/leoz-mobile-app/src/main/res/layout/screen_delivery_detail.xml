@@ -9,47 +9,11 @@
 
     <include layout="@layout/item_stop"/>
 
-    <LinearLayout
-        style="@style/AppTheme.Layout.List"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/uxDetailList"
+        android:layout_marginTop="@dimen/small_margin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <android.support.v7.widget.AppCompatTextView
-            style="@style/TextAppearance.AppCompat.Large"
-            android:alpha="0.8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/services"/>
-
-        <LinearLayout
-            android:id="@+id/uxServiceIconContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-        </LinearLayout>
-
-        <ListView
-            android:id="@+id/uxServiceList"
-            style="@style/AppTheme.ListView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <android.support.v7.widget.AppCompatTextView
-            style="@style/TextAppearance.AppCompat.Large"
-            android:alpha="0.8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/orders"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/uxOrderList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </android.support.v7.widget.RecyclerView>
-
-    </LinearLayout>
+        android:layout_height="match_parent"
+        />
 
 </LinearLayout>
