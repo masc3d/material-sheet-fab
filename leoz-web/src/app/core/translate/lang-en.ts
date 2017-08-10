@@ -51,11 +51,15 @@ export const LANG_EN_TRANS = {
   'no': 'no',
   'UserInsertSuccessful': 'User insert successful',
   'UserUpdateSuccessful': 'User update successful',
+  'apprights': 'App Rights',
+  'hub': 'HUB',
+  'route': 'Route',
+  'station': 'Station',
   // map form
   'allusers': 'all users',
   'drivers': 'drivers',
   'could not get geolocation points': 'Could not get geolocation points',
-  // stationloading form
+  // stationloading form - loadinglist
   'loadingcontrol': 'Loading control',
   'newloadlist': 'New loadlist',
   'payload': 'Payload in Kg',
@@ -65,7 +69,7 @@ export const LANG_EN_TRANS = {
   'alllists': 'all lists',
   'selectedlist': 'selected list',
   'actuallist': 'actual list',
-  'preview': 'preview',
+  'preview': 'Preview',
   'directprint': 'direct print',
   'information': 'Information',
   'loadlistnumber': 'Loadlist-No',
@@ -96,5 +100,40 @@ export const LANG_EN_TRANS = {
   'actionChangePayload': 'Action: Change payload',
   'actionChangeLoadlist': 'Action: Change loadlist',
   'notOnLoadlist': 'not yet on loadlist',
-  'onLoadlist': 'already loaded'
+  'onLoadlist': 'already loaded',
+  // stationloading form - bagscan
+  'openOnBaglist': 'not yet on baglist',
+  'bagInformation': 'Bag Information',
+  'bagID': 'Bag-ID',
+  'backLabel': 'Backlabel',
+  'backSeal': 'Backseal',
+  'yellow': 'yellow',
+  'packNumber': 'Pack Number',
+  'messages': 'Messages',
+  'llNo': 'LL-No',
+  'statistics': 'Statistics',
+  'valCount': 'No of Valore',
+  'bagWeightKg': 'Bagweight (Kg)',
+  'completeProcessingF5': 'Complete Processing (F5)',
+  'swapSealF10': 'Swap Seal (F10)',
+  'update': 'Update',
+  'noLlNoSet': 'No loadlistnumber set',
+  'noScan': 'no scan',
+  'alreadyScanned': 'bereits gescannt',
+  'noAlreadyScanned': 'This shipment no has already been scanned.',
+  'transferedToOtherLoadlist': 'This shipmentnumber has already been scanned to another loadlist and will be ' +
+  'transfered to the actual one.',
+  'noDataInDatabase': 'No data in database for this shipmentnumber.',
+  'depotMismatch': 'Scan not possible, since you are not the pickup station for this shipment.',
+  'invalidSenddate': ' The date of shipment does not correspond to the specified criteria. ' +
+  'Please correct and try again.',
+  'invalidProduct': 'This shipment is no <ONS>. Scan not possible. Please correct and try again.',
+  'noValoreScan': 'This shipment is a Valore. Scan not possible. Valore must be scanned into a bag.',
+  'baglist': 'Baglist',
+  'bagCountMsgfield': 'Your bag inventory exceeds your quota.' + '<br>' +
+                      'Please return 3 bags for relief.',
+  'infoMsgfield': 'Open the scanning panel with F2.' + '<br>' +
+                  'Clear fields with F3.' + '<br>' +
+                  'Finish processing with F5.' + '<br>' +
+                  'Replace regular seal with emergency seal with F10.'
 };

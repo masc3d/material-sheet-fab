@@ -51,11 +51,15 @@ export const LANG_DE_TRANS = {
   'no': 'nein',
   'UserInsertSuccessful': 'Benutzer erfolgreich angelegt',
   'UserUpdateSuccessful': 'Benutzer erfolgreich geändert',
+  'apprights': 'App Berechtigungen',
+  'hub': 'HUB',
+  'route': 'Linie',
+  'station': 'Station',
   // map form
   'allusers': 'alle Mitarbeiter',
   'drivers': 'Fahrer',
   'could not get geolocation points': 'Keine Geokoordinaten gefunden',
-  // stationloading form
+  // stationloading form - loadinglist
   'loadingcontrol': 'Verladesteuerung',
   'newloadlist': 'Neue Ladeliste',
   'payload': 'Zuladung in Kg',
@@ -96,6 +100,40 @@ export const LANG_DE_TRANS = {
   'actionChangePayload': 'Aktion: Änderung der Zuladung',
   'actionChangeLoadlist': 'Aktion: Wechsel Ladeliste',
   'notOnLoadlist': 'noch nicht auf Ladeliste',
-  'onLoadlist': 'bereits geladen'
+  'onLoadlist': 'bereits geladen',
+  // stationloading form - bagscan
+  'openOnBaglist': 'noch nicht auf Bagliste',
+  'bagInformation': 'Bag Information',
+  'bagID': 'Bag-ID',
+  'backLabel': 'Rücklabel',
+  'backSeal': 'Rückplombe',
+  'yellow': 'gelb',
+  'packNumber': 'Packstücknummer',
+  'messages': 'Meldungen',
+  'llNo': 'LL-Nr',
+  'statistics': 'Statistiken',
+  'valCount': 'Anzahl Valoren',
+  'bagWeightKg': 'Baggewicht (Kg)',
+  'completeProcessingF5': 'Bearbeitung abschliessen (F5)',
+  'swapSealF10': 'Tausch auf Notfallplombe (F10)',
+  'update': 'Aktualisieren',
+  'noLlNoSet': 'Keine Ladelistennummer gesetzt',
+  'noScan': 'kein Scan',
+  'alreadyScanned': 'bereits gescannt',
+  'noAlreadyScanned': 'Diese Belegnummer wurde bereits gescannt.',
+  'transferedToOtherLoadlist': 'Diese Belegnummer wurde bereits auf eine andere Ladeliste gescannt und wird jetzt umgebucht.',
+  'noDataInDatabase': 'Kein Datensatz vorhanden.',
+  'depotMismatch': 'Nicht scanbar, da Sie für diese Sendung nicht das abholende Depot sind.',
+  'invalidSenddate': 'Das Verladedatum der Sendung entspricht nicht den vorgegebenen Kriterien. ' +
+  'Bitte in der Auftragserfassung nachbearbeiten.',
+  'invalidProduct': 'Diese Sendung ist kein <ONS>. Scan nicht möglich. Bitte in der Auftragserfassung nachbearbeiten.',
+  'noValoreScan': 'Dieses Packstück ist eine Valore. Scan nicht möglich. Valoren müssen in einen Bag gescannt werden.',
+  'baglist': 'Bagliste',
+  'bagCountMsgfield': 'Ihr Bag-Bestand überschreitet Ihr Kontingent.' + '<br>' +
+                      'Bitte senden Sie zur Entlastung 3 Bags zurück.',
+  'infoMsgfield': 'Belegscanfeld öffnen mit F2.' + '<br>' +
+                      'Felder leeren mit F3.' + '<br>' +
+                      'Bearbeitung abschliessen mit F5.' + '<br>' +
+                      'Tausch auf Notfallplombe mit F10.'
 };
 

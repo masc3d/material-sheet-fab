@@ -70,6 +70,28 @@
     </div>
 
     <div class="ui-g">
+      <div class="ui-g-12 ui-md-6" style="padding: 0;">
+        <p-fieldset legend="{{'apprights' | translate}}">
+          <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12">
+              <p-checkbox name="printlabel" value="printlabel" label="{{'hub' | translate}}"></p-checkbox>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12">
+              <p-checkbox name="printlabel" value="printlabel" label="{{'route' | translate}}"></p-checkbox>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12">
+              <p-checkbox name="printlabel" value="printlabel" label="{{'station' | translate}}"></p-checkbox>
+            </div>
+          </div>
+        </p-fieldset>
+      </div>
+    </div>
+
+    <div class="ui-g">
       <div class="ui-g-12">
       <button pButton type="button" (click)="onSubmit()" [disabled]="!userForm.valid" label="{{'save' | translate}}" style="width:100px"></button>
       <button pButton type="button" (click)="clearFields()" label="{{'clear' | translate}}" style="width:100px"></button>
