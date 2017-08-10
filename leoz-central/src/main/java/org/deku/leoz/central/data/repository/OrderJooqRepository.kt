@@ -39,7 +39,7 @@ open class OrderJooqRepository {
 
         return dslContext.fetch(
                 Tables.TAD_V_ORDER,
-                Tables.TAD_V_ORDER.ID.`in`(ids.map { it.toDouble() })
+                Tables.TAD_V_ORDER.ID.`in`(set)
         ).sortedWith(compareBy { set.indexOf(it.id) })
     }
 
