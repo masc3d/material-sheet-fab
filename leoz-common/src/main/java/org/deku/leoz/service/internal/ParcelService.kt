@@ -4,6 +4,7 @@ import io.swagger.annotations.Api
 import org.deku.leoz.model.AdditionalInfo
 import sx.io.serialization.Serializable
 import java.util.*
+import javax.activation.MimeType
 import javax.ws.rs.Consumes
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
@@ -49,15 +50,19 @@ interface ParcelServiceV1 {
 
             // TODO: no object graphs with derivation. make it plain (see below). marked as @Transient as kryo will choke on this.
             @Transient
-            val additionalInfo: AdditionalInfo = AdditionalInfo.EmptyInfo
+            val additionalInfo: AdditionalInfo = AdditionalInfo.EmptyInfo,
 
+            val deliveredInfo: DeliveredInfo? = null
             /** proposal/experimental for other events in future...
-            val deliveredInfo: DeliveredInfo? = null,
             val deliveredAtNeighborInfo: DeliveredAtNeighborInfo? = null,
             val notDeliveredRefusedInfo: NotDeliveredRefusedInfo? = null
              **/
-    )
-
-
+    ) {
+        data class DeliveredInfo(
+                val recipient: String? = null,
+                val signature: String? = null,
+                val mimetype: String = MediaType.APPLICATION_SVG_XML
+        )
+    }
 }
 
