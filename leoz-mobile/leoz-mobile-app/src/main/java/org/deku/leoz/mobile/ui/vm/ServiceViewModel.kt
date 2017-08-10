@@ -3,7 +3,7 @@ package org.deku.leoz.mobile.ui.vm
 import android.content.Context
 import android.databinding.BaseObservable
 import android.support.annotation.DrawableRes
-import org.deku.leoz.mobile.model.process.mobile
+import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
 
 /**

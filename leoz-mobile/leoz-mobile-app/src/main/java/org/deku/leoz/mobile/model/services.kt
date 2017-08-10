@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.model.process
+package org.deku.leoz.mobile.model
 
 import android.content.Context
 import android.support.annotation.DrawableRes
@@ -22,97 +22,106 @@ data class ParcelServiceMeta(
     }
 }
 
-/**
- * Helper extension for creating parcel service meta pair
- */
-private fun ParcelService.createMetaPair(
-        @StringRes text: Int,
-        @DrawableRes icon: Int
-): Pair<ParcelService, ParcelServiceMeta> {
-    return Pair(this, ParcelServiceMeta(
-            value = this,
-            text = text,
-            icon = icon
-    ))
-}
 
 /**
  * Service meta lookup map
  */
-private val metaByService = mapOf<ParcelService, ParcelServiceMeta>(
-        ParcelService.SUITCASE_SHIPPING.createMetaPair(
+private val meta = listOf(
+        ParcelServiceMeta(
+                ParcelService.SUITCASE_SHIPPING,
                 R.string.service_suitcase,
                 R.drawable.ic_service
         ),
-        ParcelService.RECEIPT_ACKNOWLEDGEMENT.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.RECEIPT_ACKNOWLEDGEMENT,
                 R.string.service_receipt_acknowledgement,
                 R.drawable.ic_service_confirmation
         ),
-        ParcelService.SELF_PICKUP.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.SELF_PICKUP,
                 R.string.service_selfpickup,
                 R.drawable.ic_service
         ),
-        ParcelService.CASH_ON_DELIVERY.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.CASH_ON_DELIVERY,
                 R.string.service_cash_delivery,
                 R.drawable.ic_service_cash
         ),
-        ParcelService.PHARMACEUTICALS.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.PHARMACEUTICALS,
                 R.string.service_pharmaceuticals,
                 R.drawable.ic_service_pharma
         ),
-        ParcelService.IDENT_CONTRACT_SERVICE.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.IDENT_CONTRACT_SERVICE,
                 R.string.service_ident_contract,
                 R.drawable.ic_service_ident
         ),
-        ParcelService.SUBMISSION_PARTICIPATION.createMetaPair(
+        ParcelServiceMeta(ParcelService.SUBMISSION_PARTICIPATION,
                 R.string.service_submission,
                 R.drawable.ic_service
         ),
-        ParcelService.SECURITY_RETURN.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.SECURITY_RETURN,
                 R.string.service_security_return,
                 R.drawable.ic_service_security_return
         ),
-        ParcelService.XCHANGE.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.XCHANGE,
                 R.string.service_xchange,
                 R.drawable.ic_service_exchange
         ),
-        ParcelService.PHONE_RECEIPT.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.PHONE_RECEIPT,
                 R.string.service_phone_receipt,
                 R.drawable.ic_service_phone
         ),
-        ParcelService.DOCUMENTED_PERSONAL_DELIVERY.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.DOCUMENTED_PERSONAL_DELIVERY,
                 R.string.service_documented_personal,
                 R.drawable.ic_service_personal_document
         ),
-        ParcelService.DEPARTMENT_DELIVERY.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.DEPARTMENT_DELIVERY,
                 R.string.service_department_delivery,
                 R.drawable.ic_service_department_delivery
         ),
-        ParcelService.FIXED_APPOINTMENT.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.FIXED_APPOINTMENT,
                 R.string.service_fixed,
                 R.drawable.ic_service
         ),
-        ParcelService.FAIR_SERVICE.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.FAIR_SERVICE,
                 R.string.service_fair,
                 R.drawable.ic_service_trade_fair
         ),
-        ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS,
                 R.string.service_self_completion_duty,
                 R.drawable.ic_service
         ),
-        ParcelService.PACKAGING_RECIRCULATION.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.PACKAGING_RECIRCULATION,
                 R.string.service_packaging_recirculation,
                 R.drawable.ic_service_packaging
         ),
-        ParcelService.POSTBOX_DELIVERY.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.POSTBOX_DELIVERY,
                 R.string.service_postbox_delivery,
                 R.drawable.ic_service_postbox
         ),
-        ParcelService.NO_ALTERNATIVE_DELIVERY.createMetaPair(
+        ParcelServiceMeta(
+                ParcelService.NO_ALTERNATIVE_DELIVERY,
                 R.string.service_no_alternative,
                 R.drawable.ic_service_no_alternative_delivery
         )
 )
+
+/**
+ * Event meta lookup by reason
+ */
+private val metaByService = mapOf(*meta.map { Pair(it.value, it) }.toTypedArray())
 
 /**
  * Extension property to provide mobile meta structure
