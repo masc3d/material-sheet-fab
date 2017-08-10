@@ -114,17 +114,17 @@ class DeliveryStop(
                             ParcelServiceV1.ParcelMessage(
                                     userId = this.login.authenticatedUser?.id,
                                     nodeId = this.identity.uid.value,
+                                    deliveredInfo = ParcelServiceV1.Event.DeliveredInfo(
+                                            signature = signatureSvg,
+                                            recipient = recipientName
+                                    ),
                                     events = parcels.map {
                                         ParcelServiceV1.Event(
                                                 event = Event.DELIVERED.value,
                                                 reason = Reason.NORMAL.id,
                                                 parcelId = it.number.toLong(),
                                                 latitude = lastLocation?.altitude ?: 0.0,
-                                                longitude = lastLocation?.longitude ?: 0.0,
-                                                deliveredInfo = ParcelServiceV1.Event.DeliveredInfo(
-                                                        signature = signatureSvg,
-                                                        recipient = recipientName
-                                                )
+                                                longitude = lastLocation?.longitude ?: 0.0
                                         )
                                     }.toTypedArray()
                             )

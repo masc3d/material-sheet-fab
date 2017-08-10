@@ -29,7 +29,9 @@ interface ParcelServiceV1 {
     data class ParcelMessage(
             var userId: Int? = null,
             var nodeId: String? = null,
-            var events: Array<Event>? = null
+            var events: Array<Event>? = null,
+
+            val deliveredInfo: Event.DeliveredInfo? = null
     )
 
     /**
@@ -50,9 +52,8 @@ interface ParcelServiceV1 {
 
             // TODO: no object graphs with derivation. make it plain (see below). marked as @Transient as kryo will choke on this.
             @Transient
-            val additionalInfo: AdditionalInfo = AdditionalInfo.EmptyInfo,
+            val additionalInfo: AdditionalInfo = AdditionalInfo.EmptyInfo
 
-            val deliveredInfo: DeliveredInfo? = null
             /** proposal/experimental for other events in future...
             val deliveredAtNeighborInfo: DeliveredAtNeighborInfo? = null,
             val notDeliveredRefusedInfo: NotDeliveredRefusedInfo? = null
