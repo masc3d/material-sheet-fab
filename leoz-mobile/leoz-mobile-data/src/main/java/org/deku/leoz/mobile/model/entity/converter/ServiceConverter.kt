@@ -23,6 +23,7 @@ open class ServiceConverter : Converter<ArrayList<ParcelService>, String> {
     override fun convertToMapped(type: Class<out ArrayList<ParcelService>>?, value: String?): ArrayList<ParcelService> {
         return ArrayList((value ?: "")
                 .split(',')
+                .filter { it.isNotEmpty() }
                 .map { ParcelService.byServiceId.get(it.toLong()) }
                 .filterNotNull().toMutableList())
     }
