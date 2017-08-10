@@ -114,7 +114,7 @@ class DeliveryStop(
                             ParcelServiceV1.ParcelMessage(
                                     userId = this.login.authenticatedUser?.id,
                                     nodeId = this.identity.uid.value,
-                                    deliveredInfo = ParcelServiceV1.Event.DeliveredInfo(
+                                    deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(
                                             signature = signatureSvg,
                                             recipient = recipientName
                                     ),
