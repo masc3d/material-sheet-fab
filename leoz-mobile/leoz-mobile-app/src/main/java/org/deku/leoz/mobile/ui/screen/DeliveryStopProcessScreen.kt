@@ -497,6 +497,9 @@ class DeliveryStopProcessScreen :
                 if (this.parcelListAdapter.selectedSection != deliveredSection)
                     this.parcelListAdapter.selectedSection = deliveredSection
             }
+            else -> {
+                tones.warningBeep()
+            }
         }
     }
 
