@@ -38,7 +38,7 @@ interface ParcelServiceV1 {
     data class Event(
             val event: Int = 0,
             val reason: Int = 0,
-            val parcelId: Int = 0,
+            val parcelId: Long = 0,
             val parcelScancode: String = "", //possibly alphanumeric
             val time: Date = Date(),
             val latitude: Double? = null,
@@ -46,7 +46,11 @@ interface ParcelServiceV1 {
             //proposal/experimental for other events in future...
             val fromStation: Boolean = true, //maybe there will be a new app for line... and there are events for both e.g. damaged & photo
             val from: String? = null, //lineNo or StationNo
+
+            // TODO: no object graphs with derivation. make it plain (see below). marked as @Transient as kryo will choke on this.
+            @Transient
             val additionalInfo: AdditionalInfo = AdditionalInfo.EmptyInfo
+
             /** proposal/experimental for other events in future...
             val deliveredInfo: DeliveredInfo? = null,
             val deliveredAtNeighborInfo: DeliveredAtNeighborInfo? = null,

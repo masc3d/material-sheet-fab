@@ -57,8 +57,8 @@ class ParcelJooqRepository {
     }
      **/
 
-    fun getUnitNo(parcelId: Int): Double? {
-        if (parcelId == 0) return null
+    fun getUnitNo(parcelId: Long): Double? {
+        if (parcelId == 0L) return null
         return dslContext.select(Tables.TAD_V_ORDER_PARCEL.SCAN_ID)
                 .from(Tables.TAD_V_ORDER_PARCEL)
                 .where(Tables.TAD_V_ORDER_PARCEL.ID.eq(parcelId.toDouble()))

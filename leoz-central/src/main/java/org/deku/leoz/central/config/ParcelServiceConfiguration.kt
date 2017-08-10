@@ -1,6 +1,8 @@
 package org.deku.leoz.central.config
 
+import org.deku.leoz.central.config.MessageListenerConfiguration
 import org.deku.leoz.central.service.internal.LocationServiceV1
+import org.deku.leoz.central.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -12,15 +14,15 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class LocationServiceConfiguration {
+open class ParcelServiceConfiguration {
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
     @Inject
-    private lateinit var locationService: LocationServiceV1
+    private lateinit var parcelService: ParcelServiceV1
 
     @PostConstruct
     fun onInitialize() {
-        this.messageListenerConfiguration.centralTransientQueueListener.addDelegate(
-                locationService)
+        this.messageListenerConfiguration.centralQueueListener.addDelegate(
+                parcelService)
     }
 }

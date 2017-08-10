@@ -35,15 +35,12 @@ import java.sql.Timestamp
 import javax.imageio.ImageIO
 
 /**
+ * Parcel service message handler
  * Created by JT on 17.07.17.
  */
 @Named
 @ApiKey(false)
 @Path("internal/v1/event")
-
-/**
- * Parcel service message handler
- */
 open class ParcelServiceV1 :
         org.deku.leoz.service.internal.ParcelServiceV1,
         MqHandler<ParcelServiceV1.ParcelMessage> {

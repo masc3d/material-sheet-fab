@@ -111,9 +111,15 @@ class EventReasonAssosiation {
 
 sealed class AdditionalInfo {
     object EmptyInfo : AdditionalInfo()
-    data class WeightCorrectionInfo(val length: Int = 0, val width: Int = 0, val height: Int = 0, val weight: Double = 0.0) : AdditionalInfo()
-    data class LoadingListInfo(val loadingListNo: Long = 0) : AdditionalInfo()
 
+    data class WeightCorrectionInfo(
+            val length: Int = 0,
+            val width: Int = 0,
+            val height: Int = 0,
+            val weight: Double = 0.0) : AdditionalInfo()
+
+    data class LoadingListInfo(
+            val loadingListNo: Long = 0) : AdditionalInfo()
 
     data class DeliveredInfo(
             val recipient: String? = null,
