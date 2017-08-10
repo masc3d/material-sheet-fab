@@ -459,7 +459,8 @@ class DeliveryStopProcessScreen :
                         .subscribeOn(Schedulers.computation())
                         .subscribe()
 
-                this.parcelListAdapter.selectedSection = deliveredSection
+                if (this.parcelListAdapter.selectedSection != deliveredSection)
+                    this.parcelListAdapter.selectedSection = deliveredSection
             }
         }
     }
