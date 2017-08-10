@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.model.counter
 import org.deku.leoz.time.toShortTime
+import org.springframework.transaction.annotation.Transactional
 import sx.time.toSqlDate
 import sx.time.toTimestamp
 import java.io.ByteArrayInputStream
@@ -58,6 +59,7 @@ open class ParcelServiceV1 :
     /**
      * Parcel service message handler
      */
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
 
         //val events = message.events?.toList()
