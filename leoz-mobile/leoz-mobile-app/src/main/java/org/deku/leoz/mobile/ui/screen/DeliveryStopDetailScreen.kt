@@ -131,7 +131,9 @@ class DeliveryStopDetailScreen
                             FlexibleSectionableVmItem<Any>(
                                     view = R.layout.item_service,
                                     variable = BR.service,
-                                    viewModel = ServiceViewModel(it)
+                                    viewModel = ServiceViewModel(
+                                            context = this.context,
+                                            service = it)
                             )
                         }
                     }

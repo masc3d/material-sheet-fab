@@ -31,6 +31,7 @@ class DeliveryStop(
             name = "Delivery stop parcels",
             query = db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.ORDER_ID.`in`(this.entity.tasks.map { it.order.id } ))
+                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     )
 
