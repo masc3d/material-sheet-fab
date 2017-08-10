@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.model.process
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -10,20 +11,25 @@ import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
+import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
-import org.deku.leoz.model.DekuDeliveryListNumber
-import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.mobile.service.LocationCache
+import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
+import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
 import sx.rx.*
@@ -40,12 +46,18 @@ class DeliveryList : CompositeDisposableSupplier {
     private val db: Database by Kodein.global.lazy.instance()
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
     private val orderService: OrderService by Kodein.global.lazy.instance()
+    private val locationCache: LocationCache by Kodein.global.lazy.instance()
 
     //region Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     //endregion
+
+    private val identity: Identity by Kodein.global.lazy.instance()
+    private val login: Login by Kodein.global.lazy.instance()
+
+    private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
 
     //region Self-observing queries
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
@@ -275,7 +287,7 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
-     * Merge a single order into the database
+     * Merge a single order into the entity store
      */
     fun mergeOrder(order: Order): Completable {
         return Completable.fromCallable {
@@ -303,7 +315,7 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
-     * Load order based on unit number and merge orders into local database
+     * Load order based on unit number and merge orders into local entity store
      * @param unitNumber Unit number
      */
     fun load(unitNumber: UnitNumber): Observable<Order> {
@@ -326,7 +338,7 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
-     * Finalizes the loading process, marking all pending parcels as missing
+     * Finalizes the loading process, marking all parcels with pending loading state as missing
      */
     fun finalize(): Completable {
         return db.store.withTransaction {
@@ -358,6 +370,39 @@ class DeliveryList : CompositeDisposableSupplier {
                     }
         }
                 .toCompletable()
+                .concatWith(Completable.fromCallable {
+                    // Select parcels for which to send status events
+                    val parcels = parcelRepository.entities.filter {
+                        it.loadingState == Parcel.LoadingState.LOADED ||
+                                it.loadingState == Parcel.LoadingState.MISSING
+                    }
+
+                    val lastLocation = this@DeliveryList.locationCache.lastLocation
+
+                    // Send compound parcel message with loading states
+                    mqttChannels.central.main.channel().send(
+                            ParcelServiceV1.ParcelMessage(
+                                    userId = this.login.authenticatedUser?.id,
+                                    nodeId = this.identity.uid.value,
+                                    events = parcels.map {
+                                        ParcelServiceV1.Event(
+                                                event = when {
+                                                    it.loadingState == Parcel.LoadingState.LOADED -> Event.IN_DELIVERY.value
+                                                    else -> Event.DELIVERY_FAIL.value
+                                                },
+                                                reason = when {
+                                                    it.isDamaged -> Reason.PARCEL_DAMAGED.id
+                                                    it.loadingState == Parcel.LoadingState.MISSING -> Reason.PARCEL_MISSING.id
+                                                    else -> Reason.NORMAL.id
+                                                },
+                                                parcelId = it.number.toLong(),
+                                                latitude = lastLocation?.altitude ?: 0.0,
+                                                longitude = lastLocation?.longitude ?: 0.0
+                                        )
+                                    }.toTypedArray()
+                            )
+                    )
+                })
                 .subscribeOn(Schedulers.computation())
     }
 }

@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.activity
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler

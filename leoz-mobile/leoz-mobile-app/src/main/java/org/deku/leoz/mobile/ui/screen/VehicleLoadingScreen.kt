@@ -353,10 +353,14 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                         this.deliveryList
                                                 .finalize()
                                                 .observeOnMainThread()
-                                                .subscribeBy(onComplete = {
-                                                    this.listener?.onVehicleLoadingFinalized()
-                                                })
-
+                                                .subscribeBy(
+                                                        onComplete = {
+                                                            this.listener?.onVehicleLoadingFinalized()
+                                                        },
+                                                        onError = {
+                                                            log.error(it.message, it)
+                                                        }
+                                                )
                                     }
                                     .show()
                         }

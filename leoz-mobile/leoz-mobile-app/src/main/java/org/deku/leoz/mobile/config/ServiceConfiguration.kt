@@ -6,6 +6,7 @@ import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.mobile.mq.MqttListeners
+import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.mobile.service.NotificationService
 import org.deku.leoz.mobile.service.UpdateService
 import sx.ConfigurationMap
@@ -57,6 +58,10 @@ class ServiceConfiguration {
                     service.start()
 
                 service
+            }
+
+            bind<LocationCache>() with singleton {
+                LocationCache()
             }
         }
     }

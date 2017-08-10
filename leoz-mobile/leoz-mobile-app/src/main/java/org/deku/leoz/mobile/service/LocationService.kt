@@ -17,6 +17,7 @@ import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
+import sx.rx.ObservableRxProperty
 import sx.time.Duration
 import java.util.*
 
@@ -31,6 +32,7 @@ class LocationService(
     private val locationSettings: LocationSettings by Kodein.global.lazy.instance()
 
     private var locationManager: LocationManager? = null
+    private val locationCache: LocationCache by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
 
@@ -96,16 +98,9 @@ class LocationService(
     inner class LTRLocationListener(provider: String) : android.location.LocationListener {
         private val log = LoggerFactory.getLogger(this.javaClass)
         val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
-        val lastLocation = Location(provider)
 
-        override fun onLocationChanged(location: Location?) {
-
+        override fun onLocationChanged(location: Location) {
             log.trace("ONLOCATIONCHANGED")
-
-            if (location == null) {
-                log.warn("Location object is null.")
-                return
-            }
 
             /**
              * Check weather the acquired location is provided by a mock provider.
@@ -137,7 +132,8 @@ class LocationService(
                     accuracy = location.accuracy,
                     vehicleType = login.authenticatedUser?.vehicleType
             )
-            lastLocation.set(location)
+
+            this@LocationService.locationCache.lastLocation = location
 
             log.info("Location changed. Provider [${location.provider}] Position [$currentPosition]")
 
