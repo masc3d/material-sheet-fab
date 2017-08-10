@@ -35,18 +35,26 @@ class DeliveryStop(
             query = db.store.select(StopEntity::class)
                     .where(StopEntity.ID.eq(entity.id))
                     .get()
-    ).bind(this)
+    )
+            .bind(this)
+
+    private val stopParcelsQuery = ObservableQuery<ParcelEntity>(
+            name = "Delivery stop parcels",
+            query = db.store.select(ParcelEntity::class)
+                    .where(ParcelEntity.ORDER_ID.`in`(this.entity.tasks.map { it.order.id } ))
+                    .get()
+    )
 
     /** Observable stop */
     val stop = stopQuery.result.map { it.value.first() }
             .behave(this)
 
     /** Stop orders */
-    val orders = this.stop.map { it.tasks.map { it.order } }
+    val orders = this.stop .map { it.tasks.map { it.order as OrderEntity } }
             .behave(this)
 
     /** Stop parcels */
-    val parcels = this.stop.map { it.tasks.flatMap { it.order.parcels } }
+    val parcels = this.stopParcelsQuery.result.map { it.value }
             .behave(this)
 
     val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }

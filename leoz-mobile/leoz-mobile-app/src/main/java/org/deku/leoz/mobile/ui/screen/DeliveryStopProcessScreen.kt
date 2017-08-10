@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -17,6 +18,7 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.BR
@@ -24,11 +26,15 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
+import org.deku.leoz.mobile.dev.SyntheticInput
+import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.process.DeliveryStop
+import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
@@ -38,9 +44,11 @@ import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.EventDeliveredReason
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.ParcelService
+import org.deku.leoz.model.UnitNumber
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
@@ -88,8 +96,12 @@ class DeliveryStopProcessScreen :
     }
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val tones: Tones by Kodein.global.lazy.instance()
+
+    // Model classes
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val stop: StopEntity by lazy {
         this.stopRepository.entities.first { it.id == this.parameters.stopId }
@@ -99,7 +111,7 @@ class DeliveryStopProcessScreen :
 
     // region Sections
     val deliveredSection by lazy {
-        SectionViewModel<Parcel>(
+        SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_truck_delivery,
                 color = R.color.colorGreen,
                 background = R.drawable.section_background_green,
@@ -110,7 +122,7 @@ class DeliveryStopProcessScreen :
     }
 
     val pendingSection by lazy {
-        SectionViewModel<Parcel>(
+        SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -120,26 +132,47 @@ class DeliveryStopProcessScreen :
                         .bindToLifecycle(this)
         )
     }
+
+    val orderSection by lazy {
+        SectionViewModel<OrderEntity>(
+                icon = R.drawable.ic_order,
+                color = R.color.colorGrey,
+                background = R.drawable.section_background_grey,
+                showIfEmpty = true,
+                title = this.getText(R.string.orders).toString(),
+                items = this.deliveryStop.orders
+                        .bindToLifecycle(this)
+        )
+    }
     //endregion
 
 
-    fun SectionViewModel<Parcel>.toFlexibleItem()
-            : FlexibleExpandableVmItem<SectionViewModel<Parcel>, Any> {
+    fun <T> SectionViewModel<T>.toFlexibleItem()
+            : FlexibleExpandableVmItem<SectionViewModel<T>, Any> {
 
-        return FlexibleExpandableVmItem<SectionViewModel<Parcel>, Any>(
+        return FlexibleExpandableVmItem<SectionViewModel<T>, Any>(
                 view = R.layout.item_section_header,
                 variable = BR.header,
                 viewModel = this
         )
     }
 
-    fun Parcel.toFlexibleItem()
+    fun ParcelEntity.toFlexibleItem()
             : FlexibleSectionableVmItem<ParcelViewModel> {
 
         return FlexibleSectionableVmItem(
                 view = R.layout.item_parcel,
                 variable = BR.parcel,
                 viewModel = ParcelViewModel(this)
+        )
+    }
+
+    fun OrderEntity.toFlexibleItem()
+            : FlexibleSectionableVmItem<OrderViewModel> {
+        return FlexibleSectionableVmItem(
+                view = R.layout.item_order_compact,
+                variable = BR.order,
+                viewModel = OrderViewModel(this)
         )
     }
 
@@ -153,6 +186,11 @@ class DeliveryStopProcessScreen :
 
         adapter.addSection(
                 sectionVmItemProvider = { this.pendingSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.orderSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
@@ -314,13 +352,75 @@ class DeliveryStopProcessScreen :
                         }
                     }
                 }
+
+        this.syntheticInputs = listOf(
+                SyntheticInput(
+                        name = "Parcels",
+                        entries = this.deliveryStop.parcels.blockingFirst().map {
+                            val unitNumber = UnitNumber.parse(it.number).value
+                            SyntheticInput.Entry(
+                                    symbologyType = SymbologyType.Interleaved25,
+                                    data = unitNumber.label
+                            )
+                        }
+                )
+        )
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
-        log.trace("AIDC READ ${event}")
+        log.trace("AIDC READ $event")
 
-        //    private fun processLabelRef(ref: String) {
+        val result = UnitNumber.parseLabel(event.data)
+
+        when {
+            result.hasError -> {
+                tones.warningBeep()
+
+                this.activity.snackbarBuilder
+                        .message(R.string.error_invalid_barcode)
+                        .build().show()
+            }
+            else -> {
+                this.onInput(result.value)
+            }
+        }
     }
+
+    private fun onInput(unitNumber: UnitNumber) {
+        val parcel = this.deliveryStop.parcels.blockingFirst().firstOrNull { it.number == unitNumber.value }
+
+        if (parcel == null) {
+            tones.warningBeep()
+
+            this.activity.snackbarBuilder
+                    .message(R.string.error_invalid_parcel)
+                    .build().show()
+
+            return
+        }
+
+        this.onParcel(parcel as ParcelEntity)
+    }
+
+    /**
+     * On valid parcel entry
+     */
+    fun onParcel(parcel: ParcelEntity) {
+        when (parcelListAdapter.selectedSection) {
+            deliveredSection -> {
+                parcel.deliveryState = Parcel.DeliveryState.DELIVERED
+                this.parcelRepository.update(parcel)
+                        .subscribeOn(Schedulers.computation())
+                        .subscribe()
+            }
+        }
+    }
+
+
+    override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
+        log.trace("SELECTEDITEAM VIA LISTENER")
+    }
+
 //        val order: Order? = orderList.firstOrNull {
 //            it.parcels.firstOrNull {
 //                it.number == ref
@@ -360,9 +460,5 @@ class DeliveryStopProcessScreen :
 //        this.uxResultLeft.visibility = View.INVISIBLE
 //        this.uxResultRight.visibility = View.INVISIBLE
 //    }
-
-    override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
-        log.trace("SELECTEDITEAM VIA LISTENER")
-    }
 
 }
