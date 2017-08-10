@@ -200,8 +200,8 @@ class DeliveryStop(
                                                 event = Event.DELIVERED.value,
                                                 reason = Reason.NORMAL.id,
                                                 parcelId = it.number.toLong(),
-                                                latitude = lastLocation?.altitude ?: 0.0,
-                                                longitude = lastLocation?.longitude ?: 0.0
+                                                latitude = lastLocation?.altitude,
+                                                longitude = lastLocation?.longitude
                                         )
                                     }.toTypedArray()
                             )
