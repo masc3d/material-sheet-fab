@@ -2,20 +2,11 @@ package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.MstUser
-import org.deku.leoz.central.data.jooq.tables.TadVOrder
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
-import org.deku.leoz.central.data.prepared
 import org.jooq.DSLContext
-import org.jooq.Record
-import org.jooq.RecordMapper
-import org.jooq.Result
-import org.jooq.ResultQuery
-import org.jooq.impl.DSL
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.Stopwatch
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -38,21 +29,18 @@ open class OrderJooqRepository {
                 Tables.TAD_V_ORDER.ID.eq(id.toDouble()))
     }
 
-    fun findByIds(id: List<Long>): List<TadVOrderRecord> {
+    /**
+     * Find orders by ids.
+     * The orders are guaranteed to be returned in the same order has the list of ids
+     * @param ids List of order ids
+     */
+    fun findByIds(ids: List<Long>): List<TadVOrderRecord> {
+        val set = LinkedHashSet(ids.map { it.toDouble() })
+
         return dslContext.fetch(
                 Tables.TAD_V_ORDER,
-                Tables.TAD_V_ORDER.ID.`in`(id.map { it.toDouble() })
-        )
-    }
-
-    fun findByIdJoined(id: Long): Map<TadVOrderRecord, List<TadVOrderParcelRecord>> {
-        // TODO just an untested example, not working presumably
-        return dslContext.select()
-                .from(Tables.TAD_V_ORDER)
-                .join(Tables.TAD_V_ORDER_PARCEL)
-                .on(Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(Tables.TAD_V_ORDER.ID))
-                .where(Tables.TAD_V_ORDER.ID.eq(id.toDouble()))
-                .fetchGroups(Tables.TAD_V_ORDER, TadVOrderParcelRecord::class.java)
+                Tables.TAD_V_ORDER.ID.`in`(ids.map { it.toDouble() })
+        ).sortedWith(compareBy { set.indexOf(it.id) })
     }
 
     fun findByScan(scanId: String): TadVOrderRecord? {
@@ -64,12 +52,21 @@ open class OrderJooqRepository {
         return findById(rParcel.orderId.toLong()) //null!!!!!!
     }
 
+    /**
+     * Find parcels by order
+     * @param id Order id
+     */
     fun findParcelsByOrderId(id: Long): List<TadVOrderParcelRecord> {
         return dslContext.fetch(
                 Tables.TAD_V_ORDER_PARCEL,
-                Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble())).sortAsc(Tables.TAD_V_ORDER_PARCEL.ID)
+                Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble())
+        )
     }
 
+    /**
+     * Find parcels by order ids. The parcels returned are in no particular order
+     * @param ids Order ids
+     */
     fun findParcelsByOrderIds(ids: List<Long>): List<TadVOrderParcelRecord> {
         return dslContext.fetch(
                 Tables.TAD_V_ORDER_PARCEL,

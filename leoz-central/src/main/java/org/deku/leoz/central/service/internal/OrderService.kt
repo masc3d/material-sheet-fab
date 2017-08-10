@@ -73,6 +73,7 @@ class OrderService : OrderService {
 
     fun getByIds(ids: List<Long>): List<OrderService.Order> {
         val rOrders = this.orderRepository.findByIds(ids)
+
         val rParcelsByOrderId = this.orderRepository
                 .findParcelsByOrderIds(rOrders.map { it.id.toLong() })
                 .groupBy { it.orderId.toLong() }

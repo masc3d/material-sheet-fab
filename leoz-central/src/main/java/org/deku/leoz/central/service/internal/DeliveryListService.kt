@@ -39,24 +39,22 @@ class DeliveryListService : DeliveryListService {
                 throw DefaultProblem(
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
+
         val deliveryListOrders = this.deliveryListRepository.findDetailsById(id)
+
         deliveryList.orders = orderService.getByIds(
                 deliveryListOrders.map { it.orderId.toLong() })
 
-        val stops = mutableListOf<DeliveryListService.Stop>()
-        val deliveryListOrder = this.deliveryListRepository.findDetailsById(id)
-        deliveryListOrder.forEach { orderId ->
-            val s = DeliveryListService.Stop(
+        deliveryList.stops = deliveryList.orders.map { order ->
+            DeliveryListService.Stop(
                     tasks = listOf(
                             DeliveryListService.Task(
-                                    orderId = orderId.orderId.toLong(),
-                                    stopType = DeliveryListService.Task.Type.DELIVERY // orderId.stoptype
+                                    orderId = order.id,
+                                    stopType = DeliveryListService.Task.Type.DELIVERY
                             )
-                    )
-            )
-            stops.add(element = s)
+                    ))
         }
-        deliveryList.stops = stops.toList()
+
         return deliveryList
     }
 
