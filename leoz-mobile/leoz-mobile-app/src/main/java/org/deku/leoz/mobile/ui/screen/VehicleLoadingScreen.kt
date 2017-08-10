@@ -634,6 +634,8 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                             .subscribeOn(Schedulers.computation())
                             .subscribe()
                 }
+
+                this.parcelListAdapter.selectedSection = loadedSection
             }
         }
     }

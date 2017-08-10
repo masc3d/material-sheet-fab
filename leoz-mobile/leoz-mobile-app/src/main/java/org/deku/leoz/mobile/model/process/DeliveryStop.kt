@@ -68,6 +68,9 @@ class DeliveryStop(
     val pendingParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
             .behave(this)
 
+    val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
+            .behave(this)
+
     //region Counters
     val orderTotalAmount = this.orders.map { it.count() }
             .behave(this)
@@ -94,6 +97,30 @@ class DeliveryStop(
     /** Recipient name */
     var recipientName: String? = null
 
+    /**
+     * Resets all parcels to pending state and removes all event information
+     */
+    fun reset(): Completable {
+        val stop = this.entity
+
+        return db.store.withTransaction {
+            stop.state = Stop.State.PENDING
+            update(stop)
+
+            stop.tasks
+                    .flatMap { it.order.parcels }
+                    .forEach { parcel ->
+                        parcel.deliveryState = Parcel.DeliveryState.PENDING
+                        parcel.event = null
+                        parcel.reason = null
+                        update(parcel)
+                    }
+        }
+                .toCompletable()
+                .subscribeOn(Schedulers.computation())
+    }
+
+
     fun finalize(): Completable {
         val stop = this.entity
 
@@ -109,7 +136,7 @@ class DeliveryStop(
 
                     val parcels = stop.tasks.flatMap { it.order.parcels }
 
-                    // Send compound parcel message with loading states
+                    // Send compound closing stop parcel message
                     mqttChannels.central.main.channel().send(
                             ParcelServiceV1.ParcelMessage(
                                     userId = this.login.authenticatedUser?.id,

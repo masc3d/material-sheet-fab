@@ -15,7 +15,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
-import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
@@ -210,7 +209,7 @@ class DeliveryStopDetailScreen
                         id = R.id.action_deliver_action,
                         colorRes = R.color.colorAccent,
                         iconRes = R.drawable.ic_information_outline,
-                        menu = this.activity.inflateMenu(R.menu.menu_deliver_actions)
+                        menu = this.activity.inflateMenu(R.menu.menu_delivery_stop_actions)
                 )
         )
     }
@@ -268,21 +267,6 @@ class DeliveryStopDetailScreen
                                 startActivity(intent)
                             }
                             dialogBuilder.build().show()
-                        }
-
-                        R.id.action_fail -> {
-                            val dialog = EventDialog.Builder(this.context)
-                                    .events(this.delivery.allowedEvents)
-                                    .listener(this)
-                                    .build()
-
-                            dialog.selectedItemEvent
-                                    .bindToLifecycle(this)
-                                    .subscribe {
-                                        log.trace("SELECTEDITEAM VIA RX")
-                                    }
-
-                            dialog.show()
                         }
                     }
                 }

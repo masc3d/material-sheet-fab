@@ -183,6 +183,9 @@ class SectionsAdapter
 
         val position = this.getGlobalPositionOf(item)
 
+        if (this.isSelected(position))
+            return
+
         // When re-establishing selection when item is selected, flexible adapter may behave erratically. thus checking
 
         val firstSelection = adapter.selectedItemCount == 0

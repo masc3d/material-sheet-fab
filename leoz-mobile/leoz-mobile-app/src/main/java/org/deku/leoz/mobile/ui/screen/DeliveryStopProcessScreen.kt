@@ -21,8 +21,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
-import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.BR
+import org.deku.leoz.mobile.DebugSettings
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
@@ -52,6 +52,8 @@ import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
+import sx.android.inflateMenu
+import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
@@ -98,6 +100,7 @@ class DeliveryStopProcessScreen :
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     //region Model classes
     private val delivery: Delivery by Kodein.global.lazy.instance()
@@ -231,13 +234,16 @@ class DeliveryStopProcessScreen :
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set screen menu
+        this.menu = this.inflateMenu(R.menu.menu_delivery_stop_process)
+
         // Flexible adapter needs to be re-created with views
         this.parcelListAdapterInstance.reset()
 
         this.uxRecyclerView.adapter = parcelListAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        val closeStopMenu = this.activity.inflateMenu(R.menu.menu_deliver_options)
+        val closeStopMenu = this.activity.inflateMenu(R.menu.menu_delivery_stop_process_close)
 
         closeStopMenu.findItem(R.id.action_deliver_postbox).isEnabled =
                 this.stop.tasks.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
@@ -259,6 +265,7 @@ class DeliveryStopProcessScreen :
                         iconRes = R.drawable.ic_finish,
                         iconTintRes = android.R.color.white,
                         menu = closeStopMenu,
+                        visible = false,
                         alignEnd = false
                 )
         )
@@ -283,6 +290,17 @@ class DeliveryStopProcessScreen :
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     this.onAidcRead(it)
+                }
+
+        this.activity.menuItemEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it.itemId) {
+                        R.id.action_reset -> {
+                            this.deliveryStop.reset()
+                                    .subscribe()
+                        }
+                    }
                 }
 
         this.activity.actionEvent
@@ -381,6 +399,16 @@ class DeliveryStopProcessScreen :
                         }
                 )
         )
+
+        this.deliveryStop.pendingParcels
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribe {
+                    this.actionItems = this.actionItems.apply {
+                        first { it.id == R.id.action_delivery_close_stop }
+                                .visible = it.count() == 0
+                    }
+                }
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
@@ -423,11 +451,13 @@ class DeliveryStopProcessScreen :
      */
     fun onParcel(parcel: ParcelEntity) {
         when (parcelListAdapter.selectedSection) {
-            deliveredSection -> {
+            deliveredSection, pendingSection, orderSection -> {
                 parcel.deliveryState = Parcel.DeliveryState.DELIVERED
                 this.parcelRepository.update(parcel)
                         .subscribeOn(Schedulers.computation())
                         .subscribe()
+
+                this.parcelListAdapter.selectedSection = deliveredSection
             }
         }
     }
