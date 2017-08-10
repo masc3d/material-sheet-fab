@@ -22,7 +22,6 @@ data class ParcelServiceMeta(
     }
 }
 
-
 /**
  * Service meta lookup map
  */

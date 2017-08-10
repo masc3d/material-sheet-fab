@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.model.process
 
-import android.support.annotation.DrawableRes
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -65,22 +64,6 @@ class Delivery : CompositeDisposableSupplier {
     val nextDeliveryScreenSubject = PublishSubject.create<ScreenFragment<*>>()
     var nextDeliveryScreen: ScreenFragment<*>? by nextDeliveryScreenProperty
 
-    val allowedEvents: List<EventNotDeliveredReason> by lazy {
-        listOf(
-                EventNotDeliveredReason.Absent,
-                EventNotDeliveredReason.Refuse,
-                EventNotDeliveredReason.Vacation,
-                EventNotDeliveredReason.AddressWrong,
-                EventNotDeliveredReason.Moved,
-                EventNotDeliveredReason.Damaged,
-                EventNotDeliveredReason.XC_ObjectDamaged,
-                EventNotDeliveredReason.XC_ObjectNotReady,
-                EventNotDeliveredReason.XC_ObjectWrong,
-                EventNotDeliveredReason.CouldWantNotPay,
-                EventNotDeliveredReason.IdentDocNotPresent
-        )
-    }
-
 //    val serviceCheckList: List<ServiceCheck> = listOf(
 //            ServiceCheck(type = ServiceCheck.CheckType.CASH),
 //            ServiceCheck(type = ServiceCheck.CheckType.IMEI_PIN)
@@ -99,7 +82,7 @@ class Delivery : CompositeDisposableSupplier {
 
     fun sign(stopId: Int, reason: EventDeliveredReason, recipient: String = "") {
         when (reason) {
-            EventDeliveredReason.Normal -> {
+            EventDeliveredReason.NORMAL -> {
                 nextDeliveryScreenSubject.onNext(
                         SignatureScreen().also {
                             it.parameters = SignatureScreen.Parameters(
@@ -110,11 +93,11 @@ class Delivery : CompositeDisposableSupplier {
                         })
             }
 
-            EventDeliveredReason.Neighbor -> {
+            EventDeliveredReason.NEIGHBOR -> {
                 nextDeliveryScreenSubject.onNext(NeighbourDeliveryScreen.create(stopId = stopId))
             }
 
-            EventDeliveredReason.Postbox -> {
+            EventDeliveredReason.POSTBOX -> {
                 nextDeliveryScreenSubject.onNext(PostboxDeliveryScreen.create(stopId))
             }
 

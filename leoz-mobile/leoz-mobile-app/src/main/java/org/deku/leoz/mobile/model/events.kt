@@ -24,72 +24,72 @@ data class NotDeliveredReasonMeta(
 
 private val meta = listOf(
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.Absent,
+                EventNotDeliveredReason.ABSENT,
                 R.string.event_reason_absent,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.Refuse,
+                EventNotDeliveredReason.REFUSED,
                 R.string.service_receipt_acknowledgement,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.Vacation,
+                EventNotDeliveredReason.VACATION,
                 R.string.service_selfpickup,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.AddressWrong,
+                EventNotDeliveredReason.ADDRESS_WRONG,
                 R.string.service_cash_delivery,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.Moved,
+                EventNotDeliveredReason.MOVED,
                 R.string.service_pharmaceuticals,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.Damaged,
+                EventNotDeliveredReason.DAMAGED,
                 R.string.service_ident_contract,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.XC_CodeWrong,
+                EventNotDeliveredReason.XC_CODE_WRONG,
                 R.string.service_submission,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.XC_ObjectDamaged,
+                EventNotDeliveredReason.XC_OBJECT_DAMAGED,
                 R.string.service_security_return,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.XC_ObjectNotReady,
+                EventNotDeliveredReason.XC_OBJECT_NOT_READY,
                 R.string.service_xchange,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.XC_ObjectWrong,
+                EventNotDeliveredReason.XC_OBJECT_WRONG,
                 R.string.service_phone_receipt,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.SignatureRefused,
+                EventNotDeliveredReason.SIGNATURE_REFUSED,
                 R.string.service_documented_personal,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.CouldWantNotPay,
+                EventNotDeliveredReason.NO_PAYMENT,
                 R.string.service_department_delivery,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.IdentDocNotPresent,
+                EventNotDeliveredReason.NO_IDENT,
                 R.string.service_fixed,
                 R.drawable.ic_event
         ),
         NotDeliveredReasonMeta(
-                EventNotDeliveredReason.PIN_IMEI_Wrong,
+                EventNotDeliveredReason.PIN_IMEI_WRONG,
                 R.string.service_fair,
                 R.drawable.ic_event
         )

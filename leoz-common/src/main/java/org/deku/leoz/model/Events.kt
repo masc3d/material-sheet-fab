@@ -4,9 +4,9 @@ package org.deku.leoz.model
  * Event types
  */
 enum class EventType(val id: Int, val reasonType: Class<*>) {
-    Delivered(id = 1, reasonType = EventDeliveredReason::class.java),
-    NotDelivered(id = 2, reasonType = EventNotDeliveredReason::class.java),
-    Loaded(id = 3, reasonType = EventLoadedReason::class.java)
+    DELIVERED(id = 1, reasonType = EventDeliveredReason::class.java),
+    NOT_DELIVERED(id = 2, reasonType = EventNotDeliveredReason::class.java),
+    LOADED(id = 3, reasonType = EventLoadedReason::class.java)
 }
 
 /**
@@ -20,34 +20,33 @@ abstract class EventValue<R : Enum<R>>(
 
 // Event reasons
 enum class EventLoadedReason(val id: Int) {
-    DeliveryTour(1),
+    DELIVERY_TOUR(1),
     HUB(2),
-    SmallSort(3)
+    SMALL_SORT(3)
 }
 
-
 enum class EventDeliveredReason(val reason: Reason) {
-    Normal(Reason.NORMAL), // noticeRecipient  +unterschrift
-    Neighbor(Reason.NEIGHBOUR), // noticeNeighbour + 1 zeile Adresse  + unterschrift    nur wenn SKZ 536870912 (Keine Alternativzustellung) nicht gesetzt
-    Postbox(Reason.POSTBOX)    // kein text + Foto             // nur wenn SKZ 268435456 (Briefkastenzustellung möglich) gesetzt
+    NORMAL(Reason.NORMAL), // noticeRecipient  +unterschrift
+    NEIGHBOR(Reason.NEIGHBOUR), // noticeNeighbour + 1 zeile Adresse  + unterschrift    nur wenn SKZ 536870912 (Keine Alternativzustellung) nicht gesetzt
+    POSTBOX(Reason.POSTBOX)    // kein text + Foto             // nur wenn SKZ 268435456 (Briefkastenzustellung möglich) gesetzt
 }
 
 enum class EventNotDeliveredReason(val reason: Reason) {
-    Absent(Reason.CUSTOMER_ABSENT),
-    Refuse(Reason.CUSTOMER_REFUSED), // 1 Text :                      Wer? / Warum?
-    Vacation(Reason.CUSTOMER_VACATION), //  1Text + shortdate         : Wie lange?
-    AddressWrong(Reason.ADDRESS_WRONG), // Text               : Richtige Adresse?
-    Moved(Reason.CUSTOMER_MOVED), // Text                       : Neue Adresse?
+    ABSENT(Reason.CUSTOMER_ABSENT),
+    REFUSED(Reason.CUSTOMER_REFUSED), // 1 Text :                      Wer? / Warum?
+    VACATION(Reason.CUSTOMER_VACATION), //  1Text + shortdate         : Wie lange?
+    ADDRESS_WRONG(Reason.ADDRESS_WRONG), // Text               : Richtige Adresse?
+    MOVED(Reason.CUSTOMER_MOVED), // Text                       : Neue Adresse?
     //TODO Unknown(510),
-    Damaged(Reason.PARCEL_DAMAGED), //  Foto + text          Packstück bleibt in der Auswahl
-    XC_CodeWrong(Reason.EXCHANGE_CODE_CHECK_FAILED),
-    XC_ObjectDamaged(Reason.EXCHANGE_OBJECT_DAMAGED),
-    XC_ObjectWrong(Reason.EXCHANGE_OBJECT_WRONG),
-    SignatureRefused(Reason.SIGNATURE_REFUSED), // Text : Warum?
-    CouldWantNotPay(Reason.CUSTOMER_DID_OR_COULD_NOT_PAY),
-    IdentDocNotPresent(Reason.IDENT_DOCUMENT_NOT_THERE),
-    XC_ObjectNotReady(Reason.EXCHANGE_OBJECT_NOT_READY),
-    PIN_IMEI_Wrong(Reason.PIN_IMEI_CHECK_FAILED)
+    DAMAGED(Reason.PARCEL_DAMAGED), //  Foto + text          Packstück bleibt in der Auswahl
+    XC_CODE_WRONG(Reason.EXCHANGE_CODE_CHECK_FAILED),
+    XC_OBJECT_DAMAGED(Reason.EXCHANGE_OBJECT_DAMAGED),
+    XC_OBJECT_WRONG(Reason.EXCHANGE_OBJECT_WRONG),
+    SIGNATURE_REFUSED(Reason.SIGNATURE_REFUSED), // Text : Warum?
+    NO_PAYMENT(Reason.CUSTOMER_DID_OR_COULD_NOT_PAY),
+    NO_IDENT(Reason.IDENT_DOCUMENT_NOT_THERE),
+    XC_OBJECT_NOT_READY(Reason.EXCHANGE_OBJECT_NOT_READY),
+    PIN_IMEI_WRONG(Reason.PIN_IMEI_CHECK_FAILED)
     //TODO WaitTime(555)               // Text : Wartezeit (min)?   // Packstück bleibt in der Auswahl   // Unterschrift nach eingabe anfordern  // Kyboard auf Num stellen
 }
 
@@ -59,7 +58,7 @@ enum class EventNotDeliveredReason(val reason: Reason) {
 class EventDelivered(
         reason: EventDeliveredReason
 ) : EventValue<EventDeliveredReason>(
-        event = EventType.Delivered,
+        event = EventType.DELIVERED,
         reason = reason
 )
 
@@ -68,7 +67,7 @@ class EventDelivered(
  */
 class EventNotDelivered(reason: EventNotDeliveredReason
 ) : EventValue<EventNotDeliveredReason>(
-        event = EventType.NotDelivered,
+        event = EventType.NOT_DELIVERED,
         reason = reason
 )
 

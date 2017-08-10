@@ -40,7 +40,7 @@ class SignatureScreen
     @Parcel(Parcel.Serialization.BEAN)
     class Parameters @ParcelConstructor constructor(
             var stopId: Int,
-            var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal,
+            var deliveryReason: EventDeliveredReason = EventDeliveredReason.NORMAL,
             var recipient: String
     )
 

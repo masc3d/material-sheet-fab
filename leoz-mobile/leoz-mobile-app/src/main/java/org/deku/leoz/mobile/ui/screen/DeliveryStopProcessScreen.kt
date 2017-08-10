@@ -313,26 +313,28 @@ class DeliveryStopProcessScreen :
                         }
 
                         R.id.action_delivery_select_event -> {
-                            val dialog = EventDialog.Builder(this.context)
-                                    .events(this.delivery.allowedEvents)
+                            val eventDialog = EventDialog.Builder(this.context)
+                                    .events(this.deliveryStop.allowedEvents)
                                     .listener(this)
                                     .build()
 
-                            dialog.selectedItemEvent
+                            eventDialog.selectedItemEvent
                                     .bindToLifecycle(this)
                                     .subscribe {
-                                        log.trace("SELECTEDITEAM VIA RX")
+                                        eventDialog.hide()
+
+
                                     }
 
-                            dialog.show()
+                            eventDialog.show()
                         }
 
                         R.id.action_deliver_neighbour -> {
-                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Neighbor)
+                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.NEIGHBOR)
                         }
 
                         R.id.action_deliver_postbox -> {
-                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.Postbox)
+                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.POSTBOX)
                         }
 
                         R.id.action_deliver_recipient -> {
@@ -347,7 +349,7 @@ class DeliveryStopProcessScreen :
                                         this.activity.showScreen(SignatureScreen().also {
                                             it.parameters = SignatureScreen.Parameters(
                                                     stopId = this.stop.id,
-                                                    deliveryReason = EventDeliveredReason.Normal,
+                                                    deliveryReason = EventDeliveredReason.NORMAL,
                                                     recipient = this.deliveryStop.recipientName ?: ""
                                             )
                                         })

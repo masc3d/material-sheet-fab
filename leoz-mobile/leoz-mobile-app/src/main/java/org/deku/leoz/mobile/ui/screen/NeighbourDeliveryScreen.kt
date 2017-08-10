@@ -58,7 +58,7 @@ class NeighbourDeliveryScreen : ScreenFragment<Any>() {
                     SignatureScreen().also {
                         it.parameters = SignatureScreen.Parameters(
                                 stopId = this.stop.id,
-                                deliveryReason = EventDeliveredReason.Neighbor,
+                                deliveryReason = EventDeliveredReason.NEIGHBOR,
                                 recipient = this.uxNeighboursName.text.toString()
                         )
                     }

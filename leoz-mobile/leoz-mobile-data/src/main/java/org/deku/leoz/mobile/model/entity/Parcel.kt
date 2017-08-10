@@ -5,6 +5,7 @@ import android.databinding.Observable
 import io.requery.*
 import org.deku.leoz.mobile.data.BR
 import org.deku.leoz.model.Event
+import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.Reason
 import sx.android.databinding.BaseRxObservable
 import java.util.*
@@ -54,9 +55,8 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var deliveryState: DeliveryState
 
     @get:Bindable
-    abstract var event: Event?
-    @get:Bindable
-    abstract var reason: Reason?
+    @get:Index
+    abstract var reason: EventNotDeliveredReason?
 
     @get:Bindable
     @get:Index

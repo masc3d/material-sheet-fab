@@ -5,7 +5,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
@@ -16,6 +15,8 @@ import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.model.Event
+import org.deku.leoz.model.EventNotDeliveredReason
+import org.deku.leoz.model.ParcelService
 import org.deku.leoz.model.Reason
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
@@ -23,7 +24,6 @@ import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.behave
-import sx.rx.bind
 
 /**
  * Mobile delivery stop
@@ -98,6 +98,49 @@ class DeliveryStop(
     var recipientName: String? = null
 
     /**
+     * Services for this stop
+     */
+    val services by lazy {
+        // Normally, we'd expect all services to match, just to make sure.
+        this.orders.blockingFirst()
+                .flatMap { it.tasks }
+                .flatMap { it.services }
+                .distinct()
+    }
+
+    /**
+     * Allowed events for this stop
+     */
+    val allowedEvents: List<EventNotDeliveredReason> by lazy {
+        mutableListOf(
+                EventNotDeliveredReason.ABSENT,
+                EventNotDeliveredReason.REFUSED,
+                EventNotDeliveredReason.VACATION,
+                EventNotDeliveredReason.ADDRESS_WRONG,
+                EventNotDeliveredReason.MOVED,
+                EventNotDeliveredReason.DAMAGED
+        )
+                .also {
+                    if (services.contains(ParcelService.XCHANGE)) {
+                        it.addAll(listOf(
+                                EventNotDeliveredReason.XC_OBJECT_DAMAGED,
+                                EventNotDeliveredReason.XC_OBJECT_NOT_READY,
+                                EventNotDeliveredReason.XC_OBJECT_WRONG
+                        ))
+                    }
+                    if (services.contains(ParcelService.CASH_ON_DELIVERY)) {
+                        it.add(
+                                EventNotDeliveredReason.NO_PAYMENT)
+                    }
+                    if (services.contains(ParcelService.IDENT_CONTRACT_SERVICE)) {
+                        it.add(
+                                EventNotDeliveredReason.NO_IDENT)
+                    }
+                }
+                .distinct()
+    }
+
+    /**
      * Resets all parcels to pending state and removes all event information
      */
     fun reset(): Completable {
@@ -111,7 +154,6 @@ class DeliveryStop(
                     .flatMap { it.order.parcels }
                     .forEach { parcel ->
                         parcel.deliveryState = Parcel.DeliveryState.PENDING
-                        parcel.event = null
                         parcel.reason = null
                         update(parcel)
                     }
@@ -120,6 +162,14 @@ class DeliveryStop(
                 .subscribeOn(Schedulers.computation())
     }
 
+    fun assignEventReason(reason: EventNotDeliveredReason): Completable {
+        return db.store.withTransaction {
+            parcels.forEach {
+            }
+        }
+                .toCompletable()
+                .subscribeOn(Schedulers.computation())
+    }
 
     fun finalize(): Completable {
         val stop = this.entity

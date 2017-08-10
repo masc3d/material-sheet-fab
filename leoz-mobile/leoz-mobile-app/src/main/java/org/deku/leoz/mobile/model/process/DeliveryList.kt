@@ -2,14 +2,11 @@ package org.deku.leoz.mobile.model.process
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
@@ -22,7 +19,6 @@ import org.deku.leoz.mobile.model.service.toOrder
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.service.LocationCache
-import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
@@ -165,7 +161,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         listOf(
-                EventNotDeliveredReason.Damaged
+                EventNotDeliveredReason.DAMAGED
                 //TODO "Missing" reason is not present yet
         )
     }
