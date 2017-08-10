@@ -211,6 +211,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="question_remove_damaged_status">Remove damaged status?</string>
     <string name="question_remove_damaged_status_title">Parcel has been declared damaged</string>
 
+    <string name="recipient">Recipient</string>
+    <string name="recipient_dialog_content">Who accepted the shipment?</string>
     <string name="report_bug">Report bug</string>
 
     <string name="reset">Reset</string>

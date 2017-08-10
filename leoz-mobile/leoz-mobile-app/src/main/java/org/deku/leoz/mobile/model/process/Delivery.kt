@@ -22,6 +22,7 @@ import sx.rx.CompositeDisposableSupplier
 import sx.rx.ObservableRxProperty
 import sx.rx.behave
 import sx.rx.bind
+import kotlin.properties.Delegates
 
 /**
  * Delivery process model
@@ -56,8 +57,9 @@ class Delivery : CompositeDisposableSupplier {
     val undeliveredParcels = parcelRepository.entitiesProperty.map { it.value.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
             .behave(this)
 
-    val activeStopProperty = ObservableRxProperty<Stop?>(null)
-    val activeStop: Stop? by activeStopProperty
+    var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { p, o, v ->
+        o?.dispose()
+    })
 
     val nextDeliveryScreenProperty = ObservableRxProperty<ScreenFragment<*>?>(null)
     val nextDeliveryScreenSubject = PublishSubject.create<ScreenFragment<*>>()

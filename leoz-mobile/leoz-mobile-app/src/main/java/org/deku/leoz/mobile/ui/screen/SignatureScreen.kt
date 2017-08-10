@@ -38,10 +38,10 @@ class SignatureScreen
         SignaturePad.OnSignedListener {
 
     @Parcel(Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor (
-        var stopId: Int,
-        var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal,
-        var recipient: String
+    class Parameters @ParcelConstructor constructor(
+            var stopId: Int,
+            var deliveryReason: EventDeliveredReason = EventDeliveredReason.Normal,
+            var recipient: String
     )
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -54,12 +54,14 @@ class SignatureScreen
         "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${this.parameters.recipient}"
     }
 
-    private val stop: Stop by lazy { stopRepository.findById(this.parameters.stopId)
-            ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]") }
+    private val stop: Stop by lazy {
+        stopRepository.findById(this.parameters.stopId)
+                ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
+    }
 
     interface Listener {
         fun onSignatureCancelled()
-        fun onSignatureSubmitted()
+        fun onSignatureSubmitted(signatureSvg: String)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,9 +80,7 @@ class SignatureScreen
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         this.uxConclusion.text = descriptionText
-
         this.uxSignaturePad.setOnSignedListener(this)
 
         this.actionItems = listOf(
@@ -101,19 +101,6 @@ class SignatureScreen
                         menu = this.activity.inflateMenu(R.menu.menu_signature_exception)
                 )
         )
-
-        if (this.parameters.recipient.isNullOrEmpty()) {
-            val dialog = MaterialDialog.Builder(context)
-                    .title("Recipient")
-                    .cancelable(false)
-                    .content("Wer hat die Sendung(en) angenommen?")
-                    .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
-                    .input("Max Mustermann", null, false, { _, charSequence ->
-                        this.parameters.recipient = charSequence.toString()
-                        this.uxConclusion.text = descriptionText
-                    })
-                    .show()
-        }
     }
 
     override fun onResume() {
@@ -137,9 +124,7 @@ class SignatureScreen
                                         }
                                 dialog.show()
                             } else {
-                                // TODO
-//                                stop!!.deliver(reason = deliveryReason, recipient = recipient, signature = this.uxSignaturePad.signatureBitmap)
-                                this.listener?.onSignatureSubmitted()
+                                this.listener?.onSignatureSubmitted(this.uxSignaturePad.signatureSvg)
                             }
                         }
                         R.id.action_signature_clear -> {

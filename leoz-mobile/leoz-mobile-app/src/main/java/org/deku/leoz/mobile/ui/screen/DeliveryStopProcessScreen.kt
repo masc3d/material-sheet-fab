@@ -5,6 +5,7 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +17,11 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
+import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.BR
 
 import org.deku.leoz.mobile.R
@@ -98,7 +99,7 @@ class DeliveryStopProcessScreen :
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
 
-    // Model classes
+    //region Model classes
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
@@ -107,9 +108,12 @@ class DeliveryStopProcessScreen :
         this.stopRepository.entities.first { it.id == this.parameters.stopId }
     }
 
-    private val deliveryStop: DeliveryStop by lazy { DeliveryStop(this.stop) }
+    private val deliveryStop: DeliveryStop by lazy {
+        this.delivery.activeStop ?: throw IllegalArgumentException("Active stop not set")
+    }
+    //endregion
 
-    // region Sections
+    //region Sections
     val deliveredSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_truck_delivery,
@@ -145,7 +149,6 @@ class DeliveryStopProcessScreen :
         )
     }
     //endregion
-
 
     fun <T> SectionViewModel<T>.toFlexibleItem()
             : FlexibleExpandableVmItem<SectionViewModel<T>, Any> {
@@ -206,6 +209,9 @@ class DeliveryStopProcessScreen :
         this.headerImage = R.drawable.img_parcels_1a
         this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
+
+        // Set models's active stop when screen is created
+        this.delivery.activeStop = DeliveryStop(stop)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -238,7 +244,7 @@ class DeliveryStopProcessScreen :
 
         this.actionItems = listOf(
                 ActionItem(
-                        id = R.id.action_delivery_select_regular,
+                        id = R.id.action_delivery_select_delivered,
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_truck_delivery
                 ),
@@ -284,7 +290,7 @@ class DeliveryStopProcessScreen :
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     when (it) {
-                        R.id.action_delivery_select_regular -> {
+                        R.id.action_delivery_select_delivered -> {
                             this.parcelListAdapter.selectedSection = this.deliveredSection
                         }
 
@@ -312,13 +318,23 @@ class DeliveryStopProcessScreen :
                         }
 
                         R.id.action_deliver_recipient -> {
-                            this.activity.showScreen(SignatureScreen().also {
-                                it.parameters = SignatureScreen.Parameters(
-                                        stopId = this.stop.id,
-                                        deliveryReason = EventDeliveredReason.Normal,
-                                        recipient = ""
-                                )
-                            })
+                            MaterialDialog.Builder(context)
+                                    .title(R.string.recipient)
+                                    .cancelable(true)
+                                    .content(R.string.recipient_dialog_content)
+                                    .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
+                                    .input("Max Mustermann", null, false, { _, charSequence ->
+                                        this.deliveryStop.recipientName = charSequence.toString()
+
+                                        this.activity.showScreen(SignatureScreen().also {
+                                            it.parameters = SignatureScreen.Parameters(
+                                                    stopId = this.stop.id,
+                                                    deliveryReason = EventDeliveredReason.Normal,
+                                                    recipient = this.deliveryStop.recipientName ?: ""
+                                            )
+                                        })
+                                    })
+                                    .build().show()
                         }
                     }
                 }
@@ -334,7 +350,7 @@ class DeliveryStopProcessScreen :
                     when (section) {
                         this.deliveredSection -> {
                             this.actionItems = this.actionItems.apply {
-                                first { it.id == R.id.action_delivery_select_regular }
+                                first { it.id == R.id.action_delivery_select_delivered }
                                         .visible = false
 
                                 first { it.id == R.id.action_delivery_select_event }
@@ -343,7 +359,7 @@ class DeliveryStopProcessScreen :
                         }
                         else -> {
                             this.actionItems = this.actionItems.apply {
-                                first { it.id == R.id.action_delivery_select_regular }
+                                first { it.id == R.id.action_delivery_select_delivered }
                                         .visible = true
 
                                 first { it.id == R.id.action_delivery_select_event }
@@ -415,7 +431,6 @@ class DeliveryStopProcessScreen :
             }
         }
     }
-
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
         log.trace("SELECTEDITEAM VIA LISTENER")

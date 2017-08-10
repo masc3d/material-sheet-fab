@@ -227,4 +227,6 @@
     <string name="error_no_corresponding_stop">Kein zugehöriger Stop gefunden</string>
     <string name="unknown">Unbekannt</string>
     <string name="error_invalid_parcel">Ungültiges Paket</string>
+    <string name="recipient">Empfänger</string>
+    <string name="recipient_dialog_content">Wer hat die Sendung(en) angenommen?</string>
 </resources>

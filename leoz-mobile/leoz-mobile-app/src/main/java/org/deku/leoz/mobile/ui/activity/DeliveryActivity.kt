@@ -9,6 +9,8 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.ui.Activity
@@ -17,6 +19,7 @@ import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
 import org.slf4j.LoggerFactory
+import sx.android.rx.observeOnMainThread
 import java.util.*
 
 /**
@@ -151,8 +154,28 @@ class DeliveryActivity : Activity(),
     override fun onSignatureCancelled() {
     }
 
-    override fun onSignatureSubmitted() {
-        this@DeliveryActivity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
+    override fun onSignatureSubmitted(signatureSvg: String) {
+        val activeStop = this.delivery.activeStop
+
+        if (activeStop != null) {
+            // Complement active stop and finalize
+            activeStop.signatureSvg = signatureSvg
+            activeStop.finalize()
+                    .subscribeOn(Schedulers.computation())
+                    .observeOnMainThread()
+                    .subscribeBy(
+                            onComplete = {
+                                this.delivery.activeStop = null
+
+                                this@DeliveryActivity.supportFragmentManager.popBackStack(
+                                        DeliveryStopListScreen::class.java.canonicalName,
+                                        0)
+                            },
+                            onError = {
+                                log.error(it.message, it)
+                            }
+                    )
+        }
     }
 
     override fun onVehicleLoadingFinalized() {
