@@ -35,7 +35,7 @@ import java.sql.Timestamp
 import javax.imageio.ImageIO
 
 /**
- * Parcel service message handler
+ * Parcel service v1 implementation
  * Created by JT on 17.07.17.
  */
 @Named
@@ -55,6 +55,9 @@ open class ParcelServiceV1 :
     @Inject
     private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
 
+    /**
+     * Parcel service message handler
+     */
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
 
         //val events = message.events?.toList()
