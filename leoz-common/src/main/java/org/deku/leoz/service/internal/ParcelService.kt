@@ -31,8 +31,14 @@ interface ParcelServiceV1 {
             var nodeId: String? = null,
             var events: Array<Event>? = null,
 
-            val deliveredInfo: Event.DeliveredInfo? = null
-    )
+            val deliveredInfo: DeliveredInfo? = null
+    ) {
+        data class DeliveredInfo(
+                val recipient: String? = null,
+                val signature: String? = null,
+                val mimetype: String = MediaType.APPLICATION_SVG_XML
+        )
+    }
 
     /**
      * A Event used in leoz prototols
@@ -58,12 +64,6 @@ interface ParcelServiceV1 {
             val deliveredAtNeighborInfo: DeliveredAtNeighborInfo? = null,
             val notDeliveredRefusedInfo: NotDeliveredRefusedInfo? = null
              **/
-    ) {
-        data class DeliveredInfo(
-                val recipient: String? = null,
-                val signature: String? = null,
-                val mimetype: String = MediaType.APPLICATION_SVG_XML
-        )
-    }
+    )
 }
 
