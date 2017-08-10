@@ -27,17 +27,6 @@ class DeliveryStop(
 
     private val db: Database by Kodein.global.lazy.instance()
 
-    /**
-     * Observable stop query
-     */
-    private val stopQuery = ObservableQuery<StopEntity>(
-            name = "Delivery stop",
-            query = db.store.select(StopEntity::class)
-                    .where(StopEntity.ID.eq(entity.id))
-                    .get()
-    )
-            .bind(this)
-
     private val stopParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Delivery stop parcels",
             query = db.store.select(ParcelEntity::class)
@@ -45,16 +34,12 @@ class DeliveryStop(
                     .get()
     )
 
-    /** Observable stop */
-    val stop = stopQuery.result.map { it.value.first() }
+    /** Stop parcels */
+    val parcels = this.stopParcelsQuery.result.map { it.value }
             .behave(this)
 
     /** Stop orders */
-    val orders = this.stop .map { it.tasks.map { it.order as OrderEntity } }
-            .behave(this)
-
-    /** Stop parcels */
-    val parcels = this.stopParcelsQuery.result.map { it.value }
+    val orders = this.parcels.map { it.map { it.order as OrderEntity }.distinct() }
             .behave(this)
 
     val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
@@ -73,7 +58,7 @@ class DeliveryStop(
     val totalWeight = this.parcels.map { it.sumByDouble { it.weight } }
             .behave(this)
 
-    val orderAmount = this.deliveredParcels.map { it.map { it.order }.distinct().count() }
+    val orderAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState != Parcel.DeliveryState.PENDING } }.count() }
             .behave(this)
 
     val parcelAmount = this.deliveredParcels.map { it.count() }
