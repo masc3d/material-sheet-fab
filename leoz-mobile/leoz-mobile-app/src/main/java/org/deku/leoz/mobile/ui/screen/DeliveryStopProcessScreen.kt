@@ -17,8 +17,9 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.BR
@@ -30,10 +31,10 @@ import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.OrderEntity
-import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -57,7 +58,6 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
-
 
 /**
  * A simple [Fragment] subclass.
@@ -151,6 +151,32 @@ class DeliveryStopProcessScreen :
                         .bindToLifecycle(this)
         )
     }
+
+    /**
+     * Extension for creating sections from event/reason enum
+     */
+    fun EventNotDeliveredReason.toSection(): SectionViewModel<ParcelEntity> {
+        return SectionViewModel<ParcelEntity>(
+                icon = R.drawable.ic_event,
+                color = R.color.colorAccent,
+                background = R.drawable.section_background_accent,
+                showIfEmpty = false,
+                title = this.mobile.textOrName(context),
+                items = deliveryStop.parcelsByEvent
+                        .withDefault { Observable.empty() }
+                        .getValue(this)
+                        .bindToLifecycle(this@DeliveryStopProcessScreen)
+        )
+    }
+
+    /**
+     * Section by event/reason
+     */
+    val sectionByEvent by lazy {
+        mapOf(*this.deliveryStop.allowedEvents.map {
+            Pair(it, it.toSection())
+        }.toTypedArray())
+    }
     //endregion
 
     fun <T> SectionViewModel<T>.toFlexibleItem()
@@ -199,6 +225,13 @@ class DeliveryStopProcessScreen :
                 sectionVmItemProvider = { this.orderSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
+
+        this.sectionByEvent.forEach {
+            adapter.addSection(
+                    sectionVmItemProvider = { it.value.toFlexibleItem() },
+                    vmItemProvider = { it.toFlexibleItem() }
+            )
+        }
 
         adapter
     })
@@ -322,8 +355,12 @@ class DeliveryStopProcessScreen :
                                     .bindToLifecycle(this)
                                     .subscribe {
                                         eventDialog.hide()
-
-
+                                        this.deliveryStop.assignEventReason(it)
+                                                .observeOnMainThread()
+                                                .subscribeBy(
+                                                        onComplete = {
+                                                            this.parcelListAdapter.selectedSection = sectionByEvent.get(it)
+                                                        })
                                     }
 
                             eventDialog.show()
@@ -454,9 +491,7 @@ class DeliveryStopProcessScreen :
     fun onParcel(parcel: ParcelEntity) {
         when (parcelListAdapter.selectedSection) {
             deliveredSection, pendingSection, orderSection -> {
-                parcel.deliveryState = Parcel.DeliveryState.DELIVERED
-                this.parcelRepository.update(parcel)
-                        .subscribeOn(Schedulers.computation())
+                this.deliveryStop.deliver(parcel)
                         .subscribe()
 
                 if (this.parcelListAdapter.selectedSection != deliveredSection)

@@ -46,68 +46,6 @@ class DeliveryStop(
     private val identity: Identity by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
 
-    private val stopParcelsQuery = ObservableQuery<ParcelEntity>(
-            name = "Delivery stop parcels",
-            query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.ORDER_ID.`in`(this.entity.tasks.map { it.order.id }))
-                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
-                    .get()
-    )
-
-    /** Stop parcels */
-    val parcels = this.stopParcelsQuery.result.map { it.value }
-            .behave(this)
-
-    /** Stop orders */
-    val orders = this.parcels.map { it.map { it.order as OrderEntity }.distinct() }
-            .behave(this)
-
-    val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
-            .behave(this)
-
-    val pendingParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
-            .behave(this)
-
-    val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
-            .behave(this)
-
-    //region Counters
-    val orderTotalAmount = this.orders.map { it.count() }
-            .behave(this)
-
-    val parcelTotalAmount = this.parcels.map { it.count() }
-            .behave(this)
-
-    val totalWeight = this.parcels.map { it.sumByDouble { it.weight } }
-            .behave(this)
-
-    val orderAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState != Parcel.DeliveryState.PENDING } }.count() }
-            .behave(this)
-
-    val parcelAmount = this.deliveredParcels.map { it.count() }
-            .behave(this)
-
-    val weight = this.deliveredParcels.map { it.sumByDouble { it.weight } }
-            .behave(this)
-    //endregion
-
-    /** Signature as svg */
-    var signatureSvg: String? = null
-
-    /** Recipient name */
-    var recipientName: String? = null
-
-    /**
-     * Services for this stop
-     */
-    val services by lazy {
-        // Normally, we'd expect all services to match, just to make sure.
-        this.orders.blockingFirst()
-                .flatMap { it.tasks }
-                .flatMap { it.services }
-                .distinct()
-    }
-
     /**
      * Allowed events for this stop
      */
@@ -140,6 +78,80 @@ class DeliveryStop(
                 .distinct()
     }
 
+    private val stopParcelsQuery = ObservableQuery<ParcelEntity>(
+            name = "Delivery stop parcels",
+            query = db.store.select(ParcelEntity::class)
+                    .where(ParcelEntity.ORDER_ID.`in`(this.entity.tasks.map { it.order.id }))
+                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
+                    .get()
+    )
+
+    /** Stop parcels */
+    val parcels = this.stopParcelsQuery.result.map { it.value }
+            .behave(this)
+
+    /** Stop orders */
+    val orders = this.parcels.map { it.map { it.order as OrderEntity }.distinct() }
+            .behave(this)
+
+    val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
+            .behave(this)
+
+    val pendingParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
+            .behave(this)
+
+    val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
+            .behave(this)
+
+    val parcelsByEvent by lazy {
+        mapOf(
+                *this.allowedEvents.map { reason ->
+                    Pair(
+                            reason,
+                            this.parcels.map { it.filter { it.reason == reason } }
+                                    .behave(this)
+                    )
+                }.toTypedArray()
+        )
+    }
+
+    //region Counters
+    val orderTotalAmount = this.orders.map { it.count() }
+            .behave(this)
+
+    val parcelTotalAmount = this.parcels.map { it.count() }
+            .behave(this)
+
+    val totalWeight = this.parcels.map { it.sumByDouble { it.weight } }
+            .behave(this)
+
+    val orderAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState != Parcel.DeliveryState.PENDING } }.count() }
+            .behave(this)
+
+    val parcelAmount = this.deliveredParcels.map { it.count() }
+            .behave(this)
+
+    val weight = this.deliveredParcels.map { it.sumByDouble { it.weight } }
+            .behave(this)
+//endregion
+
+    /** Signature as svg */
+    var signatureSvg: String? = null
+
+    /** Recipient name */
+    var recipientName: String? = null
+
+    /**
+     * Services for this stop
+     */
+    val services by lazy {
+        // Normally, we'd expect all services to match, just to make sure.
+        this.orders.blockingFirst()
+                .flatMap { it.tasks }
+                .flatMap { it.services }
+                .distinct()
+    }
+
     /**
      * Resets all parcels to pending state and removes all event information
      */
@@ -162,9 +174,34 @@ class DeliveryStop(
                 .subscribeOn(Schedulers.computation())
     }
 
+    /**
+     * Deliver a single parcel
+     */
+    fun deliver(parcel: ParcelEntity): Completable {
+        return db.store.withTransaction {
+            // TODO: support order level events
+            parcels.blockingFirst().forEach {
+                it.deliveryState = Parcel.DeliveryState.PENDING
+                it.reason = null
+                update(it)
+            }
+
+            parcel.deliveryState = Parcel.DeliveryState.DELIVERED
+            update(parcel)
+        }
+                .toCompletable()
+                .subscribeOn(Schedulers.computation())
+    }
+
+    /**
+     * Assign event reason to entire stop
+     */
     fun assignEventReason(reason: EventNotDeliveredReason): Completable {
         return db.store.withTransaction {
-            parcels.forEach {
+            parcels.blockingFirst().forEach {
+                it.deliveryState = Parcel.DeliveryState.UNDELIVERED
+                it.reason = reason
+                update(it)
             }
         }
                 .toCompletable()
@@ -210,5 +247,4 @@ class DeliveryStop(
                 })
                 .subscribeOn(Schedulers.computation())
     }
-
 }
