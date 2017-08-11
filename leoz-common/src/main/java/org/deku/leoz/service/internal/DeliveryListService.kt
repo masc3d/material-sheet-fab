@@ -34,7 +34,7 @@ interface DeliveryListService {
     @Path("/{${ID}}")
     @ApiOperation(value = "Get delivery list by id")
     fun getById(
-            @PathParam(ID) @ApiParam(example = "10730061", value = "Delivery list id", required = true) id: Long
+            @PathParam(ID) @ApiParam(example = "89586115", value = "Delivery list id", required = true) id: Long
     ): DeliveryList
 
     @GET
@@ -42,14 +42,14 @@ interface DeliveryListService {
     @ApiOperation(value = "Get delivery list info")
     fun get(
             //todo not jet implemented            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null,
-            @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-06-20", value = "Delivery date", required = false) deliveryDate: ShortDate? = null
+            @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false) deliveryDate: ShortDate? = null
     ): List<DeliveryListInfo>
 
     @ApiModel(description = "Delivery list")
     data class DeliveryList(
-            @ApiModelProperty(example = "10730061", position = 10, required = true, value = "Delivery list id")
+            @ApiModelProperty(example = "89586115", position = 10, required = true, value = "Delivery list id")
             var id: Long = 0,
-            @ApiModelProperty(example = "2017-06-20", position = 20, required = true)
+            @ApiModelProperty(example = "2017-08-10", position = 20, required = true)
             var info: DeliveryListInfo = DeliveryListInfo(),
             @ApiModelProperty(position = 30, required = true, value = "Orders within delivery list")
             var orders: List<OrderService.Order> = listOf(),
@@ -77,9 +77,9 @@ interface DeliveryListService {
 
     @ApiModel(description = "Delivery list info")
     data class DeliveryListInfo(
-            @ApiModelProperty(example = "10729637", position = 10, required = true, value = "Delivery list id")
+            @ApiModelProperty(example = "89586115", position = 10, required = true, value = "Delivery list id")
             var id: Long = 0,
-            @ApiModelProperty(example = "2017-06-20", position = 20, required = true, value = "Delivery list date")
+            @ApiModelProperty(example = "2017-08-10", position = 20, required = true, value = "Delivery list date")
             var date: ShortDate = ShortDate()
     )
 

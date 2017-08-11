@@ -419,7 +419,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
 
             // Synthetic inputs for delivery lists, retrieved via online service
             val ovDeliveryLists = Observable.fromCallable {
-                this.deliveryListService.get(ShortDate("2017-06-20"))
+                this.deliveryListService.get(ShortDate("2017-08-10"))
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)
