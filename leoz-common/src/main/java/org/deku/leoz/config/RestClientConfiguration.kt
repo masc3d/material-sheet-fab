@@ -16,7 +16,7 @@ abstract class RestClientConfiguration {
     /**
      * Overridden in derived configurations to provide a specific proxy client
      */
-    protected abstract fun createClientProxyImpl(baseUri: URI, ignoreSsl: Boolean): RestClientProxy
+    abstract fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy
 
     /**
      * HTTP host to use for rest clients
@@ -45,17 +45,14 @@ abstract class RestClientConfiguration {
 
     /**
      * Factory method for creating a leoz rest client
-     * @param host REST server host name
-     * @param port REST server port
-     * @param https Use https or regular http. Defaults to false (=http)
      */
-    fun createClientProxy(): RestClientProxy {
+    fun createDefaultClientProxy(): RestClientProxy {
         val uri = this.createUri(https, host, port, RestConfiguration.MAPPING_PREFIX)
 
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
         val ignoreSslCertificate = !host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)
 
-        return this.createClientProxyImpl(uri, ignoreSslCertificate)
+        return this.createClientProxy(uri, ignoreSslCertificate)
     }
 
     companion object {
@@ -64,7 +61,7 @@ abstract class RestClientConfiguration {
              * Helper for creating service proxy
              */
             fun <T> createServiceProxy(config: RestClientConfiguration, serviceType: Class<T>): T {
-                return config.createClientProxy().create(serviceType)
+                return config.createDefaultClientProxy().create(serviceType)
             }
 
             bind<StationService>() with provider {

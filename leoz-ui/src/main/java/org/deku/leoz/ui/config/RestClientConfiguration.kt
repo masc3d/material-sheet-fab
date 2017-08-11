@@ -14,7 +14,7 @@ import java.net.URI
  * Created by masc on 08/11/2016.
  */
 class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
-    override fun createClientProxyImpl(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
+    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
         return JerseyClientProxy(baseUri, ignoreSsl)
     }
 
@@ -36,7 +36,7 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
             /** Rest client */
             bind<RestClientProxy>() with provider {
                 val config: RestClientConfiguration = instance()
-                config.createClientProxy()
+                config.createDefaultClientProxy()
             }
 
             /** Bundle service */

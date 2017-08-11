@@ -17,7 +17,7 @@ import java.net.URI
  * Created by n3 on 15/02/2017.
  */
 class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
-    override fun createClientProxyImpl(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
+    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
         return FeignClientProxy(baseUri, ignoreSsl, JacksonEncoder(), JacksonDecoder())
     }
 
@@ -33,7 +33,7 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
 
             bind<FeignClientProxy>() with provider {
                 val config: org.deku.leoz.config.RestClientConfiguration = instance()
-                config.createClientProxy() as FeignClientProxy
+                config.createDefaultClientProxy() as FeignClientProxy
             }
 
             onReady {
