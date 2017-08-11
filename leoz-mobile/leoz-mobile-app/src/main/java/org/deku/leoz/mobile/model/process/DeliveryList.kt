@@ -295,16 +295,15 @@ class DeliveryList : CompositeDisposableSupplier {
             if (createdOrderCount == 0)
                 return@fromCallable Unit
 
-            order.tasks.forEach { task ->
-                var stop = stopRepository.findStopForTask(task)
+            val task = order.deliveryTask
+            var stop = stopRepository.findStopForTask(task)
 
-                if (stop != null) {
-                    stop.tasks.add(task)
-                    db.store.update(stop).blockingGet()
-                } else {
-                    stop = Stop.create(tasks = listOf(task))
-                    db.store.insert(stop).blockingGet()
-                }
+            if (stop != null) {
+                stop.tasks.add(task)
+                db.store.update(stop).blockingGet()
+            } else {
+                stop = Stop.create(tasks = listOf(task))
+                db.store.insert(stop).blockingGet()
             }
         }
                 .subscribeOn(Schedulers.computation())
