@@ -275,7 +275,7 @@ class DeliveryStop(
                                                     it.deliveryState == Parcel.DeliveryState.DELIVERED -> Event.DELIVERED.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
-                                                reason = it.reason?.reason?.oldValue ?: Reason.NORMAL.oldValue,
+                                                reason = it.reason?.reason?.id ?: Reason.NORMAL.id,
                                                 parcelId = it.id,
                                                 latitude = lastLocation?.latitude,
                                                 longitude = lastLocation?.longitude
