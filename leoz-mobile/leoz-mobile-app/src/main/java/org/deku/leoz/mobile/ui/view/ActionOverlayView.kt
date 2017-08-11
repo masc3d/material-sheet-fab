@@ -286,29 +286,40 @@ class ActionOverlayView : RelativeLayout {
                                 sheet.uxAtionOverlaySheetBar.setBackgroundColor(fabColor)
 
                                 // Create sheet items
-                                item.menu.itemsSequence().forEach { menuItem ->
-                                    val sheetItem = this.context.layoutInflater.inflate(
-                                            R.layout.view_actionoverlay_sheet_item,
-                                            sheet.uxActionOverlaySheetItemContainer,
-                                            false)
+                                item.menu.itemsSequence()
+                                        .filter { it.isEnabled && it.isVisible }
+                                        .forEach { menuItem ->
 
-                                    sheetItem.uxActionOverlaySheetItemIcon.setImageDrawable(
-                                            menuItem.icon
-                                                    // Set default icon if applicable
-                                                    ?: (if (this.defaultIcon != 0) ContextCompat.getDrawable(context, this.defaultIcon) else null)
-                                    )
+                                            val sheetItem = this.context.layoutInflater.inflate(
+                                                    R.layout.view_actionoverlay_sheet_item,
+                                                    sheet.uxActionOverlaySheetItemContainer,
+                                                    false)
 
-                                    sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
+                                            sheetItem.uxActionOverlaySheetItemIcon.setImageDrawable(
+                                                    menuItem.icon
+                                                            // Set default icon if applicable
+                                                            ?: (if (this.defaultIcon != 0) ContextCompat.getDrawable(context, this.defaultIcon) else null)
+                                            )
 
-                                    sheetItem.setOnClickListener {
-                                        // TODO: when listener/activity is destroyed while hide sheet/animation has not finished, the view hierarchy including context/activity will leak. Commenting this. Commenting .hideSheet avoids the leak
-                                        sheetFab.value.hideSheet()
+                                            sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
 
-                                        this.listener?.onActionItem(menuItem.itemId)
-                                    }
+                                            sheetItem.setOnClickListener {
+                                                sheetFab.value.hideSheet()
 
-                                    sheet.uxActionOverlaySheetItemContainer.addView(sheetItem)
-                                }
+                                                // masc20170811. workaround for fab button vanishing when onclick messes with the view hierarchy
+                                                // eg. showing a material dialog seems to interrupt material sheet hide animations
+                                                // and fab button will not be restored to visible state after sheet has closed
+                                                sheetFab.event
+                                                        .takeUntil { it == SheetState.HIDDEN }
+                                                        .subscribeBy(onComplete = {
+                                                            // TODO: when listener/activity is destroyed while hide sheet/animation has not finished, the view hierarchy including context/activity will leak. Commenting this. Commenting .hideSheet avoids the leak
+                                                            this.listener?.onActionItem(menuItem.itemId)
+                                                        })
+
+                                            }
+
+                                            sheet.uxActionOverlaySheetItemContainer.addView(sheetItem)
+                                        }
 
                                 fab.setOnClickListener {
                                     this.materialSheetFabs.values
