@@ -152,6 +152,9 @@ class DeliveryStop(
                 .distinct()
     }
 
+    val isSignatureRequired: Boolean
+        get() = this.deliveredParcels.blockingFirst().count() > 0
+
     /**
      * Resets all parcels to pending state and removes all event information
      */
@@ -223,6 +226,7 @@ class DeliveryStop(
 
                     val parcels = stop.tasks.flatMap { it.order.parcels }
 
+                    // TODO: unify parcel message send, as this is replicated eg., in DeliveryStop
                     // Send compound closing stop parcel message
                     mqttChannels.central.main.channel().send(
                             ParcelServiceV1.ParcelMessage(
@@ -236,7 +240,7 @@ class DeliveryStop(
                                         ParcelServiceV1.Event(
                                                 event = Event.DELIVERED.value,
                                                 reason = Reason.NORMAL.id,
-                                                parcelId = it.number.toLong(),
+                                                parcelId = it.id,
                                                 latitude = lastLocation?.altitude,
                                                 longitude = lastLocation?.longitude
                                         )

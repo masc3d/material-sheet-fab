@@ -375,6 +375,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
                     val lastLocation = this@DeliveryList.locationCache.lastLocation
 
+                    // TODO: unify parcel message send, as this is replicated eg., in DeliveryStop
                     // Send compound parcel message with loading states
                     mqttChannels.central.main.channel().send(
                             ParcelServiceV1.ParcelMessage(
@@ -391,7 +392,7 @@ class DeliveryList : CompositeDisposableSupplier {
                                                     it.loadingState == Parcel.LoadingState.MISSING -> Reason.PARCEL_MISSING.id
                                                     else -> Reason.NORMAL.id
                                                 },
-                                                parcelId = it.number.toLong(),
+                                                parcelId = it.id,
                                                 latitude = lastLocation?.altitude,
                                                 longitude = lastLocation?.longitude
                                         )

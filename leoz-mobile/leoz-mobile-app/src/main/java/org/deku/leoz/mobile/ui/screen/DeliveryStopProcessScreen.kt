@@ -133,7 +133,7 @@ class DeliveryStopProcessScreen :
                 icon = R.drawable.ic_format_list_bulleted,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
-                showIfEmpty = true,
+                showIfEmpty = false,
                 title = this.getText(R.string.pending).toString(),
                 items = this.deliveryStop.pendingParcels
                         .bindToLifecycle(this)
@@ -276,10 +276,16 @@ class DeliveryStopProcessScreen :
         this.uxRecyclerView.adapter = parcelListAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        //region Action items
+
+        // Close stop menu
         val closeStopMenu = this.activity.inflateMenu(R.menu.menu_delivery_stop_process_close)
 
-        closeStopMenu.findItem(R.id.action_deliver_postbox).isEnabled =
-                this.stop.tasks.any { it.services.contains(ParcelService.POSTBOX_DELIVERY) }
+        closeStopMenu.findItem(R.id.action_deliver_postbox).isVisible =
+                this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY)
+
+        closeStopMenu.findItem(R.id.action_deliver_neighbour).isVisible =
+                this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY)
 
         this.actionItems = listOf(
                 ActionItem(
@@ -287,11 +293,13 @@ class DeliveryStopProcessScreen :
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_truck_delivery
                 ),
+
                 ActionItem(
                         id = R.id.action_delivery_select_event,
                         colorRes = R.color.colorAccent,
                         iconRes = R.drawable.ic_exclamation
                 ),
+
                 ActionItem(
                         id = R.id.action_delivery_close_stop,
                         colorRes = R.color.colorPrimary,
@@ -302,6 +310,7 @@ class DeliveryStopProcessScreen :
                         alignEnd = false
                 )
         )
+        //endregion
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
         binding.stop = StopViewModel(this.stop)
@@ -309,6 +318,8 @@ class DeliveryStopProcessScreen :
 
     override fun onResume() {
         super.onResume()
+
+        log.trace("RESUME")
 
         aidcReader.decoders.set(
                 Interleaved25Decoder(true, 11, 12),
@@ -374,24 +385,37 @@ class DeliveryStopProcessScreen :
                             delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.POSTBOX)
                         }
 
-                        R.id.action_deliver_recipient -> {
-                            MaterialDialog.Builder(context)
-                                    .title(R.string.recipient)
-                                    .cancelable(true)
-                                    .content(R.string.recipient_dialog_content)
-                                    .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
-                                    .input("Max Mustermann", null, false, { _, charSequence ->
-                                        this.deliveryStop.recipientName = charSequence.toString()
+                        R.id.action_deliver_close -> {
+                            if (this.deliveryStop.isSignatureRequired) {
+                                MaterialDialog.Builder(context)
+                                        .title(R.string.recipient)
+                                        .cancelable(true)
+                                        .content(R.string.recipient_dialog_content)
+                                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
+                                        .input("Max Mustermann", null, false, { _, charSequence ->
+                                            this.deliveryStop.recipientName = charSequence.toString()
 
-                                        this.activity.showScreen(SignatureScreen().also {
-                                            it.parameters = SignatureScreen.Parameters(
-                                                    stopId = this.stop.id,
-                                                    deliveryReason = EventDeliveredReason.NORMAL,
-                                                    recipient = this.deliveryStop.recipientName ?: ""
-                                            )
+                                            this.activity.showScreen(SignatureScreen().also {
+                                                it.parameters = SignatureScreen.Parameters(
+                                                        stopId = this.stop.id,
+                                                        deliveryReason = EventDeliveredReason.NORMAL,
+                                                        recipient = this.deliveryStop.recipientName ?: ""
+                                                )
+                                            })
                                         })
-                                    })
-                                    .build().show()
+                                        .build().show()
+                            } else {
+                                this.deliveryStop.finalize()
+                                        .observeOnMainThread()
+                                        .subscribeBy(
+                                                onComplete = {
+                                                    // TODO: move state control to model
+                                                    this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
+                                                },
+                                                onError = {
+                                                    log.error(it.message, it)
+                                                })
+                            }
                         }
                     }
                 }

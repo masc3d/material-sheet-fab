@@ -77,12 +77,12 @@
 
     <string name="event_reason_absent">Kunde abwesend</string>
     <string name="event_reason_address_wrong">Falsche adresse</string>
-    <string name="event_reason_could_want_not_pay">Kann/Will nicht zahlen</string>
+    <string name="event_reason_could_want_not_pay">Keine Bezahlung</string>
     <string name="event_reason_damaged">Paket beschädigt</string>
     <string name="event_reason_moved">Kunde umgezogen</string>
-    <string name="event_reason_no_ident_doc">Ausweis nicht verfügbar</string>
+    <string name="event_reason_no_ident_doc">Kein Ausweis</string>
     <string name="event_reason_pin_imei_wrong">PIN / IMEI falsch</string>
-    <string name="event_reason_refuse">Kunde verweigert annahme</string>
+    <string name="event_reason_refuse">Annahme verweigert</string>
     <string name="event_reason_signature_refused">Unterschrift verweigert</string>
     <string name="event_reason_vacation">Kunde in Urlaub</string>
     <string name="event_reason_xc_code_wrong">XC Code falsch</string>
@@ -229,4 +229,5 @@
     <string name="error_invalid_parcel">Ungültiges Paket</string>
     <string name="recipient">Empfänger</string>
     <string name="recipient_dialog_content">Wer hat die Sendung(en) angenommen?</string>
+    <string name="close">Schließen</string>
 </resources>

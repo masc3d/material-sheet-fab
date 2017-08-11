@@ -30,6 +30,7 @@
     <string name="check_for_updates">Check for updates</string>
 
     <string name="clear">Clear</string>
+    <string name="close">Close</string>
 
     <string name="contact">Contact</string>
 
@@ -83,7 +84,7 @@
 
     <string name="event_reason_absent">Consignee absent</string>
     <string name="event_reason_address_wrong">Wrong address</string>
-    <string name="event_reason_could_want_not_pay">Could/Want not pay</string>
+    <string name="event_reason_could_want_not_pay">No Payment</string>
     <string name="event_reason_damaged">Parcel damaged</string>
     <string name="event_reason_moved">Customer moved</string>
     <string name="event_reason_no_ident_doc">No ident document</string>
@@ -91,7 +92,7 @@
     <string name="event_reason_refuse">Consignee refused</string>
     <string name="event_reason_signature_refused">Signature refused</string>
     <string name="event_reason_unknown" translatable="false">N/A</string>
-    <string name="event_reason_vacation">Consignee in vacation</string>
+    <string name="event_reason_vacation">In vacation</string>
     <string name="event_reason_xc_code_wrong">XC code wrong</string>
     <string name="event_reason_xc_damaged">XC object damaged</string>
     <string name="event_reason_xc_not_ready">XC object not ready</string>
