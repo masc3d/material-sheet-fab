@@ -32,7 +32,6 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.mobile
@@ -82,19 +81,19 @@ class DeliveryStopProcessScreen :
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_order,
-                amount = deliveryStop.orderAmount.map { it.toString() }.toField(),
+                amount = deliveryStop.deliveredOrdersAmount.map { it.toString() }.toField(),
                 totalAmount = deliveryStop.orderTotalAmount.map { it.toString() }.toField()
         )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_variant_closed,
-                amount = deliveryStop.parcelAmount.map { it.toString() }.toField(),
+                amount = deliveryStop.deliveredParcelAmount.map { it.toString() }.toField(),
                 totalAmount = deliveryStop.parcelTotalAmount.map { it.toString() }.toField()
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_weight_scale,
-                amount = deliveryStop.weight.map { "${it.format(2)}kg" }.toField(),
+                amount = deliveryStop.deliveredParcelsWeight.map { "${it.format(2)}kg" }.toField(),
                 totalAmount = deliveryStop.totalWeight.map { "${it.format(2)}kg" }.toField()
         )
     }

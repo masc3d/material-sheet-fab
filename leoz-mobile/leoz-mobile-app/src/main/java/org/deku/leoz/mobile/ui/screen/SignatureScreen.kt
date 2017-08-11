@@ -2,7 +2,6 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -47,11 +47,12 @@ class SignatureScreen
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val db: Database by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     private val listener by lazy { this.activity as? Listener }
 
     private val descriptionText: String by lazy {
-        "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: X\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${this.parameters.recipient}"
+        "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: ${delivery.activeStop?.deliveredParcelAmount?.blockingFirst()}\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${this.parameters.recipient}"
     }
 
     private val stop: Stop by lazy {

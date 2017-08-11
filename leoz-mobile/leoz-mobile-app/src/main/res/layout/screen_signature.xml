@@ -1,29 +1,27 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="org.deku.leoz.mobile.ui.screen.SignatureScreen">
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             style="@style/AppTheme.Layout.Content"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="org.deku.leoz.mobile.ui.screen.SignatureScreen">
 
     <TextView
         android:id="@+id/uxConclusion"
+        style="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="1"
-        android:cursorVisible="false"
         android:ems="10"
-        style="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#000000"
         android:text="Für was unterschreibe ich..."
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText"/>
 
     <com.github.gcacace.signaturepad.views.SignaturePad xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/uxSignaturePad"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#4CFFFFFF"
-        app:clearOnDoubleClick="false"
-        app:penColor="@android:color/black" />
+                                                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                        android:id="@+id/uxSignaturePad"
+                                                        android:layout_width="match_parent"
+                                                        android:layout_height="match_parent"
+                                                        app:clearOnDoubleClick="false"
+                                                        app:penColor="@android:color/black"/>
 
 </FrameLayout>

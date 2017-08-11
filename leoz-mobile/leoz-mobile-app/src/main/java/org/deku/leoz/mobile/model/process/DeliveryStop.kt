@@ -145,13 +145,13 @@ class DeliveryStop(
     val totalWeight = this.parcels.map { it.sumByDouble { it.weight } }
             .behave(this)
 
-    val orderAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState == Parcel.DeliveryState.DELIVERED } }.count() }
+    val deliveredOrdersAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState == Parcel.DeliveryState.DELIVERED } }.count() }
             .behave(this)
 
-    val parcelAmount = this.deliveredParcels.map { it.count() }
+    val deliveredParcelAmount = this.deliveredParcels.map { it.count() }
             .behave(this)
 
-    val weight = this.deliveredParcels.map { it.sumByDouble { it.weight } }
+    val deliveredParcelsWeight = this.deliveredParcels.map { it.sumByDouble { it.weight } }
             .behave(this)
 //endregion
 
