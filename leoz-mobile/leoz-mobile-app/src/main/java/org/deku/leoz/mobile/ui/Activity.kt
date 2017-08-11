@@ -363,7 +363,7 @@ open class Activity : RxAppCompatActivity(),
         //endregion
 
         //region Add synthetic input entries
-        if (this.debugSettings.enabled) {
+        if (this.debugSettings.syntheticAidcEnabled) {
             for (i in 0..this.syntheticInputs.size - 1) {
                 val syntheticInputs = this.syntheticInputs.get(i)
                 val item = mainSubMenu.add(
