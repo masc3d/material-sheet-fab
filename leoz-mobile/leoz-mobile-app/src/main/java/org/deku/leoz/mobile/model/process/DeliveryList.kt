@@ -393,7 +393,7 @@ class DeliveryList : CompositeDisposableSupplier {
                                                     else -> Reason.NORMAL.id
                                                 },
                                                 parcelId = it.id,
-                                                latitude = lastLocation?.altitude,
+                                                latitude = lastLocation?.latitude,
                                                 longitude = lastLocation?.longitude
                                         )
                                     }.toTypedArray()
