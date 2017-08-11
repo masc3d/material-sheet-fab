@@ -424,7 +424,16 @@ class DeliveryStopProcessScreen :
                     }
                 }
 
-        this.parcelListAdapter.selectedSection = this.deliveredSection
+        // Initially selected section
+        val sectionWithMaxEvents = this.sectionByEvent.map {
+            Pair(it.value, it.value.items.blockingFirst())
+        }
+                .filter { it.second.count() > 0 }
+                .maxBy { it.second.count() }
+                ?.first
+
+        this.parcelListAdapter.selectedSection = sectionWithMaxEvents ?: deliveredSection
+
         this.parcelListAdapter.selectedSectionProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
