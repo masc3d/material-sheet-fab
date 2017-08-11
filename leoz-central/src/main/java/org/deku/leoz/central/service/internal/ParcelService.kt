@@ -25,6 +25,7 @@ import javax.inject.Inject
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.model.counter
+import org.deku.leoz.node.Storage
 import org.deku.leoz.time.toShortTime
 import org.springframework.transaction.annotation.Transactional
 import sx.time.toSqlDate
@@ -34,6 +35,7 @@ import java.io.File
 import java.nio.file.Files
 import java.sql.Timestamp
 import javax.imageio.ImageIO
+
 
 /**
  * Parcel service v1 implementation
@@ -56,6 +58,9 @@ open class ParcelServiceV1 :
     @Inject
     private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
 
+    @Inject
+    private lateinit var storage: Storage
+
     /**
      * Parcel service message handler
      */
@@ -73,17 +78,24 @@ open class ParcelServiceV1 :
         events.forEach {
             var insertStatus = true
             val r = dslContext.newRecord(Tables.TBLSTATUS)
-            val parcelScan = it.parcelScancode
-            if (parcelScan.isEmpty())
+            //val parcelScan = it.parcelScancode
+            /*if (parcelScan.isEmpty())
                 throw DefaultProblem(
                         title = "Missing parcelScan"
                 )
+                */
             val parcelNo: Double?
-            if (!parcelScan.all { it.isDigit() })
-                parcelNo = parcelRepository.getUnitNo(it.parcelId)
-            else {
+            //if (!parcelScan.all { it.isDigit() })
+            parcelNo = parcelRepository.getUnitNo(it.parcelId)
+            /*else {
                 parcelNo = parcelScan.toDouble()
-            }
+            }*/
+            parcelNo ?:
+                    throw DefaultProblem(
+                            title = "Missing parcelId"
+                    )
+
+            val parcelScan = parcelNo.toLong().toString()
 
             parcelNo ?:
                     throw DefaultProblem(
@@ -142,7 +154,7 @@ open class ParcelServiceV1 :
                     pasReset = true
                     val recipientInfo = StringBuilder()
                     var signature: String? = null
-                    var mimetype="svg"
+                    var mimetype = "svg"
                     when (reason) {
                         Reason.POSTBOX -> {
                             recipientInfo.append("Postbox")
@@ -166,7 +178,7 @@ open class ParcelServiceV1 :
                                     }
                                     recipientInfo.append(addInfo.recipient ?: "")
                                     signature = addInfo.signature
-                                    mimetype=addInfo.mimetype
+                                    mimetype = addInfo.mimetype
                                 }
                             }
                         }
@@ -183,7 +195,7 @@ open class ParcelServiceV1 :
                                     //val recipientInfo = StringBuilder()
                                     recipientInfo.append(addInfo.name ?: "").append(";adr ").append(addInfo.address ?: "")
                                     signature = addInfo.signature
-                                    mimetype=addInfo.mimetype
+                                    mimetype = addInfo.mimetype
                                 }
                             }
                         }
@@ -192,7 +204,7 @@ open class ParcelServiceV1 :
                     }
                     r.text = recipientInfo.toString()
                     if (signature != null) {
-                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId,mimetype)
+                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId, mimetype)
                         parcelRecord.bmpfilename = sigPath
                     }
 
@@ -457,12 +469,11 @@ open class ParcelServiceV1 :
                                 is AdditionalInfo.DamagedInfo -> {
                                     r.infotext = addInfo.description ?: ""
                                     if (addInfo.photo != null) {
-                                        val path="/Users/helke/Pictures/" +
-                                                SimpleDateFormat("yyyy").format(it.time) + "/sca_pic/" +
+                                        val path = SimpleDateFormat("yyyy").format(it.time) + "/sca_pic/" +
                                                 SimpleDateFormat("MM").format(it.time) + "/" +
                                                 SimpleDateFormat("dd").format(it.time) + "/"
 
-                                         saveImage(it.time,addInfo.photo,parcelScan,message.nodeId,path,addInfo.mimetype)
+                                        saveImage(it.time, addInfo.photo, parcelScan, message.nodeId, path, addInfo.mimetype)
                                     }
                                 }
                             }
@@ -605,20 +616,21 @@ open class ParcelServiceV1 :
         }
     }
 
-    fun saveImage(date: Date, imageBase64: String?, number: String, nodeId: String?, path: String,mimetype: String): String {
+    fun saveImage(date: Date, imageBase64: String?, number: String, nodeId: String?, path: String, mimetype: String): String {
         if (imageBase64 != null) {
             val img = Base64.getDecoder().decode(imageBase64)
             val bufferedImage = ImageIO.read(ByteArrayInputStream(img))
-            val fileWithoutExt=number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB."
+            val fileWithoutExt = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB."
 
 
+            val path2write = this.storage.transferDirectory.toString() + "/" + path
 
             val file = fileWithoutExt + "bmp"
-            val fileObj = File(path + file)
+            val fileObj = File(path2write + file)
 
             fileObj.parentFile.mkdirs()
 
-            Files.write(File(path+fileWithoutExt+mimetype).toPath(),img)
+            Files.write(File(path2write + fileWithoutExt + mimetype).toPath(), img)
 
             /*
             if (ImageIO.write(bufferedImage, "bmp", fileObj)) {
@@ -626,25 +638,24 @@ open class ParcelServiceV1 :
             } else
                 return ""
                 */
-            return path+fileWithoutExt+mimetype
+            return path2write + fileWithoutExt + mimetype
         } else
             return ""
 
     }
 
-    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?,mimetype: String): String {
+    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?, mimetype: String): String {
 
         var path = "c:\\deku2004\\SynchToSaveServer\\" +
                 SimpleDateFormat("yyyy").format(date) + "\\SB\\" +
                 SimpleDateFormat("MM").format(date) + "\\" +
                 SimpleDateFormat("dd").format(date)
 
-        path = "/Users/helke/Pictures/" +
-                SimpleDateFormat("yyyy").format(date) + "/SB/" +
+        path = SimpleDateFormat("yyyy").format(date) + "/SB/" +
                 SimpleDateFormat("MM").format(date) + "/" +
                 SimpleDateFormat("dd").format(date) + "/"
 
-        return saveImage(date,signatureBase64,number,nodeId,path,mimetype)
+        return saveImage(date, signatureBase64, number, nodeId, path, mimetype)
 
 
         //create path if not exsists
