@@ -286,8 +286,6 @@ class DeliveryStopProcessScreen :
                 this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
                         !this.deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
 
-        closeStopMenu.findItem(R.id.action_deliver_neighbour).isVisible =
-                !this.deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
 
         this.actionItems = listOf(
                 ActionItem(
@@ -491,7 +489,7 @@ class DeliveryStopProcessScreen :
                                             ?.isVisible = deliveryStop.isCloseToRecipientAvailable
 
                                     it.menu?.findItem(R.id.action_deliver_neighbour)
-                                            ?.isVisible = deliveryStop.isCloseToRecipientAvailable
+                                            ?.isVisible = deliveryStop.isCloseToNeighbourAvailable
 
                                     it.menu?.findItem(R.id.action_deliver_close)
                                             ?.isVisible = deliveryStop.isCloseWithEventAvailable

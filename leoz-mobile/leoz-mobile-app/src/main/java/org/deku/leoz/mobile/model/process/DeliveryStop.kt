@@ -188,6 +188,9 @@ class DeliveryStop(
     val isCloseToRecipientAvailable: Boolean
         get() = this.isCloseAvailable && deliveredParcels.blockingFirst().count() > 0
 
+    val isCloseToNeighbourAvailable: Boolean
+        get() = this.isCloseToRecipientAvailable && !this.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+
     /**
      * Resets all parcels to pending state and removes all event information
      */
