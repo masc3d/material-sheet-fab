@@ -84,7 +84,7 @@ subprojects {
         packager {
             sshTunnelProvider = mySshTunnelProvider
             bundleRepository = new BundleRepository(
-                    new Rsync.URI("rsync://leoz@leox.derkurier.de:13002/bundles"),
+                    new Rsync.URI("rsync://leoz@leoz.derkurier.de:13002/bundles"),
                     '2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x',
                     mySshTunnelProvider)
 

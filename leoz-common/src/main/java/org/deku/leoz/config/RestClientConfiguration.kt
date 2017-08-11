@@ -33,7 +33,7 @@ abstract class RestClientConfiguration {
      */
     var port: Int = RestConfiguration.DEFAULT_PORT
 
-    fun createUri(https: Boolean, host: String, port: Int, basePath: String): URI {
+    fun createUri(https: Boolean, host: String, port: Int, basePath: String = RestConfiguration.MAPPING_PREFIX): URI {
         val scheme = when (https) {
             true -> "https"
             false -> "http"
@@ -46,13 +46,21 @@ abstract class RestClientConfiguration {
     /**
      * Factory method for creating a leoz rest client
      */
-    fun createDefaultClientProxy(): RestClientProxy {
-        val uri = this.createUri(https, host, port, RestConfiguration.MAPPING_PREFIX)
-
+    fun createClientProxy(uri: URI): RestClientProxy {
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
-        val ignoreSslCertificate = !host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)
+        val ignoreSslCertificate = !uri.host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)
 
         return this.createClientProxy(uri, ignoreSslCertificate)
+    }
+
+    /**
+     * Factory method for creating a default leoz rest client
+     * using the configurations remote settings (host/port)
+     */
+    fun createDefaultClientProxy(): RestClientProxy {
+        val uri = this.createUri(https, host, port)
+
+        return this.createClientProxy(uri)
     }
 
     companion object {

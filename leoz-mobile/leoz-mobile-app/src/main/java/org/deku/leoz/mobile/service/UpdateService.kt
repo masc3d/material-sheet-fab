@@ -10,10 +10,12 @@ import org.deku.leoz.mobile.Storage
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
+import org.deku.leoz.mobile.config.RestClientConfiguration
 import sx.android.ApplicationPackage
 import sx.util.zip.verify
 import sx.concurrent.Service
 import sx.rs.proxy.FeignClientProxy
+import sx.rs.proxy.RestClientProxy
 import sx.time.Duration
 import sx.time.seconds
 import java.io.ByteArrayOutputStream
@@ -32,7 +34,8 @@ class UpdateService(
         executorService: ScheduledExecutorService,
         val bundleName: String,
         val versionAlias: String,
-        period: Duration
+        period: Duration,
+        private val restClientProxy: FeignClientProxy
 ) : Service(
         executorService = executorService,
         initialDelay = 1.seconds,
@@ -65,7 +68,6 @@ class UpdateService(
     }
 
     private val storage: Storage by Kodein.global.lazy.instance()
-    private val bundleService: BundleServiceV2 by Kodein.global.lazy.instance()
 
     /**
      * Temporary suffix of files currently being downloaded
@@ -112,7 +114,8 @@ class UpdateService(
         log.info("Update cycle")
 
         try {
-            val updateInfo = this.bundleService.info(this.bundleName, this.versionAlias)
+            val bundleService = this.restClientProxy.create(BundleServiceV2::class.java)
+            val updateInfo = bundleService.info(this.bundleName, this.versionAlias)
             log.info("${updateInfo}")
 
             // Cleanup
@@ -149,10 +152,9 @@ class UpdateService(
                 log.info("Downloading bundle [${downloadFile}]")
 
                 // For binary response stream, need to build target manually, so we can inject a decoder implementation
-                val feignClientProxy: FeignClientProxy = Kodein.global.instance()
 
                 FileOutputStream(downloadFile).use { stream ->
-                    val bundleService: BundleServiceV2 = feignClientProxy.target(
+                    val bundleService: BundleServiceV2 = restClientProxy.target(
                             apiType = BundleServiceV2::class.java,
                             output = stream,
                             progressCallback = { p: Float, bytesCopied: Long ->

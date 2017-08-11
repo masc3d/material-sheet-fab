@@ -24,6 +24,12 @@ update:
    # Cycle period in seconds
    period: 3600
 
+   remote:
+      host: 'leoz.derkurier.de'
+      http:
+         port: 13000
+         ssl: true
+
 # Location service settings
 location:
    enabled: true
