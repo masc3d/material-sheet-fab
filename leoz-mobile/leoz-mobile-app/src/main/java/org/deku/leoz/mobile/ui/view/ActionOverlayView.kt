@@ -22,6 +22,7 @@ import com.gordonwong.materialsheetfab.DimOverlayFrameLayout
 import com.gordonwong.materialsheetfab.MaterialSheetFab
 import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener
 import io.reactivex.Observable
+import io.reactivex.functions.Predicate
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_actionoverlay.view.*
@@ -303,19 +304,21 @@ class ActionOverlayView : RelativeLayout {
 
                                             sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
 
+                                            // masc20170811. Putting this observable sinde the onClickListener lambda
+                                            // will cause release builds to fail (on proguard) with androidstudio-2.3.3
+                                            val ovSheetHidden = sheetFab.event
+                                                    .takeUntil { it == SheetState.HIDDEN }
+
                                             sheetItem.setOnClickListener {
                                                 sheetFab.value.hideSheet()
 
                                                 // masc20170811. workaround for fab button vanishing when onclick messes with the view hierarchy
                                                 // eg. showing a material dialog seems to interrupt material sheet hide animations
                                                 // and fab button will not be restored to visible state after sheet has closed
-                                                sheetFab.event
-                                                        .takeUntil { it == SheetState.HIDDEN }
-                                                        .subscribeBy(onComplete = {
-                                                            // TODO: when listener/activity is destroyed while hide sheet/animation has not finished, the view hierarchy including context/activity will leak. Commenting this. Commenting .hideSheet avoids the leak
-                                                            this.listener?.onActionItem(menuItem.itemId)
-                                                        })
-
+                                                ovSheetHidden.subscribeBy(onComplete = {
+                                                    // TODO: when listener/activity is destroyed while hide sheet/animation has not finished, the view hierarchy including context/activity will leak. Commenting this. Commenting .hideSheet avoids the leak
+                                                    this.listener?.onActionItem(menuItem.itemId)
+                                                })
                                             }
 
                                             sheet.uxActionOverlaySheetItemContainer.addView(sheetItem)
