@@ -33,6 +33,7 @@ import sx.time.toTimestamp
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Paths
 import java.sql.Timestamp
 import javax.imageio.ImageIO
 
@@ -66,6 +67,7 @@ open class ParcelServiceV1 :
      */
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
+        log.debug(message.toString())
 
         //val events = message.events?.toList()
         val events = message.events?.toList()
@@ -161,10 +163,22 @@ open class ParcelServiceV1 :
                         }
                         Reason.NORMAL -> {
                             //if (it.deliveredInfo == null)
-                            if (it.additionalInfo == null)
+//                            if (it.additionalInfo == null)
+//                                throw DefaultProblem(
+//                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+//                                )
+                            if (message.deliveredInfo == null)
                                 throw DefaultProblem(
                                         title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
                                 )
+                            recipientInfo.append((message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).recipient ?: "")
+                            signature = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).signature
+                            mimetype = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).mimetype
+                            //val addInfo = it. additionalInfo
+                            //recipientInfo.append(.deliveredInfo.recipient ?: "")
+                            //signature = event.declaringClass.  message.deliveredInfo.signature
+                            //mimetype = message.deliveredInfo.mimetype
+/*
 
                             val addInfo = it.additionalInfo
                             when (addInfo) {
@@ -180,7 +194,9 @@ open class ParcelServiceV1 :
                                     signature = addInfo.signature
                                     mimetype = addInfo.mimetype
                                 }
+
                             }
+*/
                         }
                         Reason.NEIGHBOUR -> {
                             val addInfo = it.additionalInfo
@@ -204,7 +220,8 @@ open class ParcelServiceV1 :
                     }
                     r.text = recipientInfo.toString()
                     if (signature != null) {
-                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId, mimetype)
+//                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId, mimetype)
+                        val sigPath = saveImage(it.time, "SB", signature, parcelScan, message.nodeId, mimetype)
                         parcelRecord.bmpfilename = sigPath
                     }
 
@@ -469,11 +486,11 @@ open class ParcelServiceV1 :
                                 is AdditionalInfo.DamagedInfo -> {
                                     r.infotext = addInfo.description ?: ""
                                     if (addInfo.photo != null) {
-                                        val path = SimpleDateFormat("yyyy").format(it.time) + "/sca_pic/" +
-                                                SimpleDateFormat("MM").format(it.time) + "/" +
-                                                SimpleDateFormat("dd").format(it.time) + "/"
-
-                                        saveImage(it.time, addInfo.photo, parcelScan, message.nodeId, path, addInfo.mimetype)
+//                                        val path = SimpleDateFormat("yyyy").format(it.time) + "/sca_pic/" +
+//                                                SimpleDateFormat("MM").format(it.time) + "/" +
+//                                                SimpleDateFormat("dd").format(it.time) + "/"
+//
+//                                        saveImage(it.time, addInfo.photo, parcelScan, message.nodeId, addInfo.mimetype)
                                     }
                                 }
                             }
@@ -616,64 +633,79 @@ open class ParcelServiceV1 :
         }
     }
 
-    fun saveImage(date: Date, imageBase64: String?, number: String, nodeId: String?, path: String, mimetype: String): String {
+    // path: File,
+    fun saveImage(date: Date, location: String, imageBase64: String?, number: String, nodeId: String?, mimetype: String): String {
         if (imageBase64 != null) {
-            val img = Base64.getDecoder().decode(imageBase64)
-            val bufferedImage = ImageIO.read(ByteArrayInputStream(img))
+            val img: ByteArray
+            try {
+                img = Base64.getDecoder().decode(imageBase64)
+            } catch(e: IllegalArgumentException) {
+                log.debug("signature decode " + e.toString())
+                return ""
+            }
+//            val bufferedImage = ImageIO.read(ByteArrayInputStream(img))
             val fileWithoutExt = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB."
 
-
-            val path2write = this.storage.transferDirectory.toString() + "/" + path
-
+            val dir = storage.mobileDataDirectory.toPath()
+                    .resolve(SimpleDateFormat("yyyy").format(date))
+                    .resolve(location)
+                    .resolve(SimpleDateFormat("MM").format(date))
+                    .resolve(SimpleDateFormat("dd").format(date))
+                    .toFile().mkdir()
+//            val path2write = File(this.storage.mobileDataDirectory, dir).toString()
             val file = fileWithoutExt + "bmp"
-            val fileObj = File(path2write + file)
-
-            fileObj.parentFile.mkdirs()
-
-            Files.write(File(path2write + fileWithoutExt + mimetype).toPath(), img)
-
+//            val fileObj = File(path2write + file)
+//            fileObj.parentFile.mkdirs()
+//            Files.write(dir + file(fileWithoutExt+mimetype).toPath(),img)
+//            Files.write(File(path2write + fileWithoutExt + mimetype).toPath(), img)
             /*
             if (ImageIO.write(bufferedImage, "bmp", fileObj)) {
                 return file
             } else
                 return ""
                 */
-            return path2write + fileWithoutExt + mimetype
+            return dir.toString() + fileWithoutExt + "bmp"
+//            return path2write + fileWithoutExt + mimetype
         } else
             return ""
 
     }
 
-    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?, mimetype: String): String {
+//    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?, mimetype: String): String {
+//
+//        var path = "c:\\deku2004\\SynchToSaveServer\\" +
+//                SimpleDateFormat("yyyy").format(date) + "\\SB\\" +
+//                SimpleDateFormat("MM").format(date) + "\\" +
+//                SimpleDateFormat("dd").format(date)
+//
+//        val dir = storage.mobileDataDirectory.toPath()
+//                .resolve("qwe")
+//                .resolve("asd")
+//                .toFile()
+//
+//        path = SimpleDateFormat("yyyy").format(date) + "/SB/" +
+//                SimpleDateFormat("MM").format(date) + "/" +
+//                SimpleDateFormat("dd").format(date) + "/"
+//
+//        return saveImage(date, "" signatureBase64, number, nodeId, mimetype)
 
-        var path = "c:\\deku2004\\SynchToSaveServer\\" +
-                SimpleDateFormat("yyyy").format(date) + "\\SB\\" +
-                SimpleDateFormat("MM").format(date) + "\\" +
-                SimpleDateFormat("dd").format(date)
 
-        path = SimpleDateFormat("yyyy").format(date) + "/SB/" +
-                SimpleDateFormat("MM").format(date) + "/" +
-                SimpleDateFormat("dd").format(date) + "/"
+    //create path if not exsists
 
-        return saveImage(date, signatureBase64, number, nodeId, path, mimetype)
+    //  signatureBase64.decode64
+    //  convert to .bmp
 
+    //var file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.bmp"
+    // 2017\SB\06\09\83352287467_1804_2017060908550500_sca.bmp
+    // .save file
 
-        //create path if not exsists
+    // Set Reference in parcelrecord
+    //parcelRepository.setSignaturePath(number, file)
 
-        //  signatureBase64.decode64
-        //  convert to .bmp
+    //false -> log
 
-        //var file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.bmp"
-        // 2017\SB\06\09\83352287467_1804_2017060908550500_sca.bmp
-        // .save file
+    //return file
 
-        // Set Reference in parcelrecord
-        //parcelRepository.setSignaturePath(number, file)
-
-        //false -> log
-
-        //return file
-
-    }
+//}
 }
 
