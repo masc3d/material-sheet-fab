@@ -24,6 +24,7 @@ import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.behave
+import sx.rx.bind
 
 /**
  * Mobile delivery stop
@@ -78,6 +79,20 @@ class DeliveryStop(
                 .distinct()
     }
 
+    /**
+     * Observable stop query
+     */
+    private val stopQuery = ObservableQuery<StopEntity>(
+            name = "Delivery stop",
+            query = db.store.select(StopEntity::class)
+                    .where(StopEntity.ID.eq(entity.id))
+                    .get()
+    )
+            .bind(this)
+
+    /**
+     * Observable stop parcels query
+     */
     private val stopParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Delivery stop parcels",
             query = db.store.select(ParcelEntity::class)
@@ -85,6 +100,11 @@ class DeliveryStop(
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     )
+            .bind(this)
+
+    /** Observable stop */
+    val stop = stopQuery.result.map { it.value.first() }
+            .behave(this)
 
     /** Stop parcels */
     val parcels = this.stopParcelsQuery.result.map { it.value }
@@ -154,6 +174,9 @@ class DeliveryStop(
 
     val isSignatureRequired: Boolean
         get() = this.deliveredParcels.blockingFirst().count() > 0
+
+    val canClose: Boolean
+        get() = pendingParcels.blockingFirst().count() == 0 && entity.state == Stop.State.PENDING
 
     /**
      * Resets all parcels to pending state and removes all event information

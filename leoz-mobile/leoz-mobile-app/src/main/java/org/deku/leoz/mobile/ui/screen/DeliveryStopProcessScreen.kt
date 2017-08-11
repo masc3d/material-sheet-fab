@@ -32,6 +32,7 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.deku.leoz.mobile.model.entity.ParcelEntity
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.mobile
@@ -463,14 +464,24 @@ class DeliveryStopProcessScreen :
                 )
         )
 
-        this.deliveryStop.pendingParcels
+        // Observe changes which affect action items
+
+        Observable.merge(
+                this.deliveryStop.pendingParcels,
+                this.deliveryStop.stop
+        )
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOnMainThread()
                 .subscribe {
                     this.actionItems = this.actionItems.apply {
                         first { it.id == R.id.action_delivery_close_stop }
-                                .visible = it.count() == 0
+                                .visible = deliveryStop.canClose
                     }
+                }
+        this.deliveryStop.pendingParcels
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribe {
                 }
     }
 
