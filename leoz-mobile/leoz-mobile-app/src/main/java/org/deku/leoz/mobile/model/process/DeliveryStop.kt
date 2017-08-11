@@ -145,7 +145,7 @@ class DeliveryStop(
     val totalWeight = this.parcels.map { it.sumByDouble { it.weight } }
             .behave(this)
 
-    val orderAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState != Parcel.DeliveryState.PENDING } }.count() }
+    val orderAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState == Parcel.DeliveryState.DELIVERED } }.count() }
             .behave(this)
 
     val parcelAmount = this.deliveredParcels.map { it.count() }
