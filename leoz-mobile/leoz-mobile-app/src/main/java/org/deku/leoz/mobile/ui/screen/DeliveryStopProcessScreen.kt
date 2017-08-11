@@ -283,10 +283,11 @@ class DeliveryStopProcessScreen :
         val closeStopMenu = this.activity.inflateMenu(R.menu.menu_delivery_stop_process_close)
 
         closeStopMenu.findItem(R.id.action_deliver_postbox).isVisible =
-                this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY)
+                this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
+                        !this.deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
 
         closeStopMenu.findItem(R.id.action_deliver_neighbour).isVisible =
-                this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY)
+                !this.deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
 
         this.actionItems = listOf(
                 ActionItem(
@@ -386,7 +387,7 @@ class DeliveryStopProcessScreen :
                             delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.POSTBOX)
                         }
 
-                        R.id.action_deliver_close -> {
+                        R.id.action_deliver_recipient -> {
                             if (this.deliveryStop.isSignatureRequired) {
                                 MaterialDialog.Builder(context)
                                         .title(R.string.recipient)
@@ -405,18 +406,20 @@ class DeliveryStopProcessScreen :
                                             })
                                         })
                                         .build().show()
-                            } else {
-                                this.deliveryStop.finalize()
-                                        .observeOnMainThread()
-                                        .subscribeBy(
-                                                onComplete = {
-                                                    // TODO: move state control to model
-                                                    this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
-                                                },
-                                                onError = {
-                                                    log.error(it.message, it)
-                                                })
                             }
+                        }
+
+                        R.id.action_deliver_close -> {
+                            this.deliveryStop.finalize()
+                                    .observeOnMainThread()
+                                    .subscribeBy(
+                                            onComplete = {
+                                                // TODO: move state control to model
+                                                this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
+                                            },
+                                            onError = {
+                                                log.error(it.message, it)
+                                            })
                         }
                     }
                 }
@@ -475,13 +478,18 @@ class DeliveryStopProcessScreen :
                 .subscribe {
                     this.actionItems = this.actionItems.apply {
                         first { it.id == R.id.action_delivery_close_stop }
-                                .visible = deliveryStop.canClose
+                                .also {
+                                    it.visible = deliveryStop.isCloseAvailable
+                                    it.menu?.findItem(R.id.action_deliver_recipient)
+                                            ?.isVisible = deliveryStop.isCloseToRecipientAvailable
+
+                                    it.menu?.findItem(R.id.action_deliver_neighbour)
+                                            ?.isVisible = deliveryStop.isCloseToRecipientAvailable
+
+                                    it.menu?.findItem(R.id.action_deliver_close)
+                                            ?.isVisible = deliveryStop.isCloseWithEventAvailable
+                                }
                     }
-                }
-        this.deliveryStop.pendingParcels
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
-                .subscribe {
                 }
     }
 

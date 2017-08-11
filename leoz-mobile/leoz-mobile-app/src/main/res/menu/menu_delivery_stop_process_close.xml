@@ -15,6 +15,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_deliver_recipient"
+        android:orderInCategory="1000"
+        android:title="@string/to_recipient"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_deliver_close"
         android:orderInCategory="1000"
         android:title="@string/close"

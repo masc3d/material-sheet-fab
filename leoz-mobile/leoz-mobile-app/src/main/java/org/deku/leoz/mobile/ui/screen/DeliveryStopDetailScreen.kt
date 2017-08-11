@@ -81,7 +81,12 @@ class DeliveryStopDetailScreen
 
         this.title = getString(R.string.title_stop_detailt)
         this.aidcEnabled = true
+        this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
+    }
+
+    val serviceSection by lazy {
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -113,18 +118,19 @@ class DeliveryStopDetailScreen
         //region Services
         val services = stop.tasks.flatMap { it.services }.filter { it != ParcelService.NO_ADDITIONAL_SERVICE }.distinct()
 
+        val serviceSection = SectionViewModel<Any>(
+                icon = R.drawable.ic_service,
+                color = R.color.colorGrey,
+                background = R.drawable.section_background_grey,
+                title = this.getText(R.string.services).toString(),
+                items = Observable.fromIterable(listOf(services)))
+
         if (services.count() > 0) {
             flexibleAdapter.addItem(
                     FlexibleExpandableVmItem<SectionViewModel<Any>, Any>(
                             view = R.layout.item_section_header,
                             variable = BR.header,
-                            viewModel = SectionViewModel<Any>(
-                                    icon = R.drawable.ic_service,
-                                    color = R.color.colorGrey,
-                                    background = R.drawable.section_background_grey,
-                                    title = this.getText(R.string.services).toString(),
-                                    items = Observable.fromIterable(listOf(services))
-                            )
+                            viewModel = serviceSection
                     ).also {
                         it.subItems = services.map {
                             FlexibleSectionableVmItem<Any>(
@@ -195,7 +201,13 @@ class DeliveryStopDetailScreen
         flexibleAdapter.setStickyHeaders(true)
         flexibleAdapter.showAllHeaders()
         flexibleAdapter.collapseAll()
-        flexibleAdapter.expandAll()
+
+        // Expand service section
+        flexibleAdapter.currentItems.firstOrNull {
+            it.viewModel == serviceSection
+        }?.also {
+            flexibleAdapter.expand(it)
+        }
 
         this.actionItems = listOf(
                 ActionItem(

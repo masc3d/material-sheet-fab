@@ -175,8 +175,18 @@ class DeliveryStop(
     val isSignatureRequired: Boolean
         get() = this.deliveredParcels.blockingFirst().count() > 0
 
-    val canClose: Boolean
-        get() = pendingParcels.blockingFirst().count() == 0 && entity.state == Stop.State.PENDING
+
+    val isCloseAvailable: Boolean
+        get() =
+        pendingParcels.blockingFirst().count() == 0 &&
+                entity.state == Stop.State.PENDING
+
+    val isCloseWithEventAvailable: Boolean
+        get() = this.isCloseAvailable && deliveredParcels.blockingFirst().count() == 0
+
+
+    val isCloseToRecipientAvailable: Boolean
+        get() = this.isCloseAvailable && deliveredParcels.blockingFirst().count() > 0
 
     /**
      * Resets all parcels to pending state and removes all event information
