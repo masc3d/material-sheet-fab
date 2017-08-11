@@ -271,8 +271,11 @@ class DeliveryStop(
                                     ),
                                     events = parcels.map {
                                         ParcelServiceV1.Event(
-                                                event = Event.DELIVERED.value,
-                                                reason = Reason.NORMAL.id,
+                                                event = when {
+                                                    it.deliveryState == Parcel.DeliveryState.DELIVERED -> Event.DELIVERED.value
+                                                    else -> Event.DELIVERY_FAIL.value
+                                                },
+                                                reason = it.reason?.reason?.oldValue ?: Reason.NORMAL.oldValue,
                                                 parcelId = it.id,
                                                 latitude = lastLocation?.latitude,
                                                 longitude = lastLocation?.longitude
