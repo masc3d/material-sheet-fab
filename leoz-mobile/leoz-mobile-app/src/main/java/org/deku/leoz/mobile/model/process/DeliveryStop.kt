@@ -216,11 +216,15 @@ class DeliveryStop(
     fun deliver(parcel: ParcelEntity): Completable {
         return db.store.withTransaction {
             // TODO: support order level events
-            parcels.blockingFirst().forEach {
-                it.deliveryState = Parcel.DeliveryState.PENDING
-                it.reason = null
-                update(it)
-            }
+            parcels.blockingFirst()
+                    .filter {
+                        it.deliveryState == Parcel.DeliveryState.UNDELIVERED
+                    }
+                    .forEach {
+                        it.deliveryState = Parcel.DeliveryState.PENDING
+                        it.reason = null
+                        update(it)
+                    }
 
             parcel.deliveryState = Parcel.DeliveryState.DELIVERED
             update(parcel)

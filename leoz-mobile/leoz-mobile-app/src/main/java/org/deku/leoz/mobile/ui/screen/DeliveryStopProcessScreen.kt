@@ -549,45 +549,4 @@ class DeliveryStopProcessScreen :
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
         log.trace("SELECTEDITEAM VIA LISTENER")
     }
-
-//        val order: Order? = orderList.firstOrNull {
-//            it.parcels.firstOrNull {
-//                it.number == ref
-//            } != null
-//        }
-//
-//        hideResultImages()
-//
-//        if (order != null) {
-//            showResult(R.drawable.green)
-//        } else {
-//            //Parcel is not part of this stop
-//            if (lastRef.isNullOrBlank() || lastRef != ref) {
-//                //No (similar) reference scanned previously
-//                showResult(R.drawable.red)
-//            } else {
-//                showResult(R.drawable.red)
-//            }
-//        }
-//
-//        lastRef = ref
-//    }
-
-//    private fun showResult(backgroundResource: Int) {
-//        hideResultImages()
-//
-//        val view = if (resultCount % 2 == 0) this.uxResultLeft else this.uxResultRight
-//
-//        //view.setBackgroundResource(backgroundResource)
-//        view.setImageDrawable(ContextCompat.getDrawable(this.context, backgroundResource))
-//        view.visibility = View.VISIBLE
-//
-//        resultCount++
-//    }
-//
-//    private fun hideResultImages() {
-//        this.uxResultLeft.visibility = View.INVISIBLE
-//        this.uxResultRight.visibility = View.INVISIBLE
-//    }
-
 }
