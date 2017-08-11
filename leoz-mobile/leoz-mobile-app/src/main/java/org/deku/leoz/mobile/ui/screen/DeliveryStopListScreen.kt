@@ -217,8 +217,8 @@ class DeliveryStopListScreen
         }
 
         this.activity.showScreen(
-                DeliveryStopDetailScreen().also {
-                    it.parameters = DeliveryStopDetailScreen.Parameters(stopId = stop.id)
+                DeliveryStopProcessScreen().also {
+                    it.parameters = DeliveryStopProcessScreen.Parameters(stopId = stop.id)
                 }
         )
     }
