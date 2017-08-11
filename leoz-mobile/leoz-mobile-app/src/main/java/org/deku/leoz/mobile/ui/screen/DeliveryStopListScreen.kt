@@ -200,6 +200,7 @@ class DeliveryStopListScreen
 
     private fun onInput(unitNumber: UnitNumber) {
         val stop = this.delivery.pendingStops.blockingFirst().value
+                .plus(this.delivery.closedStops.blockingFirst().value)
                 .flatMap { it.tasks }
                 .firstOrNull {
                     it.order.parcels.any { it.number == unitNumber.value }

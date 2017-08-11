@@ -46,12 +46,21 @@ class Delivery : CompositeDisposableSupplier {
                     .get()
     )
             .bind(this)
+
+    private val closedStopsQuery = ObservableQuery<StopEntity>(
+            name = "Closed stops",
+            query = db.store.select(StopEntity::class)
+                    .where(StopEntity.STATE.eq(Stop.State.CLOSED))
+                    .orderBy(StopEntity.POSITION.asc())
+                    .get()
+    )
+            .bind(this)
+
     //endregion
 
     val pendingStops = this.pendingStopsQuery.result
 
-    val closedStops = this.deliveryList.stops.map { it.filter { it.state == Stop.State.CLOSED } }
-            .behave(this)
+    val closedStops = this.closedStopsQuery.result
 
     val undeliveredParcels = parcelRepository.entitiesProperty.map { it.value.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
             .behave(this)
@@ -59,81 +68,4 @@ class Delivery : CompositeDisposableSupplier {
     var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { p, o, v ->
         o?.dispose()
     })
-
-    val nextDeliveryScreenProperty = ObservableRxProperty<ScreenFragment<*>?>(null)
-    val nextDeliveryScreenSubject = PublishSubject.create<ScreenFragment<*>>()
-    var nextDeliveryScreen: ScreenFragment<*>? by nextDeliveryScreenProperty
-
-//    val serviceCheckList: List<ServiceCheck> = listOf(
-//            ServiceCheck(type = ServiceCheck.CheckType.CASH),
-//            ServiceCheck(type = ServiceCheck.CheckType.IMEI_PIN)
-//    )
-
-//    val serviceCheckList: List<Delivery.ServiceCheck> by lazy {
-//        ServiceCheck.CheckType.values().map {
-//            Delivery.ServiceCheck(type = it)
-//        }
-//
-//        data class ServiceCheck(val type: CheckType, var done: Boolean = false, var success: Boolean = false) {
-//            enum class CheckType {
-//                IMEI_PIN, CASH, IDENT, XC, SXC
-//            }
-//        }
-
-    fun sign(stopId: Int, reason: EventDeliveredReason, recipient: String = "") {
-        when (reason) {
-            EventDeliveredReason.NORMAL -> {
-                nextDeliveryScreenSubject.onNext(
-                        SignatureScreen().also {
-                            it.parameters = SignatureScreen.Parameters(
-                                    stopId = stopId,
-                                    deliveryReason = reason,
-                                    recipient = recipient
-                            )
-                        })
-            }
-
-            EventDeliveredReason.NEIGHBOR -> {
-                nextDeliveryScreenSubject.onNext(NeighbourDeliveryScreen.create(stopId = stopId))
-            }
-
-            EventDeliveredReason.POSTBOX -> {
-                nextDeliveryScreenSubject.onNext(PostboxDeliveryScreen.create(stopId))
-            }
-
-            else -> throw NotImplementedError("Reason [${reason.name}]  not implemented.")
-        }
-    }
-//
-//    data class ServiceCheck(val service: ParcelService, var done: Boolean = false, var success: Boolean = false)
-//
-//    fun getNextServiceCheck(): ServiceCheck? {
-//        return if (serviceCheckList.isNotEmpty()) serviceCheckList.firstOrNull { !it.done } else null
-//    }
-//
-//    val serviceCheckList: List<ServiceCheck> by lazy {
-//        val list: MutableList<ServiceCheck> = mutableListOf()
-//        val parcelServiceList: List<ParcelService> = this.getServiceOfInterest().service
-//
-//        parcelServiceList.forEach {
-//            when (it) {
-//                ParcelService.CASH_ON_DELIVERY,
-//                ParcelService.RECEIPT_ACKNOWLEDGEMENT,
-//                ParcelService.PHARMACEUTICALS,
-//                ParcelService.IDENT_CONTRACT_SERVICE,
-//                ParcelService.SUBMISSION_PARTICIPATION,
-//                ParcelService.SECURITY_RETURN,
-//                ParcelService.XCHANGE,
-//                ParcelService.PHONE_RECEIPT,
-//                ParcelService.DOCUMENTED_PERSONAL_DELIVERY,
-//                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS,
-//                ParcelService.PACKAGING_RECIRCULATION -> list.add(org.deku.leoz.mobile.model.Order.ServiceCheck(service = it))
-//                else -> {
-//
-//                }
-//            }
-//        }
-//
-//        list.toList()
-//    }
 }

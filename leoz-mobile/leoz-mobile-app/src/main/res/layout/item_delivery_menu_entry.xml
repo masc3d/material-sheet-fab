@@ -62,15 +62,19 @@
             <sx.android.view.BadgeTextView
                 android:id="@+id/uxCount"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:background="@color/colorAccent"/>
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+                />
 
             <sx.android.view.BadgeTextView
                 android:id="@+id/uxCount2"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+                />
 
         </LinearLayout>
 

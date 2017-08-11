@@ -214,7 +214,15 @@ class DeliveryStop(
      * Deliver a single parcel
      */
     fun deliver(parcel: ParcelEntity): Completable {
+        val stop = this.entity
+
         return db.store.withTransaction {
+            // In case the stop has been closed before, re-open on delivery
+            if (stop.state == Stop.State.CLOSED) {
+                stop.state = Stop.State.PENDING
+                update(stop)
+            }
+
             // TODO: support order level events
             parcels.blockingFirst()
                     .filter {

@@ -11,6 +11,7 @@ import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.ui.Activity
@@ -62,36 +63,7 @@ class DeliveryActivity : Activity(),
     override fun onResume() {
         super.onResume()
 
-        delivery.nextDeliveryScreenSubject
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .subscribe {
-                    this.showScreen(it)
-                }
     }
-
-//    fun runServiceWorkflow(stop: Stop, reason: EventDeliveredReason) {
-//
-//        val serviceCheck = stop.orders.first().getNextServiceCheck()
-//
-//        if (serviceCheck == null) {
-//            runSigningProcess(stop = stop, reason = reason)
-//        } else {
-//            when (serviceCheck.service) {
-//                ParcelService.CASH_ON_DELIVERY -> TODO()
-//                ParcelService.DOCUMENTED_PERSONAL_DELIVERY -> TODO()
-//                ParcelService.IDENT_CONTRACT_SERVICE -> TODO()
-//                ParcelService.PACKAGING_RECIRCULATION -> TODO()
-//                ParcelService.PHARMACEUTICALS -> TODO()
-//                ParcelService.PHONE_RECEIPT -> TODO()
-//                ParcelService.RECEIPT_ACKNOWLEDGEMENT -> TODO()
-//                ParcelService.SECURITY_RETURN -> TODO()
-//                ParcelService.SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS -> TODO()
-//                ParcelService.SUBMISSION_PARTICIPATION -> TODO()
-//                ParcelService.XCHANGE -> TODO()
-//            }
-//        }
-//
-//    }
 
     /**
      * Determine if changelog should be displayed automatically e.g. after an APP update.
@@ -111,12 +83,15 @@ class DeliveryActivity : Activity(),
         log.debug("Checking for changelog dialog. Current version [$currentVersionNumber] Recently saved version [$savedVersionNumber]")
 
         if (currentVersionNumber > savedVersionNumber) {
-            showChangelogDialog()
+            // TODO: disabled changelog until finalized
+            if (BuildConfig.DEBUG) {
+                showChangelogDialog()
 
-            val editor = sharedPreferences.edit()
+                val editor = sharedPreferences.edit()
 
-            editor.putInt(SharedPreference.CHANGELOG_VERSION.key, currentVersionNumber)
-            editor.apply()
+                editor.putInt(SharedPreference.CHANGELOG_VERSION.key, currentVersionNumber)
+                editor.apply()
+            }
         }
     }
 

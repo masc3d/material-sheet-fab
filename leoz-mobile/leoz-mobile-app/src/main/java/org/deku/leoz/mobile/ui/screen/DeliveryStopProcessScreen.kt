@@ -380,11 +380,9 @@ class DeliveryStopProcessScreen :
                         }
 
                         R.id.action_deliver_neighbour -> {
-                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.NEIGHBOR)
                         }
 
                         R.id.action_deliver_postbox -> {
-                            delivery.sign(stopId = this.stop.id, reason = EventDeliveredReason.POSTBOX)
                         }
 
                         R.id.action_deliver_recipient -> {
