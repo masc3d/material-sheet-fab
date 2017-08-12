@@ -120,7 +120,7 @@ open class ParcelServiceV1 :
             val event = Event.values().find { it.value == eventId }!!
             r.kzStatuserzeuger = event.creator.toString()
             r.kzStatus = event.concatId.toUInteger()
-
+            r.timestamp2 = Date().toTimestamp()
             val reasonId = it.reason
             val reason = Reason.values().find { it.id == reasonId }!!
             r.fehlercode = reason.oldValue.toUInteger()
@@ -632,10 +632,11 @@ open class ParcelServiceV1 :
             }
         }
     }
-
     // path: File,
     fun saveImage(date: Date, location: String, imageBase64: String?, number: String, nodeId: String?, mimetype: String): String {
         if (imageBase64 != null) {
+            // in image64 ist svg
+/*
             val img: ByteArray
             try {
                 img = Base64.getDecoder().decode(imageBase64)
@@ -643,6 +644,7 @@ open class ParcelServiceV1 :
                 log.debug("signature decode " + e.toString())
                 return ""
             }
+*/
 //            val bufferedImage = ImageIO.read(ByteArrayInputStream(img))
             val fileWithoutExt = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB."
 
@@ -652,20 +654,9 @@ open class ParcelServiceV1 :
                     .resolve(SimpleDateFormat("MM").format(date))
                     .resolve(SimpleDateFormat("dd").format(date))
                     .toFile().mkdir()
-//            val path2write = File(this.storage.mobileDataDirectory, dir).toString()
-            val file = fileWithoutExt + "bmp"
-//            val fileObj = File(path2write + file)
-//            fileObj.parentFile.mkdirs()
-//            Files.write(dir + file(fileWithoutExt+mimetype).toPath(),img)
-//            Files.write(File(path2write + fileWithoutExt + mimetype).toPath(), img)
-            /*
-            if (ImageIO.write(bufferedImage, "bmp", fileObj)) {
-                return file
-            } else
-                return ""
-                */
-            return dir.toString() + fileWithoutExt + "bmp"
-//            return path2write + fileWithoutExt + mimetype
+//            var file = dir. + fileWithoutExt
+//            Files.write(dir,imageBase64)
+            return fileWithoutExt
         } else
             return ""
 
