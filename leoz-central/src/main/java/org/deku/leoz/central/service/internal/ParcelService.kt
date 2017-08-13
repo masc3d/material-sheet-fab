@@ -33,6 +33,7 @@ import sx.time.toTimestamp
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.OpenOption
 import java.nio.file.Paths
 import java.sql.Timestamp
 import javax.imageio.ImageIO
@@ -632,34 +633,27 @@ open class ParcelServiceV1 :
             }
         }
     }
-    // path: File,
-    fun saveImage(date: Date, location: String, imageBase64: String?, number: String, nodeId: String?, mimetype: String): String {
-        if (imageBase64 != null) {
-            // in image64 ist svg
-/*
-            val img: ByteArray
-            try {
-                img = Base64.getDecoder().decode(imageBase64)
-            } catch(e: IllegalArgumentException) {
-                log.debug("signature decode " + e.toString())
-                return ""
-            }
-*/
-//            val bufferedImage = ImageIO.read(ByteArrayInputStream(img))
-            val fileWithoutExt = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB."
 
-            val dir = storage.mobileDataDirectory.toPath()
+    fun saveImage(date: Date, location: String, imageSVG: String?, number: String, nodeId: String?, mimetype: String): String {
+        if (imageSVG != null) {
+            val fileWithoutExt = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.svg"
+            val path = storage.mobileDataDirectory.toPath()
                     .resolve(SimpleDateFormat("yyyy").format(date))
                     .resolve(location)
                     .resolve(SimpleDateFormat("MM").format(date))
                     .resolve(SimpleDateFormat("dd").format(date))
-                    .toFile().mkdir()
-//            var file = dir. + fileWithoutExt
-//            Files.write(dir,imageBase64)
+                    .toFile()
+            path.mkdirs()
+            val pathFile = path.toPath().resolve(fileWithoutExt).toFile().toPath()
+            try {
+                Files.write(pathFile, imageSVG.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW)
+            } catch(e: Exception) {
+                log.debug("Write File " + e.toString())
+                return ""
+            }
             return fileWithoutExt
         } else
             return ""
-
     }
 
 //    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?, mimetype: String): String {
