@@ -163,9 +163,9 @@ class DeliveryStopDetailScreen
                 ).also {
                     it.subItems = orders.map {
                         FlexibleSectionableVmItem<Any>(
-                                view = R.layout.item_order_compact,
+                                view = R.layout.item_ordertask,
                                 variable = BR.order,
-                                viewModel = OrderViewModel(it)
+                                viewModel = OrderTaskViewModel(it.pickupTask)
                         )
                     }
                 }

@@ -200,11 +200,11 @@ class DeliveryStopProcessScreen :
     }
 
     fun OrderEntity.toFlexibleItem()
-            : FlexibleSectionableVmItem<OrderViewModel> {
+            : FlexibleSectionableVmItem<OrderTaskViewModel> {
         return FlexibleSectionableVmItem(
-                view = R.layout.item_order_compact,
+                view = R.layout.item_ordertask,
                 variable = BR.order,
-                viewModel = OrderViewModel(this)
+                viewModel = OrderTaskViewModel(this.pickupTask)
         )
     }
 

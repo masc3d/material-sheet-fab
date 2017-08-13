@@ -8,7 +8,7 @@
 
         <variable
             name="order"
-            type="org.deku.leoz.mobile.ui.vm.OrderViewModel"/>
+            type="org.deku.leoz.mobile.ui.vm.OrderTaskViewModel"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -55,7 +55,7 @@
                                 android:layout_height="@dimen/icon_size"
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginEnd="@dimen/margin"
-                                android:src="@drawable/ic_order"
+                                android:src="@drawable/ic_pickup"
                                 android:tint="@color/colorGrey"
                                 />
 
@@ -63,8 +63,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:text="@{order.id, default=000000000}"
-                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                                android:text="@{order.senderAddress.city , default=`12345 Some Place`}"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                                 />
 
                         </LinearLayout>
@@ -90,7 +90,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:text="@{order.parcelAmount, default=0}"
-                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                                 />
 
                         </LinearLayout>
@@ -105,12 +105,12 @@
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
                         />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{order.senderAddress.city , default=`12345 Some Place`}"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                        />
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="@{order.id, default=000000000}"-->
+                        <!--android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"-->
+                        <!--/>-->
 
                 </LinearLayout>
 
