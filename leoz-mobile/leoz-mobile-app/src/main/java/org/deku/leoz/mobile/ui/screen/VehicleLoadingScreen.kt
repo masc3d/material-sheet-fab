@@ -148,6 +148,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
+                expandOnSelection = true,
                 title = this.getText(R.string.pending).toString(),
                 items = this.deliveryList.pendingParcels.map { it.value }
                         .bindToLifecycle(this)
@@ -160,6 +161,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
+                expandOnSelection = true,
                 title = this.getText(R.string.missing).toString(),
                 items = this.deliveryList.missingParcels.map { it.value }
                         .bindToLifecycle(this)
@@ -174,7 +176,9 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 view = R.layout.item_section_header,
                 variable = BR.header,
                 viewModel = this
-        )
+        ).also {
+            it.isSelectable = true
+        }
     }
 
     fun ParcelEntity.toFlexibleItem()
