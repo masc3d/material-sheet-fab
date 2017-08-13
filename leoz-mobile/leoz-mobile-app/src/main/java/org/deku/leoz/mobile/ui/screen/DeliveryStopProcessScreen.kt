@@ -147,6 +147,7 @@ class DeliveryStopProcessScreen :
                 background = R.drawable.section_background_grey,
                 showIfEmpty = true,
                 title = this.getText(R.string.orders).toString(),
+                expandOnSelection = true,
                 items = this.deliveryStop.orders
                         .bindToLifecycle(this)
         )
@@ -186,7 +187,9 @@ class DeliveryStopProcessScreen :
                 view = R.layout.item_section_header,
                 variable = BR.header,
                 viewModel = this
-        )
+        ).also {
+            it.isSelectable = true
+        }
     }
 
     fun ParcelEntity.toFlexibleItem()

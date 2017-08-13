@@ -21,6 +21,7 @@ open class SectionViewModel<T>(
         @DrawableRes val background: Int = R.drawable.section_background_accent,
         val title: String,
         val showIfEmpty: Boolean = true,
+        val expandOnSelection: Boolean = false,
         val items: Observable<List<T>> = Observable.empty()
 )
     : BaseObservable() {

@@ -47,10 +47,17 @@ class SectionsAdapter
                 if (item != null &&
                         item is FlexibleExpandableVmItem<*, *> && item.viewModel is SectionViewModel<*>) {
 
-                    this@SectionsAdapter.selectedSection = item.viewModel as SectionViewModel<*>
+                    val section = item.viewModel as SectionViewModel<*>
 
-                    try {
-                        if (adapter.isSelected(position)) {
+                    if (item.isSelectable && !isSectionSelected(section)) {
+                        if (section.expandOnSelection)
+                            expand(position)
+
+                        this@SectionsAdapter.selectedSection = section
+
+                    } else {
+                        log.trace("SELECTABLE ${item.isSelectable}")
+                        if (adapter.isSelected(position) || !item.isSelectable) {
                             if (adapter.isExpanded(position)) {
                                 adapter.collapse(position)
                             } else {
@@ -59,10 +66,9 @@ class SectionsAdapter
                                 adapter.expand(position)
                             }
                         } else {
-                            select(item)
+                            log.trace("SELECT")
+                            select(section)
                         }
-                    } catch(e: Throwable) {
-                        log.error(e.message, e)
                     }
                 }
 
@@ -81,12 +87,7 @@ class SectionsAdapter
                 .subscribe {
                     val section = it.value
                     if (section != null && !this.isSectionSelected(section)) {
-
-                        val item = headerItems
-                                .map { it as FlexibleExpandableVmItem<*, *> }
-                                .first { it.viewModel == section }
-
-                        this.select(item)
+                        this.select(section)
                     }
                 }
     }
@@ -114,7 +115,6 @@ class SectionsAdapter
             return sectionVmItemProvider.invoke()
                     .also {
                         it.isExpanded = false
-                        it.isSelectable = true
                         it.isExpandableOnClick = false
                     }
         }
@@ -181,7 +181,7 @@ class SectionsAdapter
     fun itemOf(section: SectionViewModel<*>): FlexibleExpandableVmItem<*, *>? {
         return this.headerItems.firstOrNull {
             it is FlexibleExpandableVmItem<*, *> && it.viewModel == section
-        } as FlexibleExpandableVmItem<*,*>
+        } as FlexibleExpandableVmItem<*, *>
     }
 
     /**
@@ -221,16 +221,28 @@ class SectionsAdapter
     /**
      * Select section
      */
-    private fun select(section: IFlexible<FlexibleExpandableVmHolder>) {
+    private fun select(section: SectionViewModel<*>) {
         val adapter = this
 
-        val position = this.getGlobalPositionOf(section)
+        val item = itemOf(section)
+
+        if (item == null)
+            return
+
+        var position = this.getGlobalPositionOf(item)
+
+        log.trace("SELECTABLE ${item.isSelectable}}")
 
         if (!adapter.selectedPositions.contains(position)) {
             adapter.clearSelection()
             adapter.addSelection(position)
         }
 
-        adapter.moveItem(adapter.getGlobalPositionOf(section), 0)
+        adapter.collapseAll()
+        position = adapter.getGlobalPositionOf(item)
+        adapter.moveItem(position, 0)
+
+        if (section.expandOnSelection)
+            adapter.expand(0)
     }
 }
