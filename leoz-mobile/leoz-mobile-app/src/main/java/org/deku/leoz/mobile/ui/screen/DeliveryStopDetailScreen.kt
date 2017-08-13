@@ -214,7 +214,7 @@ class DeliveryStopDetailScreen
                         id = R.id.action_deliver_continue,
                         colorRes = R.color.colorPrimary,
                         iconTintRes = android.R.color.white,
-                        iconRes = R.drawable.ic_truck_delivery,
+                        iconRes = R.drawable.ic_delivery,
                         alignEnd = false
                 ),
                 ActionItem(

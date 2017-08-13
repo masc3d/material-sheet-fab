@@ -119,7 +119,7 @@ class DeliveryStopProcessScreen :
     //region Sections
     val deliveredSection by lazy {
         SectionViewModel<ParcelEntity>(
-                icon = R.drawable.ic_truck_delivery,
+                icon = R.drawable.ic_delivery,
                 color = R.color.colorGreen,
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.delivered).toString(),
@@ -290,7 +290,7 @@ class DeliveryStopProcessScreen :
                 ActionItem(
                         id = R.id.action_delivery_select_delivered,
                         colorRes = R.color.colorGreen,
-                        iconRes = R.drawable.ic_truck_delivery
+                        iconRes = R.drawable.ic_delivery
                 ),
 
                 ActionItem(
