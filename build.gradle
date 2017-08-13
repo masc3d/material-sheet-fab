@@ -134,7 +134,7 @@ subprojects {
         project.apply plugin: 'idea'
         project.idea {
             module {
-                outputDir = project.sourceSets.main.output.classesDirs[0]
+                outputDir = project.sourceSets.main.output.classesDir
             }
         }
         //endregion
