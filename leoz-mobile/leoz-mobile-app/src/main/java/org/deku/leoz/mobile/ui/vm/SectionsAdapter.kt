@@ -1,13 +1,10 @@
 package org.deku.leoz.mobile.ui.vm
 
-import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
 import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.utils.Log
-import org.deku.leoz.mobile.BR
-import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmHolder
@@ -51,6 +48,22 @@ class SectionsAdapter
                         item is FlexibleExpandableVmItem<*, *> && item.viewModel is SectionViewModel<*>) {
 
                     this@SectionsAdapter.selectedSection = item.viewModel as SectionViewModel<*>
+
+                    try {
+                        if (adapter.isSelected(position)) {
+                            if (adapter.isExpanded(position)) {
+                                adapter.collapse(position)
+                            } else {
+                                // TODO: after expanding and fast scrolling to bottom, item click event doesn't fire unless the list is nudged a second time. glitchy, needs investigation
+                                adapter.collapseAll()
+                                adapter.expand(position)
+                            }
+                        } else {
+                            select(item)
+                        }
+                    } catch(e: Throwable) {
+                        log.error(e.message, e)
+                    }
                 }
 
                 return true
@@ -65,13 +78,15 @@ class SectionsAdapter
         this.collapseAll()
 
         this.selectedSectionProperty
-                .subscribe { section ->
-                    if (section.value != null) {
+                .subscribe {
+                    val section = it.value
+                    if (section != null && !this.isSectionSelected(section)) {
+
                         val item = headerItems
                                 .map { it as FlexibleExpandableVmItem<*, *> }
-                                .first { it.viewModel == section.value }
+                                .first { it.viewModel == section }
 
-                        this.selectSection(item)
+                        this.select(item)
                     }
                 }
     }
@@ -160,54 +175,62 @@ class SectionsAdapter
     }
 
     /**
-     * Remove section
-     * @param sectionViewModel Section view model
+     * Return flexible item for specific section
+     * @param section Section
      */
-    fun removeSection(sectionViewModel: SectionViewModel<*>) {
-        val item = this.currentItems.firstOrNull {
-            it.viewModel == sectionViewModel
-        }
+    fun itemOf(section: SectionViewModel<*>): FlexibleExpandableVmItem<*, *>? {
+        return this.headerItems.firstOrNull {
+            it is FlexibleExpandableVmItem<*, *> && it.viewModel == section
+        } as FlexibleExpandableVmItem<*,*>
+    }
+
+    /**
+     * Determine position of section
+     * @param section Section
+     */
+    fun positionOf(section: SectionViewModel<*>): Int {
+        return this.itemOf(section)
+                ?.let {
+                    this.getGlobalPositionOf(it)
+                }
+                ?: -1
+    }
+
+    /**
+     * Determine if section is currently selected
+     * @param section Section
+     */
+    fun isSectionSelected(section: SectionViewModel<*>): Boolean {
+        return this.isSelected(positionOf(section))
+    }
+
+    /**
+     * Remove section
+     * @param section Section view model
+     */
+    fun removeSection(section: SectionViewModel<*>) {
+        val item = this.itemOf(section)
 
         if (item != null) {
             this.removeItem(this.getGlobalPositionOf(item))
         }
 
-        this.sections.remove(sectionViewModel)
+        this.sections.remove(section)
     }
 
     /**
      * Select section
      */
-    private fun selectSection(item: IFlexible<FlexibleExpandableVmHolder>) {
+    private fun select(section: IFlexible<FlexibleExpandableVmHolder>) {
         val adapter = this
 
-        val position = this.getGlobalPositionOf(item)
-
-        // When re-establishing selection when item is selected, flexible adapter may behave erratically. thus checking
-
-        val firstSelection = adapter.selectedItemCount == 0
+        val position = this.getGlobalPositionOf(section)
 
         if (!adapter.selectedPositions.contains(position)) {
             adapter.clearSelection()
             adapter.addSelection(position)
         }
 
-        if (adapter.isExpanded(position)) {
-            adapter.collapse(position)
-        } else {
-            // TODO: after expanding and fast scrolling to bottom, item click event doesn't fire unless the list is nudged a second time. glitchy, needs investigation
-            adapter.collapseAll()
-            adapter.moveItem(adapter.getGlobalPositionOf(item), 0)
-
-            val expand = Runnable {
-                adapter.expand(adapter.getGlobalPositionOf(item))
-            }
-
-            if (firstSelection)
-            // Add delay on first selection to avoid drawing glitches
-                adapter.recyclerView.postDelayed(expand, 200)
-            else
-                adapter.recyclerView.post(expand)
-        }
+        adapter.moveItem(adapter.getGlobalPositionOf(section), 0)
     }
 }

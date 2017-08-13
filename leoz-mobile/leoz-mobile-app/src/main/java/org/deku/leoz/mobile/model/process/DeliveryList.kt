@@ -132,27 +132,35 @@ class DeliveryList : CompositeDisposableSupplier {
 
     //region Counters
     val orderTotalAmount = orderRepository.entitiesProperty.map { it.value.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val stopTotalAmount = stopRepository.entitiesProperty.map { it.value.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val parcelTotalAmount = parcelRepository.entitiesProperty.map { it.value.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val totalWeight = parcelRepository.entitiesProperty.map { it.value.sumByDouble { it.weight } }
+            .distinctUntilChanged()
             .behave(this)
 
     val orderAmount = loadedParcels.map { it.value.map { it.order }.distinct().count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val parcelAmount = loadedParcels.map { it.value.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val stopAmount = this.stops.map { it.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val weight = loadedParcels.map { it.value.sumByDouble { it.weight } }
+            .distinctUntilChanged()
             .behave(this)
     //endregion
 

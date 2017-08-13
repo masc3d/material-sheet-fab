@@ -137,21 +137,27 @@ class DeliveryStop(
 
     //region Counters
     val orderTotalAmount = this.orders.map { it.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val parcelTotalAmount = this.parcels.map { it.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val totalWeight = this.parcels.map { it.sumByDouble { it.weight } }
+            .distinctUntilChanged()
             .behave(this)
 
     val deliveredOrdersAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState == Parcel.DeliveryState.DELIVERED } }.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val deliveredParcelAmount = this.deliveredParcels.map { it.count() }
+            .distinctUntilChanged()
             .behave(this)
 
     val deliveredParcelsWeight = this.deliveredParcels.map { it.sumByDouble { it.weight } }
+            .distinctUntilChanged()
             .behave(this)
 //endregion
 
