@@ -50,11 +50,8 @@ class SectionsAdapter
                     val section = item.viewModel as SectionViewModel<*>
 
                     if (item.isSelectable && !isSectionSelected(section)) {
-                        if (section.expandOnSelection)
-                            expand(position)
-
                         this@SectionsAdapter.selectedSection = section
-
+                        adapter.expand(item)
                     } else {
                         log.trace("SELECTABLE ${item.isSelectable}")
                         if (adapter.isSelected(position) || !item.isSelectable) {

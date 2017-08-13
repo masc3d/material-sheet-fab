@@ -146,8 +146,8 @@ class DeliveryStopProcessScreen :
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = true,
-                title = this.getText(R.string.orders).toString(),
                 expandOnSelection = true,
+                title = this.getText(R.string.orders).toString(),
                 items = this.deliveryStop.orders
                         .bindToLifecycle(this)
         )
