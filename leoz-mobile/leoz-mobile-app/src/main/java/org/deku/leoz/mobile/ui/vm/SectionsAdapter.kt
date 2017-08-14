@@ -52,6 +52,7 @@ class SectionsAdapter
                     if (item.isSelectable && !isSectionSelected(section)) {
                         this@SectionsAdapter.selectedSection = section
                         adapter.expand(item)
+                        adapter.recyclerView.scrollToPosition(0)
                     } else {
                         log.trace("SELECTABLE ${item.isSelectable}")
                         if (adapter.isSelected(position) || !item.isSelectable) {
@@ -61,6 +62,7 @@ class SectionsAdapter
                                 // TODO: after expanding and fast scrolling to bottom, item click event doesn't fire unless the list is nudged a second time. glitchy, needs investigation
                                 adapter.collapseAll()
                                 adapter.expand(position)
+                                adapter.recyclerView.scrollToPosition(0)
                             }
                         } else {
                             log.trace("SELECT")
@@ -239,7 +241,9 @@ class SectionsAdapter
         position = adapter.getGlobalPositionOf(item)
         adapter.moveItem(position, 0)
 
-        if (section.expandOnSelection)
+        if (section.expandOnSelection) {
             adapter.expand(0)
+            adapter.recyclerView.scrollToPosition(0)
+        }
     }
 }
