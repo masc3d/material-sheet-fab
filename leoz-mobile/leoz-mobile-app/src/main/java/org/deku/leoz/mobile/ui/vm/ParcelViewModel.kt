@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
+import android.view.View
 import org.deku.leoz.mobile.model.entity.Parcel
 import sx.format.format
 import java.text.SimpleDateFormat
@@ -11,7 +12,9 @@ import java.util.*
  * Created by masc on 26.06.17.
  */
 class ParcelViewModel(
-        val parcel: Parcel) : BaseObservable() {
+        val parcel: Parcel,
+        val showOrderTask: Boolean = true
+        ) : BaseObservable() {
 
     private fun Double.toDimensionFormat(): String {
         return this.format(1)
@@ -36,4 +39,11 @@ class ParcelViewModel(
 
     val number: String
         get() = this.parcel.number
+
+    val orderTask by lazy {
+        OrderTaskViewModel(orderTask = parcel.order.deliveryTask)
+    }
+
+    val orderTaskVisbility
+        get() = if (this.showOrderTask) View.VISIBLE else View.GONE
 }

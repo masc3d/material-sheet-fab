@@ -7,7 +7,7 @@
     <data>
 
         <variable
-            name="order"
+            name="orderTask"
             type="org.deku.leoz.mobile.ui.vm.OrderTaskViewModel"/>
     </data>
 
@@ -29,94 +29,84 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 >
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:layout_marginBottom="@dimen/margin"
                     >
 
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin"
-                        >
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            >
-
-                            <ImageView
-                                android:layout_width="@dimen/icon_size"
-                                android:layout_height="@dimen/icon_size"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginEnd="@dimen/margin"
-                                android:src="@drawable/ic_pickup"
-                                android:tint="@color/colorGrey"
-                                />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:text="@{order.senderAddress.city , default=`12345 Some Place`}"
-                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                                />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_gravity="end|center_vertical"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            >
-
-                            <ImageView
-                                android:layout_width="@dimen/icon_size"
-                                android:layout_height="@dimen/icon_size"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginEnd="@dimen/margin"
-                                android:src="@drawable/ic_package_variant_closed"
-                                android:tint="@color/colorGrey"
-                                />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:text="@{order.parcelAmount, default=0}"
-                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                                />
-
-                        </LinearLayout>
-
-
-                    </FrameLayout>
-
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{order.senderAddress.line1, default=`Line1`}"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
-                        />
+                        android:orientation="horizontal"
+                        >
 
-                    <!--<TextView-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="@{order.id, default=000000000}"-->
-                        <!--android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"-->
-                        <!--/>-->
+                        <ImageView
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/margin"
+                            android:src="@{orderTask.icon, default=@drawable/ic_pickup}"
+                            android:tint="@color/colorGrey"
+                            />
 
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@{orderTask.address.city , default=`12345 Some Place`}"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center_vertical"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/margin"
+                            android:src="@drawable/ic_package_variant_closed"
+                            android:tint="@color/colorGrey"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@{orderTask.parcelAmount, default=0}"
+                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                            />
+
+                    </LinearLayout>
+
+
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{orderTask.address.line1, default=`Line1`}"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+                    />
+
+                <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="@{order.id, default=000000000}"-->
+                <!--android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"-->
+                <!--/>-->
 
             </LinearLayout>
-
-
         </FrameLayout>
 
     </android.support.v7.widget.CardView>

@@ -198,7 +198,7 @@ class DeliveryStopProcessScreen :
         return FlexibleSectionableVmItem(
                 view = R.layout.item_parcel,
                 variable = BR.parcel,
-                viewModel = ParcelViewModel(this)
+                viewModel = ParcelViewModel(this, showOrderTask = false)
         )
     }
 
@@ -206,7 +206,7 @@ class DeliveryStopProcessScreen :
             : FlexibleSectionableVmItem<OrderTaskViewModel> {
         return FlexibleSectionableVmItem(
                 view = R.layout.item_ordertask,
-                variable = BR.order,
+                variable = BR.orderTask,
                 viewModel = OrderTaskViewModel(this.pickupTask)
         )
     }
