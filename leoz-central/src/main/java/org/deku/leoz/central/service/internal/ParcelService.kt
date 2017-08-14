@@ -221,9 +221,9 @@ open class ParcelServiceV1 :
                     }
                     r.text = recipientInfo.toString()
                     if (signature != null) {
-//                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId, mimetype)
-                        val sigPath = saveImage(it.time, "SB", signature, parcelScan, message.nodeId, mimetype)
-                        parcelRecord.bmpfilename = sigPath
+                        val sigPath = saveImage(it.time, "SB", signature, parcelScan, message.nodeId)
+                        if (sigPath != "")
+                            parcelRecord.bmpfilename = sigPath
                     }
 
                     val oldValue = parcelRecord.lieferstatus
@@ -634,24 +634,25 @@ open class ParcelServiceV1 :
         }
     }
 
-    fun saveImage(date: Date, location: String, imageSVG: String?, number: String, nodeId: String?, mimetype: String): String {
+    fun saveImage(date: Date, location: String, imageSVG: String?, number: String, nodeId: String?): String {
         if (imageSVG != null) {
-            val fileWithoutExt = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.svg"
             val path = storage.mobileDataDirectory.toPath()
-                    .resolve(SimpleDateFormat("yyyy").format(date))
+            val relPath = path.resolve(SimpleDateFormat("yyyy").format(date))
                     .resolve(location)
                     .resolve(SimpleDateFormat("MM").format(date))
                     .resolve(SimpleDateFormat("dd").format(date))
                     .toFile()
-            path.mkdirs()
-            val pathFile = path.toPath().resolve(fileWithoutExt).toFile().toPath()
+            relPath.mkdirs()
+            val file = number + "_" + nodeId.toString().substringBefore("-") + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.svg"
+            val pathFile = relPath.toPath().resolve(file).toFile().toPath()
             try {
-                Files.write(pathFile, imageSVG.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW)
+                Files.write(pathFile, imageSVG.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
+                // writeAsBMP (pathFile : nio.Path!, imageSVG : String)
+                return pathFile.toString().substringAfter(path.toString()).substring(1)
             } catch(e: Exception) {
                 log.debug("Write File " + e.toString())
                 return ""
             }
-            return fileWithoutExt
         } else
             return ""
     }
