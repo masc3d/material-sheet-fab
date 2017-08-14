@@ -55,10 +55,12 @@ export class TourDriverListComponent implements OnInit {
   }
 
   showPosition( driver: Driver ) {
+    this.tourService.resetDisplay();
     this.tourService.changeActiveMarker( driver );
   }
 
   showRoute( driver: Driver ) {
+    this.tourService.resetDisplay();
     this.tourService.changeActiveRoute( driver );
   }
 }
