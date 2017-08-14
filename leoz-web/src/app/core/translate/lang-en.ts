@@ -59,6 +59,7 @@ export const LANG_EN_TRANS = {
   'allusers': 'all users',
   'drivers': 'drivers',
   'could not get geolocation points': 'Could not get geolocation points',
+  'could not get route': 'Could not get route',
   'name': 'Name',
   'vehicle': 'Vehicle',
   'phoneoffice': 'Phone Office',
@@ -69,6 +70,8 @@ export const LANG_EN_TRANS = {
   'van': 'Van',
   'truck': 'Truck',
   'unknown': 'Unknown',
+  'last': 'last',
+  'hours': 'hours',
   // stationloading form - loadinglist
   'loadingcontrol': 'Loading control',
   'newloadlist': 'New loadlist',

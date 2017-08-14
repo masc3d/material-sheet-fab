@@ -59,6 +59,7 @@ export const LANG_DE_TRANS = {
   'allusers': 'alle Mitarbeiter',
   'drivers': 'Fahrer',
   'could not get geolocation points': 'Keine Geokoordinaten gefunden',
+  'could not get route': 'Keine Route gefunden',
   'name': 'Name',
   'vehicle': 'Fahrzeug',
   'phoneoffice': 'Telefon Büro',
@@ -69,6 +70,8 @@ export const LANG_DE_TRANS = {
   'van': 'Bus',
   'truck': 'LKW',
   'unknown': 'unbekannt',
+  'last': 'letzten',
+  'hours': 'Stunden',
   // stationloading form - loadinglist
   'loadingcontrol': 'Verladesteuerung',
   'newloadlist': 'Neue Ladeliste',

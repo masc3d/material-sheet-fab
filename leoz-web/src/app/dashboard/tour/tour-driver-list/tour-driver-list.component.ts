@@ -5,13 +5,19 @@ import { DriverService } from '../driver.service';
 import { Observable } from 'rxjs/Observable';
 import { RoleGuard } from '../../../core/auth/role.guard';
 import { UserService } from '../../user/user.service';
+import { SelectItem } from 'primeng/primeng';
 
 @Component( {
   selector: 'app-tour-driver-list',
   template: `
     <div *ngIf="isPermitted" style="margin-bottom: 10px">
-        <button pButton type="button" (click)="allUsers()" label="{{'allusers' | translate}}" style="width:150px"></button>
-        <button pButton type="button" (click)="justDrivers()" label="{{'drivers' | translate}}" style="width:150px"></button>
+      <button pButton type="button" (click)="allUsers()" label="{{'allusers' | translate}}"
+              style="width:150px"></button>
+      <button pButton type="button" (click)="justDrivers()" label="{{'drivers' | translate}}"
+              style="width:150px"></button>
+      {{'last' | translate}}
+      <p-dropdown [options]="intervalOptions"  [(ngModel)]="selectedInterval" ></p-dropdown>
+      {{'hours' | translate}}
     </div>
     <p-dataTable [value]="drivers | async | driverfilter: [filterName]" resizableColumns="true" [responsive]="true">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
@@ -27,6 +33,9 @@ import { UserService } from '../../user/user.service';
   `
 } )
 export class TourDriverListComponent implements OnInit {
+  intervalOptions: SelectItem[];
+  selectedInterval = '>24';
+
   drivers: Observable<Driver[]>;
   isPermitted: boolean;
   filterName: string;
@@ -38,9 +47,17 @@ export class TourDriverListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.intervalOptions = [
+      { label: '>24', value: '>24' },
+      { label: '1', value: '1' },
+      { label: '2', value: '2' },
+      { label: '6', value: '6' },
+      { label: '12', value: '12' },
+      { label: '24', value: '24' } ];
+
     this.drivers = this.driverService.drivers;
     this.driverService.getDrivers();
-    this.isPermitted =  (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
+    this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.filterName = 'driverfilter';
   }
 
@@ -60,7 +77,9 @@ export class TourDriverListComponent implements OnInit {
   }
 
   showRoute( driver: Driver ) {
+    const asInt = Number.parseInt( this.selectedInterval, 10 );
+    const duration = asInt ? String( asInt * 60 ) : '300000';
     this.tourService.resetDisplay();
-    this.tourService.changeActiveRoute( driver );
+    this.tourService.changeActiveRoute( driver, duration );
   }
 }

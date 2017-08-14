@@ -8,6 +8,7 @@ import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 import { MsgService } from '../../shared/msg/msg.service';
 import { Driver } from './driver.model';
 import { Marker } from './tour-map/marker.model';
+import { TranslateService } from '../../core/translate/translate.service';
 
 @Injectable()
 export class TourService {
@@ -30,9 +31,8 @@ export class TourService {
   public activeRoute = this.activeRouteSubject.asObservable().distinctUntilChanged();
 
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
-  private routeUrl = `${environment.apiUrl}/internal/v2/location`;
 
-  constructor( private http: Http, private msgService: MsgService ) {
+  constructor( private http: Http, private msgService: MsgService, private translate: TranslateService) {
   }
 
   private getLocation( userId: number ): Observable<Response> {
@@ -49,19 +49,19 @@ export class TourService {
     return this.http.get( this.locationUrl, options );
   }
 
-  private getRoute( userId: number ): Observable<Response> {
+  private getRoute( userId: number, duration: string ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
     queryParameters.set( 'user-id', String( userId ) );
-    queryParameters.set( 'from', '05/31/2017' );  // hardcoded for developement
+    queryParameters.set( 'duration', duration );  // hardcoded for developement
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
       params: queryParameters
     } );
 
-    return this.http.get( this.routeUrl, options );
+    return this.http.get( this.locationUrl, options );
   }
 
   changeActiveMarker( selectedDriver: Driver ) {
@@ -85,9 +85,9 @@ export class TourService {
         ( error: Response ) => this.msgService.handleResponse( error ) );
   }
 
-  changeActiveRoute( selectedDriver ) {
+  changeActiveRoute( selectedDriver: Driver, duration: string ) {
     this.resetDisplay();
-    this.getRoute( selectedDriver.id )
+    this.getRoute( selectedDriver.id, duration )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
@@ -113,13 +113,13 @@ export class TourService {
   locationError(): void {
     this.resetDisplay();
     // display error msg: could not get geolocation points
-    this.msgService.error( 'could not get geolocation points' );
+    this.msgService.error( this.translate.instant('could not get geolocation points') );
   }
 
   routeError(): void {
     this.resetDisplay();
     // display error msg: could not get route
-    this.msgService.error( 'could not get route' );
+    this.msgService.error( this.translate.instant('could not get route') );
   }
 
   resetDisplay() {
