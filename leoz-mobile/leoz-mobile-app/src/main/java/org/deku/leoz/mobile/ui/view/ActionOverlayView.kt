@@ -47,9 +47,9 @@ import sx.android.view.setIconTint
  */
 data class ActionItem(
         @IdRes val id: Int,
-        @ColorRes val colorRes: Int? = null,
+        @ColorRes @JvmField var colorRes: Int? = null,
         @DrawableRes val iconRes: Int? = null,
-        @ColorRes val iconTintRes: Int? = null,
+        @ColorRes @JvmField var iconTintRes: Int? = null,
         val alpha: Float? = null,
         val alignEnd: Boolean = true,
         var visible: Boolean = true,
@@ -225,9 +225,12 @@ class ActionOverlayView : RelativeLayout {
 
             this.materialSheetFabs.clear()
 
-            this.items
-                    .filter { it.visible }
+            val visibleItems = this.items.filter { it.visible }
+
+            visibleItems
+                    .filter { it.alignEnd }
                     .reversed()
+                    .plus(visibleItems.filter { it.alignEnd == false })
                     .forEach { item ->
 
                         val fab: FloatingActionButton
@@ -263,9 +266,10 @@ class ActionOverlayView : RelativeLayout {
 
                                 // Create matieral sheet fab
                                 val sheetBackgroundColor = ContextCompat.getColor(this.context, android.R.color.background_light)
+                                val colorRes = item.colorRes
                                 val fabColor =
-                                        if (item.colorRes != null)
-                                            ContextCompat.getColor(this.context, item.colorRes)
+                                        if (colorRes != null)
+                                            ContextCompat.getColor(this.context, colorRes)
                                         else
                                         // Default to fab color
                                             fab.backgroundTintList!!.defaultColor
@@ -336,14 +340,16 @@ class ActionOverlayView : RelativeLayout {
 
                         fab.id = item.id
 
-                        if (item.colorRes != null)
-                            fab.setBackgroundTint(item.colorRes)
+                        item.colorRes?.also {
+                            fab.setBackgroundTint(it)
+                        }
 
                         if (item.iconRes != null)
                             fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
 
-                        if (item.iconTintRes != null)
-                            fab.setIconTint(item.iconTintRes)
+                        item.iconTintRes?.also {
+                            fab.setIconTint(it)
+                        }
 
                         fab.alpha = item.alpha ?: this.buttonAlpha
 

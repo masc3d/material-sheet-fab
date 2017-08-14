@@ -262,6 +262,12 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
 
         this.actionItems = listOf(
                 ActionItem(
+                        id = R.id.action_vehicle_loading_finished,
+                        colorRes = R.color.colorPrimary,
+                        iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white
+                ),
+                ActionItem(
                         id = R.id.action_vehicle_loading_load,
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_truck,
@@ -272,13 +278,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                         colorRes = R.color.colorAccent,
                         iconRes = R.drawable.ic_damaged,
                         visible = true
-                ),
-                ActionItem(
-                        id = R.id.action_vehicle_loading_finished,
-                        colorRes = R.color.colorPrimary,
-                        iconRes = R.drawable.ic_finish,
-                        iconTintRes = android.R.color.white,
-                        alignEnd = false
                 )
         )
     }

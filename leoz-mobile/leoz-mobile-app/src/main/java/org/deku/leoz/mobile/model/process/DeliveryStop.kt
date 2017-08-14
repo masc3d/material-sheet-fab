@@ -190,7 +190,6 @@ class DeliveryStop(
     val isCloseWithEventAvailable: Boolean
         get() = this.isCloseAvailable && deliveredParcels.blockingFirst().count() == 0
 
-
     val isCloseToRecipientAvailable: Boolean
         get() = this.isCloseAvailable && deliveredParcels.blockingFirst().count() > 0
 

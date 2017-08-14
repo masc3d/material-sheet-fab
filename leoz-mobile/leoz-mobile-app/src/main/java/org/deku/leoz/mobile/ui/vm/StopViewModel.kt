@@ -27,11 +27,15 @@ class StopViewModel(val stop: Stop) : BaseObservable() {
     val appointmentTo: String
         get() = simpleDateFormat.format(stop.dateEnd)
 
+    private val appointmentEndCalendar by lazy {
+        stop.dateEnd?.toCalendar()
+    }
+
     val appointmentHour: Int
-        get() = stop.dateStart?.toCalendar()?.get(Calendar.HOUR) ?: 0
+        get() = appointmentEndCalendar?.get(Calendar.HOUR) ?: 0
 
     val appointmentMinute: Int
-        get() = stop.dateEnd?.toCalendar()?.get(Calendar.MINUTE) ?: 0
+        get() = appointmentEndCalendar?.get(Calendar.MINUTE) ?: 0
 
     val orderAmount: String
         get() = stop.tasks.map { it.order }.distinct().count().toString()

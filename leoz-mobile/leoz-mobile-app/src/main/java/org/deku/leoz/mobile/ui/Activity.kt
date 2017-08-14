@@ -622,7 +622,8 @@ open class Activity : RxAppCompatActivity(),
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
                                         iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         iconRes = R.drawable.ic_barcode,
-                                        visible = this.aidcReader.enabled
+                                        visible = this.aidcReader.enabled,
+                                        alignEnd = false
                                 )
                         )
                     } else {
@@ -633,7 +634,8 @@ open class Activity : RxAppCompatActivity(),
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
                                         iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         iconRes = R.drawable.ic_keyboard,
-                                        visible = this.aidcReader.enabled
+                                        visible = this.aidcReader.enabled,
+                                        alignEnd = false
                                 )
                         )
                     }

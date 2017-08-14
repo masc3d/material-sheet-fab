@@ -291,6 +291,20 @@ class DeliveryStopProcessScreen :
 
         this.actionItems = listOf(
                 ActionItem(
+                        id = R.id.action_delivery_close_stop,
+                        colorRes = R.color.colorPrimary,
+                        iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white,
+                        visible = false
+                ),
+                ActionItem(
+                        id = R.id.action_delivery_close_stop_extra,
+                        colorRes = R.color.colorAccent,
+                        iconRes = R.drawable.ic_done_black,
+                        menu = closeStopMenu,
+                        visible = false
+                ),
+                ActionItem(
                         id = R.id.action_delivery_select_delivered,
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_delivery
@@ -300,16 +314,6 @@ class DeliveryStopProcessScreen :
                         id = R.id.action_delivery_select_event,
                         colorRes = R.color.colorAccent,
                         iconRes = R.drawable.ic_exclamation
-                ),
-
-                ActionItem(
-                        id = R.id.action_delivery_close_stop,
-                        colorRes = R.color.colorPrimary,
-                        iconRes = R.drawable.ic_finish,
-                        iconTintRes = android.R.color.white,
-                        menu = closeStopMenu,
-                        visible = false,
-                        alignEnd = false
                 )
         )
         //endregion
@@ -385,7 +389,7 @@ class DeliveryStopProcessScreen :
                         R.id.action_deliver_postbox -> {
                         }
 
-                        R.id.action_deliver_recipient -> {
+                        R.id.action_delivery_close_stop -> {
                             if (this.deliveryStop.isSignatureRequired) {
                                 MaterialDialog.Builder(context)
                                         .title(R.string.recipient)
@@ -404,20 +408,18 @@ class DeliveryStopProcessScreen :
                                             })
                                         })
                                         .build().show()
+                            } else {
+                                this.deliveryStop.finalize()
+                                        .observeOnMainThread()
+                                        .subscribeBy(
+                                                onComplete = {
+                                                    // TODO: move state control to model
+                                                    this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
+                                                },
+                                                onError = {
+                                                    log.error(it.message, it)
+                                                })
                             }
-                        }
-
-                        R.id.action_deliver_close -> {
-                            this.deliveryStop.finalize()
-                                    .observeOnMainThread()
-                                    .subscribeBy(
-                                            onComplete = {
-                                                // TODO: move state control to model
-                                                this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
-                                            },
-                                            onError = {
-                                                log.error(it.message, it)
-                                            })
                         }
                     }
                 }
@@ -487,14 +489,27 @@ class DeliveryStopProcessScreen :
                         first { it.id == R.id.action_delivery_close_stop }
                                 .also {
                                     it.visible = deliveryStop.isCloseAvailable
-                                    it.menu?.findItem(R.id.action_deliver_recipient)
-                                            ?.isVisible = deliveryStop.isCloseToRecipientAvailable
 
+                                    if (deliveryStop.isCloseWithEventAvailable) {
+                                        it.colorRes =  R.color.colorAccent
+                                        it.iconTintRes = android.R.color.black
+                                    } else {
+                                        it.colorRes =  R.color.colorPrimary
+                                        it.iconTintRes = android.R.color.white
+                                    }
+                                }
+
+                        first { it.id == R.id.action_delivery_close_stop_extra }
+                                .also {
                                     it.menu?.findItem(R.id.action_deliver_neighbour)
                                             ?.isVisible = deliveryStop.isCloseToNeighbourAvailable
 
-                                    it.menu?.findItem(R.id.action_deliver_close)
-                                            ?.isVisible = deliveryStop.isCloseWithEventAvailable
+                                    it.menu?.findItem(R.id.action_deliver_postbox)
+                                            ?.isVisible = deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
+                                                    !deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+
+                                    it.visible = deliveryStop.isCloseAvailable &&
+                                            it.menu?.hasVisibleItems() ?: false
                                 }
                     }
                 }

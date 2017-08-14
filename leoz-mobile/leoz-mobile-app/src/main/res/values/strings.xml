@@ -17,6 +17,7 @@
 
     <string name="barcode_label">Barcode label</string>
 
+    <string name="call">Call</string>
     <string name="cancel">Cancel</string>
     <string name="cancel_process">Cancel process</string>
 
@@ -250,10 +251,12 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="submit">Submit</string>
 
     <string name="title_activity_delivery">Delivery</string>
+    <string name="title_confirm_call">Confirm call</string>
     <string name="title_missing_signature">Signature missing</string>
     <string name="title_specify_deliverylist">Specify a delivery list</string>
+    <string name="title_stop_list">Delivery Stops</string>
     <string name="title_stop_detailt">Stop Details</string>
-    <string name="title_stop_process">Process Stop</string>
+    <string name="title_stop_process">Delivery</string>
 
     <string name="to_neighbour">To neighbour</string>
     <string name="to_postbox">To postbox</string>

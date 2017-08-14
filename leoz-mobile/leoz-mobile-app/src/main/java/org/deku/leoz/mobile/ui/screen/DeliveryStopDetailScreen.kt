@@ -214,14 +214,20 @@ class DeliveryStopDetailScreen
                         id = R.id.action_deliver_continue,
                         colorRes = R.color.colorPrimary,
                         iconTintRes = android.R.color.white,
-                        iconRes = R.drawable.ic_delivery,
+                        iconRes = R.drawable.ic_delivery
+                ),
+                ActionItem(
+                        id = R.id.action_call,
+                        colorRes = R.color.colorGreen,
+                        iconRes = R.drawable.ic_phone,
                         alignEnd = false
                 ),
                 ActionItem(
-                        id = R.id.action_deliver_action,
+                        id = R.id.action_navigate,
                         colorRes = R.color.colorAccent,
-                        iconRes = R.drawable.ic_information_outline,
-                        menu = this.activity.inflateMenu(R.menu.menu_delivery_stop_actions)
+                        iconRes = android.R.drawable.ic_menu_mylocation,
+                        iconTintRes = android.R.color.black,
+                        alignEnd = false
                 )
         )
     }
@@ -267,13 +273,13 @@ class DeliveryStopDetailScreen
                             startActivity(intent)
                         }
 
-                        R.id.action_contact -> {
+                        R.id.action_call -> {
                             val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + stop.address.phone))
                             val dialogBuilder = MaterialDialog.Builder(context)
-                            dialogBuilder.title("Confirm call")
+                            dialogBuilder.title(R.string.title_confirm_call)
                             dialogBuilder.content(stop.address.phone)
-                            dialogBuilder.positiveText("Call")
-                            dialogBuilder.negativeText("Cancel")
+                            dialogBuilder.positiveText(R.string.call)
+                            dialogBuilder.negativeText(android.R.string.cancel)
                             dialogBuilder.cancelable(true)
                             dialogBuilder.onPositive { materialDialog, dialogAction ->
                                 startActivity(intent)

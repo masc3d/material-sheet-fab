@@ -77,7 +77,7 @@ class DeliveryStopListScreen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.title = "Delivery Stops"
+        this.title = getString(R.string.title_stop_list)
         this.aidcEnabled = true
         this.headerImage = R.drawable.img_street_1a
 
