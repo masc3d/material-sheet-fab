@@ -138,6 +138,7 @@ class OrderService : OrderService {
         o.deliveryAddress.line1 = r.deliveryAddressLine1
         o.deliveryAddress.line2 = r.deliveryAddressLine2
         o.deliveryAddress.line3 = r.deliveryAddressLine3
+        o.deliveryAddress.phoneNumber = r.deliveryAddressPhonenumber
         o.deliveryAddress.street = r.deliveryAddressStreet
         o.deliveryAddress.streetNo = r.deliveryAddressStreetNo
         o.deliveryAddress.countryCode = r.deliveryAddressCountryCode
