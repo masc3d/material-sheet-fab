@@ -37,6 +37,12 @@ import java.nio.file.OpenOption
 import java.nio.file.Paths
 import java.sql.Timestamp
 import javax.imageio.ImageIO
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+import org.apache.batik.transcoder.image.JPEGTranscoder
+import org.apache.batik.transcoder.*
+import java.io.FileOutputStream
+import javax.ws.rs.core.MediaType
 
 
 /**
@@ -221,9 +227,9 @@ open class ParcelServiceV1 :
                     }
                     r.text = recipientInfo.toString()
                     if (signature != null) {
-//                        val sigPath = saveSignature(it.time, signature, parcelScan, message.nodeId, mimetype)
-                        val sigPath = saveImage(it.time, "SB", signature, parcelScan, message.nodeId, mimetype)
-                        parcelRecord.bmpfilename = sigPath
+                        val sigPath = saveImage(it.time, "SB", signature, parcelScan, message.nodeId,mimetype)
+                        if (sigPath != "")
+                            parcelRecord.bmpfilename = sigPath
                     }
 
                     val oldValue = parcelRecord.lieferstatus
@@ -634,26 +640,65 @@ open class ParcelServiceV1 :
         }
     }
 
-    fun saveImage(date: Date, location: String, imageSVG: String?, number: String, nodeId: String?, mimetype: String): String {
-        if (imageSVG != null) {
-            val fileWithoutExt = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.svg"
+    fun saveImage(date: Date, location: String, image: String?, number: String, nodeId: String?, mimetype: String): String {
+        if (image != null) {
             val path = storage.mobileDataDirectory.toPath()
-                    .resolve(SimpleDateFormat("yyyy").format(date))
+            val relPath = path.resolve(SimpleDateFormat("yyyy").format(date))
                     .resolve(location)
                     .resolve(SimpleDateFormat("MM").format(date))
                     .resolve(SimpleDateFormat("dd").format(date))
                     .toFile()
-            path.mkdirs()
-            val pathFile = path.toPath().resolve(fileWithoutExt).toFile().toPath()
+            relPath.mkdirs()
+            var fileExtension: String
+            when (mimetype) {
+                MediaType.APPLICATION_SVG_XML -> fileExtension = "svg"
+                else -> fileExtension = "jpg"
+            }
+            //val file = number + "_" + nodeId.toString().substringBefore("-") + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.svg"
+            val file = number + "_" + nodeId.toString().substringBefore("-") + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB." + fileExtension
+            val pathFile = relPath.toPath().resolve(file).toFile().toPath()
             try {
-                Files.write(pathFile, imageSVG.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW)
+                var imgPath = pathFile
+                if (fileExtension.equals("svg")) {
+                    Files.write(pathFile, image.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
+                    //imgPath = transSvg2Jpg(pathFile)
+                } else {
+                    val img = Base64.getDecoder().decode(image)
+                    Files.write(pathFile, img, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
+
+                }
+                val bmpPath = imgPath.toString() + ".bmp"
+                //writeAsBMP(imgPath, File(bmpPath).toPath())
+                return pathFile.toString().substringAfter(path.toString()).substring(1)
             } catch(e: Exception) {
                 log.debug("Write File " + e.toString())
                 return ""
             }
-            return fileWithoutExt
         } else
             return ""
+    }
+
+    fun writeAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path): Boolean {
+        val bufferedImage = ImageIO.read(File(pathFile.toUri())) //ImageIO.read(ByteArrayInputStream(img))
+        val fileObj = File(pathBmpFile.toUri())
+        return ImageIO.write(bufferedImage, "bmp", fileObj)
+    }
+
+    fun transSvg2Jpg(pathFile: java.nio.file.Path): java.nio.file.Path {
+
+        val inputTranscoder = TranscoderInput(File(pathFile.toString()).toURI().toURL().toString())
+        val imgFile=File(pathFile.toString())
+//val jpgPath=imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension).resolve(".jpg").toFile()
+        val jpgFile =imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension+".jpg").toFile() //File(imgFile.parent+imgFile.nameWithoutExtension + ".jpg")
+        val jpgOutputstream = FileOutputStream(jpgFile)
+        val outputTranscoder = TranscoderOutput(jpgOutputstream)
+        val converter = JPEGTranscoder()
+        converter.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,0.9.toFloat())
+        converter.transcode(inputTranscoder, outputTranscoder)
+        jpgOutputstream.flush()
+        jpgOutputstream.close()
+        return jpgFile.toPath()
+
     }
 
 //    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?, mimetype: String): String {

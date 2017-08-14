@@ -7,6 +7,8 @@ import { Position } from './position.model';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 import { MsgService } from '../../shared/msg/msg.service';
 import { Driver } from './driver.model';
+import { Marker } from './tour-map/marker.model';
+import { TranslateService } from '../../core/translate/translate.service';
 
 @Injectable()
 export class TourService {
@@ -14,7 +16,12 @@ export class TourService {
   private displayMarkerSubject = new BehaviorSubject<boolean>( false );
   public displayMarker = this.displayMarkerSubject.asObservable().distinctUntilChanged();
 
-  private activeMarkerSubject = new BehaviorSubject<Position>( <Position> { latitude: 50.8645, longitude: 9.6917 } );
+  private activeMarkerSubject = new BehaviorSubject<Marker>( <Marker> {
+    position: {
+      latitude: 50.8645,
+      longitude: 9.6917
+    }, driver: {}
+  } );
   public activeMarker = this.activeMarkerSubject.asObservable().distinctUntilChanged();
 
   private displayRouteSubject = new BehaviorSubject<boolean>( false );
@@ -24,16 +31,15 @@ export class TourService {
   public activeRoute = this.activeRouteSubject.asObservable().distinctUntilChanged();
 
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
-  private routeUrl = `${environment.apiUrl}/internal/v2/location`;
 
-  constructor( private http: Http, private msgService: MsgService ) {
+  constructor( private http: Http, private msgService: MsgService, private translate: TranslateService) {
   }
 
   private getLocation( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
-    queryParameters.set( 'user-id', String(userId) );
+    queryParameters.set( 'user-id', String( userId ) );
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
@@ -43,31 +49,31 @@ export class TourService {
     return this.http.get( this.locationUrl, options );
   }
 
-  private getRoute( userId: number ): Observable<Response> {
+  private getRoute( userId: number, duration: string ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
-    queryParameters.set( 'user-id', String(userId) );
-    queryParameters.set( 'from', '05/31/2017' );  // hardcoded for developement
+    queryParameters.set( 'user-id', String( userId ) );
+    queryParameters.set( 'duration', duration );  // hardcoded for developement
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
       params: queryParameters
     } );
 
-    return this.http.get( this.routeUrl, options );
+    return this.http.get( this.locationUrl, options );
   }
 
   changeActiveMarker( selectedDriver: Driver ) {
+    this.resetDisplay();
     this.getLocation( selectedDriver.id )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
-              this.displayRouteSubject.next( false );
               this.displayMarkerSubject.next( true );
-              this.activeMarkerSubject.next( positions[ 0 ] );
+              this.activeMarkerSubject.next( <Marker> { position: positions[ 0 ], driver: selectedDriver } );
               this.msgService.clear();
             } else {
               this.locationError();
@@ -79,14 +85,18 @@ export class TourService {
         ( error: Response ) => this.msgService.handleResponse( error ) );
   }
 
-  changeActiveRoute( selectedDriver ) {
-    this.getRoute( selectedDriver.id )
+  changeActiveRoute( selectedDriver: Driver, duration: string ) {
+    this.resetDisplay();
+    this.getRoute( selectedDriver.id, duration )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
-              this.displayMarkerSubject.next( false );
+              this.displayMarkerSubject.next( true );
+              this.activeMarkerSubject.next(
+                <Marker> { position: positions[ positions.length - 1 ], driver: selectedDriver }
+              );
               this.displayRouteSubject.next( true );
               this.activeRouteSubject.next( positions );
               this.msgService.clear();
@@ -101,18 +111,19 @@ export class TourService {
   }
 
   locationError(): void {
-    this.displayRouteSubject.next( false );
-    // hide actual marker
-    this.displayMarkerSubject.next( false );
+    this.resetDisplay();
     // display error msg: could not get geolocation points
-    this.msgService.error( 'could not get geolocation points' );
+    this.msgService.error( this.translate.instant('could not get geolocation points') );
   }
 
   routeError(): void {
-    this.displayMarkerSubject.next( false );
-    // hide actual route
-    this.displayRouteSubject.next( false );
+    this.resetDisplay();
     // display error msg: could not get route
-    this.msgService.error( 'could not get route' );
+    this.msgService.error( this.translate.instant('could not get route') );
+  }
+
+  resetDisplay() {
+    this.displayRouteSubject.next( false );
+    this.displayMarkerSubject.next( false );
   }
 }

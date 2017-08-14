@@ -59,6 +59,19 @@ export const LANG_EN_TRANS = {
   'allusers': 'all users',
   'drivers': 'drivers',
   'could not get geolocation points': 'Could not get geolocation points',
+  'could not get route': 'Could not get route',
+  'name': 'Name',
+  'vehicle': 'Vehicle',
+  'phoneoffice': 'Phone Office',
+  'phonemobile': 'Phone Mobile',
+  'lastactivity': 'Last activity',
+  'bike': 'Bike',
+  'car': 'Car',
+  'van': 'Van',
+  'truck': 'Truck',
+  'unknown': 'Unknown',
+  'last': 'last',
+  'hours': 'hours',
   // stationloading form - loadinglist
   'loadingcontrol': 'Loading control',
   'newloadlist': 'New loadlist',
@@ -131,9 +144,9 @@ export const LANG_EN_TRANS = {
   'noValoreScan': 'This shipment is a Valore. Scan not possible. Valore must be scanned into a bag.',
   'baglist': 'Baglist',
   'bagCountMsgfield': 'Your bag inventory exceeds your quota.' + '<br>' +
-                      'Please return 3 bags for relief.',
+  'Please return 3 bags for relief.',
   'infoMsgfield': 'Open the scanning panel with F2.' + '<br>' +
-                  'Clear fields with F3.' + '<br>' +
-                  'Finish processing with F5.' + '<br>' +
-                  'Replace regular seal with emergency seal with F10.'
+  'Clear fields with F3.' + '<br>' +
+  'Finish processing with F5.' + '<br>' +
+  'Replace regular seal with emergency seal with F10.'
 };

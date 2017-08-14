@@ -24,6 +24,7 @@ buildscript {
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
         classpath "mysql:mysql-connector-java:$v_mysql"
+
     }
 }
 
@@ -35,7 +36,7 @@ apply plugin: 'org.flywaydb.flyway'
 apply plugin: 'sx-packager'
 
 sourceCompatibility = 1.8
-version = '0.110-SNAPSHOT'
+version = '0.111-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
@@ -90,7 +91,10 @@ dependencies {
             // FOR TESTING
 
             // Kalium
-            "org.abstractj.kalium:kalium:0.6.0"
+            "org.abstractj.kalium:kalium:0.6.0",
+
+            group: 'org.apache.xmlgraphics', name: 'batik-rasterizer', version: '1.9.1'
+            //"org.apache.xmlgraphics:batik:1.9.1"
     )
 
     testCompile(
