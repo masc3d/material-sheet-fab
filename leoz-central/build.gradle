@@ -93,7 +93,8 @@ dependencies {
             // Kalium
             "org.abstractj.kalium:kalium:0.6.0",
 
-            group: 'org.apache.xmlgraphics', name: 'batik-rasterizer', version: '1.9.1'
+            //group: 'org.apache.xmlgraphics', name: 'batik-rasterizer', version: '1.9.1'
+            group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.9.1'
             //"org.apache.xmlgraphics:batik:1.9.1"
     )
 
@@ -308,5 +309,5 @@ distributions {
 // Packager task
 packager {
     title = "Leoz Central"
-    operatingSystems = [ OperatingSystem.WINDOWS, OperatingSystem.LINUX ]
+    operatingSystems = [OperatingSystem.WINDOWS, OperatingSystem.LINUX]
 }
