@@ -2,56 +2,61 @@
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
   <input type="hidden" class="form-control" formControlName="emailOrigin">
   <div class="ui-fluid">
-
     <div class="ui-g">
+
       <div class="ui-g-12 ui-md-6">
         <div>{{'firstname' | translate}}:</div>
-        <div><input pInputText type="text" formControlName="firstName"></div>
+        <div><input pInputText formControlName="firstName"></div>
         <div *ngIf="userForm.controls['firstName'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'FirstnameMaxLength' | translate}}.
         </div>
       </div>
       <div class="ui-g-12 ui-md-6">
         <div>{{'surname' | translate}}:</div>
-        <div><input pInputText type="text" formControlName="lastName"></div>
+        <div><input pInputText formControlName="lastName"></div>
         <div *ngIf="userForm.controls['lastName'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'SurnameMaxLength' | translate}}.
         </div>
       </div>
-    </div>
 
-    <div class="ui-g">
       <div class="ui-g-12 ui-md-6">
         <div>{{'password' | translate}}:</div>
-        <div><input pInputText type="text" formControlName="password"></div>
+        <div><input pInputText formControlName="password"></div>
         <div *ngIf="userForm.controls['password'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'PwdMaxLength' | translate}}.
         </div>
       </div>
       <div class="ui-g-12 ui-md-6">
         <div>{{'email' | translate}}:</div>
-        <div><input pInputText type="text" formControlName="email"></div>
+        <div><input pInputText formControlName="email"></div>
           <div *ngIf="!userForm.controls['email'].untouched && userForm.controls['email'].hasError('email')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'EmailFormat' | translate}}.
         </div>
       </div>
-    </div>
 
-    <div class="ui-g">
       <div class="ui-g-12 ui-md-6">
-        <div>{{'phone' | translate}}:</div>
-        <div><input pInputText type="text" formControlName="phone"></div>
+        <div>{{'phoneoffice' | translate}}:</div>
+        <div><input pInputText formControlName="phone"></div>
         <div *ngIf="userForm.controls['phone'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'PhoneMaxLength' | translate}}.
         </div>
       </div>
       <div class="ui-g-12 ui-md-6">
         <div>{{'alias' | translate}}:</div>
-        <div><input pInputText type="text" formControlName="alias"></div>
+        <div><input pInputText formControlName="alias"></div>
         <div *ngIf="userForm.controls['alias'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'AliasMaxLength' | translate}}.
         </div>
       </div>
+
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'phonemobile' | translate}}:</div>
+        <div><input pInputText formControlName="mobile"></div>
+        <div *ngIf="userForm.controls['mobile'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'PhoneMaxLength' | translate}}.
+        </div>
+      </div>
+      <div class="ui-g-12 ui-md-6"></div>
     </div>
 
     <div class="ui-g" [@myself]="myself() ? 'inactive': 'active'">
@@ -67,9 +72,7 @@
         <div>{{'expires_on' | translate}}:</div>
         <p-calendar [showIcon]="true" [readonlyInput]="true" [dateFormat]="dateFormatPrimeng" [locale]="locale" formControlName="expiresOn"></p-calendar>
       </div>
-    </div>
 
-    <div class="ui-g" [@myself]="myself() ? 'inactive': 'active'">
       <div class="ui-g-12 ui-md-6" style="padding: 0;">
         <p-fieldset legend="{{'apprights' | translate}}">
           <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">

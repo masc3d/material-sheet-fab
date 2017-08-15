@@ -82,6 +82,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       email: [ null, [ Validators.required, Validators.email ] ],
       phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
+      mobile: [ null, [ Validators.required ] ],
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
       expiresOn: [ null ]
@@ -109,6 +110,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
           email: activeUser.email,
           phone: activeUser.phone,
           alias: activeUser.alias,
+          mobile: activeUser.mobile,
           role: activeUser.role,
           active: activeUser.active,
           expiresOn: activeUser.expiresOn ? new Date( activeUser.expiresOn ) : activeUser.expiresOn

@@ -22,7 +22,8 @@ import { RoleGuard } from '../../../core/auth/role.guard';
         </ng-template>
       </p-column>
       <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
-      <p-column field="phone" header="{{'phone' | translate}}"></p-column>
+      <p-column field="phone" header="{{'phoneoffice' | translate}}"></p-column>
+      <p-column field="mobile" header="{{'phonemobile' | translate}}"></p-column>
       <p-column field="active" header="{{'active' | translate}}" sortable="true">
         <ng-template let-user="rowData" pTemplate="body">
           <span *ngIf="user.active; else inactivePart">

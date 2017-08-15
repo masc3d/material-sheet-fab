@@ -10,6 +10,7 @@ export interface User {
   lastName: string;
   password: string;
   phone: string;
+  mobile: string;
   role: User.RoleEnum;
 
 }
