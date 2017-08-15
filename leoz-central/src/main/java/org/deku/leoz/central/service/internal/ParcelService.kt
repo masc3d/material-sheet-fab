@@ -120,7 +120,7 @@ open class ParcelServiceV1 :
             r.poslat = it.latitude
             r.poslong = it.longitude
 
-            r.infotext = "ScannerXY"
+            r.infotext = message.nodeId.toString().substringBefore("-")// "ScannerXY"
 
             //TODO: Die Werte kz_status und -erzeuger sollten vermutlich über die Enumeration gesetzt werden, damit man die (aktuellen) Primärschlüssel nicht an mehreren Stellen pflegen muss, oder?
             val eventId = it.event
@@ -227,7 +227,7 @@ open class ParcelServiceV1 :
                     }
                     r.text = recipientInfo.toString()
                     if (signature != null) {
-                        val sigPath = saveImage(it.time, "SB", signature, parcelScan, message.nodeId,mimetype)
+                        val sigPath = saveImage(it.time, "SB", signature, parcelScan, message.nodeId, mimetype)
                         if (sigPath != "")
                             parcelRecord.bmpfilename = sigPath
                     }
@@ -661,16 +661,19 @@ open class ParcelServiceV1 :
                 var imgPath = pathFile
                 if (fileExtension.equals("svg")) {
                     Files.write(pathFile, image.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
-                    //imgPath = transSvg2Jpg(pathFile)
+                    imgPath = transSvg2Jpg(pathFile)
                 } else {
                     val img = Base64.getDecoder().decode(image)
                     Files.write(pathFile, img, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
 
                 }
-                val bmpPath = imgPath.toString() + ".bmp"
-                //writeAsBMP(imgPath, File(bmpPath).toPath())
-                return pathFile.toString().substringAfter(path.toString()).substring(1)
-            } catch(e: Exception) {
+                val bmpFile = //imgPath.toString() + ".bmp"
+                        imgPath.toFile().parentFile.toPath().resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
+                if (writeAsBMP(imgPath, bmpFile.toPath()))
+                    return bmpFile.toString().substringAfter(path.toString()).substring(1)
+                else
+                    return pathFile.toString().substringAfter(path.toString()).substring(1)
+            } catch (e: Exception) {
                 log.debug("Write File " + e.toString())
                 return ""
             }
@@ -687,13 +690,13 @@ open class ParcelServiceV1 :
     fun transSvg2Jpg(pathFile: java.nio.file.Path): java.nio.file.Path {
 
         val inputTranscoder = TranscoderInput(File(pathFile.toString()).toURI().toURL().toString())
-        val imgFile=File(pathFile.toString())
+        val imgFile = File(pathFile.toString())
 //val jpgPath=imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension).resolve(".jpg").toFile()
-        val jpgFile =imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension+".jpg").toFile() //File(imgFile.parent+imgFile.nameWithoutExtension + ".jpg")
+        val jpgFile = imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension + ".jpg").toFile() //File(imgFile.parent+imgFile.nameWithoutExtension + ".jpg")
         val jpgOutputstream = FileOutputStream(jpgFile)
         val outputTranscoder = TranscoderOutput(jpgOutputstream)
         val converter = JPEGTranscoder()
-        converter.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,0.9.toFloat())
+        converter.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, 0.9.toFloat())
         converter.transcode(inputTranscoder, outputTranscoder)
         jpgOutputstream.flush()
         jpgOutputstream.close()
