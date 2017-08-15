@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <div class="ui-g">
+    <div class="ui-g" [@myself]="myself() ? 'inactive': 'active'">
       <div class="ui-g-12 ui-md-6">
         <div>{{'role' | translate}}:</div>
         <p-dropdown [options]="roleOptions" formControlName="role" placeholder="&nbsp;"></p-dropdown>
@@ -69,7 +69,7 @@
       </div>
     </div>
 
-    <div class="ui-g">
+    <div class="ui-g" [@myself]="myself() ? 'inactive': 'active'">
       <div class="ui-g-12 ui-md-6" style="padding: 0;">
         <p-fieldset legend="{{'apprights' | translate}}">
           <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">

@@ -7,6 +7,8 @@ import { User } from '../user.model';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
+import { PermissionCheck } from '../../../core/auth/permission-check';
+import { RoleGuard } from '../../../core/auth/role.guard';
 
 @Component( {
   selector: 'app-user-list',
@@ -38,8 +40,8 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
       </p-column>
       <p-column header="">
         <ng-template let-user="rowData" pTemplate="body">
-          <i class="fa fa-pencil fa-fw" aria-hidden="true" (click)="selected(user)"></i>
-          <i class="fa fa-trash-o fa-fw" aria-hidden="true" (click)="deactivate(user)"></i>
+          <i *ngIf="myself(user) || checkPermission(user)" class="fa fa-pencil fa-fw" aria-hidden="true" (click)="selected(user)"></i>
+          <i *ngIf="checkPermission(user)" class="fa fa-trash-o fa-fw" aria-hidden="true" (click)="deactivate(user)"></i>
         </ng-template>
       </p-column>
     </p-dataTable>
@@ -52,7 +54,8 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
 
   constructor( private userService: UserService,
                private msgService: MsgService,
-               public translate: TranslateService ) {
+               public translate: TranslateService,
+               private roleGuard: RoleGuard ) {
     super( translate );
   }
 
@@ -90,5 +93,13 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
             this.msgService.handleResponse( error );
           } );
     }
+  }
+
+  myself(user: User): boolean {
+    return PermissionCheck.myself(user);
+  }
+
+  checkPermission(user: User): boolean {
+    return PermissionCheck.hasLessPermissions(this.roleGuard.userRole, user.role);
   }
 }
