@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+
+import { GrowlModule } from 'primeng/primeng';
+
 import { TopBarComponent } from '../top-bar/top-bar.component';
 import { TranslateModule } from '../core/translate/translate.module';
 import { MsgBoxComponent } from './msg/msg-box.component';
@@ -10,7 +13,8 @@ import { MsgService } from './msg/msg.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    TranslateModule
+    TranslateModule,
+    GrowlModule
   ],
   providers: [ MsgService ],
   declarations: [

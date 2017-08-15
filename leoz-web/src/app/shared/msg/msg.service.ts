@@ -1,31 +1,38 @@
 import { Injectable } from '@angular/core';
-import { Msg } from './msg.model';
 import { Response } from '@angular/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/distinctUntilChanged';
 
+import { Message } from 'primeng/primeng';
+
+import { TranslateService } from '../../core/translate/translate.service';
+
 @Injectable()
 export class MsgService {
 
-  private msgSubject = new BehaviorSubject<Msg>( <Msg> { text: '', alertStyle: '' } );
-  public msg = this.msgSubject.asObservable().distinctUntilChanged();
+  private msgsSubject = new BehaviorSubject<Message[]>( <Message[]> [] );
+  public msgs = this.msgsSubject.asObservable().distinctUntilChanged();
+
+  constructor( private translate: TranslateService ) {
+  }
 
   clear(): void {
-    this.msgSubject.next( <Msg> { text: '', alertStyle: '' } );
+    this.msgsSubject.next( <Message[]> [] );
   }
 
   success( text: string ): void {
-    this.msgSubject.next( <Msg> { text: text, alertStyle: 'ui-messages-success' } );
+    this.msgsSubject.next( <Message[]>  [ { severity: 'success', summary: '', detail: this.translate.instant(text) } ] );
   }
 
   error( text: string ): void {
-    this.msgSubject.next( <Msg> { text: text, alertStyle: 'ui-messages-error' } );
+    this.msgsSubject.next( <Message[]>  [ { severity: 'warn', summary: '', detail: this.translate.instant(text) } ] );
   }
 
   handleResponse( resp: Response ): void {
-    this.msgSubject.next( <Msg> {
-      text: resp.json().title || 'webservice not available',
-      alertStyle: 'ui-messages-error'
-    } );
+    this.msgsSubject.next( <Message[]>  [ {
+      severity: 'warn',
+      summary: '',
+      detail: this.translate.instant(resp.json().title || 'webservice not available')
+    } ] );
   }
 }

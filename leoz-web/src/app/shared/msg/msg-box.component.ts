@@ -1,16 +1,18 @@
 import { Component, Input } from '@angular/core';
-import { Msg } from './msg.model';
+import { Message } from 'primeng/primeng';
+
 
 @Component( {
   selector: 'app-msg-box',
   template: `
-    <div *ngIf="msg.text.length > 0" class="ui-messages ui-widget ui-corner-all"
+    <p-growl [(value)]="msgs"></p-growl>
+   <!-- <div *ngIf="msg.text.length > 0" class="ui-messages ui-widget ui-corner-all"
          style="display:block" [ngClass]="msg.alertStyle">
       {{msg.text | translate}}
-    </div>
+    </div>-->
   `
 } )
 export class MsgBoxComponent {
 
-  @Input() msg: Msg;
+  @Input() msgs: Message[];
 }

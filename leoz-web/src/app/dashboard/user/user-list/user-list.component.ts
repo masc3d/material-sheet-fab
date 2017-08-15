@@ -83,7 +83,7 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
         .subscribe(
           ( resp: Response ) => {
             if (resp.status === 204) {
-              this.msgService.success( 'User successfully deactivated' );
+              this.msgService.success( 'UserSuccessfulDeactive' );
               this.userService.getUsers();
               this.userService.changeActiveUser( <User> {} );
             } else {

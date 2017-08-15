@@ -1,25 +1,24 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Response } from '@angular/http';
 import { AuthenticationService } from '../core/auth/authentication.service';
-import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/takeUntil';
 
-import { Msg } from '../shared/msg/msg.model';
+import { Message } from 'primeng/primeng';
+
 import { MsgService } from '../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-login',
   templateUrl: './login.component.html'
 } )
-export class LoginComponent implements OnInit, OnDestroy {
-
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+export class LoginComponent implements OnInit {
 
   loading = false;
 
-  errMsg: Msg;
+  errMsgs: Observable<Message[]>;
   loginForm: FormGroup;
 
   constructor( private fb: FormBuilder,
@@ -30,9 +29,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.msgService.clear();
-    this.msgService.msg
-      .takeUntil( this.ngUnsubscribe )
-      .subscribe( ( msg: Msg ) => this.errMsg = msg );
+    this.errMsgs = this.msgService.msgs;
 
     // reset login status
     this.authenticationService.logout();
@@ -41,11 +38,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       username: [ null, [ Validators.required ] ],
       password: [ null, [ Validators.required ] ],
     } );
-  }
-
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
   }
 
   login() {

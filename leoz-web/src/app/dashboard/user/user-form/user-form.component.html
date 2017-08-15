@@ -1,4 +1,4 @@
-<app-msg-box [msg]="errMsg"></app-msg-box>
+<app-msg-box [msgs]="errMsgs | async"></app-msg-box>
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
   <input type="hidden" class="form-control" formControlName="emailOrigin">
   <div class="ui-fluid">
@@ -24,6 +24,9 @@
         <div><input pInputText formControlName="password"></div>
         <div *ngIf="userForm.controls['password'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'PwdMaxLength' | translate}}.
+        </div>
+        <div *ngIf="userForm.controls['password'].hasError('minlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'PwdMinLength' | translate}}.
         </div>
       </div>
       <div class="ui-g-12 ui-md-6">

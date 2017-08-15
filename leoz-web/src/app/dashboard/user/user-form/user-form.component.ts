@@ -8,14 +8,14 @@ import {
   animate,
   transition
 } from '@angular/animations';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/takeUntil';
 
-import { SelectItem } from 'primeng/primeng';
+import { Message, SelectItem } from 'primeng/primeng';
 
 import { User } from '../user.model';
 import { UserService } from '../user.service';
 import { RoleGuard } from '../../../core/auth/role.guard';
-import { Msg } from '../../../shared/msg/msg.model';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { TranslateService } from 'app/core/translate/translate.service';
 import { AbstractTranslateComponent } from 'app/core/translate/abstract-translate.component';
@@ -50,7 +50,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   userForm: FormGroup;
   private loading = false;
-  public errMsg: Msg;
+  public errMsgs: Observable<Message[]>;
 
   constructor( private fb: FormBuilder,
                private userService: UserService,
@@ -71,14 +71,14 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
     this.roleOptions = this.createRoleOptions();
     this.stateOptions = this.createStateOptions();
 
-    this.msgService.msg
-      .takeUntil( this.ngUnsubscribe ).subscribe( ( msg: Msg ) => this.errMsg = msg );
+    this.errMsgs = this.msgService.msgs;
+
     this.msgService.clear();
     this.userForm = this.fb.group( {
       emailOrigin: [ null ],
       firstName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
       lastName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
-      password: [ null, [ Validators.required, Validators.maxLength( 25 ) ] ],
+      password: [ null, [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 25 ) ] ],
       email: [ null, [ Validators.required, Validators.email ] ],
       phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
@@ -94,6 +94,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
         this.activeUser = activeUser;
         const passwordControl = this.userForm.get( 'password' );
         const validators = <ValidatorFn[]> [];
+        validators.push( Validators.minLength( 6 ) );
         validators.push( Validators.maxLength( 25 ) );
         if (this.isEditMode( activeUser )) {
           this.msgService.clear();
@@ -149,7 +150,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   onSubmit() {
     this.loading = true;
-    const removeFields = [ 'emailOrigin' ];
+    const removeFields = [ 'emailOrigin', 'mobile' ];
     if (!this.userForm.value.emailOrigin || this.userForm.value.emailOrigin.length === 0) {
       this.createUser( this.cloneAndRemove( this.userForm.value, removeFields ) );
     } else {
