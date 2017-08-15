@@ -45,7 +45,8 @@ import { TranslateService } from '../../../core/translate/translate.service';
     <p-dataTable [value]="drivers | async | driverfilter: [filterName]" resizableColumns="true" [responsive]="true">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
-      <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
+      <p-column field="phone" header="{{'phoneoffice' | translate}}" [sortable]="true"></p-column>
+      <p-column field="mobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
       <p-column header="">
         <ng-template let-driver="rowData" pTemplate="body">
           <i class="fa fa-crosshairs fa-fw" aria-hidden="true" (click)="showPositionPeriodically(driver)"></i>
