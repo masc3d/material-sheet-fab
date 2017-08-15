@@ -70,8 +70,11 @@ export const LANG_DE_TRANS = {
   'van': 'Bus',
   'truck': 'LKW',
   'unknown': 'unbekannt',
-  'last': 'letzten',
-  'hours': 'Stunden',
+  'last': 'letzte',
+  'hs': 'Std',
+  'refreshevery': 'Aktualisieren alle',
+  'mins': 'Min',
+  'latestRefresh': 'zuletzt aktualisiert',
   // stationloading form - loadinglist
   'loadingcontrol': 'Verladesteuerung',
   'newloadlist': 'Neue Ladeliste',

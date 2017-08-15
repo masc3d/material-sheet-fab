@@ -71,7 +71,10 @@ export const LANG_EN_TRANS = {
   'truck': 'Truck',
   'unknown': 'Unknown',
   'last': 'last',
-  'hours': 'hours',
+  'hs': 'hours',
+  'refreshevery': 'Refresh ervery',
+  'mins': 'min',
+  'latestRefresh': 'latest refresh',
   // stationloading form - loadinglist
   'loadingcontrol': 'Loading control',
   'newloadlist': 'New loadlist',

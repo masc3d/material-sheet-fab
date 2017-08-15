@@ -5,9 +5,14 @@ export const DATEFORMATS = {
     de: 'dd.MM.y'
   },
   internalLong: {
-    database: 'yy-MM-dd hh:mm:ss',
-    en: 'yy/MM/dd hh:mm',
-    de: 'dd.MM.y hh:mm'
+    database: 'yy-MM-dd HH:mm:ss',
+    en: 'yy/MM/dd HH:mm',
+    de: 'dd.MM.y HH:mm'
+  },
+  internalLonger: {
+    database: 'yy-MM-dd HH:mm:ss',
+    en: 'yy/MM/dd HH:mm:ss',
+    de: 'dd.MM.y HH:mm:ss'
   },
   primeng: {
     database: 'yy-mm-dd',

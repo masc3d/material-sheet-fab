@@ -10,6 +10,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
 
   dateFormat: string;
   dateFormatLong: string;
+  dateFormatEvenLonger: string;
   dateFormatPrimeng: string;
   locale: any;
 
@@ -23,6 +24,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
       .subscribe( ( lang: string ) => {
         this.dateFormat = this.translate.setDateformat( 'internal' );
         this.dateFormatLong = this.translate.setDateformat( 'internalLong' );
+        this.dateFormatEvenLonger = this.translate.setDateformat( 'internalLonger' );
         this.dateFormatPrimeng = this.translate.setDateformat( 'primeng' );
         this.locale = this.translate.setCalendarLocale();
         if (this.doOnSubscribe) {
@@ -31,6 +33,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
       } );
     this.dateFormat = this.translate.setDateformat( 'internal' );
     this.dateFormatLong = this.translate.setDateformat( 'internalLong' );
+    this.dateFormatEvenLonger = this.translate.setDateformat( 'internalLonger' );
     this.dateFormatPrimeng = this.translate.setDateformat( 'primeng' );
     this.locale = this.translate.setCalendarLocale();
   }
