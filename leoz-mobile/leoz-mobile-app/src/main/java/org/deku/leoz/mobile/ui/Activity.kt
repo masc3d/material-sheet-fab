@@ -94,6 +94,7 @@ open class Activity : RxAppCompatActivity(),
     private var isPaused = false
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
     private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
 
     private val device: Device by Kodein.global.lazy.instance()
@@ -480,6 +481,14 @@ open class Activity : RxAppCompatActivity(),
                         Intent(applicationContext, ProtoMainActivity::class.java))
             }
 
+            R.id.nav_dev_remote_settings -> {
+                MaterialDialog.Builder(this)
+                        .content("Remote settings:\n${remoteSettings}\n\nDebug settings:\n${debugSettings}")
+                        //.content("Debug settings:\n" + debugSettings.toString())
+                        .cancelable(true)
+                        .show()
+            }
+
             R.id.nav_check_updates -> {
                 updateService.trigger()
             }
@@ -606,6 +615,7 @@ open class Activity : RxAppCompatActivity(),
 
         if (this.debugSettings.enabled) {
             this.uxNavView.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
+            this.uxNavView.menu.findItem(R.id.nav_dev_remote_settings).setVisible(true)
         }
 
         this.actionItemsProperty
