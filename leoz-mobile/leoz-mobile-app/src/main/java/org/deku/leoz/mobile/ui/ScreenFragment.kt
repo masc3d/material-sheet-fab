@@ -6,7 +6,12 @@ import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.view.Menu
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.RemoteSettings
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
@@ -15,6 +20,8 @@ import sx.rx.ObservableRxProperty
  * Created by masc on 14.06.17.
  */
 open class ScreenFragment<P> : Fragment<P>() {
+    val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
+
     val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(default = listOf())
     /** Screen action items */
     var actionItems by actionItemsProperty
@@ -23,7 +30,7 @@ open class ScreenFragment<P> : Fragment<P>() {
     /** Screen menu items */
     var menu: Menu? by menuProperty
 
-    val accentColorProperty by lazy { ObservableRxProperty<Int>(R.color.colorAccent) }
+    val accentColorProperty by lazy { ObservableRxProperty<Int>(if (remoteSettings.host.substring(0, 4) == "leoz") R.color.colorAccent else R.color.colorRed) }
     var accentColor by accentColorProperty
         @ColorRes get
 

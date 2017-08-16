@@ -68,7 +68,7 @@ class SignatureScreen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        this.orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
         this.toolbarHidden = true
     }
 
@@ -91,15 +91,23 @@ class SignatureScreen
                         iconRes = R.drawable.ic_check_circle
                 ),
                 ActionItem(
+                        id = R.id.action_signature_cancel,
+                        colorRes = R.color.colorRed,
+                        alignEnd = false,
+                        iconRes = R.drawable.ic_cancel_black,
+                        menu = this.activity.inflateMenu(R.menu.menu_signature_exception)
+                ),
+                ActionItem(
                         id = R.id.action_signature_clear,
                         colorRes = R.color.colorLightGrey,
+                        alignEnd = false,
                         iconRes = R.drawable.ic_circle_cancel
                 ),
                 ActionItem(
-                        id = R.id.action_signature_cancel,
-                        colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_cancel_black,
-                        menu = this.activity.inflateMenu(R.menu.menu_signature_exception)
+                        id = R.id.action_signature_paper,
+                        colorRes = R.color.colorAccent,
+                        alignEnd = false,
+                        iconRes = R.drawable.ic_menu_camera
                 )
         )
     }
