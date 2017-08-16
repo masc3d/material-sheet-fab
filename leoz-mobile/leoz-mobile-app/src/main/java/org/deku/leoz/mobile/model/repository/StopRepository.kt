@@ -1,6 +1,10 @@
 package org.deku.leoz.mobile.model.repository
 
 import android.databinding.Observable
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -19,6 +23,7 @@ import sx.rx.ObservableRxProperty
 class StopRepository(
         private val store: KotlinReactiveEntityStore<Persistable>
 ) : ObservingRepository<StopEntity>(StopEntity::class, store) {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
@@ -31,7 +36,7 @@ class StopRepository(
                 .get()
                 .firstOrNull()
     }
-
+    
     /**
      * Finds a suitabtle existing stop compatible with this task
      * @param task Order task
@@ -53,8 +58,9 @@ class StopRepository(
      * Stops which reference the same order tasks will be removed in order to avoid duplicates.
      */
     fun merge(stops: List<Stop>): Completable {
-        val sw = Stopwatch.createStarted()
         return Completable.fromCallable {
+            val store = this.store.toBlocking()
+
             var position = store.select(StopEntity.POSITION.max())
                     .get()
                     .scalarOr(0.0)
@@ -63,18 +69,24 @@ class StopRepository(
                     }
 
             stops.forEach { stop ->
-                // Remove stops which reference the same order tasks to avoid duplicates
-                store.delete(stop.tasks
-                        .map { it.stop }
-                        .distinct()
-                        .filterNotNull()
-                ).blockingAwait()
-
                 stop.position = position
                 position += 1.0
-
-                store.insert(stop).blockingGet()
+                store.insert(stop)
             }
+
+            val mappedStops = store.select(OrderEntity::class)
+                    .get()
+                    .flatMap { it.tasks }
+                    .mapNotNull { it.stop }
+
+            // Remove all stops without task references (cleanup)
+            store.select(StopEntity::class)
+                    .get()
+                    .subtract(mappedStops)
+                    .toList()
+                    .forEach {
+                        store.delete(it)
+                    }
         }
     }
 

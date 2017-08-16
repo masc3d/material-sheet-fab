@@ -164,9 +164,6 @@ class DeliveryList : CompositeDisposableSupplier {
             .behave(this)
     //endregion
 
-    init {
-    }
-
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         listOf(
                 EventNotDeliveredReason.DAMAGED
@@ -318,29 +315,6 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
-     * Load order based on unit number and merge orders into local entity store
-     * @param unitNumber Unit number
-     */
-    fun load(unitNumber: UnitNumber): Observable<Order> {
-        return Observable.fromCallable {
-            val orders = this.orderService.get(parcelScan = unitNumber.value)
-                    .distinctOrders()
-                    .map { it.toOrder() }
-
-            db.store.withTransaction {
-                orderRepository
-                        .merge(orders)
-                        .blockingGet()
-
-                orders.first()
-            }
-                    .subscribeOn(Schedulers.computation())
-                    .blockingGet()
-        }
-                .toHotIoObservable(log)
-    }
-
-    /**
      * Finalizes the loading process, marking all parcels with pending loading state as missing
      */
     fun finalize(): Completable {
@@ -354,19 +328,21 @@ class DeliveryList : CompositeDisposableSupplier {
             }
 
             // Set all stops which contain LOADED parcels to PENDING
-            val pendingStops = parcelRepository.entities
+            val stopsWithLoadedParcels = parcelRepository.entities
                     .filter { it.loadingState == Parcel.LoadingState.LOADED }
                     .flatMap { it.order.tasks.mapNotNull { it.stop } }
+                    .filter { it.state != Stop.State.CLOSED }
                     .distinct()
 
-            pendingStops.forEach {
+            stopsWithLoadedParcels.forEach {
                 it.state = Stop.State.PENDING
                 update(it)
             }
 
             // Reset state for remaining stops
             stopRepository.entities
-                    .subtract(pendingStops)
+                    .subtract(stopsWithLoadedParcels)
+                    .filter { it.state != Stop.State.CLOSED}
                     .forEach {
                         it.state = Stop.State.NONE
                         update(it)
