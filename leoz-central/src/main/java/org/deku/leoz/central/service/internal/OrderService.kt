@@ -104,6 +104,7 @@ class OrderService : OrderService {
         o.pickupAddress.line1 = r.pickupAddressLine1
         o.pickupAddress.line2 = r.pickupAddressLine2
         o.pickupAddress.line3 = r.pickupAddressLine3
+        o.pickupAddress.phoneNumber = r.pickupAddressPhonenumber
         o.pickupAddress.street = r.pickupAddressStreet
         o.pickupAddress.streetNo = r.pickupAddressStreetNo
         o.pickupAddress.countryCode = r.pickupAddressCountryCode
@@ -189,7 +190,7 @@ class OrderService : OrderService {
         p.number = toUnitNo(r.scanId)
         p.parcelType = ParcelType.valueMap.getValue(r.parcelType)
         p.lastDeliveryListId = r.lastDeliveryListId.toInt()
-        //P.information=
+        p.isDelivered = r.deliveredStatus.toInt() == 4
         p.dimension.weight = r.dimentionWeight
         p.dimension.height = r.dimensionHeight.toInt()
         p.dimension.length = r.dimensionLength.toInt()
