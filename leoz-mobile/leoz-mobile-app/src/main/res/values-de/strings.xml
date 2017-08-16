@@ -233,4 +233,5 @@
     <string name="title_stop_list">Stops</string>
     <string name="call">Anrufen</string>
     <string name="title_confirm_call">Anruf bestätigen</string>
+    <string name="service_valuables">Valoren</string>
 </resources>

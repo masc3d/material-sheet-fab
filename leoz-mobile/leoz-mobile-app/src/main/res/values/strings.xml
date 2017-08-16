@@ -236,6 +236,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="service_selfpickup">Self-Pickup</string>
     <string name="service_submission">Submission participation</string>
     <string name="service_suitcase">Suitcase shipping</string>
+    <string name="service_valuables">Valuables</string>
     <string name="service_xchange" translatable="false">X-Change</string>
 
     <string name="services">Services</string>
