@@ -1,14 +1,11 @@
 package org.deku.leoz.central.service.internal
 
-import javafx.scene.paint.Stop
-import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistDetailsRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistinfoRecord
 import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
-import org.deku.leoz.service.internal.OrderService
 import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
@@ -40,21 +37,28 @@ class DeliveryListService : DeliveryListService {
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
 
-        val deliveryListOrders = this.deliveryListRepository.findDetailsById(id)
+        val deliveryListStops = this.deliveryListRepository.findDetailsById(id)
+        val orders = orderService.getByIds(deliveryListStops.map { it.orderId.toLong() })
+        val deliveryListOrdersById = deliveryListStops
+                .groupBy { it.orderId }
 
-        deliveryList.orders = orderService.getByIds(
-                deliveryListOrders.map { it.orderId.toLong() })
-
-        deliveryList.stops = deliveryList.orders.map { order ->
-            DeliveryListService.Stop(
-                    tasks = listOf(
-                            DeliveryListService.Task(
-                                    orderId = order.id,
-                                    stopType = DeliveryListService.Task.Type.DELIVERY
-                            )
-                    ))
-        }
-
+        deliveryList.orders = orders
+        deliveryList.stops = deliveryList.orders
+                .map {
+                    val dlDetailsRecord = deliveryListOrdersById.getValue(it.id.toDouble()).first()
+                    DeliveryListService.Stop(
+                            tasks = listOf(
+                                    DeliveryListService.Task(
+                                            orderId = it.id,
+                                            isRemoved = if (dlDetailsRecord.removedInDeliverylist != 0.0) true else false,
+                                            stopType = when (dlDetailsRecord.stoptype) {
+                                                "DELIVERY" -> DeliveryListService.Task.Type.DELIVERY
+                                                "PICKUP" -> DeliveryListService.Task.Type.PICKUP
+                                                else -> throw UnsupportedOperationException()
+                                            }
+                                    )
+                            ))
+                }
         return deliveryList
     }
 
