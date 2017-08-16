@@ -21,7 +21,9 @@
                                                         xmlns:app="http://schemas.android.com/apk/res-auto"
                                                         android:id="@+id/uxSignaturePad"
                                                         android:layout_width="match_parent"
-                                                        android:layout_height="match_parent"
+                                                        android:layout_height="200dp"
+                                                        android:layout_gravity="center_vertical"
+                                                        android:background="@drawable/rounded_corner_background_white"
                                                         app:clearOnDoubleClick="false"
                                                         app:penColor="@android:color/black"/>
 
