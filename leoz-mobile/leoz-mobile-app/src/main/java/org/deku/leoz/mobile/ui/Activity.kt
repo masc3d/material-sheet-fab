@@ -23,6 +23,8 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AnimationUtils
+import android.view.animation.RotateAnimation
 import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
@@ -804,6 +806,20 @@ open class Activity : RxAppCompatActivity(),
                 .bindUntilEvent(fragment, FragmentEvent.PAUSE)
                 .subscribe {
                     this.uxHeaderAccentBar.backgroundColor = if (remoteSettings.host == "leoz.derkurier.de" || it.value != R.color.colorAccent) ContextCompat.getColor(this, it.value) else ContextCompat.getColor(this, R.color.colorRed)
+                }
+
+        fragment.flipScreenProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    if (it.value) {
+//                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate180) as RotateAnimation
+//                        this.uxContainer.animate()
+                        this.uxContainer.rotation = -180F
+                    } else {
+//                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate0) as RotateAnimation
+//                        this.uxContainer.animate()
+                        this.uxContainer.rotation = 0F
+                    }
                 }
 
         // Setup collapsing layout, appbar & header

@@ -73,6 +73,7 @@ class SignatureScreen
 
         this.orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         this.toolbarHidden = true
+        this.flipScreen = true
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,

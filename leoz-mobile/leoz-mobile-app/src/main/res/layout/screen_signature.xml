@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:alpha="1"
         android:ems="10"
-        android:rotation="-180"
         android:text="Für was unterschreibe ich..."
+        android:layout_gravity="bottom"
         tools:ignore="HardcodedText"/>
 
     <com.github.gcacace.signaturepad.views.SignaturePad xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,7 +23,6 @@
                                                         android:layout_width="match_parent"
                                                         android:layout_height="match_parent"
                                                         app:clearOnDoubleClick="false"
-                                                        android:rotation="-180"
                                                         app:penColor="@android:color/black"/>
 
 </FrameLayout>

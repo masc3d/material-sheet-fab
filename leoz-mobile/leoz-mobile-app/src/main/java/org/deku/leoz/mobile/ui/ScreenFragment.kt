@@ -10,6 +10,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.RemoteSettings
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -33,6 +35,9 @@ open class ScreenFragment<P> : Fragment<P>() {
     val accentColorProperty by lazy { ObservableRxProperty<Int>(R.color.colorAccent) }
     var accentColor by accentColorProperty
         @ColorRes get
+
+    val flipScreenProperty by lazy { ObservableRxProperty<Boolean>(false) }
+    var flipScreen by flipScreenProperty
 
     /**
      * Title
