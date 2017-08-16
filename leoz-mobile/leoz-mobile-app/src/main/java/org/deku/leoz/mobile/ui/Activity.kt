@@ -23,6 +23,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
 import android.widget.ProgressBar
@@ -796,10 +797,16 @@ open class Activity : RxAppCompatActivity(),
 //                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate180) as RotateAnimation
 //                        this.uxContainer.animate()
                         this.uxContainer.rotation = -180F
+
+                        // Hide status bar
+                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     } else {
 //                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate0) as RotateAnimation
 //                        this.uxContainer.animate()
                         this.uxContainer.rotation = 0F
+
+                        // Show status bar
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                     }
                 }
 
