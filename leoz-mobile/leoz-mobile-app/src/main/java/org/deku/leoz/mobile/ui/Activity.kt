@@ -801,7 +801,7 @@ open class Activity : RxAppCompatActivity(),
         fragment.accentColorProperty
                 .bindUntilEvent(fragment, FragmentEvent.PAUSE)
                 .subscribe {
-                    this.uxHeaderAccentBar.backgroundColor = ContextCompat.getColor(this, it.value)
+                    this.uxHeaderAccentBar.backgroundColor = if (remoteSettings.host == "leoz.derkurier.de" || it.value != R.color.colorAccent) ContextCompat.getColor(this, it.value) else ContextCompat.getColor(this, R.color.colorRed)
                 }
 
         // Setup collapsing layout, appbar & header

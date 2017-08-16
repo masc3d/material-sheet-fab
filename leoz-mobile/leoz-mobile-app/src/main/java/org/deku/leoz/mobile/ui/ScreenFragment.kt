@@ -30,7 +30,7 @@ open class ScreenFragment<P> : Fragment<P>() {
     /** Screen menu items */
     var menu: Menu? by menuProperty
 
-    val accentColorProperty by lazy { ObservableRxProperty<Int>(if (remoteSettings.host.substring(0, 4) == "leoz") R.color.colorAccent else R.color.colorRed) }
+    val accentColorProperty by lazy { ObservableRxProperty<Int>(R.color.colorAccent) }
     var accentColor by accentColorProperty
         @ColorRes get
 
