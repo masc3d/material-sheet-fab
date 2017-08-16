@@ -436,6 +436,8 @@ open class Activity : RxAppCompatActivity(),
         when (id) {
             R.id.action_aidc_camera -> {
                 this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
+                if (!this.cameraAidcFragmentVisible)
+                    this.uxAppBarLayout.setExpanded(false, true)
             }
 
             R.id.action_aidc_keyboard -> {
