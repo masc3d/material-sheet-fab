@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.screen
 
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,8 @@ import org.deku.leoz.model.EventDeliveredReason
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
+import sx.android.toBase64
+import sx.android.toBitmap
 
 /**
  * A simple [Fragment] subclass.
@@ -83,6 +86,10 @@ class SignatureScreen
 
         this.uxConclusion.text = descriptionText
         this.uxSignaturePad.setOnSignedListener(this)
+
+        if (savedInstanceState != null) {
+            this.uxSignaturePad.signatureBitmap = savedInstanceState.getString("BITMAP").toBitmap()
+        }
 
         this.actionItems = listOf(
                 ActionItem(
@@ -146,6 +153,11 @@ class SignatureScreen
                         }
                     }
                 }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putString("BITMAP", this.uxSignaturePad.signatureBitmap.toBase64())
+        super.onSaveInstanceState(outState)
     }
 
     // SignaturePad listeners
