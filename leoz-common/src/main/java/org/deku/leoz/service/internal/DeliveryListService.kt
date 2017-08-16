@@ -62,7 +62,9 @@ interface DeliveryListService {
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "Order id")
             var orderId: Long = 0,
             @ApiModelProperty(example = "Pickup", position = 20, required = true, value = "Stop type")
-            var stopType: Type = Task.Type.DELIVERY
+            var stopType: Type = Task.Type.DELIVERY,
+            @ApiModelProperty(example = "false", position = 30, required = true, value = "is removed from Deliverylist")
+            var isRemoved: Boolean = false
     ) {
         enum class Type {
             PICKUP,
