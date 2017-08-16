@@ -331,15 +331,6 @@ open class Activity : RxAppCompatActivity(),
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menuInflater.inflate(R.menu.main, menu)
 
-        val mainSubMenu = menu.getItem(0).subMenu
-
-        // Show logout only if there's a user actually logged in
-        menu
-                .findItem(R.id.action_logout)
-                .isVisible = (this.login.authenticatedUser != null)
-
-        menu.setGroupVisible(0, mainSubMenu.hasVisibleItems())
-
         return true
     }
 
@@ -379,6 +370,8 @@ open class Activity : RxAppCompatActivity(),
         }
         //endregion
 
+        menu.setGroupVisible(0, mainSubMenu.hasVisibleItems())
+
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -411,18 +404,6 @@ open class Activity : RxAppCompatActivity(),
                 /** Main submenu entry, ignore */
                 return true
             }
-            R.id.action_logout -> {
-                login.logout()
-
-                this.startActivity(
-                        Intent(applicationContext, MainActivity::class.java)
-                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                        Intent.FLAG_ACTIVITY_NEW_TASK))
-                finish()
-
-                return true
-            }
-
             else -> {
                 this.menuItemEventSubject.onNext(item)
 
