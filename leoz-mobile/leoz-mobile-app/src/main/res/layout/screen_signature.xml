@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:alpha="1"
         android:ems="10"
+        android:rotation="-180"
         android:text="Für was unterschreibe ich..."
         tools:ignore="HardcodedText"/>
 
@@ -22,6 +23,7 @@
                                                         android:layout_width="match_parent"
                                                         android:layout_height="match_parent"
                                                         app:clearOnDoubleClick="false"
+                                                        android:rotation="-180"
                                                         app:penColor="@android:color/black"/>
 
 </FrameLayout>

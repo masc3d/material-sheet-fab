@@ -71,7 +71,7 @@ class SignatureScreen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+        this.orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         this.toolbarHidden = true
     }
 
