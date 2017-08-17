@@ -102,23 +102,38 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.driverService.getDrivers();
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.filterName = 'driverfilter';
+    this.tourService.resetMarkerAndRoute();
   }
 
   ngOnDestroy() {
     super.ngOnDestroy();
+    this.tourService.resetMsgs();
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
   justDrivers() {
+    this.clearTimerMapdisplay();
     this.driverService.getDrivers();
     this.filterName = 'driverfilter';
   }
 
   allUsers() {
+    this.clearTimerMapdisplay();
     this.userService.getUsers();
     this.filterName = 'userfilter';
+  }
+
+  private clearTimerMapdisplay() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    this.latestRefresh = null;
+    this.periodicallyUsedDriver = null;
+    this.periodicallyUsedCallback = null;
+    this.tourService.resetDisplay();
+    this.tourService.resetMarkerAndRoute();
   }
 
   changeInterval() {

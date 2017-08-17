@@ -13,15 +13,17 @@ import { TranslateService } from '../../core/translate/translate.service';
 @Injectable()
 export class TourService {
 
-  private displayMarkerSubject = new BehaviorSubject<boolean>( false );
-  public displayMarker = this.displayMarkerSubject.asObservable().distinctUntilChanged();
-
-  private activeMarkerSubject = new BehaviorSubject<Marker>( <Marker> {
+  public homebase = <Marker> {
     position: {
       latitude: 50.8645,
       longitude: 9.6917
     }, driver: {}
-  } );
+  };
+
+  private displayMarkerSubject = new BehaviorSubject<boolean>( false );
+  public displayMarker = this.displayMarkerSubject.asObservable().distinctUntilChanged();
+
+  private activeMarkerSubject = new BehaviorSubject<Marker>( this.homebase );
   public activeMarker = this.activeMarkerSubject.asObservable().distinctUntilChanged();
 
   private displayRouteSubject = new BehaviorSubject<boolean>( false );
@@ -32,7 +34,7 @@ export class TourService {
 
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
 
-  constructor( private http: Http, private msgService: MsgService, private translate: TranslateService) {
+  constructor( private http: Http, private msgService: MsgService, private translate: TranslateService ) {
   }
 
   private getLocation( userId: number ): Observable<Response> {
@@ -62,6 +64,21 @@ export class TourService {
     } );
 
     return this.http.get( this.locationUrl, options );
+  }
+
+  resetMsgs() {
+    this.msgService.clear();
+  }
+
+  resetDisplay() {
+    this.displayRouteSubject.next( false );
+    this.displayMarkerSubject.next( false );
+  }
+
+  resetMarkerAndRoute() {
+    this.resetDisplay();
+    this.activeMarkerSubject.next( this.homebase );
+    this.activeRouteSubject.next( <Position[]> [] );
   }
 
   changeActiveMarker( selectedDriver: Driver ) {
@@ -112,18 +129,11 @@ export class TourService {
 
   locationError(): void {
     this.resetDisplay();
-    // display error msg: could not get geolocation points
-    this.msgService.error( this.translate.instant('could not get geolocation points') );
+    this.msgService.error( this.translate.instant( 'could not get geolocation points' ) );
   }
 
   routeError(): void {
     this.resetDisplay();
-    // display error msg: could not get route
-    this.msgService.error( this.translate.instant('could not get route') );
-  }
-
-  resetDisplay() {
-    this.displayRouteSubject.next( false );
-    this.displayMarkerSubject.next( false );
+    this.msgService.error( this.translate.instant( 'could not get route' ) );
   }
 }
