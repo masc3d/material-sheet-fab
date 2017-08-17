@@ -460,7 +460,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
         log.trace("AIDC READ $event")
 
         val result = Observable.concat(
-                Observable.fromCallable { UnitNumber.parseLabel(event.data,  UnitNumber.Type.Parcel, UnitNumber.Type.Bag) },
+                Observable.fromCallable { UnitNumber.parseLabel(event.data) },
                 Observable.fromCallable { DekuDeliveryListNumber.parseLabel(event.data) }
         )
                 .takeUntil { !it.hasError }
