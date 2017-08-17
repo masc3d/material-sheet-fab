@@ -127,7 +127,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.loaded).toString(),
                 items = this.deliveryList.loadedParcels.map { it.value }
-                        .bindToLifecycle(this)
         )
     }
 
@@ -138,7 +137,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 background = R.drawable.section_background_accent,
                 title = this.getText(R.string.damaged).toString(),
                 items = this.deliveryList.damagedParcels.map { it.value }
-                        .bindToLifecycle(this)
         )
     }
 
@@ -151,7 +149,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 expandOnSelection = true,
                 title = this.getText(R.string.pending).toString(),
                 items = this.deliveryList.pendingParcels.map { it.value }
-                        .bindToLifecycle(this)
         )
     }
 
@@ -164,7 +161,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 expandOnSelection = true,
                 title = this.getText(R.string.missing).toString(),
                 items = this.deliveryList.missingParcels.map { it.value }
-                        .bindToLifecycle(this)
         )
     }
     //endregion
@@ -246,9 +242,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Flexible adapter needs to be re-created with views
-        this.parcelListAdapterInstance.reset()
-
         this.uxRecyclerView.adapter = parcelListAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -282,9 +275,12 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
         )
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        log.trace("DESTROY VIEW")
+        this.parcelListAdapter.dispose()
         this.parcelListAdapterInstance.reset()
-        super.onDestroy()
+
+        super.onDestroyView()
     }
 
     override fun onResume() {

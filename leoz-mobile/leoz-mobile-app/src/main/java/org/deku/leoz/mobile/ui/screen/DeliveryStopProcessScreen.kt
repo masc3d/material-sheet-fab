@@ -124,7 +124,6 @@ class DeliveryStopProcessScreen :
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.delivered).toString(),
                 items = this.deliveryStop.deliveredParcels
-                        .bindToLifecycle(this)
         )
     }
 
@@ -136,7 +135,6 @@ class DeliveryStopProcessScreen :
                 showIfEmpty = false,
                 title = this.getText(R.string.pending).toString(),
                 items = this.deliveryStop.pendingParcels
-                        .bindToLifecycle(this)
         )
     }
 
@@ -149,7 +147,6 @@ class DeliveryStopProcessScreen :
                 expandOnSelection = true,
                 title = this.getText(R.string.orders).toString(),
                 items = this.deliveryStop.orders
-                        .bindToLifecycle(this)
         )
     }
 
@@ -166,7 +163,6 @@ class DeliveryStopProcessScreen :
                 items = deliveryStop.parcelsByEvent
                         .withDefault { Observable.empty() }
                         .getValue(this)
-                        .bindToLifecycle(this@DeliveryStopProcessScreen)
         )
     }
 
@@ -273,9 +269,6 @@ class DeliveryStopProcessScreen :
         // Set screen menu
         this.menu = this.inflateMenu(R.menu.menu_delivery_stop_process)
 
-        // Flexible adapter needs to be re-created with views
-        this.parcelListAdapterInstance.reset()
-
         this.uxRecyclerView.adapter = parcelListAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -320,6 +313,13 @@ class DeliveryStopProcessScreen :
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
         binding.stop = StopViewModel(this.stop)
+    }
+
+    override fun onDestroyView() {
+        this.parcelListAdapter.dispose()
+        this.parcelListAdapterInstance.reset()
+
+        super.onDestroyView()
     }
 
     override fun onResume() {
@@ -496,10 +496,10 @@ class DeliveryStopProcessScreen :
                                     it.visible = deliveryStop.isCloseAvailable
 
                                     if (deliveryStop.isCloseWithEventAvailable) {
-                                        it.colorRes =  R.color.colorAccent
+                                        it.colorRes = R.color.colorAccent
                                         it.iconTintRes = android.R.color.black
                                     } else {
-                                        it.colorRes =  R.color.colorPrimary
+                                        it.colorRes = R.color.colorPrimary
                                         it.iconTintRes = android.R.color.white
                                     }
                                 }
@@ -511,7 +511,7 @@ class DeliveryStopProcessScreen :
 
                                     it.menu?.findItem(R.id.action_deliver_postbox)
                                             ?.isVisible = deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
-                                                    !deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+                                            !deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
 
                                     it.visible = deliveryStop.isCloseAvailable &&
                                             it.menu?.hasVisibleItems() ?: false
