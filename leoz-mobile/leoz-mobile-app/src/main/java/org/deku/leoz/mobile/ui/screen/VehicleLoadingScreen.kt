@@ -540,11 +540,17 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                         this.deliveryList
                                                 .mergeOrder(order)
                                                 .observeOnMainThread()
-                                                .subscribeBy(onComplete = {
-                                                    this.onParcel(
-                                                            parcel = this.parcelRepository.entities.first { it.number == unitNumber.value }
-                                                    )
-                                                })
+                                                .subscribeBy(
+                                                        onComplete = {
+                                                            this.onParcel(
+                                                                    parcel = this.parcelRepository.entities.first { it.number == unitNumber.value }
+                                                            )
+                                                        },
+                                                        onError = {
+                                                            log.error("Merging order failed. ${it.message}", it)
+                                                            tones.errorBeep()
+                                                        }
+                                                )
                                     }
 
                                     if (this.deliveryList.ids.get().isEmpty()) {
@@ -563,6 +569,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
 
                                 },
                                 onError = {
+                                    log.error(it.message, it)
                                     tones.errorBeep()
                                 }
                         )
