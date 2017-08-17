@@ -384,6 +384,11 @@ class DeliveryStopProcessScreen :
                         }
 
                         R.id.action_deliver_neighbour -> {
+                            this.activity.showScreen(NeighbourDeliveryScreen().also {
+                                it.parameters = NeighbourDeliveryScreen.Parameters(
+                                        stopId = this.stop.id
+                                )
+                            })
                         }
 
                         R.id.action_deliver_postbox -> {

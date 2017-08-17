@@ -114,6 +114,11 @@ private val meta = listOf(
                 ParcelService.NO_ALTERNATIVE_DELIVERY,
                 R.string.service_no_alternative,
                 R.drawable.ic_service_no_alternative_delivery
+        ),
+        ParcelServiceMeta(
+                ParcelService.VALUED_PACKAGE,
+                R.string.service_valuables,
+                R.drawable.ic_service_valuables
         )
 )
 
@@ -127,4 +132,3 @@ private val metaByService = mapOf(*meta.map { Pair(it.value, it) }.toTypedArray(
  */
 val ParcelService.mobile: ParcelServiceMeta
     get() = metaByService.withDefault { ParcelServiceMeta(this, null, R.drawable.ic_service) }.getValue(this)
-

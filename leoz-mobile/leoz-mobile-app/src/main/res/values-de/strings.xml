@@ -176,7 +176,7 @@
     <string name="service_fair">Messeservice</string>
     <string name="service_fixed">Fixtermin</string>
     <string name="service_ident_contract">Ident Vertragsservice</string>
-    <string name="service_no_alternative">Keine alternativzustellung</string>
+    <string name="service_no_alternative">Keine Alternativzustellung</string>
     <string name="service_packaging_recirculation">Verpackungsrückführung</string>
     <string name="service_phone_receipt">Tel. Empfangsbestätigung</string>
     <string name="service_postbox_delivery">Briefkastenzustellung</string>
@@ -233,4 +233,5 @@
     <string name="title_stop_list">Stops</string>
     <string name="call">Anrufen</string>
     <string name="title_confirm_call">Anruf bestätigen</string>
+    <string name="service_valuables">Valoren</string>
 </resources>

@@ -56,6 +56,7 @@ libs/leoz-common/build
 libs/leoz-common/data
 libs/leoz-common/reports/dependencies
 modules.xml
+mobile
 openjpa-schema.xml
 out
 release

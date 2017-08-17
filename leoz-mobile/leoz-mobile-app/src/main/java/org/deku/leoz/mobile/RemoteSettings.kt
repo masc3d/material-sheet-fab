@@ -24,4 +24,11 @@ class RemoteSettings(private val map: sx.ConfigurationMap) {
 
     val http = Http()
     val broker = Broker()
+
+    override fun toString(): String {
+        return "Host: $host\n" +
+                "Port: ${Http().port}\n" +
+                "SSL: ${Http().ssl}\n" +
+                "NativePort (Broker): ${Broker().nativePort}"
+    }
 }

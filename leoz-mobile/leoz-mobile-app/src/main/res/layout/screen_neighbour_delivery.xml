@@ -28,8 +28,8 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:hint="@string/name"
-                android:nextFocusDown="@+id/uxNeighboursStreet"
-                android:maxLines="1"
+                android:nextFocusRight="@+id/uxNeighboursStreet"
+                android:imeOptions="actionNext"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
         </android.support.design.widget.TextInputLayout>
 
@@ -63,7 +63,7 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:completionThreshold="1"
-                android:maxLines="1"
+                android:imeOptions="actionNext"
                 android:hint="@string/street"
                 android:nextFocusRight="@+id/uxNeighboursStreetNo"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>

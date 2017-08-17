@@ -19,7 +19,7 @@ fun Bitmap.fromBase64(base64: String): Bitmap {
     return BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
 }
 
-fun String.toBitmap(base64: String): Bitmap {
-    val decoded = Base64.decode(base64, 0)
+fun String.toBitmap(): Bitmap {
+    val decoded = Base64.decode(this, 0)
     return BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
 }

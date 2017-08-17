@@ -39,6 +39,8 @@ class OrderRepository(
         return Single.fromCallable {
             var created = 0
 
+            val store = this.store.toBlocking()
+
             // Store orders
             orders.forEach { order ->
                 val existingOrder = store.select(OrderEntity::class)
@@ -46,21 +48,27 @@ class OrderRepository(
                         .get().firstOrNull()
 
                 if (existingOrder != null) {
-                    val orderParcelNumbers = order.parcels.map { it.number }.toHashSet()
-                    val existingOrderParcelNumbers = existingOrder.parcels.map { it.number }.toHashSet()
+                    // On existing orders, perform sanity checks, verifying this merge is sane, otherwise throw
+                    if (existingOrder.tasks.mapNotNull { it.stop }.any { it.state == Stop.State.CLOSED })
+                        throw IllegalStateException("Existing order tasks reference stops which are already closed")
 
-                    val addedParcels = order.parcels.filter {
-                        !existingOrderParcelNumbers.contains(it.number)
+                    val existingOrderParcelNumbers = existingOrder.parcels
+                            .groupBy { it.number }
+                            .mapValues { it.value.first() }
+
+                    order.parcels.forEach {
+                        val existing = existingOrderParcelNumbers.get(it.number)
+                        if (existing != null) {
+                            it.loadingState = existing.loadingState
+                            it.deliveryState = existing.deliveryState
+                        }
                     }
 
-                    val removedParcels = existingOrder.parcels.filter {
-                        !orderParcelNumbers.contains(it.number)
-                    }
-
-                    store.delete(removedParcels).blockingAwait()
-                    store.insert(addedParcels).blockingGet()
+                    // Delete old order tasks
+                    store.delete(existingOrder)
+                    store.insert(order)
                 } else {
-                    store.insert(order).blockingGet()
+                    store.insert(order)
                     created++
                 }
             }
@@ -76,6 +84,12 @@ class OrderRepository(
         return Completable.fromCallable {
             val store = store.toBlocking()
             store.select(OrderEntity::class)
+                    .get()
+                    .forEach {
+                        store.delete(it)
+                    }
+
+            store.select(OrderTaskEntity::class)
                     .get()
                     .forEach {
                         store.delete(it)

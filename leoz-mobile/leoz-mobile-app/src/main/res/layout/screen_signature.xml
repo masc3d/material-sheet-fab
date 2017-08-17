@@ -14,13 +14,16 @@
         android:alpha="1"
         android:ems="10"
         android:text="Für was unterschreibe ich..."
+        android:layout_gravity="bottom"
         tools:ignore="HardcodedText"/>
 
     <com.github.gcacace.signaturepad.views.SignaturePad xmlns:android="http://schemas.android.com/apk/res/android"
                                                         xmlns:app="http://schemas.android.com/apk/res-auto"
                                                         android:id="@+id/uxSignaturePad"
                                                         android:layout_width="match_parent"
-                                                        android:layout_height="match_parent"
+                                                        android:layout_height="250dp"
+                                                        android:layout_gravity="center_vertical"
+                                                        android:background="@drawable/rounded_corner_background_white"
                                                         app:clearOnDoubleClick="false"
                                                         app:penColor="@android:color/black"/>
 

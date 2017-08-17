@@ -23,6 +23,9 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
+import android.view.animation.AnimationUtils
+import android.view.animation.RotateAnimation
 import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
@@ -94,6 +97,7 @@ open class Activity : RxAppCompatActivity(),
     private var isPaused = false
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
     private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
 
     private val device: Device by Kodein.global.lazy.instance()
@@ -330,15 +334,6 @@ open class Activity : RxAppCompatActivity(),
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menuInflater.inflate(R.menu.main, menu)
 
-        val mainSubMenu = menu.getItem(0).subMenu
-
-        // Show logout only if there's a user actually logged in
-        menu
-                .findItem(R.id.action_logout)
-                .isVisible = (this.login.authenticatedUser != null)
-
-        menu.setGroupVisible(0, mainSubMenu.hasVisibleItems())
-
         return true
     }
 
@@ -378,6 +373,8 @@ open class Activity : RxAppCompatActivity(),
         }
         //endregion
 
+        menu.setGroupVisible(0, mainSubMenu.hasVisibleItems())
+
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -410,18 +407,6 @@ open class Activity : RxAppCompatActivity(),
                 /** Main submenu entry, ignore */
                 return true
             }
-            R.id.action_logout -> {
-                login.logout()
-
-                this.startActivity(
-                        Intent(applicationContext, MainActivity::class.java)
-                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                        Intent.FLAG_ACTIVITY_NEW_TASK))
-                finish()
-
-                return true
-            }
-
             else -> {
                 this.menuItemEventSubject.onNext(item)
 
@@ -435,6 +420,8 @@ open class Activity : RxAppCompatActivity(),
         when (id) {
             R.id.action_aidc_camera -> {
                 this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
+                if (!this.cameraAidcFragmentVisible)
+                    this.uxAppBarLayout.setExpanded(false, true)
             }
 
             R.id.action_aidc_keyboard -> {
@@ -478,6 +465,14 @@ open class Activity : RxAppCompatActivity(),
             R.id.nav_dev_prototype -> {
                 this.startActivity(
                         Intent(applicationContext, ProtoMainActivity::class.java))
+            }
+
+            R.id.nav_dev_remote_settings -> {
+                MaterialDialog.Builder(this)
+                        .content("Remote settings:\n${remoteSettings}\n\nDebug settings:\n${debugSettings}")
+                        //.content("Debug settings:\n" + debugSettings.toString())
+                        .cancelable(true)
+                        .show()
             }
 
             R.id.nav_check_updates -> {
@@ -606,6 +601,7 @@ open class Activity : RxAppCompatActivity(),
 
         if (this.debugSettings.enabled) {
             this.uxNavView.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
+            this.uxNavView.menu.findItem(R.id.nav_dev_remote_settings).setVisible(true)
         }
 
         this.actionItemsProperty
@@ -791,7 +787,27 @@ open class Activity : RxAppCompatActivity(),
         fragment.accentColorProperty
                 .bindUntilEvent(fragment, FragmentEvent.PAUSE)
                 .subscribe {
-                    this.uxHeaderAccentBar.backgroundColor = ContextCompat.getColor(this, it.value)
+                    this.uxHeaderAccentBar.backgroundColor = if (remoteSettings.host == "leoz.derkurier.de" || it.value != R.color.colorAccent) ContextCompat.getColor(this, it.value) else ContextCompat.getColor(this, R.color.colorRed)
+                }
+
+        fragment.flipScreenProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    if (it.value) {
+//                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate180) as RotateAnimation
+//                        this.uxContainer.animate()
+                        this.uxContainer.rotation = -180F
+
+                        // Hide status bar
+                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    } else {
+//                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate0) as RotateAnimation
+//                        this.uxContainer.animate()
+                        this.uxContainer.rotation = 0F
+
+                        // Show status bar
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    }
                 }
 
         // Setup collapsing layout, appbar & header

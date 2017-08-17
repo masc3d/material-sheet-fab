@@ -39,6 +39,6 @@ open class DeliveryListJooqRepository {
     fun findDetailsById(id: Long): List<TadVDeliverylistDetailsRecord> {
         return dslContext.fetch(
                 Tables.TAD_V_DELIVERYLIST_DETAILS,
-                Tables.TAD_V_DELIVERYLIST_DETAILS.ID.eq(id.toDouble())).sortAsc(Tables.TAD_V_DELIVERYLIST_DETAILS.ORDER_POSITION)
+                Tables.TAD_V_DELIVERYLIST_DETAILS.ID.eq(id.toDouble()))
     }
 }

@@ -27,6 +27,7 @@ import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
@@ -132,15 +133,17 @@ class DeliveryStopDetailScreen
                             variable = BR.header,
                             viewModel = serviceSection
                     ).also {
-                        it.subItems = services.map {
-                            FlexibleSectionableVmItem<Any>(
-                                    view = R.layout.item_service,
-                                    variable = BR.service,
-                                    viewModel = ServiceViewModel(
-                                            context = this.context,
-                                            service = it)
-                            )
-                        }
+                        it.subItems = services
+                                .filter { it.mobile.text != null }
+                                .map {
+                                    FlexibleSectionableVmItem<Any>(
+                                            view = R.layout.item_service,
+                                            variable = BR.service,
+                                            viewModel = ServiceViewModel(
+                                                    context = this.context,
+                                                    service = it)
+                                    )
+                                }
                     }
             )
         }

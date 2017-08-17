@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.screen
 
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,8 @@ import org.deku.leoz.model.EventDeliveredReason
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
+import sx.android.toBase64
+import sx.android.toBitmap
 
 /**
  * A simple [Fragment] subclass.
@@ -68,8 +71,9 @@ class SignatureScreen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        this.orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         this.toolbarHidden = true
+        this.flipScreen = true
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -84,6 +88,10 @@ class SignatureScreen
         this.uxConclusion.text = descriptionText
         this.uxSignaturePad.setOnSignedListener(this)
 
+        if (savedInstanceState != null) {
+            this.uxSignaturePad.signatureBitmap = savedInstanceState.getString("BITMAP").toBitmap()
+        }
+
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_signature_submit,
@@ -91,15 +99,23 @@ class SignatureScreen
                         iconRes = R.drawable.ic_check_circle
                 ),
                 ActionItem(
+                        id = R.id.action_signature_cancel,
+                        colorRes = R.color.colorRed,
+                        alignEnd = false,
+                        iconRes = R.drawable.ic_cancel_black,
+                        menu = this.activity.inflateMenu(R.menu.menu_signature_exception)
+                ),
+                ActionItem(
                         id = R.id.action_signature_clear,
                         colorRes = R.color.colorLightGrey,
+                        alignEnd = false,
                         iconRes = R.drawable.ic_circle_cancel
                 ),
                 ActionItem(
-                        id = R.id.action_signature_cancel,
-                        colorRes = R.color.colorRed,
-                        iconRes = R.drawable.ic_cancel_black,
-                        menu = this.activity.inflateMenu(R.menu.menu_signature_exception)
+                        id = R.id.action_signature_paper,
+                        colorRes = R.color.colorAccent,
+                        alignEnd = false,
+                        iconRes = R.drawable.ic_menu_camera
                 )
         )
     }
@@ -138,6 +154,11 @@ class SignatureScreen
                         }
                     }
                 }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putString("BITMAP", this.uxSignaturePad.signatureBitmap.toBase64())
+        super.onSaveInstanceState(outState)
     }
 
     // SignaturePad listeners

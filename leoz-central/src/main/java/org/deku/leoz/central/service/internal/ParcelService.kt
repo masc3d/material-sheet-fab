@@ -234,6 +234,7 @@ open class ParcelServiceV1 :
 
                     val oldValue = parcelRecord.lieferstatus
                     parcelRecord.lieferstatus = r.kzStatus.toShort() //4
+                    parcelRecord.erstlieferstatus = r.kzStatus.toShort()
                     if (parcelRecord.store() > 0) {
 
                         fieldHistoryRepository.addEntry(
