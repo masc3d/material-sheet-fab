@@ -5,12 +5,15 @@ import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.utils.Log
+import io.reactivex.disposables.CompositeDisposable
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmHolder
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
+import sx.rx.CompositeDisposableSupplier
 import sx.rx.ObservableRxProperty
+import sx.rx.bind
 
 /**
  * Sections adapter
@@ -21,7 +24,10 @@ class SectionsAdapter
         FlexibleAdapter<
                 FlexibleExpandableVmItem<*, *>
                 >
-        (listOf(), null, true) {
+        (listOf(), null, true),
+        CompositeDisposableSupplier {
+
+    override val compositeDisposable = CompositeDisposable()
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -166,6 +172,7 @@ class SectionsAdapter
                         this.updateItem(sectionItem)
                     }
                 }
+                .bind(this)
 
         if (sectionViewModel.showIfEmpty || sectionViewModel.items.blockingFirst().isNotEmpty())
             this.addItem(createSectionItem())
