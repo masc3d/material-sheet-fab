@@ -96,8 +96,18 @@ fun Order.Companion.create(
 @Entity
 @Table(name = "order_meta")
 abstract class OrderMeta : Meta() {
+    companion object {}
+
     @get:Lazy
     @get:Column(name = "order_", nullable = false)
     @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var order: Order
+}
+
+fun OrderMeta.Companion.create(
+        value: Any
+): OrderMeta {
+    return OrderMetaEntity().also {
+        it.set(value)
+    }
 }

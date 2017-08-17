@@ -33,15 +33,14 @@ fun OrderService.Order.toOrder(
                     services = this.pickupServices ?: listOf()
             ),
             parcels = this.parcels.map { it.toParcel() }
-    ).also {
-        val deliveryCashService = this.deliveryCashService
-        if (deliveryCashService != null) {
-            it.meta.add(OrderMetaEntity().also {
-                it.set(Order.CashService(
-                        cashAmount = deliveryCashService.cashAmount,
-                        currency = deliveryCashService.currency
-                ))
-            })
+    ).also { order ->
+        this.deliveryCashService?.also {
+            order.meta.add(
+                    Order.CashService(
+                            cashAmount = it.cashAmount,
+                            currency = it.currency
+                    )
+            )
         }
     }
 }
