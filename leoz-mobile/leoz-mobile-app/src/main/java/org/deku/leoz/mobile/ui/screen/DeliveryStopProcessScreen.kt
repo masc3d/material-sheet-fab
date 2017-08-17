@@ -506,9 +506,9 @@ class DeliveryStopProcessScreen :
                     this.actionItems = this.actionItems.apply {
                         first { it.id == R.id.action_delivery_close_stop }
                                 .also {
-                                    it.visible = deliveryStop.isCloseAvailable
+                                    it.visible = deliveryStop.canClose
 
-                                    if (deliveryStop.isCloseWithEventAvailable) {
+                                    if (deliveryStop.canCloseWithEvent) {
                                         it.colorRes = R.color.colorAccent
                                         it.iconTintRes = android.R.color.black
                                     } else {
@@ -520,13 +520,12 @@ class DeliveryStopProcessScreen :
                         first { it.id == R.id.action_delivery_close_stop_extra }
                                 .also {
                                     it.menu?.findItem(R.id.action_deliver_neighbour)
-                                            ?.isVisible = deliveryStop.isCloseToNeighbourAvailable
+                                            ?.isVisible = deliveryStop.canCloseWithDeliveryToNeighbor
 
                                     it.menu?.findItem(R.id.action_deliver_postbox)
-                                            ?.isVisible = deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
-                                            !deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+                                            ?.isVisible = deliveryStop.canCloseWithDeliveryToPostbox
 
-                                    it.visible = deliveryStop.isCloseAvailable &&
+                                    it.visible = deliveryStop.canClose &&
                                             it.menu?.hasVisibleItems() ?: false
                                 }
                     }

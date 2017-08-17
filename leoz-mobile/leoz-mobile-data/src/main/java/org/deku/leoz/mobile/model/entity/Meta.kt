@@ -55,7 +55,7 @@ fun <T : Meta> List<T>.findByType(cls: Class<*>): T? {
 
 fun <T : Meta, R> List<T>.findValueByType(cls: Class<R>): R? {
     @Suppress("UNCHECKED_CAST")
-    return this.findByType(cls)?.value as R
+    return this.findByType(cls)?.value as? R?
 }
 
 inline fun <reified T : Meta> MutableList<T>.add(value: Any) {

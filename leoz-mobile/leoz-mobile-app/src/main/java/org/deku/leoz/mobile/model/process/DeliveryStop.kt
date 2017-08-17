@@ -182,19 +182,32 @@ class DeliveryStop(
         get() = this.deliveredParcels.blockingFirst().count() > 0
 
 
-    val isCloseAvailable: Boolean
+    val canClose: Boolean
         get() =
         pendingParcels.blockingFirst().count() == 0 &&
                 entity.state == Stop.State.PENDING
 
-    val isCloseWithEventAvailable: Boolean
-        get() = this.isCloseAvailable && deliveredParcels.blockingFirst().count() == 0
+    val canCloseWithEvent: Boolean
+        get() = this.canClose && deliveredParcels.blockingFirst().count() == 0
 
-    val isCloseToRecipientAvailable: Boolean
-        get() = this.isCloseAvailable && deliveredParcels.blockingFirst().count() > 0
+    val canCloseWithDelivery: Boolean
+        get() = this.canClose && deliveredParcels.blockingFirst().count() > 0
 
-    val isCloseToNeighbourAvailable: Boolean
-        get() = this.isCloseToRecipientAvailable && !this.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+    val canCloseWithDeliveryToNeighbor: Boolean
+        get() = this.canCloseWithDelivery && !this.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+
+    val canCloseWithDeliveryToPostbox: Boolean
+        get() = this.services.contains(ParcelService.POSTBOX_DELIVERY) &&
+                !this.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+
+    /**
+     * Cash amount to collect for this stop
+     */
+    val cashAmountToCollect by lazy {
+        this.orders.blockingFirst()
+                .mapNotNull { it.meta.findValueByType(Order.CashService::class.java)?.cashAmount }
+                .sum()
+    }
 
     /**
      * Resets all parcels to pending state and removes all event information
