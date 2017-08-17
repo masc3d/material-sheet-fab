@@ -43,23 +43,18 @@ abstract class Serializer {
     /**
      * Deserializes object from byte array
      */
-    fun deserializeFrom(byteArray: ByteArray): Any {
-        return this.deserialize(ByteArrayInputStream(byteArray))
-    }
+    fun deserializeFrom(byteArray: ByteArray): Any =
+            this.deserialize(ByteArrayInputStream(byteArray))
 
     /**
      * Register class by its @Serializable annotation/uid
      */
-    fun register(cls: Class<*>): SerializableType {
-        return Serializer.types.register(cls)
-    }
+    fun register(cls: Class<*>): SerializableType = Serializer.types.register(cls)
 
     /**
      * Lookup class by its @Serializable uid
      */
-    fun lookup(uid: Long): SerializableType? {
-        return Serializer.types.lookup(uid)
-    }
+    fun lookup(uid: Long): SerializableType? = Serializer.types.lookup(uid)
 
     /**
      * Thread-safe @Serializable type directory
@@ -145,12 +140,22 @@ abstract class Serializer {
         }
 
         /**
-         * Lookup class by uid
+         * Lookup serializable type by uid
          * @param uid Class UID
          */
-        fun lookup(uid: Long): SerializableType? {
-            return typeByUidReadonly[uid]
-        }
+        fun lookup(uid: Long): SerializableType? = typeByUidReadonly[uid]
+
+        /**
+         * Lookup serializable type by class
+         * @param cls Class
+         */
+        fun typeOf(cls: Class<*>): SerializableType = typeByClassReadonly.getValue(cls)
+
+        /**
+         * Lookup serializable type by class
+         * @param cls Class
+         */
+        fun typeOrNullOf(cls: Class<*>): SerializableType? = typeByClassReadonly.get(cls)
 
         /**
          * Purges all registered classes. Useful for test cases, testing refactoring eg.
