@@ -4,6 +4,7 @@ import io.requery.Converter
 import org.deku.leoz.model.ParcelService
 
 /**
+ * Requery service converter
  * Created by masc on 17.07.17.
  */
 open class ServiceConverter : Converter<ArrayList<ParcelService>, String> {

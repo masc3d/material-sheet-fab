@@ -5,6 +5,8 @@ import android.databinding.Observable
 import io.requery.*
 import org.deku.leoz.model.Carrier
 import sx.android.databinding.BaseRxObservable
+import sx.io.serialization.Serializable
+import sx.io.serialization.Serializer
 
 /**
  * Mobile order entity
@@ -14,7 +16,18 @@ import sx.android.databinding.BaseRxObservable
 @Table(name = "order_")
 abstract class Order : BaseRxObservable(), Persistable, Observable {
 
-    companion object {}
+    companion object {
+        init {
+            // Serializable must be registered here
+            Serializer.types.register(CashService::class.java)
+        }
+    }
+
+    @Serializable(name = "CashService")
+    data class CashService(
+            var cashAmount: Double = 0.0,
+            var currency: String = "EUR"
+    )
 
     @get:Key
     abstract var id: Long
@@ -32,6 +45,14 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val tasks: MutableList<OrderTask>
 
+    @get:Lazy
+    @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
+    abstract val parcels: MutableList<Parcel>
+
+    @get:Lazy
+    @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
+    abstract val meta: MutableList<OrderMeta>
+
     val pickupTask by lazy {
         this.tasks.first { it.type == OrderTask.TaskType.PICKUP }
     }
@@ -39,10 +60,6 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     val deliveryTask by lazy {
         this.tasks.first { it.type == OrderTask.TaskType.DELIVERY }
     }
-
-    @get:Lazy
-    @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
-    abstract val parcels: MutableList<Parcel>
 }
 
 fun Order.Companion.create(
@@ -70,4 +87,17 @@ fun Order.Companion.create(
     pickupTask.order = entity
 
     return entity
+}
+
+/**
+ * Mobile order metadata entity
+ * Created by masc on 18.07.17.
+ */
+@Entity
+@Table(name = "order_meta")
+abstract class OrderMeta : Meta() {
+    @get:Lazy
+    @get:Column(name = "order_", nullable = false)
+    @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
+    abstract var order: Order
 }

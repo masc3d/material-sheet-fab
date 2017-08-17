@@ -113,12 +113,17 @@ dependencies {
             fileTree(dir: 'libs', include: ['*.jar']),
 
             project(':leoz-common'),
+            project(':sx-serialization'),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Requery
             "io.requery:requery:$v_requery",
-            "io.requery:requery-kotlin:$v_requery"
+            "io.requery:requery-kotlin:$v_requery",
+
+            // Jackson
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
     )
 
     kapt(

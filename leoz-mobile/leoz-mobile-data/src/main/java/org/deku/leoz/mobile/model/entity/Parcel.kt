@@ -95,3 +95,16 @@ fun Parcel.Companion.create(
         it.isDamaged = false
     }
 }
+
+/**
+ * Mobile parcel metadata entity
+ * Created by masc on 18.07.17.
+ */
+@Entity
+@Table(name = "parcel_meta")
+abstract class ParcelMeta : Meta() {
+    @get:Lazy
+    @get:Column(nullable = false)
+    @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
+    abstract var parcel: Parcel
+}
