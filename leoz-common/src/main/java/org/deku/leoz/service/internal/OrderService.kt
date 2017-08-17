@@ -136,7 +136,8 @@ interface OrderService {
                 //                @get:ApiModelProperty(example = "take cash in currency €", position = 120, required = false, value = "information")
                 @get:ApiModelProperty(example = "10.99", position = 130, required = false, value = "cashAmount")
                 var cashAmount: Double = 0.0,
-                var currency: String = "DE"
+                /** Currency code according to ISO 4217 https://en.wikipedia.org/wiki/ISO_4217 */
+                var currency: String = "EUR"
         )
 
         @ApiModel(value = "Appointment", description = "Apointment")
