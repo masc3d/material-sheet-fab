@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.screen
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,33 +10,40 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.jakewharton.rxbinding2.widget.RxTextView
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.screen_neighbour_delivery.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.model.EventDeliveredReason
+import org.jetbrains.anko.inputMethodManager
+import org.parceler.Parcel
+import org.parceler.ParcelConstructor
+import org.slf4j.LoggerFactory
+import sx.android.hideSoftInput
 
 /**
  * Created by phpr on 10.07.2017.
  */
-class NeighbourDeliveryScreen : ScreenFragment<Any>() {
+class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameters>() {
 
-    private lateinit var stop: Stop
+    @Parcel(Parcel.Serialization.BEAN)
+    class Parameters @ParcelConstructor constructor(
+            var stopId: Int
+    )
 
-    companion object {
-        private val db: Database by Kodein.global.lazy.instance()
+    private val log = LoggerFactory.getLogger(this.javaClass)
+    private val db: Database by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
-        fun create(stopId: Int): NeighbourDeliveryScreen {
-            val s = NeighbourDeliveryScreen()
-            s.stop = db.store.select(StopEntity::class)
-                        .where(StopEntity.ID.eq(stopId))
-                        .get()
-                        .first()
-            return s
-        }
+    private val stop: Stop by lazy {
+        stopRepository.findById(this.parameters.stopId)
+                ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +58,8 @@ class NeighbourDeliveryScreen : ScreenFragment<Any>() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        this.uxNeighboursName.requestFocus()
 
         this.uxNeighboursStreet.setAdapter(ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, arrayOf(stop.address.street)))
 

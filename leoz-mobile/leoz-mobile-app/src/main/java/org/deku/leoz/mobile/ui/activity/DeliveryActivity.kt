@@ -127,6 +127,7 @@ class DeliveryActivity : Activity(),
     }
 
     override fun onSignatureCancelled() {
+        this.supportFragmentManager.popBackStack()
     }
 
     override fun onSignatureSubmitted(signatureSvg: String) {
