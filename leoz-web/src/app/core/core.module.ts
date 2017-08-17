@@ -7,7 +7,6 @@ import { TranslateService } from './translate/translate.service';
 import { RoleGuard } from './auth/role.guard';
 import { KeyUpEventService } from './key-up-event.service';
 import { SoundService } from './sound.service';
-import { PrintingService } from './printing/printing.service';
 
 @NgModule( {
   imports: [
@@ -24,7 +23,6 @@ export class CoreModule {
         AuthenticationService,
         AuthenticationGuard,
         KeyUpEventService,
-        PrintingService,
         SoundService,
         RoleGuard,
         Translation,
