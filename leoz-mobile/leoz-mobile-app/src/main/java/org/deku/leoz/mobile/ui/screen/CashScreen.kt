@@ -10,6 +10,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -56,6 +57,7 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
         super.onCreate(savedInstanceState)
 
         this.title = "Cash collection"
+        this.headerImage = R.drawable.img_money_a
         this.scrollCollapseMode = ScrollCollapseModeType.None
     }
 
