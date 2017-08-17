@@ -40,6 +40,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.assertAny
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
@@ -77,8 +78,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
      */
     class StatsViewModel(
             val deliveryList: DeliveryList
-    )
-        : BaseObservable() {
+    ) : BaseObservable() {
 
         val stopCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_stop,
@@ -460,8 +460,16 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
         log.trace("AIDC READ $event")
 
         val result = Observable.concat(
-                Observable.fromCallable { UnitNumber.parseLabel(event.data) },
-                Observable.fromCallable { DekuDeliveryListNumber.parseLabel(event.data) }
+                Observable.fromCallable {
+                    UnitNumber
+                            .parseLabel(event.data)
+                            .assertAny(
+                                    UnitNumber.Type.Parcel,
+                                    UnitNumber.Type.Bag)
+                },
+                Observable.fromCallable {
+                    DekuDeliveryListNumber.parseLabel(event.data)
+                }
         )
                 .takeUntil { !it.hasError }
                 .last(Result(error = IllegalArgumentException("Invalid barcode")))

@@ -101,6 +101,16 @@ class UnitNumber private constructor(
 }
 
 /**
+ * Assert that specific unit number types are mandatory
+ */
+fun Result<UnitNumber>.assertAny(vararg types: UnitNumber.Type): Result<UnitNumber> =
+        when {
+            this.hasValue && !types.contains(this.value.type) ->
+                Result(error = IllegalArgumentException("Unit number type [${this.value.type}] not as required [$types]"))
+            else -> this
+        }
+
+/**
  * GLS unit number
  *
  * Example: 338500000008
