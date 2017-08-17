@@ -153,7 +153,7 @@ class MqttDispatcher(
                 this.dequeueTrigger.onNext(Unit)
             }
         }
-                .toHotCache()
+                .toHotCache(this.executorService)
     }
 
     override fun subscribe(topicName: String, qos: Int): Observable<MqttMessage> {
