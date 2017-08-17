@@ -21,7 +21,7 @@ buildscript {
 
     ext {
         v_anko = '0.10.1'
-        v_material_dialogs = '0.9.4.5'
+        v_material_dialogs = '0.9.4.6'
         v_parceler = '1.1.9'
         v_roboelectric = '3.3.2'
         v_rxlifecycle = '2.1.0'
@@ -67,7 +67,7 @@ android {
         applicationId "org.deku.leoz.mobile"
         targetSdkVersion 26
         versionCode 1
-        versionName "0.40-SNAPSHOT"
+        versionName "0.41-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -272,7 +272,7 @@ dependencies {
             'com.github.pwittchen:reactivenetwork-rx2:0.11.0',
 
             // Android (multipart) upload service
-            'net.gotev:uploadservice:3.3.1',
+            'net.gotev:uploadservice:3.4',
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:4.0.1") {

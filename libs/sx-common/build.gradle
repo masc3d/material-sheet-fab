@@ -10,7 +10,7 @@ buildscript {
         v_jgit = '4.8.0.201706111038-r'
         v_jsch = '0.0.9'
         v_querydsl = '4.1.4'
-        v_kotlin = '1.1.3-2'
+        v_kotlin = '1.1.4'
         v_requery = '1.4.0'
         v_resteasy = '3.1.4.Final'
         v_slf4j = '1.7.25'
@@ -45,7 +45,7 @@ dependencies {
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
             // RX
-            "io.reactivex.rxjava2:rxjava:2.1.2",
+            "io.reactivex.rxjava2:rxjava:2.1.3",
             "io.reactivex:rxkotlin:2.0.0-RC1",
     )
 
