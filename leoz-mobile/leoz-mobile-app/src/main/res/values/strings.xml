@@ -280,4 +280,9 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
+    <string name="dialog_title_event_selection">Event selection</string>
+    <string name="please_sign_here">Please sign here:</string>
+    <string name="back_choose_new_delivery_options">Back, choose new delivery option</string>
+    <string name="signature_conclusion">I acknowledge the receipt of:\nOrders: %1$s\nParcels: %2$s\nRecipient: %3$s</string>
+    <string name="signature_signed_by_name">Name: %s</string>
 </resources>

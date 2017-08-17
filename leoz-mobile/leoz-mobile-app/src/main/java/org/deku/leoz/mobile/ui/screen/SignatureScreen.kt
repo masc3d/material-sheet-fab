@@ -55,7 +55,7 @@ class SignatureScreen
     private val listener by lazy { this.activity as? Listener }
 
     private val descriptionText: String by lazy {
-        "Aufträge: ${stop.tasks.map { it.order }.distinct().count()}\nPakete: ${delivery.activeStop?.deliveredParcelAmount?.blockingFirst()}\nEmpfänger: ${stop.address.line1}\nAngenommen von: ${this.parameters.recipient}"
+        this@SignatureScreen.getString(R.string.signature_conclusion, stop.tasks.map { it.order }.distinct().count(), delivery.activeStop?.deliveredParcelAmount?.blockingFirst(), stop.address.line1)
     }
 
     private val stop: Stop by lazy {
@@ -86,6 +86,7 @@ class SignatureScreen
         super.onViewCreated(view, savedInstanceState)
 
         this.uxConclusion.text = descriptionText
+        this.uxRecipient.text = this.getString(R.string.signature_signed_by_name, this.parameters.recipient)
         this.uxSignaturePad.setOnSignedListener(this)
 
         if (savedInstanceState != null) {

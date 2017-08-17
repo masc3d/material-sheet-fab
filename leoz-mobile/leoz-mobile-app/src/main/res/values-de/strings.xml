@@ -234,4 +234,9 @@
     <string name="call">Anrufen</string>
     <string name="title_confirm_call">Anruf bestätigen</string>
     <string name="service_valuables">Valoren</string>
+    <string name="dialog_title_event_selection">Event Auswahl</string>
+    <string name="please_sign_here">Bitte hier unterschreiben</string>
+    <string name="back_choose_new_delivery_options">Zurück, neue Zustelloption wählen</string>
+    <string name="signature_conclusion">Ich quittiere den Empfang von\nAufträge: %1$s\nPakete: %2$s\nEmpfänger: %3$s</string>
+    <string name="signature_signed_by_name">Name: %s</string>
 </resources>

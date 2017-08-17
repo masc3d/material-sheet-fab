@@ -13,18 +13,46 @@
         android:layout_height="wrap_content"
         android:alpha="1"
         android:ems="10"
-        android:text="Für was unterschreibe ich..."
+        android:text="@string/signature_conclusion"
         android:layout_gravity="bottom"
         tools:ignore="HardcodedText"/>
 
-    <com.github.gcacace.signaturepad.views.SignaturePad xmlns:android="http://schemas.android.com/apk/res/android"
-                                                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                        android:id="@+id/uxSignaturePad"
-                                                        android:layout_width="match_parent"
-                                                        android:layout_height="250dp"
-                                                        android:layout_gravity="center_vertical"
-                                                        android:background="@drawable/rounded_corner_background_white"
-                                                        app:clearOnDoubleClick="false"
-                                                        app:penColor="@android:color/black"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:text="@string/please_sign_here" />
+
+        <com.github.gcacace.signaturepad.views.SignaturePad xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/uxSignaturePad"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_below="@+id/textView3"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/rounded_corner_background_white"
+            app:clearOnDoubleClick="false"
+            app:penColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/uxRecipient"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/uxSignaturePad"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="@dimen/small_margin"
+            android:text="@string/signature_signed_by_name" />
+
+    </RelativeLayout>
 
 </FrameLayout>

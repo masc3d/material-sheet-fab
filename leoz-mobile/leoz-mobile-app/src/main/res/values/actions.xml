@@ -19,6 +19,7 @@
     <item name="action_delivery_close_stop_extra" type="id"/>
     <item name="action_delivery_select_delivered" type="id"/>
     <item name="action_delivery_select_event" type="id"/>
+    <item name="action_delivery_process_dev_show_cash_screen" type="id"/>
     <item name="action_help" type="id"/>
     <item name="action_navigate" type="id"/>
     <item name="action_signature_submit" type="id"/>

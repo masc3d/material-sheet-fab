@@ -122,7 +122,7 @@ class DeliveryStopDetailScreen
         val serviceSection = SectionViewModel<Any>(
                 icon = R.drawable.ic_service,
                 color = R.color.colorGrey,
-                background = R.drawable.section_background_grey,
+                background = R.drawable.section_background_red,
                 title = this.getText(R.string.services).toString(),
                 items = Observable.fromIterable(listOf(services)))
 

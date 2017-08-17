@@ -68,7 +68,7 @@ class EventDialog private constructor(
         init {
             // Initialize builder
             this
-                    .title("Event selection")
+                    .title(context.getString(org.deku.leoz.mobile.R.string.dialog_title_event_selection))
                     .adapter(this.eventAdapter, LinearLayoutManager(this.context))
         }
 

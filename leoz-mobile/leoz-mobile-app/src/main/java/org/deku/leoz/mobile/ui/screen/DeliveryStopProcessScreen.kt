@@ -267,7 +267,11 @@ class DeliveryStopProcessScreen :
         super.onViewCreated(view, savedInstanceState)
 
         // Set screen menu
-        this.menu = this.inflateMenu(R.menu.menu_delivery_stop_process)
+        this.menu = this.inflateMenu(R.menu.menu_delivery_stop_process).also {
+            it.add(0, R.id.action_delivery_process_dev_show_cash_screen, 0, "Show Cash screen").also {
+                it.setIcon(R.drawable.ic_service_cash)
+            }
+        }
 
         this.uxRecyclerView.adapter = parcelListAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -349,6 +353,15 @@ class DeliveryStopProcessScreen :
                         R.id.action_reset -> {
                             this.deliveryStop.reset()
                                     .subscribe()
+                        }
+
+                        R.id.action_delivery_process_dev_show_cash_screen -> {
+                            this.activity.showScreen(CashScreen().also {
+                                it.parameters = CashScreen.Parameters(
+                                        stopId = this.stop.id,
+                                        deliveryReason = EventDeliveredReason.NORMAL
+                                )
+                            })
                         }
                     }
                 }

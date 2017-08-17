@@ -4,6 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
+    style="@style/AppTheme.Layout.Content"
     tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
 
     <!-- TODO: Update blank fragment layout -->
@@ -12,78 +13,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="10"
-        android:gravity="center"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/uxOrderCashList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/uxCashEnter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:background="@drawable/rounded_corner_background_white"
-                android:ems="10"
-                android:enabled="true"
-                android:hint="@string/given_cash_eg_15_00"
-                android:inputType="textCapCharacters|textNoSuggestions"
-                android:padding="5dp" />
-
-        </android.support.design.widget.TextInputLayout>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/medium_margin"
         android:layout_weight="0"
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/uxTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/cash_service"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView18"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/cash_value" />
+                android:text="To be collected:" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <EditText
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/ic_sigma" />
+
+                <TextView
                     android:id="@+id/uxCashValue"
+                    style="@style/TextAppearance.AppCompat.Large"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="none|number"
-                    android:text="10,99"
+                    android:text="10,99 €"
                     tools:ignore="HardcodedText" />
-
-                <ImageView
-                    android:id="@+id/uxCashValueIco"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_done_black" />
 
             </LinearLayout>
 
@@ -92,18 +69,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView16"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/given_cash" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
+
+                <!-- TODO: Change Icon to a hand which gives/gets money -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/ic_service_cash" />
 
                 <EditText
                     android:id="@+id/uxCashGiven"
@@ -111,17 +89,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
+                    style="@style/TextAppearance.AppCompat.Large"
                     android:ems="10"
                     android:hint="00,00"
                     android:inputType="none|numberDecimal"
                     tools:ignore="HardcodedText" />
 
-                <ImageView
-                    android:id="@+id/uxCashGivenIco"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_cancel_black" />
             </LinearLayout>
 
         </LinearLayout>
@@ -131,34 +104,27 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView11"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/change" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/uxCashChange"
+                <ImageView
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/ic_return" />
+
+                <TextView
+                    android:id="@+id/uxCashChange"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:ems="10"
                     android:hint="00,00"
-                    android:inputType="none|numberDecimal"
                     tools:ignore="HardcodedText" />
 
-                <ImageView
-                    android:id="@+id/uxCashChangeIco"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_cancel_black" />
             </LinearLayout>
         </LinearLayout>
 
