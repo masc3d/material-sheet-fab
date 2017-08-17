@@ -21,18 +21,42 @@ export class MsgService {
   }
 
   success( text: string ): void {
-    this.msgsSubject.next( <Message[]>  [ { severity: 'success', summary: '', detail: this.translate.instant(text) } ] );
+    this.msgsSubject.next( <Message[]>  [ {
+      severity: 'success',
+      summary: '',
+      detail: this.translate.instant( text )
+    } ] );
   }
 
   error( text: string ): void {
-    this.msgsSubject.next( <Message[]>  [ { severity: 'warn', summary: '', detail: this.translate.instant(text) } ] );
+    this.msgsSubject.next( <Message[]>  [ { severity: 'warn', summary: '', detail: this.translate.instant( text ) } ] );
   }
 
   handleResponse( resp: Response ): void {
+    let msg = '';
+    try {
+      const json = resp.json();
+      if (json.title) {
+        msg = json.title
+      } else {
+        msg = 'webservice not available';
+        if (json.message) {
+          this.handleBackendError( resp.url, json.message );
+        }
+      }
+    } catch (e) {
+      msg = 'webservice not available';
+      this.handleBackendError( resp.url,
+        resp.text().length > 0 ? resp.text() : `${resp.status}: ${resp.statusText}` );
+    }
     this.msgsSubject.next( <Message[]>  [ {
       severity: 'warn',
       summary: '',
-      detail: this.translate.instant(resp.json().title || 'webservice not available')
+      detail: this.translate.instant( msg )
     } ] );
+  }
+
+  private handleBackendError( url: string, errMsg: string ) {
+    console.error( 'Backend Error', url, errMsg );
   }
 }

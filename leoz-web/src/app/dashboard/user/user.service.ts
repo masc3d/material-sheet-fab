@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { User } from './user.model';
 import { environment } from '../../../environments/environment';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Injectable()
 export class UserService {
@@ -18,7 +19,8 @@ export class UserService {
   private activeUserSubject = new BehaviorSubject<User>( <User> {} );
   public activeUser = this.activeUserSubject.asObservable().distinctUntilChanged();
 
-  constructor( private http: Http ) {
+  constructor( private http: Http,
+               private msgService: MsgService ) {
   }
 
   insert( userData: any ): Observable<Response> {
@@ -53,8 +55,8 @@ export class UserService {
     this.http.get( this.userListUrl, options )
       .subscribe( ( response: Response ) => this.usersSubject.next( <User[]> response.json() ),
         ( error: Response ) => {
-          console.log( error );
-          this.usersSubject.next( <User[]> {} );
+          this.msgService.handleResponse( error );
+          this.usersSubject.next( <User[]> [] );
         } );
   }
 
