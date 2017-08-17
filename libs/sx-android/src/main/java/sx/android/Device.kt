@@ -1,14 +1,22 @@
 package sx.android
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.provider.Settings
+import java.util.*
 
 /**
  * Generic android device class, exposing device specific information like ids and serials
  * Created by masc on 26/02/2017.
  */
 open class Device(private val context: Context) {
+
+    companion object {
+        val SHAREDPREFS_TAG = "sx.androi.device"
+        val SHAREDPREFS_KEY_EMUSERIAL = "emu.serial"
+    }
+
     /**
      * Device manfucaturer
      */
@@ -69,7 +77,34 @@ open class Device(private val context: Context) {
         Runtime.getRuntime().maxMemory()
     }
 
-    val serial: String = Build.SERIAL
+    /**
+     * Device hardware serial number.
+     * Returns an artificially generated random serial for emulators which is preserved until the applicaiton is reinstalled.
+     */
+    val serial: String by lazy {
+        when (this.isEmulator) {
+            false -> Build.SERIAL
+            // Generate a random serial number for emulators
+            true -> {
+                // For emulators, generate an artifical random serial and preserve it until the application is reinstalled
+                val sharedPrefs = this.context.getSharedPreferences(SHAREDPREFS_TAG, Context.MODE_PRIVATE)
+                sharedPrefs.getString(SHAREDPREFS_KEY_EMUSERIAL, null)
+                        .let {
+                            when (it) {
+                                null -> {
+                                    val deviceId = "EMU-${UUID.randomUUID().mostSignificantBits.toString(16)}"
+                                    sharedPrefs.edit().also {
+                                        it.putString(SHAREDPREFS_KEY_EMUSERIAL, deviceId)
+                                        it.apply()
+                                    }
+                                    deviceId
+                                }
+                                else -> it
+                            }
+                        }
+            }
+        }
+    }
     val manufacturer: Manufacturer = Manufacturer()
     val model: Model = Model()
 
