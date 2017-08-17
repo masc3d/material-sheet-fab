@@ -75,15 +75,19 @@ class UnitNumber private constructor(
         }
 
         /** Parse a plain unit number without check digit */
-        fun parse(value: String): Result<UnitNumber> {
+        fun parse(value: String, vararg requiredTypes: Type = Type.values()): Result<UnitNumber> {
             if (value.length != 11)
                 return Result(error = IllegalArgumentException("Unit number [${value}] must have 11 digits"))
 
-            return Result(UnitNumber(value))
+            val unitNo = UnitNumber(value)
+            if (!requiredTypes.contains(unitNo.type))
+                return Result(error = IllegalArgumentException("Unit number type [${unitNo.type}] is not as required [$requiredTypes]"))
+
+            return Result(unitNo)
         }
 
         /** Parse label unit number, which includes a check digit */
-        fun parseLabel(value: String): Result<UnitNumber> {
+        fun parseLabel(value: String, vararg requiredTypes: Type = Type.values()): Result<UnitNumber> {
             if (value.length != 12)
                 return Result(error = IllegalArgumentException("Label based unit number [${value}] must have 12 digits"))
 
@@ -93,7 +97,13 @@ class UnitNumber private constructor(
             val number = CheckDigits.DEKU.verify(value)
 
             return when {
-                number != null -> Result(UnitNumber(number))
+                number != null -> {
+                    val unitNo = UnitNumber(number)
+                    if (!requiredTypes.contains(unitNo.type))
+                        return Result(error = IllegalArgumentException("Unit number type [${unitNo.type}] is not as required [$requiredTypes]"))
+
+                    Result(unitNo)
+                }
                 else -> Result(error = IllegalArgumentException("Unit number [${value}] has invalid check digit"))
             }
         }
