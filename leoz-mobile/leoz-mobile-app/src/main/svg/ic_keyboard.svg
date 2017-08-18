@@ -1,4 +1,6 @@
-<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/>
-    <path d="M0 0h24v24H0zm0 0h24v24H0z" fill="none"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48pt" height="48pt" viewBox="0 0 48 48" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 40 10 L 8 10 C 5.796875 10 4.023438 11.796875 4.023438 14 L 4 34 C 4 36.203125 5.796875 38 8 38 L 40 38 C 42.203125 38 44 36.203125 44 34 L 44 14 C 44 11.796875 42.203125 10 40 10 Z M 22 16 L 26 16 L 26 20 L 22 20 Z M 22 22 L 26 22 L 26 26 L 22 26 Z M 16 16 L 20 16 L 20 20 L 16 20 Z M 16 22 L 20 22 L 20 26 L 16 26 Z M 14 26 L 10 26 L 10 22 L 14 22 Z M 14 20 L 10 20 L 10 16 L 14 16 Z M 32 34 L 16 34 L 16 30 L 32 30 Z M 32 26 L 28 26 L 28 22 L 32 22 Z M 32 20 L 28 20 L 28 16 L 32 16 Z M 38 26 L 34 26 L 34 22 L 38 22 Z M 38 20 L 34 20 L 34 16 L 38 16 Z M 38 20 "/>
+</g>
 </svg>
