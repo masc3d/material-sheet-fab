@@ -35,11 +35,11 @@ fun OrderService.Order.toOrder(
             parcels = this.parcels.map { it.toParcel() }
     ).also { order ->
         this.deliveryCashService?.also {
-            order.meta.add(
+            order.meta.add(OrderMeta.create(
                     Order.CashService(
                             cashAmount = it.cashAmount,
                             currency = it.currency
-                    )
+                    ))
             )
         }
     }

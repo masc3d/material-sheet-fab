@@ -34,8 +34,6 @@ abstract class Meta : BaseRxObservable(), Persistable, Observable {
     abstract var value: Any
         protected set
 
-    inline fun <reified T> getTypedValue(): T = T::class.java.cast(value)
-
     fun set(value: Any) {
         typeUid = Serializer.types.typeOf(value.javaClass).uid
         this.value = value
@@ -56,10 +54,4 @@ fun <T : Meta> List<T>.findByType(cls: Class<*>): T? {
 fun <T : Meta, R> List<T>.findValueByType(cls: Class<R>): R? {
     @Suppress("UNCHECKED_CAST")
     return this.findByType(cls)?.value as? R?
-}
-
-inline fun <reified T : Meta> MutableList<T>.add(value: Any) {
-    this.add(T::class.java.newInstance().also {
-        it.set(value)
-    })
 }
