@@ -205,7 +205,7 @@ class DeliveryStop(
      */
     val cashAmountToCollect by lazy {
         this.orders.blockingFirst()
-                .mapNotNull { it.meta.findValueByType(Order.CashService::class.java)?.cashAmount }
+                .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.cashAmount }
                 .sum()
     }
 

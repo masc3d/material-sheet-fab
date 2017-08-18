@@ -42,16 +42,16 @@ abstract class Meta : BaseRxObservable(), Persistable, Observable {
 
 // Extension methods for metadata collections
 
-fun <T : Meta> List<T>.findByType(cls: Class<*>): T? {
+fun <T : Meta> List<T>.firstByTypeOrNull(cls: Class<*>): T? {
     val uid = Serializer.types.typeOrNullOf(cls)?.uid
 
     if (uid == null)
         return null
 
-    return this.first { it.typeUid == uid }
+    return this.firstOrNull { it.typeUid == uid }
 }
 
-fun <T : Meta, R> List<T>.findValueByType(cls: Class<R>): R? {
+fun <T : Meta, R> List<T>.firstValueByTypeOrNull(cls: Class<R>): R? {
     @Suppress("UNCHECKED_CAST")
-    return this.findByType(cls)?.value as? R?
+    return this.firstByTypeOrNull(cls)?.value as? R?
 }
