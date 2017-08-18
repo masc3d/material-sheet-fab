@@ -4,13 +4,20 @@ package org.deku.leoz.mobile.ui.screen
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.text.InputType
 import android.view.View
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.jakewharton.rxbinding2.widget.RxTextView
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
@@ -18,16 +25,20 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.OrderMeta
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.OrderTaskViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.model.EventDeliveredReason
+import org.jetbrains.anko.inputMethodManager
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.android.hideSoftInput
+import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 
@@ -48,6 +59,10 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
     private val db: Database by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
+
+    private val deliveryStop: DeliveryStop by lazy {
+        delivery.activeStop!!
+    }
 
     private val stop: Stop by lazy {
         stopRepository.findById(this.parameters.stopId)
@@ -77,6 +92,7 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
 
         this.title = "Cash collection"
         this.headerImage = R.drawable.img_money_a
+        this.scrollCollapseMode = ScrollCollapseModeType.EnterAlways
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -133,6 +149,66 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
                         iconRes = R.drawable.ic_delivery
                 )
         )
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        this.activity.actionEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it) {
+                        R.id.action_cash_continue -> {
+                            this.getSignature()
+                        }
+                    }
+                }
+    }
+
+    private fun getSignature() {
+        when (this.parameters.deliveryReason) {
+            EventDeliveredReason.NORMAL -> {
+                if (this.deliveryStop.isSignatureRequired) {
+                    MaterialDialog.Builder(context)
+                            .title(R.string.recipient)
+                            .cancelable(true)
+                            .content(R.string.recipient_dialog_content)
+                            .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
+                            .input("Max Mustermann", null, false, { _, charSequence ->
+                                this.deliveryStop.recipientName = charSequence.toString()
+
+                                this.activity.showScreen(SignatureScreen().also {
+                                    it.parameters = SignatureScreen.Parameters(
+                                            stopId = this.stop.id,
+                                            deliveryReason = EventDeliveredReason.NORMAL,
+                                            recipient = this.deliveryStop.recipientName ?: ""
+                                    )
+                                })
+                            })
+                            .build().show()
+                } else {
+                    this.deliveryStop.finalize()
+                            .observeOnMainThread()
+                            .subscribeBy(
+                                    onComplete = {
+                                        // TODO: move state control to model
+                                        this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
+                                    },
+                                    onError = {
+                                        log.error(it.message, it)
+                                    })
+                }
+            }
+
+            EventDeliveredReason.NEIGHBOR -> {
+                this.activity.showScreen(NeighbourDeliveryScreen().also {
+                    it.parameters = NeighbourDeliveryScreen.Parameters(
+                            stopId = this.stop.id
+                    )
+                })
+            }
+        }
+
     }
 
 }

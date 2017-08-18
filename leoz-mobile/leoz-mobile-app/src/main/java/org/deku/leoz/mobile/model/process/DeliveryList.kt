@@ -368,11 +368,11 @@ class DeliveryList : CompositeDisposableSupplier {
                                         ParcelServiceV1.Event(
                                                 event = when {
                                                     it.loadingState == Parcel.LoadingState.LOADED -> Event.IN_DELIVERY.value
+                                                    it.loadingState == Parcel.LoadingState.MISSING -> Event.NOT_IN_DEIVERY.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
                                                 reason = when {
                                                     it.isDamaged -> Reason.PARCEL_DAMAGED.id
-                                                    it.loadingState == Parcel.LoadingState.MISSING -> Reason.PARCEL_MISSING.id
                                                     else -> Reason.NORMAL.id
                                                 },
                                                 parcelId = it.id,

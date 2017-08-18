@@ -17,15 +17,12 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
             android:layout_marginBottom="20dp"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="To be collected:" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -33,8 +30,9 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
                     app:srcCompat="@drawable/ic_sigma" />
 
                 <TextView
@@ -56,6 +54,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
             android:orientation="vertical">
 
             <LinearLayout
@@ -65,8 +65,9 @@
 
                 <!-- TODO: Change Icon to a hand which gives/gets money -->
                 <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
                     app:srcCompat="@drawable/ic_money_handover" />
 
                 <EditText
@@ -88,6 +89,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginEnd="@dimen/medium_margin"
             android:orientation="vertical">
 
             <LinearLayout
@@ -96,8 +99,9 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="24dp"
+                    android:layout_gravity="center"
+                    android:layout_height="24dp"
                     app:srcCompat="@drawable/ic_return" />
 
                 <TextView
