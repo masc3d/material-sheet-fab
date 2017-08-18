@@ -240,4 +240,11 @@
     <string name="signature_conclusion">Ich quittiere den Empfang von\nAufträge: %1$s\nPakete: %2$s\nEmpfänger: %3$s</string>
     <string name="signature_signed_by_name">Name: %s</string>
     <string name="title_cash_collection">Nachnahme</string>
+    <string name="service_message_receipt_acknowledgement">Achtung: Füllen Sie die beiliegende EB aus.</string>
+    <string name="service_message_submission">Achtung, Submissionsteilnahme! [AHB einfügen]</string>
+    <string name="service_message_xchange">Tauschobjekt erforderlich! Zustellung nur bei Tausch</string>
+    <string name="service_message_security_return">Tauschgerät erforderlich! Bitte prüfen Sie die IMEI Nummer des Gerätes</string>
+    <string name="service_message_package_recirculation">Bitte führen Sie die Verpackung zurück. Zustellung sonst nicht erlaubt!</string>
+    <string name="service_message_ident_contract">Bitte überprüfen Sie zusammen mit dem Kunden den beiliegendne Vertrag, lassen Sie diesen unterschreiben und führen Sie ihn zurück</string>
+    <string name="service_message_documented_personal_delivery">Achtung: Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
 </resources>

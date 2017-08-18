@@ -285,12 +285,12 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="back_choose_new_delivery_options">Back, choose new delivery option</string>
     <string name="signature_conclusion">I acknowledge the receipt of:\nOrders: %1$s\nParcels: %2$s\nRecipient: %3$s</string>
     <string name="signature_signed_by_name">Name: %s</string>
-    <string name="service_message_receipt_acknowledgement" translatable="false">Attention: Please fill out the attached receipt</string>
-    <string name="service_message_ident_contract" translatable="false">Please check together with the consignee the attached contract. Send the signed contract back.</string>
-    <string name="service_message_submission" translatable="false">Attention: Submission participation!</string>
-    <string name="service_message_security_return" translatable="false">Exchange device required! Please check the IMEI number of the device</string>
-    <string name="service_message_xchange" translatable="false">Exchange object required! Delivery only with exchange</string>
-    <string name="service_message_documented_personal_delivery" translatable="false">Attention: Fill out the attached document with information from an official ID card</string>
-    <string name="service_message_package_recirculation" translatable="false">Please return the packaging of the parcel</string>
+    <string name="service_message_receipt_acknowledgement">Attention: Please fill out the attached receipt</string>
+    <string name="service_message_ident_contract">Please check together with the consignee the attached contract. Send the signed contract back.</string>
+    <string name="service_message_submission">Attention: Submission participation!</string>
+    <string name="service_message_security_return">Exchange device required! Please check the IMEI number of the device</string>
+    <string name="service_message_xchange">Exchange object required! Delivery only with exchange</string>
+    <string name="service_message_documented_personal_delivery">Attention: Fill out the attached document with information from an official ID card</string>
+    <string name="service_message_package_recirculation">Please return the packaging of the parcel</string>
     <string name="title_cash_collection">Cash collection</string>
 </resources>
