@@ -132,6 +132,12 @@ class UnitNumberTests {
             "841553343806"
     )
 
+    val DEKU_BAGS = listOf(
+            "100713216733",
+            "100713216740",
+            "100713216757"
+    )
+
     @Test
     fun testGlsUnitNumbers() {
         // Test GLS unit numbers
@@ -174,6 +180,16 @@ class UnitNumberTests {
             val un = UnitNumber.parseLabel(it).value
 
             Assert.assertEquals(UnitNumber.Type.BackSeal, un.type)
+        }
+    }
+
+    @Test
+    fun testUnitNumberTypeFilter() {
+        DEKU_VARIOUS.forEach {
+            val un = UnitNumber.parseLabel(it)
+            if (!un.assertAny(UnitNumber.Type.Parcel).hasError) {
+                Assert.assertEquals(un.value.type, UnitNumber.Type.Parcel)
+            }
         }
     }
 }
