@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui.screen
 
-
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.net.Uri
@@ -12,7 +11,7 @@ import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
@@ -24,10 +23,13 @@ import kotlinx.android.synthetic.main.screen_delivery_detail.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
+import org.deku.leoz.mobile.dev.SyntheticInput
+import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.mobile
+import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
@@ -36,9 +38,11 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.ParcelService
+import org.deku.leoz.model.UnitNumber
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
@@ -56,9 +60,11 @@ class DeliveryStopDetailScreen
     )
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val tones: Tones by Kodein.global.lazy.instance()
 
     // Model classes
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val stop: Stop by lazy {
@@ -250,7 +256,7 @@ class DeliveryStopDetailScreen
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-
+                    this.onAidcRead(it)
                 }
 
         this.activity.actionEvent
@@ -291,6 +297,64 @@ class DeliveryStopDetailScreen
                         }
                     }
                 }
+
+        this.syntheticInputs = listOf(
+                SyntheticInput(
+                        name = "Parcels",
+                        entries = this.deliveryList.loadedParcels.blockingFirst().value.map {
+                            val unitNumber = UnitNumber.parse(it.number).value
+                            SyntheticInput.Entry(
+                                    symbologyType = SymbologyType.Interleaved25,
+                                    data = unitNumber.label
+                            )
+                        }
+                )
+        )
+    }
+
+    private fun onAidcRead(event: AidcReader.ReadEvent) {
+        log.trace("AIDC READ $event")
+
+        val result = UnitNumber.parseLabel(event.data)
+
+        when {
+            result.hasError -> {
+                tones.warningBeep()
+
+                this.activity.snackbarBuilder
+                        .message(R.string.error_invalid_barcode)
+                        .build().show()
+            }
+            else -> {
+                this.onInput(result.value)
+            }
+        }
+    }
+
+    private fun onInput(unitNumber: UnitNumber) {
+        val stop = this.delivery.pendingStops.blockingFirst().value
+                .plus(this.delivery.closedStops.blockingFirst().value)
+                .flatMap { it.tasks }
+                .firstOrNull {
+                    it.order.parcels.any { it.number == unitNumber.value }
+                }
+                ?.stop
+
+        if (stop == null) {
+            tones.warningBeep()
+
+            this.activity.snackbarBuilder
+                    .message(R.string.error_no_corresponding_stop)
+                    .build().show()
+
+            return
+        }
+
+        this.activity.showScreen(
+                DeliveryStopProcessScreen().also {
+                    it.parameters = DeliveryStopProcessScreen.Parameters(stopId = stop.id)
+                }
+        )
     }
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {

@@ -44,6 +44,7 @@ class DeliveryStopListScreen
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
+
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
 
