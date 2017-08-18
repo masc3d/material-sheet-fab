@@ -69,7 +69,10 @@ interface AuthorizationService {
             /** Device IMEI */
             @ApiModelProperty(value = "Mobile device imei", example = "990000862471854", required = true)
             var imei: String = ""
-    )
+    ) {
+        /** Empty companion for attaching extension methods */
+        companion object {}
+    }
 
     /**
      * Mobile authorization request

@@ -13,6 +13,7 @@ import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.entity.UserEntity
 import org.deku.leoz.mobile.model.entity.create
+import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
@@ -50,11 +51,6 @@ class Login {
      */
     private val SALT = "f169bf5444f57fbc4abdd5d089c8395e".parseHex()
 
-    /**
-     * This IMEI is provided in case the device has none (eg newer emulators)
-     */
-    private val DUMMY_IMEI = "000000000000000"
-
     // Consumers can observe this property for changes
     val authenticatedUserProperty = ObservableRxProperty<User?>(null)
     // Delegated property for convenient access
@@ -83,11 +79,7 @@ class Login {
                                 email = email,
                                 password = password
                         ),
-                        mobile = AuthorizationService.Mobile(
-                                model = device.model.name,
-                                serial = device.serial,
-                                imei = if (device.imei.isNotBlank()) device.imei else DUMMY_IMEI
-                        )
+                        mobile = AuthorizationService.Mobile.create(device)
                 )
 
                 val authResponse = authService.authorizeMobile(request)

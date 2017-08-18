@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.*
@@ -21,14 +22,21 @@ import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import org.deku.leoz.bundle.BundleType
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.LogConfiguration
+import org.deku.leoz.mobile.model.service.create
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
+import org.deku.leoz.service.internal.AuthorizationService
+import org.deku.leoz.service.internal.ParcelServiceV1
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import sx.Stopwatch
 import sx.android.Device
 import sx.android.aidc.AidcReader
+import sx.mq.mqtt.channel
 import java.util.concurrent.TimeUnit
 
 
@@ -123,6 +131,10 @@ class StartupActivity : RxAppCompatActivity() {
                                     val device: Device = Kodein.global.instance()
                                     log.info(device.toString())
 
+
+                                    val identity: Identity = Kodein.global.instance()
+                                    log.info(identity.toString())
+
                                     // Prepare database
                                     val database: Database = Kodein.global.instance()
 
@@ -131,7 +143,7 @@ class StartupActivity : RxAppCompatActivity() {
                                             // Simply getting a writable database reference will perform (requery) migration
                                             database.dataSource.writableDatabase
                                         })
-                                    } catch(e: Throwable) {
+                                    } catch (e: Throwable) {
                                         // Build error message
                                         var text = "${this.getText(org.deku.leoz.mobile.R.string.error_database_inconsistent)}"
                                         text += if (e.message != null) " (${e.message})" else ""
@@ -150,13 +162,27 @@ class StartupActivity : RxAppCompatActivity() {
                                     this.startService(
                                             Intent(applicationContext, LocationService::class.java))
 
+                                    // Send authorization message
+                                    run {
+                                        val mqEndpoints = Kodein.global.instance<MqttEndpoints>()
+                                        mqEndpoints.central.main.channel().send(
+                                                AuthorizationService.NodeRequest(
+                                                        key = identity.uid.value,
+                                                        name = BundleType.LeozMobile.value,
+                                                        systemInfo = AuthorizationService.Mobile.create(device).let {
+                                                            ObjectMapper().writeValueAsString(it)
+                                                        }
+                                                )
+                                        )
+                                    }
+
                                     // Start main activity
                                     val handler = Handler()
                                     handler.postDelayed({
                                         this@StartupActivity.startMainActivity(withAnimation = true)
                                     }, 300)
                                     this@StartupActivity.started = true
-                                } catch(e: Throwable) {
+                                } catch (e: Throwable) {
                                     log.error(e.message, e)
 
                                     this.showErrorAlert(text = e.message ?: e.javaClass.simpleName, onPositiveButton = {
