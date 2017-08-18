@@ -36,7 +36,7 @@ interface ParcelServiceV1 {
         data class DeliveredInfo(
                 val recipient: String? = null,
                 val signature: String? = null,
-                val mimetype: String = MediaType.APPLICATION_SVG_XML
+                val mimetype: String = MediaType.APPLICATION_SVG_XML //? "image/svg+xml" vs "application/svg+xml"? "image/jpg"
         )
     }
 

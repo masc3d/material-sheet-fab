@@ -41,9 +41,13 @@ import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
 import org.apache.batik.transcoder.*
+import java.awt.Color
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
+import javax.imageio.IIOImage
 import javax.ws.rs.core.MediaType
-
+import javax.imageio.*
 
 /**
  * Parcel service v1 implementation
@@ -683,9 +687,32 @@ open class ParcelServiceV1 :
     }
 
     fun writeAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path): Boolean {
-        val bufferedImage = ImageIO.read(File(pathFile.toUri())) //ImageIO.read(ByteArrayInputStream(img))
-        val fileObj = File(pathBmpFile.toUri())
-        return ImageIO.write(bufferedImage, "bmp", fileObj)
+        try {
+            val bufferedImage = ImageIO.read(File(pathFile.toUri())) //ImageIO.read(ByteArrayInputStream(img))
+            val fileObj = File(pathBmpFile.toUri())
+
+            val os = FileOutputStream(fileObj)
+            val bmpWriter = ImageIO.getImageWritersByFormatName("bmp").next()
+            val bmpWriteParam = bmpWriter.defaultWriteParam
+            bmpWriteParam.compressionMode = ImageWriteParam.MODE_EXPLICIT
+            bmpWriteParam.compressionQuality = 0.8.toFloat()
+
+            //val baos=ByteArrayOutputStream()
+            val ios = ImageIO.createImageOutputStream(os)//(baos)
+            bmpWriter.output = ios
+            bmpWriter.write(null, IIOImage(bufferedImage, null, null), bmpWriteParam)
+            //baos.flush()
+
+            os.close()
+            ios.close()
+            bmpWriter.dispose()
+            return true
+        } catch (e: Exception) {
+            log.debug(("convert to bmp :" + e.toString()))
+            return false
+        }
+
+        //return ImageIO.write(bufferedImage, "bmp", fileObj)
     }
 
     fun transSvg2Jpg(pathFile: java.nio.file.Path): java.nio.file.Path {
@@ -698,6 +725,7 @@ open class ParcelServiceV1 :
         val outputTranscoder = TranscoderOutput(jpgOutputstream)
         val converter = JPEGTranscoder()
         converter.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, 0.9.toFloat())
+        converter.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE)
         converter.transcode(inputTranscoder, outputTranscoder)
         jpgOutputstream.flush()
         jpgOutputstream.close()
