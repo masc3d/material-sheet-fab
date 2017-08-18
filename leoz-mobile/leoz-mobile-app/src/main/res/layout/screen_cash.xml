@@ -12,7 +12,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/small_margin"
         android:gravity="center"
         android:layout_marginEnd="@dimen/small_margin"
         android:orientation="vertical">
@@ -34,7 +33,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:layout_width="36dp"
                     android:layout_height="match_parent"
                     app:srcCompat="@drawable/ic_sigma" />
 
@@ -66,7 +65,7 @@
 
                 <!-- TODO: Change Icon to a hand which gives/gets money -->
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:layout_width="36dp"
                     android:layout_height="match_parent"
                     app:srcCompat="@drawable/ic_money_handover" />
 
@@ -79,7 +78,7 @@
                     style="@style/TextAppearance.AppCompat.Large"
                     android:ems="10"
                     android:hint="00,00"
-                    android:inputType="none|numberDecimal"
+                    android:inputType="numberDecimal"
                     tools:ignore="HardcodedText" />
 
             </LinearLayout>
@@ -97,7 +96,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:layout_width="36dp"
                     android:layout_height="match_parent"
                     app:srcCompat="@drawable/ic_return" />
 
