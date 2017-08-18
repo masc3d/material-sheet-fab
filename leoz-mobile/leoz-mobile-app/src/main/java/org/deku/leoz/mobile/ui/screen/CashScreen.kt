@@ -11,18 +11,15 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.OrderMeta
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryStop
@@ -41,6 +38,7 @@ import sx.android.hideSoftInput
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
+import java.text.DecimalFormat
 
 
 /**
@@ -59,6 +57,7 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
     private val db: Database by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    val decimalFormat = DecimalFormat("#0.00")
 
     private val deliveryStop: DeliveryStop by lazy {
         delivery.activeStop!!
@@ -90,15 +89,15 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.title = "Cash collection"
+        this.title = getString(R.string.title_cash_collection)
         this.headerImage = R.drawable.img_money_a
-        this.scrollCollapseMode = ScrollCollapseModeType.EnterAlways
+        this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxCashValue.text = "${delivery.activeStop?.cashAmountToCollect} €"
+        this.uxCashValue.text = "${decimalFormat.format(delivery.activeStop?.cashAmountToCollect)} €"
         this.flexibleAdapterInstance.reset()
         this.uxOrderCashList.adapter = flexibleAdapter
         this.uxOrderCashList.layoutManager = LinearLayoutManager(context)
@@ -141,14 +140,30 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
             flexibleAdapter.expand(it)
         }
 
-        this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_cash_continue,
-                        colorRes = R.color.colorPrimary,
-                        iconTintRes = android.R.color.white,
-                        iconRes = R.drawable.ic_delivery
-                )
-        )
+
+
+        this.uxCashGiven.setOnEditorActionListener { textView, i, keyEvent ->
+            val entered: Double? = this.uxCashGiven.text.toString().toDoubleOrNull()
+            if (entered != null) {
+                if (entered >= this.deliveryStop.cashAmountToCollect) {
+                    this.uxCashChange.text = decimalFormat.format((entered - this.deliveryStop.cashAmountToCollect)).toString()
+                    this.actionItems = listOf(
+                            ActionItem(
+                                    id = R.id.action_cash_continue,
+                                    colorRes = R.color.colorPrimary,
+                                    iconTintRes = android.R.color.white,
+                                    iconRes = R.drawable.ic_delivery
+                            )
+                    )
+                } else {
+                    this.uxCashGiven.error = "Weniger eingegeben als notwendig!"
+                }
+            } else {
+                this.uxCashGiven.error = "Nur nummerische Eingaben zulässig!"
+            }
+            this.context.inputMethodManager.hideSoftInput()
+            true
+        }
     }
 
     override fun onResume() {

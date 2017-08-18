@@ -239,4 +239,5 @@
     <string name="back_choose_new_delivery_options">Zurück, neue Zustelloption wählen</string>
     <string name="signature_conclusion">Ich quittiere den Empfang von\nAufträge: %1$s\nPakete: %2$s\nEmpfänger: %3$s</string>
     <string name="signature_signed_by_name">Name: %s</string>
+    <string name="title_cash_collection">Nachnahme</string>
 </resources>

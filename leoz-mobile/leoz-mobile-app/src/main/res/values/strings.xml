@@ -292,4 +292,5 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="service_message_xchange" translatable="false">Exchange object required! Delivery only with exchange</string>
     <string name="service_message_documented_personal_delivery" translatable="false">Attention: Fill out the attached document with information from an official ID card</string>
     <string name="service_message_package_recirculation" translatable="false">Please return the packaging of the parcel</string>
+    <string name="title_cash_collection">Cash collection</string>
 </resources>
