@@ -68,7 +68,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    app:srcCompat="@drawable/ic_service_cash" />
+                    app:srcCompat="@drawable/ic_money_handover" />
 
                 <EditText
                     android:id="@+id/uxCashGiven"

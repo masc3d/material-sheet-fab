@@ -4,6 +4,7 @@ import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -276,10 +277,17 @@ class DeliveryStopDetailScreen
                         R.id.action_navigate -> {
                             val intent: Intent = Intent(
                                     Intent.ACTION_VIEW,
-                                    //Uri.parse("google.navigation:q=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}&mode=d")
-                                    Uri.parse("https://www.google.com/maps/dir/?api=1&query=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}")
+                                    Uri.parse("google.navigation:q=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}&mode=d")
+                                    //Uri.parse("https://www.google.com/maps/dir/?api=1&query=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}")
                             )
-                            startActivity(intent)
+                            try {
+                                startActivity(intent)
+                            } catch (e: Exception) {
+                                this.activity.snackbarBuilder
+                                        .message("Failed! Navigation App installed?")
+                                        .duration(Snackbar.LENGTH_INDEFINITE)
+                                        .build().show()
+                            }
                         }
 
                         R.id.action_call -> {
