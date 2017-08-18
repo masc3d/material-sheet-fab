@@ -398,47 +398,15 @@ class DeliveryStopProcessScreen :
                         }
 
                         R.id.action_deliver_neighbour -> {
-                            this.activity.showScreen(NeighbourDeliveryScreen().also {
-                                it.parameters = NeighbourDeliveryScreen.Parameters(
-                                        stopId = this.stop.id
-                                )
-                            })
+                            this.closeStop(reason = org.deku.leoz.model.EventDeliveredReason.NEIGHBOR)
                         }
 
                         R.id.action_deliver_postbox -> {
+                            this.closeStop(reason = org.deku.leoz.model.EventDeliveredReason.POSTBOX)
                         }
 
                         R.id.action_delivery_close_stop -> {
-                            if (this.deliveryStop.isSignatureRequired) {
-                                MaterialDialog.Builder(context)
-                                        .title(R.string.recipient)
-                                        .cancelable(true)
-                                        .content(R.string.recipient_dialog_content)
-                                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
-                                        .input("Max Mustermann", null, false, { _, charSequence ->
-                                            this.deliveryStop.recipientName = charSequence.toString()
-
-                                            this.activity.showScreen(SignatureScreen().also {
-                                                it.parameters = SignatureScreen.Parameters(
-                                                        stopId = this.stop.id,
-                                                        deliveryReason = EventDeliveredReason.NORMAL,
-                                                        recipient = this.deliveryStop.recipientName ?: ""
-                                                )
-                                            })
-                                        })
-                                        .build().show()
-                            } else {
-                                this.deliveryStop.finalize()
-                                        .observeOnMainThread()
-                                        .subscribeBy(
-                                                onComplete = {
-                                                    // TODO: move state control to model
-                                                    this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
-                                                },
-                                                onError = {
-                                                    log.error(it.message, it)
-                                                })
-                            }
+                            this.closeStop(org.deku.leoz.model.EventDeliveredReason.NORMAL)
                         }
                     }
                 }
@@ -584,6 +552,68 @@ class DeliveryStopProcessScreen :
                 tones.warningBeep()
             }
         }
+    }
+
+    private fun closeStop(reason: EventDeliveredReason) {
+        //TODO: To be "managed" by a/the model
+        //if (delivery.activeStop!!.services.contains())
+        if (delivery.activeStop!!.cashAmountToCollect > 0) {
+            //Requires CashScreen to be shown
+            this.activity.showScreen(CashScreen().also {
+                it.parameters = CashScreen.Parameters(
+                        stopId = this.stop.id,
+                        deliveryReason = reason
+                )
+            })
+        } else {
+            when (reason) {
+                EventDeliveredReason.NEIGHBOR -> {
+                    this.activity.showScreen(NeighbourDeliveryScreen().also {
+                        it.parameters = NeighbourDeliveryScreen.Parameters(
+                                stopId = this.stop.id
+                        )
+                    })
+                }
+
+                EventDeliveredReason.POSTBOX -> {
+                    //TODO
+                }
+
+                EventDeliveredReason.NORMAL -> {
+                    if (this.deliveryStop.isSignatureRequired) {
+                        MaterialDialog.Builder(context)
+                                .title(R.string.recipient)
+                                .cancelable(true)
+                                .content(R.string.recipient_dialog_content)
+                                .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
+                                .input("Max Mustermann", null, false, { _, charSequence ->
+                                    this.deliveryStop.recipientName = charSequence.toString()
+
+                                    this.activity.showScreen(SignatureScreen().also {
+                                        it.parameters = SignatureScreen.Parameters(
+                                                stopId = this.stop.id,
+                                                deliveryReason = EventDeliveredReason.NORMAL,
+                                                recipient = this.deliveryStop.recipientName ?: ""
+                                        )
+                                    })
+                                })
+                                .build().show()
+                    } else {
+                        this.deliveryStop.finalize()
+                                .observeOnMainThread()
+                                .subscribeBy(
+                                        onComplete = {
+                                            // TODO: move state control to model
+                                            this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
+                                        },
+                                        onError = {
+                                            log.error(it.message, it)
+                                        })
+                    }
+                }
+            }
+        }
+
     }
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {

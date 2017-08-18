@@ -15,10 +15,12 @@ import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.entity.OrderMeta
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.OrderTaskViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.model.EventDeliveredReason
@@ -52,10 +54,6 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
                 ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
     }
 
-    val cashValue: Double by lazy {
-        0.0
-    }
-
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
             FlexibleExpandableVmItem<
                     SectionViewModel<Any>, *>
@@ -79,13 +77,12 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
 
         this.title = "Cash collection"
         this.headerImage = R.drawable.img_money_a
-        this.scrollCollapseMode = ScrollCollapseModeType.None
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxCashValue.text = "$cashValue €"
+        this.uxCashValue.text = "${delivery.activeStop?.cashAmountToCollect} €"
         this.flexibleAdapterInstance.reset()
         this.uxOrderCashList.adapter = flexibleAdapter
         this.uxOrderCashList.layoutManager = LinearLayoutManager(context)
@@ -111,7 +108,7 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
                 ).also {
                     it.subItems = orders.map {
                         FlexibleSectionableVmItem<Any>(
-                                view = R.layout.item_ordertask, //TODO: To be replaced by an item which shows the cash value (hide zipcode and city)
+                                view = R.layout.item_ordertask, //TODO: To be replaced by an item which includes the cash value (hide zip-code and city)
                                 variable = BR.orderTask,
                                 viewModel = OrderTaskViewModel(it.pickupTask)
                         )
@@ -127,6 +124,15 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
         flexibleAdapter.currentItems.firstOrNull().also {
             flexibleAdapter.expand(it)
         }
+
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_cash_continue,
+                        colorRes = R.color.colorPrimary,
+                        iconTintRes = android.R.color.white,
+                        iconRes = R.drawable.ic_delivery
+                )
+        )
     }
 
 }
