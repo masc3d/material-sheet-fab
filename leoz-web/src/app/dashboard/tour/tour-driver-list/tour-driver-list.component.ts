@@ -20,9 +20,11 @@ import { TranslateService } from '../../../core/translate/translate.service';
       <div class="ui-g">
         <div class="ui-g-12 no-pad">
           <button pButton type="button" (click)="allUsers()" label="{{'allusers' | translate}}"
-          style="width:150px"></button>
+          style="width:190px"></button>
           <button pButton type="button" (click)="justDrivers()" label="{{'drivers' | translate}}"
-          style="width:150px"></button>
+          style="width:190px"></button>
+          <button pButton type="button" label="{{'showlist' | translate}}"
+          style="width:190px"></button>
         </div>
         <div class="ui-g-12 ui-lg-4 no-pad">
           {{'refreshevery' | translate}}

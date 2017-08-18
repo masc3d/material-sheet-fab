@@ -56,6 +56,8 @@ export const LANG_EN_TRANS = {
   'hub': 'HUB',
   'route': 'Route',
   'station': 'Station',
+  'line': 'Line',
+  'homebase': 'Home',
   // map form
   'allusers': 'all users',
   'drivers': 'drivers',
@@ -76,6 +78,7 @@ export const LANG_EN_TRANS = {
   'refreshevery': 'Refresh ervery',
   'mins': 'min',
   'latestRefresh': 'latest refresh',
+  'showlist': 'list fade in/out',
   // stationloading form - loadinglist
   'loadingcontrol': 'Loading control',
   'newloadlist': 'New loadlist',
