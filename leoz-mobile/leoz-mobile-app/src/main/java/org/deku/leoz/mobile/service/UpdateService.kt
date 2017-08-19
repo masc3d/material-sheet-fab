@@ -10,6 +10,7 @@ import org.deku.leoz.mobile.Storage
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.config.RestClientConfiguration
 import sx.android.ApplicationPackage
 import sx.util.zip.verify
@@ -34,6 +35,7 @@ class UpdateService(
         executorService: ScheduledExecutorService,
         val bundleName: String,
         val versionAlias: String,
+        val identity: Identity,
         period: Duration,
         private val restClientProxy: FeignClientProxy
 ) : Service(
@@ -115,7 +117,12 @@ class UpdateService(
 
         try {
             val bundleService = this.restClientProxy.create(BundleServiceV2::class.java)
-            val updateInfo = bundleService.info(this.bundleName, this.versionAlias)
+
+            val updateInfo = bundleService.info(
+                    bundleName = this.bundleName,
+                    versionAlias = this.versionAlias,
+                    nodeKey = identity.uid.value)
+
             log.info("${updateInfo}")
 
             // Cleanup

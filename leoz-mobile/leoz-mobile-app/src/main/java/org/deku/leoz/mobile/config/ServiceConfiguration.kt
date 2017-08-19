@@ -71,6 +71,7 @@ class ServiceConfiguration {
                         executorService = instance(),
                         bundleName = settings.bundleName,
                         versionAlias = settings.versionAlias,
+                        identity = instance(),
                         period = settings.period.seconds,
                         restClientProxy = restClientConfiguration.createClientProxy(
                                 uri = restClientConfiguration.createUri(
