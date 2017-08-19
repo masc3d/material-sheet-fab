@@ -291,26 +291,29 @@ class DeliveryList : CompositeDisposableSupplier {
      * Merge a single order into the entity store
      */
     fun mergeOrder(order: Order): Completable {
-        return Completable.fromCallable {
+        return db.store.withTransaction {
             val createdOrderCount = orderRepository
                     .merge(listOf(order))
                     .blockingGet()
 
             // If this order existed already, we're done
             if (createdOrderCount == 0)
-                return@fromCallable Unit
+                return@withTransaction
 
             val task = order.deliveryTask
             var stop = stopRepository.findStopForTask(task)
 
             if (stop != null) {
                 stop.tasks.add(task)
-                db.store.update(stop).blockingGet()
+                update(stop)
             } else {
                 stop = Stop.create(tasks = listOf(task))
-                db.store.insert(stop).blockingGet()
+                stopRepository
+                        .merge(listOf(stop))
+                        .blockingAwait()
             }
         }
+                .toCompletable()
                 .subscribeOn(Schedulers.computation())
     }
 
