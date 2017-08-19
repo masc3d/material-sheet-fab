@@ -266,7 +266,15 @@ class DeliveryStop(
      * Assign event reason to entire stop
      */
     fun assignEventReason(reason: EventNotDeliveredReason): Completable {
+        val stop = this.entity
+
         return db.store.withTransaction {
+            // In case the stop has been closed before, re-open on delivery
+            if (stop.state == Stop.State.CLOSED) {
+                stop.state = Stop.State.PENDING
+                update(stop)
+            }
+
             parcels.blockingFirst().forEach {
                 it.deliveryState = Parcel.DeliveryState.UNDELIVERED
                 it.reason = reason
