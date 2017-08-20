@@ -17,6 +17,7 @@ import android.support.transition.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.text.InputType
 import android.util.TypedValue
@@ -807,6 +808,15 @@ open class Activity : RxAppCompatActivity(),
 
                         // Show status bar
                         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    }
+                }
+
+        fragment.lockNavigationDrawerProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it.value) {
+                        true -> this.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                        false -> this.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
                     }
                 }
 

@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.ui.vm
 import android.databinding.BaseObservable
 import android.view.View
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.model.UnitNumber
 import sx.format.format
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,7 +39,7 @@ class ParcelViewModel(
         else ""
 
     val number: String
-        get() = this.parcel.number
+        get() = "${this.parcel.number}(${UnitNumber.parse(this.parcel.number).valueOrNull?.label?.last()})"
 
     val orderTask by lazy {
         OrderTaskViewModel(orderTask = parcel.order.deliveryTask)
