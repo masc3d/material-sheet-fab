@@ -247,4 +247,6 @@
     <string name="service_message_package_recirculation">Bitte führen Sie die Verpackung zurück. Zustellung sonst nicht erlaubt!</string>
     <string name="service_message_ident_contract">Bitte überprüfen Sie zusammen mit dem Kunden den beiliegendne Vertrag, lassen Sie diesen unterschreiben und führen Sie ihn zurück</string>
     <string name="service_message_documented_personal_delivery">Achtung: Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
+    <string name="not_loaded">Nicht beladen</string>
+    <string name="to_be_loaded">Zu beladen</string>
 </resources>

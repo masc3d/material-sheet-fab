@@ -147,7 +147,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
-                title = this.getText(R.string.pending).toString(),
+                title = getString(R.string.to_be_loaded),
                 items = this.deliveryList.pendingParcels.map { it.value }
         )
     }
@@ -159,7 +159,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
-                title = this.getText(R.string.missing).toString(),
+                title = getString(R.string.not_loaded),
                 items = this.deliveryList.missingParcels.map { it.value }
         )
     }

@@ -29,6 +29,7 @@ data class ParcelServiceMeta(
 
 /**
  * Service meta lookup map
+ * Services which are not mapped to a Text (StringRes) won't be displayed to the user
  */
 private val meta = listOf(
         ParcelServiceMeta(

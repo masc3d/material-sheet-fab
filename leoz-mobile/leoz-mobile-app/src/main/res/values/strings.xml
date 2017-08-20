@@ -293,4 +293,6 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="service_message_documented_personal_delivery">Attention: Fill out the attached document with information from an official ID card</string>
     <string name="service_message_package_recirculation">Please return the packaging of the parcel</string>
     <string name="title_cash_collection">Cash collection</string>
+    <string name="to_be_loaded">To be loaded</string>
+    <string name="not_loaded">Not loaded</string>
 </resources>

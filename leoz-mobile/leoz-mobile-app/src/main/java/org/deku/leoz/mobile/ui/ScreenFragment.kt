@@ -39,6 +39,9 @@ open class ScreenFragment<P> : Fragment<P>() {
     val flipScreenProperty by lazy { ObservableRxProperty<Boolean>(false) }
     var flipScreen by flipScreenProperty
 
+    val lockNavigationDrawerProperty by lazy { ObservableRxProperty(false) }
+    var lockNavigationDrawer by lockNavigationDrawerProperty
+
     /**
      * Title
      */
