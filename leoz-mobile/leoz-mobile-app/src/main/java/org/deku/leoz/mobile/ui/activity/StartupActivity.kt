@@ -75,7 +75,6 @@ class StartupActivity : RxAppCompatActivity() {
         // Load log configuration first
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
-        Kodein.global.instance<UpdateService>()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
@@ -131,7 +130,6 @@ class StartupActivity : RxAppCompatActivity() {
                                     val device: Device = Kodein.global.instance()
                                     log.info(device.toString())
 
-
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
 
@@ -151,6 +149,9 @@ class StartupActivity : RxAppCompatActivity() {
 
                                         throw RuntimeException(text, e)
                                     }
+
+                                    // Start update service
+                                    Kodein.global.instance<UpdateService>()
 
                                     // Late initialization of singletons which require eg. permissions
                                     Kodein.global.instance<IMqttAsyncClient>()
