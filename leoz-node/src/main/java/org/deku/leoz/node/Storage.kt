@@ -49,6 +49,12 @@ open class Storage(appName: String)
         d
     }
 
+    val workTmpDataDirectory by lazy {
+        val d = File(this.publicDirectory, "workTmp")
+        d.mkdirs()
+        d
+    }
+
     // Files
     /** Local application configuration file */
     val applicationConfigurationFile by lazy {

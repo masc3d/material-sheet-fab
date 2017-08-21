@@ -648,7 +648,22 @@ open class ParcelServiceV1 :
 
     fun saveImage(date: Date, location: String, image: String?, number: String, nodeId: String?, mimetype: String): String {
         if (image != null) {
-            val path = storage.mobileDataDirectory.toPath()
+            val pathMobile = storage.mobileDataDirectory.toPath()
+            val relPathMobile = pathMobile.resolve(SimpleDateFormat("yyyy").format(date))
+                    .resolve(location)
+                    .resolve(SimpleDateFormat("MM").format(date))
+                    .resolve(SimpleDateFormat("dd").format(date))
+                    .toFile()
+            relPathMobile.mkdirs()
+
+            val relPathMobileOriginal = pathMobile.resolve(SimpleDateFormat("yyyy").format(date))
+                    .resolve(location + "-Original")
+                    .resolve(SimpleDateFormat("MM").format(date))
+                    .resolve(SimpleDateFormat("dd").format(date))
+                    .toFile()
+            relPathMobileOriginal.mkdirs()
+
+            val path = storage.workTmpDataDirectory.toPath()
             val relPath = path.resolve(SimpleDateFormat("yyyy").format(date))
                     .resolve(location)
                     .resolve(SimpleDateFormat("MM").format(date))
@@ -663,24 +678,47 @@ open class ParcelServiceV1 :
             //val file = number + "_" + nodeId.toString().substringBefore("-") + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.svg"
             val file = number + "_" + nodeId.toString().substringBefore("-") + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB." + fileExtension
             val pathFile = relPath.toPath().resolve(file).toFile().toPath()
+            val pathFileMobile = relPathMobile.toPath().resolve(file).toFile().toPath()
+            val pathFileMobileOriginal = relPathMobileOriginal.toPath().resolve(file).toFile().toPath()
             try {
                 var imgPath = pathFile
                 if (fileExtension.equals("svg")) {
                     Files.write(pathFile, image.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
+                    Files.copy(pathFile, pathFileMobileOriginal)
                     imgPath = transSvg2Jpg(pathFile)
                 } else {
                     val img = Base64.getDecoder().decode(image)
                     Files.write(pathFile, img, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
-
+                    Files.copy(pathFile, pathFileMobileOriginal)
                 }
-                val bmpFile = //imgPath.toString() + ".bmp"
-                        imgPath.toFile().parentFile.toPath().resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
-                if (writeAsBMP(imgPath, bmpFile.toPath()))
-                    return bmpFile.toString().substringAfter(path.toString()).substring(1)
-                else
-                    return pathFile.toString().substringAfter(path.toString()).substring(1)
+                val bmpFile = imgPath.toFile().parentFile.toPath()
+                        .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
+                val bmpFileMobile = pathFileMobile.toFile().parentFile.toPath()
+                        .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
+
+
+                var ret: String
+                if (fileExtension.equals("svg")) {
+                    if (writeAsBMP(imgPath, bmpFile.toPath())) {
+                        Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
+                        ret = bmpFile.toString().substringAfter(path.toString()).substring(1)
+                    } else
+                        ret = pathFile.toString().substringAfter(path.toString()).substring(1)
+                } else {
+                    if (writePhotoAsBMP(imgPath, bmpFile.toPath())) {
+                        Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
+                        ret = bmpFile.toString().substringAfter(path.toString()).substring(1)
+                    } else
+                        ret = pathFile.toString().substringAfter(path.toString()).substring(1)
+                }
+                if (!imgPath.equals(pathFile)) {
+                    Files.delete(imgPath)
+                }
+                Files.delete(pathFile)
+                Files.delete(bmpFile.toPath())
+                return ret
             } catch (e: Exception) {
-                log.debug("Write File " + e.toString())
+                log.error("Write File " + e.toString())
                 return ""
             }
         } else
@@ -704,7 +742,23 @@ open class ParcelServiceV1 :
 
 
         } catch (e: Exception) {
-            log.debug(("convert to bmp :" + e.toString()))
+            log.error("convert to bmp :" + e.toString())
+            return false
+        }
+
+
+    }
+
+    fun writePhotoAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path): Boolean {
+        try {
+            val bufferedImage = ImageIO.read(File(pathFile.toUri()))
+            val fileObj = File(pathBmpFile.toUri())
+
+            return ImageIO.write(bufferedImage, "bmp", fileObj)
+
+
+        } catch (e: Exception) {
+            log.error("convert to bmp :" + e.toString())
             return false
         }
 
@@ -715,65 +769,22 @@ open class ParcelServiceV1 :
 
         val inputTranscoder = TranscoderInput(File(pathFile.toString()).toURI().toURL().toString())
         val imgFile = File(pathFile.toString())
-//val jpgPath=imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension).resolve(".jpg").toFile()
-        val jpgFile = imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension + ".jpg").toFile() //File(imgFile.parent+imgFile.nameWithoutExtension + ".jpg")
-        //val jpgOutputstream = FileOutputStream(jpgFile)
+
+        val jpgFile = imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension + ".jpg").toFile()
+
 
         FileOutputStream(jpgFile).use {
-            //output ->
-            //{
-
-            //val outputTranscoder = TranscoderOutput(jpgOutputstream)
-            //val outputTranscoder = TranscoderOutput(output)
             val outputTranscoder = TranscoderOutput(it)
             val converter = JPEGTranscoder()
             converter.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, 0.9.toFloat())
             converter.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE)
             converter.transcode(inputTranscoder, outputTranscoder)
-            //}
-            //jpgOutputstream.flush()
-            //jpgOutputstream.close()
 
         }
         return jpgFile.toPath()
 
     }
 
-//    fun saveSignature(date: Date, signatureBase64: String?, number: String, nodeId: String?, mimetype: String): String {
-//
-//        var path = "c:\\deku2004\\SynchToSaveServer\\" +
-//                SimpleDateFormat("yyyy").format(date) + "\\SB\\" +
-//                SimpleDateFormat("MM").format(date) + "\\" +
-//                SimpleDateFormat("dd").format(date)
-//
-//        val dir = storage.mobileDataDirectory.toPath()
-//                .resolve("qwe")
-//                .resolve("asd")
-//                .toFile()
-//
-//        path = SimpleDateFormat("yyyy").format(date) + "/SB/" +
-//                SimpleDateFormat("MM").format(date) + "/" +
-//                SimpleDateFormat("dd").format(date) + "/"
-//
-//        return saveImage(date, "" signatureBase64, number, nodeId, mimetype)
 
-
-    //create path if not exsists
-
-    //  signatureBase64.decode64
-    //  convert to .bmp
-
-    //var file = number + "_" + nodeId.toString() + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.bmp"
-    // 2017\SB\06\09\83352287467_1804_2017060908550500_sca.bmp
-    // .save file
-
-    // Set Reference in parcelrecord
-    //parcelRepository.setSignaturePath(number, file)
-
-    //false -> log
-
-    //return file
-
-//}
 }
 
