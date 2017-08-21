@@ -113,7 +113,6 @@ open class UserJooqRepository {
                 .where(Tables.MST_KEY.KEY.eq(apiKey))?.fetchOneInto(MstUser.MST_USER)
     }
 
-
     fun deleteById(id: Int): Boolean {
         return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.ID.eq(id)).execute() > 0) true else false
     }
@@ -148,6 +147,7 @@ fun MstUserRecord.toUser(): UserService.User {
             active = this.isActive,
             externalUser = this.isExternalUser,
             phone = this.phone,
+            phoneMobile = this.phoneMobile,
             expiresOn = this.expiresOn
     )
     return user
