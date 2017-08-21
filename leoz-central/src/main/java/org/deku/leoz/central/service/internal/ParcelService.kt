@@ -48,6 +48,7 @@ import java.io.FileOutputStream
 import javax.imageio.IIOImage
 import javax.ws.rs.core.MediaType
 import javax.imageio.*
+import javax.imageio.plugins.bmp.BMPImageWriteParam
 
 /**
  * Parcel service v1 implementation
@@ -688,31 +689,26 @@ open class ParcelServiceV1 :
 
     fun writeAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path): Boolean {
         try {
-            val bufferedImage = ImageIO.read(File(pathFile.toUri())) //ImageIO.read(ByteArrayInputStream(img))
+            val bufferedImageLoad = ImageIO.read(File(pathFile.toUri())) //ImageIO.read(ByteArrayInputStream(img))
             val fileObj = File(pathBmpFile.toUri())
 
-            val os = FileOutputStream(fileObj)
-            val bmpWriter = ImageIO.getImageWritersByFormatName("bmp").next()
-            val bmpWriteParam = bmpWriter.defaultWriteParam
-            bmpWriteParam.compressionMode = ImageWriteParam.MODE_EXPLICIT
-            bmpWriteParam.compressionQuality = 0.8.toFloat()
+            val bufferedImage = BufferedImage(bufferedImageLoad.width, bufferedImageLoad.height, BufferedImage.TYPE_BYTE_BINARY)
 
-            //val baos=ByteArrayOutputStream()
-            val ios = ImageIO.createImageOutputStream(os)//(baos)
-            bmpWriter.output = ios
-            bmpWriter.write(null, IIOImage(bufferedImage, null, null), bmpWriteParam)
-            //baos.flush()
+            for (y in 0..bufferedImageLoad.height - 1) {
+                for (x in 0..bufferedImageLoad.width - 1) {
+                    bufferedImage.setRGB(x, y, bufferedImageLoad.getRGB(x, y))
+                }
+            }
 
-            os.close()
-            ios.close()
-            bmpWriter.dispose()
-            return true
+            return ImageIO.write(bufferedImage, "bmp", fileObj)
+
+
         } catch (e: Exception) {
             log.debug(("convert to bmp :" + e.toString()))
             return false
         }
 
-        //return ImageIO.write(bufferedImage, "bmp", fileObj)
+
     }
 
     fun transSvg2Jpg(pathFile: java.nio.file.Path): java.nio.file.Path {
@@ -721,14 +717,24 @@ open class ParcelServiceV1 :
         val imgFile = File(pathFile.toString())
 //val jpgPath=imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension).resolve(".jpg").toFile()
         val jpgFile = imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension + ".jpg").toFile() //File(imgFile.parent+imgFile.nameWithoutExtension + ".jpg")
-        val jpgOutputstream = FileOutputStream(jpgFile)
-        val outputTranscoder = TranscoderOutput(jpgOutputstream)
-        val converter = JPEGTranscoder()
-        converter.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, 0.9.toFloat())
-        converter.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE)
-        converter.transcode(inputTranscoder, outputTranscoder)
-        jpgOutputstream.flush()
-        jpgOutputstream.close()
+        //val jpgOutputstream = FileOutputStream(jpgFile)
+
+        FileOutputStream(jpgFile).use {
+            //output ->
+            //{
+
+            //val outputTranscoder = TranscoderOutput(jpgOutputstream)
+            //val outputTranscoder = TranscoderOutput(output)
+            val outputTranscoder = TranscoderOutput(it)
+            val converter = JPEGTranscoder()
+            converter.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, 0.9.toFloat())
+            converter.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE)
+            converter.transcode(inputTranscoder, outputTranscoder)
+            //}
+            //jpgOutputstream.flush()
+            //jpgOutputstream.close()
+
+        }
         return jpgFile.toPath()
 
     }
