@@ -78,18 +78,12 @@ class OrderRepository(
     }
 
     /**
-     * Remove all orders
+     * Remove all orders (and referenced records, eg. tasks, addresses and stops)
      */
     fun removeAll(): Completable {
         return Completable.fromCallable {
             val store = store.toBlocking()
             store.select(OrderEntity::class)
-                    .get()
-                    .forEach {
-                        store.delete(it)
-                    }
-
-            store.select(OrderTaskEntity::class)
                     .get()
                     .forEach {
                         store.delete(it)

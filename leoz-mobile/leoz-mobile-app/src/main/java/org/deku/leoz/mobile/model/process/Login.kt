@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model.process
 
+import android.content.SharedPreferences
 import android.net.NetworkInfo
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -9,16 +10,18 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.DebugSettings
+import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.entity.UserEntity
 import org.deku.leoz.mobile.model.entity.create
+import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.Device
+import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
 import sx.text.parseHex
 import java.net.ConnectException
@@ -40,11 +43,12 @@ class Login {
 
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
     private val device: Device by Kodein.global.lazy.instance()
-    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
-
-    private val db: Database by Kodein.global.lazy.instance()
+    private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
 
     private val authService: AuthorizationService by Kodein.global.lazy.instance()
+
+    private val db: Database by Kodein.global.lazy.instance()
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     /**
      * SALT for hashing passwords locally
@@ -55,6 +59,31 @@ class Login {
     val authenticatedUserProperty = ObservableRxProperty<User?>(null)
     // Delegated property for convenient access
     var authenticatedUser: User? by authenticatedUserProperty
+
+    /** c'tor */
+    init {
+        this.authenticatedUserProperty
+                .observeOnMainThread()
+                .subscribe { user ->
+
+            sharedPrefs.edit().also {
+                it.putInt(SharedPreference.AUTHENTICATED_USER_ID.key, user.value?.id ?: 0)
+                it.apply()
+            }
+        }
+
+        // Restore model state
+        val store = db.store.toBlocking()
+
+        val authenticatedUserId = sharedPrefs.getInt(SharedPreference.AUTHENTICATED_USER_ID.key, 0)
+
+        if (authenticatedUserId != 0) {
+            this.authenticatedUser = store.select(UserEntity::class)
+                    .where(UserEntity.ID.eq(authenticatedUserId))
+                    .get()
+                    .firstOrNull()
+        }
+    }
 
     /**
      * Authenticate user (asnychronously)
@@ -67,6 +96,8 @@ class Login {
 
         // Authorization task
         val task = Observable.fromCallable {
+
+            val store = db.store.toBlocking()
 
             /**
              * Authorize online
@@ -95,7 +126,7 @@ class Login {
                 )
 
                 // Store user in database
-                db.store.upsert(user).blockingGet()
+                store.upsert(user)
 
                 return user
             }
@@ -106,7 +137,7 @@ class Login {
             fun authorizeOffline(): User {
                 log.info("Authorizing user [${email}] offline")
 
-                val user = db.store.select(UserEntity::class)
+                val user = store.select(UserEntity::class)
                         .where(UserEntity.EMAIL.eq(email))
                         .get()
                         .firstOrNull()
@@ -118,25 +149,48 @@ class Login {
             }
 
             // Actual authorization logic
-            if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
-                try {
-                    authorizeOnline()
-                } catch(e: Throwable) {
-                    // Falling back to offline login on specific conditions, like network timeouts
-                    // There should not be a generic fallback, as the exception may also indicate
-                    // a user cannot authorize due to being disabled or non-existent.
-                    when (e.cause) {
-                        is SocketTimeoutException,
-                        is ConnectException -> {
-                            log.warn(e.message)
-                            authorizeOffline()
+            val user = when {
+                (connectivity.network.state == NetworkInfo.State.CONNECTED) -> {
+                    try {
+                        authorizeOnline()
+                    } catch (e: Throwable) {
+                        // Falling back to offline login on specific conditions, like network timeouts
+                        // There should not be a generic fallback, as the exception may also indicate
+                        // a user cannot authorize due to being disabled or non-existent.
+                        when (e.cause) {
+                            is SocketTimeoutException,
+                            is ConnectException -> {
+                                log.warn(e.message)
+                                authorizeOffline()
+                            }
+                            else -> throw e
                         }
-                        else -> throw e
                     }
                 }
-            } else {
-                authorizeOffline()
+                else -> {
+                    authorizeOffline()
+                }
             }
+
+            // Check for user switch
+            val lastActiveUser = store.select(UserEntity::class)
+                    .orderBy(UserEntity.LAST_LOGIN_TIME.desc())
+                    .get()
+                    .first()
+
+            if (lastActiveUser != user) {
+                log.warn("Previously active user [${lastActiveUser.email}], current user [${user.email}]. Removing all data.")
+
+                // Remove all data on user switch
+                this.orderRepository.removeAll()
+                        .blockingAwait()
+            }
+
+            // Update last login time
+            user.lastLoginTime = Date()
+            store.update(user)
+
+            user
         }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
