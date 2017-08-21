@@ -805,7 +805,8 @@ open class Activity : BaseActivity(),
         fragment.accentColorProperty
                 .bindUntilEvent(fragment, FragmentEvent.PAUSE)
                 .subscribe {
-                    this.uxHeaderAccentBar.backgroundColor = if (remoteSettings.host == "leoz.derkurier.de" || it.value != R.color.colorAccent) ContextCompat.getColor(this, it.value) else ContextCompat.getColor(this, R.color.colorRed)
+                    this.uxHeaderAccentBar.backgroundColor = if (remoteSettings.hostIsProductive || it.value != R.color.colorAccent)
+                        ContextCompat.getColor(this, it.value) else ContextCompat.getColor(this, R.color.colorDev)
                 }
 
         fragment.flipScreenProperty
