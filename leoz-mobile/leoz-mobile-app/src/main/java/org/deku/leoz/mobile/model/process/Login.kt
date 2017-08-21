@@ -128,6 +128,7 @@ class Login {
                     when (e.cause) {
                         is SocketTimeoutException,
                         is ConnectException -> {
+                            log.warn(e.message)
                             authorizeOffline()
                         }
                         else -> throw e

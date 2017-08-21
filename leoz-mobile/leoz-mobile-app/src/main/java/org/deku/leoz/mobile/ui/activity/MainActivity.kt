@@ -16,6 +16,7 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import com.afollestad.materialdialogs.MaterialDialog
+import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.device.Tones
 
 
@@ -33,12 +34,14 @@ class MainActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.supportActionBar?.title = getText(R.string.login)
+        if (savedInstanceState == null) {
+            this.supportActionBar?.title = getText(R.string.login)
 
-        this.showScreen(
-                MainScreen(),
-                addToBackStack = false
-        )
+            this.showScreen(
+                    MainScreen(),
+                    addToBackStack = false
+            )
+        }
     }
 
     override fun onBackPressed() {
@@ -76,12 +79,11 @@ class MainActivity
 
     //region LoginFragment listener
     override fun onLoginSuccessful() {
+        this.finish()
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
                                 Intent.FLAG_ACTIVITY_NEW_TASK))
-
-        this.finish()
     }
 
     override fun onLoginPending() {

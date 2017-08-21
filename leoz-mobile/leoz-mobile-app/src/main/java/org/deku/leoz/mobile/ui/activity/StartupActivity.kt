@@ -29,6 +29,7 @@ import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
 import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.service.internal.ParcelServiceV1
@@ -44,21 +45,28 @@ import java.util.concurrent.TimeUnit
  * Responsible for routing intents to activities and displaying splash screen
  * Created by masc on 27.03.14.
  */
-class StartupActivity : RxAppCompatActivity() {
+class StartupActivity : BaseActivity() {
     val log = LoggerFactory.getLogger(this.javaClass)
 
-    private var started: Boolean by serialState(false)
+    companion object {
+        val EXTRA_ACTIVITY = "ACTIVITY"
+    }
 
     /**
      * Start main activitiy
      */
     private fun startMainActivity(withAnimation: Boolean) {
-        val i = Intent(this@StartupActivity, MainActivity::class.java)
-        this.startActivity(i)
+        this.finish()
+
+        val activityName = this.intent.getStringExtra(EXTRA_ACTIVITY)
+                ?: MainActivity::class.java.canonicalName
+
+        log.trace("STARTUP ACTIVITY ${activityName}")
+        this.startActivity(
+                Intent(this, Class.forName(activityName)))
+
         if (withAnimation)
             this.overridePendingTransition(org.deku.leoz.mobile.R.anim.main_fadein, org.deku.leoz.mobile.R.anim.splash_fadeout)
-
-        this.finish()
     }
 
     /**
@@ -79,7 +87,7 @@ class StartupActivity : RxAppCompatActivity() {
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
 
-        if (!this.started) {
+        if (!this.app.isInitialized) {
             val ovDatabase = Observable.fromCallable {
             }
 
@@ -182,7 +190,7 @@ class StartupActivity : RxAppCompatActivity() {
                                     handler.postDelayed({
                                         this@StartupActivity.startMainActivity(withAnimation = true)
                                     }, 300)
-                                    this@StartupActivity.started = true
+                                    this.app.isInitialized = true
                                 } catch (e: Throwable) {
                                     log.error(e.message, e)
 

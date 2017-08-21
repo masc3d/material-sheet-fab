@@ -66,6 +66,7 @@ import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.dev.SyntheticInput
+import org.deku.leoz.mobile.ui.activity.StartupActivity
 import org.jetbrains.anko.backgroundColor
 import sx.aidc.SymbologyType
 import sx.android.*
@@ -78,7 +79,7 @@ import java.util.NoSuchElementException
  * Leoz activity base class
  * Created by n3 on 23/02/2017.
  */
-open class Activity : RxAppCompatActivity(),
+open class Activity : BaseActivity(),
         NavigationView.OnNavigationItemSelectedListener,
         ScreenFragment.Listener,
         ActionOverlayView.Listener {
@@ -239,6 +240,23 @@ open class Activity : RxAppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!this.app.isInitialized) {
+            // Currently the startup activity is required for seamless startup
+            // as retrieving the honeywell aidc reader synchronously requires an activity transition.
+            // Without activity transition the aidc service doesn't get opportunity to delivery its instance
+            // and trying to retrieving the aidc instance initially, which is a blocking call, will result in a deadlock.
+            //
+            // We still use the activity task state to determine the most recent active
+            // activity, so we can (at least) restore the most recent activity for the user.
+            val i = Intent(this, StartupActivity::class.java).also {
+                it.putExtra("ACTIVITY", this.javaClass.canonicalName)
+            }
+            this.startActivity(i)
+
+            this.finish()
+            return
+        }
 
         this.setContentView(R.layout.main)
 
@@ -485,12 +503,7 @@ open class Activity : RxAppCompatActivity(),
 
             R.id.nav_logout -> {
                 this.uxNavView.postDelayed({
-                    login.logout()
-                    this.startActivity(
-                            Intent(applicationContext, MainActivity::class.java)
-                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                            Intent.FLAG_ACTIVITY_NEW_TASK))
-                    finish()
+                    onLogout()
                 }, 20)
             }
         }
@@ -691,6 +704,12 @@ open class Activity : RxAppCompatActivity(),
 
                             // Hide navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.GONE
+
+                            // All activities except for Main require login
+                            if (!(this is MainActivity)) {
+                                log.warn("User not set, logging out")
+                                this.onLogout()
+                            }
                         }
                     }
                 }
@@ -726,6 +745,16 @@ open class Activity : RxAppCompatActivity(),
                     this.cameraAidcFragmentVisible = false
                 }
         //endregion
+    }
+
+    fun onLogout() {
+        login.logout()
+
+        finish()
+        this.startActivity(
+                Intent(applicationContext, MainActivity::class.java)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     /**

@@ -18,10 +18,13 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import com.github.salomonbrys.kodein.lazy
 import com.tinsuke.icekick.extension.freezeInstanceState
+import com.tinsuke.icekick.extension.serialState
 import com.tinsuke.icekick.extension.unfreezeInstanceState
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
+import org.deku.leoz.mobile.ui.BaseActivity
+import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.slf4j.LoggerFactory
 
 
@@ -35,6 +38,8 @@ open class Application : MultiDexApplication() {
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     internal val bundle = Bundle()
+
+    var isInitialized: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
@@ -103,7 +108,6 @@ open class Application : MultiDexApplication() {
             eu.davidea.flexibleadapter.utils.Log.setLevel(
                     eu.davidea.flexibleadapter.utils.Log.Level.SUPPRESS)
         }
-
     }
 
     override fun onTerminate() {
@@ -158,7 +162,7 @@ open class Application : MultiDexApplication() {
     //endregion
 }
 
-val Activity.app: Application get() = this.application as Application
+val BaseActivity.app: Application get() = this.application as Application
 
 /**
  * Freezes instance state within application bundle
