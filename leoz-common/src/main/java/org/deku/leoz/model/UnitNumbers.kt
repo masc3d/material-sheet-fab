@@ -58,10 +58,17 @@ class UnitNumber private constructor(
     }
 
     /**
+     * Unit number label check digit
+     */
+    val labelCheckDigit by lazy {
+        CheckDigits.DEKU.calculate(this.value)
+    }
+
+    /**
      * Unit number label content including check digit
      */
     val label by lazy {
-        "${this.value}${CheckDigits.DEKU.calculate(this.value)}"
+        "${this.value}${this.labelCheckDigit}"
     }
 
     companion object {
