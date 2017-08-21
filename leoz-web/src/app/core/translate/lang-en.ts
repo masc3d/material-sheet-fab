@@ -8,6 +8,7 @@ export const LANG_EN_TRANS = {
   'User authentication failed': 'User authentication failed',
   'password': 'Password',
   'password is required': 'Password is required',
+  'loggedinas': 'Logged in as',
   // menu
   'home': 'Home',
   'footer': 'Footer',

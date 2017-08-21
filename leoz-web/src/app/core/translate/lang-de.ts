@@ -8,6 +8,7 @@ export const LANG_DE_TRANS = {
   'User authentication failed': 'Anmeldung fehlgeschlagen',
   'password': 'Kennwort',
   'password is required': 'Kennwort muss angegeben werden',
+  'loggedinas': 'Angemeldet als',
   // menu
   'home': 'Startseite',
   'footer': 'Fussbereich',
