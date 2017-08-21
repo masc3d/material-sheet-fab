@@ -26,7 +26,7 @@ class ObservableRxProperty<T>(
         ReadWriteProperty<Any?, T> {
 
     /** Property update container */
-    class Update<T>(val old: T?, val value: T)
+    data class Update<T>(val old: T?, val value: T)
 
     private var value = default
     private val subject: BehaviorSubject<Update<T>> = BehaviorSubject.create()
@@ -36,17 +36,13 @@ class ObservableRxProperty<T>(
         this.observable.subscribe(observer)
     }
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return value
-    }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T = value
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         this.set(value)
     }
 
-    fun get(): T {
-        return value
-    }
+    fun get(): T = value
 
     fun set(value: T) {
         val old = this.value
