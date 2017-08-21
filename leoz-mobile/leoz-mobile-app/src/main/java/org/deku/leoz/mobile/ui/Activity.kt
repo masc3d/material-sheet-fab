@@ -25,8 +25,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.AnimationUtils
-import android.view.animation.RotateAnimation
 import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
@@ -36,7 +34,6 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
@@ -276,12 +273,12 @@ open class Activity : BaseActivity(),
 
         val toggle = ActionBarDrawerToggle(
                 this,
-                this.drawer_layout,
+                this.uxDrawerLayout,
                 this.uxToolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close)
 
-        this.drawer_layout.addDrawerListener(toggle)
+        this.uxDrawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         //endregion
 
@@ -342,8 +339,8 @@ open class Activity : BaseActivity(),
 
 
     override fun onBackPressed() {
-        if (this.drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            this.drawer_layout.closeDrawer(GravityCompat.START)
+        if (this.uxDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            this.uxDrawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }
@@ -502,13 +499,11 @@ open class Activity : BaseActivity(),
             }
 
             R.id.nav_logout -> {
-                this.uxNavView.postDelayed({
-                    onLogout()
-                }, 20)
+                this.login.logout()
             }
         }
 
-        this.drawer_layout.closeDrawer(GravityCompat.START)
+        this.uxDrawerLayout.closeDrawer(GravityCompat.START)
 
         return false
     }
@@ -707,8 +702,11 @@ open class Activity : BaseActivity(),
 
                             // All activities except for Main require login
                             if (!(this is MainActivity)) {
-                                log.warn("User not set, logging out")
-                                this.onLogout()
+                                finish()
+                                this.startActivity(
+                                        Intent(applicationContext, MainActivity::class.java)
+                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                                        Intent.FLAG_ACTIVITY_NEW_TASK))
                             }
                         }
                     }
@@ -745,16 +743,6 @@ open class Activity : BaseActivity(),
                     this.cameraAidcFragmentVisible = false
                 }
         //endregion
-    }
-
-    fun onLogout() {
-        login.logout()
-
-        finish()
-        this.startActivity(
-                Intent(applicationContext, MainActivity::class.java)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     /**
@@ -844,8 +832,8 @@ open class Activity : BaseActivity(),
                 .bindUntilEvent(fragment, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it.value) {
-                        true -> this.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-                        false -> this.drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                        true -> this.uxDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                        false -> this.uxDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
                     }
                 }
 
