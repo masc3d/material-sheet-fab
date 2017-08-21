@@ -115,7 +115,7 @@ class UserService : UserService {
     }
 
 
-    override fun create(user: User, apiKey: String?) {
+    override fun create(user: User, apiKey: String?, sendCredentials: Boolean) {
 
         var rec = userRepository.findByMail(user.email)
         if (rec != null) {
@@ -127,7 +127,7 @@ class UserService : UserService {
         update(user.email, user, apiKey)
     }
 
-    override fun update(email: String, user: User, apiKey: String?) {
+    override fun update(email: String, user: User, apiKey: String?, sendCredentials: Boolean) {
         apiKey ?:
                 throw DefaultProblem(
                         status = Response.Status.BAD_REQUEST,
@@ -156,6 +156,7 @@ class UserService : UserService {
         val lastName = user.lastName
         val firstName = user.firstName
         val phone = user.phone
+        val mobilePhone = user.phoneMobile
 
         var isNew = false
         var rec = userRepository.findByMail(email)
@@ -312,6 +313,8 @@ class UserService : UserService {
             rec.externalUser = user.isExternalUser
         if (phone != null)
             rec.phone = phone
+        if (mobilePhone != null)
+            rec.phoneMobile = mobilePhone
         if (user.expiresOn != null)
             rec.expiresOn = user.expiresOn
 
@@ -320,17 +323,13 @@ class UserService : UserService {
                     status = Response.Status.BAD_REQUEST,
                     title = "Problem on update")
 
+        if (sendCredentials) {
+            //TODO If SendCredentials is true, the user will receive his credentials via SMS
+        }
+
     }
 
     override fun getById(userId: Int): User {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getMobilePermission(userId: Int): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getPreferences(userId: Int, type: UserPreferenceKey): List<UserService.Preferences> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

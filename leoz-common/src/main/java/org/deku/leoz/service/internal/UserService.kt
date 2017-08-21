@@ -21,6 +21,7 @@ interface UserService {
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
         const val PREF_TYPE = "preference-type"
+        const val SEND_CRED = "send-credentials"
         //const val DEBITOR_NO = "debitor-no"
         //const val HEADERPARAM_APIKEY = "x-api-key"
     }
@@ -63,6 +64,9 @@ interface UserService {
             @get:ApiModelProperty(example = "+496677950", required = false, value = "Phone number")
             var phone: String? = null,
 
+            @get:ApiModelProperty(example = "+491713456789", required = false, value = "Mobile phone number")
+            var phoneMobile: String? = null,
+
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
             var expiresOn: java.sql.Date? = null
     )
@@ -102,20 +106,6 @@ interface UserService {
     @ApiOperation(value = "Get user by ID")
     fun getById(@QueryParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): User
 
-    @GET
-    @Path("/{$USER_ID}/preferences")
-    @ApiOperation(value = "Get preferences of a user")
-    fun getPreferences(
-            @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
-            @QueryParam(PREF_TYPE) @ApiParam(value = "Type of desired preferences", required = false, allowMultiple = true) type: UserPreferenceKey
-    ): List<Preferences>
-
-    @GET
-    @Path("/{$USER_ID}/mobilePermission")
-    @ApiOperation(value = "Get app-permission for user")
-    fun getMobilePermission(
-            @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): Int
-
     /**
      * Create user
      * @param user User to create
@@ -123,7 +113,7 @@ interface UserService {
     @POST
     @Path("/")
     @ApiOperation(value = "Create user")
-    fun create(@ApiParam(value = "User") user: User, @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?)
+    fun create(@ApiParam(value = "User") user: User, @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?, @QueryParam(value = SEND_CRED) @ApiParam(value = "Send credentials to newly created user?", required = false) sendCredentials: Boolean = false)
 
     /**
      * Update user (replaces entire user)
@@ -135,5 +125,6 @@ interface UserService {
     @ApiOperation(value = "Update user")
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
-               @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?)
+               @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?,
+               @QueryParam(value = SEND_CRED) @ApiParam(value = "Send credentials to newly created user?", required = false, hidden = true) sendCredentials: Boolean = false)
 }
