@@ -20,22 +20,22 @@ import { TranslateService } from '../../../core/translate/translate.service';
       <div class="ui-g">
         <div class="ui-g-12 no-pad">
           <button pButton type="button" (click)="allUsers()" label="{{'allusers' | translate}}"
-          style="width:190px"></button>
+                  style="width:190px"></button>
           <button pButton type="button" (click)="justDrivers()" label="{{'drivers' | translate}}"
-          style="width:190px"></button>
-          <button pButton type="button" label="{{'showlist' | translate}}"
-          style="width:190px"></button>
+                  style="width:190px"></button>
+          <button pButton type="button" (click)="toggleVisibility()" label="{{'showlist' | translate}}"
+                  style="width:190px"></button>
         </div>
         <div class="ui-g-12 ui-lg-4 no-pad">
           {{'refreshevery' | translate}}
           <p-dropdown [options]="refreshOptions" [(ngModel)]="selectedRefresh"
-          (onChange)="changeRefreshRate()"></p-dropdown>
+                      (onChange)="changeRefreshRate()"></p-dropdown>
           {{'mins' | translate}}
         </div>
         <div class="ui-g-12 ui-lg-3 no-pad">
           {{'last' | translate}}
           <p-dropdown [options]="intervalOptions" [(ngModel)]="selectedInterval"
-          (onChange)="changeInterval()"></p-dropdown>
+                      (onChange)="changeInterval()"></p-dropdown>
           {{'hs' | translate}}
         </div>
         <div class="ui-g-12 ui-lg-5 no-pad">
@@ -43,8 +43,8 @@ import { TranslateService } from '../../../core/translate/translate.service';
         </div>
       </div>
     </div>
-
-    <p-dataTable [value]="drivers | async | driverfilter: [filterName]" resizableColumns="true" [responsive]="true">
+    <p-dataTable *ngIf="tableIsVisible" [value]="drivers | async | driverfilter: [filterName]" resizableColumns="true"
+                 [responsive]="true">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phoneoffice' | translate}}" [sortable]="true"></p-column>
@@ -68,6 +68,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   drivers: Observable<Driver[]>;
   isPermitted: boolean;
   filterName: string;
+  tableIsVisible: boolean;
 
   private refreshTimer: Observable<number>;
   private subscription: Subscription;
@@ -105,6 +106,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.filterName = 'driverfilter';
     this.tourService.resetMarkerAndRoute();
+    this.tableIsVisible = true;
   }
 
   ngOnDestroy() {
@@ -119,6 +121,10 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.clearTimerMapdisplay();
     this.driverService.getDrivers();
     this.filterName = 'driverfilter';
+  }
+
+  toggleVisibility(): void {
+    this.tableIsVisible = !this.tableIsVisible;
   }
 
   allUsers() {
