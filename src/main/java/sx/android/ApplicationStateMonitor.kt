@@ -34,6 +34,7 @@ class ApplicationStateMonitor(
 
 
     init {
+        log.info("Registering lifecycle callbacks")
         application.registerActivityLifecycleCallbacks(this.handler)
     }
 
@@ -74,7 +75,7 @@ class ApplicationStateMonitor(
             activityCount--
 
             if (activityCount < 0)
-                throw IllegalStateException("Inconsistent state. Application state monitor must be instantiated before any activity starts.")
+                activityCount = 0
 
             if (activityCount == 0) {
                 log.trace("APPLICATION BACKGROUND")
