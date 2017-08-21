@@ -12,13 +12,17 @@ import { AbstractTranslateComponent } from 'app/core/translate/abstract-translat
   template: `
     <div id="main-menu">
       <p-panelMenu [model]="items"></p-panelMenu>
+      <div style="margin-top: 15px; margin-left: 10px">
+        {{ 'loggedinas' | translate }}:<br>{{myEmail}}</div>
     </div>
   `
 
 } )
+
 export class LeftMenuComponent extends AbstractTranslateComponent implements OnInit {
 
   items: MenuItem[];
+  myEmail: string;
 
   constructor( private renderer: Renderer2,
                @Inject( DOCUMENT ) private document: any,
@@ -30,6 +34,8 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
   ngOnInit() {
     super.ngOnInit();
     this.items = this.createItems();
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    this.myEmail = currUser.user.email;
   }
 
   private createItems(): MenuItem[] {
