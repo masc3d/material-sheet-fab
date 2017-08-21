@@ -15,11 +15,11 @@ import java.util.*
 class ParcelViewModel(
         val parcel: Parcel,
         val showOrderTask: Boolean = true
-        ) : BaseObservable() {
+) : BaseObservable() {
 
-    private fun Double.toDimensionFormat(): String {
-        return this.format(1)
-    }
+    private fun Double.toDimensionFormat(): String = this.format(1)
+
+    private val unitNumber by lazy { UnitNumber.parse(this.parcel.number).value }
 
     val length: String
         get() = this.parcel.length.toDimensionFormat()
@@ -31,15 +31,14 @@ class ParcelViewModel(
         get() = this.parcel.width.toDimensionFormat()
 
     val weight: String
-        get() = "${this.parcel.weight.format(1)}"
+        get() = this.parcel.weight.format(1)
 
     val modificationTime: String
         get() = if (this.parcel.modificationTime != null)
             SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(this.parcel.modificationTime)
         else ""
 
-    val number: String
-        get() = "${this.parcel.number}(${UnitNumber.parse(this.parcel.number).valueOrNull?.label?.last()})"
+    val number: String by lazy { "${this.unitNumber.value}-${this.unitNumber.labelCheckDigit}" }
 
     val orderTask by lazy {
         OrderTaskViewModel(orderTask = parcel.order.deliveryTask)
