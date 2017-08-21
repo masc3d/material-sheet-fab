@@ -79,11 +79,11 @@ class MainActivity
 
     //region LoginFragment listener
     override fun onLoginSuccessful() {
-        this.finish()
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
                                 Intent.FLAG_ACTIVITY_NEW_TASK))
+        this.finish()
     }
 
     override fun onLoginPending() {

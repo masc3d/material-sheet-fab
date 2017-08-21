@@ -56,8 +56,6 @@ class StartupActivity : BaseActivity() {
      * Start main activitiy
      */
     private fun startMainActivity(withAnimation: Boolean) {
-        this.finish()
-
         val activityName = this.intent.getStringExtra(EXTRA_ACTIVITY)
                 ?: MainActivity::class.java.canonicalName
 
@@ -67,6 +65,8 @@ class StartupActivity : BaseActivity() {
 
         if (withAnimation)
             this.overridePendingTransition(org.deku.leoz.mobile.R.anim.main_fadein, org.deku.leoz.mobile.R.anim.splash_fadeout)
+
+        this.finish()
     }
 
     /**

@@ -126,9 +126,7 @@ class Login {
                 )
 
                 // Store user in database
-                store.upsert(user)
-
-                return user
+                return store.upsert(user)
             }
 
             /**
@@ -178,7 +176,7 @@ class Login {
                     .get()
                     .first()
 
-            if (lastActiveUser != user) {
+            if (lastActiveUser.id != user.id) {
                 log.warn("Previously active user [${lastActiveUser.email}], current user [${user.email}]. Removing all data.")
 
                 // Remove all data on user switch

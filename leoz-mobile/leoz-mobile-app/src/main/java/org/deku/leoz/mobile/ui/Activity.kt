@@ -702,11 +702,11 @@ open class Activity : BaseActivity(),
 
                             // All activities except for Main require login
                             if (!(this is MainActivity)) {
-                                finish()
                                 this.startActivity(
                                         Intent(applicationContext, MainActivity::class.java)
                                                 .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
                                                         Intent.FLAG_ACTIVITY_NEW_TASK))
+                                finish()
                             }
                         }
                     }
