@@ -9,8 +9,8 @@ import java.util.*
 fun OrderTask.hasCompatibleAppointmentsWith(other: OrderTask): Boolean {
     val tDateStart = this.appointmentStart
     val tDateEnd = this.appointmentEnd
-    val oDateStart = this.appointmentEnd
-    val oDateEnd = this.appointmentEnd
+    val oDateStart = other.appointmentStart
+    val oDateEnd = other.appointmentEnd
 
     // If any has no appointment they are compatible
     if ((tDateStart == null && tDateEnd == null) ||
