@@ -3,17 +3,14 @@ package sx.android.aidc
 import android.content.Context
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
-import com.jakewharton.rxbinding2.view.RxView
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
-import com.trello.rxlifecycle2.RxLifecycle
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import org.slf4j.LoggerFactory
-import io.reactivex.subjects.BehaviorSubject
+import sx.aidc.SymbologyType
 import sx.rx.ObservableRxProperty
-import sx.rx.observableRx
 
 /**
  * Barcode reader implementation using the internal camera
@@ -74,14 +71,14 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
      * Pair mapping of aidc.BarcodeType to zxing.BarcodeFormat
      */
     private val barcodeTypeMapping = listOf(
-            Pair(BarcodeType.Code128, BarcodeFormat.CODE_128),
-            Pair(BarcodeType.Code39, BarcodeFormat.CODE_39),
-            Pair(BarcodeType.Datamatrix, BarcodeFormat.DATA_MATRIX),
-            Pair(BarcodeType.Ean13, BarcodeFormat.EAN_13),
-            Pair(BarcodeType.Ean8, BarcodeFormat.EAN_8),
-            Pair(BarcodeType.Interleaved25, BarcodeFormat.ITF),
-            Pair(BarcodeType.Pdf417, BarcodeFormat.PDF_417),
-            Pair(BarcodeType.QrCode, BarcodeFormat.QR_CODE)
+            Pair(SymbologyType.Code128, BarcodeFormat.CODE_128),
+            Pair(SymbologyType.Code39, BarcodeFormat.CODE_39),
+            Pair(SymbologyType.Datamatrix, BarcodeFormat.DATA_MATRIX),
+            Pair(SymbologyType.Ean13, BarcodeFormat.EAN_13),
+            Pair(SymbologyType.Ean8, BarcodeFormat.EAN_8),
+            Pair(SymbologyType.Interleaved25, BarcodeFormat.ITF),
+            Pair(SymbologyType.Pdf417, BarcodeFormat.PDF_417),
+            Pair(SymbologyType.QrCode, BarcodeFormat.QR_CODE)
     )
 
     private val barcodeFormatByType by lazy {
@@ -95,7 +92,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     private fun mapBarcodeFormats(): List<BarcodeFormat> {
         return this.decoders.mapNotNull {
             when (it) {
-                is BarcodeDecoder -> this.barcodeFormatByType[it.barcodeType]
+                is BarcodeDecoder -> this.barcodeFormatByType[it.symbologyType]
                 else -> null
             }
         }
@@ -114,8 +111,8 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
 
     //region Zxing barcode callback
     override fun barcodeResult(result: BarcodeResult) {
-        val barcodeType = barcodeTypeByFormat[result.barcodeFormat] ?: BarcodeType.Unknown
-        this.readEventSubject.onNext(ReadEvent(data = result.text, barcodeType = barcodeType))
+        val barcodeType = barcodeTypeByFormat[result.barcodeFormat] ?: SymbologyType.Unknown
+        this.readEventSubject.onNext(ReadEvent(data = result.text, symbologyType = barcodeType))
     }
 
     override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>) {

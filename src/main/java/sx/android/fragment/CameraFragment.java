@@ -134,7 +134,7 @@ public class CameraFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_camera, container, false);
+        mRootView = inflater.inflate(R.layout.sx_fragment_camera, container, false);
 
         mPictureImageView = (AsyncImageView) mRootView.findViewById(R.id.pictureImageView);
         if (mPicture != null) {
