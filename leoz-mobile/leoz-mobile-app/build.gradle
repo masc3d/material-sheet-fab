@@ -67,7 +67,7 @@ android {
         applicationId "org.deku.leoz.mobile"
         targetSdkVersion 26
         versionCode 1
-        versionName "0.45-SNAPSHOT"
+        versionName "0.46-ALPHA"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
