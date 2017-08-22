@@ -57,22 +57,23 @@ android {
         }
     }
 
-    flavorDimensions "default"
-
-    productFlavors {
-        dev {
-            dimension "default"
-        }
-
-        prod {
-            dimension "default"
-        }
-    }
+    // TODO: CANARY product flavors, temporary disabled
+//    flavorDimensions "default"
+//
+//    productFlavors {
+//        dev {
+//            dimension "default"
+//        }
+//
+//        prod {
+//            dimension "default"
+//        }
+//    }
 }
 
 dependencies {
     implementation(
-            project(':sx-android'),
+            project(path: ':sx-android', configuration: 'default'),
             project(':sx-common'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
