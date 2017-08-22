@@ -20,7 +20,7 @@ ext {
                     url     : 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 31
+                    target  : 32
             ],
             // Production/live
             live: [
