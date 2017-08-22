@@ -19,7 +19,7 @@ database:
 # Update service settings
 update:
    bundle-name: 'leoz-mobile'
-   version-alias: 'alpha'
+   version-alias: 'snapshot'
    force: false
    # Cycle period in seconds
    period: 3600
