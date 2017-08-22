@@ -12,12 +12,7 @@ import com.github.salomonbrys.kodein.erased.*
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.tinsuke.icekick.extension.serialState
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
-import org.deku.leoz.mobile.Application
-import org.deku.leoz.mobile.app
-import org.deku.leoz.mobile.freezeInstanceState
-import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.service.UpdateService
-import org.deku.leoz.mobile.unfreezeInstanceState
 import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -25,6 +20,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
+import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
@@ -168,8 +164,14 @@ class StartupActivity : BaseActivity() {
                                     }
 
                                     // Initialize location service
-                                    this.startService(
-                                            Intent(applicationContext, LocationService::class.java))
+                                    run {
+                                        val locationSettings = Kodein.global.instance<LocationSettings>()
+
+                                        if (locationSettings.enabled) {
+                                            this.startService(
+                                                    Intent(applicationContext, LocationService::class.java))
+                                        }
+                                    }
 
                                     // Send authorization message
                                     run {
