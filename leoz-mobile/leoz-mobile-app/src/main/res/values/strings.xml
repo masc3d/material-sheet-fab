@@ -295,4 +295,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="title_cash_collection">Cash collection</string>
     <string name="to_be_loaded">To be loaded</string>
     <string name="not_loaded">Not loaded</string>
+    <string name="title_alternativedelivery">Alternativzustellung</string>
+    <string name="deliveryscanning">Delivery scanning</string>
+    <string name="to_be_scanned">To be scanned</string>
 </resources>

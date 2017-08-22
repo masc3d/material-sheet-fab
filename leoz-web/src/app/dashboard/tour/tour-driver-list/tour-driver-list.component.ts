@@ -13,6 +13,12 @@ import { Subscription } from 'rxjs/Subscription';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 
+interface CallbackArguments {
+  driver: Driver;
+  tourService: TourService;
+  interval: string;
+}
+
 @Component( {
   selector: 'app-tour-driver-list',
   template: `
@@ -21,25 +27,29 @@ import { TranslateService } from '../../../core/translate/translate.service';
         <div class="ui-g-12 no-pad">
           <button pButton type="button" (click)="allUsers()" label="{{'allusers' | translate}}"
                   style="width:190px"></button>
-          <button pButton type="button" (click)="justDrivers()" label="{{'drivers' | translate}}"
+          <button pButton type="button" (click)="allDrivers()" label="{{'alldrivers' | translate}}"
                   style="width:190px"></button>
           <button pButton type="button" (click)="toggleVisibility()" label="{{'showlist' | translate}}"
                   style="width:190px"></button>
         </div>
-        <div class="ui-g-12 ui-lg-4 no-pad">
+
+        <div class="ui-g-12 ui-lg-5 no-pad">
           {{'refreshevery' | translate}}
           <p-dropdown [options]="refreshOptions" [(ngModel)]="selectedRefresh"
                       (onChange)="changeRefreshRate()"></p-dropdown>
           {{'mins' | translate}}
         </div>
-        <div class="ui-g-12 ui-lg-3 no-pad">
+        <div class="ui-g-12 ui-lg-7 no-pad">
           {{'last' | translate}}
           <p-dropdown [options]="intervalOptions" [(ngModel)]="selectedInterval"
                       (onChange)="changeInterval()"></p-dropdown>
           {{'hs' | translate}}
         </div>
         <div class="ui-g-12 ui-lg-5 no-pad">
-          {{'latestRefresh' | translate}} {{latestRefresh | date:dateFormatEvenLonger}}
+          {{'latestRefresh' | translate}}: {{latestRefresh | date:dateFormatEvenLonger}}
+        </div>
+        <div class="ui-g-12 ui-lg-7 no-pad">
+          {{'selectedformap' | translate}}: {{displayedMapmode | translate}}
         </div>
       </div>
     </div>
@@ -48,7 +58,7 @@ import { TranslateService } from '../../../core/translate/translate.service';
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phoneoffice' | translate}}" [sortable]="true"></p-column>
-      <p-column field="mobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
+      <p-column field="phoneMobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
       <p-column header="">
         <ng-template let-driver="rowData" pTemplate="body">
           <i class="fa fa-crosshairs fa-fw" aria-hidden="true" (click)="showPositionPeriodically(driver)"></i>
@@ -74,6 +84,8 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   private subscription: Subscription;
   private periodicallyUsedDriver: Driver;
   private periodicallyUsedCallback: Function;
+  private periodicallyUsedFilter: string;
+  private displayedMapmode: string;
 
   constructor( private driverService: DriverService,
                private tourService: TourService,
@@ -102,11 +114,10 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       { label: '60', value: 60 } ];
 
     this.drivers = this.driverService.drivers;
-    this.driverService.getDrivers();
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
-    this.filterName = 'driverfilter';
     this.tourService.resetMarkerAndRoute();
     this.tableIsVisible = true;
+    this.allDrivers();
   }
 
   ngOnDestroy() {
@@ -117,10 +128,12 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     }
   }
 
-  justDrivers() {
+  allDrivers() {
     this.clearTimerMapdisplay();
     this.driverService.getDrivers();
     this.filterName = 'driverfilter';
+    this.displayedMapmode = 'alldrivers';
+    this.showAllPositionsPeriodically( 'alldrivers' );
   }
 
   toggleVisibility(): void {
@@ -131,6 +144,8 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.clearTimerMapdisplay();
     this.userService.getUsers();
     this.filterName = 'userfilter';
+    this.displayedMapmode = 'allusers';
+    this.showAllPositionsPeriodically( 'allusers' );
   }
 
   private clearTimerMapdisplay() {
@@ -140,6 +155,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.latestRefresh = null;
     this.periodicallyUsedDriver = null;
     this.periodicallyUsedCallback = null;
+    this.periodicallyUsedFilter = null;
     this.tourService.resetDisplay();
     this.tourService.resetMarkerAndRoute();
   }
@@ -153,7 +169,8 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   private restartShowPeriodically() {
-    if (this.periodicallyUsedDriver && this.periodicallyUsedCallback) {
+    if ((this.periodicallyUsedDriver && this.periodicallyUsedCallback)
+      || (this.periodicallyUsedFilter && this.periodicallyUsedCallback)) {
       this.showPeriodically();
     }
   }
@@ -164,32 +181,49 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     }
     this.refreshTimer = Observable.timer( 0, this.selectedRefresh * 60 * 1000 );
     this.subscription = this.refreshTimer.subscribe( ( tick: number ) => {
-      this.periodicallyUsedCallback( this.periodicallyUsedDriver, this.tourService, this.selectedInterval );
+      this.periodicallyUsedCallback( {
+        driver: this.periodicallyUsedDriver,
+        tourService: this.tourService,
+        interval: this.selectedInterval
+      } );
       this.latestRefresh = new Date();
     } );
   }
 
+  showAllPositionsPeriodically( filterUserType: string ) {
+    this.periodicallyUsedFilter = filterUserType;
+    this.periodicallyUsedDriver = null;
+    this.periodicallyUsedCallback = this.showAllPositions;
+    this.showPeriodically();
+  }
+
   showPositionPeriodically( driver: Driver ) {
+    this.periodicallyUsedFilter = null;
     this.periodicallyUsedDriver = driver;
     this.periodicallyUsedCallback = this.showPosition;
     this.showPeriodically();
+    this.displayedMapmode = `${this.periodicallyUsedDriver.firstName} ${this.periodicallyUsedDriver.lastName}`;
   }
 
   showRoutePeriodically( driver: Driver ) {
+    this.periodicallyUsedFilter = null;
     this.periodicallyUsedDriver = driver;
     this.periodicallyUsedCallback = this.showRoute;
     this.showPeriodically();
+    this.displayedMapmode = `${this.periodicallyUsedDriver.firstName} ${this.periodicallyUsedDriver.lastName}`;
   }
 
-  showPosition( driver: Driver, tourService: TourService ) {
-    tourService.resetDisplay();
-    tourService.changeActiveMarker( driver );
+  showAllPositions( args: CallbackArguments ) {
+    args.tourService.fetchAllPositions( this.periodicallyUsedFilter );
   }
 
-  showRoute( driver: Driver, tourService: TourService, selectedInterval ) {
-    const asInt = Number.parseInt( selectedInterval, 10 );
+  showPosition( args: CallbackArguments ) {
+    args.tourService.changeActiveMarker( args.driver );
+  }
+
+  showRoute( args: CallbackArguments ) {
+    const asInt = Number.parseInt( args.interval, 10 );
     const duration = asInt ? String( asInt * 60 ) : '300000';
-    tourService.resetDisplay();
-    tourService.changeActiveRoute( driver, duration );
+    args.tourService.changeActiveRoute( args.driver, duration );
   }
 }

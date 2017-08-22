@@ -1,7 +1,7 @@
 export interface Position {
   phone: string;
   name: string;
-  mobile: string;
+  phoneMobile: string;
   latitude: number;
   longitude: number;
   speed: number;
