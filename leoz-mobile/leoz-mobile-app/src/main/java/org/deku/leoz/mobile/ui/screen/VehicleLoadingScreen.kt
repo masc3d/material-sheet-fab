@@ -29,6 +29,7 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
+import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -135,7 +136,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 icon = R.drawable.ic_damaged,
                 color = R.color.colorAccent,
                 background = R.drawable.section_background_accent,
-                title = this.getText(R.string.damaged).toString(),
+                title = this.getText(org.deku.leoz.model.EventNotDeliveredReason.DAMAGED.mobile.text!!).toString(),
                 items = this.deliveryList.damagedParcels.map { it.value }
         )
     }

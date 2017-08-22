@@ -249,4 +249,7 @@
     <string name="service_message_documented_personal_delivery">Achtung: Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
     <string name="not_loaded">Nicht beladen</string>
     <string name="to_be_loaded">Zu beladen</string>
+    <string name="deliveryscanning">Zustellscannung</string>
+    <string name="to_be_scanned">Noch zu scannen</string>
+    <string name="title_alternativedelivery">Alternative delivery</string>
 </resources>
