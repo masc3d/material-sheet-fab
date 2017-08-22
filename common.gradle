@@ -1,0 +1,12 @@
+// Common gradle tasks
+
+/**
+ * Clean gradle cache
+ */
+task cleanGradleCache {
+    group = 'build'
+
+    doLast {
+        new File(this.project.rootDir, '.gradle').deleteDir()
+    }
+}

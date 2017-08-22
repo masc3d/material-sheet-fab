@@ -22,11 +22,14 @@ import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
 import sx.junit.PrototypeTest
+import sx.time.toTimestamp
+import java.sql.Timestamp
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -52,6 +55,7 @@ open class QueryPerformanceTest {
     @Inject
     private lateinit var entityManagerFactory: EntityManagerFactory
 
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
     @Inject
     private lateinit var dataSource: DataSource
 
@@ -167,16 +171,26 @@ open class QueryPerformanceTest {
     open fun testSelectEntityQueryDsl() {
         val qRoute = QMstRoute.mstRoute
 
+        val date = Date().toTimestamp()
         for (i in 0..1000)
             run(
                     block = {
-//                        val sw = Stopwatch.createStarted()
+                        val sw = Stopwatch.createStarted()
+                        val t = System.currentTimeMillis()
+                        val ts = Timestamp(Date().time)
                         val result = JPAQuery<MstRoute>(this.entityManager)
                                 .from(qRoute)
-                                .where(qRoute.syncId.eq(100))
+                                .where(qRoute.layer.eq(1)
+                                        .and(qRoute.country.eq("DE"))
+                                        .and(qRoute.zipFrom.loe("50181"))
+                                        .and(qRoute.zipTo.goe("50181"))
+                                        .and(qRoute.validFrom.before(ts))
+                                        .and(qRoute.validTo.after(ts))
+                                )
                                 .createQuery()
-                                .singleResult
-//                        log.info("${result}")
+                                .resultList
+
+                        log.info("${sw} ${result.count()} ${ts}")
                     },
                     threads = 4,
                     repeat = 1000
@@ -196,7 +210,7 @@ open class QueryPerformanceTest {
         for (i in 0..500)
             run(
                     block = {
-//                        val sw = Stopwatch.createStarted()
+                        //                        val sw = Stopwatch.createStarted()
                         val result = this.routeRepository.findAll(qRoute.syncId.eq(r.nextInt(100).toLong()))
 //                        log.info("${result}")
                     },
@@ -221,7 +235,7 @@ open class QueryPerformanceTest {
         for (i in 0..1000)
             run(
                     block = {
-//                        val sw = Stopwatch.createStarted()
+                        //                        val sw = Stopwatch.createStarted()
                         val result = q
                                 .set(pSyncId, 100)
                                 .createQuery()

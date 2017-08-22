@@ -1,0 +1,407 @@
+/* You can add global styles to this file, and also import other style files */
+$color-deku-blue: #184b7d;
+$color-sortable-th: #7493b1;
+
+html {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(to bottom, #cfcfcf, white)
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: transparent;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  overflow-y: scroll;
+}
+
+h2 {
+  font-weight: normal;
+  margin: 0;
+  padding: 8px;
+}
+
+.text-muted {
+  color: #2d5682;
+}
+
+.text-red {
+  color: #cd151e;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/************* START TOP MENU **************/
+#top-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9;
+  border: 0;
+  border-top: 2px solid #f8ae18;
+  border-bottom: 1px solid #9a9797;
+  background: linear-gradient(to bottom, #cfcfcf, #d4d4d4)
+}
+
+#top-menu > div {
+  float: left;
+}
+
+#top-menu .title {
+  min-width: 270px;
+  cursor: pointer;
+}
+
+#top-menu .title h2 {
+  font-size: 22px;
+  padding: 22px 10px;
+  font-weight: 500;
+  color: #fff;
+  margin: 0;
+}
+
+#mobile-main-menu {
+  display: none;
+  cursor: pointer;
+}
+
+#mobile-main-menu {
+  padding: 24px 15px;
+}
+
+#mobile-main-menu img {
+  height: 16px;
+}
+
+/************* END TOP MENU **************/
+
+/************* START MAIN MENU **************/
+#main-menu {
+  width: 212px;
+  height: calc(100% - 88px);
+  float: left;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 999;
+  -webkit-transition: left .5s ease;
+  -moz-transition: left .5s ease;
+  -ms-transition: left .5s ease;
+  -o-transition: left .5s ease;
+  transition: left .5s ease;
+  background: linear-gradient(to bottom, #cfcfcf, white);
+  border: 1px solid azure;
+  overflow-y: auto;
+}
+
+/************* END MAIN MENU **************/
+
+/************* START MAIN **************/
+#main {
+  width: calc(100% - 220px);
+  height: 100%;
+  float: right;
+  margin-top: 95px;
+  box-sizing: border-box;
+}
+
+/************* END MAIN **************/
+
+/************* START CONTENT **************/
+#content p,
+#content li:not([class^='L']),
+#content .accordion h4 {
+  font-size: 17px;
+}
+
+#content li:not([class^='L']) {
+  line-height: 30px;
+}
+
+#content li:not([class^='L']) a,
+#content p a {
+  text-decoration: none;
+}
+
+/************* END CONTENT **************/
+
+@media (max-width: 1020px) {
+  #top-menu {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    border-bottom: 1px solid #9a9797;
+  }
+
+  #top-menu #mobile-main-menu {
+    order: 3;
+  }
+
+  #top-menu .title {
+    order: 2;
+    width: calc(100% - 95px);
+    text-align: center;
+    min-width: 1px;
+  }
+
+  #mobile-main-menu {
+    display: inline-block;
+  }
+
+  #main-menu {
+    left: -100%;
+    z-index: 1001;
+  }
+
+  .isOpenMenu #main-menu {
+    left: 0;
+  }
+
+  #main {
+    width: 100%;
+    float: none;
+  }
+}
+
+@media (max-width: 600px) {
+  #top-menu .title h2 {
+    padding: 15px;
+  }
+
+  #top-menu .logo {
+    margin: 0 15px 0 0;
+  }
+
+  #mobile-main-menu {
+    padding: 17px 15px;
+  }
+
+  #main-menu {
+    height: calc(100% - 55px);
+  }
+}
+
+.app-footer {
+  padding: 3rem 2rem;
+  margin-top: 3rem;
+  background-color: transparent;
+  text-align: left;
+  color: #818a91 !important;
+}
+
+@media (min-width: 576px) {
+  .container {
+    width: 540px;
+    max-width: 100%
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: 720px;
+    max-width: 100%
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    width: 960px;
+    max-width: 100%
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1140px;
+    max-width: 100%;
+  }
+}
+
+a {
+  color: #2d5682;
+  text-decoration: none;
+}
+
+.card.customClass,
+.card.customClass .card-header,
+.panel.customClass {
+  background-color: #5bc0de;
+  color: #fff;
+}
+
+.panel.customClass .panel-body {
+  background-color: #337aa7;
+}
+
+.panel-default .panel-heading {
+  color: black;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.panel-heading {
+  padding: 5px 15px;
+  border-bottom: 1px solid transparent;
+}
+
+.panel-title {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 16px;
+  color: #2d5682;
+}
+
+.yaga-map {
+  height: 600px;
+}
+
+.leaflet-container {
+  margin-top: 10px;
+}
+
+input.ng-invalid, select.ng-invalid, input.invalid, p-dropdown.ng-invalid > div > label {
+  border-left: 5px solid red !important;
+}
+
+input.ng-valid, select.ng-valid, p-dropdown.ng-valid > div > label {
+  padding-left: 5px;
+}
+
+/*** overwriting styles from primeng **/
+/* PanelMenu */
+.ui-panelmenu .ui-panelmenu-header.ui-state-active,
+.ui-panelmenu .ui-panelmenu-header.ui-state-active a {
+  border-color: #989a9c;
+  background: #989a9c;
+  color: #FFFFFF;
+}
+
+a {
+  text-decoration: none !important;
+  &:hover,
+  &:focus {
+    color: $color-deku-blue !important;
+  }
+}
+
+.ui-state-disabled, .ui-widget:disabled {
+  opacity: 0.7;
+}
+
+.ui-widget-header .ui-state-active, .ui-widget-content .ui-state-active, .ui-state-active {
+  border-color: #bebebe;
+  background: #ffffff;
+  //color: #212121;
+}
+
+.ui-panelmenu .ui-panelmenu-header.ui-state-active, .ui-panelmenu .ui-panelmenu-header.ui-state-active a {
+  border-color: #c0c0c0;
+  background: #ffffff;
+  color: #212121;
+}
+
+.ui-widget-content .ui-state-active, .ui-state-active {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #212121;
+}
+
+.ui-message.ui-messages-error {
+  color: #f44336;
+  background-color: transparent;
+  border: 0;
+}
+
+.ui-messages {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.ui-messages.ui-messages-error {
+  color: #f44336;
+  background-color: #eeeeee;
+  border-color: #f44336;
+}
+
+.ui-messages.ui-messages-success {
+  color: #4CAF50;
+  background-color: #eeeeee;
+  border-color: #4CAF50;
+}
+
+p-tabmenu > div,
+p-tabview > div {
+  background: transparent !important;
+}
+
+p-tabview > div > ul {
+  border: 0 !important;
+}
+
+p-tabpanel > div {
+  border: 1px solid darkgrey !important;
+  padding: 5px !important;
+}
+
+.ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
+  background-color: $color-deku-blue;
+
+  &:enabled:hover,
+  &:focus {
+    background-color: lighten($color-deku-blue, 7%) !important;
+  }
+}
+
+.ui-datatable th.ui-state-active {
+  background-color: $color-sortable-th !important;
+  color: #ffffff;
+}
+
+.ui-state-default a {
+  color: #000000 !important;
+  font-weight: normal;
+}
+
+.ui-panelmenu .ui-panelmenu-header.ui-state-active a {
+  color: #000000 !important;
+}
+
+.ui-panelmenu .ui-panelmenu-content .ui-menuitem-link {
+  color: #000000 !important;
+}
+
+.ui-fieldset {
+  border: 1px solid darkgrey;
+  background-color: transparent;
+  height: 100%;
+}
+
+.ui-fieldset, .ui-fieldset .ui-fieldset-legend {
+  background: transparent;
+  color: #000000;
+  padding: 0 5px;
+}
+
+.ui-fieldset .ui-fieldset-legend {
+  border: 1px solid transparent !important;
+}

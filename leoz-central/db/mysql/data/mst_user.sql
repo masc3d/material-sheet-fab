@@ -21,7 +21,7 @@
 
 LOCK TABLES `mst_user` WRITE;
 /*!40000 ALTER TABLE `mst_user` DISABLE KEYS */;
-INSERT INTO `mst_user` (`id`, `key_id`, `debitor_id`, `alias`, `email`, `role`, `password`, `active`, `expires_on`, `firstname`, `lastname`, `external_user`, `phone`, `ts_created`, `ts_updated`, `ts_lastlogin`) VALUES (1,1,1,'dev','dev@leoz','user','e03c1faf96e4484bba2d63cfada94d88d3cdf8ff',1,'2017-06-30','dev','leoz',NULL,NULL,'2017-05-24 19:01:50','2017-05-25 10:03:11',NULL);
+INSERT INTO `mst_user` (`key_id`, `debitor_id`, `alias`, `email`, `role`, `password`, `active`, `expires_on`, `firstname`, `lastname`, `external_user`, `phone`, `ts_created`, `ts_updated`, `ts_lastlogin`) VALUES (1,1,'dev','dev@leoz','USER','e03c1faf96e4484bba2d63cfada94d88d3cdf8ff',1,'2099-12-31','dev','leoz',NULL,NULL,'2017-05-24 19:01:50','2017-05-25 10:03:11',NULL);
 /*!40000 ALTER TABLE `mst_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

@@ -1,10 +1,9 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
-import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
-import org.deku.leoz.hashUserPassword
+import org.deku.leoz.service.internal.UserService.User
 import sx.io.serialization.Serializable
 import sx.rs.PATCH
 import javax.ws.rs.Consumes
@@ -70,7 +69,10 @@ interface AuthorizationService {
             /** Device IMEI */
             @ApiModelProperty(value = "Mobile device imei", example = "990000862471854", required = true)
             var imei: String = ""
-    )
+    ) {
+        /** Empty companion for attaching extension methods */
+        companion object {}
+    }
 
     /**
      * Mobile authorization request
@@ -86,39 +88,9 @@ interface AuthorizationService {
     /**
      * Web authorization response
      */
-    data class WebResponse(
+    data class Response(
             var key: String = "",
             var user: User? = null
-    )
-
-    /**
-     * Created by 27694066 on 25.04.2017.
-     */
-    @ApiModel(description = "User Model")
-    data class User(
-            @get:ApiModelProperty(example = "foo@bar.com", required = true, value = "User identifier")
-            var email: String = "@",
-
-            @get:ApiModelProperty(example = "12345678", required = false, value = "Allocation of User to debitor")
-            var debitorId: Int? = null,
-
-            @get:ApiModelProperty(example = "foo.bar", required = false, value = "Alias of the user")
-            var alias: String? = null,
-
-            @get:ApiModelProperty(example = "User", required = true, value = "Role of the user", allowableValues = "Admin, PowerUser, User, Driver, Customer")
-            var role: String? = null,
-
-            @get:ApiModelProperty(example = "Foo", required = false, value = "First name")
-            var firstName: String? = null,
-
-            @get:ApiModelProperty(example = "Bar", required = false, value = "Last name")
-            var lastName: String? = null,
-
-            @get:ApiModelProperty(example = "true", required = false, value = "Active user")
-            var active: Boolean? = null,
-
-            @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
-            var expiresOn: java.sql.Date? = null
     )
 
     /**
@@ -128,7 +100,7 @@ interface AuthorizationService {
     @PATCH
     @Path("/mobile")
     @ApiOperation(value = "Request mobile device authorization")
-    fun authorizeMobile(request: MobileRequest): WebResponse
+    fun authorizeMobile(request: MobileRequest): Response
 
     /**
      * Request authorization
@@ -137,7 +109,7 @@ interface AuthorizationService {
     @PATCH
     @Path("/web")
     @ApiOperation(value = "Request web authorization")
-    fun authorizeWeb(request: Credentials): WebResponse
+    fun authorize(request: Credentials): Response
 
     companion object {
         // TODO: extension methods on interface level will break feign. also this looks like it rather belongs to mst_user/leoz-central

@@ -11,6 +11,10 @@ import sx.ConfigurationMapPath
 class RemoteSettings(private val map: sx.ConfigurationMap) {
     val host: String by map.value("")
 
+    val hostIsProductive by lazy {
+        this.host == "leoz.derkurier.de"
+    }
+
     @sx.ConfigurationMapPath("remote.http")
     inner class Http {
         val port: Int by map.value(0)
@@ -24,4 +28,11 @@ class RemoteSettings(private val map: sx.ConfigurationMap) {
 
     val http = Http()
     val broker = Broker()
+
+    override fun toString(): String {
+        return "Host: $host\n" +
+                "Port: ${Http().port}\n" +
+                "SSL: ${Http().ssl}\n" +
+                "NativePort (Broker): ${Broker().nativePort}"
+    }
 }

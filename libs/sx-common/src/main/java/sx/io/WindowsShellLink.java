@@ -198,8 +198,8 @@ public class WindowsShellLink {
         }
 
         @Override
-        protected List getFieldOrder() {
-            return Arrays.asList(new String[]{"vtbl"});
+        protected List<String> getFieldOrder() {
+            return Arrays.asList("vtbl");
         }
     }
 
@@ -231,9 +231,8 @@ public class WindowsShellLink {
         }
 
         @Override
-        protected List getFieldOrder() {
-            return Arrays.asList(new String[]{
-                    "QueryInterface",
+        protected List<String> getFieldOrder() {
+            return Arrays.asList("QueryInterface",
                     "AddRef",
                     "Release",
                     "GetPath",
@@ -253,8 +252,7 @@ public class WindowsShellLink {
                     "SetIconLocation",
                     "SetRelativePath",
                     "Resolve",
-                    "SetPath"
-            });
+                    "SetPath");
         }
     }
 
@@ -266,8 +264,8 @@ public class WindowsShellLink {
         }
 
         @Override
-        protected List getFieldOrder() {
-            return Arrays.asList(new String[]{"vtbl"});
+        protected List<String> getFieldOrder() {
+            return Arrays.asList("vtbl");
         }
     }
 
@@ -287,9 +285,8 @@ public class WindowsShellLink {
         }
 
         @Override
-        protected List getFieldOrder() {
-            return Arrays.asList(new String[]{
-                    "QueryInterface",
+        protected List<String> getFieldOrder() {
+            return Arrays.asList("QueryInterface",
                     "AddRef",
                     "Release",
                     "GetClassID",
@@ -297,8 +294,7 @@ public class WindowsShellLink {
                     "Load",
                     "Save",
                     "SaveCompleted",
-                    "GetCurFile",
-            });
+                    "GetCurFile");
         }
     }
 

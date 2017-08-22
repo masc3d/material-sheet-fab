@@ -2,43 +2,55 @@ package org.deku.leoz.mobile
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
+import android.provider.Settings
 import android.support.multidex.MultiDexApplication
 import android.support.v7.app.AppCompatDelegate
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.bind
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.singleton
+import com.github.salomonbrys.kodein.lazy
 import com.tinsuke.icekick.extension.freezeInstanceState
+import com.tinsuke.icekick.extension.serialState
 import com.tinsuke.icekick.extension.unfreezeInstanceState
+import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
+import org.deku.leoz.mobile.ui.BaseActivity
+import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.slf4j.LoggerFactory
-import sx.ConfigurationMap
-import sx.ConfigurationMapPath
+
 
 /**
  * Application
  * Created by masc on 10/12/2016.
  */
-open class Application : MultiDexApplication(), android.app.Application.ActivityLifecycleCallbacks {
-    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+open class Application : MultiDexApplication() {
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     internal val bundle = Bundle()
+
+    var isInitialized: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
 
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-
+        // region Injection setup
         // Base modules
         Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
         Kodein.global.addImport(SettingsConfiguration.module)
 
-        // Android specific modules
+        //Android specific modules
         Kodein.global.addImport(androidModule)
         Kodein.global.addImport(Kodein.Module {
             bind<Context>() with singleton { this@Application.applicationContext }
@@ -47,8 +59,10 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         })
 
         // Higher level modules
+        Kodein.global.addImport(ApplicationConfiguration.module)
         Kodein.global.addImport(ExecutorConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
+        Kodein.global.addImport(RepositoryConfiguration.module)
         Kodein.global.addImport(ModelConfiguration.module)
         Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(ServiceConfiguration.module)
@@ -57,8 +71,7 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
         Kodein.global.addImport(ToneConfiguration.module)
         Kodein.global.addImport(MqttConfiguration.module)
-
-        this.registerActivityLifecycleCallbacks(this)
+        //endregion
 
         //region Global exception handler
         run {
@@ -83,10 +96,21 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
             }
         }
         //endregion
+
+        // Enable app compat vector support
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        if (!BuildConfig.DEBUG) {
+            // FlexibleAdapter logging is currently not compatible with obfuscated builds
+            // Internally tries to extract a stack trace element which does not
+            // work with obfuscated class names (presumably)
+            // TODO: should be investigated/reported/fixed upstream
+            eu.davidea.flexibleadapter.utils.Log.setLevel(
+                    eu.davidea.flexibleadapter.utils.Log.Level.SUPPRESS)
+        }
     }
 
     override fun onTerminate() {
-        this.unregisterActivityLifecycleCallbacks(this)
         super.onTerminate()
     }
 
@@ -117,48 +141,28 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
-    override fun onConfigurationChanged(p0: Configuration?) {
-        log.trace("CONFIGCHANGE")
+    //region Component callbacks
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        log.trace("CONFIGURATION CHANGE")
+
+        super.onConfigurationChanged(newConfig)
     }
 
     override fun onLowMemory() {
-        log.trace("LOWMEM")
+        log.trace("MEMORY LOW")
+
+        super.onLowMemory()
     }
 
-    override fun onTrimMemory(p0: Int) {
-        log.trace("TRIMMEM")
-    }
+    override fun onTrimMemory(level: Int) {
+        log.trace("MEMORY TRIMMED [${level}]")
 
-    override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
-        log.trace("ACT_CREATED [${p0}]")
+        super.onTrimMemory(level)
     }
-
-    override fun onActivityDestroyed(p0: Activity?) {
-        log.trace("ACT_DESTROYED [${p0}]")
-    }
-
-    override fun onActivityPaused(p0: Activity?) {
-        log.trace("ACT_PAUSED [${p0}]")
-    }
-
-    override fun onActivityResumed(p0: Activity?) {
-        log.trace("ACT_RESUMED [${p0}]")
-    }
-
-    override fun onActivitySaveInstanceState(p0: Activity?, p1: Bundle?) {
-        log.trace("ACT_SAVEINSTANCESTATE [${p0}]")
-    }
-
-    override fun onActivityStarted(p0: Activity?) {
-        log.trace("ACT_STARTED [${p0}]")
-    }
-
-    override fun onActivityStopped(p0: Activity?) {
-        log.trace("ACT_STOPPED [${p0}]")
-    }
+    //endregion
 }
 
-val Activity.app: Application get() = this.application as Application
+val BaseActivity.app: Application get() = this.application as Application
 
 /**
  * Freezes instance state within application bundle

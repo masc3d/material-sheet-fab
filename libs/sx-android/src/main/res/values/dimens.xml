@@ -4,5 +4,6 @@
     <dimen name="horizontal_margin">6dp</dimen>
     <dimen name="vertical_margin">6dp</dimen>
     <dimen name="horizontal_large_margin">12dp</dimen>
+    <dimen name="horizontal_xlarge_margin">20dp</dimen>
     <dimen name="vertical_large_margin">12dp</dimen>
 </resources>

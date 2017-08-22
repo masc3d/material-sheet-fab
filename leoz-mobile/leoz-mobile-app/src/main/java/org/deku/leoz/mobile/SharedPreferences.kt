@@ -1,10 +1,7 @@
 package org.deku.leoz.mobile
 
-/**
- * Created by 27694066 on 05.05.2017.
- */
-val PREFERENCE_TAG = "leoz.app"
-
 enum class SharedPreference(val key: String) {
+    /** The currently authenticated user (email) */
+    AUTHENTICATED_USER_ID("authenticated_user_id"),
     CHANGELOG_VERSION("changelog_version")
 }

@@ -40,7 +40,7 @@ open class MessageListenerConfiguration {
     // Listeners
     val nodeQueueListener by lazy {
         SpringJmsListener(
-                JmsEndpoints.node.queue(this.application.identity.key),
+                JmsEndpoints.node.queue(this.application.identity.uid),
                 executorService)
     }
 

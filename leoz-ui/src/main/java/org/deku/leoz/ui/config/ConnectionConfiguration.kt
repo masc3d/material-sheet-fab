@@ -37,18 +37,26 @@ class ConnectionConfiguration {
     val restConfiguration: RestClientConfiguration by Kodein.global.lazy.instance()
     val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
 
+    class NodeUpdatedEvent(
+            val node: UdpDiscoveryService.Node<DiscoveryInfo>? = null
+    )
+
     // Events
-    private val _nodeUpdatedEvent = PublishSubject.create<UdpDiscoveryService.Node<DiscoveryInfo>?>()
+    private val _nodeUpdatedEvent = PublishSubject.create<NodeUpdatedEvent>()
     /** Node update event */
     val nodeUpdatdEvent by lazy { _nodeUpdatedEvent.hide() }
 
     /**
      * Active node that services should connect to
      */
-    var node: UdpDiscoveryService.Node<DiscoveryInfo>? by Delegates.observable(null) { _, o: UdpDiscoveryService.Node<DiscoveryInfo>?, n: UdpDiscoveryService.Node<DiscoveryInfo>? ->
+    var node: UdpDiscoveryService.Node<DiscoveryInfo>? by Delegates.observable(null) {
+        _,
+        o: UdpDiscoveryService.Node<DiscoveryInfo>?,
+        n: UdpDiscoveryService.Node<DiscoveryInfo>? ->
+
         val DEFAULT_HOST = "localhost"
         val oldHost = o?.address?.hostName ?: DEFAULT_HOST
-        val newHost = node?.address?.hostName ?: DEFAULT_HOST
+        val newHost = n?.address?.hostName ?: DEFAULT_HOST
 
         if (oldHost != newHost) {
             // Delegate setting to configurations
@@ -56,7 +64,7 @@ class ConnectionConfiguration {
             this.bundleConfiguration.rsyncHost = newHost
             log.info("Updated remote host to [${newHost}]")
 
-            _nodeUpdatedEvent.onNext(n)
+            _nodeUpdatedEvent.onNext(NodeUpdatedEvent(n))
         }
     }
 }

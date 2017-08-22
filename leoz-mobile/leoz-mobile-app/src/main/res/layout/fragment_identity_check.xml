@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckFragment">
+    tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -26,7 +26,7 @@
                 android:layout_margin="20dp"
                 android:background="@drawable/rounded_corner_background_white"
                 android:ems="10"
-                android:hint="Document type"
+                android:hint="@string/document_type"
                 android:inputType="textCapCharacters|textNoSuggestions"
                 android:padding="5dp" />
 
@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Identity-Check"
+            android:text="@string/identity_check"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -59,7 +59,7 @@
                 android:id="@+id/textView18"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Document" />
+                android:text="@string/document" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -72,10 +72,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
-                    android:hint="Passport/Drivers license"
-                    android:inputType="textPersonName" />
+                    android:hint="@string/passport_drivers_license"
+                    android:inputType="none|textPersonName" />
 
                 <ImageView
                     android:id="@+id/imageView5"
@@ -97,7 +96,7 @@
                 android:id="@+id/textView16"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Doc.-No." />
+                android:text="@string/doc_no" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -110,10 +109,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
-                    android:hint="Document No."
-                    android:inputType="text" />
+                    android:hint="@string/document_no"
+                    android:inputType="none|text" />
 
                 <ImageView
                     android:id="@+id/imageView6"
@@ -134,7 +132,7 @@
                 android:id="@+id/textView11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Authority" />
+                android:text="@string/authority" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -147,10 +145,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
-                    android:hint="Name of Authority"
-                    android:inputType="text" />
+                    android:hint="@string/name_of_authority"
+                    android:inputType="none|text" />
 
                 <ImageView
                     android:id="@+id/imageView7"
@@ -170,7 +167,7 @@
                 android:id="@+id/textView12"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Expiry" />
+                android:text="@string/expiry" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -183,10 +180,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:editable="false"
                     android:ems="10"
                     android:hint="DD.MM.YYYY"
-                    android:inputType="date" />
+                    android:inputType="date"
+                    tools:ignore="none|HardcodedText" />
 
                 <ImageView
                     android:id="@+id/imageView8"

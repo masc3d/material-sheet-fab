@@ -13,4 +13,12 @@ export class PermissionCheck {
     return this.roleSorting.indexOf( ownRole) <= this.roleSorting.indexOf( givenRole );
   }
 
+  public static hasLessPermissions( ownRole: User.RoleEnum, givenRole: User.RoleEnum ): boolean {
+    return this.roleSorting.indexOf( ownRole) < this.roleSorting.indexOf( givenRole );
+  }
+
+  public static myself( user: User ): boolean {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    return currUser && currUser.user.email === user.email;
+  }
 }

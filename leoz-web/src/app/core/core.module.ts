@@ -5,6 +5,8 @@ import { AuthenticationGuard } from './auth/authentication.guard';
 import { Translation } from './translate/translation';
 import { TranslateService } from './translate/translate.service';
 import { RoleGuard } from './auth/role.guard';
+import { KeyUpEventService } from './key-up-event.service';
+import { SoundService } from './sound.service';
 
 @NgModule( {
   imports: [
@@ -20,10 +22,9 @@ export class CoreModule {
       providers: [
         AuthenticationService,
         AuthenticationGuard,
-        // AdminRoleGuard,
+        KeyUpEventService,
+        SoundService,
         RoleGuard,
-        // UserRoleGuard,
-        // DriverRoleGuard,
         Translation,
         TranslateService ]
     };

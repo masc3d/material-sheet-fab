@@ -16,6 +16,8 @@ import org.deku.leoz.service.entity.DayType
 import org.deku.leoz.service.entity.ServiceErrorCode
 import org.deku.leoz.service.pub.RoutingService.*
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import sx.rs.auth.ApiKey
 import sx.time.toDate
 import sx.time.toLocalDate
@@ -270,15 +272,20 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 //
 //        val rRoutes = emq.resultList
 //
-        val qRoute = QMstRoute.mstRoute
+//        val qRoute = QMstRoute.mstRoute
 
-        val rRoutes = routeRepository.findAll(
-                qRoute.layer.eq(routingLayer.layer)
-                        .and(qRoute.country.eq(requestParticipant?.country?.toUpperCase()))
-                        .and(qRoute.zipFrom.loe(queryZipCode))
-                        .and(qRoute.zipTo.goe(queryZipCode))
-                        .and(qRoute.validFrom.before(validDate?.toTimestamp()))
-                        .and(qRoute.validTo.after(validDate?.toTimestamp())))
+        val rRoutes = routeRepository.findRouteQuery.create { query, p ->
+            query
+                    .set(p.layer, routingLayer.layer)
+                    .set(p.country, requestParticipant?.country?.toUpperCase())
+                    .set(p.zip, queryZipCode)
+                    .set(p.validDate, validDate?.toTimestamp())
+        }
+                .execute()
+                // Sorting a few records in memory is much faster than adding sort criteria to complex query with h2
+                .sortedByDescending {
+                    it.syncId
+                }
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
@@ -326,8 +333,10 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
         participant.island = (rRoute.island != 0)
         participant.earliestTimeOfDelivery = rRoute.etod!!.toShortTime()
         participant.term = rRoute.term!!
-        if (rRoute.ltodsa != null)
-            participant.sundayDeliveryUntil = rRoute.ltodsa.toShortTime()
+        if (rRoute.saturdayOk != 0 && rRoute.ltodsa.toShortTime() != ShortTime(localTime = "00:00"))
+            participant.saturdayDeliveryUntil = rRoute.ltodsa.toShortTime()
+        if (rRoute.ltodholiday.toShortTime() != ShortTime(localTime = "00:00"))
+            participant.sundayDeliveryUntil = rRoute.ltodholiday.toShortTime()
 
         return participant
     }
@@ -419,11 +428,12 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 
             var validZip = true
 
-            while (k < this.zipFormat.length && validZip) {
+            while (i < cZip.length && k <= this.zipFormat.length && validZip) {
                 if (i + 1 > cZip.length)
                     csZip = ""
                 else
                     csZip = cZip.get(i).toString()
+
                 csZipFormat = cZipFormat.get(k).toString()
                 csNew = ""
                 when (csZipFormat) {
@@ -438,7 +448,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
                         i++
                         k++
                     } else if (csZip == " ") {
-                        i = i + 1
+                        i++
                     } else if (Ints.tryParse(csZip) == null) {
                         validZip = false
                     } else {
@@ -459,11 +469,13 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
                         csNew = csZip
                     }
                     "L" -> if (csZip == "")
-                    else if (csZip.contains("abcdefghijklmnopqrstuvwxyz0123456789 ")) {
+                        validZip = false
+                    else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ".contains(csZip)) {
                         i++
                         k++
                         csNew = csZip
                     } else {
+                        validZip = false
                         zipConform = ""
                     }
                     "G" -> {

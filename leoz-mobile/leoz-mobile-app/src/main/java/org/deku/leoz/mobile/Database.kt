@@ -1,24 +1,24 @@
 package org.deku.leoz.mobile
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import com.github.salomonbrys.kodein.erased.instance
-import org.flywaydb.core.Flyway
-import org.flywaydb.core.api.android.ContextHolder
+import android.database.sqlite.SQLiteOpenHelper
 import org.slf4j.LoggerFactory
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
-import io.requery.android.sqlite.DatabaseSource
+import io.requery.android.database.sqlite.SQLiteDatabase
+import io.requery.android.sqlitex.SqlitexDatabaseSource
+import io.requery.cache.EntityCacheBuilder
 import io.requery.reactivex.KotlinReactiveEntityStore
+import io.requery.sql.ConfigurationBuilder
 import io.requery.sql.KotlinEntityDataStore
-import org.deku.leoz.mobile.data.requery.Models
-import sx.Stopwatch
-import sx.rx.toHotReplay
+import io.requery.sql.TableCreationMode
+import org.deku.leoz.mobile.model.entity.Models
 
 /**
  * Database
  * Created by n3 on 17/02/2017.
+ * @param context
+ * @param name Database name
+ * @param clean Remove database prior to initialization
  */
 class Database(
         val context: Context,
@@ -28,47 +28,38 @@ class Database(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
-     * Asynchronous database migration with deferred result
+     * Database schema version
      */
-    inner class Migration {
-        /**
-         * Most recent asynchronous migration result. Null is ok.
-         */
-        var result: Throwable? = null
-            private set
+    data class SchemaVersion(
+            val major: Int,
+            val minor: Int
+    ) {
+        val sqliteVersion by lazy { major * MAJOR_BASE + minor }
 
-        /**
-         * Migrate database (asynchronously)
-         * @return Hot observable emitting the number of successfully applied migrations
-         */
-        fun run(): Observable<Int> {
-            return Observable.fromCallable {
+        companion object {
+            /** Number base for major version updates */
+            val MAJOR_BASE = 1000
 
-                // Initialize/run database schema
-                val jdbcUrl = String.format("jdbc:sqldroid:%s", this@Database.file)
-                val flyway = Flyway()
-                flyway.setDataSource(jdbcUrl, "", "")
-
-                val sw = Stopwatch.createStarted()
-                val result = flyway.migrate()
-
-                // This may appear to take up to a second on older devices
-                // which is misleading as migration is usually done threaded, simultaneously
-                // with other initialization tasks. Even on older devices flyway migration
-                // won't affect startup time significantly
-                log.info("Migration completed in ${sw}")
-                result
+            fun parse(sqliteVersion: Int): SchemaVersion {
+                return SchemaVersion(
+                        major = sqliteVersion.div(MAJOR_BASE),
+                        minor = sqliteVersion.rem(MAJOR_BASE)
+                )
             }
-                    .subscribeOn(Schedulers.newThread())
-                    .doOnComplete {
-                        result = null
-                    }
-                    .doOnError {
-                        result = it
-                        log.error(it.message, it)
-                    }
-                    .toHotReplay()
         }
+
+        override fun toString(): String {
+            return "${major}.${minor}"
+        }
+    }
+
+    companion object {
+        /**
+         * Schema version. Must be increased on entity model changes.
+         * Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
+         * Major increases indicate breaking changes and will reset the database on migration
+         */
+        val SCHEMA_VERSION = SchemaVersion(major = 5, minor = 1)
     }
 
     /**
@@ -78,7 +69,7 @@ class Database(
         context.getDatabasePath(this.name)
     }
 
-    /**
+    /**t
      * Database path
      */
     val path by lazy {
@@ -86,43 +77,84 @@ class Database(
     }
 
     /**
-     * Requery entity store
+     * Requery data source
      */
-    val store by lazy {
-        // Requery data store
-        val ds = object : DatabaseSource(
-                this.context,
-                Models.REQUERY,
-                name,
-                1) {
+    val dataSource: SqlitexDatabaseSource by lazy {
+        // Using requery's more current sqlite implementation
+        // SqlitexDatabaseSource -> https://github.com/requery/sqlite-android
 
-            override fun onCreate(db: SQLiteDatabase?) {
-                // Leave creation/migration to flyway
-            }
+        if (this.file.exists()) {
+            val db = SQLiteDatabase.openOrCreateDatabase(this.file.toString(), null)
+            val schemaVersion = SchemaVersion.parse(db.version)
+            db.close()
 
-            override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-                // Leave creation/migration to flyway
+            log.info("Current database schema version [${schemaVersion}]")
+
+            if (schemaVersion.major != SCHEMA_VERSION.major) {
+                log.warn("Major schema update ${schemaVersion} -> ${SCHEMA_VERSION}, removing database file")
+                this.file.delete()
             }
         }
 
+        val ds = object : SqlitexDatabaseSource(
+                this.context,
+                Models.DEFAULT,
+                this.name,
+                SCHEMA_VERSION.sqliteVersion
+        ) {
+
+            override fun onDowngrade(db: io.requery.android.database.sqlite.SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+                throw IllegalStateException("Downgrade not allowed")
+            }
+
+            override fun onCreate(db: io.requery.android.database.sqlite.SQLiteDatabase?) {
+                log.info("Creating database")
+                super.onCreate(db)
+            }
+
+            override fun onUpgrade(db: io.requery.android.database.sqlite.SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+                val oldSchemaVersion = SchemaVersion.parse(oldVersion)
+                val newSchemaVersion = SchemaVersion.parse(newVersion)
+
+                log.info("Migrating database schema ${oldSchemaVersion} -> ${newSchemaVersion}")
+
+                super.onUpgrade(db, oldVersion, newVersion)
+            }
+
+            override fun onConfigure(builder: ConfigurationBuilder) {
+                builder.setEntityCache(
+                        EntityCacheBuilder(Models.DEFAULT)
+                                .useReferenceCache(true)
+                                .build()
+                )
+                super.onConfigure(builder)
+            }
+        }
+
+        ds.setLoggingEnabled(false)
+        ds.setTableCreationMode(TableCreationMode.CREATE_NOT_EXISTS)
+
+        ds
+    }
+
+    /**
+     * Requery entity store
+     */
+    val store by lazy {
         KotlinReactiveEntityStore(
                 store = KotlinEntityDataStore<Persistable>(
-                        configuration = ds.configuration))
+                        configuration = this.dataSource.configuration))
     }
 
     init {
         if (this.clean) {
-
             // Remove database file in debug builds
             if (this.file.exists()) {
-                log.warn("Deleting database file")
+                log.warn("Clean initialization, removing database file")
                 this.file.delete()
             }
         }
 
         this.path.mkdirs()
-
-        // Initialize context holder for flyway
-        ContextHolder.setContext(this.context)
     }
 }

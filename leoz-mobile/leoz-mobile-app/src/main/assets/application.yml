@@ -24,16 +24,27 @@ update:
    # Cycle period in seconds
    period: 3600
 
+   remote:
+      host: 'leoz.derkurier.de'
+      http:
+         port: 13000
+         ssl: true
+
 # Location service settings
 location:
    enabled: true
    # Minimum distance in meters
-   minDistance: 500
+   minDistance: 75
    force: true
    # Period in seconds
-   period: 600
-   allowMockLocation: false
+   period: 20
+   allow-mock-location: false
 
 # Developer/debug settings
 debug:
    enabled: false
+   allow-developer-options: true
+   # By default free screen rotation is not allowed and controlled per screen
+   user-screen-rotation: false
+   # Enables synthetic aidc inputs, available via screen menu
+   synthetic-aidc-enabled: false

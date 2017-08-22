@@ -34,7 +34,7 @@ open class DiscoveryServiceConfguration {
     open val discoveryService: DiscoveryService
         get() = DiscoveryService(
                 executorService = this.executorService,
-                uid = this.application.identity.shortKey,
+                uid = this.application.identity.shortUid,
                 bundleType = this.application.bundleType)
 
     @PostConstruct

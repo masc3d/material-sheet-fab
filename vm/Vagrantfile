@@ -4,6 +4,10 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
+# Load custom local vagrant file if it exists
+client_vagrantfile = File.expand_path('./Vagrantfile.local', __FILE__)
+load client_vagrantfile if File.exists?(client_vagrantfile)
+
 required_plugins = %w(vagrant-vbguest)
 
 plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
@@ -82,8 +86,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # information on available options.
 
   # masc20140721. virtual box specific machine changes
-  config.vm.provider "virtualbox" do |v|
+  config.vm.provider "hyperv" do |v, override|
+    override.vm.box = "hashicorp/precise64"
+    v.memory = 2048
+    v.cpus = 1
+  end
+  
+  config.vm.provider "virtualbox" do |v, override|
     # Don't boot with headless mode
+	override.vm.box = "masc/ubuntu-16.04"
     v.name = "leoz-dev"
     v.gui = true
     v.memory = 2048

@@ -59,7 +59,7 @@ class MqttConfiguration(
                         // Server URI
                         "tcp://${remoteSettings.host}:${remoteSettings.broker.nativePort}",
                         // Client ID
-                        identity.key.value,
+                        identity.uid.value,
                         MemoryPersistence())
             }
 

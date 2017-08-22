@@ -9,13 +9,7 @@ import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.text.parseHex
 import javax.inject.Inject
-import sx.time.toLocalDate
-import java.util.*
 import javax.inject.Named
-import org.deku.leoz.central.data.jooq.tables.MstDebitor
-import org.jooq.impl.DSL.*
-import org.deku.leoz.service.internal.LocationService
-import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.service.internal.UserService
 
 
@@ -119,7 +113,6 @@ open class UserJooqRepository {
                 .where(Tables.MST_KEY.KEY.eq(apiKey))?.fetchOneInto(MstUser.MST_USER)
     }
 
-
     fun deleteById(id: Int): Boolean {
         return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.ID.eq(id)).execute() > 0) true else false
     }
@@ -132,7 +125,6 @@ open class UserJooqRepository {
     }
 
     fun save(userRecord: MstUserRecord): Boolean {
-        userRecord ?: return false
         return (userRecord.store() > 0)
     }
 
@@ -140,46 +132,29 @@ open class UserJooqRepository {
 
 fun MstUserRecord.toUser(): UserService.User {
 
-    val user = UserService.User(this.email,
-            this.debitorId,
-            this.alias,
-            this.role,
-            this.password,
-            this.firstname,
-            this.lastname,
-            this.isActive,
-            this.isExternalUser,
-            this.phone,
-            this.expiresOn
+    val user = UserService.User(
+            // IMPORTANT: password must never be set when converting to service instance
+            // as it leaks hashes to the client. That's why the initial recommendation
+            // was to *not* have password on service level entities and
+            // introduce password set/update operations as a dedicated entry point.
+            id = this.id,
+            email = this.email,
+            debitorId = this.debitorId,
+            alias = this.alias,
+            role = this.role,
+            firstName = this.firstname,
+            lastName = this.lastname,
+            active = this.isActive,
+            externalUser = this.isExternalUser,
+            phone = this.phone,
+            phoneMobile = this.phoneMobile,
+            expiresOn = this.expiresOn
     )
     return user
 }
 
 val MstUserRecord.isActive: Boolean
     get() = (this.active ?: 0) != 0
+
 val MstUserRecord.isExternalUser: Boolean
     get() = (this.externalUser ?: 0) != 0
-
-fun MstUserRecord.toLocationServiceUser(): LocationService.User {
-
-    val user = LocationService.User(this.email,
-            this.debitorId,
-            this.alias,
-            this.role
-    )
-    return user
-}
-
-fun MstUserRecord.toAuthorizationServiceUser(): AuthorizationService.User {
-
-    val user = AuthorizationService.User(this.email,
-            this.debitorId,
-            this.alias,
-            this.role,
-            this.firstname,
-            this.lastname,
-            this.isActive,
-            this.expiresOn
-    )
-    return user
-}

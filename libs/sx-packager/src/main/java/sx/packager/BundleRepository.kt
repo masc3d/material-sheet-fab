@@ -204,6 +204,19 @@ class BundleRepository(
                 .filter({ v -> v.compareTo(version) != 0 })
                 .take(2)
 
+        /**
+         * Internal method performing sync
+         */
+        fun sync(source: Rsync.URI, destination: Rsync.URI, copyDestinations: List<Rsync.URI>) {
+            logInfo("Synchronizing [${source}] -> [${destination}] using copy destinations [${copyDestinations.joinToString(", ")}[")
+
+            val rc = this.createRsyncClient()
+            rc.copyDestinations = copyDestinations
+            rc.sync(source, destination, { r ->
+                logInfo("Updating [${r.flags}] [${r.path}]")
+            })
+        }
+
         if (!remoteVersions.contains(version)) {
             logInfo("Version does not exist remotely, transferring all platforms")
             // Transfer entire version folder
@@ -211,16 +224,10 @@ class BundleRepository(
             val copyDestinationUris = copyDestinationVersions
                     .map({ v -> Rsync.URI("../").resolve(v) })
 
-            val rc = this.createRsyncClient()
             val source = Rsync.URI(versionSrcPath)
             val destination = this.rsyncModuleUri.resolve(bundleName).resolve(version)
-            rc.copyDestinations = copyDestinationUris
 
-            logInfo("Synchronizing [${source}] -> [${destination}]")
-
-            rc.sync(source, destination, { r ->
-                logInfo("Uploading ${r.path}")
-            })
+            sync(source, destination, copyDestinationUris)
         } else {
             logInfo("Version already exists remotely")
 
@@ -230,16 +237,10 @@ class BundleRepository(
                 val copyDestinationUris = copyDestinationVersions
                         .map({ v -> Rsync.URI("../../").resolve(v, bundle.platform!!) })
 
-                val rc = this.createRsyncClient()
                 val source = Rsync.URI(versionSrcPath).resolve(bundle.platform!!)
                 val destination = this.rsyncModuleUri.resolve(bundleName).resolve(bundle.version!!, bundle.platform!!)
-                rc.copyDestinations = copyDestinationUris
 
-                logInfo("Synchronizing [${source}] -> [${destination}]")
-
-                rc.sync(source, destination, { r ->
-                    logInfo("Updating [${r.flags}] [${r.path}]")
-                })
+                sync(source, destination, copyDestinationUris)
             }
         }
 

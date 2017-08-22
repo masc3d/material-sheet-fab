@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import sx.packager.BundleRepository
+import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
@@ -25,28 +26,37 @@ class PackagerPluginExtension {
 
     def String title
 
-    /** Packager base directory */
-    File packagerBaseDir
-    /** Release directory base path */
-    File releaseBasePath
+    /** Bundle name. Defaults to `project.name` */
+    String bundleName = null
+    /** Bundle version. Defaults to `project.name` (`android.defaultConfig.versionName` for `sx-packager-android`) */
+    String version = null
     /** Path to .icns file */
     File osxIcon
     /** Path to .ico file */
     File windowsIcon
-    /** Native platforms */
+    /**
+     * Optionallist of operating systems to build native bundles for when invoking `releaseNativeBundle.
+     * If this parameter is omitted native bundle will be built for any os.
+     * */
+    List<OperatingSystem> operatingSystems = null
+
+    /** Packager base directory */
+    File packagerBaseDir
+    /** Release directory base path */
+    File releaseBasePath
+
+    /** Native platform binary location */
     File nativePlatformDir
     /** Perform repository sanity checks */
     Boolean checkRepository = true
     /** Create self extracting archive */
     Boolean createSelfExtractingArchive = false
+
     /** SSH tunnel provider for establishing secure rsync connections */
     SshTunnelProvider sshTunnelProvider = null
     /** Bundle repository for push/pull*/
     BundleRepository bundleRepository = null
-    /** Bundle name. Defaults to `project.name` */
-    String bundleName = null
-    /** Bundle version. Defaults to `project.name` (`android.defaultConfig.versionNmae` for `sx-packager-android`) */
-    String version = null
+
     /** Git repository root */
     File gitRoot = null
 

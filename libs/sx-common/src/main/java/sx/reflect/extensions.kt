@@ -10,10 +10,10 @@ val Class<*>.allGenericInterfaces: List<Type>
     get() {
         val interfaces = mutableListOf<Type>()
 
-        fun recurse(clz: Class<*>, interfaces: MutableList<Type>) {
-            interfaces.addAll(clz.genericInterfaces.toList())
-            if (clz.superclass != null && clz.superclass != Any::class.java)
-                recurse(clz.superclass, interfaces)
+        fun recurse(c: Class<*>, types: MutableList<Type>) {
+            types.addAll(c.genericInterfaces.toList())
+            if (c.superclass != null && c.superclass != Any::class.java)
+                recurse(c.superclass, types)
         }
 
         recurse(this, interfaces)

@@ -6,6 +6,7 @@ import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.isActive
 import org.deku.leoz.central.data.repository.toUser
+import org.deku.leoz.model.UserPreferenceKey
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.UserService.User
 import org.jooq.DSLContext
@@ -114,7 +115,7 @@ class UserService : UserService {
     }
 
 
-    override fun create(user: User, apiKey: String?) {
+    override fun create(user: User, apiKey: String?, sendCredentials: Boolean) {
 
         var rec = userRepository.findByMail(user.email)
         if (rec != null) {
@@ -124,12 +125,9 @@ class UserService : UserService {
         }
 
         update(user.email, user, apiKey)
-
     }
 
-    override fun update(email: String, user: User, apiKey: String?) {
-
-
+    override fun update(email: String, user: User, apiKey: String?, sendCredentials: Boolean) {
         apiKey ?:
                 throw DefaultProblem(
                         status = Response.Status.BAD_REQUEST,
@@ -158,13 +156,15 @@ class UserService : UserService {
         val lastName = user.lastName
         val firstName = user.firstName
         val phone = user.phone
+        val mobilePhone = user.phoneMobile
 
         var isNew = false
         var rec = userRepository.findByMail(email)
         if (rec == null) {
             isNew = true
             rec = dslContext.newRecord(Tables.MST_USER)
-            if (user.email == null || user.email.equals("@"))
+            //if (user.email == null || user.email.equals("@"))
+            if (user.email.equals("@"))
                 user.email = email
             if (!user.email.equals(email)) {
                 throw  DefaultProblem(
@@ -188,15 +188,15 @@ class UserService : UserService {
                         title = "login user can not create/change user - no permission")
             }
 
-            if (user.email != null) {
-                if (!rec.email.equals(user.email)) {
-                    if (userRepository.mailExists(user.email)) {
-                        throw  DefaultProblem(
-                                status = Response.Status.BAD_REQUEST,
-                                title = "duplicate email")
-                    }
+            //if (user.email != null) {
+            if (!rec.email.equals(user.email)) {
+                if (userRepository.mailExists(user.email)) {
+                    throw  DefaultProblem(
+                            status = Response.Status.BAD_REQUEST,
+                            title = "duplicate email")
                 }
             }
+            //}
 
             val testAlias: String
             if (alias != null) {
@@ -217,8 +217,6 @@ class UserService : UserService {
                 }
             }
         }
-
-
 
         if (isNew) {
             alias ?: throw  DefaultProblem(
@@ -261,8 +259,6 @@ class UserService : UserService {
                         title = "duplicate alias/debitor")
         }
 
-
-
         if (!UserRole.values().any { it.name == authorizedUserRecord.role })
             throw  DefaultProblem(
                     status = Response.Status.BAD_REQUEST,
@@ -292,15 +288,12 @@ class UserService : UserService {
             }
         }
 
-
-
-
-
         rec ?: throw  DefaultProblem(
                 status = Response.Status.BAD_REQUEST,
                 title = "not found")
 
-        if ((user.email != null) && (user.email != "@"))
+        //if ((user.email != null) && (user.email != "@"))
+        if (user.email != "@")
             rec.email = user.email
         if (debitor != null)
             rec.debitorId = debitor
@@ -320,6 +313,8 @@ class UserService : UserService {
             rec.externalUser = user.isExternalUser
         if (phone != null)
             rec.phone = phone
+        if (mobilePhone != null)
+            rec.phoneMobile = mobilePhone
         if (user.expiresOn != null)
             rec.expiresOn = user.expiresOn
 
@@ -328,6 +323,19 @@ class UserService : UserService {
                     status = Response.Status.BAD_REQUEST,
                     title = "Problem on update")
 
+        if (sendCredentials) {
+            //TODO If SendCredentials is true, the user will receive his credentials via SMS
+        }
+
+    }
+
+    override fun getById(userId: Int, apiKey: String?): User {
+        val u = userRepository.findById(userId) ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "User with ID [$userId] not found"
+        )
+
+        return this.get(email = u.email, apiKey = apiKey).first()
     }
 
 }

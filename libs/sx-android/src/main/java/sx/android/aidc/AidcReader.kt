@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import sx.rx.ObservableRxProperty
-import sx.rx.observableRx
+import sx.aidc.SymbologyType
 
 /**
  * Abstract barcode reader
@@ -38,9 +38,9 @@ abstract class AidcReader {
         }
     }
 
-    data class ReadEvent(val data: String, val barcodeType: BarcodeType)
+    data class ReadEvent(val data: String, val symbologyType: SymbologyType)
 
-    protected val enabledProperty = ObservableRxProperty(true)
+    val enabledProperty = ObservableRxProperty(false)
     /**
      * Enable or disable barcode reader
      */

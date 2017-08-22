@@ -1,6 +1,8 @@
 package sx.rx
 
 import io.reactivex.*
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.observables.ConnectableObservable
 import io.reactivex.rxkotlin.subscribeBy
@@ -12,6 +14,18 @@ import java.util.concurrent.TimeUnit
 
 fun <T> T.toSingletonObservable(): Observable<T> = Observable.just(this)
 fun <T> Throwable.toObservable(): Observable<T> = Observable.error(this)
+
+interface CompositeDisposableSupplier : Disposable {
+    val compositeDisposable: CompositeDisposable
+
+    override fun isDisposed(): Boolean {
+        return this.compositeDisposable.isDisposed
+    }
+
+    override fun dispose() {
+        this.compositeDisposable.dispose()
+    }
+}
 
 /**
  * Subscribe on a specific executor
@@ -39,9 +53,11 @@ fun <T> Observable<T>.observeOn(executor: Executor? = null): Observable<T> {
 /**
  * Connects to observable to force start emitting and returns the Observable (instead of the subscription
  * as .connect() does.
+ * @param composite The composite disposable to attach to for disposal
  */
-fun <T> ConnectableObservable<T>.connected(): Observable<T> {
-    this.connect()
+fun <T> ConnectableObservable<T>.connected(composite: CompositeDisposable? = null): Observable<T> {
+    val disposable = this.connect()
+    composite?.add(disposable)
     return this
 }
 
@@ -49,15 +65,15 @@ fun <T> ConnectableObservable<T>.connected(): Observable<T> {
  * Transforms observable into a hot completable
  * Created by masc on 23/06/16.
  */
-fun <T> Observable<T>.toHotCompletable(executor: Executor? = null): Completable {
-    return this.subscribeOn(executor).publish().connected().ignoreElements()
+fun <T> Observable<T>.toHotCompletable(composite: CompositeDisposable? = null, executor: Executor? = null): Completable {
+    return this.subscribeOn(executor).publish().connected(composite).ignoreElements()
 }
 
 /**
  * Transform Observable into a hot one with replay applied
  */
-fun <T> Observable<T>.toHotReplay(executor: Executor? = null): Observable<T> {
-    return this.subscribeOn(executor).replay().connected()
+fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null, executor: Executor? = null): Observable<T> {
+    return this.subscribeOn(executor).replay().connected(composite)
 }
 
 /**
@@ -75,14 +91,22 @@ fun Completable.toHotCache(executor: Executor? = null, onError: (Throwable) -> U
 /**
  * Transform Observable into a hot one with replay applied
  */
-fun <T> Observable<T>.toHotReplay(scheduler: Scheduler? = null): Observable<T> {
+fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null, scheduler: Scheduler? = null): Observable<T> {
     return (if (scheduler != null) this.subscribeOn(scheduler) else this)
             .replay()
-            .connected()
+            .connected(composite)
 }
 
-fun <T> Observable<T>.toHotReplay(): Observable<T> {
-    return this.toHotReplay(scheduler = null)
+fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null): Observable<T> {
+    return this.toHotReplay(composite = composite, scheduler = null)
+}
+
+fun <T> Observable<T>.behave(composite: CompositeDisposable): Observable<T> {
+    return this.replay(1).connected(composite)
+}
+
+fun <T> Observable<T>.behave(supplier: CompositeDisposableSupplier): Observable<T> {
+    return this.replay(1).connected(supplier.compositeDisposable)
 }
 
 /**
@@ -110,6 +134,14 @@ fun <T> Observable<T>.retryWith(
             }
         }
     }
+}
+
+/**
+ * Bind disposable to a composite disposable
+ */
+fun <T : Disposable> T.bind(supplier: CompositeDisposableSupplier): T {
+    supplier.compositeDisposable.add(this)
+    return this
 }
 
 /**

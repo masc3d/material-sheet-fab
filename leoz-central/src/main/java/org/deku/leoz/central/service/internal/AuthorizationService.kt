@@ -1,10 +1,8 @@
 package org.deku.leoz.central.service.internal
 
-import org.apache.commons.lang3.RandomStringUtils
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.model.UserRole
@@ -47,7 +45,7 @@ class AuthorizationService
 
 
     interface Listener : EventListener {
-        fun onAuthorized(nodeIdentityKey: Identity.Key)
+        fun onAuthorized(nodeIdentityUid: Identity.Uid)
     }
 
     // TODO: replace with rx event
@@ -57,7 +55,7 @@ class AuthorizationService
     /**
      * Mobile authorization request
      */
-    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.WebResponse {
+    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.Response {
         val serial = request.mobile?.serial
         val imei = request.mobile?.imei
 
@@ -65,33 +63,28 @@ class AuthorizationService
             throw DefaultProblem(title = "At least one of serial or imei must be provided")
 
         // TODO: handle mobile info as required
-
-
+        
         val user = request.user
 
         user ?:
-            throw DefaultProblem(title = "User is required")
+                throw DefaultProblem(title = "User is required")
 
-        return authorizeWeb(AuthorizationService.Credentials(user.email,user.password))
+        return authorize(AuthorizationService.Credentials(user.email, user.password))
     }
 
-    override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
+    override fun authorize(request: AuthorizationService.Credentials): AuthorizationService.Response {
         val user = request
 
         val userRecord = this.userRepository.findByMail(email = user.email)
 
         userRecord ?:
-            throw DefaultProblem(title = "User does not exist")
+                throw DefaultProblem(title = "User does not exist")
 
         // Verify credentials
         if (!userRecord.verifyPassword(user.password))
             throw DefaultProblem(
                     title = "User authentication failed",
                     status = Response.Status.UNAUTHORIZED)
-        val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId)
-                ?: throw DefaultProblem(
-                title = "Missing sdebitor",
-                status = Response.Status.UNAUTHORIZED)
 
         val df = DecimalFormat("#")
         df.maximumFractionDigits = 0
@@ -101,12 +94,12 @@ class AuthorizationService
                     title = "Invalid user role",
                     status = Response.Status.UNAUTHORIZED)
 
-        if (!userRecord.isActive){
+        if (!userRecord.isActive) {
             throw DefaultProblem(
                     title = "user deactivated",
                     status = Response.Status.UNAUTHORIZED)
         }
-        if(Date()>userRecord.expiresOn){
+        if (Date() > userRecord.expiresOn) {
             throw DefaultProblem(
                     title = "user account expired",
                     status = Response.Status.UNAUTHORIZED)
@@ -129,9 +122,9 @@ class AuthorizationService
         if (keyRecord == null)
             throw DefaultProblem(title = "User key not valid")
 
-        return AuthorizationService.WebResponse(
+        return AuthorizationService.Response(
                 key = keyRecord.key,
-                user=userRecord.toAuthorizationServiceUser())
+                user = userRecord.toUser())
     }
 
     /**
@@ -145,7 +138,7 @@ class AuthorizationService
             val am = AuthorizationService.NodeResponse()
             am.key = message.key
 
-            val identityKey = Identity.Key(message.key)
+            val identityKey = Identity.Uid(message.key)
             var record = nodeJooqRepository.findByKey(message.key)
             if (record == null) {
                 val conflictingRecord = nodeJooqRepository.findByKeyStartingWith(identityKey.short)

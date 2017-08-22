@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.ui.fragment
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,14 +14,16 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.device.Tone
-import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.ui.Fragment
-import org.deku.leoz.mobile.ui.activity.MainActivity
+import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
-import sx.android.aidc.*
+import sx.android.hideSoftInput
+import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
 
@@ -30,20 +31,21 @@ import javax.mail.internet.InternetAddress
  * Login fragment
  * Created by n3 on 26/02/2017.
  */
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val tone: Tone by Kodein.global.lazy.instance()
 
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
 
     interface Listener {
-        fun onLoginSuccessful()
+        /** Called when it's appropriate to show progress indication */
+        fun onLoginPending() {}
+
+        fun onLoginFailed() {}
+        fun onLoginSuccessful() {}
     }
 
-    private val listener get() = this.activity as? Listener
+    private val listener by lazy { this.activity as? Listener }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
@@ -77,32 +79,27 @@ class LoginFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        aidcReader.decoders.set(
-                Ean8Decoder(true),
-                Ean13Decoder(true),
-                Interleaved25Decoder(true, 11, 12),
-                DatamatrixDecoder(true),
-                Code128Decoder(true)
+        data class State(
+                val pending: Boolean = false,
+                val result: User? = null
         )
-
-        aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    log.info("Barcode scanned ${it.data}")
-                }
 
         // Actions triggering login
 
         val rxLoginTrigger =
                 Observable.merge(listOf(
-                        RxView.clicks(this.uxLogin)
-                                .map { Unit },
                         RxTextView.editorActions(this.uxPassword)
                                 .map { Unit }
-                                .replay(1).refCount()
+                                .replay(1)
+                                .refCount()
+                                .doOnNext {
+                                    this.context.inputMethodManager.hideSoftInput()
+                                },
+                        this.syntheticLoginSubject
                 ))
 
         rxLoginTrigger
+                .observeOn(AndroidSchedulers.mainThread())
                 .switchMap {
                     Observable.fromCallable {
                         // Verify all fields
@@ -119,18 +116,40 @@ class LoginFragment : Fragment() {
                             email = uxMailaddress.text.toString(),
                             password = uxPassword.text.toString()
                     )
+                            .map {
+                                // Map success result to state
+                                State(pending = false, result = it)
+                            }
+                            // Merge delayed pending state
+                            .mergeWith(Observable
+                                    .just(State(pending = true))
+                                    .delay(250, TimeUnit.MILLISECONDS)
+                            )
+                            // Complete this observable on success result
+                            .takeUntil {
+                                it.pending == false
+                            }
                 }
                 .doOnError {
-                    tone.errorBeep()
-                    Snackbar.make(this.view!!, "Login failed", Snackbar.LENGTH_SHORT)
-                            .show()
+                    log.error(it.message, it)
+                    this.view?.post {
+                        this.listener?.onLoginFailed()
+                    }
                 }
+                // Retrying the entire observable (including required triggers, eg. user input)
                 .retry()
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    log.info("Login successful $it")
-                    this.listener?.onLoginSuccessful()
+                    when {
+                        it.pending == true -> {
+                            this.listener?.onLoginPending()
+                        }
+                        else -> {
+                            log.info("Login successful $it")
+                            this.listener?.onLoginSuccessful()
+                        }
+                    }
                 }
     }
 
@@ -171,5 +190,19 @@ class LoginFragment : Fragment() {
                 true
             }
         }
+    }
+
+    private val syntheticLoginSubject = PublishSubject.create<Unit>()
+
+    /**
+     * Synthesizes login by adding a user/password into the referring field
+     * and triggering the login process
+     * @param email User mail address
+     * @param password Password
+     */
+    fun synthesizeLogin(email: String, password: String) {
+        this.uxMailaddress.setText(email)
+        this.uxPassword.setText(password)
+        this.syntheticLoginSubject.onNext(Unit)
     }
 }

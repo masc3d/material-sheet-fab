@@ -5,6 +5,10 @@ import sx.security.DigestType
 import sx.security.getInstance
 import sx.text.toHexString
 import java.security.SecureRandom
+import java.util.*
+import sun.security.krb5.Confounder.bytes
+import java.nio.ByteBuffer
+
 
 /**
  * Identity factory for desktop devices
@@ -33,10 +37,11 @@ class DesktopIdentityFactory(
             sr.nextBytes(salt)
             m.update(salt)
 
-            // Calculate digest and format to hex
-            val key = m.digest().toHexString()
+            // Calculate digest and convert ot UUID
+            val bb = ByteBuffer.wrap(m.digest())
+            val uuid = UUID(bb.getLong(), bb.getLong())
 
-            return Identity(key, name)
+            return Identity(uuid.toString(), name)
         } catch (e: Exception) {
             throw RuntimeException(e)
         }

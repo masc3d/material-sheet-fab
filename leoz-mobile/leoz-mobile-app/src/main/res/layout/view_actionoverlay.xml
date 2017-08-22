@@ -7,23 +7,38 @@
     <!-- Container for dim overlays. -->
     <!-- Each material sheet requires a dedicated one for sheet click events to work properly -->
     <RelativeLayout
-        android:id="@+id/actionoverlay_dim_container"
+        android:id="@+id/uxActionOverlayDimContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
 
-    <!-- Container for floating action buttons -->
-    <LinearLayout
-        android:id="@+id/actionoverlay_container"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="end"
-        android:orientation="horizontal"
-        />
+        android:layout_height="match_parent">
+
+        <!-- Container for floating action buttons aligned at start -->
+        <LinearLayout
+            android:id="@+id/uxActionOverlayContainerStart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start"
+            android:orientation="horizontal"
+            />
+
+        <!-- Container for floating action buttons aligned at end -->
+        <LinearLayout
+            android:id="@+id/uxActionOverlayContainerEnd"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="end"
+            android:orientation="horizontal"
+            />
+
+    </FrameLayout>
 
     <!--Container for material sheet fab's reveal layouts -->
     <RelativeLayout
-        android:id="@+id/actionoverlay_sheet_container"
+        android:id="@+id/uxActionOverlaySheetContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />

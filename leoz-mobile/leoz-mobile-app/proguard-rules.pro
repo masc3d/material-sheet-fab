@@ -27,6 +27,7 @@
 # Required for JAX/RS, Feign
 -keep class com.fasterxml.** { *; }
 -keep class javax.ws.rs.** { *; }
+-keep class org.deku.leoz.model.** { *; }
 -keep class org.deku.leoz.rest.** { *; }
 -keep class org.deku.leoz.service.** { *; }
 -keep class sx.rs.PATCH { *; }
@@ -46,6 +47,7 @@
 
 # Serializers
 -keep class com.esotericsoftware.** { *; }
+-keepclassmembers class sx.io.serialization.** { *; }
 # Doesn't work for nested/inner classes of annotated classes (tried *$*, **$**, ** etc.)
 # which means all nested serializable classes must have @Serializable
 -keep @sx.io.serialization.Serializable class * { *; }
@@ -75,6 +77,7 @@
 -dontwarn rx.internal.**
 -dontwarn sx.concurrent.**
 -dontwarn sx.io.**
+-dontwarn sx.jpa.**
 -dontwarn sx.jsch.**
 -dontwarn sx.junit.**
 -dontwarn sx.mq.**

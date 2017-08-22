@@ -39,7 +39,13 @@
       <option name="SHOW_OPTIMIZED_WARNING" value="true" />
     </Native>
     <Profilers>
+<<<<<<< HEAD
       <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+=======
+      <option name="ENABLE_ADVANCED_PROFILING" value="true" />
+      <option name="SUPPORT_LIB_ENABLED" value="true" />
+      <option name="INSTRUMENTATION_ENABLED" value="true" />
+>>>>>>> master
     </Profilers>
     <option name="DEEP_LINK" value="" />
     <option name="ACTIVITY_CLASS" value="" />

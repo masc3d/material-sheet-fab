@@ -1,34 +1,56 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn } from '@angular/forms';
 import { Response } from '@angular/http';
-import { Subscription } from 'rxjs/Subscription';
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition
+} from '@angular/animations';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/takeUntil';
 
-import { SelectItem } from 'primeng/primeng';
+import { Message, SelectItem } from 'primeng/primeng';
 
 import { User } from '../user.model';
 import { UserService } from '../user.service';
 import { RoleGuard } from '../../../core/auth/role.guard';
-import { Msg } from '../../../shared/msg/msg.model';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { TranslateService } from 'app/core/translate/translate.service';
 import { AbstractTranslateComponent } from 'app/core/translate/abstract-translate.component';
+import { PermissionCheck } from '../../../core/auth/permission-check';
 
 @Component( {
   selector: 'app-user-form',
-  templateUrl: './user-form.component.html'
+  templateUrl: './user-form.component.html',
+  animations: [
+    trigger( 'myself', [
+      state( 'inactive', style( {
+        opacity: 0,
+        // transform: 'translateY(-100%)'
+      } ) ),
+      state( 'active', style( {
+        opacity: 1,
+        // transform: 'translateY(0)'
+      } ) ),
+      transition( 'inactive <=> active',
+        animate( '0.5s ease-in-out' ) )
+    ] ),
+  ]
 } )
-export class UserFormComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
+export class UserFormComponent extends AbstractTranslateComponent implements OnInit {
 
+  dateFormatPrimeng: string;
+
+  locale: any;
   roleOptions: SelectItem[];
   stateOptions: SelectItem[];
-
   activeUser: User;
+
   userForm: FormGroup;
-  private subscriptionCRUD: Subscription;
-  private subscriptionMsg: Subscription;
-  private subscriptionActiveUser: Subscription;
   private loading = false;
-  public errMsg: Msg;
+  public errMsgs: Observable<Message[]>;
 
   constructor( private fb: FormBuilder,
                private userService: UserService,
@@ -38,6 +60,8 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
     super( translate, () => {
       this.roleOptions = this.createRoleOptions();
       this.stateOptions = this.createStateOptions();
+      const expiresOnControl = this.userForm.get( 'expiresOn' );
+      setTimeout( () => expiresOnControl.setValue( expiresOnControl.value ), 20 );
     } );
   }
 
@@ -47,77 +71,69 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
     this.roleOptions = this.createRoleOptions();
     this.stateOptions = this.createStateOptions();
 
-    this.subscriptionMsg = this.msgService.msg.subscribe( ( msg: Msg ) => this.errMsg = msg );
+    this.errMsgs = this.msgService.msgs;
+
     this.msgService.clear();
     this.userForm = this.fb.group( {
       emailOrigin: [ null ],
       firstName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
       lastName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
-      password: [ null, [ Validators.required, Validators.maxLength( 25 ) ] ],
+      password: [ null, [ Validators.required, Validators.minLength( 6 ), Validators.maxLength( 25 ) ] ],
       email: [ null, [ Validators.required, Validators.email ] ],
       phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
+      phoneMobile: [ null, [ Validators.required ] ],
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
       expiresOn: [ null ]
-      // "expiresOn": "2017-03-16T17:00:00.000Z"
     } );
 
-    this.subscriptionActiveUser = this.userService.activeUser.subscribe( ( activeUser: User ) => {
-      this.activeUser = activeUser;
-      const passwordControl = this.userForm.get( 'password' );
-      const validators = <ValidatorFn[]> [];
-      validators.push( Validators.maxLength( 25 ) );
-      if (this.isEditMode( activeUser )) {
-        this.msgService.clear();
-      } else {
-        validators.push( Validators.required );
-      }
-      passwordControl.clearValidators();
-      passwordControl.setValidators( validators );
-      console.log('activeUser.expiresOn', activeUser.expiresOn);
-      this.userForm.patchValue( {
-        emailOrigin: activeUser.email,
-        firstName: activeUser.firstName,
-        lastName: activeUser.lastName,
-        password: '',
-        email: activeUser.email,
-        phone: activeUser.phone,
-        alias: activeUser.alias,
-        role: activeUser.role,
-        active: activeUser.active,
-        expiresOn: activeUser.expiresOn
+    this.userService.activeUser
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( activeUser: User ) => {
+        this.activeUser = activeUser;
+        const passwordControl = this.userForm.get( 'password' );
+        const validators = <ValidatorFn[]> [];
+        validators.push( Validators.minLength( 6 ) );
+        validators.push( Validators.maxLength( 25 ) );
+        if (this.isEditMode( activeUser )) {
+          this.msgService.clear();
+        } else {
+          validators.push( Validators.required );
+        }
+        passwordControl.clearValidators();
+        passwordControl.setValidators( validators );
+        this.userForm.patchValue( {
+          emailOrigin: activeUser.email,
+          firstName: activeUser.firstName,
+          lastName: activeUser.lastName,
+          password: '',
+          email: activeUser.email,
+          phone: activeUser.phone,
+          alias: activeUser.alias,
+          phoneMobile: activeUser.phoneMobile,
+          role: activeUser.role,
+          active: activeUser.active,
+          expiresOn: activeUser.expiresOn ? new Date( activeUser.expiresOn ) : activeUser.expiresOn
+        } );
       } );
-    } );
-  }
-
-  ngOnDestroy() {
-    super.ngOnDestroy();
-    if (this.subscriptionCRUD) {
-      this.subscriptionCRUD.unsubscribe();
-    }
-    if (this.subscriptionActiveUser) {
-      this.subscriptionActiveUser.unsubscribe();
-    }
-    if (this.subscriptionMsg) {
-      this.subscriptionMsg.unsubscribe();
-    }
   }
 
   private createStateOptions(): SelectItem[] {
     const stateOptions = [];
-    stateOptions.push( { label: this.translate.instant( 'active' ), value: 1 } );
-    stateOptions.push( { label: this.translate.instant( 'inactive' ), value: 0 } );
+    stateOptions.push( { label: this.translate.instant( 'yes' ), value: 1 } );
+    stateOptions.push( { label: this.translate.instant( 'no' ), value: 0 } );
     return stateOptions;
   }
 
   private createRoleOptions(): SelectItem[] {
     const roleOptions = [];
     if (this.roleGuard.isPoweruser()) {
-      roleOptions.push( { label: this.translate.instant( 'Poweruser' ), value: 'POWERUSER' } );
-    }
-    if (this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
       roleOptions.push( { label: this.translate.instant( 'User' ), value: 'USER' } );
+      roleOptions.push( { label: this.translate.instant( 'Driver' ), value: 'DRIVER' } );
+      roleOptions.push( { label: this.translate.instant( 'Customer' ), value: 'CUSTOMER' } );
+    }
+    if (this.roleGuard.isUser()) {
       roleOptions.push( { label: this.translate.instant( 'Driver' ), value: 'DRIVER' } );
       roleOptions.push( { label: this.translate.instant( 'Customer' ), value: 'CUSTOMER' } );
     }
@@ -126,6 +142,10 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   private isEditMode( activeUser: User ) {
     return activeUser.email && activeUser.email.length > 0;
+  }
+
+  myself(): boolean {
+    return PermissionCheck.myself( this.activeUser );
   }
 
   onSubmit() {
@@ -151,12 +171,12 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
   }
 
   protected createUser( userData: any ) {
-    this.subscriptionCRUD = this.userService.insert( userData )
+    this.userService.insert( userData )
       .subscribe(
         ( resp: Response ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.msgService.success( 'User insert successful' );
+            this.msgService.success( this.translate.instant( 'UserInsertSuccessful' ) )
             this.clearActiveUser();
             this.userService.getUsers();
           } else {
@@ -171,12 +191,12 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
   }
 
   protected updateUser( userData: any, originEmail: string ) {
-    this.subscriptionCRUD = this.userService.update( userData, originEmail )
+    this.userService.update( userData, originEmail )
       .subscribe(
         ( resp: Response ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.msgService.success( 'User update successful' );
+            this.msgService.success( this.translate.instant( 'UserUpdateSuccessful' ) )
             this.clearActiveUser();
             this.userService.getUsers();
           } else {

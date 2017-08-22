@@ -11,5 +11,6 @@ data class ParcelServiceRestriction(
         val paperReceiptNeeded: Boolean = false,
         val identityCheckRequired: Boolean = false,
         val imeiCheckRequired: Boolean = false,
-        val cash: Boolean = false
+        val cash: Boolean = false,
+        val summarizedDeliveryAllowed: Boolean = true
 )

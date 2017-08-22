@@ -23,7 +23,7 @@ class FileSyncHostService(
         executorService: ScheduledExecutorService,
         baseDirectory: File,
         identity: Identity,
-        private val nodeEndpointSupplier: (identityKey: Identity.Key) -> JmsEndpoint)
+        private val nodeEndpointSupplier: (identityUid: Identity.Uid) -> JmsEndpoint)
 :
         FileSyncServiceBase(
                 executorService = executorService,
@@ -33,13 +33,13 @@ class FileSyncHostService(
      * Node metadata contianer
      */
     class Node(
-            val identityKey: Identity.Key,
+            val identityUid: Identity.Uid,
             val outDirectory: File) {
     }
 
     private val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
     /** Known nodes */
-    private val nodes = java.util.HashMap<Identity.Key, Node>()
+    private val nodes = java.util.HashMap<Identity.Uid, Node>()
     /** Known nodes by watchkey */
     private val nodesByWatchkey = HashMap<WatchKey, Node>()
     /** Reentrant lock */
@@ -88,7 +88,7 @@ class FileSyncHostService(
 
                         // Notify nodes
                         nodes.forEach {
-                            this@FileSyncHostService.notifyNode(it.identityKey)
+                            this@FileSyncHostService.notifyNode(it.identityUid)
                         }
                     } catch(e: InterruptedException) {
                         throw e
@@ -127,17 +127,17 @@ class FileSyncHostService(
      */
     override fun onMessage(message: FileSyncMessage, replyChannel: MqChannel?) {
         try {
-            val identityKey = Identity.Key(message.key)
-            log.info("Received ping from [${identityKey}]")
+            val identityUid = Identity.Uid(message.uid)
+            log.info("Received ping from [${identityUid}]")
 
             // Prepare directories
-            this.nodeInDirectory(identityKey)
-            val nodeOutDirectory = this.nodeOutDirectory(identityKey)
+            this.nodeInDirectory(identityUid)
+            val nodeOutDirectory = this.nodeOutDirectory(identityUid)
 
             lock.withLock {
-                this.nodes.getOrPut(identityKey, {
+                this.nodes.getOrPut(identityUid, {
                     val node = FileSyncHostService.Node(
-                            identityKey = identityKey,
+                            identityUid = identityUid,
                             outDirectory = nodeOutDirectory)
 
                     val watchable = WatchServiceFactory.newWatchable(nodeOutDirectory, this.watchService)
@@ -148,7 +148,7 @@ class FileSyncHostService(
 
                     this.nodesByWatchkey.put(wk, node)
 
-                    this@FileSyncHostService.notifyNode(identityKey)
+                    this@FileSyncHostService.notifyNode(identityUid)
                     node
                 })
             }
@@ -158,7 +158,7 @@ class FileSyncHostService(
                 replyChannel.send(FileSyncMessage())
             }
 
-            this.notifyNode(identityKey)
+            this.notifyNode(identityUid)
         } catch(e: Exception) {
             this.log.error(e.message, e)
         }
@@ -166,13 +166,13 @@ class FileSyncHostService(
 
     /**
      * Notify node about available files
-     * @param identityKey Node identity key
+     * @param identityUid Node identity key
      */
-    private fun notifyNode(identityKey: Identity.Key) {
-        val out = this.nodeOutDirectory(identityKey)
+    private fun notifyNode(identityUid: Identity.Uid) {
+        val out = this.nodeOutDirectory(identityUid)
         if (out.exists() && out.listFiles().count() > 0) {
-            log.trace("Sending file sync notification to [${identityKey}]")
-            this.nodeEndpointSupplier(identityKey).channel().use {
+            log.trace("Sending file sync notification to [${identityUid}]")
+            this.nodeEndpointSupplier(identityUid).channel().use {
                 it.send(FileSyncMessage())
             }
         }

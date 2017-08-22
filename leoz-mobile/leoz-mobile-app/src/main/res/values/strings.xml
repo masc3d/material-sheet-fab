@@ -1,27 +1,72 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="action_retry">Retry</string>
     <string name="action_settings">Settings</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
 
-    <string name="app_name" translatable="false">Mobile Suite</string>
-    <string name="app_name_long" translatable="false">Mobile Suite</string>
+    <string name="app_name" translatable="false">mobileX</string>
+    <string name="app_name_long" translatable="false">mobileX</string>
     <string name="app_project_name" translatable="false">leoz-mobile</string>
 
+    <string name="authentication_failed">Authentication failed</string>
+
+    <string name="authority">Authority</string>
+
+    <string name="back">Back</string>
+
+    <string name="barcode_label">Barcode label</string>
+
+    <string name="call">Call</string>
     <string name="cancel">Cancel</string>
+    <string name="cancel_process">Cancel process</string>
 
     <string name="capture_image">Capture image</string>
 
+    <string name="cash_service">Cash-Service</string>
+    <string name="cash_value">Cash value</string>
+
+    <string name="change">Change</string>
+
     <string name="check_for_updates">Check for updates</string>
 
-    <string name="continue_without">Continue withour</string>
+    <string name="clear">Clear</string>
+    <string name="close">Close</string>
+
+    <string name="contact">Contact</string>
+
+    <string name="continue_text">Continue</string>
+    <string name="continue_without">Continue without</string>
+
+    <string name="orders">Orders</string>
+
+    <string name="damaged">Damaged</string>
+
+    <string name="delivered">Delivered</string>
 
     <string name="delivery">Delivery</string>
+    <string name="delivery_failed">Delivery failed</string>
+    <string name="delivery_list_number">Delivery list number</string>
 
     <string name="dev_login">Developer login</string>
 
+    <string name="device_check">Device-Check</string>
+    <string name="device_check_instruction_to_continue">You are not allowed to continue the delivery without completing this check.</string>
+    <string name="device_check_instructions">You have got 3 attempts to enter the correct digits. If all three fail, the devlivery failed.</string>
+
+    <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
+
     <string name="dismiss">Dismiss</string>
 
+    <string name="doc_no">Doc.-No.</string>
+
+    <string name="document">Document</string>
+    <string name="document_no">Document No.</string>
+    <string name="document_type">Document type</string>
+
+    <string name="enter_imei_instructions">Please enter last 4 IMEI digits of the returned device</string>
+
+    <string name="error_connectivity">Could not connect to remote server</string>
     <string name="error_database_inconsistent">Inconsistent database state</string>
     <string name="error_empty_field">Field cannot be empty.</string>
     <string name="error_fatal">Fatal error</string>
@@ -29,12 +74,43 @@
     <string name="error_format_mail">This is not a valid email format</string>
     <string name="error_imager_scan_failed">Incomplete or failed scan</string>
     <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_barcode">Invalid barcode</string>
     <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
+    <string name="error_invalid_delivery_list">Invalid delivery list</string>
     <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_parcel">Invalid parcel</string>
     <string name="error_invalid_password">This password is too short</string>
+    <string name="error_no_corresponding_order">No corresponding order</string>
+    <string name="error_no_corresponding_stop">No corresponding stop</string>
+
+    <string name="event_reason_absent">Consignee absent</string>
+    <string name="event_reason_address_wrong">Wrong address</string>
+    <string name="event_reason_could_want_not_pay">No Payment</string>
+    <string name="event_reason_damaged">Parcel damaged</string>
+    <string name="event_reason_moved">Customer moved</string>
+    <string name="event_reason_no_ident_doc">No ident document</string>
+    <string name="event_reason_pin_imei_wrong">PIN / IMEI wrong</string>
+    <string name="event_reason_refuse">Consignee refused</string>
+    <string name="event_reason_signature_refused">Signature refused</string>
+    <string name="event_reason_unknown" translatable="false">N/A</string>
+    <string name="event_reason_vacation">In vacation</string>
+    <string name="event_reason_xc_code_wrong">XC code wrong</string>
+    <string name="event_reason_xc_damaged">XC object damaged</string>
+    <string name="event_reason_xc_not_ready">XC object not ready</string>
+    <string name="event_reason_xc_wrong">XC wrong object</string>
+
+    <string name="exit_application">Exit application</string>
+    <string name="exit_application_prompt">Do you really want to exit the application?</string>
+
+    <string name="expiry">Expiry</string>
+
+    <string name="given_cash">Given cash</string>
+    <string name="given_cash_eg_15_00">Given cash (eg. 15,00)</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="help">Help</string>
 
     <string name="hint_field_mail">Email Address</string>
     <string name="hint_field_password">Password</string>
@@ -44,16 +120,88 @@
 
     <string name="hub" translatable="false">HUB</string>
 
+    <string name="identity_check">Identity-Check</string>
+
+    <string name="imei_last_4">IMEI (last 4)</string>
+
     <string name="linehaul">Linehaul</string>
 
+    <string name="load_delivery_list">Load delivery list</string>
+
+    <string name="loaded">Loaded</string>
+
     <string name="login" translatable="false">Login</string>
+    <string name="login_pending">Authenticating</string>
 
     <string name="logout">Logout</string>
+
+    <string name="manual_label_input">Manual barcode label input</string>
+
+    <string name="menu">Menu</string>
+
+    <string name="missing">Missing</string>
+
+    <string name="name">Name</string>
+    <string name="name_of_authority">Name of Authority</string>
+
+    <string name="navigate">Navigate</string>
 
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
 
+    <string name="news">News</string>
+
+    <string name="no_go_back">No, go back</string>
+
+    <string name="number_short_no">No.</string>
+
     <string name="ok" translatable="false">OK</string>
+
+    <string name="order_list">Order list</string>
+    <string name="order_not_on_delivery_list">Order not on delivery list</string>
+    <string name="order_not_on_delivery_list_confirmation">Do you want to store the corresponding order?</string>
+
+    <string name="parcel_damaged">Parcel damaged</string>
+    <string name="parcel_missing">Parcel missing</string>
+
+    <string name="parcels">Parcels</string>
+
+    <string name="passport_drivers_license">Passport/Drivers license</string>
+
+    <string name="pending">Pending</string>
+
+    <string name="please_wait">Please wait</string>
+
+    <string name="privacy_disclaimer_text" translatable="false">
+        Datenschutzerklärung
+
+Die Nutzung unserer Seite ist ohne eine Angabe von personenbezogenen Daten möglich. Für die Nutzung einzelner Services unserer Seite können sich hierfür abweichende Regelungen ergeben, die in diesem Falle nachstehend gesondert erläutert werden. Ihre personenbezogenen Daten (z.B. Name, Anschrift, E-Mail, Telefonnummer, u.ä.) werden von uns nur gemäß den Bestimmungen des deutschen Datenschutzrechts verarbeitet. Daten sind dann personenbezogen, wenn sie eindeutig einer bestimmten natürlichen Person zugeordnet werden können. Die rechtlichen Grundlagen des Datenschutzes finden Sie im Bundesdatenschutzgesetz (BDSG) und dem Telemediengesetz (TMG). Nachstehende Regelungen informieren Sie insoweit über die Art, den Umfang und Zweck der Erhebung, die Nutzung und die Verarbeitung von personenbezogenen Daten durch den Anbieter
+
+[Name und Anschrift des Betreibers]
+
+[Telefonnummer des Betreibers]
+
+[E-Mail des Betreibers]
+
+Wir weisen darauf hin, dass die internetbasierte Datenübertragung Sicherheitslücken aufweist, ein lückenloser Schutz vor Zugriffen durch Dritte somit unmöglich ist.
+
+Serverdaten
+
+Aus technischen Gründen werden u.a. folgende Daten, die Ihr Internet-Browser an uns bzw. an unseren Webspace-Provider übermittelt, erfasst (sogenannte Serverlogfiles):
+
+- Browsertyp und -version
+- verwendetes Betriebssystem
+- Webseite, von der aus Sie uns besuchen (Referrer URL)
+- Webseite, die Sie besuchen
+- Datum und Uhrzeit Ihres Zugriffs
+- Ihre Internet Protokoll (IP)-Adresse.
+
+Diese anonymen Daten werden getrennt von Ihren eventuell angegebenen personenbezogenen Daten gespeichert und lassen so keine Rückschlüsse auf eine bestimmte Person zu. Sie werden zu statistischen Zwecken ausgewertet, um unseren Internetauftritt und unsere Angebote optimieren zu können.
+
+Kontaktmöglichkeit
+
+Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder über ein Kontaktformular in Verbindung zu treten. In diesem Fall werden die vom Nutzer gemachten Angaben zum Zwecke der Bearbeitung seiner Kontaktaufnahme gespeichert. Eine Weitergabe an Dritte erfolgt nicht. Ein Abgleich der so erhobenen Daten mit Daten, die möglicherweise durch andere Komponenten unserer Seite erhoben werden, erfolgt ebenfalls nicht.
+    </string>
 
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
@@ -62,20 +210,92 @@
 
     <string name="prototype">Prototype</string>
 
+    <string name="question_remove_damaged_status">Remove damaged status?</string>
+    <string name="question_remove_damaged_status_title">Parcel has been declared damaged</string>
+
+    <string name="recipient">Recipient</string>
+    <string name="recipient_dialog_content">Who accepted the shipment?</string>
     <string name="report_bug">Report bug</string>
+
+    <string name="reset">Reset</string>
+
+    <string name="service_cash_delivery">Cash on delivery</string>
+    <string name="service_department_delivery">Department delivery</string>
+    <string name="service_documented_personal">Documented personal delivery</string>
+    <string name="service_fair">Fair service</string>
+    <string name="service_fixed">Fixed appointment</string>
+    <string name="service_ident_contract">Ident contract</string>
+    <string name="service_no_alternative">No alternative delivery</string>
+    <string name="service_packaging_recirculation">Packaging recirculation</string>
+    <string name="service_pharmaceuticals" translatable="false">Pharmaceuticals</string>
+    <string name="service_phone_receipt">Phone receipt</string>
+    <string name="service_postbox_delivery">Postbox delivery</string>
+    <string name="service_receipt_acknowledgement">Receipt acknowledgement</string>
+    <string name="service_security_return" translatable="false">Security return</string>
+    <string name="service_self_completion_duty">Self completion of duty</string>
+    <string name="service_selfpickup">Self-Pickup</string>
+    <string name="service_submission">Submission participation</string>
+    <string name="service_suitcase">Suitcase shipping</string>
+    <string name="service_valuables">Valuables</string>
+    <string name="service_xchange" translatable="false">X-Change</string>
+
+    <string name="services">Services</string>
+
+    <string name="signed_on_paper">Signed on paper</string>
 
     <string name="skip">Skip</string>
 
     <string name="station_id">Station ID</string>
 
+    <string name="street">Street</string>
+
+    <string name="submit">Submit</string>
+
     <string name="title_activity_delivery">Delivery</string>
+    <string name="title_confirm_call">Confirm call</string>
+    <string name="title_missing_signature">Signature missing</string>
+    <string name="title_specify_deliverylist">Specify a delivery list</string>
+    <string name="title_stop_list">Delivery Stops</string>
+    <string name="title_stop_detailt">Stop Details</string>
+    <string name="title_stop_process">Delivery</string>
+
+    <string name="to_neighbour">To neighbour</string>
+    <string name="to_postbox">To postbox</string>
+    <string name="to_recipient">To recipient</string>
 
     <string name="update">Update</string>
 
     <string name="user">User</string>
+    <string name="unknown">Unknown</string>
+
+    <string name="vehicle_loading">Vehicle loading</string>
+    <string name="vehicle_loading_finalize_dialog">All pending parcels will be marked missing.</string>
+    <string name="vehicle_loading_finalize_dialog_title">Finalize vehicle loading</string>
+    <string name="vehicle_loading_unload_parcel_dialog">Unload parcel?</string>
+    <string name="vehicle_loading_unload_parcel_dialog_title">Parcel has been loaded</string>
 
     <string name="version">Version</string>
     <string name="version_available">v%s is available</string>
 
     <string name="warehouse">Warehouse</string>
+
+    <string name="yes_start_tour">Yes, start tour</string>
+    <string name="dialog_title_event_selection">Event selection</string>
+    <string name="please_sign_here">Please sign here:</string>
+    <string name="back_choose_new_delivery_options">Back, choose new delivery option</string>
+    <string name="signature_conclusion">I acknowledge the receipt of:\nOrders: %1$s\nParcels: %2$s\nRecipient: %3$s</string>
+    <string name="signature_signed_by_name">Name: %s</string>
+    <string name="service_message_receipt_acknowledgement">Attention: Please fill out the attached receipt</string>
+    <string name="service_message_ident_contract">Please check together with the consignee the attached contract. Send the signed contract back.</string>
+    <string name="service_message_submission">Attention: Submission participation!</string>
+    <string name="service_message_security_return">Exchange device required! Please check the IMEI number of the device</string>
+    <string name="service_message_xchange">Exchange object required! Delivery only with exchange</string>
+    <string name="service_message_documented_personal_delivery">Attention: Fill out the attached document with information from an official ID card</string>
+    <string name="service_message_package_recirculation">Please return the packaging of the parcel</string>
+    <string name="title_cash_collection">Cash collection</string>
+    <string name="to_be_loaded">To be loaded</string>
+    <string name="not_loaded">Not loaded</string>
+    <string name="title_alternativedelivery">Alternativzustellung</string>
+    <string name="deliveryscanning">Delivery scanning</string>
+    <string name="to_be_scanned">To be scanned</string>
 </resources>

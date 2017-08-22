@@ -1,11 +1,14 @@
 package org.deku.leoz.mobile
 
 import com.facebook.stetho.Stetho
+import org.slf4j.LoggerFactory
 
 /**
  * Created by n3 on 13/12/2016.
  */
 class DebugApplication : Application() {
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+
     override fun onCreate() {
         super.onCreate()
 

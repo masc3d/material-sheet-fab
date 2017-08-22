@@ -38,12 +38,11 @@ class MqttSqlitePersistence constructor(
         private val COL_PAYLOAD = "payload"
     }
 
-    private val dbInstance = LazyInstance<SQLiteDatabase>({
-        SQLiteDatabase.openOrCreateDatabase(this.databaseFile, null)
-    })
-
     private val db by lazy {
-        this.dbInstance.get()
+        // Make sure that database path exists
+        this.databaseFile.parentFile.mkdirs()
+
+        SQLiteDatabase.openOrCreateDatabase(this.databaseFile, null)
     }
 
     init {

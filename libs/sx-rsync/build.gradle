@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.1.2-5'
+        v_kotlin = '1.1.4-2'
     }
 
     repositories {
@@ -43,7 +43,7 @@ dependencies {
             project(':sx-ssh'),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-            "org.apache.commons:commons-lang3:3.5",
+            "org.apache.commons:commons-lang3:3.6",
             // Ini/conf file support
             'org.ini4j:ini4j:0.5.4'
     )

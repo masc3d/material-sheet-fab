@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.1.2-5'
+        v_kotlin = '1.1.4-2'
     }
 
     repositories {
@@ -43,7 +43,7 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             // Kryo
-            "com.esotericsoftware:kryo:4.0.0"
+            "com.esotericsoftware:kryo:4.0.1"
     )
 
     testCompile(

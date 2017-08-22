@@ -20,7 +20,7 @@ ext {
                     url     : 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 14
+                    target  : 32
             ],
             // Production/live
             live: [
@@ -28,21 +28,21 @@ ext {
                     user    : 'migration',
                     password: 'dekudb',
                     baseline: 2,
-                    target  : 16
+                    target  : 33
             ],
             // Test 61
             test61: [
-                    url     : 'jdbc:mysql://10.3.73.61:3306?useSSL=false',
-                    user    : 'migration',
+                    url     : 'jdbc:mysql://10.3.73.61:3305?useSSL=false',
+                    user    : 'root',
                     password: 'dekudb',
-                    target  : 2
+                    target  : 100
             ]
     ]
 }
 
 buildscript {
     ext {
-        v_flyway = '4.1.2'
+        v_flyway = '4.2.0'
         v_mysql = '5.1.40'
 
         DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'

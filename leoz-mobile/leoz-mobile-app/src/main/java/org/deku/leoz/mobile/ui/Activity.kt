@@ -1,112 +1,299 @@
 package org.deku.leoz.mobile.ui
 
+import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
+import android.graphics.PorterDuff
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
+import android.location.LocationManager
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
-import android.support.transition.Fade
-import android.support.transition.TransitionManager
+import android.provider.Settings
+import android.support.annotation.StringRes
+import android.support.design.widget.*
+import android.support.transition.*
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
+import android.text.InputType
+import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
+import android.widget.ProgressBar
+import com.afollestad.materialdialogs.MaterialDialog
+import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.main.*
-import kotlinx.android.synthetic.main.main_app_bar.*
-import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.device.Tone
+import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
-import org.deku.leoz.mobile.DebugSettings
-import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
-import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
-import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-
+import org.deku.leoz.identity.Identity
+import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.dev.SyntheticInput
+import org.deku.leoz.mobile.ui.activity.StartupActivity
+import org.jetbrains.anko.backgroundColor
+import sx.aidc.SymbologyType
+import sx.android.*
+import sx.android.aidc.SimulatingAidcReader
+import sx.android.rx.observeOnMainThread
+import sx.android.view.setIconTint
+import java.util.NoSuchElementException
 
 /**
  * Leoz activity base class
  * Created by n3 on 23/02/2017.
  */
-open class Activity : RxAppCompatActivity(),
+open class Activity : BaseActivity(),
         NavigationView.OnNavigationItemSelectedListener,
         ScreenFragment.Listener,
         ActionOverlayView.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    companion object {
+        /** Base menu id for dynamically generated synthetic input entries */
+        val MENU_ID_DEV_BASE = 0x5000
+        val MENU_ID_DEV_MAX = 0x5100
+
+        val AIDC_ACTION_ITEM_COLOR = R.color.colorDarkGrey
+        val AIDC_ACTION_ITEM_TINT = android.R.color.white
+    }
+
+    /** Indicates the activity has been paused */
     private var isPaused = false
 
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
+    private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
+
+    private val device: Device by Kodein.global.lazy.instance()
+    private val identity: Identity by Kodein.global.lazy.instance()
+
+    // AIDC readers
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
-    private val tone: Tone by Kodein.global.lazy.instance()
+    private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
+
+    private val tones: Tones by Kodein.global.lazy.instance()
+
+    // Services
     private val updateService: UpdateService by Kodein.global.lazy.instance()
+
+    // Process models
     private val login: Login by Kodein.global.lazy.instance()
-    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     /** Action items */
     private val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
     private var actionItems by actionItemsProperty
 
     private val actionEventSubject = PublishSubject.create<Int>()
+    /** Action overlay event */
     val actionEvent = this.actionEventSubject.hide()
+
+    /** Additional menu items to add */
+    var screenMenuItems: Menu? = null
+
+    private val menuItemEventSubject = PublishSubject.create<MenuItem>()
+    /** Menu item event */
+    val menuItemEvent = this.menuItemEventSubject.hide()
+
+    /** Currently active synthetic inputs */
+    private var syntheticInputsProperty = ObservableRxProperty<List<SyntheticInput>>(listOf())
+    var syntheticInputs by syntheticInputsProperty
+
+    /** Snackbar builder to use with this activity */
+    val snackbarBuilder by lazy {
+        SnackbarBuilder(this.uxCoordinatorLayout)
+    }
+
+    /**
+     * Ref counting progress indicator, wrapping a progress bar
+     */
+    class ProgressIndicator(
+            val progressBar: ProgressBar
+    ) {
+        private var refCount = 0
+
+        fun show() {
+            refCount++
+            this.progressBar.post { this.progressBar.visibility = View.VISIBLE }
+        }
+
+        fun hide() {
+            if (refCount == 0)
+                throw IllegalStateException("Inconsistent show/hide invocations (.hide has been called more often than .show)")
+
+            refCount--
+            if (refCount == 0)
+                this.progressBar.post { this.progressBar.visibility = View.GONE }
+        }
+    }
+
+    val progressIndicator by lazy { ProgressIndicator(this.uxProgressBar) }
+
+    /**
+     * Responsible for controlling header
+     */
+    private inner class Header {
+        /** Default expanded header height */
+        private val headerDefaultExpandedSize by lazy {
+            this@Activity.resources.getDimension(R.dimen.header_expanded_default_height).toInt()
+        }
+
+        /** Default header height (-> action bar height */
+        private val headerDefaultHeight by lazy {
+            val tv = TypedValue();
+            if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics())
+                tv.data
+            } else throw NoSuchElementException("Couldnt find attribute actionBarSize")
+        }
+
+        /** The default header drawable */
+        val defaultDrawable by lazy {
+            // Prepare default image
+            val sourceImage = this@Activity.getDrawable(R.drawable.img_street_1a).toBitmap()
+
+            val ydp = this@Activity.convertPxToDp(sourceImage.height)
+            val xdp = this@Activity.convertPxToDp(sourceImage.width)
+
+            val bitmap = Bitmap.createBitmap(
+                    sourceImage,
+                    0,
+                    this@Activity.convertDpToPx(ydp / 10).toInt(),
+                    sourceImage.width,
+                    this@Activity.convertDpToPx(ydp / 2.1F).toInt()
+            )
+
+            val drawable = BitmapDrawable(this@Activity.resources, bitmap)
+
+            drawable
+        }
+
+        /** Header drawable */
+        var headerDrawable: Drawable? = null
+            set(value) {
+                if (field != null) {
+                    // Drawable transition animatino
+                    val oldDrawable = if (field != null) field else defaultDrawable
+                    val newDrawable = if (value != null) value else defaultDrawable
+
+                    val drawable = TransitionDrawable(listOf(
+                            oldDrawable,
+                            newDrawable
+                    ).toTypedArray())
+
+                    this@Activity.uxHeaderImageView.setImageDrawable(drawable)
+                    drawable.isCrossFadeEnabled = true
+                    drawable.startTransition(500)
+                } else {
+                    // Don't animate when drawable is set initially
+                    this@Activity.uxHeaderImageView.setImageDrawable(value)
+                }
+
+                field = value
+            }
+    }
+
+    /**
+     * Header
+     */
+    private val header = Header()
+
+    // Views
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (!this.app.isInitialized) {
+            // Currently the startup activity is required for seamless startup
+            // as it takes care of synchronously retrieving the honeywell aidc reader from the
+            // aidc manager service. Without a main thread handler cycle eg. activity transition,
+            // injecting the aidc instance (on main thread) will cause a deadlock
+            // TODO: HoneywellAidcReader internals should be completely reactive, so consumers don't have to worry about this.
+
+            // Use the activity task state to determine the most recent active
+            // activity, so we can (at least) restore the most recent activity for the user.
+            val i = Intent(this, StartupActivity::class.java).also {
+                it.putExtra("ACTIVITY", this.javaClass.canonicalName)
+            }
+            this.startActivity(i)
+
+            this.finish()
+            return
+        }
+
         this.setContentView(R.layout.main)
 
-        this.nav_view.setNavigationItemSelectedListener(this)
+        this.uxNavView.setNavigationItemSelectedListener(this)
+
+        //region Progress bar / activity indicator
+
+        // Change progress bar color, as this is apparently not themable and there's no proper
+        // way to do this in xml layout that is compatible down to 4.x
+        this.uxProgressBar.indeterminateDrawable.setColorFilter(
+                ContextCompat.getColor(this, R.color.colorDarkGrey),
+                PorterDuff.Mode.SRC_IN);
+        //endregion
 
         //region Action bar
-        this.setSupportActionBar(this.toolbar)
+        this.setSupportActionBar(this.uxToolbar)
 
         val toggle = ActionBarDrawerToggle(
                 this,
-                this.drawer_layout,
-                this.toolbar,
+                this.uxDrawerLayout,
+                this.uxToolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close)
 
-        this.drawer_layout.addDrawerListener(toggle)
+        this.uxDrawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         //endregion
 
+        // Disable collapsing toolbar title (for now). This will leave regular support action bar title intact.
+        this.uxCollapsingToolbarLayout.isTitleEnabled = true
+
         //region Backstack listener
         this.supportFragmentManager.addOnBackStackChangedListener {
-            val fragments = this.supportFragmentManager.fragments ?: listOf<Fragment>()
+            val fragments = this.supportFragmentManager.fragments ?: listOf<Fragment<*>>()
                     .filterNotNull()
                     .map { it.javaClass.simpleName }
-                    .joinToString(", ")
 
-            log.info("BACKSTACK [${fragments}]")
+            // Log backstack state
+            log.trace("BACKSTACK [${fragments.joinToString(", ")}]")
         }
         //endregion
 
@@ -120,16 +307,29 @@ open class Activity : RxAppCompatActivity(),
                             transition.addTarget(uxActionOverlay)
                             TransitionManager.beginDelayedTransition(uxActionOverlay, transition)
                         }
-                        this@Activity.uxActionOverlay.visibility = when (isOpen) { true -> View.GONE; else -> View.VISIBLE }
+                        this@Activity.uxActionOverlay.visibility = when (isOpen) { true -> View.GONE; else -> View.VISIBLE
+                        }
                     }
                 })
         //endregion
 
         this.uxActionOverlay.fabStyle = R.style.AppTheme_Fab
+        this.uxActionOverlay.defaultIcon = R.drawable.ic_chevron_right
+        this.uxActionOverlay.defaultIcon = R.drawable.ic_chevron_right
+        this.uxActionOverlay.buttonAlpha = 0.87F
         this.uxActionOverlay.listener = this
 
         this.cameraAidcFragmentVisible = false
+
+        // Register to the app's state change event in order to detect when application comes to foreground
+        this.applicationStateMonitor.stateChangedEvent
+                .bindToLifecycle(this)
+                .filter { it == ApplicationStateMonitor.StateType.Foreground }
+                .subscribe {
+                    this.onForeground()
+                }
     }
+
 
     override fun onPause() {
         this.isPaused = true
@@ -139,10 +339,9 @@ open class Activity : RxAppCompatActivity(),
     }
 
 
-
     override fun onBackPressed() {
-        if (this.drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            this.drawer_layout.closeDrawer(GravityCompat.START)
+        if (this.uxDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            this.uxDrawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }
@@ -152,12 +351,48 @@ open class Activity : RxAppCompatActivity(),
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menuInflater.inflate(R.menu.main, menu)
 
-        // Show logout only if there's a user actually logged in
-        menu
-                .findItem(R.id.action_logout)
-                .setVisible(this.login.authenticatedUser != null)
-
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val mainSubMenu = menu.getItem(0).subMenu
+
+        //region Add screen fragment menu items
+        val screenMenuItems = this.screenMenuItems
+        if (screenMenuItems != null && screenMenuItems.hasVisibleItems()) {
+            for (i in 0..screenMenuItems.size() - 1) {
+                val screenMenuItem = screenMenuItems.getItem(i)
+                val item = mainSubMenu.add(
+                        0,
+                        screenMenuItem.itemId,
+                        screenMenuItem.order,
+                        screenMenuItem.title
+                )
+
+                item.icon = screenMenuItem.icon
+            }
+        }
+        //endregion
+
+        //region Add synthetic input entries
+        if (this.debugSettings.syntheticAidcEnabled) {
+            for (i in 0..this.syntheticInputs.size - 1) {
+                val syntheticInputs = this.syntheticInputs.get(i)
+                val item = mainSubMenu.add(
+                        0,
+                        MENU_ID_DEV_BASE + i,
+                        0,
+                        syntheticInputs.name
+                )
+
+                item.icon = this.getDrawable(R.drawable.ic_barcode_scan)
+            }
+        }
+        //endregion
+
+        menu.setGroupVisible(0, mainSubMenu.hasVisibleItems())
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -166,22 +401,32 @@ open class Activity : RxAppCompatActivity(),
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
+        // Handle dynamically generated ids
+        if (id >= MENU_ID_DEV_BASE && id < MENU_ID_DEV_MAX) {
+            val syntheticInputs = this.syntheticInputs.get(id - MENU_ID_DEV_BASE)
+
+            MaterialDialog.Builder(this)
+                    .title(syntheticInputs.name)
+                    .inputType(InputType.TYPE_CLASS_TEXT)
+                    .items(*syntheticInputs.entries.map { it.data }.toTypedArray())
+                    .itemsCallback { materialDialog, view, i, charSequence ->
+                        simulatingAidcReader.emit(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25)
+                    }
+                    .cancelable(true)
+                    .show()
+
+            return true
+        }
+
+        // Handle regular menu entries
         when (id) {
-            R.id.action_settings -> {
-                return false
-            }
-            R.id.action_logout -> {
-                login.logout()
-
-                this.startActivity(
-                        Intent(applicationContext, MainActivity::class.java)
-                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                        Intent.FLAG_ACTIVITY_NEW_TASK))
-                finish()
-
+            R.id.action_main -> {
+                /** Main submenu entry, ignore */
                 return true
             }
             else -> {
+                this.menuItemEventSubject.onNext(item)
+
                 return super.onOptionsItemSelected(item)
             }
         }
@@ -192,7 +437,29 @@ open class Activity : RxAppCompatActivity(),
         when (id) {
             R.id.action_aidc_camera -> {
                 this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
+                if (!this.cameraAidcFragmentVisible)
+                    this.uxAppBarLayout.setExpanded(false, true)
             }
+
+            R.id.action_aidc_keyboard -> {
+                this.cameraAidcFragmentVisible = false
+
+                MaterialDialog.Builder(this)
+                        .title(R.string.manual_label_input)
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .input(R.string.barcode_label, 0, object : MaterialDialog.InputCallback {
+                            override fun onInput(dialog: MaterialDialog, input: CharSequence?) {
+                                log.trace("MANUAL INPUT ${input}")
+                                this@Activity.simulatingAidcReader.emit(
+                                        input.toString(),
+                                        SymbologyType.Unknown
+                                )
+                            }
+                        })
+                        .build()
+                        .show()
+            }
+
         }
 
         // Emit action event
@@ -217,6 +484,14 @@ open class Activity : RxAppCompatActivity(),
                         Intent(applicationContext, ProtoMainActivity::class.java))
             }
 
+            R.id.nav_dev_remote_settings -> {
+                MaterialDialog.Builder(this)
+                        .content("Remote settings:\n${remoteSettings}\n\nDebug settings:\n${debugSettings}")
+                        //.content("Debug settings:\n" + debugSettings.toString())
+                        .cancelable(true)
+                        .show()
+            }
+
             R.id.nav_check_updates -> {
                 updateService.trigger()
             }
@@ -224,102 +499,106 @@ open class Activity : RxAppCompatActivity(),
             R.id.nav_send -> {
             }
 
-            R.id.nav_dev_login -> {
-                this.nav_view.postDelayed({
-                    login.authenticate(
-                            email = Login.DEV_EMAIL,
-                            password = Login.DEV_PASSWORD
-
-                    )
-                            .subscribeBy(
-                                    onNext = {
-                                        this.startActivity(
-                                                Intent(applicationContext, DeliveryActivity::class.java)
-                                                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                                                Intent.FLAG_ACTIVITY_NEW_TASK))
-                                        finish()
-
-                                    },
-                                    onError = {
-                                        tone.errorBeep()
-                                    }
-                            )
-                }, 20)
-            }
-
             R.id.nav_logout -> {
-                this.nav_view.postDelayed({
-                    login.logout()
-                    this.startActivity(
-                            Intent(applicationContext, MainActivity::class.java)
-                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                            Intent.FLAG_ACTIVITY_NEW_TASK))
-                    finish()
-                }, 20)
+                this.login.logout()
             }
         }
 
-        this.drawer_layout.closeDrawer(GravityCompat.START)
+        this.uxDrawerLayout.closeDrawer(GravityCompat.START)
 
         return false
     }
 
+    /**
+     * Aidc fragment control
+     */
     private var cameraAidcFragmentVisible: Boolean
         get() {
             val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
             return fragment != null
         }
         set(value) {
-            // Lookup dynamically created fab with action overlay for applying translucency effect
-            val aidcFab = this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_camera)
-            if (aidcFab != null) {
-                when (value) {
-                    true -> {
-                        aidcFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = R.color.colorAccent)
-                        aidcFab.alpha = 0.6F
-                    }
-                    false -> {
-                        aidcFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
-                        aidcFab.alpha = 0.85F
-                    }
-                }
-            }
-
             if (value == this.cameraAidcFragmentVisible)
                 return
 
-            if (!value) {
-                val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
+            when (value) {
+                true -> {
+                    // Show camera fragment
+                    this.supportFragmentManager.withTransaction {
+                        it.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
+                        it.replace(R.id.uxScannerContainer, AidcCameraFragment(), AidcCameraFragment::class.java.canonicalName)
+                    }
 
-                if (fragment != null) {
-                    if (isPaused) {
-                        // If activitiy is about to pause, avoid animation as they will fail/throw in case activity is detroyed afterwards
-                        this@Activity.supportFragmentManager.withTransaction {
-                            it.remove(fragment)
-                        }
-                    } else {
-                        val view = fragment.view
-                        if (view != null) {
-                            // Fragment removal cannot be animated, thus doing it manually
-                            ViewCompat.animate(view)
-                                    .translationY(view.height.toFloat())
-                                    .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
-                                    .withEndAction {
-                                        this@Activity.supportFragmentManager.withTransaction {
-                                            it.remove(fragment)
+                    // Remove action items,add aidc keyboard button whie camera fragment is visilble
+                    this.actionItems = listOf(
+                            ActionItem(
+                                    id = R.id.action_aidc_keyboard,
+                                    colorRes = AIDC_ACTION_ITEM_COLOR,
+                                    iconTintRes = AIDC_ACTION_ITEM_TINT,
+                                    iconRes = R.drawable.ic_keyboard
+                            )
+                    )
+                }
+
+                false -> {
+                    val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
+
+                    if (fragment != null) {
+                        if (isPaused) {
+                            // If activitiy is about to pause, avoid animation as they will fail/throw in case activity is detroyed afterwards
+                            this@Activity.supportFragmentManager.withTransaction {
+                                it.remove(fragment)
+                            }
+                        } else {
+                            val view = fragment.view
+                            if (view != null) {
+                                // Fragment removal cannot be animated with custom animation, thus doing it manually
+                                ViewCompat.animate(view)
+                                        .translationY(view.height.toFloat())
+                                        .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
+                                        .withEndAction {
+                                            this@Activity.supportFragmentManager.withTransaction {
+                                                it.remove(fragment)
+                                            }
                                         }
-                                    }
-                                    .start()
+                                        .start()
+                            }
+                        }
+
+                        // Find top-most screen fragment and restore action items
+                        val screenFragment = this.supportFragmentManager.fragments
+                                .firstOrNull {
+                                    it is ScreenFragment<*>
+                                } as? ScreenFragment<*>
+
+                        if (screenFragment != null)
+                            this.actionItems = screenFragment.actionItems
+                    }
+                }
+            }
+
+            // Lookup dynamically created fab with action overlay for applying translucency effect
+            listOf(
+                    this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_camera),
+                    this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_keyboard)
+            )
+                    .filterNotNull()
+                    .forEach {
+
+                        when (value) {
+                            true -> {
+                                if (it.id == R.id.action_aidc_camera)
+                                    it.setIconTint(R.color.colorAccent)
+
+                                it.alpha = 0.6F
+                            }
+                            false -> {
+                                it.setIconTint(AIDC_ACTION_ITEM_TINT)
+                                it.alpha = this.uxActionOverlay.buttonAlpha
+                            }
                         }
 
                     }
-                }
-            } else {
-                this.supportFragmentManager.withTransaction {
-                    it.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
-                    it.replace(R.id.uxScannerContainer, AidcCameraFragment(), AidcCameraFragment::class.java.canonicalName)
-                }
-            }
         }
 
     override fun onResume() {
@@ -329,26 +608,47 @@ open class Activity : RxAppCompatActivity(),
 
         // Customize navigation drawer
 
-        val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
+        val navHeaderView = this.uxNavView.getHeaderView(0)
         navHeaderView.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
+        navHeaderView.uxDeviceId.text = this.identity.shortUid.toString()
 
         if (this.debugSettings.enabled) {
-            this.nav_view.menu.findItem(R.id.nav_dev_login).setVisible(true)
-            this.nav_view.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
+            this.uxNavView.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
+            this.uxNavView.menu.findItem(R.id.nav_dev_remote_settings).setVisible(true)
         }
 
         this.actionItemsProperty
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
+                    log.info("ACTION ITEMS CAHNGED")
                     val items = mutableListOf(*it.value.toTypedArray())
-                    items.add(
-                            0,
-                            ActionItem(
-                                    id = R.id.action_aidc_camera,
-                                    colorRes = R.color.colorAccent,
-                                    iconRes = R.drawable.ic_barcode
-                            )
-                    )
+
+                    if (this.device.manufacturer.type == Device.Manufacturer.Type.Generic) {
+                        items.add(
+                                0,
+                                ActionItem(
+                                        id = R.id.action_aidc_camera,
+                                        colorRes = AIDC_ACTION_ITEM_COLOR,
+                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
+                                        iconRes = R.drawable.ic_barcode,
+                                        visible = this.aidcReader.enabled,
+                                        alignEnd = false
+                                )
+                        )
+                    } else {
+                        items.add(
+                                0,
+                                ActionItem(
+                                        id = R.id.action_aidc_keyboard,
+                                        colorRes = AIDC_ACTION_ITEM_COLOR,
+                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
+                                        iconRes = R.drawable.ic_keyboard,
+                                        visible = this.aidcReader.enabled,
+                                        alignEnd = false
+                                )
+                        )
+                    }
+
                     this.uxActionOverlay.items = items
                 }
 
@@ -357,20 +657,21 @@ open class Activity : RxAppCompatActivity(),
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onNext = { event ->
-                            val sb = Snackbar.make(
-                                    this.uxContainer,
-                                    this@Activity.getString(R.string.version_available, event.version),
-                                    Snackbar.LENGTH_INDEFINITE)
-                            sb.setAction(R.string.update, {
-                                event.apk.install(this@Activity)
-                            })
-                            sb.show()
+                            this.snackbarBuilder
+                                    .message(this@Activity.getString(R.string.version_available, event.version))
+                                    .duration(Snackbar.LENGTH_INDEFINITE)
+                                    .actionText(R.string.update)
+                                    .actionClickListener {
+                                        event.apk.install(this@Activity)
+                                    }
+                                    .build().show()
                         })
 
 
         // Authentication changes
 
         this.login.authenticatedUserProperty
+                .distinctUntilChanged()
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
                     this@Activity.invalidateOptionsMenu()
@@ -378,51 +679,74 @@ open class Activity : RxAppCompatActivity(),
                     val user = it.value
                     when {
                         user != null -> {
-                            this.nav_view.menu
+                            this.uxNavView.menu
                                     .findItem(R.id.nav_logout)
                                     .setVisible(true)
 
-                            this.nav_view.menu
+                            this.uxNavView.menu
                                     .findItem(R.id.nav_dev_prototype)
                                     .setVisible(this.debugSettings.enabled)
-
-                            this.nav_view.menu
-                                    .findItem(R.id.nav_dev_login)
-                                    .setVisible(false)
 
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
                             navHeaderView.uxActiveUser.text = user.email
-                            navHeaderView.uxStationID.text = "-_-"
+                            navHeaderView.uxStationId.text = "-_-"
                         }
                         else -> {
-                            this.nav_view.menu
+                            this.uxNavView.menu
                                     .findItem(R.id.nav_logout)
                                     .setVisible(false)
 
-                            this.nav_view.menu
+                            this.uxNavView.menu
                                     .findItem(R.id.nav_dev_prototype)
                                     .setVisible(false)
 
-                            this.nav_view.menu
-                                    .findItem(R.id.nav_dev_login)
-                                    .setVisible(this.debugSettings.enabled)
-
                             // Hide navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.GONE
+
+                            // All activities except for Main require login
+                            if (!(this is MainActivity)) {
+                                this.startActivity(
+                                        Intent(applicationContext, MainActivity::class.java)
+                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                                        Intent.FLAG_ACTIVITY_NEW_TASK))
+                                finish()
+                            }
                         }
+                    }
+                }
+
+        //region AIDC
+        this.aidcReader.enabledProperty
+                .distinctUntilChanged()
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { enabled ->
+                    log.info("AIDC reader ${if (enabled.value) "enabled" else "disabled"}")
+                    val aidcActionItem = this.uxActionOverlay.items
+                            .filter {
+                                (it.id == R.id.action_aidc_camera || it.id == R.id.action_aidc_keyboard)
+                                        &&
+                                        it.visible != enabled.value
+                            }
+                            .firstOrNull()
+
+                    if (aidcActionItem != null) {
+                        aidcActionItem.visible = enabled.value
+                        this.uxActionOverlay.update()
                     }
                 }
 
         this.aidcReader.bindActivity(this)
 
         this.cameraReader.readEvent
-                .bindToLifecycle(this)
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    this.tone.beep()
+                    this.tones.beep()
                     this.cameraAidcFragmentVisible = false
                 }
+        //endregion
     }
 
     /**
@@ -430,8 +754,9 @@ open class Activity : RxAppCompatActivity(),
      * @param fragment Screen fragment to show
      * @param addToBackStack If the fragment should be added to the backstack
      */
-    fun showScreen(fragment: ScreenFragment, addToBackStack: Boolean = true): Int {
+    fun showScreen(fragment: ScreenFragment<*>, addToBackStack: Boolean = true): Int {
         log.trace("SHOW SCREEN [${fragment.javaClass.simpleName}]")
+
         return supportFragmentManager.withTransaction {
             if (addToBackStack) {
                 it.setCustomAnimations(
@@ -447,12 +772,242 @@ open class Activity : RxAppCompatActivity(),
         }
     }
 
-    override fun onScreenFragmentResume(fragment: ScreenFragment) {
+    override fun onScreenFragmentResume(fragment: ScreenFragment<*>) {
+        this.aidcReader.enabled = fragment.aidcEnabled
+
         // Take over action items from screen fragment when it resumes
-        this.actionItems = fragment.actionItems
+        fragment.actionItemsProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    this.actionItems = it.value
+                }
+
+        fragment.menuProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribeBy(
+                        onNext = {
+                            this.screenMenuItems = it.value
+                            this.invalidateOptionsMenu()
+                        },
+                        onComplete = {
+                            this.screenMenuItems = null
+                        }
+                )
+
+        fragment.syntheticInputsProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribeBy(
+                        onNext = {
+                            this.syntheticInputs = it.value
+                            this.invalidateOptionsMenu()
+                        },
+                        onComplete = {
+                            this.syntheticInputs = listOf()
+                        }
+                )
+
+        fragment.accentColorProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    this.uxHeaderAccentBar.backgroundColor = if (remoteSettings.hostIsProductive || it.value != R.color.colorAccent)
+                        ContextCompat.getColor(this, it.value) else ContextCompat.getColor(this, R.color.colorDev)
+                }
+
+        fragment.flipScreenProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    if (it.value) {
+//                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate180) as RotateAnimation
+//                        this.uxContainer.animate()
+                        this.uxContainer.rotation = -180F
+
+                        // Hide status bar
+                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    } else {
+//                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate0) as RotateAnimation
+//                        this.uxContainer.animate()
+                        this.uxContainer.rotation = 0F
+
+                        // Show status bar
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    }
+                }
+
+        fragment.lockNavigationDrawerProperty
+                .bindUntilEvent(fragment, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it.value) {
+                        true -> this.uxDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                        false -> this.uxDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                    }
+                }
+
+        // Setup collapsing layout, appbar & header
+
+        this.uxCollapsingToolbarLayout.title = fragment.title
+
+        var expandAppBar = true
+        var scrollCollapseMode = fragment.scrollCollapseMode
+        var scroll = (scrollCollapseMode != ScreenFragment.ScrollCollapseModeType.None)
+
+        log.trace("HEADER HEIGHT ${this.uxHeader.layoutParams.height}")
+
+        if (fragment.toolbarCollapsed) {
+            expandAppBar = false
+            scroll = true
+        }
+
+        if (fragment.toolbarHidden) {
+            // Workaround for supportActionBar not adjusting content area
+
+            // Hiding the entire appbar via expanded flag only works in conjunction
+            // with collapsing toolbar scroll/snap mode
+            expandAppBar = false
+            scroll = true
+            scrollCollapseMode = ScreenFragment.ScrollCollapseModeType.EnterAlwaysCollapsed
+        }
+
+        // Apply action bar changes
+        run {
+            // Make sure app bar is visible (eg. when screen changes)
+            // otherwise transitioning from a scrolling to a static content screen
+            // may leave the app bar hidden.
+            log.trace("APPBAR EXPAND ${expandAppBar}")
+
+            this.uxAppBarLayout.setExpanded(expandAppBar, true)
+        }
+
+        // Apply header changes
+        run {
+            // TODO: don't expand when scroll position is not top on pre-existing fragment
+
+            this.header.headerDrawable = if (fragment.headerImage != 0)
+                ContextCompat.getDrawable(baseContext, fragment.headerImage)
+            else
+                this.header.defaultDrawable
+        }
+
+        // Apply collapsing toolbar settings
+        run {
+            // EXIT_UNTIL_COLLAPSED should always be the default, so title and appbar expansion works properly
+            val collapsingScrollFlag = when (scrollCollapseMode) {
+                ScreenFragment.ScrollCollapseModeType.ExitUntilCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+                ScreenFragment.ScrollCollapseModeType.EnterAlways -> AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                ScreenFragment.ScrollCollapseModeType.EnterAlwaysCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
+
+                ScreenFragment.ScrollCollapseModeType.None -> AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+                else -> 0
+            }
+
+            val scrollFlag = when (scroll) {
+                false -> 0
+                else -> AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+            }
+
+            val scrollSnapFlag = when (fragment.scrollSnap) {
+                true -> AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+                false -> 0
+            }
+
+            val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
+
+            layoutParams.scrollFlags =
+                    scrollFlag or collapsingScrollFlag or scrollSnapFlag
+
+            log.trace("SCROLL FLAGS ${layoutParams.scrollFlags}")
+
+            this.uxCollapsingToolbarLayout.requestLayout()
+        }
+
+        // Apply requested orientation
+        this.requestedOrientation = when {
+            debugSettings.userScreenRotation -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        // Enforce orientation on every fragment resume
+            else -> fragment.orientation
+        }
+
     }
 
-    override fun onScreenFragmentPause(fragment: ScreenFragment) {
+    override fun onScreenFragmentPause(fragment: ScreenFragment<*>) {
         this.cameraAidcFragmentVisible = false
     }
+
+    /**
+     * On foreground handler (hooked into ApplicationStateMonitor)
+     */
+    private fun onForeground() {
+        // Check developer settings
+        if (!debugSettings.enabled && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
+            MaterialDialog.Builder(this)
+                    .title("Developer options enabled")
+                    .content("Developer options are enabled on your device. To continue, you must disable developer options!")
+                    .positiveText("Settings")
+                    .negativeText("Abort")
+                    .onPositive { materialDialog, dialogAction ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                        this.startActivityForResult(intent, 0)
+                    }
+                    .onNegative { materialDialog, dialogAction ->
+                        when (android.os.Build.VERSION.SDK_INT) {
+                            android.os.Build.VERSION_CODES.LOLLIPOP -> this.finishAndRemoveTask()
+                            else -> this.finishAffinity()
+                        }
+                    }
+                    .cancelable(false)
+                    .show()
+        }
+
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            MaterialDialog.Builder(this)
+                    .title("GPS location provider is not enabled")
+                    .content("The GPS location on your device is disabled. To continue, you must enable GPS location!")
+                    .positiveText("Settings")
+                    .negativeText("Abort")
+                    .onPositive { materialDialog, dialogAction ->
+                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                        this.startActivityForResult(intent, 0)
+                    }
+                    .onNegative { materialDialog, dialogAction ->
+                        when (android.os.Build.VERSION.SDK_INT) {
+                            android.os.Build.VERSION_CODES.LOLLIPOP -> this.finishAndRemoveTask()
+                            else -> this.finishAffinity()
+                        }
+                    }
+                    .cancelable(false)
+                    .show()
+        }
+    }
+}
+
+/**
+ * Extension method for easily binding observable lifecycle to activity progress indicator
+ */
+fun <T> Observable<T>.composeWithActivityProgress(activity: Activity): Observable<T> {
+    return this
+            .doOnSubscribe {
+                activity.progressIndicator.show()
+            }
+            .doFinally {
+                activity.progressIndicator.hide()
+            }
+}
+
+fun <T> Observable<T>.composeAsRest(activity: Activity, @StringRes errorMessage: Int = 0): Observable<T> {
+    return this
+            .observeOnMainThread()
+            .composeWithActivityProgress(activity)
+            .doOnError {
+                if (errorMessage != 0) {
+                    activity.snackbarBuilder
+                            .message(
+                                    if (it.isConnectivityException)
+                                        R.string.error_connectivity
+                                    else
+                                        errorMessage
+                            )
+                            .duration(Snackbar.LENGTH_LONG)
+                            .build().show()
+                }
+            }
 }

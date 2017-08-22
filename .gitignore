@@ -61,6 +61,7 @@ out
 release
 vm/.vagrant
 vm/dist
+vm/Vagrantfile.local
 workspace.xml
 local.properties
 libs/sx-packager-gradle/.idea/libraries

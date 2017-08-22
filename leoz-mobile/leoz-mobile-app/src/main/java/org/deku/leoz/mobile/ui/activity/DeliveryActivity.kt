@@ -1,52 +1,54 @@
 package org.deku.leoz.mobile.ui.activity
 
-import android.app.FragmentManager
-import android.content.pm.ActivityInfo
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.v7.view.menu.MenuBuilder
-import android.view.View
+import android.support.v4.app.FragmentManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import kotlinx.android.synthetic.main.main_content.*
-import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Delivery
+import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.SharedPreference
+import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.ui.Activity
+import org.deku.leoz.mobile.ui.ChangelogItem
+import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
-import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
-import sx.android.fragment.CameraFragment
-import sx.android.fragment.util.withTransaction
+import sx.android.rx.observeOnMainThread
+import java.util.*
 
 /**
  * Created by 27694066 on 09.05.2017.
  */
 class DeliveryActivity : Activity(),
-        CameraFragment.Listener,
-        DeliveryMainFragment.Listener,
-        SignatureFragment.Listener,
+        MenuScreen.Listener,
+        SignatureScreen.Listener,
+        VehicleLoadingScreen.Listener,
         VehicleLoadingDialog.OnDialogResultListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    val delivery: Delivery by Kodein.global.lazy.instance()
 
-    companion object {
-        const val FRAGMENT_TAG_CAMERA = "fragmentCamera"
-        const val FRAGMENT_TAG_SIGNATURE = "fragmentSignature"
-        const val FRAGMENT_TAG_TOURSELECTION = "fragmentTourSelection"
-        const val FRAGMENT_TAG_TOUROVERVIEW = "fragmentTourOverview"
-        const val FRAGMENT_TAG_DELIVERYMENUE = "fragmentDeliveryMenue"
-    }
+    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            this.showScreen(DeliveryMainFragment(), addToBackStack = false)
-
-            this.supportActionBar?.setTitle(R.string.delivery)
+            //TODO: First fragment to be shown should be the privacy disclaimer (Maybe to be displayed as an dialog?)
+            this.showScreen(MenuScreen(), addToBackStack = false)
+            //Show privacy disclaimer
+            //TODO
+            //Show vehicle selection dialog
+            //TODO Call the function when the disclaimer is dismissed
+            //Check if the changelog dialog should be displayed TODO: Call this function when the vehicle selection is done.
+            queryChangelogDisplay()
         }
     }
 
@@ -58,47 +60,106 @@ class DeliveryActivity : Activity(),
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+    }
+
     /**
-     * Fragment listener
+     * Determine if changelog should be displayed automatically e.g. after an APP update.
+     * Display the dialog only after the user has been logged in
      */
+    fun queryChangelogDisplay() {
+        var currentVersionNumber = 0
+        val savedVersionNumber = sharedPreferences.getInt(SharedPreference.CHANGELOG_VERSION.key, 0)
 
-    override fun onDeliveryMenuChoosed(entryType: DeliveryMainFragment.MenuEntry.Entry) {
-        when (entryType) {
-            DeliveryMainFragment.MenuEntry.Entry.LOADING -> {
-                /**
-                 * Start "vehicle loading" process
-                 */
-                val dialog: VehicleLoadingDialog = VehicleLoadingDialog(this)
-                dialog.show(supportFragmentManager, "LOADINGDIALOG")
-            }
+        try {
+            val pi = packageManager.getPackageInfo(packageName, 0)
+            currentVersionNumber = pi.versionCode
+        } catch (e: Exception) {
+            log.error("${e.message}\r\n${e.stackTrace}")
+        }
 
-            DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
-                this.showScreen(StopOverviewFragment())
+        log.debug("Checking for changelog dialog. Current version [$currentVersionNumber] Recently saved version [$savedVersionNumber]")
+
+        if (currentVersionNumber > savedVersionNumber) {
+            // TODO: disabled changelog until finalized
+            if (BuildConfig.DEBUG) {
+                showChangelogDialog()
+
+                val editor = sharedPreferences.edit()
+
+                editor.putInt(SharedPreference.CHANGELOG_VERSION.key, currentVersionNumber)
+                editor.apply()
             }
         }
     }
 
-    override fun onCameraFragmentPictureTaken(data: ByteArray?) {
-        log.debug("ONCAMERAFRAGMENTPICTURETAKEN")
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun showChangelogDialog() {
+        val entries = listOf(
+                ChangelogItem(
+                        date = Date(1498255200),
+                        version = "0.15-SNAPSHOT",
+                        entries = ChangelogItem.ChangelogEntry(
+                                title = "Performance update",
+                                description = "We improved the app performance to provide you an better user experience."
+                        )
+                )
+        )
 
+        ChangelogDialog.create(entries).show(supportFragmentManager, "DIALOG_CHANGELOG")
     }
 
-    override fun onCameraFragmentShutter() {
-        log.debug("ONCAMERAFRAGMENTSHUTTER")
-    }
+    /**
+     * Fragment listener
+     */
 
-    override fun onCameraFragmentDiscarded() {
-        log.debug("ONCAMERAFRAGMENTDISCARDED")
+    override fun onDeliveryMenuSelection(entryType: MenuScreen.MenuEntry.Entry) {
+        when (entryType) {
+            MenuScreen.MenuEntry.Entry.LOADING -> {
+                this.showScreen(VehicleLoadingScreen())
+            }
+
+            MenuScreen.MenuEntry.Entry.DELIVERY -> {
+                this.showScreen(DeliveryStopListScreen())
+            }
+        }
     }
 
     override fun onSignatureCancelled() {
+        this.supportFragmentManager.popBackStack()
     }
 
-    override fun onSignatureSubmitted() {
-        this@DeliveryActivity.supportFragmentManager.popBackStack(DeliveryProcessFragment::class.java.canonicalName, 0)
-        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        this.supportActionBar?.show()
+    override fun onSignatureSubmitted(signatureSvg: String) {
+        val activeStop = this.delivery.activeStop
+
+        if (activeStop != null) {
+            // Complement active stop and finalize
+            activeStop.signatureSvg = signatureSvg
+            activeStop.finalize()
+                    .subscribeOn(Schedulers.computation())
+                    .observeOnMainThread()
+                    .subscribeBy(
+                            onComplete = {
+                                this.delivery.activeStop = null
+
+                                this@DeliveryActivity.supportFragmentManager.popBackStack(
+                                        DeliveryStopListScreen::class.java.canonicalName,
+                                        0)
+                            },
+                            onError = {
+                                log.error(it.message, it)
+                            }
+                    )
+        }
+    }
+
+    override fun onVehicleLoadingFinalized() {
+        this.supportFragmentManager.popBackStack(
+                VehicleLoadingScreen::class.java.canonicalName,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+        this.showScreen(DeliveryStopListScreen())
     }
 
     /**
@@ -111,20 +172,9 @@ class DeliveryActivity : Activity(),
     }
 
     override fun onDeliveryListSkipped() {
-        this.showScreen(VehicleLoadingFragment())
+        this.showScreen(VehicleLoadingScreen())
     }
 
     override fun onCanceled() {
-    }
-
-    fun showDeliverFabButtons() {
-    }
-
-    fun showSignaturePad() {
-        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        this.supportActionBar?.hide()
-
-        val signatureFragment = SignatureFragment()
-        this.showScreen(signatureFragment)
     }
 }

@@ -1,7 +1,10 @@
 export interface Driver {
+  id: number;
   firstName: string;
   lastName: string;
   role: Driver.RoleEnum;
+  phone: string;
+  phoneMobile: string;
   email: string;
   active: boolean;
 }

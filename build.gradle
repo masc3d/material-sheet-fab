@@ -25,6 +25,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 apply from: 'versions.gradle'
+apply from: 'common.gradle'
 
 def assertJvmVersion(String vmVersion) {
     def jvm = ManagementFactory.getRuntimeMXBean()
@@ -37,7 +38,7 @@ assertJvmVersion(v_jvm)
 
 buildscript {
     ext {
-        v_jgit = '4.6.1.201703071140-r'
+        v_jgit = '4.8.0.201706111038-r'
         v_jsch = '0.0.9'
     }
 
@@ -128,6 +129,16 @@ subprojects {
     }
 
     plugins.withType(JavaPlugin).whenPluginAdded {
+        //region Since IJ-2017.2, default output path is `out`. Unify so both build toolchains share the same output path
+        // REMARK: possibly a better approach would be to synchronize gradle build output to IJ out directories
+        project.apply plugin: 'idea'
+        project.idea {
+            module {
+                outputDir = project.sourceSets.main.output.classesDir
+            }
+        }
+        //endregion
+
         project.test {
             ignoreFailures true
         }

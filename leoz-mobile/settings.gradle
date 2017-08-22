@@ -1,5 +1,5 @@
-include ':leoz-mobile-app'
 include ':leoz-mobile-data'
+include ':leoz-mobile-app'
 include ':leoz-common'
 include ':sx-common'
 include ':sx-android'

@@ -6,17 +6,22 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import org.deku.leoz.mobile.PREFERENCE_TAG
 
 /**
+ * Shared preferences configuration
  * Created by 27694066 on 05.05.2017.
  */
 class SharedPreferenceConfiguration {
     companion object {
+        /**
+         * Created by 27694066 on 05.05.2017.
+         */
+        val PREFERENCE_TAG = "leoz.app"
+
         val module = Kodein.Module {
             bind<SharedPreferences>() with singleton {
                 val context: Context = instance()
-                context.getSharedPreferences(PREFERENCE_TAG, 0)
+                context.getSharedPreferences(PREFERENCE_TAG, Context.MODE_PRIVATE)
             }
         }
     }

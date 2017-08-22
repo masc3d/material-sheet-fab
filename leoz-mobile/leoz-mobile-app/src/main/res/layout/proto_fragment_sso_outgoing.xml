@@ -11,7 +11,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="22dp"
-        android:id="@+id/uxSSOOutBagIDLabel" />
+        android:id="@+id/uxSSOOutBagIDLabel"
+        tools:ignore="HardcodedText" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -22,8 +23,9 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/uxSSOOutOrderIDText"
         android:hint="000000000000"
-        android:singleLine="true"
-        android:textAlignment="center" />
+        android:maxLines="1"
+        android:textAlignment="center"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:text="Bag Plombennummer"
@@ -32,7 +34,8 @@
         android:layout_below="@+id/uxSSOOutOrderIDText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="26dp"
-        android:id="@+id/uxSSOOutBagSealLabel" />
+        android:id="@+id/uxSSOOutBagSealLabel"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:text="Status: Bitte scannen"
@@ -41,7 +44,8 @@
         android:id="@+id/uxSSOOutStatus"
         android:layout_below="@+id/uxSSOOutSealText"
         android:layout_centerHorizontal="true"
-        android:textSize="30sp" />
+        android:textSize="30sp"
+        tools:ignore="HardcodedText" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -69,6 +73,7 @@
         android:layout_below="@+id/uxSSOOutBagSealLabel"
         android:layout_alignStart="@+id/uxSSOOutOrderIDText"
         android:textAlignment="center"
-        android:singleLine="true" />
+        android:maxLines="1"
+        tools:ignore="HardcodedText" />
 
 </RelativeLayout>

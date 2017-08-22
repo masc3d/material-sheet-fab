@@ -1,4 +1,4 @@
-import { Component, Inject, Renderer2 } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 
 import { MenuItem } from 'primeng/primeng';
@@ -12,13 +12,17 @@ import { AbstractTranslateComponent } from 'app/core/translate/abstract-translat
   template: `
     <div id="main-menu">
       <p-panelMenu [model]="items"></p-panelMenu>
+      <div style="margin-top: 15px; margin-left: 10px">
+        {{ 'loggedinas' | translate }}:<br>{{myEmail}}</div>
     </div>
   `
 
 } )
-export class LeftMenuComponent extends AbstractTranslateComponent {
+
+export class LeftMenuComponent extends AbstractTranslateComponent implements OnInit {
 
   items: MenuItem[];
+  myEmail: string;
 
   constructor( private renderer: Renderer2,
                @Inject( DOCUMENT ) private document: any,
@@ -30,6 +34,8 @@ export class LeftMenuComponent extends AbstractTranslateComponent {
   ngOnInit() {
     super.ngOnInit();
     this.items = this.createItems();
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    this.myEmail = currUser.user.email;
   }
 
   private createItems(): MenuItem[] {
@@ -85,9 +91,9 @@ export class LeftMenuComponent extends AbstractTranslateComponent {
     } );
 
     // items.push( {
-    //   label: this.translate.instant( 'test for bagscan' ),
+    //   label: this.translate.instant( 'stationloading' ),
     //   icon: '',
-    //   routerLink: '/dashboard/stationloading',
+    //   routerLink: '/dashboard/stationloading/loadinglistscan',
     //   command: closeMenu
     // } );
 

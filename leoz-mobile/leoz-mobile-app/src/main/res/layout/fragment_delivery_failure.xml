@@ -3,11 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="org.deku.leoz.mobile.ui.screen.DeliveryFailureFragment">
+    tools:context="org.deku.leoz.mobile.ui.screen.DeliveryFailureScreen">
 
     <!-- TODO: Update blank fragment layout -->
 
     <ListView
+        style="@style/AppTheme.ListView"
         android:id="@+id/uxFailEventList"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

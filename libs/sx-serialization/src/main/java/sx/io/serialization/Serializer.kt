@@ -43,23 +43,18 @@ abstract class Serializer {
     /**
      * Deserializes object from byte array
      */
-    fun deserializeFrom(byteArray: ByteArray): Any {
-        return this.deserialize(ByteArrayInputStream(byteArray))
-    }
+    fun deserializeFrom(byteArray: ByteArray): Any =
+            this.deserialize(ByteArrayInputStream(byteArray))
 
     /**
      * Register class by its @Serializable annotation/uid
      */
-    fun register(cls: Class<*>): SerializableType {
-        return Serializer.types.register(cls)
-    }
+    fun register(cls: Class<*>): SerializableType = Serializer.types.register(cls)
 
     /**
      * Lookup class by its @Serializable uid
      */
-    fun lookup(uid: Long): SerializableType? {
-        return Serializer.types.lookup(uid)
-    }
+    fun lookup(uid: Long): SerializableType? = Serializer.types.lookup(uid)
 
     /**
      * Thread-safe @Serializable type directory
@@ -93,21 +88,21 @@ abstract class Serializer {
 
             /**
              * Helper function to register class
-             * @param c Class to register
+             * @param cls_ Class to register
              */
-            fun registerImpl(c: Class<*>, stype: SerializableType) {
-                if (stype.uid == 0L)
-                    throw IllegalArgumentException("@Serializable uid of ${c} is 0")
+            fun registerImpl(cls_: Class<*>, stype_: SerializableType) {
+                if (stype_.uid == 0L)
+                    throw IllegalArgumentException("@Serializable uid of ${cls_} is 0")
 
                 this.lock.withLock {
-                    log.debug("Registering type ${c}")
+                    log.debug("Registering type ${cls_}")
 
-                    val registeredClass = this.typeByUid[stype.uid]
+                    val registeredClass = this.typeByUid[stype_.uid]
                     if (registeredClass != null)
-                        throw IllegalArgumentException("Cannot register [${c}] as UID [${stype}] is already registered with [${registeredClass}]")
+                        throw IllegalArgumentException("Cannot register [${cls_}] as UID [${stype_}] is already registered with [${registeredClass}]")
 
-                    this.typeByUid[stype.uid] = stype
-                    this.typeByClass[c] = stype
+                    this.typeByUid[stype_.uid] = stype_
+                    this.typeByClass[cls_] = stype_
 
                     this.typeByUidReadonly = mapOf(*typeByUid.toList().toTypedArray())
                     this.typeByClassReadonly = mapOf(*typeByClass.toList().toTypedArray())
@@ -145,12 +140,22 @@ abstract class Serializer {
         }
 
         /**
-         * Lookup class by uid
+         * Lookup serializable type by uid
          * @param uid Class UID
          */
-        fun lookup(uid: Long): SerializableType? {
-            return typeByUidReadonly[uid]
-        }
+        fun lookup(uid: Long): SerializableType? = typeByUidReadonly[uid]
+
+        /**
+         * Lookup serializable type by class
+         * @param cls Class
+         */
+        fun typeOf(cls: Class<*>): SerializableType = typeByClassReadonly.getValue(cls)
+
+        /**
+         * Lookup serializable type by class
+         * @param cls Class
+         */
+        fun typeOrNullOf(cls: Class<*>): SerializableType? = typeByClassReadonly.get(cls)
 
         /**
          * Purges all registered classes. Useful for test cases, testing refactoring eg.

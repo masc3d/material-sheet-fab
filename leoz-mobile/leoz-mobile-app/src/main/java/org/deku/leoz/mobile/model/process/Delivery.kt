@@ -1,0 +1,71 @@
+package org.deku.leoz.mobile.model.process
+
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.model.*
+import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.model.entity.*
+import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.screen.NeighbourDeliveryScreen
+import org.deku.leoz.mobile.ui.screen.PostboxDeliveryScreen
+import org.deku.leoz.mobile.ui.screen.SignatureScreen
+import org.slf4j.LoggerFactory
+import sx.requery.ObservableQuery
+import sx.rx.CompositeDisposableSupplier
+import sx.rx.ObservableRxProperty
+import sx.rx.behave
+import sx.rx.bind
+import kotlin.properties.Delegates
+
+/**
+ * Delivery process model
+ * Created by 27694066 on 09.05.2017.
+ */
+class Delivery : CompositeDisposableSupplier {
+    override val compositeDisposable by lazy { CompositeDisposable() }
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    private val db: Database by Kodein.global.lazy.instance()
+    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
+
+    //region Self-observable queries
+    private val pendingStopsQuery = ObservableQuery<StopEntity>(
+            name = "Pending stops",
+            query = db.store.select(StopEntity::class)
+                    .where(StopEntity.STATE.eq(Stop.State.PENDING))
+                    .orderBy(StopEntity.POSITION.asc())
+                    .get()
+    )
+            .bind(this)
+
+    private val closedStopsQuery = ObservableQuery<StopEntity>(
+            name = "Closed stops",
+            query = db.store.select(StopEntity::class)
+                    .where(StopEntity.STATE.eq(Stop.State.CLOSED))
+                    .orderBy(StopEntity.POSITION.asc())
+                    .get()
+    )
+            .bind(this)
+
+    //endregion
+
+    val pendingStops = this.pendingStopsQuery.result
+
+    val closedStops = this.closedStopsQuery.result
+
+    val undeliveredParcels = parcelRepository.entitiesProperty.map { it.value.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
+            .behave(this)
+
+    var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { p, o, v ->
+        o?.dispose()
+    })
+}

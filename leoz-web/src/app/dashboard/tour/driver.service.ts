@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, RequestOptions, Response } from '@angular/http';
+import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -8,7 +8,7 @@ import 'rxjs/add/observable/of';
 import { environment } from '../../../environments/environment';
 import { Driver } from './driver.model';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
-import { Subscription } from 'rxjs/Subscription';
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Injectable()
 export class DriverService {
@@ -18,12 +18,8 @@ export class DriverService {
   private driversSubject = new BehaviorSubject<Driver[]>( [] );
   public drivers = this.driversSubject.asObservable().distinctUntilChanged();
 
-  private activeDriverSubject = new BehaviorSubject<Driver>( <Driver> {} );
-  public activeDriver = this.activeDriverSubject.asObservable().distinctUntilChanged();
-
-  private subscription: Subscription;
-
-  constructor( private http: Http ) {
+  constructor( private http: Http,
+               private msgService: MsgService ) {
   }
 
   getDrivers(): void {
@@ -34,11 +30,11 @@ export class DriverService {
       search: new URLSearchParams()
     } );
 
-    this.subscription = this.http.get( this.driverListUrl, options )
+    this.http.get( this.driverListUrl, options )
       .subscribe( ( response: Response ) => this.driversSubject.next( <Driver[]> response.json() ),
         ( error: Response ) => {
-          console.log( error );
-          this.driversSubject.next( <Driver[]> {} );
+          this.driversSubject.next( <Driver[]> [] );
+          this.msgService.handleResponse( error );
         } );
   }
 

@@ -3,13 +3,16 @@ version = '0.1'
 
 buildscript {
     ext {
-        v_feign = '9.5.0'
-        v_jackson = '2.8.7'
+        v_feign = '9.5.1'
+        v_jackson = '2.9.0'
+        v_javax_persistence = '2.1.1'
         v_jersey = '2.25'
-        v_jgit = '4.6.1.201703071140-r'
+        v_jgit = '4.8.0.201706111038-r'
         v_jsch = '0.0.9'
-        v_kotlin = '1.1.2-5'
-        v_resteasy = '3.1.2.Final'
+        v_querydsl = '4.1.4'
+        v_kotlin = '1.1.4-2'
+        v_requery = '1.4.0'
+        v_resteasy = '3.1.4.Final'
         v_slf4j = '1.7.25'
     }
 
@@ -42,13 +45,13 @@ dependencies {
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
             // RX
-            "io.reactivex.rxjava2:rxjava:2.1.0",
+            "io.reactivex.rxjava2:rxjava:2.1.3",
             "io.reactivex:rxkotlin:2.0.0-RC1",
     )
 
     compileOnly(
             // Misc
-            "org.apache.commons:commons-lang3:3.5",
+            "org.apache.commons:commons-lang3:3.6",
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:2.0.1",
             // JNA
@@ -63,7 +66,9 @@ dependencies {
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             // Feign REST
             "io.github.openfeign:feign-jackson:$v_feign",
-            "io.github.openfeign:feign-jaxrs:$v_feign",
+            dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
+                exclude group: "javax.ws.rs", module: "jsr311-api"
+            },
             // YAML
             "org.yaml:snakeyaml:1.18",
             // Jackson
@@ -77,6 +82,17 @@ dependencies {
             "com.jcraft:jsch.agentproxy.jsch:$v_jsch",
             "com.jcraft:jsch.agentproxy.sshagent:$v_jsch",
             "com.jcraft:jsch.agentproxy.pageant:$v_jsch",
+
+            // QueryDSL
+            "com.querydsl:querydsl-core:$v_querydsl",
+            "com.querydsl:querydsl-jpa:$v_querydsl",
+
+            // JPA
+            "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
+
+            // Requery
+            "io.requery:requery:$v_requery",
+            "io.requery:requery-kotlin:$v_requery",
 
             // JUnit
             "junit:junit:4.12",

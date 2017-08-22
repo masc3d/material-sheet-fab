@@ -26,7 +26,8 @@
                 android:textAlignment="center"
                 android:textAllCaps="false"
                 android:textIsSelectable="false"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccent"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:text="Mobile: OK"
@@ -34,7 +35,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccent"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:text="Sync: OK"
@@ -42,10 +44,12 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccent"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <ListView
+            style="@style/AppTheme.ListView"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:scrollbars="none"

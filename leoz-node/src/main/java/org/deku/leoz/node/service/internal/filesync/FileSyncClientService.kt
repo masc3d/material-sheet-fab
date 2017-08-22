@@ -192,7 +192,7 @@ class FileSyncClientService constructor(
      */
     private fun ping() {
         this.centralEndpointSupplier().channel().use() {
-            it.sendRequest(FileSyncMessage(this.identity.key.value)).use {
+            it.sendRequest(FileSyncMessage(this.identity.uid.value)).use {
                 it.receive()
             }
         }

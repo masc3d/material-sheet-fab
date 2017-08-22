@@ -32,8 +32,8 @@ class BlockingObservableTest {
     }
 
     val log = LoggerFactory.getLogger(this.javaClass)
-    final val DELAY = 150L
-    final val COUNT = 10
+    val DELAY = 150L
+    val COUNT = 10
 
     /**
      * Single observable emitting numbers with a sleep/delay
@@ -74,7 +74,7 @@ class BlockingObservableTest {
     fun testRxReplaySingle() {
         val emitCount = AtomicInteger(0)
 
-        val ov = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        val ov = this.observableDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
 
         val cov = ov
                 .subscribeOn(Schedulers.newThread())
@@ -98,7 +98,7 @@ class BlockingObservableTest {
     fun testRxReplayMerged() {
         val emitCount = AtomicInteger(0)
 
-        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
 
         val cov = ov
                 .subscribeOn(Schedulers.newThread())
@@ -128,7 +128,7 @@ class BlockingObservableTest {
     fun testRxCacheSingle() {
         val emitCount = AtomicInteger(0)
 
-        val ov = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        val ov = this.observableDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
 
         val cov = ov
                 .subscribeOn(Schedulers.newThread())
@@ -162,7 +162,7 @@ class BlockingObservableTest {
     fun testRxCacheMerged() {
         val emitCount = AtomicInteger(0)
 
-        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
 
         val cov = ov
                 .subscribeOn(Schedulers.newThread())
@@ -210,7 +210,7 @@ class BlockingObservableTest {
     @Test
     fun testRxSubscribeAwaitable() {
         val emitCount = AtomicInteger(0)
-        val a = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        this.observableDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
                 .subscribeOn(Schedulers.newThread())
                 .doOnNext {
                     log.info("Observed $it")

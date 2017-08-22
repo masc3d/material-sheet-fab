@@ -5,68 +5,84 @@ import org.deku.leoz.service.entity.ShortDate
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
+
 /**
- * Created by JT on 29.05.17.
+ * Created by JT on 24.05.17.
+ *
+ *  Order:       (Auftrag / Sendung) kann Packstücke beinhalten
+ *  Shipment:   = Order
+ *  Parcel:     (Packstück / Collie ) entält als Eigenschaft nur Gewicht und Größe
+ *  Unit:       = Parcel
+ *  Deliverylist:  List<Order>
+ *  Stop
+ *  Job
  */
 
-@Path("internal/v1/delivery-list")
+@Path("internal/v1/deliverylist")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Delivery list service")
 interface DeliveryListService {
     companion object {
-        const val ORDERID = "order-id"
-        const val DELIVERYLIST = "delivery-list"
-        const val DRIVER = "driver"
+        //const val ORDER_ID = "order-id"
+        const val ID = "id"
+        //const val DRIVER = "driver"
+        const val DELIVERY_DATE = "delivery-date"
     }
 
     @GET
-    @Path("/{${DELIVERYLIST}}")
+    @Path("/{${ID}}")
     @ApiOperation(value = "Get delivery list by id")
     fun getById(
-            @PathParam(DELIVERYLIST) @ApiParam(value = "Delivery list ID", required = true) id: String
+            @PathParam(ID) @ApiParam(example = "89586115", value = "Delivery list id", required = true) id: Long
     ): DeliveryList
 
     @GET
-    @Path("/")
+    @Path("/info")
     @ApiOperation(value = "Get delivery list info")
     fun get(
-            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null
+            //todo not jet implemented            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null,
+            @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false) deliveryDate: ShortDate? = null
     ): List<DeliveryListInfo>
 
-
-
-    /**
-     * Created by JT on 24.05.17.
-     *
-     *
-     *  Order:       (Auftrag / Sendung) kann Packstücke beinhalten
-     *  Shipment:   = Order
-     *  Parcel:     (Packstück / Collie ) entält als Eigenschaft nur Gewicht und Größe
-     *  Unit:       = Parcel
-     *  Deliverylist:  List<Order>
-     *  Stop
-     *  Job
-     *
-     *
-     */
-
-    @ApiModel(description = "Delivery List")
+    @ApiModel(description = "Delivery list")
     data class DeliveryList(
-            @ApiModelProperty(position = 10, required = true, value = "DeliveryListInfo")
-            val id: DeliveryListInfo,
-            @ApiModelProperty(position = 30, required = true, value = "Orders")
-            val orders: List<OrderService.Order>
+            @ApiModelProperty(example = "89586115", position = 10, required = true, value = "Delivery list id")
+            var id: Long = 0,
+            @ApiModelProperty(example = "2017-08-10", position = 20, required = true)
+            var info: DeliveryListInfo = DeliveryListInfo(),
+            @ApiModelProperty(position = 30, required = true, value = "Orders within delivery list")
+            var orders: List<OrderService.Order> = listOf(),
+            @ApiModelProperty(position = 40, required = true, value = "Stop list")
+            var stops: List<Stop> = listOf()
     )
 
-    @ApiModel(description = "Delivery List Info")
+    @ApiModel(description = "Task")
+    data class Task(
+            @ApiModelProperty(example = "12345678", position = 10, required = true, value = "Order id")
+            var orderId: Long = 0,
+            @ApiModelProperty(example = "Pickup", position = 20, required = true, value = "Stop type")
+            var stopType: Type = Task.Type.DELIVERY,
+            @ApiModelProperty(example = "false", position = 30, required = true, value = "is removed from Deliverylist")
+            var isRemoved: Boolean = false
+    ) {
+        enum class Type {
+            PICKUP,
+            DELIVERY
+        }
+    }
+
+    @ApiModel(description = "Stop")
+    data class Stop(
+            var tasks: List<Task> = listOf()
+    )
+
+    @ApiModel(description = "Delivery list info")
     data class DeliveryListInfo(
-            @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
-            val id: String,
-            @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
-            val date: ShortDate
+            @ApiModelProperty(example = "89586115", position = 10, required = true, value = "Delivery list id")
+            var id: Long = 0,
+            @ApiModelProperty(example = "2017-08-10", position = 20, required = true, value = "Delivery list date")
+            var date: ShortDate = ShortDate()
     )
-
-
 
 }

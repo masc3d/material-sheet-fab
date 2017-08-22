@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.DebugSettings
+import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.RemoteSettings
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap
@@ -49,6 +50,10 @@ class SettingsConfiguration {
 
             bind<DebugSettings>() with singleton {
                 DebugSettings(instance<ConfigurationMap>())
+            }
+
+            bind<LocationSettings>() with singleton {
+                LocationSettings(instance<ConfigurationMap>())
             }
         }
     }

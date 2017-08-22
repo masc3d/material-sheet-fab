@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory
  */
 class ProtoSsoFragment
     :
-        ScreenFragment(),
+        ScreenFragment<Any>(),
         ProtoSsoMenuFragment.OnFragmentInteractionListener,
         ProtoSsoOutgoingFragment.OnFragmentInteractionListener  {
 

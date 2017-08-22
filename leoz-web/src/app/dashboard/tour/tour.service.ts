@@ -4,18 +4,32 @@ import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { environment } from '../../../environments/environment';
 import { Position } from './position.model';
-import { Subscription } from 'rxjs/Subscription';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 import { MsgService } from '../../shared/msg/msg.service';
+import { Driver } from './driver.model';
+import { MarkerModel } from './tour-map/marker.model';
+import { TranslateService } from '../../core/translate/translate.service';
+import { DriverService } from './driver.service';
+import RoleEnum = Driver.RoleEnum;
 
 @Injectable()
 export class TourService {
 
+  public homebase = <MarkerModel> {
+    position: {
+      latitude: 50.8645,
+      longitude: 9.6917
+    }, driver: {}
+  };
+
   private displayMarkerSubject = new BehaviorSubject<boolean>( false );
   public displayMarker = this.displayMarkerSubject.asObservable().distinctUntilChanged();
 
-  private activeMarkerSubject = new BehaviorSubject<Position>( <Position> { latitude: 50.8645, longitude: 9.6917 } );
+  private activeMarkerSubject = new BehaviorSubject<MarkerModel>( this.homebase );
   public activeMarker = this.activeMarkerSubject.asObservable().distinctUntilChanged();
+
+  private allMarkersSubject = new BehaviorSubject<MarkerModel[]>( [] );
+  public allMarkers = this.allMarkersSubject.asObservable().distinctUntilChanged();
 
   private displayRouteSubject = new BehaviorSubject<boolean>( false );
   public displayRoute = this.displayRouteSubject.asObservable().distinctUntilChanged();
@@ -23,18 +37,22 @@ export class TourService {
   private activeRouteSubject = new BehaviorSubject<Position[]>( <Position[]> [] );
   public activeRoute = this.activeRouteSubject.asObservable().distinctUntilChanged();
 
-  private locationUrl = `${environment.apiUrl}/internal/v1/location/recent`;
-  private routeUrl = `${environment.apiUrl}/internal/v1/location`;
-  private subscription: Subscription;
+  private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
 
-  constructor( private http: Http, private msgService: MsgService ) {
+  private drivers: Driver[];
+
+  constructor( private http: Http,
+               private msgService: MsgService,
+               private translate: TranslateService,
+               private driverService: DriverService ) {
+    driverService.drivers.subscribe( ( drivers: Driver[] ) => this.drivers = drivers );
   }
 
-  getLocation( email: string ): Observable<Response> {
+  private getLocation( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
-    queryParameters.set( 'email', email );
+    queryParameters.set( 'user-id', String( userId ) );
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
@@ -44,31 +62,61 @@ export class TourService {
     return this.http.get( this.locationUrl, options );
   }
 
-  getRoute( email: string ): Observable<Response> {
+  private getAllLocations(): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
-    queryParameters.set( 'email', email );
-    queryParameters.set( 'from', '05/31/2017' );  // hardcoded for developement
+    queryParameters.set( 'debitor-id', String( currUser.user.debitorId ) );
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
       params: queryParameters
     } );
 
-    return this.http.get( this.routeUrl, options );
+    return this.http.get( this.locationUrl, options );
   }
 
-  changeActiveMarker( selectedDriver ) {
-    this.subscription = this.getLocation( selectedDriver.email )
+  private getRoute( userId: number, duration: string ): Observable<Response> {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+
+    const queryParameters = new URLSearchParams();
+    queryParameters.set( 'user-id', String( userId ) );
+    queryParameters.set( 'duration', duration );  // hardcoded for developement
+
+    const options = new RequestOptions( {
+      headers: ApiKeyHeaderFactory.headers( currUser.key ),
+      params: queryParameters
+    } );
+
+    return this.http.get( this.locationUrl, options );
+  }
+
+  resetMsgs() {
+    this.msgService.clear();
+  }
+
+  resetDisplay() {
+    this.allMarkersSubject.next( [] );
+    this.displayRouteSubject.next( false );
+    this.displayMarkerSubject.next( false );
+  }
+
+  resetMarkerAndRoute() {
+    this.resetDisplay();
+    this.activeMarkerSubject.next( this.homebase );
+    this.activeRouteSubject.next( <Position[]> [] );
+  }
+
+  changeActiveMarker( selectedDriver: Driver ) {
+    this.resetDisplay();
+    this.getLocation( selectedDriver.id )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
-              this.displayRouteSubject.next( false );
               this.displayMarkerSubject.next( true );
-              this.activeMarkerSubject.next( positions[ 0 ] );
+              this.activeMarkerSubject.next( <MarkerModel> { position: positions[ 0 ], driver: selectedDriver } );
               this.msgService.clear();
             } else {
               this.locationError();
@@ -80,14 +128,18 @@ export class TourService {
         ( error: Response ) => this.msgService.handleResponse( error ) );
   }
 
-  changeActiveRoute( selectedDriver ) {
-    this.subscription = this.getRoute( selectedDriver.email )
+  changeActiveRoute( selectedDriver: Driver, duration: string ) {
+    this.resetDisplay();
+    this.getRoute( selectedDriver.id, duration )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
-              this.displayMarkerSubject.next( false );
+              this.displayMarkerSubject.next( true );
+              this.activeMarkerSubject.next(
+                <MarkerModel> { position: positions[ positions.length - 1 ], driver: selectedDriver }
+              );
               this.displayRouteSubject.next( true );
               this.activeRouteSubject.next( positions );
               this.msgService.clear();
@@ -102,18 +154,44 @@ export class TourService {
   }
 
   locationError(): void {
-    this.displayRouteSubject.next( false );
-    // hide actual marker
-    this.displayMarkerSubject.next( false );
-    // display error msg: could not get geolocation points
-    this.msgService.error( 'could not get geolocation points' );
+    this.resetDisplay();
+    this.msgService.error( this.translate.instant( 'could not get geolocation points' ) );
   }
 
   routeError(): void {
-    this.displayMarkerSubject.next( false );
-    // hide actual route
-    this.displayRouteSubject.next( false );
-    // display error msg: could not get route
-    this.msgService.error( 'could not get route' );
+    this.resetDisplay();
+    this.msgService.error( this.translate.instant( 'could not get route' ) );
+  }
+
+  fetchAllPositions( filter: string ) {
+    this.resetDisplay();
+    this.driverService.getDrivers();
+    this.getAllLocations()
+      .subscribe( ( response: Response ) => {
+          const allLocations = response.json();
+          const allMarkers = [];
+          if (allLocations && allLocations.length > 0) {
+            allLocations.forEach( ( userLocation: any ) => {
+              if (userLocation.gpsDataPoints && userLocation.gpsDataPoints.length > 0) {
+                const filtered = this.drivers.filter( ( driver: Driver ) => driver.id === userLocation.userId );
+                if (filtered.length > 0) {
+                  const driver = filtered[ 0 ];
+                  if (driver.active) {
+                    const position = <Position> userLocation.gpsDataPoints[ 0 ];
+                    if (filter === 'allusers'
+                      || (filter === 'alldrivers' && driver.role === RoleEnum.DRIVER)) {
+                      allMarkers.push( <MarkerModel> { position: position, driver: driver } )
+                    }
+                  }
+                }
+              }
+            } );
+            this.msgService.clear();
+          } else {
+            this.locationError();
+          }
+          this.allMarkersSubject.next( allMarkers );
+        },
+        ( error: Response ) => this.msgService.handleResponse( error ) );
   }
 }

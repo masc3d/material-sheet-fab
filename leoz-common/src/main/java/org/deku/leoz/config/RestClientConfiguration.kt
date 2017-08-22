@@ -16,7 +16,7 @@ abstract class RestClientConfiguration {
     /**
      * Overridden in derived configurations to provide a specific proxy client
      */
-    protected abstract fun createClientProxyImpl(baseUri: URI, ignoreSsl: Boolean): RestClientProxy
+    abstract fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy
 
     /**
      * HTTP host to use for rest clients
@@ -33,7 +33,7 @@ abstract class RestClientConfiguration {
      */
     var port: Int = RestConfiguration.DEFAULT_PORT
 
-    fun createUri(https: Boolean, host: String, port: Int, basePath: String): URI {
+    fun createUri(https: Boolean, host: String, port: Int, basePath: String = RestConfiguration.MAPPING_PREFIX): URI {
         val scheme = when (https) {
             true -> "https"
             false -> "http"
@@ -45,17 +45,22 @@ abstract class RestClientConfiguration {
 
     /**
      * Factory method for creating a leoz rest client
-     * @param host REST server host name
-     * @param port REST server port
-     * @param https Use https or regular http. Defaults to false (=http)
      */
-    fun createClientProxy(): RestClientProxy {
-        val uri = this.createUri(https, host, port, RestConfiguration.MAPPING_PREFIX)
-
+    fun createClientProxy(uri: URI): RestClientProxy {
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
-        val ignoreSslCertificate = !host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)
+        val ignoreSslCertificate = !uri.host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)
 
-        return this.createClientProxyImpl(uri, ignoreSslCertificate)
+        return this.createClientProxy(uri, ignoreSslCertificate)
+    }
+
+    /**
+     * Factory method for creating a default leoz rest client
+     * using the configurations remote settings (host/port)
+     */
+    fun createDefaultClientProxy(): RestClientProxy {
+        val uri = this.createUri(https, host, port)
+
+        return this.createClientProxy(uri)
     }
 
     companion object {
@@ -64,7 +69,7 @@ abstract class RestClientConfiguration {
              * Helper for creating service proxy
              */
             fun <T> createServiceProxy(config: RestClientConfiguration, serviceType: Class<T>): T {
-                return config.createClientProxy().create(serviceType)
+                return config.createDefaultClientProxy().create(serviceType)
             }
 
             bind<StationService>() with provider {
@@ -76,7 +81,7 @@ abstract class RestClientConfiguration {
             }
 
             bind<DeliveryListService>() with provider {
-                createServiceProxy(config = instance(), serviceType = DeliveryListService::class.java)
+                 createServiceProxy(config = instance(), serviceType = DeliveryListService::class.java)
             }
 
             bind<OrderService>() with provider {
@@ -91,8 +96,8 @@ abstract class RestClientConfiguration {
                 createServiceProxy(config = instance(), serviceType = AuthorizationService::class.java)
             }
 
-            bind<LocationService>() with provider {
-                createServiceProxy(config = instance(), serviceType = LocationService::class.java)
+            bind<LocationServiceV2>() with provider {
+                createServiceProxy(config = instance(), serviceType = LocationServiceV2::class.java)
             }
         }
     }

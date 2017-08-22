@@ -12,12 +12,12 @@ import javax.inject.Inject
 interface CountryRepository :
         JpaRepository<MstCountry, String>,
         QueryDslPredicateExecutor<MstCountry>,
-        CountryRepositoryCustom
+        CountryRepositoryExtension
 
 
-interface CountryRepositoryCustom
+interface CountryRepositoryExtension
 
-class CountryRepositoryImpl : CountryRepositoryCustom {
+class CountryRepositoryImpl : CountryRepositoryExtension {
     @Inject
     private lateinit var routeRepository: CountryRepository
 }

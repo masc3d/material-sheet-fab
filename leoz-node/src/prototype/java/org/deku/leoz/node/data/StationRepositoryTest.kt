@@ -25,9 +25,17 @@ class StationRepositoryTest {
     private lateinit var stationRepository: StationRepository
 
     @Test
-    fun test() {
+    fun testFindAll() {
         for (d in stationRepository.findAll()) {
             println(d)
         }
     }
+
+    @Test
+    fun testFindWithQuery() {
+        for (d in stationRepository.findWithQuery("DEKU")) {
+            println(d)
+        }
+    }
+
 }

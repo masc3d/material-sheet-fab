@@ -34,29 +34,29 @@ abstract class FileSyncServiceBase(
 
     /**
      * Build transfer in directory for specific node and makes sure it exists
-     * @param identityKey Node identity
+     * @param identityUid Node identity
      */
-    fun nodeInDirectory(identityKey: Identity.Key): File {
-        val d = File(this.inDirectory, identityKey.short)
+    fun nodeInDirectory(identityUid: Identity.Uid): File {
+        val d = File(this.inDirectory, identityUid.short)
         d.mkdirs()
         return d
     }
 
     /**
      * Builds transfer out directory for specific node and makes sure it exists
-     * @param identityKey Node identity
+     * @param identityUid Node identity
      */
-    fun nodeOutDirectory(identityKey: Identity.Key): File {
-        val d = File(this.outDirectory, identityKey.short)
+    fun nodeOutDirectory(identityUid: Identity.Uid): File {
+        val d = File(this.outDirectory, identityUid.short)
         d.mkdirs()
         return d
     }
 
-    fun nodeInRelativePath(identityKey: Identity.Key = this.identity.key): String {
-        return "${this.inDirectoryName}/${identityKey.short}"
+    fun nodeInRelativePath(identityUid: Identity.Uid = this.identity.uid): String {
+        return "${this.inDirectoryName}/${identityUid.short}"
     }
 
-    fun nodeOutRelativePath(identityKey: Identity.Key = this.identity.key): String {
-        return "${this.outDirectoryName}/${identityKey.short}"
+    fun nodeOutRelativePath(identityUid: Identity.Uid = this.identity.uid): String {
+        return "${this.outDirectoryName}/${identityUid.short}"
     }
 }

@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response
 @Path("internal/v1/bundle")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Bundle operations v1")
+@Api(value = "Bundle operations")
 interface BundleServiceV1 {
 
     companion object {
@@ -44,7 +44,7 @@ interface BundleServiceV1 {
     @GET
     @Path("/download/{${BUNDLE}}/{${VERSION}}")
     @ApiOperation(value = "Download bundle. Only supported for android bundles (for now)")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
     fun download(
             @PathParam(BUNDLE) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,
             @PathParam(VERSION) version: String
@@ -62,7 +62,7 @@ interface BundleServiceV1 {
 @Path("internal/v2/bundle")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Bundle operations v2")
+@Api(value = "Bundle operations")
 interface BundleServiceV2 {
 
     companion object {
@@ -93,7 +93,7 @@ interface BundleServiceV2 {
     @GET
     @Path("/{${NAME}}/{${VERSION}}/download")
     @ApiOperation(value = "Download bundle. Only supported for android bundles (for now)")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
     fun download(
             @PathParam(NAME) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,
             @PathParam(VERSION) version: String

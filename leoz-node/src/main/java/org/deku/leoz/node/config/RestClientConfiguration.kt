@@ -17,7 +17,8 @@ import javax.inject.Inject
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
 open class RestClientConfiguration : RestClientConfiguration() {
-    override fun createClientProxyImpl(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
+
+    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
         return RestEasyClientProxy(baseUri, ignoreSsl)
     }
 
@@ -33,5 +34,5 @@ open class RestClientConfiguration : RestClientConfiguration() {
 
     @get:Bean
     open val restClient: RestClientProxy
-        get() = this.createClientProxy()
+        get() = this.createDefaultClientProxy()
 }

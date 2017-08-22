@@ -15,7 +15,6 @@ import java.util.zip.GZIPOutputStream
 @Target(AnnotationTarget.CLASS)
 annotation class Serializable @JvmOverloads constructor(val uid: Long = 0, val name: String = "", val version: Int = 1)
 
-
 /**
  * Serializable type metadata container
  */
@@ -36,7 +35,12 @@ class SerializableType private constructor (
             val annotation = javaClass.getAnnotation(Serializable::class.java)
             val objectStreamClass = ObjectStreamClass.lookup(javaClass)
 
-            val name = annotation?.name ?: javaClass.simpleName
+            val name: String = annotation?.name.let {
+                when {
+                    it == null || it.isNullOrEmpty() -> javaClass.simpleName
+                    else -> it
+                }
+            }
             val version = annotation?.version ?: 1
 
             val uid = if (annotation != null) {

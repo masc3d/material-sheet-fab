@@ -8,5 +8,6 @@ import sx.io.serialization.Serializable
  */
 @Serializable(0x360b49d4873922)
 class FileSyncMessage(
-        var key: String = ""
+        /** Sender node uid */
+        var uid: String = ""
 )

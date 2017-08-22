@@ -1,10 +1,15 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import 'rxjs/add/operator/takeUntil';
+
+import { MapComponent } from '@yaga/leaflet-ng2';
+import Point = L.Point;
+
 import { TourService } from '../tour.service';
 import { Position } from '../position.model';
-import { Subscription } from 'rxjs/Subscription';
-import { GeoJSONDirective, MapComponent } from '@yaga/leaflet-ng2';
-import { advanceActivatedRoute } from '@angular/router/src/router_state';
-import { element } from 'protractor';
+import { MarkerModel } from './marker.model';
+import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
+import { TranslateService } from '../../../core/translate/translate.service';
 
 @Component( {
   selector: 'app-tour-map',
@@ -13,77 +18,209 @@ import { element } from 'protractor';
       <yaga-zoom-control></yaga-zoom-control>
       <yaga-scale-control [metric]="true" [imperial]="false"></yaga-scale-control>
       <yaga-attribution-control></yaga-attribution-control>
-      <!--<yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"-->
-      <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"
+      <!-- <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"
+                        [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>-->
+      <yaga-tile-layer [url]="'http://tiles.derkurier.de/styles/osm-bright/rendered/{z}/{x}/{y}.png'"
                        [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
-      <!--<yaga-tile-layer [url]="'http://192.168.161.202:8080/styles/osm-bright/rendered/{z}/{x}/{y}.png'"-->
-      <!--[attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>-->
       <yaga-geojson [data]="routeGeoJson"></yaga-geojson>
       <yaga-marker [lat]="markerLat" [lng]="markerLng" [display]="displayMarker">
         <yaga-popup>
           <p>
-            Latitude: {{markerLat}}<br/>
-            Longitude: {{markerLng}}
+            {{'name' | translate}}: {{markerName}}<br/>
+            {{'vehicle' | translate}}: {{markerVehicle | translate}}<br/>
+            {{'phoneoffice' | translate}}: {{markerPhoneoffice}}<br/>
+            {{'phonemobile' | translate}}: {{markerPhonemobile}}<br/>
+            {{'lastactivity' | translate}}: {{markerLastactivity | date:dateFormatLong}}
           </p>
         </yaga-popup>
+        <yaga-icon [iconUrl]="iconUrl" [iconSize]="iconSize"></yaga-icon>
       </yaga-marker>
     </yaga-map>`
 } )
-export class TourMapComponent implements OnInit, OnDestroy {
+export class TourMapComponent extends AbstractTranslateComponent implements OnInit {
 
   markerLat: number;
   markerLng: number;
+  markerName: string;
+  markerVehicle: string;
+  markerPhoneoffice: string;
+  markerPhonemobile: string;
+  markerLastactivity: string;
+
   displayMarker: boolean;
   name: string;
   routeGeoJson: any;
+  iconSize: Point;
+  iconUrl: string;
 
   @ViewChild( 'yagaMap' )
   yagaMap: MapComponent;
 
-  private subscriptionDisplay: Subscription;
-  private subscriptionMarker: Subscription;
-
-  private subscriptionDisplayRoute: Subscription;
-  private subscriptionRoute: Subscription;
   private bbox: L.LatLngBounds;
+  private allMarkers: MarkerModel[];
+  private allCustomMarkers: L.Marker[];
 
-  constructor( private tourService: TourService ) {
+  constructor( protected translate: TranslateService,
+               private tourService: TourService,
+               private datePipe: DatePipe ) {
+    super( translate );
   }
 
   ngOnInit(): void {
-    console.log( 'yagaMap', this.yagaMap );
+    super.ngOnInit();
 
-    this.subscriptionDisplay = this.tourService.displayMarker.subscribe( ( displayMarker: boolean ) => {
-      this.displayMarker = displayMarker;
-    } );
+    this.allMarkers = [];
+    this.allCustomMarkers = [];
+    this.tourService.displayMarker
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( displayMarker: boolean ) => {
+        this.displayMarker = displayMarker;
+        if (!displayMarker) {
+          this.yagaMap.closePopup();
+        }
+      } );
 
-    this.subscriptionDisplayRoute = this.tourService.displayRoute.subscribe( ( displayRoute: boolean ) => {
-      if (!displayRoute) {
-        this.routeGeoJson = this.createGeoJson( [] );
-      }
-    } );
+    this.tourService.allMarkers
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( allMarkers: MarkerModel[]) => {
+        this.removeAllCustomMarkers();
+        if (allMarkers.length > 0) {
+          let latMin;
+          let latMax;
+          let lngMin;
+          let lngMax;
+          allMarkers.forEach(
+            ( markerModel: MarkerModel ) => {
+              this.addMarkerToMap( markerModel );
+              latMin = !latMin || markerModel.position.latitude < latMin ? markerModel.position.latitude : latMin;
+              latMax = !latMax || markerModel.position.latitude > latMax ? markerModel.position.latitude : latMax;
+              lngMin = !lngMin || markerModel.position.longitude < lngMin ? markerModel.position.longitude : lngMin;
+              lngMax = !lngMax || markerModel.position.longitude > lngMax ? markerModel.position.longitude : lngMax;
 
-    this.subscriptionMarker = this.tourService.activeMarker.subscribe( ( activeMarker: Position ) => {
-      this.markerLat = activeMarker.latitude;
-      this.markerLng = activeMarker.longitude;
-      this.yagaMap.flyTo( L.latLng( activeMarker.latitude, activeMarker.longitude ) );
-    } );
+            }
+          );
+          this.bbox = L.latLngBounds( [ latMin, lngMin ], [ latMax, lngMax ] );
+          this.yagaMap.fitBounds( this.bbox );
+        }
+      } );
 
-    this.subscriptionRoute = this.tourService.activeRoute.subscribe( ( activeRoute: Position[] ) => {
-      this.routeGeoJson = this.createGeoJson( activeRoute );
-      if (this.bbox) {
-        this.yagaMap.fitBounds( this.bbox );
-      }
-    } );
+    this.tourService.displayRoute
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( displayRoute: boolean ) => {
+        if (!displayRoute) {
+          this.routeGeoJson = this.createGeoJson( [] );
+        }
+      } );
+
+    this.tourService.activeMarker
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( activeMarker: MarkerModel ) => {
+        switch (activeMarker.position.vehicleType) {
+          case Position.VehicleType.BIKE:
+            this.iconUrl = 'assets/css/images/bike-icon.png';
+            this.iconSize = new Point( 32, 32 );
+            this.markerVehicle = 'bike';
+            break;
+          case Position.VehicleType.CAR:
+            this.iconUrl = 'assets/css/images/car-icon.png';
+            this.iconSize = new Point( 32, 32 );
+            this.markerVehicle = 'car';
+            break;
+          case Position.VehicleType.VAN:
+            this.iconUrl = 'assets/css/images/van-icon.png';
+            this.iconSize = new Point( 32, 32 );
+            this.markerVehicle = 'van';
+            break;
+          case Position.VehicleType.TRUCK:
+            this.iconUrl = 'assets/css/images/truck-icon.png';
+            this.iconSize = new Point( 32, 32 );
+            this.markerVehicle = 'truck';
+            break;
+          default:
+            this.iconUrl = 'assets/css/images/marker-icon.png';
+            this.iconSize = new Point( 25, 41 );
+            this.markerVehicle = 'unknown';
+            break;
+        }
+        this.markerLat = activeMarker.position.latitude;
+        this.markerLng = activeMarker.position.longitude;
+        this.markerName = `${activeMarker.driver.firstName} ${activeMarker.driver.lastName}`;
+        this.markerPhoneoffice = activeMarker.driver.phone;
+        this.markerPhonemobile = activeMarker.driver.phoneMobile;
+        this.markerLastactivity = activeMarker.position.time;
+        this.yagaMap.flyTo( L.latLng( activeMarker.position.latitude, activeMarker.position.longitude ) );
+      } );
+
+    this.tourService.activeRoute
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( activeRoute: Position[] ) => {
+        this.routeGeoJson = this.createGeoJson( activeRoute );
+        if (this.bbox) {
+          this.yagaMap.fitBounds( this.bbox );
+        }
+      } );
   }
 
-  ngOnDestroy(): void {
-    if (this.subscriptionDisplay) {
-      this.subscriptionDisplay.unsubscribe();
+  addMarkerToMap( markerModel: MarkerModel ) {
+    let customIcon;
+    let markerVehicle;
+    switch (markerModel.position.vehicleType) {
+      case Position.VehicleType.BIKE:
+        customIcon = L.icon( {
+          iconUrl: 'assets/css/images/bike-icon.png',
+          iconSize: [ 32, 32 ]
+        } );
+        markerVehicle = 'bike';
+        break;
+      case Position.VehicleType.CAR:
+        customIcon = L.icon( {
+          iconUrl: 'assets/css/images/car-icon.png',
+          iconSize: [ 32, 32 ]
+        } );
+        markerVehicle = 'car';
+        break;
+      case Position.VehicleType.VAN:
+        customIcon = L.icon( {
+          iconUrl: 'assets/css/images/van-icon.png',
+          iconSize: [ 32, 32 ]
+        } );
+        markerVehicle = 'van';
+        break;
+      case Position.VehicleType.TRUCK:
+        customIcon = L.icon( {
+          iconUrl: 'assets/css/images/truck-icon.png',
+          iconSize: [ 32, 32 ]
+        } );
+        markerVehicle = 'truck';
+        break;
+      default:
+        customIcon = L.icon( {
+          iconUrl: 'assets/css/images/marker-icon.png',
+          iconSize: [ 32, 32 ]
+        } );
+        markerVehicle = 'unknown';
+        break;
     }
-    if (this.subscriptionMarker) {
-      this.subscriptionMarker.unsubscribe();
-    }
+    const popupContent = `
+    <p>
+      ${this.translate.instant( 'name' )}: ${markerModel.driver.firstName} ${markerModel.driver.lastName}<br/>
+      ${this.translate.instant( 'vehicle' )}: ${this.translate.instant(markerVehicle)}<br/>
+      ${this.translate.instant( 'phoneoffice' )}: ${markerModel.driver.phone}<br/>
+      ${this.translate.instant( 'phonemobile' )}: ${markerModel.driver.phoneMobile}<br/>
+      ${this.translate.instant( 'lastactivity' )}: ${this.datePipe.transform( markerModel.position.time, this.dateFormatLong )}
+    </p>
+    `;
+
+    const customMarker = new L.Marker( [ markerModel.position.latitude, markerModel.position.longitude ], { icon: customIcon } );
+    customMarker.bindPopup( popupContent ).addTo( this.yagaMap );
+    this.allCustomMarkers.push( customMarker );
+  }
+
+  removeAllCustomMarkers() {
+    this.allCustomMarkers.forEach(
+      ( customMarker: L.Marker ) => this.yagaMap.removeLayer( customMarker )
+    );
+    this.allCustomMarkers = [];
   }
 
   private createGeoJson( activeRoute: Position[] ): any {
