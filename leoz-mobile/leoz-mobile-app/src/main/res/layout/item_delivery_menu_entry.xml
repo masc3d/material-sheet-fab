@@ -31,7 +31,7 @@
                 android:layout_width="@dimen/icon_size"
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/horizontal_xlarge_margin"
+                android:layout_marginEnd="@dimen/large_margin"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/ic_cancel_black"/>
@@ -41,9 +41,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/horizontal_large_margin"
-                android:layout_marginBottom="@dimen/horizontal_xlarge_margin"
-                android:layout_marginTop="@dimen/horizontal_xlarge_margin"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginBottom="@dimen/large_margin"
+                android:layout_marginTop="@dimen/large_margin"
                 android:text="Menu-Name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 card_view:ignore="HardcodedText" />

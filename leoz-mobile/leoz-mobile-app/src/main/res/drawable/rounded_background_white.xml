@@ -3,7 +3,7 @@
     android:shape="rectangle" >
     <!-- This is the stroke you want to define -->
     <stroke android:width="0dp"
-        android:color="@color/dark_gray"/>
+        android:color="@color/colorDarkGrey"/>
 
     <!-- Optional, round your corners -->
     <corners android:bottomLeftRadius="5dp"

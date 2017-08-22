@@ -28,7 +28,7 @@
                 android:id="@+id/uxAtionOverlaySheetBar"
                 android:layout_width="match_parent"
                 android:layout_height="16dp"
-                android:background="@color/dark_gray"
+                android:background="@color/colorDarkGrey"
                 />
 
             <!-- Sheet item container -->
