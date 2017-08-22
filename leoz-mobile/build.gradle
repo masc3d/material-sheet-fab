@@ -8,11 +8,14 @@ import sx.rsync.Rsync
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 apply from: '../versions.gradle'
+apply from: '../common.gradle'
 
 buildscript {
     ext {
-        v_android_buildtools = '26.0.0'
-        v_android_support = '25.3.1'
+        v_android_buildtools = '26.0.1'
+        v_android_support = '26.0.1'
+        v_android_test = '1.0.0'
+        v_xerial_sqlite = '3.20.0'
     }
 
     repositories {
@@ -29,7 +32,7 @@ buildscript {
     dependencies {
         classpath "sx:sx-ssh:0.1"
         classpath "sx:sx-packager-gradle:0.1"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.15.0"
     }
 }
 
@@ -45,6 +48,9 @@ subprojects {
         repositories {
             mavenCentral()
             jcenter()
+            maven {
+                url "https://maven.google.com"
+            }
         }
 
     }
@@ -52,6 +58,9 @@ subprojects {
     repositories {
         mavenCentral()
         jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
     }
 
     apply plugin: 'com.github.ben-manes.versions'
@@ -75,7 +84,7 @@ subprojects {
         packager {
             sshTunnelProvider = mySshTunnelProvider
             bundleRepository = new BundleRepository(
-                    new Rsync.URI("rsync://leoz@leox.derkurier.de:13002/bundles"),
+                    new Rsync.URI("rsync://leoz@leoz.derkurier.de:13002/bundles"),
                     '2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x',
                     mySshTunnelProvider)
 

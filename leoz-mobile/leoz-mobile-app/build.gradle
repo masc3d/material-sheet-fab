@@ -10,20 +10,18 @@ buildscript {
 
     dependencies {
         classpath(
-                'com.android.tools.build:gradle:3.0.0-alpha3',
+                "com.android.tools.build:gradle:3.0.0-beta2",
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
-                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.4",
-                "com.trello:victor:0.3.0",
+                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.3",
+                "com.trello:victor:1.0.0",
                 "sx:sx-packager-gradle:0.1",
         )
     }
 
     ext {
-        v_android_buildtools = '26.0.0'
-        v_android_support = '25.3.1'
         v_anko = '0.10.1'
-        v_dbflow = '4.0.2'
-        v_parceler = '1.1.8'
+        v_material_dialogs = '0.9.4.6'
+        v_parceler = '1.1.9'
         v_roboelectric = '3.3.2'
         v_rxlifecycle = '2.1.0'
         v_stetho = '1.5.0'
@@ -58,9 +56,11 @@ android {
 
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
+        // TODO: move min sdk to product flavors
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
-        versionName "0.13-SNAPSHOT"
+        versionName "0.47-ALPHA"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -69,6 +69,10 @@ android {
             sourceCompatibility JavaVersion.VERSION_1_7
             targetCompatibility JavaVersion.VERSION_1_7
         }
+    }
+
+    dataBinding {
+        enabled true
     }
 
     flavorDimensions "default"
@@ -153,7 +157,6 @@ dexcount {
     verbose = false
     maxTreeDepth = Integer.MAX_VALUE
     teamCityIntegration = false
-    enableForInstantRun = false
     teamCitySlug = null
     runOnEachAssemble = false
 }
@@ -164,13 +167,13 @@ repositories {
 
 dependencies {
     implementation(
-            project(':leoz-mobile-data'),
+            project(path: ':leoz-mobile-data', configuration: 'default'),
+            project(path: ':sx-android', configuration: 'default'),
+            project(path: ':sx-android-honeywell', configuration: 'default'),
+            project(path: ':material-sheet-fab', configuration: 'default'),
             project(':leoz-common'),
             project(':sx-common'),
-            project(':sx-android'),
-            project(':sx-android-honeywell'),
             project(':sx-serialization'),
-            project(':material-sheet-fab'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             // Android
@@ -214,11 +217,9 @@ dependencies {
 
             // Requery
             "io.requery:requery:$v_requery",
+            "io.requery:requery-kotlin:$v_requery",
             "io.requery:requery-android:$v_requery",
-
-            // Flyway
-            "org.sqldroid:sqldroid:1.0.3",
-            "org.flywaydb:flyway-core:$v_flyway",
+            "io.requery:sqlite-android:3.20.0",
 
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
@@ -239,16 +240,27 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
-            'com.github.pwittchen:reactivenetwork-rx2:0.9.1',
+            'com.github.pwittchen:reactivenetwork-rx2:0.11.0',
+
+            // Android (multipart) upload service
+            'net.gotev:uploadservice:3.4',
 
             // Kryo
-            dependencies.create("com.esotericsoftware:kryo:4.0.0") {
+            dependencies.create("com.esotericsoftware:kryo:4.0.1") {
                 exclude group: 'org.ow2.asm', module: 'asm'
             },
 
             // UI
-            "eu.davidea:flexible-adapter:5.0.0-rc1",
-            'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0',
+            "eu.davidea:flexible-adapter:5.0.0-rc2",
+            "eu.davidea:flexible-adapter-databinding:1.0.0-b1@aar",
+            "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",
+
+            // Dialog
+            "com.afollestad.material-dialogs:core:$v_material_dialogs",
+            "com.afollestad.material-dialogs:commons:$v_material_dialogs",
+
+            "com.eightbitlab:blurview:1.3.3",
+            "com.github.andrewlord1990:snackbarbuilder:0.9.0",
 
             //
             // FOR TESTING
@@ -263,27 +275,15 @@ dependencies {
             // Volley
             "com.android.volley:volley:1.0.0",
 
-            // Flow
-            'com.squareup.flow:flow:1.0.0-alpha2',
-
-            "com.github.Raizlabs.DBFlow:dbflow-core:$v_dbflow",
-            "com.github.Raizlabs.DBFlow:dbflow:$v_dbflow",
-
-            // kotlin extensions
-            "com.github.Raizlabs.DBFlow:dbflow-kotlinextensions:$v_dbflow",
-
-            // RXJava 2 support
-            "com.github.Raizlabs.DBFlow:dbflow-rx2:$v_dbflow",
-
-            // RXJava 2 Kotlin Extensions Support
-            "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:$v_dbflow",
-
             // Anko
             "org.jetbrains.anko:anko-commons:$v_anko",
 
             // Anko Layouts
             "org.jetbrains.anko:anko-sdk25:$v_anko", // sdk15, sdk19, sdk21, sdk23 are also available
             "org.jetbrains.anko:anko-appcompat-v7:$v_anko",
+
+            // Camera
+            "com.flurgle:camerakit:0.9.18",
 
             // Coroutine listeners for Anko Layouts
             "org.jetbrains.anko:anko-sdk25-coroutines:$v_anko",
@@ -315,6 +315,13 @@ dependencies {
 
             // Support-v4 (Anko Layouts)
             "org.jetbrains.anko:anko-support-v4:$v_anko",
+
+            "com.fenchtose:tooltip:0.1.5",
+            "net.cachapa.expandablelayout:expandablelayout:2.9.1"
+    )
+
+    compileOnly(
+            "com.google.auto.value:auto-value:$v_autovalue"
     )
 
     debugImplementation(
@@ -325,6 +332,9 @@ dependencies {
 
     testImplementation(
             "junit:junit:$v_junit",
+
+            "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
+
             "org.robolectric:robolectric:$v_roboelectric",
             "org.robolectric:shadows-multidex:$v_roboelectric",
     )
@@ -334,17 +344,15 @@ dependencies {
             project(path: ':sx-serialization', configuration: 'testArtifacts'),
             "junit:junit:$v_junit",
             "com.android.support:support-annotations:$v_android_support",
-            "com.android.support.test:runner:0.5",
-            "com.android.support.test:rules:0.5",
-//            dependencies.create('com.android.support.test.espresso:espresso-core:2.2.2') {
-//                exclude group: 'com.android.support', module: 'support-annotations'
-//            }
+            "com.android.support.test:runner:$v_android_test",
+            "com.android.support.test:rules:$v_android_test",
     )
 
-//    kapt(
-//            "org.parceler:parceler:$v_parceler",
-//            "com.github.Raizlabs.DBFlow:dbflow-processor:$v_dbflow"
-//    )
+    kapt(
+            "org.parceler:parceler:$v_parceler",
+            "com.android.databinding:compiler:3.0.0-beta2",
+            "com.google.auto.value:auto-value:$v_autovalue",
+    )
 }
 
 victor {
@@ -366,9 +374,11 @@ clean {
     }
 }
 
+// masc20170526.
+// Amend output paths of victor, as AndroidStudio designer cannot see
+// generated resources/drawables in build folder
+
 afterEvaluate {
-    // masc20170526. amend output paths of victor, as AndroidStudio designer cannot see
-    // generated resources/drawables in build folder
     GENERATED_DIR.mkdirs()
 
     // Apply changes to all rasterize tasks
@@ -378,6 +388,38 @@ afterEvaluate {
         project.task "${it.name}" {
             outputDir GENERATED_SVG_DIR
         }
+    }
+}
+
+// Exclude sqlite native libs for release builds only.
+// As android.packagingOptions can't be defined on build type level,
+// need hook into tasks and clean before tasks.package*Release
+
+def removeSqliteLibs() {
+    fileTree("${buildDir}/intermediates") {
+        include '**/arm64-v8a/libsqlite3x.so'
+        include '**/x86/libsqlite3x.so'
+        include '**/x86_64/libsqlite3x.so'
+    }.each {
+        it.absoluteFile.delete()
+    }
+}
+
+afterEvaluate {
+    // TODO: migrate for CANARY
+//    tasks.packageProdRelease.doFirst {
+//        removeSqliteLibs()
+//    }
+//    tasks.packageDevRelease.doFirst {
+//        removeSqliteLibs()
+//    }
+
+    // masc20170731. workaround for release builds failing
+    // (when switching between product flavors, as we usually work in `dev` but native bundle is `prod`
+    android.applicationVariants.findAll {
+        it.buildType.name == 'release'
+    }.forEach {
+        it.assemble.dependsOn(tasks.cleanBuildCache)
     }
 }
 

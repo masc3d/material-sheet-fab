@@ -1,145 +1,116 @@
-import groovy.io.FileType
-import org.flywaydb.core.Flyway
-import org.jboss.forge.roaster.model.source.JavaInterfaceSource
-import org.jooq.util.DefaultGeneratorStrategy
-import org.jooq.util.Definition
-import org.jooq.util.GenerationTool
-import org.jooq.util.GeneratorStrategy
-import org.jooq.util.sqlite.SQLiteDatabase
-import org.jooq.util.jaxb.*
-import org.jboss.forge.roaster.Roaster
-import org.jboss.forge.roaster.model.*
-import org.jboss.forge.roaster.model.source.*
-
 buildscript {
-    ext {
-        v_ormlite = '5.0'
-        v_xerial_sqlite = '3.18.0'
-    }
-
     dependencies {
         classpath(
-                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
-                "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
-                "org.flywaydb:flyway-gradle-plugin:$v_flyway",
-
-                // JOOQ
-                "org.jooq:jooq:$v_jooq",
-                "org.jooq:jooq-meta:$v_jooq",
-                "org.jooq:jooq-codegen:$v_jooq",
-
-                // Roaster
-                "org.jboss.forge.roaster:roaster-api:$v_roaster",
-                "org.jboss.forge.roaster:roaster-jdt:$v_roaster",
-                "org.apache.commons:commons-lang3:$v_commons_lang",
-
-                // JPA
-                "org.eclipse.persistence:eclipselink:$v_eclipselink",
-
-                // Requery
-                "io.requery:requery:$v_requery"
+                'com.android.tools.build:gradle:3.0.0-beta2',
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
         )
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'kotlin'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'org.flywaydb.flyway'
 apply plugin: 'idea'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
-//region Constants
-
-// Database related parameters
-def DB_FILENAME = 'leoz-mobile.db'
-def DB_RESOURCES_DIR = new File(project.projectDir, 'src/main/resources/db')
-def DB_DIR = new File(project.buildDir, 'db')
-def DB_FILE = new File(DB_DIR, DB_FILENAME)
-
-// Flyway parameters
-def FLYWAY_MIGRATION_DIR = new File(DB_RESOURCES_DIR, 'migration')
-def FLYWAY_TASK_GROUP = 'flyway'
-
-// JDBC parameters
-def JDBC_DRIVER = 'org.sqlite.JDBC'
-def JDBC_URL = "jdbc:sqlite:${DB_FILE}"
-
 /** Base directory for generated classes */
 def GENERATED_DIR = file("${project.projectDir}/src/generated")
-/** The base path for generated classes by jooq */
-def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
 /** Folder where kapt generates source files */
 def KAPT_GENERATED_DIR = new File(project.buildDir, 'generated/source/kapt/main')
 /** A destination folder where we sync kapt generated classes to, referring to kaptSync task/workaround see below */
 def KAPT_DST_GENERATED_DIR = new File(GENERATED_DIR, 'kapt')
 
-class Constants {
-    /** Package name for jooq generated classes */
-    static def JOOQ_PACKAGE_NAME = 'org.deku.leoz.mobile.data.jooq'
-    /** Package name for requery interfaces */
-    static def REQUERY_PACKAGE_NAME = 'org.deku.leoz.mobile.data.requery'
-    /** Package name for jpa classes */
-    static def ORMLITE_PACKAGE_NAME = 'org.deku.leoz.mobile.data.ormlite'
-}
+// TODO: verify if those workarounds require migration for CANARY
 
-def JOOQ_PACKAGE_NAME = Constants.JOOQ_PACKAGE_NAME
-//endregion
+//idea {
+//    module {
+//        // Add KAPT generated sources to intellij
+//        sourceDirs += KAPT_DST_GENERATED_DIR
+//    }
+//}
 
-idea {
-    module {
-        // Add KAPT generated sources to intellij
-        sourceDirs += KAPT_DST_GENERATED_DIR
+// TODO: stupid workaround for making AndroidStudio see kapt generated classes. Unlike IJ, AndroidStudio seems to ignore .java files in build dir even when they're explicltly added to `sourceDirs` via idea plugin
+//task kaptSync(type: Sync) {
+//    from KAPT_GENERATED_DIR
+//    into KAPT_DST_GENERATED_DIR
+//}
+//tasks.classes {
+//    dependsOn tasks.kaptSync
+//}
+
+android {
+    publishNonDefault true
+    compileSdkVersion 26
+    buildToolsVersion v_android_buildtools
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_7
+            targetCompatibility JavaVersion.VERSION_1_7
+        }
+    }
+
+    dataBinding {
+        enabled true
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        dev {
+            dimension "default"
+        }
+
+        prod {
+            dimension "default"
+        }
     }
 }
 
-// TODO: stupid workaround for making AndroidStudio see kapt generated classes. Unlike IJ, AndroidStudio seems to ignore .java files in build dir even when they're explicltly added to `sourceDirs` via idea plugin
-task kaptSync(type: Sync) {
-    from KAPT_GENERATED_DIR
-    into KAPT_DST_GENERATED_DIR
-}
-tasks.classes {
-    dependsOn tasks.kaptSync
-}
-
-configurations {
-    /** Configuration for loading (jdbc) driver within buildscript */
-    driver
-}
-
 dependencies {
-    compile(
+    implementation(
+            project(':sx-android'),
             fileTree(dir: 'libs', include: ['*.jar']),
+
+            project(':leoz-common'),
+            project(':sx-serialization'),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-            // javax.persistence
-            "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
-
-            // ORMLite
-            "com.j256.ormlite:ormlite-core:$v_ormlite",
-
             // Requery
             "io.requery:requery:$v_requery",
-            "io.requery:requery-kotlin:$v_requery"
-    )
+            "io.requery:requery-kotlin:$v_requery",
 
-    compileOnly(
-            // Roaster
-            "org.jboss.forge.roaster:roaster-api:$v_roaster",
-            "org.jboss.forge.roaster:roaster-jdt:$v_roaster",
-            "org.apache.commons:commons-lang3:$v_commons_lang",
-            "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
-    )
-
-    driver(
-            "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
+            // Jackson
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
     )
 
     kapt(
-            "io.requery:requery-processor:$v_requery"
+            "io.requery:requery-processor:$v_requery",
+            "com.android.databinding:compiler:3.0.0-beta2"
     )
 
     testCompile(
@@ -153,19 +124,10 @@ dependencies {
             // rx
             "io.reactivex.rxjava2:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:$v_rxkotlin",
-
-            // ORMLite
-            "com.j256.ormlite:ormlite-jdbc:$v_ormlite"
     )
 }
 
 sourceSets {
-    main {
-        java {
-            srcDirs += JOOQ_GENERATED_DIR
-        }
-    }
-
     test {
         java {
             srcDirs += KAPT_GENERATED_DIR
@@ -178,241 +140,3 @@ clean {
         GENERATED_DIR.deleteDir()
     }
 }
-
-//region Flyway
-flyway {
-    driver = JDBC_DRIVER
-    url = JDBC_URL
-    locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
-}
-
-tasks.findAll() { it.group != null && it.group.equalsIgnoreCase('flyway') }.each {
-    // Make sure base dir of SQLite database exists prior to execution of any flyway task
-    it.doFirst {
-        DB_DIR.mkdirs()
-    }
-}
-//endregion
-
-tasks.clean.dependsOn(flywayClean)
-
-//region JOOQ
-/**
- * JOOQ generator strategy
- */
-public class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
-    @Override
-    String getJavaPackageName(Definition definition, GeneratorStrategy.Mode mode) {
-        def packageName = super.getJavaPackageName(definition, mode)
-        // Mangle package name for jpa pojos
-        if (mode == GeneratorStrategy.Mode.POJO) {
-            packageName = Constants.ORMLITE_PACKAGE_NAME
-        } else if (mode == GeneratorStrategy.Mode.INTERFACE) {
-            packageName = Constants.REQUERY_PACKAGE_NAME
-        }
-
-        return packageName
-    }
-
-    @Override
-    String getJavaClassName(Definition definition, GeneratorStrategy.Mode mode) {
-        String baseName = super
-                .getJavaClassName(definition, mode)
-
-        def ENTITY = "entity"
-        if (baseName.toLowerCase().endsWith(ENTITY))
-            baseName = baseName.substring(0, baseName.length() - ENTITY.length())
-        if (mode == GeneratorStrategy.Mode.INTERFACE) {
-            return "${baseName}Entity"
-        } else {
-            return baseName
-        }
-    }
-}
-
-/**
- * JOOQ generator configuration
- */
-def jooqConfiguration = new Configuration()
-        .withJdbc(
-        new Jdbc()
-                .withDriver(JDBC_DRIVER)
-                .withUrl(JDBC_URL))
-        .withGenerator(
-        new Generator()
-                .withGenerate(
-                new Generate()
-                        .withRecords(false)
-                        .withDaos(false)
-                // POJOs are used for ORMLite
-                        .withPojos(true)
-                // Interfaces are used for requery
-                        .withInterfaces(true)
-//                        .withPojosEqualsAndHashCode(true)
-                        .withJpaAnnotations(true)
-                        .withFluentSetters(false))
-                .withStrategy(new Strategy()
-                .withName(CustomJooqGeneratorStrategy.class.canonicalName))
-                .withDatabase(
-                new Database()
-                        .withName(SQLiteDatabase.class.canonicalName)
-                        .withInputSchema('')
-        )
-                .withTarget(
-                new Target()
-                        .withPackageName(JOOQ_PACKAGE_NAME)
-                        .withDirectory(JOOQ_GENERATED_DIR.toString())))
-
-/**
- * Task generating JOOQ and JPA classes.
- * TODO: jooq plugin doesn't work correctly with customized generator strategy (class loading issue)
- */
-task jooqGenerate(group: 'jooq') {
-    dependsOn tasks.flywayMigrate
-    mustRunAfter tasks.flywayMigrate
-
-    inputs.dir FLYWAY_MIGRATION_DIR
-    outputs.dir JOOQ_GENERATED_DIR
-
-    doFirst {
-        JOOQ_GENERATED_DIR.deleteDir()
-    }
-
-    doLast {
-        GenerationTool.generate(jooqConfiguration)
-
-        // Post process generated java classes
-        jpaPostProcess(JOOQ_GENERATED_DIR)
-
-        // Remove JOOQ classes (didn't find a way to disable this via `jooqConfiguration`
-        new File(JOOQ_GENERATED_DIR, JOOQ_PACKAGE_NAME.replace('.', '/')).deleteDir()
-    }
-}
-// Dependencies
-tasks.compileJava {
-    dependsOn tasks.jooqGenerate
-    mustRunAfter tasks.jooqGenerate
-}
-tasks.compileKotlin {
-    dependsOn tasks.jooqGenerate
-    mustRunAfter tasks.jooqGenerate
-}
-//endregion
-
-//region Support methods
-/**
- * Performs post-processing on jpa-generated entity classes.
- * @param sourceDir Generated sources dir (to process)
- */
-static def jpaPostProcess(File sourceDir) {
-    // Iterate source files
-    sourceDir.eachFileRecurse(FileType.FILES, {
-        if (!it.name.endsWith(".java"))
-            return
-
-        def jtype = Roaster.parse(it)
-
-        // Look for JPA annotations
-        def tableAnnotation = jtype.annotations.find {
-            it.qualifiedName == javax.persistence.Table.canonicalName
-        }
-
-        // Skip classes & interfaces without @Table annotation
-        if (tableAnnotation == null)
-            return
-
-        // Collect all methods belonging to properties
-        def propertyMutatorMethods = jtype.properties.collect {
-            it.mutator
-        }
-        def propertyAccessorMethods = jtype.properties.collect {
-            it.accessor
-        }
-        def propertyMethods = propertyMutatorMethods + propertyAccessorMethods
-
-        // Correct column annotation names which JOOQ doesn't escape properly
-        // for all generated interfaces and classes
-        if (jtype instanceof JavaInterfaceSource) {
-            jtype.methods.each {
-                def columnAnnotation = it.annotations.find {
-                    it.qualifiedName == javax.persistence.Column.canonicalName
-                }
-
-                if (columnAnnotation != null) {
-                    def c = (AnnotationSource) columnAnnotation
-
-                    def name = 'name'
-                    def val = c.getStringValue(name)
-
-                    // Field names to escape
-                    if (val == 'timestamp') {
-                        c.setStringValue(name, "'${val}'")
-                    }
-                }
-            }
-        }
-
-        // Remove interface methods which don't belong to properties, as requery can't handle them
-        def nonPropertyMethods = jtype.methods
-                .findAll { !propertyMethods.contains(it) }
-                .collect()
-
-        nonPropertyMethods
-                .each {
-            jtype.removeMethod(it)
-        }
-
-        // Post-processing for JOOQ generated JPA pojos for ORMLite
-        if (jtype instanceof JavaClassSource) {
-            def jsource = (JavaClassSource) jtype
-
-            // Requery processing those classes cannot be prevented and will
-            // cause errors (duplicate class members) due to inherited interface is also JPA annotated
-            // Adding requery's @Transient to prevent this
-            jsource.addAnnotation(io.requery.Transient.canonicalName)
-
-            // Move accessor annotations to fields (for ORMLite)
-            jsource.properties
-                    .findAll { it.annotations.size() > 0 }
-                    .each { property ->
-
-                def fieldSource = (FieldSource) property.field
-
-                // Move all annotations except @Override
-                def annotationsToMove = property.accessor.annotations
-                        .findAll { it.qualifiedName != java.lang.Override.canonicalName }
-                        .collect()
-
-                annotationsToMove
-                        .each { annotation ->
-
-                    def annotationSource = fieldSource.addAnnotation(annotation.qualifiedName)
-                    annotation.values.each {
-                        annotationSource.setLiteralValue(it.name, it.literalValue)
-                    }
-                }
-
-                def methodSource = (MethodSource) property.accessor
-                annotationsToMove.each {
-                    methodSource.removeAnnotation(it)
-                }
-            }
-
-            // Amend member access rights for properties, so requery doesn't complain about annotated private fields
-            jsource.fields.each {
-                def fieldSource = (FieldSource) it
-                fieldSource.setPackagePrivate()
-            }
-
-//            jsource.properties.each {
-//                def propertySource = (PropertySource) it
-//                propertySource.accessor.setPackagePrivate()
-//                propertySource.mutator.setPackagePrivate()
-//            }
-        }
-
-        // Rewrite class
-        it.write(jtype.toString())
-    })
-}
-//endregion
