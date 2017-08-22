@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:text="@{stop.address.line2, default = `Address Line 2`}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    android:layout_marginBottom="@dimen/horizontal_large_margin"
+                    android:layout_marginBottom="@dimen/medium_margin"
                     />
 
                 <TextView

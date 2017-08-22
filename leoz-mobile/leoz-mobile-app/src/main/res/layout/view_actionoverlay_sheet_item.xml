@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:paddingBottom="@dimen/vertical_large_margin"
-              android:paddingTop="@dimen/vertical_large_margin"
+              android:paddingBottom="@dimen/large_margin"
+              android:paddingTop="@dimen/large_margin"
               android:background="?attr/selectableItemBackground"
               android:clickable="true"
               android:orientation="horizontal">
@@ -12,8 +12,8 @@
     <ImageView
         android:id="@+id/uxActionOverlaySheetItemIcon"
         style="@style/AppTheme.ActionOverlay.ImageView"
-        android:layout_marginStart="@dimen/horizontal_large_margin"
-        android:layout_marginEnd="@dimen/horizontal_xlarge_margin"
+        android:layout_marginStart="@dimen/medium_margin"
+        android:layout_marginEnd="@dimen/medium_margin"
         android:layout_gravity="center_vertical"
         android:src="@drawable/ic_bug"/>
 
@@ -21,7 +21,7 @@
         android:id="@+id/uxActionOverlaySheetItemTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/horizontal_xlarge_margin"
+        android:layout_marginEnd="@dimen/large_margin"
         android:textAppearance="@style/AppTheme.ActionOverlay.TextAppearance"
         android:text="Action"
         android:layout_gravity="center_vertical"

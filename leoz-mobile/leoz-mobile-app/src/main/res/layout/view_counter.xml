@@ -37,7 +37,7 @@
                     android:layout_marginBottom="@dimen/small_margin"
                     android:layout_marginStart="@dimen/margin"
                     android:src="@{counter.drawableRes, default=@drawable/ic_stop}"
-                    android:tint="@color/dark_gray"
+                    android:tint="@color/colorDarkGrey"
                     />
 
             </FrameLayout>
