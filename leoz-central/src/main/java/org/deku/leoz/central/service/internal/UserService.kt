@@ -329,8 +329,13 @@ class UserService : UserService {
 
     }
 
-    override fun getById(userId: Int): User {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getById(userId: Int, apiKey: String?): User {
+        val u = userRepository.findById(userId) ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "User with ID [$userId] not found"
+        )
+
+        return this.get(email = u.email, apiKey = apiKey).first()
     }
 
 }

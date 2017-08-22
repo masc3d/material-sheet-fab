@@ -104,7 +104,10 @@ interface UserService {
     @GET
     @Path("/{$USER_ID}")
     @ApiOperation(value = "Get user by ID")
-    fun getById(@QueryParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): User
+    fun getById(
+            @QueryParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+    ): User
 
     /**
      * Create user
