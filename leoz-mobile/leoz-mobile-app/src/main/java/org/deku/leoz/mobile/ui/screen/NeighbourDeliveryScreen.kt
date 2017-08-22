@@ -53,6 +53,7 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
         super.onCreate(savedInstanceState)
 
         this.retainInstance = true
+        this.title = getString(R.string.title_alternativedelivery)
         this.scrollCollapseMode = ScrollCollapseModeType.EnterAlways
     }
 

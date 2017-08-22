@@ -122,7 +122,7 @@ class DeliveryStopProcessScreen :
                 icon = R.drawable.ic_delivery,
                 color = R.color.colorGreen,
                 background = R.drawable.section_background_green,
-                title = this.getText(R.string.delivered).toString(),
+                title = getString(R.string.deliveryscanning),
                 items = this.deliveryStop.deliveredParcels
         )
     }
@@ -133,7 +133,7 @@ class DeliveryStopProcessScreen :
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
-                title = this.getText(R.string.pending).toString(),
+                title = getString(R.string.to_be_scanned),
                 items = this.deliveryStop.pendingParcels
         )
     }
@@ -145,7 +145,7 @@ class DeliveryStopProcessScreen :
                 background = R.drawable.section_background_grey,
                 showIfEmpty = true,
                 expandOnSelection = true,
-                title = this.getText(R.string.orders).toString(),
+                title = this.getString(R.string.orders),
                 items = this.deliveryStop.orders
         )
     }
