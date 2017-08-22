@@ -54,8 +54,8 @@
 
       <div class="ui-g-12 ui-md-6">
         <div>{{'phonemobile' | translate}}:</div>
-        <div><input pInputText formControlName="mobile"></div>
-        <div *ngIf="userForm.controls['mobile'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+        <div><input pInputText formControlName="phoneMobile"></div>
+        <div *ngIf="userForm.controls['phoneMobile'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'PhoneMaxLength' | translate}}.
         </div>
       </div>

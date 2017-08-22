@@ -82,7 +82,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       email: [ null, [ Validators.required, Validators.email ] ],
       phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
-      mobile: [ null, [ Validators.required ] ],
+      phoneMobile: [ null, [ Validators.required ] ],
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
       expiresOn: [ null ]
@@ -111,7 +111,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
           email: activeUser.email,
           phone: activeUser.phone,
           alias: activeUser.alias,
-          mobile: activeUser.mobile,
+          phoneMobile: activeUser.phoneMobile,
           role: activeUser.role,
           active: activeUser.active,
           expiresOn: activeUser.expiresOn ? new Date( activeUser.expiresOn ) : activeUser.expiresOn
@@ -150,7 +150,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   onSubmit() {
     this.loading = true;
-    const removeFields = [ 'emailOrigin', 'mobile' ];
+    const removeFields = [ 'emailOrigin' ];
     if (!this.userForm.value.emailOrigin || this.userForm.value.emailOrigin.length === 0) {
       this.createUser( this.cloneAndRemove( this.userForm.value, removeFields ) );
     } else {
