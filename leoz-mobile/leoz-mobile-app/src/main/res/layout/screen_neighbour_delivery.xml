@@ -28,8 +28,9 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:hint="@string/name"
-                android:nextFocusRight="@+id/uxNeighboursStreet"
+                android:completionThreshold="1"
                 android:imeOptions="actionNext"
+                android:nextFocusRight="@+id/uxNeighboursStreet"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
         </android.support.design.widget.TextInputLayout>
 

@@ -11,7 +11,10 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.screen_neighbour_delivery.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
@@ -50,6 +53,7 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
         super.onCreate(savedInstanceState)
 
         this.retainInstance = true
+        this.scrollCollapseMode = ScrollCollapseModeType.EnterAlways
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -74,6 +78,23 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
                     }
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val action = RxTextView.editorActions(this.uxNeighboursStreetNo)
+                        .map { Unit }
+                        .replay(1)
+                        .refCount()
+                        .doOnNext {
+                            this.context.inputMethodManager.hideSoftInput()
+                        }
+
+        action
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+
     }
 
 }
