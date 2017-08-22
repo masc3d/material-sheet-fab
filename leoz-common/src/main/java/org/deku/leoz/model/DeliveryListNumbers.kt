@@ -16,7 +16,7 @@ class DekuDeliveryListNumber private constructor(
          * @param value Barcode/label content including check-digit
          */
         fun parseLabel(value: String): Result<DekuDeliveryListNumber> {
-            if (value.length != 10)
+            if (value.length < 6 || value.length > 10)
                 return Result(error = IllegalArgumentException("DEKU delivery list label [${value}] has invalid length"))
 
             if (!value.all { it.isDigit() })
@@ -34,7 +34,7 @@ class DekuDeliveryListNumber private constructor(
          * @param value Delivery list number without check-digit
          */
         fun parse(value: String): Result<DekuDeliveryListNumber> {
-            if (value.length < 7 || value.length > 9)
+            if (value.length < 5 || value.length > 9)
                 return Result(error = IllegalArgumentException("DEKU delivery list number [${value}] has invalid length"))
 
             if (!value.all { it.isDigit() })
