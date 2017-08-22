@@ -578,7 +578,6 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
 
                                 },
                                 onError = {
-                                    log.error(it.message, it)
                                     tones.errorBeep()
                                 }
                         )

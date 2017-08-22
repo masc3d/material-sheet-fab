@@ -1,7 +1,7 @@
 import { Position } from '../position.model';
 import { Driver } from '../driver.model';
 
-export interface Marker {
+export interface MarkerModel {
   position: Position;
   driver: Driver;
 }
