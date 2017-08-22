@@ -20,6 +20,7 @@ buildscript {
 
     ext {
         v_anko = '0.10.1'
+        v_javamail = '1.6.0'
         v_material_dialogs = '0.9.4.6'
         v_parceler = '1.1.9'
         v_roboelectric = '3.3.2'
@@ -75,17 +76,18 @@ android {
         enabled true
     }
 
-    flavorDimensions "default"
-
-    productFlavors {
-        dev {
-            dimension "default"
-        }
-
-        prod {
-            dimension "default"
-        }
-    }
+    // TODO: CANARY product flavors, temporary disabled
+//    flavorDimensions "default"
+//
+//    productFlavors {
+//        dev {
+//            dimension "default"
+//        }
+//
+//        prod {
+//            dimension "default"
+//        }
+//    }
 
     signingConfigs {
         release {
@@ -199,6 +201,10 @@ dependencies {
             dependencies.create("com.github.tony19:logback-android-classic:1.1.1-6") {
                 exclude group: 'com.google.android', module: 'android'
             },
+
+            // JavaMail
+            "com.sun.mail:android-mail:$v_javamail",
+            "com.sun.mail:android-activation:$v_javamail",
 
             // Reactive
             "io.reactivex.rxjava2:rxjava:$v_rxjava",
@@ -320,10 +326,6 @@ dependencies {
             "net.cachapa.expandablelayout:expandablelayout:2.9.1"
     )
 
-    compileOnly(
-            "com.google.auto.value:auto-value:$v_autovalue"
-    )
-
     debugImplementation(
             // Stetho
             "com.facebook.stetho:stetho:$v_stetho",
@@ -350,8 +352,8 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:3.0.0-beta2",
-            "com.google.auto.value:auto-value:$v_autovalue",
+            "com.android.databinding:compiler:3.0.0-beta2"
+            // TODO: auto-value requires specific annotations processor setup with CANARY
     )
 }
 
