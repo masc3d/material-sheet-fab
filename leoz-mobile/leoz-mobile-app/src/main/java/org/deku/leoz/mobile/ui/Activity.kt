@@ -240,11 +240,12 @@ open class Activity : BaseActivity(),
 
         if (!this.app.isInitialized) {
             // Currently the startup activity is required for seamless startup
-            // as retrieving the honeywell aidc reader synchronously requires an activity transition.
-            // Without activity transition the aidc service doesn't get opportunity to delivery its instance
-            // and trying to retrieving the aidc instance initially, which is a blocking call, will result in a deadlock.
-            //
-            // We still use the activity task state to determine the most recent active
+            // as it takes care of synchronously retrieving the honeywell aidc reader from the
+            // aidc manager service. Without a main thread handler cycle eg. activity transition,
+            // injecting the aidc instance (on main thread) will cause a deadlock
+            // TODO: HoneywellAidcReader internals should be completely reactive, so consumers don't have to worry about this.
+
+            // Use the activity task state to determine the most recent active
             // activity, so we can (at least) restore the most recent activity for the user.
             val i = Intent(this, StartupActivity::class.java).also {
                 it.putExtra("ACTIVITY", this.javaClass.canonicalName)
@@ -508,6 +509,9 @@ open class Activity : BaseActivity(),
         return false
     }
 
+    /**
+     * Aidc fragment control
+     */
     private var cameraAidcFragmentVisible: Boolean
         get() {
             val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)

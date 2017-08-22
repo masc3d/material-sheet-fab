@@ -8,7 +8,7 @@ import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.Observable
-import org.deku.leoz.mobile.model.entity.getEventText
+import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.EventNotDeliveredReason
 import org.slf4j.LoggerFactory
 
@@ -48,7 +48,7 @@ class EventDialog private constructor(
         private var events = listOf<EventNotDeliveredReason>()
             set(value) {
                 value.forEach {
-                    val eventText = this.context.getEventText(it)
+                    val eventText = it.mobile.text
                     if (eventText != null) {
                         this@Builder.eventAdapter.add(
                                 MaterialSimpleListItem.Builder(this.context)
