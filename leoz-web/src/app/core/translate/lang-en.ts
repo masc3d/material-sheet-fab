@@ -62,6 +62,7 @@ export const LANG_EN_TRANS = {
   // map form
   'allusers': 'all users',
   'drivers': 'drivers',
+  'alldrivers': 'all drivers',
   'could not get geolocation points': 'Could not get geolocation points',
   'could not get route': 'Could not get route',
   'name': 'Name',
@@ -74,12 +75,13 @@ export const LANG_EN_TRANS = {
   'van': 'Van',
   'truck': 'Truck',
   'unknown': 'Unknown',
-  'last': 'last',
+  'last': 'Last',
   'hs': 'hours',
   'refreshevery': 'Refresh ervery',
   'mins': 'min',
-  'latestRefresh': 'latest refresh',
+  'latestRefresh': 'Latest refresh',
   'showlist': 'list fade in/out',
+  'selectedformap': 'Selected for Map',
   // stationloading form - loadinglist
   'loadingcontrol': 'Loading control',
   'newloadlist': 'New loadlist',

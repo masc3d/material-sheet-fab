@@ -7,13 +7,15 @@ import { Position } from './position.model';
 import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 import { MsgService } from '../../shared/msg/msg.service';
 import { Driver } from './driver.model';
-import { Marker } from './tour-map/marker.model';
+import { MarkerModel } from './tour-map/marker.model';
 import { TranslateService } from '../../core/translate/translate.service';
+import { DriverService } from './driver.service';
+import RoleEnum = Driver.RoleEnum;
 
 @Injectable()
 export class TourService {
 
-  public homebase = <Marker> {
+  public homebase = <MarkerModel> {
     position: {
       latitude: 50.8645,
       longitude: 9.6917
@@ -23,8 +25,11 @@ export class TourService {
   private displayMarkerSubject = new BehaviorSubject<boolean>( false );
   public displayMarker = this.displayMarkerSubject.asObservable().distinctUntilChanged();
 
-  private activeMarkerSubject = new BehaviorSubject<Marker>( this.homebase );
+  private activeMarkerSubject = new BehaviorSubject<MarkerModel>( this.homebase );
   public activeMarker = this.activeMarkerSubject.asObservable().distinctUntilChanged();
+
+  private allMarkersSubject = new BehaviorSubject<MarkerModel[]>( [] );
+  public allMarkers = this.allMarkersSubject.asObservable().distinctUntilChanged();
 
   private displayRouteSubject = new BehaviorSubject<boolean>( false );
   public displayRoute = this.displayRouteSubject.asObservable().distinctUntilChanged();
@@ -34,7 +39,13 @@ export class TourService {
 
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
 
-  constructor( private http: Http, private msgService: MsgService, private translate: TranslateService ) {
+  private drivers: Driver[];
+
+  constructor( private http: Http,
+               private msgService: MsgService,
+               private translate: TranslateService,
+               private driverService: DriverService ) {
+    driverService.drivers.subscribe( ( drivers: Driver[] ) => this.drivers = drivers );
   }
 
   private getLocation( userId: number ): Observable<Response> {
@@ -42,6 +53,20 @@ export class TourService {
 
     const queryParameters = new URLSearchParams();
     queryParameters.set( 'user-id', String( userId ) );
+
+    const options = new RequestOptions( {
+      headers: ApiKeyHeaderFactory.headers( currUser.key ),
+      params: queryParameters
+    } );
+
+    return this.http.get( this.locationUrl, options );
+  }
+
+  private getAllLocations(): Observable<Response> {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+
+    const queryParameters = new URLSearchParams();
+    queryParameters.set( 'debitor-id', String( currUser.user.debitorId ) );
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
@@ -71,6 +96,7 @@ export class TourService {
   }
 
   resetDisplay() {
+    this.allMarkersSubject.next( [] );
     this.displayRouteSubject.next( false );
     this.displayMarkerSubject.next( false );
   }
@@ -90,7 +116,7 @@ export class TourService {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
               this.displayMarkerSubject.next( true );
-              this.activeMarkerSubject.next( <Marker> { position: positions[ 0 ], driver: selectedDriver } );
+              this.activeMarkerSubject.next( <MarkerModel> { position: positions[ 0 ], driver: selectedDriver } );
               this.msgService.clear();
             } else {
               this.locationError();
@@ -112,7 +138,7 @@ export class TourService {
             if (positions && positions.length > 0) {
               this.displayMarkerSubject.next( true );
               this.activeMarkerSubject.next(
-                <Marker> { position: positions[ positions.length - 1 ], driver: selectedDriver }
+                <MarkerModel> { position: positions[ positions.length - 1 ], driver: selectedDriver }
               );
               this.displayRouteSubject.next( true );
               this.activeRouteSubject.next( positions );
@@ -135,5 +161,37 @@ export class TourService {
   routeError(): void {
     this.resetDisplay();
     this.msgService.error( this.translate.instant( 'could not get route' ) );
+  }
+
+  fetchAllPositions( filter: string ) {
+    this.resetDisplay();
+    this.driverService.getDrivers();
+    this.getAllLocations()
+      .subscribe( ( response: Response ) => {
+          const allLocations = response.json();
+          const allMarkers = [];
+          if (allLocations && allLocations.length > 0) {
+            allLocations.forEach( ( userLocation: any ) => {
+              if (userLocation.gpsDataPoints && userLocation.gpsDataPoints.length > 0) {
+                const filtered = this.drivers.filter( ( driver: Driver ) => driver.id === userLocation.userId );
+                if (filtered.length > 0) {
+                  const driver = filtered[ 0 ];
+                  if (driver.active) {
+                    const position = <Position> userLocation.gpsDataPoints[ 0 ];
+                    if (filter === 'allusers'
+                      || (filter === 'alldrivers' && driver.role === RoleEnum.DRIVER)) {
+                      allMarkers.push( <MarkerModel> { position: position, driver: driver } )
+                    }
+                  }
+                }
+              }
+            } );
+            this.msgService.clear();
+          } else {
+            this.locationError();
+          }
+          this.allMarkersSubject.next( allMarkers );
+        },
+        ( error: Response ) => this.msgService.handleResponse( error ) );
   }
 }

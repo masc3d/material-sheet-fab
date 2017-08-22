@@ -62,6 +62,7 @@ export const LANG_DE_TRANS = {
   // map form
   'allusers': 'alle Mitarbeiter',
   'drivers': 'Fahrer',
+  'alldrivers': 'alle Fahrer',
   'could not get geolocation points': 'Keine Geokoordinaten gefunden',
   'could not get route': 'Keine Route gefunden',
   'name': 'Name',
@@ -74,12 +75,13 @@ export const LANG_DE_TRANS = {
   'van': 'Bus',
   'truck': 'LKW',
   'unknown': 'unbekannt',
-  'last': 'letzte',
+  'last': 'Letzte',
   'hs': 'Std',
   'refreshevery': 'Aktualisieren alle',
   'mins': 'Min',
-  'latestRefresh': 'zuletzt aktualisiert',
+  'latestRefresh': 'Zuletzt aktualisiert',
   'showlist': 'Liste ein-/ausblenden',
+  'selectedformap': 'Ausgewählt für Karte',
   // stationloading form - loadinglist
   'loadingcontrol': 'Verladesteuerung',
   'newloadlist': 'Neue Ladeliste',
