@@ -61,6 +61,7 @@ open class CameraScreen : ScreenFragment<Any>() {
 
         this.toolbarHidden = true
         this.statusBarHidden = true
+        this.lockNavigationDrawer = true
     }
 
     /** Can be overriden to add an overlay view to the camera screen */
