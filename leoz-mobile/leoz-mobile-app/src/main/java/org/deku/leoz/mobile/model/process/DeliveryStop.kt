@@ -106,7 +106,7 @@ class DeliveryStop(
     val stop = stopQuery.result.map { it.value.first() }
             .behave(this)
 
-    /** Stop parcels */
+    /** All parcels of this stop. Also includes missing parcels */
     val parcels = this.stopParcelsQuery.result.map { it.value }
             .behave(this)
 
@@ -114,18 +114,21 @@ class DeliveryStop(
     val orders = this.parcels.map { it.map { it.order as OrderEntity }.distinct() }
             .behave(this)
 
-    val pendingParcels = this.parcels.map {
-        it.filter {
-            it.deliveryState == Parcel.DeliveryState.PENDING &&
-                    /** Only consider parcels which actually have been loaded (excludes missing parcels) */
-                    it.loadingState == Parcel.LoadingState.LOADED
-        }
+    /** Loaded parcels for this stop */
+    val loadedParcels = this.parcels.map {
+        /** Automatically excludes missing parcels */
+        it.filter { it.loadingState == Parcel.LoadingState.LOADED }
     }
+
+    /** Parcels pending delivery for this stop */
+    val pendingParcels = this.loadedParcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
             .behave(this)
 
+    /** Delivered parcels of this stop */
     val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
             .behave(this)
 
+    /** Undelivered parcels of this stop */
     val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
             .behave(this)
 
@@ -146,7 +149,7 @@ class DeliveryStop(
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelTotalAmount = this.parcels.map { it.count() }
+    val parcelTotalAmount = this.loadedParcels.map { it.count() }
             .distinctUntilChanged()
             .behave(this)
 
@@ -261,7 +264,12 @@ class DeliveryStop(
                         update(it)
                     }
 
+            /** Mark parcel delivered */
             parcel.deliveryState = Parcel.DeliveryState.DELIVERED
+
+            /** In case the parcel was missing, make sure to correct the loading state */
+            parcel.loadingState = Parcel.LoadingState.LOADED
+
             update(parcel)
         }
                 .toCompletable()
