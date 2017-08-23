@@ -41,6 +41,10 @@ class MainActivity
                     MainScreen(),
                     addToBackStack = false
             )
+
+            if (this.login.authenticatedUser != null) {
+                this.onLoginSuccessful()
+            }
         }
     }
 
