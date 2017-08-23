@@ -114,15 +114,16 @@ class DeliveryStop(
     val orders = this.parcels.map { it.map { it.order as OrderEntity }.distinct() }
             .behave(this)
 
-    val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
-            .behave(this)
-
     val pendingParcels = this.parcels.map {
         it.filter {
             it.deliveryState == Parcel.DeliveryState.PENDING &&
+                    /** Only consider parcels which actually have been loaded (excludes missing parcels) */
                     it.loadingState == Parcel.LoadingState.LOADED
         }
     }
+            .behave(this)
+
+    val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
             .behave(this)
 
     val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
