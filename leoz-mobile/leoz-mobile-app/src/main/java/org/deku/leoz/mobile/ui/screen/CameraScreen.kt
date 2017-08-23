@@ -1,7 +1,6 @@
-package org.deku.leoz.mobile.ui.fragment
+package org.deku.leoz.mobile.ui.screen
 
 import android.graphics.BitmapFactory
-import android.graphics.Camera
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,7 +32,7 @@ import java.util.concurrent.ExecutorService
  *
  * Created by phpr on 03.08.2017.
  */
-open class CameraFragment : ScreenFragment<Any>() {
+open class CameraScreen : ScreenFragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val executorService: ExecutorService by Kodein.global.lazy.instance()
@@ -42,9 +41,9 @@ open class CameraFragment : ScreenFragment<Any>() {
     private var pictureJpeg: ByteArray? = null
 
     private val listener by lazy {
-        this.targetFragment as? CameraFragment.Listener
-                ?: this.parentFragment as? CameraFragment.Listener
-                ?: this.activity as? CameraFragment.Listener
+        this.targetFragment as? Listener
+                ?: this.parentFragment as? Listener
+                ?: this.activity as? Listener
     }
 
     interface Listener {
@@ -83,25 +82,25 @@ open class CameraFragment : ScreenFragment<Any>() {
             override fun onPictureTaken(picture: ByteArray) {
                 log.trace("PICTURE TAKEN WITH SIZE [${picture.size}]")
 
-                this@CameraFragment.view?.post {
+                this@CameraScreen.view?.post {
                     // Temporarily store image
-                    this@CameraFragment.pictureJpeg = picture
+                    this@CameraScreen.pictureJpeg = picture
 
                     // Hide progress
-                    this@CameraFragment.uxProgressContainer.visibility = View.INVISIBLE
+                    this@CameraScreen.uxProgressContainer.visibility = View.INVISIBLE
 
-                    this@CameraFragment.torchEnabled = false
+                    this@CameraScreen.torchEnabled = false
 
                     // Create a bitmap
-                    this@CameraFragment.uxPreviewImage.imageBitmap = BitmapFactory.decodeByteArray(picture, 0, picture.size)
-                    this@CameraFragment.showImageActions()
+                    this@CameraScreen.uxPreviewImage.imageBitmap = BitmapFactory.decodeByteArray(picture, 0, picture.size)
+                    this@CameraScreen.showImageActions()
                 }
             }
 
             override fun onCameraOpened() {
                 log.trace("CAMERA OPENED")
-                this@CameraFragment.uxProgressContainer.post {
-                    this@CameraFragment.uxProgressContainer.visibility = View.INVISIBLE
+                this@CameraScreen.uxProgressContainer.post {
+                    this@CameraScreen.uxProgressContainer.visibility = View.INVISIBLE
                 }
             }
 
@@ -162,7 +161,7 @@ open class CameraFragment : ScreenFragment<Any>() {
                             this.sounds.playCameraClick()
 
                             Observable.fromCallable {
-                                this@CameraFragment.uxCameraView.captureImage()
+                                this@CameraScreen.uxCameraView.captureImage()
                             }
                                     .subscribeOn(executor = executorService)
                                     .subscribe()
@@ -177,8 +176,8 @@ open class CameraFragment : ScreenFragment<Any>() {
                         }
 
                         R.id.action_camera_save -> {
-                            this@CameraFragment.listener?.onCameraImageTaken(this.pictureJpeg!!)
-                            this@CameraFragment.activity.supportFragmentManager.popBackStack()
+                            this@CameraScreen.listener?.onCameraImageTaken(this.pictureJpeg!!)
+                            this@CameraScreen.activity.supportFragmentManager.popBackStack()
                         }
                     }
                 }
