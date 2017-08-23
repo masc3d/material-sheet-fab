@@ -117,7 +117,12 @@ class DeliveryStop(
     val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
             .behave(this)
 
-    val pendingParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
+    val pendingParcels = this.parcels.map {
+        it.filter {
+            it.deliveryState == Parcel.DeliveryState.PENDING &&
+                    it.loadingState == Parcel.LoadingState.LOADED
+        }
+    }
             .behave(this)
 
     val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
@@ -184,8 +189,8 @@ class DeliveryStop(
 
     val canClose: Boolean
         get() =
-        pendingParcels.blockingFirst().count() == 0 &&
-                entity.state == Stop.State.PENDING
+            pendingParcels.blockingFirst().count() == 0 &&
+                    entity.state == Stop.State.PENDING
 
     val canCloseWithEvent: Boolean
         get() = this.canClose && deliveredParcels.blockingFirst().count() == 0

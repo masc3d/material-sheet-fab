@@ -20,11 +20,21 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     companion object {}
 
     enum class LoadingState {
-        PENDING, LOADED, MISSING
+        /** Parcel is pending to be loaded */
+        PENDING,
+        /** Parcel has been loaded */
+        LOADED,
+        /** Parcel could not be loaded as it was missing */
+        MISSING
     }
 
     enum class DeliveryState {
-        PENDING, DELIVERED, UNDELIVERED
+        /** Parcel is pending for delivery */
+        PENDING,
+        /** Parcel has been delivered */
+        DELIVERED,
+        /** Parcel could not be delivered */
+        UNDELIVERED
     }
 
     @get:Key
