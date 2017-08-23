@@ -18,6 +18,7 @@ database:
 
 # Update service settings
 update:
+   enabled: true
    bundle-name: 'leoz-mobile'
    version-alias: 'snapshot'
    force: false
