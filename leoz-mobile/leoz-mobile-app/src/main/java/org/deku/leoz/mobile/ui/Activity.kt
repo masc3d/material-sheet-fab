@@ -869,6 +869,12 @@ open class Activity : BaseActivity(),
             scrollCollapseMode = ScreenFragment.ScrollCollapseModeType.EnterAlwaysCollapsed
         }
 
+        if (fragment.statusBarHidden) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+
         // Apply action bar changes
         run {
             // Make sure app bar is visible (eg. when screen changes)
