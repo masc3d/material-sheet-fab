@@ -48,4 +48,4 @@ debug:
    # By default free screen rotation is not allowed and controlled per screen
    user-screen-rotation: false
    # Enables synthetic aidc inputs, available via screen menu
-   synthetic-aidc-enabled: false
+   synthetic-aidc-enabled: true
