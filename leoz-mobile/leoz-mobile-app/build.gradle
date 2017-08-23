@@ -21,7 +21,7 @@ buildscript {
 
     ext {
         v_anko = '0.10.1'
-        v_material_dialogs = '0.9.4.6'
+        v_material_dialogs = '0.9.4.7'
         v_parceler = '1.1.9'
         v_roboelectric = '3.3.2'
         v_rxlifecycle = '2.1.0'
