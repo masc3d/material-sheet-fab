@@ -126,6 +126,7 @@ open class CameraScreen : ScreenFragment<Any>() {
         this.showCaptureActions()
 
         this.torchEnabledProperty
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.uxCameraView.flash = when (it.value) {
                         true -> CameraKit.Constants.FLASH_TORCH
