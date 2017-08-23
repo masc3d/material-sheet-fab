@@ -7,6 +7,7 @@ include ':sx-android-honeywell'
 include ':sx-mq'
 include ':sx-serialization'
 include ':material-sheet-fab'
+include ':camerakit'
 
 // Mangle project paths
 project(':sx-common').projectDir = file('../libs/sx-common')
@@ -18,3 +19,4 @@ project(':leoz-common').projectDir = file('../leoz-common')
 
 // Libs
 project(':material-sheet-fab').projectDir = file('libs/material-sheet-fab/material-sheet-fab')
+project(':camerakit').projectDir = file('libs/CameraKit-Android/camerakit')

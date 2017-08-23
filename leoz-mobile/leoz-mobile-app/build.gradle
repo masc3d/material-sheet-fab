@@ -203,6 +203,7 @@ dependencies {
             project(':sx-serialization'),
             project(':leoz-common'),
             project(':material-sheet-fab'),
+            project(':camerakit'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             // Android
@@ -310,14 +311,6 @@ dependencies {
             // Anko Layouts
             "org.jetbrains.anko:anko-sdk25:$v_anko", // sdk15, sdk19, sdk21, sdk23 are also available
             "org.jetbrains.anko:anko-appcompat-v7:$v_anko",
-
-            // Camera
-
-            // Google's cameraview, has torch, lacks threaded intialization (freezes UI for seconds when initialized)
-            //"com.github.google:cameraview:3eaeac0",
-
-            // Fork of google's cameraview, has threaded init, lacks torch
-            "com.flurgle:camerakit:0.9.18",
 
             // Coroutine listeners for Anko Layouts
             "org.jetbrains.anko:anko-sdk25-coroutines:$v_anko",
