@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.fragment
 
 import android.graphics.BitmapFactory
+import android.graphics.Camera
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.jetbrains.anko.imageBitmap
 import org.slf4j.LoggerFactory
+import sx.rx.ObservableRxProperty
 import sx.rx.subscribeOn
 import java.util.concurrent.ExecutorService
 
@@ -49,6 +51,9 @@ open class CameraFragment : ScreenFragment<Any>() {
         fun onCameraImageTaken(jpeg: ByteArray)
     }
 
+    private val torchEnabledProperty = ObservableRxProperty(false)
+    private var torchEnabled: Boolean by torchEnabledProperty
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,7 +64,7 @@ open class CameraFragment : ScreenFragment<Any>() {
     }
 
     /** Can be overriden to add an overlay view to the camera screen */
-    open fun onCreateOverlayView() { }
+    open fun onCreateOverlayView() {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_camera, container, false)
@@ -78,9 +83,13 @@ open class CameraFragment : ScreenFragment<Any>() {
                 log.trace("PICTURE TAKEN WITH SIZE [${picture.size}]")
 
                 this@CameraFragment.view?.post {
+                    // Temporarily store image
                     this@CameraFragment.pictureJpeg = picture
 
+                    // Hide progress
                     this@CameraFragment.uxProgressContainer.visibility = View.INVISIBLE
+
+                    this@CameraFragment.torchEnabled = false
 
                     // Create a bitmap
                     this@CameraFragment.uxPreviewImage.imageBitmap = BitmapFactory.decodeByteArray(picture, 0, picture.size)
@@ -100,18 +109,40 @@ open class CameraFragment : ScreenFragment<Any>() {
             }
         })
 
+        this.torchEnabled = false
+
         Observable.fromCallable {
             log.trace("STARTING CAMERA")
             this.uxCameraView.start()
         }
                 .subscribeOn(executor = this.executorService)
                 .subscribe()
+
     }
 
     override fun onResume() {
         super.onResume()
 
         this.showCaptureActions()
+
+        this.torchEnabledProperty
+                .subscribe {
+                    this.uxCameraView.flash = when (it.value) {
+                        true -> CameraKit.Constants.FLASH_TORCH
+                        false -> CameraKit.Constants.FLASH_OFF
+                    }
+
+                    val iconTint: Int = when (it.value) {
+                        true -> R.color.colorAccent
+                        false -> android.R.color.black
+                    }
+
+                    this.actionItems = this.actionItems.apply {
+                        first { it.id == R.id.action_camera_flash }
+                                .iconTintRes = iconTint
+                    }
+
+                }
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -137,8 +168,7 @@ open class CameraFragment : ScreenFragment<Any>() {
                         }
 
                         R.id.action_camera_flash -> {
-                            // TODO: implement torch mode support in CameraKit
-                            //this.uxCameraView.setFlash(CameraKit.Constants.FLASH_TORCH)
+                            this.torchEnabled = !this.torchEnabled
                         }
 
                         R.id.action_camera_discard -> {
@@ -166,17 +196,14 @@ open class CameraFragment : ScreenFragment<Any>() {
                         iconRes = android.R.drawable.ic_menu_camera,
                         iconTintRes = android.R.color.white,
                         colorRes = R.color.colorPrimary
+                ),
+                ActionItem(
+                        id = R.id.action_camera_flash,
+                        iconRes = R.drawable.ic_flash,
+                        iconTintRes = android.R.color.black,
+                        colorRes = R.color.colorDarkGrey,
+                        alignEnd = false
                 )
-
-                // Disabled flash control for now. AUTO should be ok. TORCH requires some work
-                // as it's not available via CameraKit.
-//                ,ActionItem(
-//                        id = R.id.action_camera_flash,
-//                        iconRes = R.drawable.ic_flash,
-//                        iconTintRes = android.R.color.white,
-//                        colorRes = R.color.colorDarkGrey,
-//                        alignEnd = false
-//                )
         )
     }
 
