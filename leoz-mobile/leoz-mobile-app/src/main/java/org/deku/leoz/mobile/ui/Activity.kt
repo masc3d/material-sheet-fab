@@ -710,8 +710,8 @@ open class Activity : BaseActivity(),
                             if (!(this is MainActivity)) {
                                 this.startActivity(
                                         Intent(applicationContext, MainActivity::class.java)
-                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                                        Intent.FLAG_ACTIVITY_NEW_TASK))
+                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+
                                 finish()
                             }
                         }
