@@ -2,11 +2,7 @@ package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.address
-import org.deku.leoz.mobile.model.entity.dateEnd
-import org.deku.leoz.mobile.model.entity.dateStart
-import org.deku.leoz.mobile.model.entity.OrderTask
-import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.*
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,10 +36,7 @@ class StopViewModel(val stop: Stop) : BaseObservable() {
     val orderAmount: String
         get() = stop.tasks.map { it.order }.distinct().count().toString()
 
-    val parcelAmount: String
-        get() {
-            return stop.tasks.flatMap {
-                it.order.parcels
-            }.count().toString()
-        }
+    val parcelAmount: String by lazy {
+        stop.tasks.flatMap { it.order.parcels }.count().toString()
+    }
 }
