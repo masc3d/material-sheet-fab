@@ -64,6 +64,7 @@ import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.ui.activity.StartupActivity
+import org.deku.leoz.mobile.ui.fragment.CameraFragment
 import org.jetbrains.anko.backgroundColor
 import sx.aidc.SymbologyType
 import sx.android.*
@@ -477,6 +478,7 @@ open class Activity : BaseActivity(),
 
             R.id.nav_camera -> {
                 // Handle the camera action
+                this.showScreen(CameraFragment())
             }
 
             R.id.nav_dev_prototype -> {

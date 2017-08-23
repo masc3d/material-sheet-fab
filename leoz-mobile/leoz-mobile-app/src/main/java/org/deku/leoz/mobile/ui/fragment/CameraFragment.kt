@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui.fragment
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,145 +9,194 @@ import com.flurgle.camerakit.CameraKit
 import com.flurgle.camerakit.CameraListener
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.tnt.innight.mobile.Sounds
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_camera.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.Storage
-import org.deku.leoz.mobile.model.entity.Order
-import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.util.*
+import org.jetbrains.anko.imageBitmap
+import org.slf4j.LoggerFactory
+import sx.rx.subscribeOn
+import java.util.concurrent.ExecutorService
 
 /**
+ * Generic camera screen fragment
+ *
+ * Can be used standalone or derived from for eg. adding an overlay view.
+ *
  * Created by phpr on 03.08.2017.
  */
-class CameraFragment : ScreenFragment<Any>() {
+open class CameraFragment : ScreenFragment<Any>() {
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
-    val storage: Storage by Kodein.global.lazy.instance()
+    private val executorService: ExecutorService by Kodein.global.lazy.instance()
+    private val sounds: Sounds by Kodein.global.lazy.instance()
 
-    var bitmap: Bitmap? = null
-    var order: Order? = null
-    var parcel: Parcel? = null
-    var type: PictureType? = null
+    private var pictureJpeg: ByteArray? = null
 
-    val actionItemCapture = listOf(
-            ActionItem(
-                    id = R.id.action_camera_trigger,
-                    iconRes = android.R.drawable.ic_menu_camera,
-                    colorRes = R.color.colorAccent
-            )
-    )
-    val actionItemImage = listOf(
-            ActionItem(
-                    id = R.id.action_camera_save,
-                    iconRes = R.drawable.ic_check_circle,
-                    colorRes = R.color.colorGreen
-            ),
-            ActionItem
-            (
-                    id = R.id.action_camera_discard,
-                    iconRes = R.drawable.ic_circle_cancel,
-                    colorRes = R.color.colorRed
-            )
-    )
-
-    private val listener by lazy { this.activity as? CameraFragment.Listener }
-
-    companion object {
-        fun create(order: Order, type: PictureType): CameraFragment {
-            val f = CameraFragment()
-            return f
-        }
-
-        fun create(parcel: Parcel, type: PictureType): CameraFragment {
-            val f = CameraFragment()
-            return f
-        }
-
-        enum class PictureType {
-            PARCEL_DAMAGED,
-            PARCEL_OTHER,
-            POSTBOX
-        }
+    private val listener by lazy {
+        this.targetFragment as? CameraFragment.Listener
+                ?: this.parentFragment as? CameraFragment.Listener
+                ?: this.activity as? CameraFragment.Listener
     }
 
     interface Listener {
-        fun onCameraImageTaken(bitmap: Bitmap)
-        fun onCameraImageSaved(file: File)
-        fun onCameraCancelled()
+        fun onCameraImageTaken(jpeg: ByteArray)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (savedInstanceState == null) {
+        }
+
+        this.toolbarHidden = true
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.fragment_camera, container)
-    }
+    /** Can be overriden to add an overlay view to the camera screen */
+    open fun onCreateOverlayView() { }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+            inflater.inflate(R.layout.fragment_camera, container, false)
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        this.uxProgressContainer.visibility = View.VISIBLE
+
         this.uxCameraView.setJpegQuality(100)
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
-        this.uxCameraView.setFlash(CameraKit.Constants.FLASH_AUTO)
+        this.uxCameraView.setFlash(CameraKit.Constants.FLASH_OFF)
         this.uxCameraView.setCameraListener(object : CameraListener() {
-            override fun onPictureTaken(picture: ByteArray?) {
-                super.onPictureTaken(picture)
-                // Create a bitmap
-                bitmap = BitmapFactory.decodeByteArray(picture, 0, picture!!.size)
-                this@CameraFragment.actionItems = actionItemCapture
-                this@CameraFragment.uxContainer.visibility = View.GONE
+
+            override fun onPictureTaken(picture: ByteArray) {
+                log.trace("PICTURE TAKEN WITH SIZE [${picture.size}]")
+
+                this@CameraFragment.view?.post {
+                    this@CameraFragment.pictureJpeg = picture
+
+                    this@CameraFragment.uxProgressContainer.visibility = View.INVISIBLE
+
+                    // Create a bitmap
+                    this@CameraFragment.uxPreviewImage.imageBitmap = BitmapFactory.decodeByteArray(picture, 0, picture.size)
+                    this@CameraFragment.showImageActions()
+                }
+            }
+
+            override fun onCameraOpened() {
+                log.trace("CAMERA OPENED")
+                this@CameraFragment.uxProgressContainer.post {
+                    this@CameraFragment.uxProgressContainer.visibility = View.INVISIBLE
+                }
+            }
+
+            override fun onCameraClosed() {
+                log.trace("CAMERA CLOSED")
             }
         })
+
+        Observable.fromCallable {
+            log.trace("STARTING CAMERA")
+            this.uxCameraView.start()
+        }
+                .subscribeOn(executor = this.executorService)
+                .subscribe()
     }
 
     override fun onResume() {
         super.onResume()
 
-        this.uxCameraView.start()
+        this.showCaptureActions()
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it) {
                         R.id.action_camera_trigger -> {
-                            this.uxCameraView.captureImage()
+                            // Hide trigger button
+                            this.actionItems = this.actionItems.apply {
+                                first { it.id == R.id.action_camera_trigger }
+                                        .visible = false
+                            }
+
+                            // Show activity indicator, as capture will take a short while
+                            this.uxProgressContainer.visibility = View.VISIBLE
+
+                            this.sounds.playCameraClick()
+
+                            Observable.fromCallable {
+                                this@CameraFragment.uxCameraView.captureImage()
+                            }
+                                    .subscribeOn(executor = executorService)
+                                    .subscribe()
                         }
 
                         R.id.action_camera_flash -> {
-
+                            // TODO: implement torch mode support in CameraKit
+                            //this.uxCameraView.setFlash(CameraKit.Constants.FLASH_TORCH)
                         }
 
                         R.id.action_camera_discard -> {
-
+                            this.showCaptureActions()
                         }
 
                         R.id.action_camera_save -> {
-                            if (order == null && parcel == null)
-                                this@CameraFragment.listener?.onCameraImageTaken(bitmap!!)
-                            else
-                                saveImage(bitmap!!)
+                            this@CameraFragment.listener?.onCameraImageTaken(this.pictureJpeg!!)
+                            this@CameraFragment.activity.supportFragmentManager.popBackStack()
                         }
                     }
                 }
     }
 
-    fun saveImage(bitmap: Bitmap) {
-        val filename = "${type?.name}_${if (order == null) "PARCEL-${parcel?.id}" else "ORDER-${order?.id}"}_${Date().time}.jpg"
-        val file: File = File(storage.imageDir, filename)
-        val os = BufferedOutputStream(FileOutputStream(file))
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, os)
-        os.close()
+    override fun onDestroyView() {
+        this.uxCameraView.stop()
+        super.onDestroyView()
+    }
 
-        this@CameraFragment.listener?.onCameraImageSaved(file = file)
+    private fun showCaptureActions() {
+        this.uxPreviewImage.visibility = View.GONE
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_camera_trigger,
+                        iconRes = android.R.drawable.ic_menu_camera,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary
+                )
+
+                // Disabled flash control for now. AUTO should be ok. TORCH requires some work
+                // as it's not available via CameraKit.
+//                ,ActionItem(
+//                        id = R.id.action_camera_flash,
+//                        iconRes = R.drawable.ic_flash,
+//                        iconTintRes = android.R.color.white,
+//                        colorRes = R.color.colorDarkGrey,
+//                        alignEnd = false
+//                )
+        )
+    }
+
+    private fun showImageActions() {
+        this.uxPreviewImage.visibility = View.VISIBLE
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_camera_save,
+                        iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary
+                ),
+                ActionItem
+                (
+                        id = R.id.action_camera_discard,
+                        iconRes = R.drawable.ic_circle_cancel,
+                        iconTintRes = android.R.color.black,
+                        colorRes = R.color.colorAccent,
+                        alignEnd = false
+                )
+        )
     }
 }

@@ -312,6 +312,11 @@ dependencies {
             "org.jetbrains.anko:anko-appcompat-v7:$v_anko",
 
             // Camera
+
+            // Google's cameraview, has torch, lacks threaded intialization (freezes UI for seconds when initialized)
+            //"com.github.google:cameraview:3eaeac0",
+
+            // Fork of google's cameraview, has threaded init, lacks torch
             "com.flurgle:camerakit:0.9.18",
 
             // Coroutine listeners for Anko Layouts

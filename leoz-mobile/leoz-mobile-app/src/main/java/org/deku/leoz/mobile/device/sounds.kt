@@ -25,8 +25,6 @@ class Sounds(private val context: Context) {
                 .build()
 
         cameraSoundId = soundPool.load(context, R.raw.sound_camera_click, 0);
-
-        // Ideally we'd wait here for soundpool having loaded all sounds entirely
     }
 
     private fun playSoundWithId(id: Int) {
