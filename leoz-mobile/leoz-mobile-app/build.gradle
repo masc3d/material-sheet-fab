@@ -67,7 +67,7 @@ android {
         applicationId "org.deku.leoz.mobile"
         targetSdkVersion 26
         versionCode 1
-        versionName "0.47-ALPHA"
+        versionName "0.48-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -349,10 +349,6 @@ dependencies {
             "net.cachapa.expandablelayout:expandablelayout:2.9.1"
     )
 
-    provided(
-            "com.google.auto.value:auto-value:$v_autovalue"
-    )
-
     debugCompile(
             // Stetho
             "com.facebook.stetho:stetho:$v_stetho",
@@ -380,7 +376,6 @@ dependencies {
     kapt(
             "org.parceler:parceler:$v_parceler",
             "com.android.databinding:compiler:2.3.3",
-            "com.google.auto.value:auto-value:$v_autovalue",
     )
 }
 
