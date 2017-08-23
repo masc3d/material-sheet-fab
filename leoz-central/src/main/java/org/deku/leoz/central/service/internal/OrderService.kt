@@ -191,6 +191,7 @@ class OrderService : OrderService {
         p.parcelType = ParcelType.valueMap.getValue(r.parcelType)
         p.lastDeliveryListId = r.lastDeliveryListId.toInt()
         p.isDelivered = r.deliveredStatus.toInt() == 4
+        p.isMissing = r.deliveredStatus.toInt() == 8 && r.lastDeliveredEventReason.toInt() == 30
         p.dimension.weight = r.dimentionWeight
         p.dimension.height = r.dimensionHeight.toInt()
         p.dimension.length = r.dimensionLength.toInt()

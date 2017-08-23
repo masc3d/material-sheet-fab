@@ -165,9 +165,10 @@ interface OrderService {
                 @get:ApiModelProperty(position = 60, required = true, value = "ParcelDimension")
                 var dimension: ParcelDimension = Parcel.ParcelDimension(),
                 @get:ApiModelProperty(position = 70, required = true, value = "is Delivered")
-                var isDelivered: Boolean = false
-        )
-        {
+                var isDelivered: Boolean = false,
+                @get:ApiModelProperty(position = 80, required = true, value = "is Missing")
+                var isMissing: Boolean = false
+        ) {
             @ApiModel(value = "ParcelDimentions", description = "Parcel dementions and weight")
             data class ParcelDimension(
                     @ApiModelProperty(dataType = "double", example = "10", position = 10, required = false, value = "length")
