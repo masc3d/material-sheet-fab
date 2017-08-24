@@ -108,8 +108,9 @@ class DeliveryStop(
     private val stopParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Delivery stop parcels",
             query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.ORDER_ID.`in`(this.entity.tasks.map { it.order.id }))
-                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
+                    .join(OrderTaskEntity::class)
+                    .on(OrderTaskEntity.STOP_ID.eq(this.entity.id))
+                    .and(OrderTaskEntity.ORDER_ID.eq(ParcelEntity.ORDER_ID))
                     .get()
     )
             .bind(this)
@@ -117,14 +118,24 @@ class DeliveryStop(
     /** Observable stop */
     val stop = stopQuery.result.map { it.value.first() }
             .behave(this)
-    
+
     /**
      * All parcels of this stop. Also includes missing parcels
      * As requery has the shortcoming of not firing self observable queries via joins, have to merge manually
      * */
     val parcels = Observable.merge(
-            this.stopParcelsQuery.result.map { it.value },
-            this.stopOrderTasksQuery.result.map { it.value.flatMap { it.order.parcels.map { it as ParcelEntity } }.distinct() }
+            this.stopParcelsQuery.result.map {
+                it.value.sortedByDescending { it.modificationTime }
+            },
+
+            this.stopOrderTasksQuery.result.map {
+                it.value.flatMap {
+                    it.order.parcels
+                            .sortedBy { it.modificationTime }
+                            .map { it as ParcelEntity }
+                }
+                        .distinct()
+            }
     )
             .behave(this)
 
