@@ -131,7 +131,7 @@ class DeliveryStop(
             this.stopOrderTasksQuery.result.map {
                 it.value.flatMap {
                     it.order.parcels
-                            .sortedBy { it.modificationTime }
+                            .sortedByDescending { it.modificationTime }
                             .map { it as ParcelEntity }
                 }
                         .distinct()
