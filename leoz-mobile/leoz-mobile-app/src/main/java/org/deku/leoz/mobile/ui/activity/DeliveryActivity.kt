@@ -83,8 +83,8 @@ class DeliveryActivity : Activity(),
         log.debug("Checking for changelog dialog. Current version [$currentVersionNumber] Recently saved version [$savedVersionNumber]")
 
         if (currentVersionNumber > savedVersionNumber) {
-            // TODO: disabled changelog until finalized
-            if (BuildConfig.DEBUG) {
+            // TODO: disabled changelog until finalized | phpr: enabled while piloting alpha though
+            if (BuildConfig.DEBUG || true) {
                 showChangelogDialog()
 
                 val editor = sharedPreferences.edit()
@@ -98,11 +98,11 @@ class DeliveryActivity : Activity(),
     fun showChangelogDialog() {
         val entries = listOf(
                 ChangelogItem(
-                        date = Date(1498255200),
-                        version = "0.15-SNAPSHOT",
+                        date = Date(1503612000),
+                        version = "0.58-SNAPSHOT",
                         entries = ChangelogItem.ChangelogEntry(
-                                title = "Performance update",
-                                description = "We improved the app performance to provide you an better user experience."
+                                title = "Fehlerkorrektur & Foto",
+                                description = "Die Zustellung mehrerer Stops zugleich ist nun möglich. \"Beschädigt\" Scannung in der Fahrzeugverladung erfasst nun Fotos."
                         )
                 )
         )
