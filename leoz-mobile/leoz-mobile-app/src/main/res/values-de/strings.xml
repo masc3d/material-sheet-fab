@@ -10,8 +10,11 @@
     <string name="authority">Behörde</string>
 
     <string name="back">Zurück</string>
+    <string name="back_choose_new_delivery_options">Zurück, neue Zustelloption wählen</string>
 
     <string name="barcode_label">Barcode Label</string>
+
+    <string name="call">Anrufen</string>
 
     <string name="cancel">Abbrechen</string>
     <string name="cancel_process">Prozess abbrechen</string>
@@ -27,12 +30,12 @@
 
     <string name="clear">Leeren</string>
 
+    <string name="close">Schließen</string>
+
     <string name="contact">Kontakt</string>
 
     <string name="continue_text">Fortfahren</string>
     <string name="continue_without">Ohne fortfahren</string>
-
-    <string name="orders">Aufträge</string>
 
     <string name="delivered">Zugestellt</string>
 
@@ -46,7 +49,9 @@
     <string name="device_check_instruction_to_continue">Es ist nicht gestattet mit den Auftrag fortzufahren, ohne die Prüfung abzuschließen.</string>
     <string name="device_check_instructions">Sie haben 3 versuche den korrekten Code einzugeben. Schlagen alle fehl, ist der Auftrag fehlgeschlagen.</string>
 
+    <string name="dialog_content_stop_merge">Möchten Sie diesen Stop zusammenführen?</string>
     <string name="dialog_text_missing_signature">Es wurde keine Unterschrift gegeben. Hat der Kunde auf Papier unterschrieben?</string>
+    <string name="dialog_title_event_selection">Event Auswahl</string>
 
     <string name="dismiss">Verwerfen</string>
 
@@ -70,8 +75,10 @@
     <string name="error_invalid_credentials">Email &amp; Passwort Kombination konnte nicht gefunden werden.</string>
     <string name="error_invalid_delivery_list">Ungültige Rollkarte</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
+    <string name="error_invalid_parcel">Ungültiges Paket</string>
     <string name="error_invalid_password">Das Passwort ist zu kurz</string>
     <string name="error_no_corresponding_order">Kein zugehöriger Auftrag gefunden</string>
+    <string name="error_no_corresponding_stop">Kein zugehöriger Stop gefunden</string>
 
     <string name="event_reason_absent">Kunde abwesend</string>
     <string name="event_reason_address_wrong">Falsche Adresse</string>
@@ -145,6 +152,8 @@
     <string name="order_not_on_delivery_list">Auftrag nicht auf Rollkarte</string>
     <string name="order_not_on_delivery_list_confirmation">Zugehörigen Auftrag speichern?</string>
 
+    <string name="orders">Aufträge</string>
+
     <string name="parcel_damaged">Paket beschädigt</string>
     <string name="parcel_missing">Paket fehlt</string>
 
@@ -154,6 +163,7 @@
 
     <string name="pending">Ausstehend</string>
 
+    <string name="please_sign_here">Bitte hier unterschreiben</string>
     <string name="please_wait">Bitte warten</string>
 
     <string name="prompt_password">Passwort (optional)</string>
@@ -163,6 +173,9 @@
 
     <string name="question_remove_damaged_status">Beschädigt-Status entfernen?</string>
     <string name="question_remove_damaged_status_title">Paket wurde als beschädigt gekennzeichnet</string>
+
+    <string name="recipient">Empfänger</string>
+    <string name="recipient_dialog_content">Wer hat die Sendung(en) angenommen?</string>
 
     <string name="report_bug">Fehler melden</string>
 
@@ -174,6 +187,13 @@
     <string name="service_fair">Messeservice</string>
     <string name="service_fixed">Fixtermin</string>
     <string name="service_ident_contract">Ident Vertragsservice</string>
+    <string name="service_message_documented_personal_delivery">Achtung: Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
+    <string name="service_message_ident_contract">Bitte überprüfen Sie zusammen mit dem Kunden den beiliegendne Vertrag, lassen Sie diesen unterschreiben und führen Sie ihn zurück</string>
+    <string name="service_message_package_recirculation">Bitte führen Sie die Verpackung zurück. Zustellung sonst nicht erlaubt!</string>
+    <string name="service_message_receipt_acknowledgement">Achtung: Füllen Sie die beiliegende EB aus.</string>
+    <string name="service_message_security_return">Tauschgerät erforderlich! Bitte prüfen Sie die IMEI Nummer des Gerätes</string>
+    <string name="service_message_submission">Achtung, Submissionsteilnahme! [AHB einfügen]</string>
+    <string name="service_message_xchange">Tauschobjekt erforderlich! Zustellung nur bei Tausch</string>
     <string name="service_no_alternative">Keine Alternativzustellung</string>
     <string name="service_packaging_recirculation">Verpackungsrückführung</string>
     <string name="service_phone_receipt">Tel. Empfangsbestätigung</string>
@@ -183,8 +203,12 @@
     <string name="service_selfpickup">Selbstabholung</string>
     <string name="service_submission">Submissionsteilnahme</string>
     <string name="service_suitcase">Kofferversand</string>
+    <string name="service_valuables">Valoren</string>
 
     <string name="services">Services</string>
+
+    <string name="signature_conclusion">Ich quittiere den Empfang von\nAufträge: %1$s\nPakete: %2$s\nEmpfänger: %3$s</string>
+    <string name="signature_signed_by_name">Name: %s</string>
 
     <string name="signed_on_paper">Unters. auf Papier</string>
 
@@ -197,14 +221,21 @@
     <string name="submit">Absenden</string>
 
     <string name="title_activity_delivery">Zustellung</string>
+    <string name="title_alternativedelivery">Alternative delivery</string>
+    <string name="title_cash_collection">Nachnahme</string>
+    <string name="title_confirm_call">Anruf bestätigen</string>
     <string name="title_missing_signature">Unterschrift fehlt</string>
     <string name="title_specify_deliverylist">Geben Sie eine Rollkarten an</string>
     <string name="title_stop_detailt">Stop Details</string>
+    <string name="title_stop_list">Stops</string>
+    <string name="title_stop_merge">Stops zusammenführen</string>
     <string name="title_stop_process">Zustellung</string>
 
     <string name="to_neighbour">An Nachbar</string>
     <string name="to_postbox">An Briefkasten</string>
     <string name="to_recipient">An Empfänger</string>
+
+    <string name="unknown">Unbekannt</string>
 
     <string name="update">Aktualisieren</string>
 
@@ -222,31 +253,4 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="error_no_corresponding_stop">Kein zugehöriger Stop gefunden</string>
-    <string name="unknown">Unbekannt</string>
-    <string name="error_invalid_parcel">Ungültiges Paket</string>
-    <string name="recipient">Empfänger</string>
-    <string name="recipient_dialog_content">Wer hat die Sendung(en) angenommen?</string>
-    <string name="close">Schließen</string>
-    <string name="title_stop_list">Stops</string>
-    <string name="call">Anrufen</string>
-    <string name="title_confirm_call">Anruf bestätigen</string>
-    <string name="service_valuables">Valoren</string>
-    <string name="dialog_title_event_selection">Event Auswahl</string>
-    <string name="please_sign_here">Bitte hier unterschreiben</string>
-    <string name="back_choose_new_delivery_options">Zurück, neue Zustelloption wählen</string>
-    <string name="signature_conclusion">Ich quittiere den Empfang von\nAufträge: %1$s\nPakete: %2$s\nEmpfänger: %3$s</string>
-    <string name="signature_signed_by_name">Name: %s</string>
-    <string name="title_cash_collection">Nachnahme</string>
-    <string name="service_message_receipt_acknowledgement">Achtung: Füllen Sie die beiliegende EB aus.</string>
-    <string name="service_message_submission">Achtung, Submissionsteilnahme! [AHB einfügen]</string>
-    <string name="service_message_xchange">Tauschobjekt erforderlich! Zustellung nur bei Tausch</string>
-    <string name="service_message_security_return">Tauschgerät erforderlich! Bitte prüfen Sie die IMEI Nummer des Gerätes</string>
-    <string name="service_message_package_recirculation">Bitte führen Sie die Verpackung zurück. Zustellung sonst nicht erlaubt!</string>
-    <string name="service_message_ident_contract">Bitte überprüfen Sie zusammen mit dem Kunden den beiliegendne Vertrag, lassen Sie diesen unterschreiben und führen Sie ihn zurück</string>
-    <string name="service_message_documented_personal_delivery">Achtung: Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
-    <string name="not_loaded">Nicht beladen</string>
-    <string name="title_alternativedelivery">Alternative delivery</string>
-    <string name="title_stop_merge">Stops zusammenführen</string>
-    <string name="dialog_content_stop_merge">Möchten Sie diesen Stop zusammenführen?</string>
 </resources>
