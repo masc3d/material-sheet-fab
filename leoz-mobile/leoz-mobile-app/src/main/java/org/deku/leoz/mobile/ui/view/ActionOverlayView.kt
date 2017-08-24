@@ -6,8 +6,9 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.IdRes
 import android.support.annotation.StyleRes
 import android.support.design.widget.FloatingActionButton
+import android.support.transition.Explode
+import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.AttributeSet
 import android.view.Menu
 import android.view.View
@@ -16,14 +17,13 @@ import org.deku.leoz.mobile.R
 import android.view.Gravity
 import android.support.v7.view.ContextThemeWrapper
 import android.widget.FrameLayout
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import com.gordonwong.materialsheetfab.DimOverlayFrameLayout
 import com.gordonwong.materialsheetfab.MaterialSheetFab
 import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener
 import io.reactivex.Observable
-import io.reactivex.functions.Predicate
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_actionoverlay.view.*
 import kotlinx.android.synthetic.main.view_actionoverlay_sheet.view.*
@@ -31,8 +31,10 @@ import kotlinx.android.synthetic.main.view_actionoverlay_sheet_item.view.*
 import org.jetbrains.anko.itemsSequence
 import org.jetbrains.anko.layoutInflater
 import org.slf4j.LoggerFactory
+import sx.android.rx.observeOnMainThread
 import sx.android.view.setBackgroundTint
 import sx.android.view.setIconTint
+import java.util.concurrent.TimeUnit
 
 /**
  * Action overlay item/floating button
@@ -119,14 +121,26 @@ class ActionOverlayView : RelativeLayout {
     /** Default button alpha */
     var buttonAlpha: Float = 1.0F
 
+    private val itemsSubject = PublishSubject.create<List<ActionItem>>()
+    private val backpressuredItems = itemsSubject
+            .debounce(50, TimeUnit.MILLISECONDS)
+
     /**
      * Action items
      */
     var items: List<ActionItem> = listOf()
         set(value) {
             field = value
+            this.itemsSubject.onNext(value)
+        }
+
+    init {
+        this.backpressuredItems
+                .observeOnMainThread()
+                .subscribe {
             this.update()
         }
+    }
 
     /**
      * Registers to the material sheet fab's event handler and returns a subject reflecting those events
@@ -217,6 +231,10 @@ class ActionOverlayView : RelativeLayout {
 
     fun update() {
         val updateImpl = {
+            TransitionManager.beginDelayedTransition(uxActionOverlayContainer, Explode().apply {
+                duration = 200
+            })
+
             // Remove fabs
             this.uxActionOverlayContainerStart.removeAllViews()
             this.uxActionOverlayContainerEnd.removeAllViews()
