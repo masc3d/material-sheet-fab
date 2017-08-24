@@ -34,8 +34,6 @@
 
     <string name="orders">Aufträge</string>
 
-    <string name="damaged">Beschädigt</string>
-
     <string name="delivered">Zugestellt</string>
 
     <string name="delivery">Zustellung</string>
@@ -78,7 +76,7 @@
     <string name="event_reason_absent">Kunde abwesend</string>
     <string name="event_reason_address_wrong">Falsche Adresse</string>
     <string name="event_reason_could_want_not_pay">Keine Bezahlung</string>
-    <string name="event_reason_damaged">Paket beschädigt</string>
+    <string name="event_reason_damaged">Beschädigt</string>
     <string name="event_reason_moved">Kunde umgezogen</string>
     <string name="event_reason_no_ident_doc">Kein Ausweis</string>
     <string name="event_reason_pin_imei_wrong">PIN / IMEI falsch</string>
@@ -248,8 +246,6 @@
     <string name="service_message_ident_contract">Bitte überprüfen Sie zusammen mit dem Kunden den beiliegendne Vertrag, lassen Sie diesen unterschreiben und führen Sie ihn zurück</string>
     <string name="service_message_documented_personal_delivery">Achtung: Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
     <string name="not_loaded">Nicht beladen</string>
-    <string name="to_be_loaded">Zu beladen</string>
     <string name="deliveryscanning">Zustellscannung</string>
-    <string name="to_be_scanned">Noch zu scannen</string>
     <string name="title_alternativedelivery">Alternative delivery</string>
 </resources>

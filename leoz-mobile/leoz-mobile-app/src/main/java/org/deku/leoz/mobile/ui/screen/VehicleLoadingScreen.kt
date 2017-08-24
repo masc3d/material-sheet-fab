@@ -4,6 +4,7 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.LayoutInflater
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
@@ -24,6 +25,7 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ItemParcelBinding
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
@@ -40,6 +42,7 @@ import org.deku.leoz.mobile.ui.composeAsRest
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.DekuDeliveryListNumber
+import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.assertAny
 import org.deku.leoz.service.entity.ShortDate
@@ -60,8 +63,10 @@ import java.util.concurrent.ExecutorService
 /**
  * Vehicle loading screen
  */
-class VehicleLoadingScreen : ScreenFragment<Any>() {
-
+class VehicleLoadingScreen :
+        ScreenFragment<Any>(),
+        BaseCameraScreen.Listener
+{
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
@@ -120,6 +125,9 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
 
+    /** The current/most recently selected damaged parcel */
+    private var currentDamagedParcel: ParcelEntity? = null
+
     // region Sections
     val loadedSection by lazy {
         SectionViewModel<ParcelEntity>(
@@ -136,7 +144,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 icon = R.drawable.ic_damaged,
                 color = R.color.colorAccent,
                 background = R.drawable.section_background_accent,
-                title = this.getText(org.deku.leoz.model.EventNotDeliveredReason.DAMAGED.mobile.text!!).toString(),
+                title = this.getString(R.string.event_reason_damaged),
                 items = this.deliveryList.damagedParcels.map { it.value }
         )
     }
@@ -148,7 +156,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
-                title = getString(R.string.to_be_loaded),
+                title = getString(R.string.pending),
                 items = this.deliveryList.pendingParcels.map { it.value }
         )
     }
@@ -160,7 +168,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
-                title = getString(R.string.not_loaded),
+                title = getString(R.string.missing),
                 items = this.deliveryList.missingParcels.map { it.value }
         )
     }
@@ -182,7 +190,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
             : FlexibleSectionableVmItem<ParcelViewModel> {
 
         return FlexibleSectionableVmItem(
-                view = R.layout.item_parcel,
+                view = R.layout.item_parcel_card,
                 variable = BR.parcel,
                 viewModel = ParcelViewModel(this)
         )
@@ -286,6 +294,8 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
 
     override fun onResume() {
         super.onResume()
+
+        this.currentDamagedParcel = null
 
         aidcReader.decoders.set(
                 Interleaved25Decoder(true, 6, 12),
@@ -545,7 +555,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                 onNext = { order ->
                                     tones.beep()
 
-                                    fun onConfirmed() {
+                                    fun mergeOrder() {
                                         this.deliveryList
                                                 .mergeOrder(order)
                                                 .observeOnMainThread()
@@ -563,7 +573,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                     }
 
                                     if (this.deliveryList.ids.get().isEmpty()) {
-                                        onConfirmed()
+                                        mergeOrder()
                                     } else {
                                         MaterialDialog.Builder(this.activity)
                                                 .title(R.string.order_not_on_delivery_list)
@@ -571,7 +581,7 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                                 .positiveText(android.R.string.yes)
                                                 .negativeText(android.R.string.no)
                                                 .onPositive { _, _ ->
-                                                    onConfirmed()
+                                                    mergeOrder()
                                                 }
                                                 .build().show()
                                     }
@@ -605,19 +615,23 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
                                 this.aidcReader.enabled = true
                             }
                             .onPositive { _, _ ->
+                                // Removed damaged parcel status
                                 parcel.isDamaged = false
+
                                 this.parcelRepository.update(parcel)
                                         .subscribeOn(Schedulers.computation())
                                         .subscribe()
                             }
                             .show()
                 } else {
-                    // TODO take photo
-                    parcel.isDamaged = true
+                    this.currentDamagedParcel = parcel
 
-                    this.parcelRepository.update(parcel)
-                            .subscribeOn(Schedulers.computation())
-                            .subscribe()
+                    /** Show camera screen */
+                    this.activity.showScreen(DamagedParcelCameraScreen().apply {
+                        parameters = DamagedParcelCameraScreen.Parameters(
+                                parcelId = parcel.id
+                        )
+                    })
                 }
             }
             else -> {
@@ -651,6 +665,19 @@ class VehicleLoadingScreen : ScreenFragment<Any>() {
 
                 this.parcelListAdapter.selectedSection = loadedSection
             }
+        }
+    }
+
+    override fun onCameraImageTaken(jpeg: ByteArray) {
+        this.currentDamagedParcel?.also { parcel ->
+            log.trace("Image for damaged parcel [${parcel}]")
+            // TODO: store/send image
+
+            parcel.isDamaged = true
+
+            this.parcelRepository.update(parcel)
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe()
         }
     }
 }

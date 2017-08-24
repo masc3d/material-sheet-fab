@@ -122,7 +122,7 @@ class DeliveryStopProcessScreen :
                 icon = R.drawable.ic_delivery,
                 color = R.color.colorGreen,
                 background = R.drawable.section_background_green,
-                title = getString(R.string.deliveryscanning),
+                title = getString(R.string.delivered),
                 items = this.deliveryStop.deliveredParcels
         )
     }
@@ -133,7 +133,7 @@ class DeliveryStopProcessScreen :
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
-                title = getString(R.string.to_be_scanned),
+                title = getString(R.string.pending),
                 items = this.deliveryStop.pendingParcels
         )
     }
@@ -192,7 +192,7 @@ class DeliveryStopProcessScreen :
             : FlexibleSectionableVmItem<ParcelViewModel> {
 
         return FlexibleSectionableVmItem(
-                view = R.layout.item_parcel,
+                view = R.layout.item_parcel_card,
                 variable = BR.parcel,
                 viewModel = ParcelViewModel(this, showOrderTask = false)
         )
@@ -556,7 +556,7 @@ class DeliveryStopProcessScreen :
 
     private fun closeStop(reason: EventDeliveredReason) {
         //TODO: To be "managed" by a/the model
-        val serviceList: List<MaterialDialog>? = delivery?.activeStop?.services?.filter { it.mobile.ackMessage != null }?.map {
+        val serviceList: List<MaterialDialog>? = delivery.activeStop?.services?.filter { it.mobile.ackMessage != null }?.map {
             MaterialDialog.Builder(context)
                     .content(this.getString(it.mobile.ackMessage!!))
                     .cancelable(false)

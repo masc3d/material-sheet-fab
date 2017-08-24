@@ -1,7 +1,9 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
+import android.support.annotation.DrawableRes
 import android.view.View
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.model.UnitNumber
 import sx.format.format
@@ -14,6 +16,8 @@ import java.util.*
  */
 class ParcelViewModel(
         val parcel: Parcel,
+        @DrawableRes val parcelIcon: Int = R.drawable.ic_package_variant_closed,
+        val showDimensions: Boolean = true,
         val showOrderTask: Boolean = true
 ) : BaseObservable() {
 
@@ -43,6 +47,9 @@ class ParcelViewModel(
     val orderTask by lazy {
         OrderTaskViewModel(orderTask = parcel.order.deliveryTask)
     }
+
+    val dimensionsVisibility
+        get() = if (this.showDimensions) View.VISIBLE else View.GONE
 
     val orderTaskVisbility
         get() = if (this.showOrderTask) View.VISIBLE else View.GONE
