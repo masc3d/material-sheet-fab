@@ -5,9 +5,6 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.TblstatusRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
-import org.deku.leoz.model.AdditionalInfo
-import org.deku.leoz.model.Event
-import org.deku.leoz.model.Reason
 import org.deku.leoz.node.rest.DefaultProblem
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -24,7 +21,6 @@ import java.text.SimpleDateFormat
 import javax.inject.Inject
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.jooq.Routines
-import org.deku.leoz.model.counter
 import org.deku.leoz.node.Storage
 import org.deku.leoz.time.toShortTime
 import org.springframework.transaction.annotation.Transactional
@@ -41,6 +37,10 @@ import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
 import org.apache.batik.transcoder.*
+import org.deku.leoz.model.*
+import org.deku.leoz.time.toDateOnlyTime
+import org.deku.leoz.time.toDateWithoutTime
+import org.deku.leoz.time.toString_ddMMyyyy_PointSeparated
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -232,7 +232,7 @@ open class ParcelServiceV1 :
                     }
                     r.text = recipientInfo.toString()
                     if (signature != null) {
-                        val sigPath = saveImage(it.time, "SB", signature, parcelScan, message.nodeId, mimetype)
+                        val sigPath = saveImage(it.time, Location.SB, signature, parcelScan, message.nodeId, mimetype, Location.SB_Original)
                         if (sigPath != "")
                             parcelRecord.bmpfilename = sigPath
                     }
@@ -276,11 +276,14 @@ open class ParcelServiceV1 :
                     if (orderRecord.dtauslieferdatum == null) {
                         oldDeliveryDate = ""
                     } else {
-                        oldDeliveryDate = SimpleDateFormat("dd.MM.yyyy").format(orderRecord.dtauslieferdatum)
+                        //oldDeliveryDate = SimpleDateFormat("dd.MM.yyyy").format(orderRecord.dtauslieferdatum)
+                        oldDeliveryDate = orderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
                     }
                     val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
-                    val deliveryTime = SimpleDateFormat("yyyy-MM-dd HH:mm").parse("1899-12-30 " + (it.time.toShortTime().toString()))
-                    val deliveryDate = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
+                    //val deliveryTime = SimpleDateFormat("yyyy-MM-dd HH:mm").parse("1899-12-30 " + (it.time.toShortTime().toString()))
+                    val deliveryTime = it.time.toDateOnlyTime()
+                    //val deliveryDate = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
+                    val deliveryDate = it.time.toDateWithoutTime()
 
                     orderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
                     orderRecord.dtauslieferzeit = deliveryTime.toTimestamp()
@@ -299,7 +302,8 @@ open class ParcelServiceV1 :
 
                         }
                         //if (oldDeliveryDate != it.time.toTimestamp().toLocalDate().toString()) {
-                        if (oldDeliveryDate != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                        //if (oldDeliveryDate != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                        if (oldDeliveryDate != it.time.toString_ddMMyyyy_PointSeparated()) {
 
 
                             fieldHistoryRepository.addEntry(
@@ -307,7 +311,7 @@ open class ParcelServiceV1 :
                                     unitNo = parcelRecord.colliebelegnr,
                                     fieldName = "dtauslieferdatum",
                                     oldValue = oldDeliveryDate,
-                                    newValue = SimpleDateFormat("dd.MM.yyyy").format(it.time),
+                                    newValue = it.time.toString_ddMMyyyy_PointSeparated(), //SimpleDateFormat("dd.MM.yyyy").format(it.time),
                                     changer = "I",
                                     point = "IM"
                             )
@@ -318,7 +322,8 @@ open class ParcelServiceV1 :
 
                     if (from != null) {
                         if (from.equals("956") || from.equals("935"))
-                            if (parcelScan.startsWith("10071")) {
+                            if (UnitNumber.parse(parcelScan).value.type == UnitNumber.Type.Bag) {
+                                //if (parcelScan.startsWith("10071")) {
                                 val unitInBagUnitRecords = parcelRepository.findUnitsInBagByBagUnitNumber(parcelNo)
                                 if (unitInBagUnitRecords != null) {
                                     unitInBagUnitRecords.forEach {
@@ -388,7 +393,8 @@ open class ParcelServiceV1 :
                                             if (unitInBagOrderRecord.dtauslieferdatum == null) {
                                                 unitInBagOldDeliveryDate = ""
                                             } else {
-                                                unitInBagOldDeliveryDate = SimpleDateFormat("dd.MM.yyyy").format(unitInBagOrderRecord.dtauslieferdatum)
+                                                //unitInBagOldDeliveryDate = SimpleDateFormat("dd.MM.yyyy").format(unitInBagOrderRecord.dtauslieferdatum)
+                                                unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
                                             }
                                             val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
 
@@ -410,7 +416,8 @@ open class ParcelServiceV1 :
                                                     )
                                                 }
                                                 //if (unitInBagOldDeliveryDate != deliveryDate.toTimestamp().toLocalDate().toString()) {
-                                                if (unitInBagOldDeliveryDate != SimpleDateFormat("dd.MM.yyyy").format(deliveryDate)) {
+                                                //if (unitInBagOldDeliveryDate != SimpleDateFormat("dd.MM.yyyy").format(deliveryDate)) {
+                                                if (unitInBagOldDeliveryDate != deliveryDate.toString_ddMMyyyy_PointSeparated()) {
 
 
                                                     fieldHistoryRepository.addEntry(
@@ -418,7 +425,7 @@ open class ParcelServiceV1 :
                                                             unitNo = it.colliebelegnr,
                                                             fieldName = "dtauslieferdatum",
                                                             oldValue = unitInBagOldDeliveryDate,
-                                                            newValue = SimpleDateFormat("dd.MM.yyyy").format(deliveryDate),
+                                                            newValue = deliveryDate.toString_ddMMyyyy_PointSeparated(), //SimpleDateFormat("dd.MM.yyyy").format(deliveryDate),
                                                             changer = "I",
                                                             point = "IM"
                                                     )
@@ -519,19 +526,21 @@ open class ParcelServiceV1 :
                     if (parcelRecord.dteingangdepot2 == null) {
                         oldValue = ""
                     } else {
-                        oldValue = SimpleDateFormat("dd.MM.yyyy").format(parcelRecord.dteingangdepot2)
+                        //oldValue = SimpleDateFormat("dd.MM.yyyy").format(parcelRecord.dteingangdepot2)
+                        oldValue = parcelRecord.dteingangdepot2.toString_ddMMyyyy_PointSeparated()
                     }
-                    val importDate = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
+                    val importDate = it.time.toDateWithoutTime()//SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
                     parcelRecord.dteingangdepot2 = importDate.toTimestamp()// it.time.toTimestamp()
                     if (parcelRecord.store() > 0) {
-                        if (oldValue != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                        //if (oldValue != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                        if (oldValue != it.time.toString_ddMMyyyy_PointSeparated()) {
 
                             fieldHistoryRepository.addEntry(
                                     orderId = parcelRecord.orderid,
                                     unitNo = parcelRecord.colliebelegnr,
                                     fieldName = "dteingangdepot2",
                                     oldValue = oldValue,
-                                    newValue = SimpleDateFormat("dd.MM.yyyy").format(it.time),
+                                    newValue = it.time.toString_ddMMyyyy_PointSeparated(), //SimpleDateFormat("dd.MM.yyyy").format(it.time),
                                     changer = "SP",
                                     point = "IM"
                             )
@@ -577,23 +586,25 @@ open class ParcelServiceV1 :
                                 }
 
                             }
-                            val depotOutDate = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
+                            val depotOutDate = it.time.toDateWithoutTime()//SimpleDateFormat("yyyy-MM-dd HH:mm").parse(it.time.toLocalDate().toString() + (" 00:00"))
                             val oldDepotOut: String
                             if (parcelRecord.dtausgangdepot2 == null) {
                                 oldDepotOut = ""
                             } else {
-                                oldDepotOut = SimpleDateFormat("dd.MM.yyyy").format(parcelRecord.dtausgangdepot2)
+                                //oldDepotOut = SimpleDateFormat("dd.MM.yyyy").format(parcelRecord.dtausgangdepot2)
+                                oldDepotOut = parcelRecord.dtausgangdepot2.toString_ddMMyyyy_PointSeparated()
                             }
                             parcelRecord.dtausgangdepot2 = depotOutDate.toTimestamp()
                             if (parcelRecord.store() > 0) {
-                                if (oldDepotOut != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                                //if (oldDepotOut != SimpleDateFormat("dd.MM.yyyy").format(it.time)) {
+                                if (oldDepotOut != it.time.toString_ddMMyyyy_PointSeparated()) {
 
                                     fieldHistoryRepository.addEntry(
                                             orderId = parcelRecord.orderid,
                                             unitNo = parcelRecord.colliebelegnr,
                                             fieldName = "dtausgangdepot2",
                                             oldValue = oldDepotOut,
-                                            newValue = SimpleDateFormat("dd.MM.yyyy").format(it.time),
+                                            newValue = it.time.toString_ddMMyyyy_PointSeparated(), //SimpleDateFormat("dd.MM.yyyy").format(it.time),
                                             changer = "SP",
                                             point = "IM"
                                     )
@@ -646,51 +657,49 @@ open class ParcelServiceV1 :
         }
     }
 
-    fun saveImage(date: Date, location: String, image: String?, number: String, nodeId: String?, mimetype: String): String {
+    fun saveImage(date: Date, location: Location, image: String?, number: String, nodeId: String?, mimetype: String, locationOriginal: Location?): String {
         if (image != null) {
+            val keepOriginal = if (locationOriginal != null) true else false
             val pathMobile = storage.mobileDataDirectory.toPath()
-            val relPathMobile = pathMobile.resolve(SimpleDateFormat("yyyy").format(date))
-                    .resolve(location)
-                    .resolve(SimpleDateFormat("MM").format(date))
-                    .resolve(SimpleDateFormat("dd").format(date))
-                    .toFile()
-            relPathMobile.mkdirs()
 
-            val relPathMobileOriginal = pathMobile.resolve(SimpleDateFormat("yyyy").format(date))
-                    .resolve(location + "-Original")
-                    .resolve(SimpleDateFormat("MM").format(date))
-                    .resolve(SimpleDateFormat("dd").format(date))
-                    .toFile()
-            relPathMobileOriginal.mkdirs()
+            val addInfo = nodeId.toString().substringBefore("-")
+            val mobileFilename = FileName(number, date, location, pathMobile, addInfo)
+            val relPathMobile = mobileFilename.getPath()
 
             val path = storage.workTmpDataDirectory.toPath()
-            val relPath = path.resolve(SimpleDateFormat("yyyy").format(date))
-                    .resolve(location)
-                    .resolve(SimpleDateFormat("MM").format(date))
-                    .resolve(SimpleDateFormat("dd").format(date))
-                    .toFile()
-            relPath.mkdirs()
+
+            val mobileWorkFilename = FileName(number, date, location, path, addInfo)
+            val relPath = mobileWorkFilename.getPath()
+
             var fileExtension: String
             when (mimetype) {
                 MediaType.APPLICATION_SVG_XML -> fileExtension = "svg"
                 else -> fileExtension = "jpg"
             }
-            //val file = number + "_" + nodeId.toString().substringBefore("-") + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB.svg"
-            val file = number + "_" + nodeId.toString().substringBefore("-") + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB." + fileExtension
-            val pathFile = relPath.toPath().resolve(file).toFile().toPath()
-            val pathFileMobile = relPathMobile.toPath().resolve(file).toFile().toPath()
-            val pathFileMobileOriginal = relPathMobileOriginal.toPath().resolve(file).toFile().toPath()
+            val file = mobileFilename.getFilenameWithoutExtension() + "." + fileExtension
+            val pathFile = relPath.resolve(file).toFile().toPath()
+            val pathFileMobile = relPathMobile.resolve(file).toFile().toPath()
+
+
+
             try {
                 var imgPath = pathFile
                 if (fileExtension.equals("svg")) {
                     Files.write(pathFile, image.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
-                    Files.copy(pathFile, pathFileMobileOriginal)
                     imgPath = transSvg2Jpg(pathFile)
                 } else {
                     val img = Base64.getDecoder().decode(image)
                     Files.write(pathFile, img, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
+                }
+
+                if (keepOriginal) {
+                    val mobileOriginalFilename = FileName(number, date, locationOriginal!!, pathMobile, addInfo)
+                    val relPathMobileOriginal = mobileOriginalFilename.getPath()
+                    val pathFileMobileOriginal = relPathMobileOriginal.resolve(file).toFile().toPath()
                     Files.copy(pathFile, pathFileMobileOriginal)
                 }
+
+
                 val bmpFile = imgPath.toFile().parentFile.toPath()
                         .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
                 val bmpFileMobile = pathFileMobile.toFile().parentFile.toPath()
@@ -701,13 +710,13 @@ open class ParcelServiceV1 :
                 if (fileExtension.equals("svg")) {
                     if (writeAsBMP(imgPath, bmpFile.toPath())) {
                         Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
-                        ret = bmpFile.toString().substringAfter(path.toString()).substring(1)
+                        ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
                     } else
                         ret = pathFile.toString().substringAfter(path.toString()).substring(1)
                 } else {
                     if (writePhotoAsBMP(imgPath, bmpFile.toPath())) {
                         Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
-                        ret = bmpFile.toString().substringAfter(path.toString()).substring(1)
+                        ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
                     } else
                         ret = pathFile.toString().substringAfter(path.toString()).substring(1)
                 }
