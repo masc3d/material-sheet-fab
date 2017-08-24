@@ -627,7 +627,7 @@ class VehicleLoadingScreen :
                     this.currentDamagedParcel = parcel
 
                     /** Show camera screen */
-                    this.activity.showScreen(DamagedParcelCameraScreen().apply {
+                    this.activity.showScreen(DamagedParcelCameraScreen(target = this).apply {
                         parameters = DamagedParcelCameraScreen.Parameters(
                                 parcelId = parcel.id
                         )

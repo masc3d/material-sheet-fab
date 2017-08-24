@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.screen
 
 import android.databinding.DataBindingUtil
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,7 @@ import org.parceler.ParcelConstructor
  * Damaged parcel camera screen
  * Created by masc on 24.08.17.
  */
-class DamagedParcelCameraScreen : BaseCameraScreen<DamagedParcelCameraScreen.Parameters>() {
+class DamagedParcelCameraScreen(target: Fragment) : BaseCameraScreen<DamagedParcelCameraScreen.Parameters>(target) {
 
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
