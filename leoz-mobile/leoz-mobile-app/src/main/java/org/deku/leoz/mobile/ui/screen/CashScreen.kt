@@ -180,6 +180,7 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
                 }
     }
 
+    // TODO: this method replicates stop process screen logic. cash screen should update model and leave coordination to stop process screen (notfiy via fragment target listener)
     private fun getSignature() {
         when (this.parameters.deliveryReason) {
             EventDeliveredReason.NORMAL -> {
