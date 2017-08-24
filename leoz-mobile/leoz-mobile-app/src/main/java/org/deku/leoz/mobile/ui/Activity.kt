@@ -447,7 +447,7 @@ open class Activity : BaseActivity(),
 
                 MaterialDialog.Builder(this)
                         .title(R.string.manual_label_input)
-                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .inputType(InputType.TYPE_CLASS_NUMBER)
                         .input(R.string.barcode_label, 0, object : MaterialDialog.InputCallback {
                             override fun onInput(dialog: MaterialDialog, input: CharSequence?) {
                                 log.trace("MANUAL INPUT ${input}")

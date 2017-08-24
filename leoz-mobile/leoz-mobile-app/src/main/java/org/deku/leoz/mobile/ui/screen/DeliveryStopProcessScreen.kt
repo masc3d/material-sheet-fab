@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui.screen
 
-
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -12,7 +11,7 @@ import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
@@ -20,9 +19,11 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.BR
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
 
 import org.deku.leoz.mobile.R
@@ -103,9 +104,11 @@ class DeliveryStopProcessScreen :
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     //region Model classes
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val db: Database by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
+
+    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     private val stop: StopEntity by lazy {
         this.stopRepository.entities.first { it.id == this.parameters.stopId }
@@ -521,19 +524,50 @@ class DeliveryStopProcessScreen :
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        val parcel = this.deliveryStop.parcels.blockingFirst().firstOrNull { it.number == unitNumber.value }
+        var parcel = this.deliveryStop.parcels.blockingFirst().firstOrNull { it.number == unitNumber.value }
 
         if (parcel == null) {
+            // Parcel does not belong to this delivery stop, ask for stop merge
             tones.warningBeep()
 
-            this.activity.snackbarBuilder
-                    .message(R.string.error_invalid_parcel)
-                    .build().show()
+            parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
+            val sourceStop = parcel?.order?.deliveryTask?.stop
 
-            return
+            if (parcel != null && sourceStop != null) {
+                MaterialDialog.Builder(context)
+                        .title(R.string.title_stop_merge)
+                        .cancelable(true)
+                        .content(R.string.dialog_content_stop_merge)
+                        .positiveText(android.R.string.yes)
+                        .onPositive { _, _ ->
+                            db.store.withTransaction {
+                                stopRepository.mergeInto(
+                                        source = sourceStop,
+                                        target = deliveryStop.entity
+                                )
+                                        .blockingAwait()
+                            }
+                                    .toCompletable()
+                                    .subscribeOn(Schedulers.computation())
+                                    .subscribeBy(
+                                            onError = {
+                                                log.error(it.message, it)
+                                                tones.errorBeep()
+                                            })
+                        }
+                        .negativeText(android.R.string.no)
+                        .build().show()
+            } else {
+                this.activity.snackbarBuilder
+                        .message(R.string.error_invalid_parcel)
+                        .build().show()
+
+                return
+            }
+
         }
 
-        this.onParcel(parcel as ParcelEntity)
+        this.onParcel(parcel)
     }
 
     /**
@@ -549,6 +583,7 @@ class DeliveryStopProcessScreen :
                     this.parcelListAdapter.selectedSection = deliveredSection
             }
             else -> {
+                // TODO: add support for scanning/adding parcel to damaged section
                 tones.warningBeep()
             }
         }

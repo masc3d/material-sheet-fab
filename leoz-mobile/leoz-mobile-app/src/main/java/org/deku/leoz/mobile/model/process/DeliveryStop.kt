@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
@@ -91,6 +92,17 @@ class DeliveryStop(
             .bind(this)
 
     /**
+     * Observable stop tasks query
+     */
+    private val stopOrderTasksQuery = ObservableQuery<OrderTaskEntity>(
+            name = "Delivery stop tasks",
+            query = db.store.select(OrderTaskEntity::class)
+                    .where(OrderTaskEntity.STOP_ID.eq(entity.id))
+                    .get()
+    )
+            .bind(this)
+
+    /**
      * Observable stop parcels query
      */
     private val stopParcelsQuery = ObservableQuery<ParcelEntity>(
@@ -105,9 +117,15 @@ class DeliveryStop(
     /** Observable stop */
     val stop = stopQuery.result.map { it.value.first() }
             .behave(this)
-
-    /** All parcels of this stop. Also includes missing parcels */
-    val parcels = this.stopParcelsQuery.result.map { it.value }
+    
+    /**
+     * All parcels of this stop. Also includes missing parcels
+     * As requery has the shortcoming of not firing self observable queries via joins, have to merge manually
+     * */
+    val parcels = Observable.merge(
+            this.stopParcelsQuery.result.map { it.value },
+            this.stopOrderTasksQuery.result.map { it.value.flatMap { it.order.parcels.map { it as ParcelEntity } }.distinct() }
+    )
             .behave(this)
 
     /** Stop orders */
@@ -168,7 +186,7 @@ class DeliveryStop(
     val deliveredParcelsWeight = this.deliveredParcels.map { it.sumByDouble { it.weight } }
             .distinctUntilChanged()
             .behave(this)
-//endregion
+    //endregion
 
     /** Signature as svg */
     var signatureSvg: String? = null
