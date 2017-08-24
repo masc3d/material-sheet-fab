@@ -246,6 +246,7 @@
     <string name="service_message_ident_contract">Bitte überprüfen Sie zusammen mit dem Kunden den beiliegendne Vertrag, lassen Sie diesen unterschreiben und führen Sie ihn zurück</string>
     <string name="service_message_documented_personal_delivery">Achtung: Beiliegendes Dokument ausfüllen. Amtlichen Lichtbildausweis verwenden!</string>
     <string name="not_loaded">Nicht beladen</string>
-    <string name="deliveryscanning">Zustellscannung</string>
     <string name="title_alternativedelivery">Alternative delivery</string>
+    <string name="title_stop_merge">Stops zusammenführen</string>
+    <string name="dialog_content_stop_merge">Möchten Sie diesen Stop zusammenführen?</string>
 </resources>
