@@ -147,11 +147,11 @@ open class ParcelServiceV1 :
                     r.erzeugerstation = from
                 }
             }
-            val userId=message.userId
+            val userId = message.userId
             if (userId != null) {
                 val station = userRepository.findStationNrByUserId(userId)
-                if(station!=null){
-                    r.erzeugerstation=station.toString().padStart(3,'0')
+                if (station != null) {
+                    r.erzeugerstation = station.toString().padStart(3, '0')
                 }
             }
 
@@ -565,6 +565,14 @@ open class ParcelServiceV1 :
                     if (!existStatus)
                         existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 1)
                     if (!existStatus)
+                        insertStatus = false
+                    existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 7)
+                    if (existStatus)
+                        insertStatus = false
+                }
+                Event.NOT_IN_DEIVERY -> {
+                    var existStatus =   parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 11)
+                    if (existStatus)
                         insertStatus = false
                 }
                 Event.EXPORT_LOADED -> {
