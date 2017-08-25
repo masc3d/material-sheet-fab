@@ -1,6 +1,6 @@
 # Peer connectivity settings
 remote:
-   host: 'leoz.derkurier.de'
+   host: 'leox.derkurier.de'
 
    # Http related settings
    http:
@@ -20,7 +20,7 @@ database:
 update:
    enabled: true
    bundle-name: 'leoz-mobile'
-   version-alias: 'alpha'
+   version-alias: 'snapshot'
    force: false
    # Cycle period in seconds
    period: 3600
@@ -48,4 +48,4 @@ debug:
    # By default free screen rotation is not allowed and controlled per screen
    user-screen-rotation: false
    # Enables synthetic aidc inputs, available via screen menu
-   synthetic-aidc-enabled: false
+   synthetic-aidc-enabled: true
