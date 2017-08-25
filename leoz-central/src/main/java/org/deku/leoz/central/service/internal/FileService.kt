@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.FileServiceV1
+import org.slf4j.LoggerFactory
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.auth.ApiKey
@@ -20,6 +21,9 @@ class FileServiceV1 :
         FileServiceV1,
         MqHandler<FileServiceV1.FileFragmentMessage> {
 
-    override fun onMessage(message:FileServiceV1.FileFragmentMessage, replyChannel: MqChannel?) {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    override fun onMessage(message: FileServiceV1.FileFragmentMessage, replyChannel: MqChannel?) {
+        log.trace("Received ${message}")
     }
 }
