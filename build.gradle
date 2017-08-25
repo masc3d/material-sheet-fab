@@ -19,7 +19,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:3.0.0-beta2"
+        classpath "com.android.tools.build:gradle:3.0.0-beta3"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
@@ -141,7 +141,10 @@ dependencies {
     testImplementation(
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
-            "org.robolectric:shadows-multidex:$v_roboelectric"
+            "org.robolectric:shadows-multidex:$v_roboelectric",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 
     androidTestImplementation(
