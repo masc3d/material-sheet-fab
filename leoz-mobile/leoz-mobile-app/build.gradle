@@ -186,7 +186,7 @@ dependencies {
             "com.android.support:design:$v_android_support",
             "com.android.support:cardview-v7:$v_android_support",
             "com.android.support:recyclerview-v7:$v_android_support",
-            'com.android.support:multidex:1.0.1',
+            'com.android.support:multidex:1.0.2',
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
@@ -320,6 +320,9 @@ dependencies {
 
             // Support-v4 (Anko Layouts)
             "org.jetbrains.anko:anko-support-v4:$v_anko",
+
+            // Anko
+            "org.jetbrains.anko:anko-sqlite:$v_anko",
 
             "com.fenchtose:tooltip:0.1.5",
             "net.cachapa.expandablelayout:expandablelayout:2.9.1"
