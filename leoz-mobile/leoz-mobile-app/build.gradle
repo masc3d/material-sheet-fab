@@ -322,6 +322,7 @@ dependencies {
             "org.jetbrains.anko:anko-support-v4:$v_anko",
 
             // Anko
+            // TODO: CANARY doesn't pull this transitive dependency (sx-android/mq needs it) resulting in runtime errors with debug builds. proguard will reveal those missing classes when building release
             "org.jetbrains.anko:anko-sqlite:$v_anko",
 
             "com.fenchtose:tooltip:0.1.5",
