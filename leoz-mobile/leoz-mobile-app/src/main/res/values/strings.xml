@@ -54,6 +54,7 @@
     <string name="device_check_instructions">You have got 3 attempts to enter the correct digits. If all three fail, the devlivery failed.</string>
 
     <string name="dialog_content_stop_merge">Do you want to merge this stop?</string>
+    <string name="dialog_content_outdated_orders">Orders are outdated. All data must be erased in order to proceed. Continue?</string>
     <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
     <string name="dialog_title_event_selection">Event selection</string>
 
@@ -271,6 +272,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="title_cash_collection">Cash collection</string>
     <string name="title_confirm_call">Confirm call</string>
     <string name="title_missing_signature">Signature missing</string>
+    <string name="title_reset_data">Reset data</string>
     <string name="title_specify_deliverylist">Specify a delivery list</string>
     <string name="title_stop_detailt">Stop Details</string>
     <string name="title_stop_list">Delivery Stops</string>

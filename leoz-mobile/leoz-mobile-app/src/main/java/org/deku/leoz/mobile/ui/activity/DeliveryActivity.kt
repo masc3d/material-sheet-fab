@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.ui.activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.app.FragmentManager
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -12,8 +13,10 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
@@ -36,6 +39,8 @@ class DeliveryActivity : Activity(),
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
+
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,11 +118,23 @@ class DeliveryActivity : Activity(),
     /**
      * Fragment listener
      */
-
     override fun onDeliveryMenuSelection(entryType: MenuScreen.MenuEntry.Entry) {
         when (entryType) {
             MenuScreen.MenuEntry.Entry.LOADING -> {
-                this.showScreen(VehicleLoadingScreen())
+                if (this.orderRepository.hasOutdatedOrders()) {
+                    MaterialDialog.Builder(this)
+                            .title(R.string.title_reset_data)
+                            .content(R.string.dialog_content_outdated_orders)
+                            .positiveText(android.R.string.yes)
+                            .negativeText(android.R.string.no)
+                            .onPositive { _, _->
+                                this.orderRepository.removeAll()
+                                this.showScreen(VehicleLoadingScreen())
+                            }
+                            .build().show()
+                } else {
+                    this.showScreen(VehicleLoadingScreen())
+                }
             }
 
             MenuScreen.MenuEntry.Entry.DELIVERY -> {

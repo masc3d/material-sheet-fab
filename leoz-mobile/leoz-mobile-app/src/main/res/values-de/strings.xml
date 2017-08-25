@@ -253,4 +253,6 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
+    <string name="title_reset_data">Daten zurücksetzen</string>
+    <string name="dialog_content_outdated_orders">Aufträge sind veraltet. Um fortzufahren müssen alle Daten gelöscht werden. Fortfahjren?</string>
 </resources>

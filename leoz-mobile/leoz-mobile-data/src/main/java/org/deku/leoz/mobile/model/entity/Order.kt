@@ -7,6 +7,7 @@ import org.deku.leoz.model.Carrier
 import sx.android.databinding.BaseRxObservable
 import sx.io.serialization.Serializable
 import sx.io.serialization.Serializer
+import java.util.*
 
 /**
  * Mobile order entity
@@ -53,6 +54,9 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val meta: MutableList<OrderMeta>
 
+    @get:Column
+    abstract var creationTime: Date?
+
     val pickupTask by lazy {
         this.tasks.first { it.type == OrderTask.TaskType.PICKUP }
     }
@@ -81,6 +85,7 @@ fun Order.Companion.create(
         it.tasks.add(deliveryTask)
         it.parcels.addAll(parcels)
         it.deliveryListId = deliveryListId
+        it.creationTime = Date()
     }
 
     deliveryTask.order = entity

@@ -319,7 +319,8 @@ class VehicleLoadingScreen :
                     when (it.itemId) {
                         R.id.action_reset -> {
                             db.store.withTransaction {
-                                orderRepository.removeAll().blockingAwait()
+                                orderRepository.removeAll()
+                                        .blockingAwait()
                             }
                                     .subscribeOn(Schedulers.computation())
                                     .subscribe()

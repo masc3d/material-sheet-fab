@@ -27,6 +27,15 @@ class Database(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    companion object {
+        /**
+         * Schema version. Must be increased on entity model changes.
+         * Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
+         * Major increases indicate breaking changes and will reset the database on migration
+         */
+        val SCHEMA_VERSION = SchemaVersion(major = 5, minor = 2)
+    }
+
     /**
      * Database schema version
      */
@@ -48,20 +57,8 @@ class Database(
             }
         }
 
-        override fun toString(): String {
-            return "${major}.${minor}"
-        }
+        override fun toString(): String = "${major}.${minor}"
     }
-
-    companion object {
-        /**
-         * Schema version. Must be increased on entity model changes.
-         * Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
-         * Major increases indicate breaking changes and will reset the database on migration
-         */
-        val SCHEMA_VERSION = SchemaVersion(major = 5, minor = 1)
-    }
-
     /**
      * Database file
      */
