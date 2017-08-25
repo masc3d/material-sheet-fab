@@ -12,6 +12,8 @@ import javax.inject.Inject
 import javax.inject.Named
 import org.deku.leoz.service.internal.UserService
 
+//import sun.tools.jconsole.Tab
+
 
 /**
  * User repository
@@ -126,6 +128,12 @@ open class UserJooqRepository {
 
     fun save(userRecord: MstUserRecord): Boolean {
         return (userRecord.store() > 0)
+    }
+
+    fun findStationNrByUserId(id: Int): Int? {
+        return dslContext.select(Tables.TBLDEPOTLISTE.DEPOTNR)
+                .from(Tables.TBLDEPOTLISTE.innerJoin(Tables.MST_USER).on(Tables.TBLDEPOTLISTE.ID.eq(Tables.MST_USER.DEBITOR_ID)))
+                .where(Tables.MST_USER.ID.eq(id)).fetchOneInto(Int::class.java)
     }
 
 }
