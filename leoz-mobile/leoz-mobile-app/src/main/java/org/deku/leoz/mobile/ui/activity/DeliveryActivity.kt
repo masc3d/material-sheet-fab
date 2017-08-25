@@ -13,6 +13,7 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.model.process.Delivery
@@ -23,6 +24,7 @@ import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
 import org.slf4j.LoggerFactory
+import sx.android.getSubscriptionManager
 import sx.android.rx.observeOnMainThread
 import java.util.*
 
@@ -40,6 +42,7 @@ class DeliveryActivity : Activity(),
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
 
+    private val db: Database by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,9 +131,16 @@ class DeliveryActivity : Activity(),
                             .positiveText(android.R.string.yes)
                             .negativeText(android.R.string.no)
                             .onPositive { _, _->
-                                this.orderRepository.removeAll()
-                                        .blockingAwait()
-                                this.showScreen(VehicleLoadingScreen())
+                                db.store.withTransaction {
+                                    orderRepository.removeAll()
+                                            .blockingAwait()
+                                }
+                                        .toCompletable()
+                                        .subscribeOn(Schedulers.computation())
+                                        .observeOnMainThread()
+                                        .subscribeBy(onComplete = {
+                                            this.showScreen(VehicleLoadingScreen())
+                                        })
                             }
                             .build().show()
                 } else {
