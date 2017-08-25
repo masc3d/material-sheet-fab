@@ -2,7 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.service.internal.ParcelServiceV1
-import org.springframework.transaction.annotation.Transactional
+import org.deku.leoz.service.internal.FileServiceV1
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.auth.ApiKey
@@ -17,9 +17,9 @@ import javax.ws.rs.Path
 @ApiKey(false)
 @Path("internal/v1/file")
 class FileServiceV1 :
-        org.deku.leoz.service.internal.FileServiceV1,
-        MqHandler<ParcelServiceV1.ParcelMessage> {
+        FileServiceV1,
+        MqHandler<FileServiceV1.FileFragmentMessage> {
 
-    override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
+    override fun onMessage(message:FileServiceV1.FileFragmentMessage, replyChannel: MqChannel?) {
     }
 }
