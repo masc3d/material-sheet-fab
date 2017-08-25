@@ -34,7 +34,6 @@ import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
-import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.EventNotDeliveredReason
@@ -198,7 +197,7 @@ class DeliveryStopDetailScreen
                 ).also {
                     it.subItems = parcels.map {
                         FlexibleSectionableVmItem<Any>(
-                                view = R.layout.item_parcel,
+                                view = R.layout.item_parcel_card,
                                 variable = BR.parcel,
                                 viewModel = ParcelViewModel(it, showOrderTask = false)
                         )

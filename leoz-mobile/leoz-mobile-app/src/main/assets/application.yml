@@ -18,6 +18,7 @@ database:
 
 # Update service settings
 update:
+   enabled: true
    bundle-name: 'leoz-mobile'
    version-alias: 'snapshot'
    force: false
@@ -47,4 +48,4 @@ debug:
    # By default free screen rotation is not allowed and controlled per screen
    user-screen-rotation: false
    # Enables synthetic aidc inputs, available via screen menu
-   synthetic-aidc-enabled: false
+   synthetic-aidc-enabled: true

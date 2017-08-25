@@ -91,6 +91,22 @@ class StopRepository(
     }
 
     /**
+     * Merges one stop into another
+     * @param source Source stop
+     * @param target Target stop
+     */
+    fun mergeInto(source: Stop, target: Stop): Completable {
+        return Completable.fromCallable {
+            val store = this.store.toBlocking()
+
+            target.tasks.addAll(source.tasks)
+            
+            store.delete(source)
+            store.update(target)
+        }
+    }
+
+    /**
      * Remove all orders
      */
     fun removeAll(): Completable {
@@ -103,5 +119,13 @@ class StopRepository(
                         store.delete(it)
                     }
         }
+    }
+
+    /**
+     * Merge one stop into another
+     * @param other Stop to merge into
+     */
+    fun StopEntity.mergeInto(other: Stop) {
+        this@StopRepository.mergeInto(source = this, target = other)
     }
 }

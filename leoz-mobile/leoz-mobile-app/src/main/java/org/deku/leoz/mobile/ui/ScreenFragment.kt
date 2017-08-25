@@ -80,6 +80,11 @@ open class ScreenFragment<P> : Fragment<P>() {
     var toolbarCollapsed: Boolean = false
 
     /**
+     * Screen should have hidden status bar
+     */
+    var statusBarHidden: Boolean = false
+
+    /**
      * Header image
      */
     var headerImage: Int = 0

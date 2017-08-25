@@ -64,6 +64,7 @@ import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.ui.activity.StartupActivity
+import org.deku.leoz.mobile.ui.screen.CameraScreen
 import org.jetbrains.anko.backgroundColor
 import sx.aidc.SymbologyType
 import sx.android.*
@@ -446,7 +447,7 @@ open class Activity : BaseActivity(),
 
                 MaterialDialog.Builder(this)
                         .title(R.string.manual_label_input)
-                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .inputType(InputType.TYPE_CLASS_NUMBER)
                         .input(R.string.barcode_label, 0, object : MaterialDialog.InputCallback {
                             override fun onInput(dialog: MaterialDialog, input: CharSequence?) {
                                 log.trace("MANUAL INPUT ${input}")
@@ -477,6 +478,7 @@ open class Activity : BaseActivity(),
 
             R.id.nav_camera -> {
                 // Handle the camera action
+                this.showScreen(CameraScreen())
             }
 
             R.id.nav_dev_prototype -> {
@@ -708,8 +710,8 @@ open class Activity : BaseActivity(),
                             if (!(this is MainActivity)) {
                                 this.startActivity(
                                         Intent(applicationContext, MainActivity::class.java)
-                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                                        Intent.FLAG_ACTIVITY_NEW_TASK))
+                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+
                                 finish()
                             }
                         }
@@ -865,6 +867,12 @@ open class Activity : BaseActivity(),
             expandAppBar = false
             scroll = true
             scrollCollapseMode = ScreenFragment.ScrollCollapseModeType.EnterAlwaysCollapsed
+        }
+
+        if (fragment.statusBarHidden) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
 
         // Apply action bar changes

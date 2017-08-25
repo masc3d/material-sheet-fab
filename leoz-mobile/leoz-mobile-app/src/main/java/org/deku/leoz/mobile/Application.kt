@@ -2,14 +2,11 @@ package org.deku.leoz.mobile
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
-import android.provider.Settings
 import android.support.multidex.MultiDexApplication
 import android.support.v7.app.AppCompatDelegate
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
@@ -18,13 +15,10 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import com.github.salomonbrys.kodein.lazy
 import com.tinsuke.icekick.extension.freezeInstanceState
-import com.tinsuke.icekick.extension.serialState
 import com.tinsuke.icekick.extension.unfreezeInstanceState
-import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.deku.leoz.mobile.ui.BaseActivity
-import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.slf4j.LoggerFactory
 
 
@@ -69,7 +63,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(DeviceConfiguration.module)
         Kodein.global.addImport(AidcConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
-        Kodein.global.addImport(ToneConfiguration.module)
+        Kodein.global.addImport(SoundConfiguration.module)
         Kodein.global.addImport(MqttConfiguration.module)
         //endregion
 

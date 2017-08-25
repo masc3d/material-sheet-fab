@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
@@ -91,13 +92,25 @@ class DeliveryStop(
             .bind(this)
 
     /**
+     * Observable stop tasks query
+     */
+    private val stopOrderTasksQuery = ObservableQuery<OrderTaskEntity>(
+            name = "Delivery stop tasks",
+            query = db.store.select(OrderTaskEntity::class)
+                    .where(OrderTaskEntity.STOP_ID.eq(entity.id))
+                    .get()
+    )
+            .bind(this)
+
+    /**
      * Observable stop parcels query
      */
     private val stopParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Delivery stop parcels",
             query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.ORDER_ID.`in`(this.entity.tasks.map { it.order.id }))
-                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
+                    .join(OrderTaskEntity::class)
+                    .on(OrderTaskEntity.STOP_ID.eq(this.entity.id))
+                    .and(OrderTaskEntity.ORDER_ID.eq(ParcelEntity.ORDER_ID))
                     .get()
     )
             .bind(this)
@@ -106,20 +119,45 @@ class DeliveryStop(
     val stop = stopQuery.result.map { it.value.first() }
             .behave(this)
 
-    /** Stop parcels */
-    val parcels = this.stopParcelsQuery.result.map { it.value }
+    /**
+     * All parcels of this stop. Also includes missing parcels
+     * As requery has the shortcoming of not firing self observable queries via joins, have to merge manually
+     * */
+    val parcels = Observable.merge(
+            this.stopParcelsQuery.result.map {
+                it.value.sortedByDescending { it.modificationTime }
+            },
+
+            this.stopOrderTasksQuery.result.map {
+                it.value.flatMap {
+                    it.order.parcels
+                            .sortedByDescending { it.modificationTime }
+                            .map { it as ParcelEntity }
+                }
+                        .distinct()
+            }
+    )
             .behave(this)
 
     /** Stop orders */
     val orders = this.parcels.map { it.map { it.order as OrderEntity }.distinct() }
             .behave(this)
 
+    /** Loaded parcels for this stop */
+    val loadedParcels = this.parcels.map {
+        /** Automatically excludes missing parcels */
+        it.filter { it.loadingState == Parcel.LoadingState.LOADED }
+    }
+
+    /** Parcels pending delivery for this stop */
+    val pendingParcels = this.loadedParcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
+            .behave(this)
+
+    /** Delivered parcels of this stop */
     val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
             .behave(this)
 
-    val pendingParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
-            .behave(this)
-
+    /** Undelivered parcels of this stop */
     val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
             .behave(this)
 
@@ -140,7 +178,7 @@ class DeliveryStop(
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelTotalAmount = this.parcels.map { it.count() }
+    val parcelTotalAmount = this.loadedParcels.map { it.count() }
             .distinctUntilChanged()
             .behave(this)
 
@@ -159,7 +197,7 @@ class DeliveryStop(
     val deliveredParcelsWeight = this.deliveredParcels.map { it.sumByDouble { it.weight } }
             .distinctUntilChanged()
             .behave(this)
-//endregion
+    //endregion
 
     /** Signature as svg */
     var signatureSvg: String? = null
@@ -184,8 +222,8 @@ class DeliveryStop(
 
     val canClose: Boolean
         get() =
-        pendingParcels.blockingFirst().count() == 0 &&
-                entity.state == Stop.State.PENDING
+            pendingParcels.blockingFirst().count() == 0 &&
+                    entity.state == Stop.State.PENDING
 
     val canCloseWithEvent: Boolean
         get() = this.canClose && deliveredParcels.blockingFirst().count() == 0
@@ -255,7 +293,12 @@ class DeliveryStop(
                         update(it)
                     }
 
+            /** Mark parcel delivered */
             parcel.deliveryState = Parcel.DeliveryState.DELIVERED
+
+            /** In case the parcel was missing, make sure to correct the loading state */
+            parcel.loadingState = Parcel.LoadingState.LOADED
+
             update(parcel)
         }
                 .toCompletable()

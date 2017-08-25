@@ -41,12 +41,19 @@ class MainActivity
                     MainScreen(),
                     addToBackStack = false
             )
+
+            if (this.login.authenticatedUser != null) {
+                this.onLoginSuccessful()
+            }
         }
     }
 
     override fun onBackPressed() {
-        showExitDialog()
-        return
+        if (this.supportFragmentManager.backStackEntryCount == 0) {
+            showExitDialog()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onDestroy() {
@@ -63,7 +70,7 @@ class MainActivity
 
         builder.setTitle(R.string.exit_application)
                 .setMessage(R.string.exit_application_prompt)
-                .setPositiveButton(android.R.string.yes, { dialog, which -> System.exit(0) })
+                .setPositiveButton(android.R.string.yes, { dialog, which -> this.app.terminate() })
                 .setNegativeButton(android.R.string.no, null)
 
         builder.create().show()
@@ -81,8 +88,8 @@ class MainActivity
     override fun onLoginSuccessful() {
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                Intent.FLAG_ACTIVITY_NEW_TASK))
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+
         this.finish()
     }
 
