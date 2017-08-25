@@ -74,6 +74,9 @@ open class ParcelServiceV1 :
     @Inject
     private lateinit var storage: Storage
 
+    @Inject
+    private lateinit var userRepository: UserJooqRepository
+
     /**
      * Parcel service message handler
      */
@@ -142,6 +145,13 @@ open class ParcelServiceV1 :
             if (it.fromStation) {
                 if (from != null) {
                     r.erzeugerstation = from
+                }
+            }
+            val userId=message.userId
+            if (userId != null) {
+                val station = userRepository.findStationNrByUserId(userId)
+                if(station!=null){
+                    r.erzeugerstation=station.toString().padStart(3,'0')
                 }
             }
 

@@ -14,7 +14,7 @@ enum class Location {
     QubeVu
 }
 
-class FileName(val value: String, val date: Date, val type: Location, val startPath: Path, val additionalInfo: String? = null) {
+class FileName(val value: String, val date: Date, val type: Location, val basePath: Path, val additionalInfo: String? = null) {
 
 
     fun getPath(): Path {
@@ -24,7 +24,7 @@ class FileName(val value: String, val date: Date, val type: Location, val startP
         }
 
 
-        val relPathMobile = startPath.resolve(SimpleDateFormat("yyyy").format(workdate))
+        val relPathMobile = basePath.resolve(SimpleDateFormat("yyyy").format(workdate))
                 .resolve(type.toString())
                 .resolve(SimpleDateFormat("MM").format(workdate))
                 .resolve(SimpleDateFormat("dd").format(workdate))
