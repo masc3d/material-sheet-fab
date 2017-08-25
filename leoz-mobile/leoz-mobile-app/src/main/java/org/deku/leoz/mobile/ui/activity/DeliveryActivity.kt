@@ -129,6 +129,7 @@ class DeliveryActivity : Activity(),
                             .negativeText(android.R.string.no)
                             .onPositive { _, _->
                                 this.orderRepository.removeAll()
+                                        .blockingAwait()
                                 this.showScreen(VehicleLoadingScreen())
                             }
                             .build().show()
