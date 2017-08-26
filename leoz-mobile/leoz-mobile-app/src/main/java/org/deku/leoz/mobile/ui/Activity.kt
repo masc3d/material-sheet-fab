@@ -12,8 +12,12 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.support.annotation.StringRes
-import android.support.design.widget.*
-import android.support.transition.*
+import android.support.design.widget.AppBarLayout
+import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
+import android.support.transition.Fade
+import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
@@ -37,45 +41,46 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.main.*
-import org.deku.leoz.mobile.device.Tones
-import org.deku.leoz.mobile.service.UpdateService
-import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
-import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
-import org.deku.leoz.mobile.model.process.Login
-import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
-import org.deku.leoz.mobile.ui.activity.MainActivity
-import org.deku.leoz.mobile.ui.view.ActionItem
-import org.deku.leoz.mobile.ui.view.ActionOverlayView
-import sx.android.aidc.AidcReader
-import sx.android.aidc.CameraAidcReader
-import sx.android.fragment.util.withTransaction
-import sx.rx.ObservableRxProperty
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.dev.SyntheticInput
+import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
+import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
+import org.deku.leoz.mobile.service.UpdateService
+import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.activity.StartupActivity
+import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.deku.leoz.mobile.ui.screen.BaseCameraScreen
 import org.deku.leoz.mobile.ui.screen.CameraScreen
+import org.deku.leoz.mobile.ui.view.ActionItem
+import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import org.jetbrains.anko.backgroundColor
+import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
 import sx.android.*
+import sx.android.aidc.AidcReader
+import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
+import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTint
 import sx.mq.mqtt.channel
-import java.util.NoSuchElementException
+import sx.rx.ObservableRxProperty
+import java.util.*
 
 /**
  * Leoz activity base class
@@ -147,7 +152,7 @@ open class Activity : BaseActivity(),
     }
 
     override fun onCameraImageTaken(jpeg: ByteArray) {
-        mqttEndpoints.central.main.channel().sendFile(jpeg)
+        mqttEndpoints.central.main.channel().sendFile(jpeg, MimeType.JPEG.value)
     }
 
     /**

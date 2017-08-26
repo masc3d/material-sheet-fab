@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.flurgle.camerakit.CameraKit
 import com.flurgle.camerakit.CameraListener
+import com.flurgle.camerakit.Size
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -83,6 +84,7 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
 
         this.uxCameraView.setJpegQuality(100)
         log.trace("CAMERA CAPTURE SIZE ${this.uxCameraView.captureSize}")
+        this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_1080P)
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
         this.uxCameraView.setFlash(CameraKit.Constants.FLASH_OFF)
 
