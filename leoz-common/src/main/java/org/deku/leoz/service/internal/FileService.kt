@@ -25,18 +25,22 @@ interface FileServiceV1 {
      * File fragment message
      */
     @Serializable(0xef27382c9e8b98)
-    data class FileFragmentMessage(
+    class FileFragmentMessage(
             /** Node uid of sender */
             var nodeUid: String? = null,
+            /** Unique identifier of this file */
+            val fileUid: UUID? = null,
             /** Zero-based index of fragment */
             var index: Int = 0,
             /** Total amount of fragments of the file this fragment belongs to */
             var total: Int? = null,
-            /** Unique identifier of this file */
-            val fileUid: UUID? = null,
             /** Payload of this fragment */
             var payload: ByteArray? = null
-    )
+    ) {
+        override fun toString(): String {
+            return "${this.javaClass.simpleName}(nodeUid=${nodeUid}, fileUid=${fileUid}, index=${index}, total=${total}, payload.size=${payload?.size})"
+        }
+    }
 }
 
 /**
