@@ -2,6 +2,7 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
 import org.deku.leoz.model.AdditionalInfo
+import sx.collections.chunked
 import sx.io.serialization.Serializable
 import java.util.*
 import javax.activation.MimeType
@@ -11,7 +12,8 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 
 /**
- * Created by JT on 17.07.17.
+ * File service V1
+ * Created by masc on 25.08.2017.
  */
 @Path("internal/v1/file")
 @Produces(MediaType.APPLICATION_JSON)
@@ -33,7 +35,26 @@ interface FileServiceV1 {
             /** Unique identifier of this file */
             val fileUid: UUID? = null,
             /** Payload of this fragment */
-            val payload: ByteArray? = null
+            var payload: ByteArray? = null
     )
 }
 
+/**
+ * Creates file fragment messages from in-memory data
+ */
+fun ByteArray.toFileFragmentMessages(
+        maxChunkSize: Int,
+        nodeUid: String,
+        fileUid: UUID
+): List<FileServiceV1.FileFragmentMessage> {
+    val chunks = this.chunked(maxChunkSize)
+
+    return chunks.mapIndexed { index, bytes ->
+        FileServiceV1.FileFragmentMessage(
+                nodeUid = nodeUid,
+                index = index,
+                total = chunks.size,
+                fileUid = fileUid,
+                payload = bytes)
+    }
+}
