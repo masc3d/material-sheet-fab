@@ -29,36 +29,47 @@ interface FileServiceV1 {
             /** Node uid of sender */
             var nodeUid: String? = null,
             /** Unique identifier of this file */
-            val fileUid: UUID? = null,
+            var fileUid: UUID? = null,
+            /** Mime type of this file */
+            var mimeType: String? = null,
             /** Zero-based index of fragment */
-            var index: Int = 0,
+            var index: Int? = null,
             /** Total amount of fragments of the file this fragment belongs to */
             var total: Int? = null,
             /** Payload of this fragment */
             var payload: ByteArray? = null
     ) {
-        override fun toString(): String {
-            return "${this.javaClass.simpleName}(nodeUid=${nodeUid}, fileUid=${fileUid}, index=${index}, total=${total}, payload.size=${payload?.size})"
-        }
+        override fun toString(): String =
+                "${this.javaClass.simpleName}(nodeUid=${nodeUid}, fileUid=${fileUid}, index=${index}, total=${total}, mime-type=${mimeType}, payload.size=${payload?.size})"
     }
 }
+
+val FileServiceV1.FileFragmentMessage.isLastFragment: Boolean
+    get() {
+        val index = index ?: 0
+        val total = total ?: 0
+
+        return index == (total - 1)
+    }
 
 /**
  * Creates file fragment messages from in-memory data
  */
 fun ByteArray.toFileFragmentMessages(
-        maxChunkSize: Int,
         nodeUid: String,
-        fileUid: UUID
+        fileUid: UUID,
+        mimeType: String,
+        maxChunkSize: Int
 ): List<FileServiceV1.FileFragmentMessage> {
     val chunks = this.chunked(maxChunkSize)
 
     return chunks.mapIndexed { index, bytes ->
         FileServiceV1.FileFragmentMessage(
                 nodeUid = nodeUid,
+                fileUid = fileUid,
+                mimeType = mimeType,
                 index = index,
                 total = chunks.size,
-                fileUid = fileUid,
                 payload = bytes)
     }
 }
