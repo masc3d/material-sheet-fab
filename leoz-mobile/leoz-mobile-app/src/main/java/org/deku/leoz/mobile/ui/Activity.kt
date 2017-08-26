@@ -63,7 +63,10 @@ import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.dev.SyntheticInput
+import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.ui.activity.StartupActivity
+import org.deku.leoz.mobile.ui.screen.BaseCameraScreen
 import org.deku.leoz.mobile.ui.screen.CameraScreen
 import org.jetbrains.anko.backgroundColor
 import sx.aidc.SymbologyType
@@ -71,6 +74,7 @@ import sx.android.*
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTint
+import sx.mq.mqtt.channel
 import java.util.NoSuchElementException
 
 /**
@@ -80,7 +84,8 @@ import java.util.NoSuchElementException
 open class Activity : BaseActivity(),
         NavigationView.OnNavigationItemSelectedListener,
         ScreenFragment.Listener,
-        ActionOverlayView.Listener {
+        ActionOverlayView.Listener,
+        BaseCameraScreen.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -115,6 +120,7 @@ open class Activity : BaseActivity(),
 
     // Process models
     private val login: Login by Kodein.global.lazy.instance()
+    private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
 
     /** Action items */
     private val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
@@ -138,6 +144,10 @@ open class Activity : BaseActivity(),
     /** Snackbar builder to use with this activity */
     val snackbarBuilder by lazy {
         SnackbarBuilder(this.uxCoordinatorLayout)
+    }
+
+    override fun onCameraImageTaken(jpeg: ByteArray) {
+        mqttEndpoints.central.main.channel().sendFile(jpeg)
     }
 
     /**
