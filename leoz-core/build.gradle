@@ -61,7 +61,8 @@ dependencies {
             // Commons
             "commons-io:commons-io:$v_commons_io",
             // kryo
-            "com.esotericsoftware:kryo:4.0.1",
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers",
             "net.java.dev.jna:jna:$v_jna",
             "net.java.dev.jna:jna-platform:$v_jna",
             // YAML

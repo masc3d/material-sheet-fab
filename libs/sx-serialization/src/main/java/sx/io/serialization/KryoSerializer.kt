@@ -10,10 +10,12 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
 import com.esotericsoftware.kryo.serializers.EnumNameSerializer
 import com.esotericsoftware.kryo.util.*
 import com.esotericsoftware.minlog.Log
+import de.javakaffee.kryoserializers.UUIDSerializer
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.reflect.Array
+import java.util.*
 
 /**
  * Kryo serializer with support for @Serializable annotations and lookup by UID
@@ -187,6 +189,7 @@ class KryoSerializer(
         private fun newKryo(): Kryo {
             // Create kryo with custom ClassResolver
             val k = Kryo(ClassResolver(), MapReferenceResolver())
+
             // Setting the default serializer to CompatibleFieldSerializer is crucial here
             // as the default FiedldSerializer relies solely in order and may cause breakage as classes evolve
             k.setDefaultSerializer(CompatibleFieldSerializer::class.java)
@@ -195,6 +198,8 @@ class KryoSerializer(
 
             // Register custom serializers
             k.addDefaultSerializer(Enum::class.java, EnumNameSerializer::class.java)
+            k.addDefaultSerializer(UUID::class.java, UUIDSerializer::class.java)
+
             return k
         }
 

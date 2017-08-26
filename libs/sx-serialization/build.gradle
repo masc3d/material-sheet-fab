@@ -4,6 +4,8 @@ version '0.1'
 buildscript {
     ext {
         v_kotlin = '1.1.4-2'
+        v_kryo = '4.0.1'
+        v_kryo_serializers = '0.42'
         v_slf4j = '1.7.25'
         v_protostuff = '1.6.0'
     }
@@ -37,7 +39,9 @@ dependencies {
 
     compileOnly(
             // Kryo
-            "com.esotericsoftware:kryo:4.0.1",
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers",
+
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
@@ -50,9 +54,15 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "com.esotericsoftware:kryo:4.0.1",
+
+            // Kryo
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers",
+
+            // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+
             "ch.qos.logback:logback-classic:1.2.3"
     )
 }

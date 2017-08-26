@@ -276,7 +276,10 @@ dependencies {
             'net.gotev:uploadservice:3.4',
 
             // Kryo
-            dependencies.create("com.esotericsoftware:kryo:4.0.1") {
+            dependencies.create("com.esotericsoftware:kryo:$v_kryo") {
+                exclude group: 'org.ow2.asm', module: 'asm'
+            },
+            dependencies.create("de.javakaffee:kryo-serializers:$v_kryo_serializers") {
                 exclude group: 'org.ow2.asm', module: 'asm'
             },
 
