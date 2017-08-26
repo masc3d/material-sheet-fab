@@ -7,6 +7,8 @@ buildscript {
         v_artemis = '1.5.4'
         v_kodein = '4.1.0'
         v_kotlin = '1.1.4-2'
+        v_kryo = '4.0.1'
+        v_kryo_serializers = '0.42'
         v_protostuff = '1.5.3'
         v_spring = '4.3.10.RELEASE'
     }
@@ -140,6 +142,7 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
 
             // Kryo
-            "com.esotericsoftware:kryo:4.0.1"
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers"
     )
 }
