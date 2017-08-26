@@ -73,9 +73,8 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
     /** Can be overridden to add an overlay view to the camera screen */
     open protected fun createOverlayView(viewGroup: ViewGroup): View? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_camera, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+            inflater.inflate(R.layout.fragment_camera, container, false)
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,10 +82,11 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
         this.uxProgressContainer.visibility = View.VISIBLE
 
         this.uxCameraView.setJpegQuality(100)
+        log.trace("CAMERA CAPTURE SIZE ${this.uxCameraView.captureSize}")
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
         this.uxCameraView.setFlash(CameraKit.Constants.FLASH_OFF)
-        this.uxCameraView.setCameraListener(object : CameraListener() {
 
+        this.uxCameraView.setCameraListener(object : CameraListener() {
             override fun onPictureTaken(picture: ByteArray) {
                 log.trace("PICTURE TAKEN WITH SIZE [${picture.size}]")
 
@@ -123,13 +123,13 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
 
         this.torchEnabled = false
 
-        Observable.fromCallable {
-            log.trace("STARTING CAMERA")
-            this.uxCameraView.start()
-        }
-                .subscribeOn(executor = this.executorService)
-                .subscribe()
+        this.uxCameraView.start()
+    }
 
+    override fun onDestroyView() {
+        this.uxCameraView.stop()
+        this.uxCameraView.setCameraListener(null)
+        super.onDestroyView()
     }
 
     override fun onResume() {
@@ -194,11 +194,6 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
                         }
                     }
                 }
-    }
-
-    override fun onDestroyView() {
-        this.uxCameraView.stop()
-        super.onDestroyView()
     }
 
     private fun showCaptureActions() {
