@@ -144,14 +144,14 @@ class DeliveryStop(
             .behave(this)
 
     /** Loaded parcels for this stop */
-    val loadedParcels = this.parcels.map {
-        /** Automatically excludes missing parcels */
-        it.filter { it.state == Parcel.State.LOADED }
-    }
+    val loadedParcels = this.parcels.map { it.filter { it.state == Parcel.State.LOADED } }
 
     /** Parcels pending delivery for this stop */
     val pendingParcels = this.loadedParcels.map { it.filter { it.reason == null } }
             .behave(this)
+
+    /** Missing parcels */
+    val missingParcels = this.parcels.map { it.filter { it.state == Parcel.State.MISSING } }
 
     /** Delivered parcels of this stop */
     val deliveredParcels = this.parcels.map { it.filter { it.state == Parcel.State.DELIVERED } }
@@ -174,7 +174,8 @@ class DeliveryStop(
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelTotalAmount = this.parcels.map { it.count() }
+    val parcelTotalAmount = this.parcels
+            .map { it.filter { it.state != Parcel.State.MISSING }.count() }
             .distinctUntilChanged()
             .behave(this)
 

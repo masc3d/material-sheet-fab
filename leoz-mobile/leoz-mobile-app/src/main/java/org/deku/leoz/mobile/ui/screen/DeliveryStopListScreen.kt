@@ -47,10 +47,16 @@ class DeliveryStopListScreen
         ScreenFragment<Any>(),
         FlexibleAdapter.OnItemMoveListener {
 
+    interface Listener {
+        fun onDeliveryStopListUnitNumberInput(unitNumber: UnitNumber)
+    }
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
+
+    private val listener by lazy { this.activity as? Listener }
 
     // Model classes
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
@@ -209,27 +215,6 @@ class DeliveryStopListScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        val parcel = this.parcelRepository
-                .findByNumber(unitNumber.value)
-
-        val stop = parcel?.order?.tasks
-                ?.mapNotNull { it.stop }
-                ?.firstOrNull()
-
-        if (stop == null) {
-            tones.warningBeep()
-
-            this.activity.snackbarBuilder
-                    .message(R.string.error_no_corresponding_stop)
-                    .build().show()
-
-            return
-        }
-
-        this.activity.showScreen(
-                DeliveryStopProcessScreen().also {
-                    it.parameters = DeliveryStopProcessScreen.Parameters(stopId = stop.id)
-                }
-        )
+        this.listener?.onDeliveryStopListUnitNumberInput(unitNumber)
     }
 }

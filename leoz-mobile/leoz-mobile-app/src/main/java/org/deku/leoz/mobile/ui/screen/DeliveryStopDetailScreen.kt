@@ -60,6 +60,12 @@ class DeliveryStopDetailScreen
             var stopId: Int
     )
 
+    interface Listener {
+        fun onDeliveryStopDetailUnitNumberInput(unitNumber: UnitNumber)
+    }
+
+    private val listener by lazy { this.activity as? Listener }
+
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
 
@@ -340,28 +346,7 @@ class DeliveryStopDetailScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        val parcel = this.parcelRepository
-                .findByNumber(unitNumber.value)
-
-        val stop = parcel?.order?.tasks
-                ?.mapNotNull { it.stop }
-                ?.firstOrNull()
-
-        if (stop == null) {
-            tones.warningBeep()
-
-            this.activity.snackbarBuilder
-                    .message(R.string.error_no_corresponding_stop)
-                    .build().show()
-
-            return
-        }
-
-        this.activity.showScreen(
-                DeliveryStopProcessScreen().also {
-                    it.parameters = DeliveryStopProcessScreen.Parameters(stopId = stop.id)
-                }
-        )
+        this.listener?.onDeliveryStopDetailUnitNumberInput(unitNumber)
     }
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {

@@ -153,6 +153,17 @@ class DeliveryStopProcessScreen :
         )
     }
 
+    val missingSection by lazy {
+        SectionViewModel<ParcelEntity>(
+                icon = R.drawable.ic_missing,
+                color = R.color.colorGrey,
+                background = R.drawable.section_background_grey,
+                showIfEmpty = false,
+                title = getString(R.string.missing),
+                items = this.deliveryStop.missingParcels
+        )
+    }
+
     /**
      * Extension for creating sections from event/reason enum
      */
@@ -220,6 +231,11 @@ class DeliveryStopProcessScreen :
 
         adapter.addSection(
                 sectionVmItemProvider = { this.pendingSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.missingSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
 

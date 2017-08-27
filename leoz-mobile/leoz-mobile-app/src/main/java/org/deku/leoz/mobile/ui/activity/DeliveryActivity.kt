@@ -16,33 +16,44 @@ import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.SharedPreference
+import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.OrderRepository
+import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
+import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.android.getSubscriptionManager
 import sx.android.rx.observeOnMainThread
 import java.util.*
 
 /**
+ * Delivery activity
  * Created by 27694066 on 09.05.2017.
  */
 class DeliveryActivity : Activity(),
         MenuScreen.Listener,
         SignatureScreen.Listener,
         VehicleLoadingScreen.Listener,
-        VehicleLoadingDialog.OnDialogResultListener {
-
+        VehicleLoadingDialog.OnDialogResultListener,
+        DeliveryStopListScreen.Listener,
+        DeliveryStopDetailScreen.Listener
+{
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
 
+    private val tones: Tones by Kodein.global.lazy.instance()
+
     private val db: Database by Kodein.global.lazy.instance()
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -204,5 +215,56 @@ class DeliveryActivity : Activity(),
     }
 
     override fun onCanceled() {
+    }
+
+    private fun onDeliveryUnitNumberInput(unitNumber: UnitNumber) {
+        val parcel = this.parcelRepository
+                .findByNumber(unitNumber.value)
+
+        if (parcel == null) {
+            tones.warningBeep()
+
+            this.snackbarBuilder
+                    .message(R.string.error_unknown_parcel)
+                    .build().show()
+
+            return
+        }
+
+        // If parcel is missing, mark as loaded
+        if (parcel.state == Parcel.State.MISSING) {
+            parcel.state = Parcel.State.LOADED
+            parcelRepository.update(parcel as ParcelEntity)
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe()
+        }
+
+        val stop = parcel.order.tasks
+                .mapNotNull { it.stop }
+                .firstOrNull()
+
+        if (stop == null) {
+            tones.warningBeep()
+
+            this.snackbarBuilder
+                    .message(R.string.error_no_corresponding_stop)
+                    .build().show()
+
+            return
+        }
+
+        this.showScreen(
+                DeliveryStopProcessScreen().also {
+                    it.parameters = DeliveryStopProcessScreen.Parameters(stopId = stop.id)
+                }
+        )
+    }
+
+    override fun onDeliveryStopDetailUnitNumberInput(unitNumber: UnitNumber) {
+        this.onDeliveryUnitNumberInput(unitNumber)
+    }
+
+    override fun onDeliveryStopListUnitNumberInput(unitNumber: UnitNumber) {
+        this.onDeliveryUnitNumberInput(unitNumber)
     }
 }
