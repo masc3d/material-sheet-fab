@@ -83,7 +83,6 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
         this.uxProgressContainer.visibility = View.VISIBLE
 
         this.uxCameraView.setJpegQuality(100)
-        log.trace("CAMERA CAPTURE SIZE ${this.uxCameraView.captureSize}")
         this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_1080P)
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
         this.uxCameraView.setFlash(CameraKit.Constants.FLASH_OFF)

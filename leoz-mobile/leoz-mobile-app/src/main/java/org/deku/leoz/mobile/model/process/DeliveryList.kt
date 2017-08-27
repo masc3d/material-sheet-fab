@@ -59,7 +59,7 @@ class DeliveryList : CompositeDisposableSupplier {
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Loaded parcels",
             query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.LoadingState.LOADED))
+                    .where(ParcelEntity.STATE.eq(Parcel.State.LOADED))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
@@ -75,7 +75,7 @@ class DeliveryList : CompositeDisposableSupplier {
     private val pendingParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Pending parcels",
             query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.LoadingState.PENDING))
+                    .where(ParcelEntity.STATE.eq(Parcel.State.PENDING))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
@@ -83,7 +83,7 @@ class DeliveryList : CompositeDisposableSupplier {
     private val missingParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Missing parcels",
             query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.LOADING_STATE.eq(Parcel.LoadingState.MISSING))
+                    .where(ParcelEntity.STATE.eq(Parcel.State.MISSING))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
                     .get()
     ).bind(this)
@@ -323,16 +323,16 @@ class DeliveryList : CompositeDisposableSupplier {
     fun finalize(): Completable {
         return db.store.withTransaction {
             // Set all pending parcels to MISSING
-            val pendingParcels = parcelRepository.entities.filter { it.loadingState == Parcel.LoadingState.PENDING }
+            val pendingParcels = parcelRepository.entities.filter { it.state == Parcel.State.PENDING }
 
             pendingParcels.forEach {
-                it.loadingState = Parcel.LoadingState.MISSING
+                it.state = Parcel.State.MISSING
                 update(it)
             }
 
             // Set all stops which contain LOADED parcels to PENDING
             val stopsWithLoadedParcels = parcelRepository.entities
-                    .filter { it.loadingState == Parcel.LoadingState.LOADED }
+                    .filter { it.state == Parcel.State.LOADED }
                     .flatMap { it.order.tasks.mapNotNull { it.stop } }
                     .filter { it.state != Stop.State.CLOSED }
                     .distinct()
@@ -355,8 +355,8 @@ class DeliveryList : CompositeDisposableSupplier {
                 .concatWith(Completable.fromCallable {
                     // Select parcels for which to send status events
                     val parcels = parcelRepository.entities.filter {
-                        it.loadingState == Parcel.LoadingState.LOADED ||
-                                it.loadingState == Parcel.LoadingState.MISSING
+                        it.state == Parcel.State.LOADED ||
+                                it.state == Parcel.State.MISSING
                     }
 
                     val lastLocation = this@DeliveryList.locationCache.lastLocation
@@ -370,8 +370,8 @@ class DeliveryList : CompositeDisposableSupplier {
                                     events = parcels.map {
                                         ParcelServiceV1.Event(
                                                 event = when {
-                                                    it.loadingState == Parcel.LoadingState.LOADED -> Event.IN_DELIVERY.value
-                                                    it.loadingState == Parcel.LoadingState.MISSING -> Event.NOT_IN_DEIVERY.value
+                                                    it.state == Parcel.State.LOADED -> Event.IN_DELIVERY.value
+                                                    it.state == Parcel.State.MISSING -> Event.NOT_IN_DEIVERY.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
                                                 reason = when {

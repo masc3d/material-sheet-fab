@@ -4,7 +4,6 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
@@ -25,24 +24,26 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.databinding.ItemParcelBinding
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.mq.MimeType
+import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.rx.toHotIoObservable
-
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.composeAsRest
 import org.deku.leoz.mobile.ui.view.ActionItem
-import org.deku.leoz.mobile.ui.vm.*
+import org.deku.leoz.mobile.ui.vm.CounterViewModel
+import org.deku.leoz.mobile.ui.vm.ParcelViewModel
+import org.deku.leoz.mobile.ui.vm.SectionViewModel
+import org.deku.leoz.mobile.ui.vm.SectionsAdapter
 import org.deku.leoz.model.DekuDeliveryListNumber
-import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.assertAny
 import org.deku.leoz.service.entity.ShortDate
@@ -58,6 +59,7 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
+import sx.mq.mqtt.channel
 import java.util.concurrent.ExecutorService
 
 /**
@@ -124,6 +126,8 @@ class VehicleLoadingScreen :
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
+
+    private val mqttEndPoints: MqttEndpoints by Kodein.global.lazy.instance()
 
     /** The current/most recently selected damaged parcel */
     private var currentDamagedParcel: ParcelEntity? = null
@@ -329,10 +333,10 @@ class VehicleLoadingScreen :
                         R.id.action_vehicle_loading_dev_mark_all_loaded -> {
                             db.store.withTransaction {
                                 select(ParcelEntity::class)
-                                        .where(ParcelEntity.LOADING_STATE.eq(Parcel.LoadingState.PENDING))
+                                        .where(ParcelEntity.STATE.eq(Parcel.State.PENDING))
                                         .get()
                                         .forEach {
-                                            it.loadingState = Parcel.LoadingState.LOADED
+                                            it.state = Parcel.State.LOADED
                                             parcelRepository.update(it).blockingGet()
                                         }
                             }
@@ -636,7 +640,7 @@ class VehicleLoadingScreen :
                 }
             }
             else -> {
-                if (parcel.loadingState == Parcel.LoadingState.LOADED) {
+                if (parcel.state == Parcel.State.LOADED) {
                     if (SUPPORT_UNLOAD_ON_SCAN) {
                         this.tones.warningBeep()
                         this.aidcReader.enabled = false
@@ -650,7 +654,7 @@ class VehicleLoadingScreen :
                                     this.aidcReader.enabled = true
                                 }
                                 .onPositive { _, _ ->
-                                    parcel.loadingState = Parcel.LoadingState.PENDING
+                                    parcel.state = Parcel.State.PENDING
                                     this.parcelRepository.update(parcel)
                                             .subscribeOn(Schedulers.computation())
                                             .subscribe()
@@ -658,7 +662,7 @@ class VehicleLoadingScreen :
                                 .show()
                     }
                 } else {
-                    parcel.loadingState = Parcel.LoadingState.LOADED
+                    parcel.state = Parcel.State.LOADED
                     this.parcelRepository.update(parcel)
                             .subscribeOn(Schedulers.computation())
                             .subscribe()

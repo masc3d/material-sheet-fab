@@ -4,9 +4,7 @@ import android.databinding.Bindable
 import android.databinding.Observable
 import io.requery.*
 import org.deku.leoz.mobile.data.BR
-import org.deku.leoz.model.Event
 import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.Reason
 import sx.android.databinding.BaseRxObservable
 import java.util.*
 
@@ -19,22 +17,15 @@ import java.util.*
 abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     companion object {}
 
-    enum class LoadingState {
+    enum class State {
         /** Parcel is pending to be loaded */
         PENDING,
         /** Parcel has been loaded */
         LOADED,
         /** Parcel could not be loaded as it was missing */
-        MISSING
-    }
-
-    enum class DeliveryState {
-        /** Parcel is pending for delivery */
-        PENDING,
+        MISSING,
         /** Parcel has been delivered */
-        DELIVERED,
-        /** Parcel could not be delivered */
-        UNDELIVERED
+        DELIVERED
     }
 
     @get:Key
@@ -56,13 +47,8 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
 
     @get:Bindable
     @get:Column(nullable = false)
-    @get:Index
-    abstract var loadingState: LoadingState
-
-    @get:Bindable
-    @get:Column(nullable = false)
-    @get:Index
-    abstract var deliveryState: DeliveryState
+    @get:Index("parcel_state_index")
+    abstract var state: State
 
     @get:Bindable
     @get:Index
@@ -81,7 +67,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     @get:ManyToOne
     abstract var order: Order
 
-    val loadingStateProperty by lazy { ObservableRxField<LoadingState>(BR.loadingState, { this.loadingState }) }
+    val loadingStateProperty by lazy { ObservableRxField<State>(BR.state, { this.state }) }
     val modificationTimeProperty by lazy { ObservableRxField<Date?>(BR.modificationTime, { this.modificationTime }) }
 }
 
@@ -100,8 +86,7 @@ fun Parcel.Companion.create(
         it.height = height
         it.width = width
         it.weight = weight
-        it.loadingState = Parcel.LoadingState.PENDING
-        it.deliveryState = Parcel.DeliveryState.PENDING
+        it.state = Parcel.State.PENDING
         it.isDamaged = false
     }
 }

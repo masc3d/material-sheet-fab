@@ -31,6 +31,7 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
@@ -65,6 +66,7 @@ class DeliveryStopDetailScreen
     // Model classes
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val stop: Stop by lazy {
@@ -338,13 +340,12 @@ class DeliveryStopDetailScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        val stop = this.delivery.pendingStops.blockingFirst().value
-                .plus(this.delivery.closedStops.blockingFirst().value)
-                .flatMap { it.tasks }
-                .firstOrNull {
-                    it.order.parcels.any { it.number == unitNumber.value }
-                }
-                ?.stop
+        val parcel = this.parcelRepository
+                .findByNumber(unitNumber.value)
+
+        val stop = parcel?.order?.tasks
+                ?.mapNotNull { it.stop }
+                ?.firstOrNull()
 
         if (stop == null) {
             tones.warningBeep()

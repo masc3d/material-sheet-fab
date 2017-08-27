@@ -146,19 +146,15 @@ class DeliveryStop(
     /** Loaded parcels for this stop */
     val loadedParcels = this.parcels.map {
         /** Automatically excludes missing parcels */
-        it.filter { it.loadingState == Parcel.LoadingState.LOADED }
+        it.filter { it.state == Parcel.State.LOADED }
     }
 
     /** Parcels pending delivery for this stop */
-    val pendingParcels = this.loadedParcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
+    val pendingParcels = this.loadedParcels.map { it.filter { it.reason == null } }
             .behave(this)
 
     /** Delivered parcels of this stop */
-    val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
-            .behave(this)
-
-    /** Undelivered parcels of this stop */
-    val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
+    val deliveredParcels = this.parcels.map { it.filter { it.state == Parcel.State.DELIVERED } }
             .behave(this)
 
     val parcelsByEvent by lazy {
@@ -178,7 +174,7 @@ class DeliveryStop(
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelTotalAmount = this.loadedParcels.map { it.count() }
+    val parcelTotalAmount = this.parcels.map { it.count() }
             .distinctUntilChanged()
             .behave(this)
 
@@ -186,7 +182,7 @@ class DeliveryStop(
             .distinctUntilChanged()
             .behave(this)
 
-    val deliveredOrdersAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState == Parcel.DeliveryState.DELIVERED } }.count() }
+    val deliveredOrdersAmount = this.orders.map { it.filter { it.parcels.all { it.state == Parcel.State.DELIVERED } }.count() }
             .distinctUntilChanged()
             .behave(this)
 
@@ -259,8 +255,9 @@ class DeliveryStop(
 
             stop.tasks
                     .flatMap { it.order.parcels }
+                    .filter { it.state == Parcel.State.DELIVERED}
                     .forEach { parcel ->
-                        parcel.deliveryState = Parcel.DeliveryState.PENDING
+                        parcel.state = Parcel.State.LOADED
                         parcel.reason = null
                         update(parcel)
                     }
@@ -285,19 +282,15 @@ class DeliveryStop(
             // TODO: support order level events
             parcels.blockingFirst()
                     .filter {
-                        it.deliveryState == Parcel.DeliveryState.UNDELIVERED
+                        it.state == Parcel.State.LOADED
                     }
                     .forEach {
-                        it.deliveryState = Parcel.DeliveryState.PENDING
                         it.reason = null
                         update(it)
                     }
 
             /** Mark parcel delivered */
-            parcel.deliveryState = Parcel.DeliveryState.DELIVERED
-
-            /** In case the parcel was missing, make sure to correct the loading state */
-            parcel.loadingState = Parcel.LoadingState.LOADED
+            parcel.state = Parcel.State.DELIVERED
 
             update(parcel)
         }
@@ -319,7 +312,7 @@ class DeliveryStop(
             }
 
             parcels.blockingFirst().forEach {
-                it.deliveryState = Parcel.DeliveryState.UNDELIVERED
+                it.state = Parcel.State.LOADED
                 it.reason = reason
                 update(it)
             }
@@ -356,7 +349,7 @@ class DeliveryStop(
                                     events = parcels.map {
                                         ParcelServiceV1.Event(
                                                 event = when {
-                                                    it.deliveryState == Parcel.DeliveryState.DELIVERED -> Event.DELIVERED.value
+                                                    it.state == Parcel.State.DELIVERED -> Event.DELIVERED.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
                                                 reason = it.reason?.reason?.id ?: Reason.NORMAL.id,

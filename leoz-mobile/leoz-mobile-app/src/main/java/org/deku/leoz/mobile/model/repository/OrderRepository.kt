@@ -73,8 +73,7 @@ class OrderRepository(
                     order.parcels.forEach {
                         val existing = existingOrderParcelNumbers.get(it.number)
                         if (existing != null) {
-                            it.loadingState = existing.loadingState
-                            it.deliveryState = existing.deliveryState
+                            it.state = existing.state
                         }
                     }
 

@@ -19,11 +19,17 @@ import android.support.annotation.CallSuper
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.android.ui.flexibleadapter.FlexibleVmItem
 import org.deku.leoz.mobile.ui.vm.StopViewModel
@@ -42,11 +48,15 @@ class DeliveryStopListScreen
         FlexibleAdapter.OnItemMoveListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
-    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
+
+    // Model classes
+    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
@@ -107,7 +117,7 @@ class DeliveryStopListScreen
         this.syntheticInputs = listOf(
                 SyntheticInput(
                         name = "Parcels",
-                        entries = this.deliveryList.loadedParcels.blockingFirst().value.map {
+                        entries = this.parcelRepository.entities.map {
                             val unitNumber = UnitNumber.parse(it.number).value
                             SyntheticInput.Entry(
                                     symbologyType = SymbologyType.Interleaved25,
@@ -155,10 +165,9 @@ class DeliveryStopListScreen
     //endregion
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.screen_delivery_stop_list, container, false)
-    }
+                              savedInstanceState: Bundle?): View? =
+            // Inflate the layout for this fragment
+            inflater.inflate(R.layout.screen_delivery_stop_list, container, false)
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -200,13 +209,12 @@ class DeliveryStopListScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        val stop = this.delivery.pendingStops.blockingFirst().value
-                .plus(this.delivery.closedStops.blockingFirst().value)
-                .flatMap { it.tasks }
-                .firstOrNull {
-                    it.order.parcels.any { it.number == unitNumber.value }
-                }
-                ?.stop
+        val parcel = this.parcelRepository
+                .findByNumber(unitNumber.value)
+
+        val stop = parcel?.order?.tasks
+                ?.mapNotNull { it.stop }
+                ?.firstOrNull()
 
         if (stop == null) {
             tones.warningBeep()

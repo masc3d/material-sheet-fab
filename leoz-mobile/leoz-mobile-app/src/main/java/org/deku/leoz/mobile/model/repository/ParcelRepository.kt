@@ -22,6 +22,16 @@ class ParcelRepository(
 ) : ObservingRepository<ParcelEntity>(ParcelEntity::class, store) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    /**
+     * Find parcel by unit number
+     * @param number Unit number
+     */
+    fun findByNumber(number: String): Parcel? {
+        return store.select(ParcelEntity::class)
+                .where(ParcelEntity.NUMBER.eq(number))
+                .get()
+                .firstOrNull()
+    }
 
     override fun update(entity: ParcelEntity): Single<ParcelEntity> {
         entity.modificationTime = Date()

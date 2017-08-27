@@ -25,7 +25,5 @@ abstract class ObservingRepository<E : Persistable>(
     val entitiesProperty = query.result
     val entities by entitiesProperty
 
-    open fun update(entity: E): Single<E> {
-        return store.update(entity)
-    }
+    open fun update(entity: E): Single<E> = store.update(entity)
 }
