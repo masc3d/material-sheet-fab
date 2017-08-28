@@ -380,7 +380,17 @@ class DeliveryList : CompositeDisposableSupplier {
                                                 },
                                                 parcelId = it.id,
                                                 latitude = lastLocation?.latitude,
-                                                longitude = lastLocation?.longitude
+                                                longitude = lastLocation?.longitude,
+                                                damagedInfo = when {
+                                                    it.isDamaged -> {
+                                                        ParcelServiceV1.Event.DamagedInfo(
+                                                                pictureFileUids = it.meta.filterValuesByType(Parcel.DamagedInfo::class.java).map {
+                                                                    it.pictureFileUid
+                                                                }.toTypedArray()
+                                                        )
+                                                    }
+                                                    else -> null
+                                                }
                                         )
                                     }.toTypedArray()
                             )

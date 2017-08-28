@@ -29,6 +29,8 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
+import org.deku.leoz.mobile.model.entity.ParcelMeta
+import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -67,8 +69,7 @@ import java.util.concurrent.ExecutorService
  */
 class VehicleLoadingScreen :
         ScreenFragment<Any>(),
-        BaseCameraScreen.Listener
-{
+        BaseCameraScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
@@ -676,9 +677,16 @@ class VehicleLoadingScreen :
     override fun onCameraImageTaken(jpeg: ByteArray) {
         this.currentDamagedParcel?.also { parcel ->
             log.trace("Image for damaged parcel [${parcel}]")
-            // TODO: store/send image
 
+            // Send file
+            val fileUid = mqttEndPoints.central.main.channel().sendFile(jpeg, MimeType.JPEG.value)
+
+            // Update parcel with damaged info
             parcel.isDamaged = true
+
+            parcel.meta.add(ParcelMeta.create(
+                    Parcel.DamagedInfo(pictureFileUid = fileUid)
+            ))
 
             this.parcelRepository.update(parcel)
                     .subscribeOn(Schedulers.computation())

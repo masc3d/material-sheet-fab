@@ -6,6 +6,8 @@ import io.requery.*
 import org.deku.leoz.mobile.data.BR
 import org.deku.leoz.model.EventNotDeliveredReason
 import sx.android.databinding.BaseRxObservable
+import sx.io.serialization.Serializable
+import sx.io.serialization.Serializer
 import java.util.*
 
 /**
@@ -15,7 +17,12 @@ import java.util.*
 @Entity
 @Table(name = "parcel")
 abstract class Parcel : BaseRxObservable(), Persistable, Observable {
-    companion object {}
+    companion object {
+        init {
+            // Serializable must be registered here
+            Serializer.types.register(Parcel.DamagedInfo::class.java)
+        }
+    }
 
     enum class State {
         /** Parcel is pending to be loaded */
@@ -27,6 +34,12 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
         /** Parcel has been delivered */
         DELIVERED
     }
+
+    @Serializable(0x53d7a72bd9aee6)
+    class DamagedInfo(
+            /** Picture file uid */
+            val pictureFileUid: UUID
+    )
 
     @get:Key
     abstract var id: Long
@@ -98,8 +111,17 @@ fun Parcel.Companion.create(
 @Entity
 @Table(name = "parcel_meta")
 abstract class ParcelMeta : Meta() {
+    companion object {}
     @get:Lazy
     @get:Column(nullable = false)
     @get:ManyToOne(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract var parcel: Parcel
+}
+
+fun ParcelMeta.Companion.create(
+        value: Any
+): ParcelMeta {
+    return ParcelMetaEntity().also {
+        it.set(value)
+    }
 }

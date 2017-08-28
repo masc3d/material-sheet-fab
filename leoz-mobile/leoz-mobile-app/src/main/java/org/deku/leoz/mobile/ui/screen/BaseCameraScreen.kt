@@ -191,6 +191,7 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
 
                         R.id.action_camera_save -> {
                             this@BaseCameraScreen.listener?.onCameraImageTaken(this.pictureJpeg!!)
+                            this.showCaptureActions()
                         }
                     }
                 }
