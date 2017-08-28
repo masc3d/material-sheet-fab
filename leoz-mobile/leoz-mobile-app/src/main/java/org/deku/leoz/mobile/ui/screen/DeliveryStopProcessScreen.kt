@@ -619,49 +619,54 @@ class DeliveryStopProcessScreen :
             it.show()
         }
 
+        when (reason) {
+            EventDeliveredReason.NEIGHBOR -> {
+                this.activity.showScreen(NeighbourDeliveryScreen().also {
+                    it.parameters = NeighbourDeliveryScreen.Parameters(
+                            stopId = this.stop.id
+                    )
+                })
+            }
 
-        if (delivery.activeStop!!.cashAmountToCollect > 0) {
-            //Requires CashScreen to be shown
-            this.activity.showScreen(CashScreen().also {
-                it.parameters = CashScreen.Parameters(
-                        stopId = this.stop.id,
-                        deliveryReason = reason
-                )
-            })
-        } else {
-            when (reason) {
-                EventDeliveredReason.NEIGHBOR -> {
-                    this.activity.showScreen(NeighbourDeliveryScreen().also {
-                        it.parameters = NeighbourDeliveryScreen.Parameters(
-                                stopId = this.stop.id
-                        )
-                    })
-                }
+            EventDeliveredReason.POSTBOX -> {
+                //TODO
+            }
 
-                EventDeliveredReason.POSTBOX -> {
-                    //TODO
-                }
-
-                EventDeliveredReason.NORMAL -> {
-                    if (this.deliveryStop.isSignatureRequired) {
-                        MaterialDialog.Builder(context)
-                                .title(R.string.recipient)
-                                .cancelable(true)
-                                .content(R.string.recipient_dialog_content)
-                                .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
-                                .input("Max Mustermann", null, false, { _, charSequence ->
-                                    this.deliveryStop.recipientName = charSequence.toString()
-
-                                    this.activity.showScreen(SignatureScreen().also {
-                                        it.parameters = SignatureScreen.Parameters(
-                                                stopId = this.stop.id,
-                                                deliveryReason = EventDeliveredReason.NORMAL,
-                                                recipient = this.deliveryStop.recipientName ?: ""
-                                        )
-                                    })
+            EventDeliveredReason.NORMAL -> {
+                when {
+                    this.deliveryStop.isSignatureRequired -> {
+                        when {
+                            this.deliveryStop.cashAmountToCollect > 0 -> {
+                                //Requires CashScreen to be shown
+                                this.activity.showScreen(CashScreen().also {
+                                    it.parameters = CashScreen.Parameters(
+                                            stopId = this.stop.id,
+                                            deliveryReason = reason
+                                    )
                                 })
-                                .build().show()
-                    } else {
+                            }
+                            else -> {
+                                MaterialDialog.Builder(context)
+                                        .title(R.string.recipient)
+                                        .cancelable(true)
+                                        .content(R.string.recipient_dialog_content)
+                                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
+                                        .input("Max Mustermann", null, false, { _, charSequence ->
+                                            this.deliveryStop.recipientName = charSequence.toString()
+
+                                            this.activity.showScreen(SignatureScreen().also {
+                                                it.parameters = SignatureScreen.Parameters(
+                                                        stopId = this.stop.id,
+                                                        deliveryReason = EventDeliveredReason.NORMAL,
+                                                        recipient = this.deliveryStop.recipientName ?: ""
+                                                )
+                                            })
+                                        })
+                                        .build().show()
+                            }
+                        }
+                    }
+                    else -> {
                         this.deliveryStop.finalize()
                                 .observeOnMainThread()
                                 .subscribeBy(
@@ -676,7 +681,6 @@ class DeliveryStopProcessScreen :
                 }
             }
         }
-
     }
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
