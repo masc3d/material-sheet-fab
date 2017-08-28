@@ -74,9 +74,16 @@ class OrderRepository(
                     order.parcels.forEach {
                         val existing = existingOrderParcelNumbers.get(it.number)
 
-                        // Only override local state if definitve state was provided
-                        if (it.state == Parcel.State.PENDING && existing != null) {
-                            it.state = existing.state
+                        if (existing != null) {
+                            // Only override local state if we had one (not pending)
+                            if (existing.state != Parcel.State.PENDING) {
+                                it.state = existing.state
+                            }
+
+                            // Only override damaged state if it was already set locally
+                            if (existing.isDamaged) {
+                                it.isDamaged = true
+                            }
                         }
                     }
 
