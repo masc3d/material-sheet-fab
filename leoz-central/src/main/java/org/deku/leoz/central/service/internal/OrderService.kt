@@ -4,6 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.OrderJooqRepository
+import org.deku.leoz.central.data.repository.ParcelJooqRepository
 import org.deku.leoz.model.*
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.OrderService
@@ -30,6 +31,9 @@ class OrderService : OrderService {
 
     @Inject
     private lateinit var orderRepository: OrderJooqRepository
+
+    @Inject
+    private lateinit var parcelRepository: ParcelJooqRepository
 
     override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
         val orders: List<Order>
@@ -192,6 +196,7 @@ class OrderService : OrderService {
         p.lastDeliveryListId = r.lastDeliveryListId.toInt()
         p.isDelivered = r.deliveredStatus.toInt() == 4
         p.isMissing = r.deliveredStatus.toInt() == 8 && r.lastDeliveredEventReason.toInt() == 30
+        p.isDamaged = parcelRepository.statusExist(r.scanId, "E", 8, 31)
         p.dimension.weight = r.dimentionWeight
         p.dimension.height = r.dimensionHeight.toInt()
         p.dimension.length = r.dimensionLength.toInt()

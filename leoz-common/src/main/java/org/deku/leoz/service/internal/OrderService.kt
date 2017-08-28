@@ -167,7 +167,9 @@ interface OrderService {
                 @get:ApiModelProperty(position = 70, required = true, value = "is Delivered")
                 var isDelivered: Boolean = false,
                 @get:ApiModelProperty(position = 80, required = true, value = "is Missing")
-                var isMissing: Boolean = false
+                var isMissing: Boolean = false,
+                @get:ApiModelProperty(position = 80, required = true, value = "is Damaged")
+                var isDamaged: Boolean = false
         ) {
             @ApiModel(value = "ParcelDimentions", description = "Parcel dementions and weight")
             data class ParcelDimension(
