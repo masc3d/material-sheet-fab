@@ -384,7 +384,7 @@ class DeliveryList : CompositeDisposableSupplier {
                                                 damagedInfo = when {
                                                     it.isDamaged -> {
                                                         ParcelServiceV1.Event.DamagedInfo(
-                                                                pictureFileUids = it.meta.filterValuesByType(Parcel.DamagedInfo::class.java).map {
+                                                                pictureFileUids = it.meta.filterValuesByType(Parcel.DamagedInfo::class.java).mapNotNull {
                                                                     it.pictureFileUid
                                                                 }.toTypedArray()
                                                         )

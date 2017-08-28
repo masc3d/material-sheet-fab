@@ -38,7 +38,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     @Serializable(0x53d7a72bd9aee6)
     class DamagedInfo(
             /** Picture file uid */
-            val pictureFileUid: UUID
+            var pictureFileUid: UUID? = null
     )
 
     @get:Key
