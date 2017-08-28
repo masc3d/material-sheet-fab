@@ -554,19 +554,19 @@ open class ParcelServiceV1 :
                 }
                 Event.IN_DELIVERY -> {
                     //ticket #260
-                    var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "H", 2)
+                    var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "H", 2, 0)
                     if (!existStatus)
-                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "H", 4)
+                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "H", 4, 0)
                     if (!existStatus)
-                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 1)
+                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 1, 0)
                     if (!existStatus)
                         insertStatus = false
-                    existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 7)
+                    existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 7, 0)
                     if (existStatus)
                         insertStatus = false
                 }
                 Event.NOT_IN_DEIVERY -> {
-                    var existStatus =   parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 11)
+                    var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 1, 0)
                     if (existStatus)
                         insertStatus = false
                 }
