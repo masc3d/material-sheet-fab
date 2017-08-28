@@ -6,6 +6,7 @@ import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.OrderEntity
+import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.Stop
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
@@ -72,7 +73,9 @@ class OrderRepository(
 
                     order.parcels.forEach {
                         val existing = existingOrderParcelNumbers.get(it.number)
-                        if (existing != null) {
+
+                        // Only override local state if definitve state was provided
+                        if (it.state == Parcel.State.PENDING && existing != null) {
                             it.state = existing.state
                         }
                     }

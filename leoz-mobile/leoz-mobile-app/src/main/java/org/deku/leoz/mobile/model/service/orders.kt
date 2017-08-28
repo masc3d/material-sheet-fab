@@ -68,5 +68,11 @@ fun OrderService.Order.Parcel.toParcel(): Parcel {
             height = this.dimension.height?.toDouble() ?: 0.0,
             width = this.dimension.width?.toDouble() ?: 0.0,
             weight = this.dimension.weight ?: 0.0
-    )
+    ).also {
+        it.state = when {
+            this.isDelivered -> Parcel.State.DELIVERED
+            this.isMissing -> Parcel.State.MISSING
+            else -> Parcel.State.PENDING
+        }
+    }
 }
