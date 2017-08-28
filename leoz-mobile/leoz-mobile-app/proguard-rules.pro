@@ -64,6 +64,7 @@
 -dontwarn com.google.common.**
 -dontwarn com.sun.mail.**
 -dontwarn com.trello.rxlifecycle.**
+-dontwarn de.javakaffee.kryoserializers.**
 -dontwarn feign.DefaultMethodHandler
 -dontwarn org.objenesis.**
 -dontwarn javax.**
