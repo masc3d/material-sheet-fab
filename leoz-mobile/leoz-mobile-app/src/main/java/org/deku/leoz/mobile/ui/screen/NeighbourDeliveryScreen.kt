@@ -16,6 +16,8 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function
 import kotlinx.android.synthetic.main.screen_neighbour_delivery.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
@@ -24,12 +26,14 @@ import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.model.EventDeliveredReason
 import org.jetbrains.anko.inputMethodManager
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.android.hideSoftInput
+import sx.android.showSoftInput
 
 /**
  * Neighbour delivery screen
@@ -60,48 +64,98 @@ class NeighbourDeliveryScreen(target: Fragment? = null) : ScreenFragment<Neighbo
 
         this.retainInstance = true
         this.title = getString(R.string.title_alternativedelivery)
-        this.scrollCollapseMode = ScrollCollapseModeType.EnterAlways
+        this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.screen_neighbour_delivery, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+            inflater.inflate(R.layout.screen_neighbour_delivery, container, false)
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxNeighboursName.requestFocus()
+        this.context.inputMethodManager.showSoftInput()
 
-        this.uxNeighboursStreet.setAdapter(ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, arrayOf(stop.address.street)))
+        this.uxNeighboursStreet.setAdapter(
+                ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line,
+                        arrayOf(stop.address.street)))
 
-        this.uxContinue.setOnClickListener {
-            this.activity.showScreen(
-                    SignatureScreen(target = this.targetFragment).also {
-                        it.parameters = SignatureScreen.Parameters(
-                                stopId = this.stop.id,
-                                deliveryReason = EventDeliveredReason.NEIGHBOR,
-                                recipient = this.uxNeighboursName.text.toString()
-                        )
-                    }
-            )
-        }
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_continue,
+                        colorRes = R.color.colorPrimary,
+                        iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white,
+                        visible = false
+                )
+        )
     }
 
     override fun onResume() {
         super.onResume()
 
-        val action = RxTextView.editorActions(this.uxNeighboursStreetNo)
-                        .map { Unit }
-                        .replay(1)
-                        .refCount()
-                        .doOnNext {
-                            this.context.inputMethodManager.hideSoftInput()
-                        }
-
-        action
+        val ovNeighborName = RxTextView
+                .textChanges(this.uxNeighboursName)
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
 
+        val ovNeighborStreet = RxTextView
+                .textChanges(this.uxNeighboursStreet)
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+
+        val ovNeighborStreetNo = RxTextView
+                .textChanges(this.uxNeighboursStreetNo)
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+
+        val ovLastEditorAction = RxTextView.editorActions(this.uxNeighboursStreetNo)
+                .map { Unit }
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+
+        val ovActionEvent = this.activity.actionEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+
+        // Observable which emits true/false idnicating required fields are filled or not
+        val ovFieldsFilled = Observable.combineLatest(
+                arrayOf(
+                        ovNeighborName.map { it.length > 0 },
+                        ovNeighborStreet.map { it.length > 0 },
+                        ovNeighborStreetNo.map { it.length > 0 }),
+                { a: Array<Any> -> a.all { it == true } }
+        )
+                .distinctUntilChanged()
+
+        // Action button visibility
+        ovFieldsFilled
+                .subscribe {
+                    this.actionItems = this.actionItems.apply {
+                        first { it.id == R.id.action_continue }
+                                .visible = it
+                    }
+                }
+
+        Observable.mergeArray(
+                // Last editor action combined with form fill indicator
+                ovLastEditorAction
+                        .withLatestFrom(
+                                ovFieldsFilled,
+                                BiFunction { a: Unit, b: Boolean -> b })
+                        .filter { it == true },
+                // Action button event
+                ovActionEvent
+                        .filter { it == R.id.action_continue }
+        )
+                .subscribe {
+                    this.context.inputMethodManager.hideSoftInput()
+
+                    this.activity.showScreen(
+                            SignatureScreen(target = this.targetFragment).also {
+                                it.parameters = SignatureScreen.Parameters(
+                                        stopId = this.stop.id,
+                                        deliveryReason = EventDeliveredReason.NEIGHBOR,
+                                        recipient = this.uxNeighboursName.text.toString()
+                                )
+                            }
+                    )
+                }
     }
 
 }

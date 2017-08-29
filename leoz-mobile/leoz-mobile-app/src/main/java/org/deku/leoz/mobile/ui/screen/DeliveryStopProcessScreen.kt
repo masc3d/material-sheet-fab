@@ -788,7 +788,7 @@ class DeliveryStopProcessScreen :
                                         .title(R.string.recipient)
                                         .cancelable(true)
                                         .content(R.string.recipient_dialog_content)
-                                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
+                                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME or InputType.TYPE_TEXT_FLAG_CAP_WORDS)
                                         .input("Max Mustermann", null, false, { _, charSequence ->
                                             this.deliveryStop.recipientName = charSequence.toString()
 
