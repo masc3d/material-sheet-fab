@@ -759,7 +759,7 @@ class DeliveryStopProcessScreen :
 
         when (reason) {
             EventDeliveredReason.NEIGHBOR -> {
-                this.activity.showScreen(NeighbourDeliveryScreen().also {
+                this.activity.showScreen(NeighbourDeliveryScreen(target = this).also {
                     it.parameters = NeighbourDeliveryScreen.Parameters(
                             stopId = this.stop.id
                     )
@@ -776,7 +776,7 @@ class DeliveryStopProcessScreen :
                         when {
                             this.deliveryStop.cashAmountToCollect > 0 -> {
                                 //Requires CashScreen to be shown
-                                this.activity.showScreen(CashScreen().also {
+                                this.activity.showScreen(CashScreen(target = this).also {
                                     it.parameters = CashScreen.Parameters(
                                             stopId = this.stop.id,
                                             deliveryReason = reason

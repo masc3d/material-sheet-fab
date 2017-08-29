@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.screen
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -31,9 +32,10 @@ import org.slf4j.LoggerFactory
 import sx.android.hideSoftInput
 
 /**
+ * Neighbour delivery screen
  * Created by phpr on 10.07.2017.
  */
-class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameters>() {
+class NeighbourDeliveryScreen(target: Fragment? = null) : ScreenFragment<NeighbourDeliveryScreen.Parameters>() {
 
     @Parcel(Parcel.Serialization.BEAN)
     class Parameters @ParcelConstructor constructor(
@@ -47,6 +49,10 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
     private val stop: Stop by lazy {
         stopRepository.findById(this.parameters.stopId)
                 ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
+    }
+
+    init {
+        this.setTargetFragment(target, 0)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +76,7 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
 
         this.uxContinue.setOnClickListener {
             this.activity.showScreen(
-                    SignatureScreen().also {
+                    SignatureScreen(target = this.targetFragment).also {
                         it.parameters = SignatureScreen.Parameters(
                                 stopId = this.stop.id,
                                 deliveryReason = EventDeliveredReason.NEIGHBOR,

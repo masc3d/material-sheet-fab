@@ -44,7 +44,7 @@ import java.text.DecimalFormat
 /**
  * A simple [Fragment] subclass.
  */
-class CashScreen : ScreenFragment<CashScreen.Parameters>() {
+class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameters>() {
 
     @Parcel(Parcel.Serialization.BEAN)
     class Parameters @ParcelConstructor constructor(
@@ -68,6 +68,10 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
                 ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
     }
 
+    init {
+        this.setTargetFragment(target, 0)
+    }
+
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
             FlexibleExpandableVmItem<
                     SectionViewModel<Any>, *>
@@ -80,11 +84,10 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
-    override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?,
-                              savedInstanceState: android.os.Bundle?): android.view.View? {
-        // Inflate the layout for this fragment
-        return inflater!!.inflate(org.deku.leoz.mobile.R.layout.screen_cash, container, false)
-    }
+    override fun onCreateView(inflater: android.view.LayoutInflater, container: android.view.ViewGroup?,
+                              savedInstanceState: android.os.Bundle?): android.view.View? =
+            // Inflate the layout for this fragment
+            inflater.inflate(org.deku.leoz.mobile.R.layout.screen_cash, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -193,7 +196,7 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
                             .input("Max Mustermann", null, false, { _, charSequence ->
                                 this.deliveryStop.recipientName = charSequence.toString()
 
-                                this.activity.showScreen(SignatureScreen().also {
+                                this.activity.showScreen(SignatureScreen(target = this.targetFragment).also {
                                     it.parameters = SignatureScreen.Parameters(
                                             stopId = this.stop.id,
                                             deliveryReason = EventDeliveredReason.NORMAL,
@@ -217,7 +220,7 @@ class CashScreen : ScreenFragment<CashScreen.Parameters>() {
             }
 
             EventDeliveredReason.NEIGHBOR -> {
-                this.activity.showScreen(NeighbourDeliveryScreen().also {
+                this.activity.showScreen(NeighbourDeliveryScreen(target = this.targetFragment).also {
                     it.parameters = NeighbourDeliveryScreen.Parameters(
                             stopId = this.stop.id
                     )
