@@ -14,6 +14,7 @@ import { TourRoutingModule } from './tour-routing.module';
 import { DriverService } from './driver.service';
 import { DriverFilterPipe } from './driver.pipe';
 import { UserService } from '../user/user.service';
+import { DateMomentjsPipe } from '../../core/translate/date-momentjs.pipe';
 
 @NgModule( {
   imports: [
@@ -35,7 +36,8 @@ import { UserService } from '../user/user.service';
     DriverService,
     UserService,
     TourService,
-    DatePipe
+    DatePipe,
+    DateMomentjsPipe
   ],
   exports: [
     TourComponent

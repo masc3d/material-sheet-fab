@@ -46,7 +46,7 @@ interface CallbackArguments {
           {{'hs' | translate}}
         </div>
         <div class="ui-g-12 ui-lg-5 no-pad">
-          {{'latestRefresh' | translate}}: {{latestRefresh | date:dateFormatEvenLonger}}
+          {{'latestRefresh' | translate}}: {{latestRefresh | dateMomentjs:dateFormatEvenLonger}}
         </div>
         <div class="ui-g-12 ui-lg-7 no-pad">
           {{'selectedformap' | translate}}: {{displayedMapmode | translate}}
@@ -58,7 +58,7 @@ interface CallbackArguments {
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phoneoffice' | translate}}" [sortable]="true"></p-column>
-      <p-column field="phoneMobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
+      <p-column field="mobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
       <p-column header="">
         <ng-template let-driver="rowData" pTemplate="body">
           <i class="fa fa-crosshairs fa-fw" aria-hidden="true" (click)="showPositionPeriodically(driver)"></i>
@@ -210,7 +210,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.periodicallyUsedDriver = driver;
     this.periodicallyUsedCallback = this.showRoute;
     this.showPeriodically();
-    this.displayedMapmode = `${this.periodicallyUsedDriver.firstName} ${this.periodicallyUsedDriver.lastName}`;
+
   }
 
   showAllPositions( args: CallbackArguments ) {

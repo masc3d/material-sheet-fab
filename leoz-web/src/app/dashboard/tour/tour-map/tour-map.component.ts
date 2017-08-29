@@ -10,6 +10,7 @@ import { Position } from '../position.model';
 import { MarkerModel } from './marker.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
+import { DateMomentjsPipe } from '../../../core/translate/date-momentjs.pipe';
 
 @Component( {
   selector: 'app-tour-map',
@@ -22,7 +23,7 @@ import { TranslateService } from '../../../core/translate/translate.service';
                         [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>-->
       <yaga-tile-layer [url]="'http://tiles.derkurier.de/styles/osm-bright/rendered/{z}/{x}/{y}.png'"
                        [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
-      <yaga-geojson [data]="routeGeoJson"></yaga-geojson>
+      <!--<yaga-geojson [data]="routeGeoJson"></yaga-geojson>-->
       <yaga-marker [lat]="markerLat" [lng]="markerLng" [display]="displayMarker">
         <yaga-popup>
           <p>
@@ -30,7 +31,7 @@ import { TranslateService } from '../../../core/translate/translate.service';
             {{'vehicle' | translate}}: {{markerVehicle | translate}}<br/>
             {{'phoneoffice' | translate}}: {{markerPhoneoffice}}<br/>
             {{'phonemobile' | translate}}: {{markerPhonemobile}}<br/>
-            {{'lastactivity' | translate}}: {{markerLastactivity | date:dateFormatLong}}
+            {{'lastactivity' | translate}}: {{markerLastactivity | dateMomentjs:dateFormatLong}}
           </p>
         </yaga-popup>
         <yaga-icon [iconUrl]="iconUrl" [iconSize]="iconSize"></yaga-icon>
@@ -59,10 +60,11 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
   private bbox: L.LatLngBounds;
   private allMarkers: MarkerModel[];
   private allCustomMarkers: L.Marker[];
+  private geoJsonLayer: L.GeoJSON;
 
   constructor( protected translate: TranslateService,
                private tourService: TourService,
-               private datePipe: DatePipe ) {
+               private datePipe: DateMomentjsPipe ) {
     super( translate );
   }
 
@@ -82,7 +84,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
 
     this.tourService.allMarkers
       .takeUntil( this.ngUnsubscribe )
-      .subscribe( ( allMarkers: MarkerModel[]) => {
+      .subscribe( ( allMarkers: MarkerModel[] ) => {
         this.removeAllCustomMarkers();
         if (allMarkers.length > 0) {
           let latMin;
@@ -204,7 +206,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
     const popupContent = `
     <p>
       ${this.translate.instant( 'name' )}: ${markerModel.driver.firstName} ${markerModel.driver.lastName}<br/>
-      ${this.translate.instant( 'vehicle' )}: ${this.translate.instant(markerVehicle)}<br/>
+      ${this.translate.instant( 'vehicle' )}: ${this.translate.instant( markerVehicle )}<br/>
       ${this.translate.instant( 'phoneoffice' )}: ${markerModel.driver.phone}<br/>
       ${this.translate.instant( 'phonemobile' )}: ${markerModel.driver.phoneMobile}<br/>
       ${this.translate.instant( 'lastactivity' )}: ${this.datePipe.transform( markerModel.position.time, this.dateFormatLong )}
@@ -224,12 +226,17 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
   }
 
   private createGeoJson( activeRoute: Position[] ): any {
+    // remove previous geojson layer
+    if (this.geoJsonLayer) {
+      this.yagaMap.removeLayer( this.geoJsonLayer );
+    }
     let geoJson = {
       'type': 'FeatureCollection',
       'features': []
     };
     if (activeRoute && activeRoute.length > 0) {
       const coordinates = [];
+      const marker = [];
       let latMin;
       let latMax;
       let lngMin;
@@ -240,19 +247,48 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
         lngMin = !lngMin || waypoint.longitude < lngMin ? waypoint.longitude : lngMin;
         lngMax = !lngMax || waypoint.longitude > lngMax ? waypoint.longitude : lngMax;
         coordinates.push( [ waypoint.longitude, waypoint.latitude ] );
+        marker.push( {
+          'type': 'Feature',
+          'properties': {
+            'name': 'start',
+            'popupContent': this.datePipe.transform( waypoint.time, this.dateFormatLong )
+          },
+          'geometry': {
+            'type': 'Point',
+            'coordinates': [ waypoint.longitude, waypoint.latitude, 0.0 ]
+          }
+        } )
       }
       this.bbox = L.latLngBounds( [ latMin, lngMin ], [ latMax, lngMax ] );
+      const features = [ {
+        'type': 'Feature',
+        'geometry': {
+          'type': 'LineString',
+          'coordinates': coordinates
+        }
+      }, ...marker ];
       geoJson = {
         'type': 'FeatureCollection',
-        'features': [ {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': coordinates
-          }
-        } ]
+        'features': features
       };
+
+      this.geoJsonLayer = L.geoJSON( geoJson, {
+        onEachFeature: function(feature, layer) {
+          if (feature.properties && feature.properties['popupContent']) {
+            layer.bindPopup(feature.properties['popupContent'], {closeButton: false, offset: L.point(0, -20)});
+            layer.on('mouseover', function() { layer.openPopup(); });
+            layer.on('mouseout', function() { layer.closePopup(); });
+          }
+        },
+
+        pointToLayer: function ( feature, latlng ) {
+          return L.circleMarker( latlng, {radius: 2} );
+        }
+      } );
+
+      this.yagaMap.addLayer( this.geoJsonLayer );
+      this.yagaMap.fitBounds( this.geoJsonLayer.getBounds(), { padding: [ 0, 0 ] } );
     }
-    return geoJson;
+    // return geoJson;
   }
 }
