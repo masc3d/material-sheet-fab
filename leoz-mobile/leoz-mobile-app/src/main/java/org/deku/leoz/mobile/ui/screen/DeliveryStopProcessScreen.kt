@@ -873,7 +873,7 @@ class DeliveryStopProcessScreen :
 
     override fun onNeighbourDeliveryScreenContinue(neighbourName: String) {
         this.deliveryStop.recipientName = neighbourName
-        
+
         this.activity.showScreen(
                 SignatureScreen(target = this).also {
                     it.parameters = SignatureScreen.Parameters(

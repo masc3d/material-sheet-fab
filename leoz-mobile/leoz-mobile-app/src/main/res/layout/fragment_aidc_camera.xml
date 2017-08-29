@@ -32,4 +32,16 @@
         app:backgroundTint="@color/colorDarkGrey"
         app:srcCompat="@drawable/ic_flash" />
 
+    <android.support.design.widget.FloatingActionButton
+        style="@style/AppTheme.Fab"
+        android:id="@+id/fab_aidc_camera_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|top"
+        android:alpha="0.6"
+        app:layout_anchor="@id/fragment_aidc_camera"
+        app:layout_anchorGravity="start"
+        app:backgroundTint="@color/colorDarkGrey"
+        app:srcCompat="@drawable/ic_pin" />
+
 </FrameLayout>

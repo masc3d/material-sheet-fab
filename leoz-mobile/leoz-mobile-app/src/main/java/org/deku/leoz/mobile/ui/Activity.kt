@@ -526,14 +526,15 @@ open class Activity : BaseActivity(),
         return false
     }
 
+    private val cameraAidcFragment: AidcCameraFragment?
+        get() = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName) as? AidcCameraFragment
+
     /**
      * Aidc fragment control
      */
     private var cameraAidcFragmentVisible: Boolean
-        get() {
-            val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
-            return fragment != null
-        }
+        get() = this.cameraAidcFragment != null
+
         set(value) {
             if (value == this.cameraAidcFragmentVisible)
                 return
@@ -558,7 +559,7 @@ open class Activity : BaseActivity(),
                 }
 
                 false -> {
-                    val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
+                    val fragment = this.cameraAidcFragment
 
                     if (fragment != null) {
                         if (isPaused) {
@@ -761,7 +762,11 @@ open class Activity : BaseActivity(),
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     this.tones.beep()
-                    this.cameraAidcFragmentVisible = false
+
+                    this.cameraAidcFragment?.also {
+                        if (!it.isPinned)
+                            this.cameraAidcFragmentVisible = false
+                    }
                 }
         //endregion
     }
