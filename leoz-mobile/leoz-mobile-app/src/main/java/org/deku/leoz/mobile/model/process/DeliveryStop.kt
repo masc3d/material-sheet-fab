@@ -405,6 +405,7 @@ class DeliveryStop(
                                     },
                                     signatureOnPaperInfo = when {
                                         signatureOnPaperImageUid != null -> ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(
+                                                recipient = recipientName,
                                                 pictureFileUid = this.signatureOnPaperImageUid
                                         )
                                         else -> null

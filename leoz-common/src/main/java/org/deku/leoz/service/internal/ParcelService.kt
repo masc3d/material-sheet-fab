@@ -41,6 +41,7 @@ interface ParcelServiceV1 {
         )
 
         data class SignatureOnPaperInfo(
+                val recipient: String? = null,
                 val pictureFileUid: UUID? = null
         )
     }
