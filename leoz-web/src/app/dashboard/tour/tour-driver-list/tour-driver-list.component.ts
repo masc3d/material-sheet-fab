@@ -197,6 +197,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   showPositionPeriodically( driver: Driver ) {
+    this.toggleVisibility();
     this.periodicallyUsedFilter = null;
     this.periodicallyUsedDriver = driver;
     this.periodicallyUsedCallback = this.showPosition;
@@ -205,6 +206,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   showRoutePeriodically( driver: Driver ) {
+    this.toggleVisibility();
     this.periodicallyUsedFilter = null;
     this.periodicallyUsedDriver = driver;
     this.periodicallyUsedCallback = this.showRoute;
