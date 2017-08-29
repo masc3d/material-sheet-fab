@@ -8,9 +8,12 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
 import sx.rx.ObservableRxProperty
+import java.util.concurrent.TimeUnit
 
 /**
  * Barcode reader implementation using the internal camera
@@ -50,7 +53,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
                             true -> {
                                 this.resume()
                                 this.isSoundEffectsEnabled = true
-                                this.decodeSingle(this@CameraAidcReader)
+                                this.decodeContinuous(this@CameraAidcReader)
                             }
                             false -> {
                                 this.pause()
@@ -110,12 +113,24 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     }
 
     //region Zxing barcode callback
+    private val debounceReadEventSubject = PublishSubject.create<ReadEvent>()
+    private val debounceReadEvent = debounceReadEventSubject
+            .hide()
+            .throttleFirst(500, TimeUnit.MILLISECONDS)
+
     override fun barcodeResult(result: BarcodeResult) {
         val barcodeType = barcodeTypeByFormat[result.barcodeFormat] ?: SymbologyType.Unknown
-        this.readEventSubject.onNext(ReadEvent(data = result.text, symbologyType = barcodeType))
+        this.debounceReadEventSubject.onNext(ReadEvent(data = result.text, symbologyType = barcodeType))
     }
 
     override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>) {
     }
     //endregion
+
+    init {
+        this.debounceReadEvent
+                .subscribe {
+                    this.readEventSubject.onNext(it)
+                }
+    }
 }
