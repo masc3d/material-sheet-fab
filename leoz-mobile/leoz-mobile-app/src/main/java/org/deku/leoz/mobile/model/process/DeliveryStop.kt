@@ -49,7 +49,7 @@ class DeliveryStop(
     private val login: Login by Kodein.global.lazy.instance()
 
     /**
-     * Allowed events for this stop
+     * Allowed events for this stop (all levels)
      */
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         mutableListOf(
@@ -78,6 +78,38 @@ class DeliveryStop(
                     }
                 }
                 .distinct()
+    }
+
+    /**
+     * Allowed parcel level events
+     */
+    val allowedParcelEvents by lazy {
+        this.allowedEvents.filter {
+            when (it) {
+                EventNotDeliveredReason.DAMAGED -> true
+                else -> false
+            }
+        }
+    }
+
+    /**
+     * Allowed order level events
+     */
+    val allowedOrderEvents by lazy {
+        this.allowedEvents.filter {
+            when (it) {
+                EventNotDeliveredReason.REFUSED,
+                EventNotDeliveredReason.XC_OBJECT_NOT_READY -> true
+                else -> false
+            }
+        }
+    }
+
+    /**
+     * Allowed stop level events
+     */
+    val allowedStopEvents by lazy {
+        this.allowedEvents.subtract(this.allowedParcelEvents).toList()
     }
 
     /**
@@ -145,6 +177,7 @@ class DeliveryStop(
 
     /** Loaded parcels for this stop */
     val loadedParcels = this.parcels.map { it.filter { it.state == Parcel.State.LOADED } }
+            .behave(this)
 
     /** Parcels pending delivery for this stop */
     val pendingParcels = this.loadedParcels.map { it.filter { it.reason == null } }
@@ -152,6 +185,11 @@ class DeliveryStop(
 
     /** Missing parcels */
     val missingParcels = this.parcels.map { it.filter { it.state == Parcel.State.MISSING } }
+            .behave(this)
+
+    /** Damaged parcels */
+    val damagedParcels = this.parcels.map { it.filter { it.isDamaged } }
+            .behave(this)
 
     /** Delivered parcels of this stop */
     val deliveredParcels = this.parcels.map { it.filter { it.state == Parcel.State.DELIVERED } }

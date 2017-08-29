@@ -128,8 +128,6 @@ class VehicleLoadingScreen :
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
 
-    private val mqttEndPoints: MqttEndpoints by Kodein.global.lazy.instance()
-
     /** The current/most recently selected damaged parcel */
     private var currentDamagedParcel: ParcelEntity? = null
 
@@ -676,19 +674,10 @@ class VehicleLoadingScreen :
 
     override fun onCameraImageTaken(jpeg: ByteArray) {
         this.currentDamagedParcel?.also { parcel ->
-            log.trace("Image for damaged parcel [${parcel}]")
-
-            // Send file
-            val fileUid = mqttEndPoints.central.main.channel().sendFile(jpeg, MimeType.JPEG.value)
-
-            // Update parcel with damaged info
-            parcel.isDamaged = true
-
-            parcel.meta.add(ParcelMeta.create(
-                    Parcel.DamagedInfo(pictureFileUid = fileUid)
-            ))
-
-            this.parcelRepository.update(parcel)
+            parcelRepository.markDamaged(
+                    parcel = parcel,
+                    jpegPictureData = jpeg
+            )
                     .subscribeOn(Schedulers.computation())
                     .subscribe()
         }

@@ -151,8 +151,11 @@ class SectionsAdapter
                         }
                     } else {
                         if (sectionViewModel.showIfEmpty || !items.isEmpty()) {
-                            sectionItem = createSectionItem()
-                            this.addItem(sectionItem)
+                            // The section could have been removed prior to item change
+                            if (this.sections.contains(sectionViewModel)) {
+                                sectionItem = createSectionItem()
+                                this.addItem(sectionItem)
+                            }
                         }
                     }
 
@@ -187,7 +190,7 @@ class SectionsAdapter
     fun itemOf(section: SectionViewModel<*>): FlexibleExpandableVmItem<*, *>? {
         return this.headerItems.firstOrNull {
             it is FlexibleExpandableVmItem<*, *> && it.viewModel == section
-        } as FlexibleExpandableVmItem<*, *>
+        } as? FlexibleExpandableVmItem<*, *>
     }
 
     /**
@@ -217,11 +220,16 @@ class SectionsAdapter
     fun removeSection(section: SectionViewModel<*>) {
         val item = this.itemOf(section)
 
+        if (this.isSectionSelected(section))
+            this.selectedSection = null
+
         if (item != null) {
-            this.removeItem(this.getGlobalPositionOf(item))
+            val pos = this.getGlobalPositionOf(item)
+            this.removeItem(pos)
         }
 
         this.sections.remove(section)
+
     }
 
     /**

@@ -31,14 +31,15 @@ import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
-import org.deku.leoz.mobile.model.entity.OrderEntity
-import org.deku.leoz.mobile.model.entity.ParcelEntity
+import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.mq.MimeType
+import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
@@ -59,13 +60,15 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
+import sx.mq.mqtt.channel
 
 /**
  * A simple [Fragment] subclass.
  */
 class DeliveryStopProcessScreen :
         ScreenFragment<DeliveryStopProcessScreen.Parameters>(),
-        EventDialog.Listener {
+        EventDialog.Listener,
+        BaseCameraScreen.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -103,6 +106,8 @@ class DeliveryStopProcessScreen :
     private val tones: Tones by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
+    private val mqttEndPoints: MqttEndpoints by Kodein.global.lazy.instance()
+
     //region Model classes
     private val db: Database by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
@@ -117,6 +122,9 @@ class DeliveryStopProcessScreen :
     private val deliveryStop: DeliveryStop by lazy {
         this.delivery.activeStop ?: throw IllegalArgumentException("Active stop not set")
     }
+
+    /** The current/most recently selected damaged parcel */
+    private var currentDamagedParcel: ParcelEntity? = null
     //endregion
 
     //region Sections
@@ -161,6 +169,17 @@ class DeliveryStopProcessScreen :
                 showIfEmpty = false,
                 title = getString(R.string.missing),
                 items = this.deliveryStop.missingParcels
+        )
+    }
+
+    val damagedSection by lazy {
+        SectionViewModel<ParcelEntity>(
+                icon = R.drawable.ic_damaged,
+                color = R.color.colorAccent,
+                background = R.drawable.section_background_accent,
+                showIfEmpty = true,
+                title = getString(R.string.event_reason_damaged),
+                items = this.deliveryStop.damagedParcels
         )
     }
 
@@ -388,7 +407,7 @@ class DeliveryStopProcessScreen :
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .subscribe {
                     when (it) {
                         R.id.action_delivery_select_delivered -> {
@@ -405,12 +424,32 @@ class DeliveryStopProcessScreen :
                                     .bindToLifecycle(this)
                                     .subscribe {
                                         eventDialog.hide()
-                                        this.deliveryStop.assignEventReason(it)
-                                                .observeOnMainThread()
-                                                .subscribeBy(
-                                                        onComplete = {
-                                                            this.parcelListAdapter.selectedSection = sectionByEvent.get(it)
-                                                        })
+
+                                        when {
+                                        // Parcel level event
+                                            this.deliveryStop.allowedParcelEvents.contains(it) -> {
+                                                when (it) {
+                                                    EventNotDeliveredReason.DAMAGED -> {
+                                                        log.trace("DAMAGED SECTION SELECTED")
+                                                        this.parcelListAdapter.addSection(
+                                                                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                                                vmItemProvider = { it.toFlexibleItem() }
+                                                        )
+
+                                                        this.parcelListAdapter.selectedSection = this.damagedSection
+                                                    }
+                                                }
+                                            }
+                                            else -> {
+                                                // Stop level event
+                                                this.deliveryStop.assignEventReason(it)
+                                                        .observeOnMainThread()
+                                                        .subscribeBy(
+                                                                onComplete = {
+                                                                    this.parcelListAdapter.selectedSection = sectionByEvent.getValue(it)
+                                                                })
+                                            }
+                                        }
                                     }
 
                             eventDialog.show()
@@ -430,7 +469,27 @@ class DeliveryStopProcessScreen :
                     }
                 }
 
-        // Initially selected section
+        //region Dynamic sections
+        this.deliveryStop.damagedParcels
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribe {
+                    if (it.count() > 0) {
+                        this.parcelListAdapter.addSection(
+                                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                vmItemProvider = { it.toFlexibleItem() }
+                        )
+                    } else {
+                        this.parcelListAdapter.removeSection(this.damagedSection)
+
+                        if (this.parcelListAdapter.selectedSection == null) {
+                            this.parcelListAdapter.selectedSection = this.deliveredSection
+                        }
+                    }
+                }
+        //endregion
+
+        //region Initially selected section
         val sectionWithMaxEvents = this.sectionByEvent.map {
             Pair(it.value, it.value.items.blockingFirst())
         }
@@ -439,6 +498,7 @@ class DeliveryStopProcessScreen :
                 ?.first
 
         this.parcelListAdapter.selectedSection = sectionWithMaxEvents ?: deliveredSection
+        // endregion
 
         this.parcelListAdapter.selectedSectionProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -598,10 +658,54 @@ class DeliveryStopProcessScreen :
                 if (this.parcelListAdapter.selectedSection != deliveredSection)
                     this.parcelListAdapter.selectedSection = deliveredSection
             }
+            damagedSection -> {
+                if (parcel.isDamaged) {
+                    this.tones.warningBeep()
+                    this.aidcReader.enabled = false
+
+                    MaterialDialog.Builder(this.context)
+                            .title(R.string.question_remove_damaged_status_title)
+                            .content(R.string.question_remove_damaged_status)
+                            .negativeText(getString(android.R.string.no))
+                            .positiveText(getString(android.R.string.yes))
+                            .dismissListener {
+                                this.aidcReader.enabled = true
+                            }
+                            .onPositive { _, _ ->
+                                // Removed damaged parcel status
+                                parcel.isDamaged = false
+
+                                this.parcelRepository.update(parcel)
+                                        .subscribeOn(Schedulers.computation())
+                                        .subscribe()
+                            }
+                            .show()
+                } else {
+                    this.currentDamagedParcel = parcel
+
+                    /** Show camera screen */
+                    this.activity.showScreen(DamagedParcelCameraScreen(target = this).apply {
+                        parameters = DamagedParcelCameraScreen.Parameters(
+                                parcelId = parcel.id
+                        )
+                    })
+                }
+            }
             else -> {
                 // TODO: add support for scanning/adding parcel to damaged section
                 tones.warningBeep()
             }
+        }
+    }
+
+    override fun onCameraImageTaken(jpeg: ByteArray) {
+        this.currentDamagedParcel?.also { parcel ->
+            parcelRepository.markDamaged(
+                    parcel = parcel,
+                    jpegPictureData = jpeg
+            )
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe()
         }
     }
 
