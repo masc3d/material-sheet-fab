@@ -71,7 +71,7 @@ interface CallbackArguments {
 export class TourDriverListComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
   intervalOptions: SelectItem[];
   refreshOptions: SelectItem[];
-  selectedInterval = '>24';
+  selectedInterval = '24';
   selectedRefresh = 10;
 
   latestRefresh: Date;
@@ -98,7 +98,6 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   ngOnInit() {
     super.ngOnInit();
     this.intervalOptions = [
-      { label: '>24', value: '>24' },
       { label: '1', value: '1' },
       { label: '2', value: '2' },
       { label: '6', value: '6' },
@@ -214,16 +213,14 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   showAllPositions( args: CallbackArguments ) {
-    args.tourService.fetchAllPositions( this.periodicallyUsedFilter );
+    args.tourService.fetchAllPositions( this.periodicallyUsedFilter, Number.parseInt(this.selectedInterval, 10) * 60 );
   }
 
   showPosition( args: CallbackArguments ) {
-    args.tourService.changeActiveMarker( args.driver );
+    args.tourService.changeActiveMarker( args.driver, Number.parseInt(this.selectedInterval, 10) * 60 );
   }
 
   showRoute( args: CallbackArguments ) {
-    const asInt = Number.parseInt( args.interval, 10 );
-    const duration = asInt ? String( asInt * 60 ) : '300000';
-    args.tourService.changeActiveRoute( args.driver, duration );
+    args.tourService.changeActiveRoute( args.driver, Number.parseInt(this.selectedInterval, 10) * 60 );
   }
 }
