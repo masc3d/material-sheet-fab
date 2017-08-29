@@ -116,7 +116,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.drivers = this.driverService.drivers;
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.tourService.resetMarkerAndRoute();
-    this.tableIsVisible = true;
+    this.tableIsVisible = false;
     this.allDrivers();
   }
 
@@ -129,6 +129,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   allDrivers() {
+    this.tableIsVisible = false;
     this.clearTimerMapdisplay();
     this.driverService.getDrivers();
     this.filterName = 'driverfilter';
@@ -141,6 +142,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   allUsers() {
+    this.tableIsVisible = false;
     this.clearTimerMapdisplay();
     this.userService.getUsers();
     this.filterName = 'userfilter';
