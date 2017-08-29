@@ -68,7 +68,8 @@ import sx.mq.mqtt.channel
 class DeliveryStopProcessScreen :
         ScreenFragment<DeliveryStopProcessScreen.Parameters>(),
         EventDialog.Listener,
-        BaseCameraScreen.Listener {
+        BaseCameraScreen.Listener,
+        SignatureScreen.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -709,17 +710,50 @@ class DeliveryStopProcessScreen :
         }
     }
 
-    private fun closeStop(reason: EventDeliveredReason) {
-        //TODO: To be "managed" by a/the model
-        val serviceList: List<MaterialDialog>? = delivery.activeStop?.services?.filter { it.mobile.ackMessage != null }?.map {
-            MaterialDialog.Builder(context)
-                    .content(this.getString(it.mobile.ackMessage!!))
-                    .cancelable(false)
-                    .positiveText(R.string.ok)
-                    .build()
-        }
+    override fun onSignatureSubmitted(signatureSvg: String) {
+        // Complement active stop and finalize
+        this.deliveryStop.signatureSvg = signatureSvg
+        this.finalizeStop()
+    }
 
-        serviceList?.forEach {
+
+    override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
+        this.deliveryStop.signOnPaper(signatureJpeg)
+        this.finalizeStop()
+    }
+
+    private fun finalizeStop() {
+        this.deliveryStop.finalize()
+                .subscribeOn(Schedulers.computation())
+                .observeOnMainThread()
+                .subscribeBy(
+                        onComplete = {
+                            this.delivery.activeStop = null
+
+                            this.activity.supportFragmentManager.popBackStack(
+                                    DeliveryStopListScreen::class.java.canonicalName,
+                                    0)
+                        },
+                        onError = {
+                            log.error(it.message, it)
+                        }
+                )
+    }
+
+    private fun closeStop(reason: EventDeliveredReason) {
+        // Show notification dialogs
+        val dialogs: List<MaterialDialog> = this.deliveryStop.services
+                .filter { it.mobile.ackMessage != null }
+                .map {
+                    MaterialDialog.Builder(context)
+                            .content(this.getString(it.mobile.ackMessage!!))
+                            .cancelable(false)
+                            .positiveText(R.string.ok)
+                            .build()
+                }
+
+        // TODO: this will certainly not work. must be reactive
+        dialogs.forEach {
             it.show()
         }
 
@@ -758,7 +792,7 @@ class DeliveryStopProcessScreen :
                                         .input("Max Mustermann", null, false, { _, charSequence ->
                                             this.deliveryStop.recipientName = charSequence.toString()
 
-                                            this.activity.showScreen(SignatureScreen().also {
+                                            this.activity.showScreen(SignatureScreen(target = this).also {
                                                 it.parameters = SignatureScreen.Parameters(
                                                         stopId = this.stop.id,
                                                         deliveryReason = EventDeliveredReason.NORMAL,

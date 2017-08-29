@@ -24,7 +24,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                android:background="@drawable/rounded_corner_background_white"
                 android:ems="10"
                 android:hint="@string/document_type"
                 android:inputType="textCapCharacters|textNoSuggestions"

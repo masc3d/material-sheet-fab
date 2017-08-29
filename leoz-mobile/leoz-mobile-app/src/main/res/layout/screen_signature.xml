@@ -1,22 +1,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
-             style="@style/AppTheme.Layout.Content"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="org.deku.leoz.mobile.ui.screen.SignatureScreen">
 
-    <TextView
-        android:id="@+id/uxConclusion"
-        style="@style/TextAppearance.AppCompat.Medium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:alpha="1"
-        android:ems="10"
-        android:text="@string/signature_conclusion"
-        android:layout_gravity="bottom"
-        tools:ignore="HardcodedText"/>
-
+    <!-- TODO: this screen needs redesign. relative layouts don't scale well across display sizes -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,30 +18,60 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_marginBottom="@dimen/margin"
             android:gravity="center"
-            android:text="@string/please_sign_here" />
+            android:text="@string/please_sign_here"
+            />
 
-        <com.github.gcacace.signaturepad.views.SignaturePad xmlns:android="http://schemas.android.com/apk/res/android"
+        <com.github.gcacace.signaturepad.views.SignaturePad
+            xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/uxSignaturePad"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_below="@+id/textView3"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/rounded_corner_background_white"
+            android:background="@drawable/signaturepad_background"
             app:clearOnDoubleClick="false"
-            app:penColor="@android:color/black" />
+            app:penColor="@android:color/black"/>
+
+
+        <FrameLayout
+            style="@style/AppTheme.Layout.Content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/uxSignaturePad"
+            >
+
+            <TextView
+                android:id="@+id/uxRecipient"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/small_margin"
+                android:text="@string/signature_signed_by_name"/>
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+    <FrameLayout
+        style="@style/AppTheme.Layout.Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        >
 
         <TextView
-            android:id="@+id/uxRecipient"
+            android:id="@+id/uxConclusion"
             style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/uxSignaturePad"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="@dimen/small_margin"
-            android:text="@string/signature_signed_by_name" />
-
-    </RelativeLayout>
+            android:alpha="1"
+            android:ems="10"
+            android:text="@string/signature_conclusion"
+            tools:ignore="HardcodedText"/>
+    </FrameLayout>
 
 </FrameLayout>
