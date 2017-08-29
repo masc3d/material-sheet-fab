@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     style="@style/AppTheme.Layout.Screen"
     tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
@@ -12,8 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="end"
-        android:layout_marginEnd="@dimen/small_margin"
+        style="@style/AppTheme.Layout.Content"
         android:orientation="vertical">
 
         <LinearLayout
@@ -21,20 +20,22 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/medium_margin"
             android:layout_marginEnd="@dimen/medium_margin"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="@dimen/medium_margin"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="end"
+                android:layout_gravity="center"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
+                    android:layout_marginEnd="@dimen/medium_margin"
                     android:layout_gravity="center"
-                    app:srcCompat="@drawable/ic_sigma" />
+                    app:srcCompat="@drawable/ic_sigma"
+                    />
 
                 <TextView
                     android:id="@+id/uxCashValue"
@@ -42,11 +43,13 @@
                     android:layout_width="0dp"
                     android:gravity="end"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
+                    android:paddingEnd="@dimen/small_margin"
+                    android:paddingStart="@dimen/small_margin"
                     android:ems="10"
                     android:text="10,99 €"
-                    tools:ignore="HardcodedText" />
+                    tools:ignore="HardcodedText"
+                    />
 
             </LinearLayout>
 
@@ -55,7 +58,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="@dimen/large_margin"
             android:layout_marginStart="@dimen/medium_margin"
             android:layout_marginEnd="@dimen/medium_margin"
             android:orientation="vertical">
@@ -63,13 +66,13 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="end"
+                android:layout_gravity="center"
                 android:orientation="horizontal">
 
-                <!-- TODO: Change Icon to a hand which gives/gets money -->
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
+                    android:layout_marginEnd="@dimen/medium_margin"
                     android:layout_gravity="center"
                     app:srcCompat="@drawable/ic_money_handover" />
 
@@ -77,7 +80,6 @@
                     android:id="@+id/uxCashGiven"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:gravity="end"
                     style="@style/TextAppearance.AppCompat.Large"
@@ -100,23 +102,25 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="end"
+                android:layout_gravity="center"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="24dp"
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
                     android:layout_gravity="center"
-                    android:layout_height="24dp"
+                    android:layout_marginEnd="@dimen/medium_margin"
                     app:srcCompat="@drawable/ic_return" />
 
                 <TextView
                     android:id="@+id/uxCashChange"
                     style="@style/TextAppearance.AppCompat.Large"
-                    android:layout_width="0dp"
                     android:gravity="end"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_width="0dp"
                     android:layout_weight="1"
+                    android:paddingEnd="@dimen/small_margin"
+                    android:paddingStart="@dimen/small_margin"
                     android:ems="10"
                     android:hint="00,00"
                     tools:ignore="HardcodedText" />

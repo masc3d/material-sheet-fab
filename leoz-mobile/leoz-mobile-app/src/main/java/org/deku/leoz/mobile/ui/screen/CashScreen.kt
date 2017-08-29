@@ -32,6 +32,7 @@ import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.hideSoftInput
+import sx.android.showSoftInput
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import java.text.DecimalFormat
@@ -171,6 +172,9 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
             this.context.inputMethodManager.hideSoftInput()
             true
         }
+
+        this.uxCashGiven.requestFocus()
+        this.context.inputMethodManager.showSoftInput()
     }
 
     override fun onResume() {
