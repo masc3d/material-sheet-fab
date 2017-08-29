@@ -300,7 +300,6 @@ class DeliveryStop(
 
             stop.tasks
                     .flatMap { it.order.parcels }
-                    .filter { it.state == Parcel.State.DELIVERED }
                     .forEach { parcel ->
                         parcel.state = Parcel.State.LOADED
                         parcel.reason = null
@@ -319,20 +318,33 @@ class DeliveryStop(
 
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
-            if (stop.state == Stop.State.CLOSED) {
-                stop.state = Stop.State.PENDING
-                update(stop)
-            }
+            open()
 
-            // TODO: support order level events
-            parcels.blockingFirst()
-                    .filter {
-                        it.state == Parcel.State.LOADED
+            // Check if all stop parcel have the (same) event
+            val stopParcels = parcels.blockingFirst()
+
+            if (parcel.reason != null) {
+                val parcelsToReset = when {
+                    // Reset event for all stop parcels if event matches
+                    stopParcels.all { it.reason == parcel.reason } -> {
+                        stopParcels
                     }
-                    .forEach {
-                        it.reason = null
-                        update(it)
+                    // Reset event for all parcels of this order if event matches
+                    parcel.order.parcels.all { it.reason == parcel.reason } -> {
+                        parcel.order.parcels
                     }
+                    else -> listOf()
+                }
+
+                parcelsToReset
+                        .filter {
+                            it.state == Parcel.State.LOADED
+                        }
+                        .forEach {
+                            it.reason = null
+                            update(it)
+                        }
+            }
 
             /** Mark parcel delivered */
             parcel.state = Parcel.State.DELIVERED
@@ -344,17 +356,25 @@ class DeliveryStop(
     }
 
     /**
+     * (Re-)open stop
+     */
+    private fun open() {
+        val stop = this.entity
+        if (stop.state == Stop.State.CLOSED) {
+            stop.state = Stop.State.PENDING
+            db.store.toBlocking().update(stop)
+        }
+    }
+
+    /**
      * Assign event reason to entire stop
      */
-    fun assignEventReason(reason: EventNotDeliveredReason): Completable {
+    fun assignStopLevelEvent(reason: EventNotDeliveredReason): Completable {
         val stop = this.entity
 
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
-            if (stop.state == Stop.State.CLOSED) {
-                stop.state = Stop.State.PENDING
-                update(stop)
-            }
+            open()
 
             parcels.blockingFirst().forEach {
                 it.state = Parcel.State.LOADED
@@ -365,6 +385,27 @@ class DeliveryStop(
                 .toCompletable()
                 .subscribeOn(Schedulers.computation())
     }
+
+    /**
+     * Assign event reason to entire stop
+     */
+    fun assignOrderLevelEvent(order: Order, reason: EventNotDeliveredReason): Completable {
+        val stop = this.entity
+
+        return db.store.withTransaction {
+            // In case the stop has been closed before, re-open on delivery
+            open()
+
+            order.parcels.forEach {
+                it.state = Parcel.State.LOADED
+                it.reason = reason
+                update(it)
+            }
+        }
+                .toCompletable()
+                .subscribeOn(Schedulers.computation())
+    }
+
 
     /**
      * Sends the image and stores the file uid internally, which will be passed

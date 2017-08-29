@@ -236,6 +236,7 @@ class DeliveryStopProcessScreen :
 
     fun OrderEntity.toFlexibleItem()
             : FlexibleSectionableVmItem<OrderTaskViewModel> {
+
         return FlexibleSectionableVmItem(
                 view = R.layout.item_ordertask,
                 variable = BR.orderTask,
@@ -429,8 +430,8 @@ class DeliveryStopProcessScreen :
                                         eventDialog.hide()
 
                                         when {
-                                        // Parcel level event
                                             this.deliveryStop.allowedParcelEvents.contains(it) -> {
+                                                // Parcel level event
                                                 when (it) {
                                                     EventNotDeliveredReason.DAMAGED -> {
                                                         log.trace("DAMAGED SECTION SELECTED")
@@ -441,11 +442,14 @@ class DeliveryStopProcessScreen :
 
                                                         this.parcelListAdapter.selectedSection = this.damagedSection
                                                     }
+
+                                                    else -> {
+                                                    }
                                                 }
                                             }
                                             else -> {
                                                 // Stop level event
-                                                this.deliveryStop.assignEventReason(it)
+                                                this.deliveryStop.assignStopLevelEvent(it)
                                                         .observeOnMainThread()
                                                         .subscribeBy(
                                                                 onComplete = {
@@ -530,6 +534,37 @@ class DeliveryStopProcessScreen :
                             }
                         }
                     }
+                }
+
+        this.parcelListAdapter.itemClickEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe { item ->
+                    log.debug("ONITEMCLICK")
+
+                    ((item as? FlexibleSectionableVmItem<*>)
+                            ?.viewModel as? OrderTaskViewModel)
+                            ?.also { orderTaskViewModel ->
+                                val eventDialog = EventDialog.Builder(this.context)
+                                        .events(this.deliveryStop.allowedOrderEvents)
+                                        .listener(this)
+                                        .build()
+
+                                eventDialog.selectedItemEvent
+                                        .bindToLifecycle(this)
+                                        .subscribe {
+                                            eventDialog.hide()
+
+                                            // Stop level event
+                                            this.deliveryStop.assignOrderLevelEvent(orderTaskViewModel.orderTask.order, it)
+                                                    .observeOnMainThread()
+                                                    .subscribeBy(
+                                                            onComplete = {
+                                                                this.parcelListAdapter.selectedSection = sectionByEvent.getValue(it)
+                                                            })
+                                        }
+
+                                eventDialog.show()
+                            }
                 }
 
         this.syntheticInputs = listOf(
@@ -654,6 +689,7 @@ class DeliveryStopProcessScreen :
      */
     fun onParcel(parcel: ParcelEntity) {
         when (parcelListAdapter.selectedSection) {
+
             deliveredSection, pendingSection, orderSection -> {
                 this.deliveryStop.deliver(parcel)
                         .subscribe()
@@ -661,6 +697,7 @@ class DeliveryStopProcessScreen :
                 if (this.parcelListAdapter.selectedSection != deliveredSection)
                     this.parcelListAdapter.selectedSection = deliveredSection
             }
+
             damagedSection -> {
                 if (parcel.isDamaged) {
                     this.tones.warningBeep()
@@ -876,7 +913,8 @@ class DeliveryStopProcessScreen :
                 })
             }
 
-            else -> {}
+            else -> {
+            }
         }
     }
 
