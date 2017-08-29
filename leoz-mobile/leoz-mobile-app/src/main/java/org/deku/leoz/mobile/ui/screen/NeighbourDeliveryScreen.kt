@@ -46,6 +46,16 @@ class NeighbourDeliveryScreen(target: Fragment? = null) : ScreenFragment<Neighbo
             var stopId: Int
     )
 
+    interface Listener {
+        fun onNeighbourDeliveryScreenContinue(neighbourName: String)
+    }
+
+    private val listener by lazy {
+        this.targetFragment as? Listener
+                ?: this.parentFragment as? Listener
+                ?: this.activity as? Listener
+    }
+
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val db: Database by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
@@ -145,15 +155,8 @@ class NeighbourDeliveryScreen(target: Fragment? = null) : ScreenFragment<Neighbo
         )
                 .subscribe {
                     this.context.inputMethodManager.hideSoftInput()
-
-                    this.activity.showScreen(
-                            SignatureScreen(target = this.targetFragment).also {
-                                it.parameters = SignatureScreen.Parameters(
-                                        stopId = this.stop.id,
-                                        deliveryReason = EventDeliveredReason.NEIGHBOR,
-                                        recipient = this.uxNeighboursName.text.toString()
-                                )
-                            }
+                    this.listener?.onNeighbourDeliveryScreenContinue(
+                            neighbourName = this.uxNeighboursName.text.toString()
                     )
                 }
     }

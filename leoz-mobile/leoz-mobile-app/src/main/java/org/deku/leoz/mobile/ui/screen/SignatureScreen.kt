@@ -16,8 +16,8 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -48,16 +48,16 @@ class SignatureScreen(target: Fragment? = null)
             var recipient: String
     )
 
-    private val log = LoggerFactory.getLogger(this.javaClass)
-    private val db: Database by Kodein.global.lazy.instance()
-    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
-    private val delivery: Delivery by Kodein.global.lazy.instance()
-
     private val listener by lazy {
         this.targetFragment as? Listener
                 ?: this.parentFragment as? Listener
                 ?: this.activity as? Listener
     }
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
+    private val db: Database by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     private val descriptionText: String by lazy {
         this@SignatureScreen.getString(R.string.signature_conclusion,
