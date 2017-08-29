@@ -23,6 +23,7 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.jetbrains.anko.imageBitmap
 import org.slf4j.LoggerFactory
+import sx.android.Device
 import sx.rx.ObservableRxProperty
 import sx.rx.subscribeOn
 import java.util.concurrent.ExecutorService
@@ -40,6 +41,7 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
 
     private val executorService: ExecutorService by Kodein.global.lazy.instance()
     private val sounds: Sounds by Kodein.global.lazy.instance()
+    private val device: Device by Kodein.global.lazy.instance()
 
     private var pictureJpeg: ByteArray? = null
 
@@ -83,7 +85,12 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
         this.uxProgressContainer.visibility = View.VISIBLE
 
         this.uxCameraView.setJpegQuality(90)
-        this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_HIGHEST)
+
+        // Currently only set higher resolutions for honeywell devices
+        // TODO: Regular phones may crash with either VIDEO_QUALITY_1080P or VIDEO_QUALITY_HIGHEST, this seems ot be an issue with CameraKit and needs to be fixed there.
+        if (this.device.manufacturer.type == Device.Manufacturer.Type.Honeywell)
+            this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_1080P)
+
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
         this.uxCameraView.setFlash(CameraKit.Constants.FLASH_OFF)
 
