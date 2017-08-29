@@ -123,7 +123,7 @@ open class ParcelServiceV1 :
             r.poslat = it.latitude
             r.poslong = it.longitude
 
-            r.infotext = message.nodeId.toString().substringBefore("-")// "ScannerXY"
+            r.infotext = "MOB " + message.userId.toString()
 
             //TODO: Die Werte kz_status und -erzeuger sollten vermutlich über die Enumeration gesetzt werden, damit man die (aktuellen) Primärschlüssel nicht an mehreren Stellen pflegen muss, oder?
             val eventId = it.event
@@ -174,28 +174,37 @@ open class ParcelServiceV1 :
                     val recipientInfo = StringBuilder()
                     var signature: String? = null
                     var mimetype = "svg"
+                    var pictureFileUid : UUID? = null
                     when (reason) {
                         Reason.POSTBOX -> {
                             recipientInfo.append("Postbox")
                         }
                         Reason.NORMAL -> {
-                            //if (it.deliveredInfo == null)
-//                            if (it.additionalInfo == null)
-//                                throw DefaultProblem(
-//                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-//                                )
-                            if (message.deliveredInfo == null)
-                                throw DefaultProblem(
-                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                )
-                            recipientInfo.append((message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).recipient ?: "")
-                            signature = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).signature
-                            mimetype = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).mimetype
-                            //val addInfo = it. additionalInfo
-                            //recipientInfo.append(.deliveredInfo.recipient ?: "")
-                            //signature = event.declaringClass.  message.deliveredInfo.signature
-                            //mimetype = message.deliveredInfo.mimetype
-/*
+                            when (message.deliveredInfo) {
+                                null -> {
+                                    when (message.signatureOnPaperInfo) {
+                                        null -> {
+                                            throw DefaultProblem(
+                                                    title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                        }
+                                        else -> {
+                                            recipientInfo.append((message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).recipient ?: "")
+                                            pictureFileUid =   (message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).pictureFileUid
+                                        }
+                                    }
+                                }
+                                else -> {
+                                    recipientInfo.append((message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).recipient ?: "")
+                                    signature = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).signature
+                                    mimetype = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).mimetype
+                                }
+                            }
+
+/*                            val addInfo = it.additionalInfo
+                            recipientInfo.append(.deliveredInfo.recipient ?: "")
+                            signature = event.declaringClass.message.deliveredInfo.signature
+                            mimetype = message.deliveredInfo.mimetype
+
 
                             val addInfo = it.additionalInfo
                             when (addInfo) {
@@ -566,7 +575,7 @@ open class ParcelServiceV1 :
                         insertStatus = false
                 }
                 Event.NOT_IN_DEIVERY -> {
-                    var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 1, 0)
+                    var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 11, 0)
                     if (existStatus)
                         insertStatus = false
                 }
