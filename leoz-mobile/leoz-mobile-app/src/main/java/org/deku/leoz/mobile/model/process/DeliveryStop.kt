@@ -13,7 +13,9 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.EventNotDeliveredReason
@@ -26,6 +28,7 @@ import sx.requery.ObservableQuery
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.behave
 import sx.rx.bind
+import java.util.*
 
 /**
  * Mobile delivery stop
@@ -43,7 +46,7 @@ class DeliveryStop(
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
-    private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
+    private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
 
     private val identity: Identity by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
@@ -234,8 +237,11 @@ class DeliveryStop(
             .behave(this)
     //endregion
 
-    /** Signature as svg */
+    /** Signature handwriting as svg */
     var signatureSvg: String? = null
+
+    /** Signature camera image */
+    var signatureOnPaperImageUid: UUID? = null
 
     /** Recipient name */
     var recipientName: String? = null
@@ -294,7 +300,7 @@ class DeliveryStop(
 
             stop.tasks
                     .flatMap { it.order.parcels }
-                    .filter { it.state == Parcel.State.DELIVERED}
+                    .filter { it.state == Parcel.State.DELIVERED }
                     .forEach { parcel ->
                         parcel.state = Parcel.State.LOADED
                         parcel.reason = null
@@ -360,6 +366,15 @@ class DeliveryStop(
                 .subscribeOn(Schedulers.computation())
     }
 
+    /**
+     * Sends the image and stores the file uid internally, which will be passed
+     * with close stop ParcelMessage on finalize
+     */
+    fun signOnPaper(signatureOnPaperImageJpeg: ByteArray) {
+        // Send file
+        this.signatureOnPaperImageUid = mqttEndpoints.central.main.channel().sendFile(signatureOnPaperImageJpeg, MimeType.JPEG.value)
+    }
+
     fun finalize(): Completable {
         val stop = this.entity
 
@@ -377,14 +392,24 @@ class DeliveryStop(
 
                     // TODO: unify parcel message send, as this is replicated eg., in DeliveryStop
                     // Send compound closing stop parcel message
-                    mqttChannels.central.main.channel().send(
+                    mqttEndpoints.central.main.channel().send(
                             ParcelServiceV1.ParcelMessage(
                                     userId = this.login.authenticatedUser?.id,
                                     nodeId = this.identity.uid.value,
-                                    deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(
-                                            signature = signatureSvg,
-                                            recipient = recipientName
-                                    ),
+                                    deliveredInfo = when {
+                                        signatureSvg != null -> ParcelServiceV1.ParcelMessage.DeliveredInfo(
+                                                signature = signatureSvg,
+                                                recipient = recipientName
+                                        )
+                                        else -> null
+                                    },
+                                    signatureOnPaperInfo = when {
+                                        signatureOnPaperImageUid != null -> ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(
+                                                recipient = recipientName,
+                                                pictureFileUid = this.signatureOnPaperImageUid
+                                        )
+                                        else -> null
+                                    },
                                     events = parcels.map {
                                         ParcelServiceV1.Event(
                                                 event = when {

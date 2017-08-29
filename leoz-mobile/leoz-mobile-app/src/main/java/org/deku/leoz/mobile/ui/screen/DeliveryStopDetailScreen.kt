@@ -131,7 +131,9 @@ class DeliveryStopDetailScreen
         // Build detail list
 
         //region Services
-        val services = stop.tasks.flatMap { it.services }.filter { it != ParcelService.NO_ADDITIONAL_SERVICE && it.mobile.text != null }.distinct()
+        val services = stop.tasks.flatMap { it.services }
+                .filter { it != ParcelService.NO_ADDITIONAL_SERVICE && it.mobile.text != null }
+                .distinct()
 
         val serviceSection = SectionViewModel<Any>(
                 icon = R.drawable.ic_service,

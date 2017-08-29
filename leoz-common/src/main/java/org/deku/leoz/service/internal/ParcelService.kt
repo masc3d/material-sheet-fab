@@ -31,12 +31,18 @@ interface ParcelServiceV1 {
             var nodeId: String? = null,
             var events: Array<Event>? = null,
 
-            val deliveredInfo: DeliveredInfo? = null
+            val deliveredInfo: DeliveredInfo? = null,
+            val signatureOnPaperInfo: SignatureOnPaperInfo? = null
     ) {
         data class DeliveredInfo(
                 val recipient: String? = null,
                 val signature: String? = null,
                 val mimetype: String = MediaType.APPLICATION_SVG_XML //? "image/svg+xml" vs "application/svg+xml"? "image/jpg"
+        )
+
+        data class SignatureOnPaperInfo(
+                val recipient: String? = null,
+                val pictureFileUid: UUID? = null
         )
     }
 

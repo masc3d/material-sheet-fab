@@ -19,6 +19,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
 
 /**
+ * Screen fragment
  * Created by masc on 14.06.17.
  */
 open class ScreenFragment<P> : Fragment<P>() {

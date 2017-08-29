@@ -39,7 +39,6 @@ import java.util.*
  */
 class DeliveryActivity : Activity(),
         MenuScreen.Listener,
-        SignatureScreen.Listener,
         VehicleLoadingScreen.Listener,
         VehicleLoadingDialog.OnDialogResultListener,
         DeliveryStopListScreen.Listener,
@@ -162,34 +161,6 @@ class DeliveryActivity : Activity(),
             MenuScreen.MenuEntry.Entry.DELIVERY -> {
                 this.showScreen(DeliveryStopListScreen())
             }
-        }
-    }
-
-    override fun onSignatureCancelled() {
-        this.supportFragmentManager.popBackStack()
-    }
-
-    override fun onSignatureSubmitted(signatureSvg: String) {
-        val activeStop = this.delivery.activeStop
-
-        if (activeStop != null) {
-            // Complement active stop and finalize
-            activeStop.signatureSvg = signatureSvg
-            activeStop.finalize()
-                    .subscribeOn(Schedulers.computation())
-                    .observeOnMainThread()
-                    .subscribeBy(
-                            onComplete = {
-                                this.delivery.activeStop = null
-
-                                this@DeliveryActivity.supportFragmentManager.popBackStack(
-                                        DeliveryStopListScreen::class.java.canonicalName,
-                                        0)
-                            },
-                            onError = {
-                                log.error(it.message, it)
-                            }
-                    )
         }
     }
 
