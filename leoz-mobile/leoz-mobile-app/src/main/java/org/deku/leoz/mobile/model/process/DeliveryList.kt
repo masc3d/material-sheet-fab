@@ -345,7 +345,7 @@ class DeliveryList : CompositeDisposableSupplier {
             // Reset state for remaining stops
             stopRepository.entities
                     .subtract(stopsWithLoadedParcels)
-                    .filter { it.state != Stop.State.CLOSED}
+                    .filter { it.state != Stop.State.CLOSED }
                     .forEach {
                         it.state = Stop.State.NONE
                         update(it)
@@ -371,7 +371,7 @@ class DeliveryList : CompositeDisposableSupplier {
                                         ParcelServiceV1.Event(
                                                 event = when {
                                                     it.state == Parcel.State.LOADED -> Event.IN_DELIVERY.value
-                                                    it.state == Parcel.State.MISSING -> Event.NOT_IN_DEIVERY.value
+                                                    it.state == Parcel.State.MISSING -> Event.NOT_IN_DELIVERY.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
                                                 reason = when {
@@ -384,9 +384,12 @@ class DeliveryList : CompositeDisposableSupplier {
                                                 damagedInfo = when {
                                                     it.isDamaged -> {
                                                         ParcelServiceV1.Event.DamagedInfo(
-                                                                pictureFileUids = it.meta.filterValuesByType(Parcel.DamagedInfo::class.java).mapNotNull {
-                                                                    it.pictureFileUid
-                                                                }.toTypedArray()
+                                                                pictureFileUids = it.meta
+                                                                        .filterValuesByType(Parcel.DamagedInfo::class.java)
+                                                                        .mapNotNull {
+                                                                            it.pictureFileUid
+                                                                        }
+                                                                        .toTypedArray()
                                                         )
                                                     }
                                                     else -> null

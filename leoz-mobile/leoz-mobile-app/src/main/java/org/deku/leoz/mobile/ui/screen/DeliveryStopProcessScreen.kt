@@ -694,7 +694,7 @@ class DeliveryStopProcessScreen :
         when (parcelListAdapter.selectedSection) {
 
             deliveredSection, pendingSection, orderSection -> {
-                this.deliveryStop.deliver(parcel)
+                this.deliveryStop.deliverParcel(parcel)
                         .subscribe()
 
                 if (this.parcelListAdapter.selectedSection != deliveredSection)
@@ -760,6 +760,8 @@ class DeliveryStopProcessScreen :
     }
 
     private fun closeStop(variant: EventDeliveredReason) {
+        this.deliveryStop.resetCloseStopState()
+
         this.currentCloseStopVariatn = variant
 
         // Show notification dialogs
@@ -865,26 +867,26 @@ class DeliveryStopProcessScreen :
             }
 
             is PostboxCameraScreen -> {
-                this.deliveryStop.postboxDelivery(jpeg)
+                this.deliveryStop.deliverToPostbox(jpeg)
                 this.finalizeStop()
             }
         }
     }
 
     override fun onSignatureSubmitted(signatureSvg: String) {
-        // Complement active stop and finalize
         this.deliveryStop.signatureSvg = signatureSvg
         this.finalizeStop()
     }
 
 
     override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
-        this.deliveryStop.signOnPaper(signatureJpeg)
+        this.deliveryStop.deliverWithSignatureOnPaper(signatureJpeg)
         this.finalizeStop()
     }
 
     override fun onNeighbourDeliveryScreenContinue(neighbourName: String) {
         this.deliveryStop.recipientName = neighbourName
+        this.deliveryStop.deliveredReason = EventDeliveredReason.NEIGHBOR
 
         this.activity.showScreen(
                 SignatureScreen(target = this).also {
