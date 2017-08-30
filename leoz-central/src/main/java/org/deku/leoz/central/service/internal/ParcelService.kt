@@ -66,14 +66,15 @@ open class ParcelServiceV1 :
     @Inject
     private lateinit var messagesRepository: MessagesJooqRepository
 
+    @Inject
+    private lateinit var parcelProcessing: ParcelProcessing
+
     /**
      * Parcel service message handler
      */
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
         log.debug(message.toString())
-
-        val parcelProcessing= ParcelProcessing()
 
         //val events = message.events?.toList()
         val events = message.events?.toList()

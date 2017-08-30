@@ -14,15 +14,17 @@ import org.json.simple.JSONObject
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
 import sx.time.toTimestamp
+import java.io.StringReader
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.json.Json
 import javax.json.JsonObject
 import javax.json.JsonObjectBuilder
+import javax.json.JsonReader
 
 @Named
-open class ParcelProcessing {
+class ParcelProcessing {
 
     @Inject
     private lateinit var messagesRepository: MessagesJooqRepository
@@ -115,9 +117,14 @@ open class ParcelProcessing {
                                 val addInfo = it.additionalInfo?.toString() ?: "{}"
 
 //json mit empf-name parsen und setzen
+                                var json: JsonObject?=null
+                                Json.createReader(StringReader(addInfo)).use {
+                                    json = it.readObject()
+                                }
 
-                                //recipientInfo.append(json.string("recipient"))
-                                recipientInfo.append(addInfo)
+
+                                recipientInfo.append(json?.getString("recipient"))
+                                //recipientInfo.append(addInfo)
 
 
                             }
