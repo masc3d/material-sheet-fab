@@ -420,7 +420,10 @@ class DeliveryStopProcessScreen :
 
                         R.id.action_delivery_select_event -> {
                             val eventDialog = EventDialog.Builder(this.context)
-                                    .events(this.deliveryStop.allowedEvents)
+                                    .events(
+                                            this.deliveryStop
+                                                    .allowedStopEvents
+                                                    .plus(this.deliveryStop.allowedParcelEvents))
                                     .listener(this)
                                     .build()
 
@@ -849,7 +852,7 @@ class DeliveryStopProcessScreen :
     }
 
     override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
-        when(sender) {
+        when (sender) {
             is DamagedParcelCameraScreen -> {
                 this.currentDamagedParcel?.also { parcel ->
                     parcelRepository.markDamaged(
