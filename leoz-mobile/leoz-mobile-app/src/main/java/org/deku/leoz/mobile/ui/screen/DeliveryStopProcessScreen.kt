@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
-
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
@@ -33,12 +32,13 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.mobile
+import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
@@ -65,8 +65,11 @@ import sx.format.format
  */
 class DeliveryStopProcessScreen :
         ScreenFragment<DeliveryStopProcessScreen.Parameters>(),
-        EventDialog.Listener {
-
+        EventDialog.Listener,
+        BaseCameraScreen.Listener,
+        SignatureScreen.Listener,
+        NeighbourDeliveryScreen.Listener,
+        CashScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @org.parceler.Parcel(org.parceler.Parcel.Serialization.BEAN)
@@ -103,6 +106,8 @@ class DeliveryStopProcessScreen :
     private val tones: Tones by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
+    private val mqttEndPoints: MqttEndpoints by Kodein.global.lazy.instance()
+
     //region Model classes
     private val db: Database by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
@@ -117,6 +122,12 @@ class DeliveryStopProcessScreen :
     private val deliveryStop: DeliveryStop by lazy {
         this.delivery.activeStop ?: throw IllegalArgumentException("Active stop not set")
     }
+
+    /** The current/most recently selected damaged parcel */
+    private var currentDamagedParcel: ParcelEntity? = null
+
+    /** Current close stop variant */
+    private var currentCloseStopType: EventDeliveredReason? = null
     //endregion
 
     //region Sections
@@ -150,6 +161,28 @@ class DeliveryStopProcessScreen :
                 expandOnSelection = true,
                 title = this.getString(R.string.orders),
                 items = this.deliveryStop.orders
+        )
+    }
+
+    val missingSection by lazy {
+        SectionViewModel<ParcelEntity>(
+                icon = R.drawable.ic_missing,
+                color = R.color.colorGrey,
+                background = R.drawable.section_background_grey,
+                showIfEmpty = false,
+                title = getString(R.string.missing),
+                items = this.deliveryStop.missingParcels
+        )
+    }
+
+    val damagedSection by lazy {
+        SectionViewModel<ParcelEntity>(
+                icon = R.drawable.ic_damaged,
+                color = R.color.colorAccent,
+                background = R.drawable.section_background_accent,
+                showIfEmpty = true,
+                title = getString(R.string.event_reason_damaged),
+                items = this.deliveryStop.damagedParcels
         )
     }
 
@@ -203,6 +236,7 @@ class DeliveryStopProcessScreen :
 
     fun OrderEntity.toFlexibleItem()
             : FlexibleSectionableVmItem<OrderTaskViewModel> {
+
         return FlexibleSectionableVmItem(
                 view = R.layout.item_ordertask,
                 variable = BR.orderTask,
@@ -220,6 +254,11 @@ class DeliveryStopProcessScreen :
 
         adapter.addSection(
                 sectionVmItemProvider = { this.pendingSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
+
+        adapter.addSection(
+                sectionVmItemProvider = { this.missingSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
@@ -372,7 +411,7 @@ class DeliveryStopProcessScreen :
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .subscribe {
                     when (it) {
                         R.id.action_delivery_select_delivered -> {
@@ -389,23 +428,46 @@ class DeliveryStopProcessScreen :
                                     .bindToLifecycle(this)
                                     .subscribe {
                                         eventDialog.hide()
-                                        this.deliveryStop.assignEventReason(it)
-                                                .observeOnMainThread()
-                                                .subscribeBy(
-                                                        onComplete = {
-                                                            this.parcelListAdapter.selectedSection = sectionByEvent.get(it)
-                                                        })
+
+                                        when {
+                                            this.deliveryStop.allowedParcelEvents.contains(it) -> {
+                                                // Parcel level event
+                                                when (it) {
+                                                    EventNotDeliveredReason.DAMAGED -> {
+                                                        log.trace("DAMAGED SECTION SELECTED")
+                                                        this.parcelListAdapter.addSection(
+                                                                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                                                vmItemProvider = { it.toFlexibleItem() }
+                                                        )
+
+                                                        this.parcelListAdapter.selectedSection = this.damagedSection
+                                                    }
+
+                                                    else -> {
+                                                    }
+                                                }
+                                            }
+                                            else -> {
+                                                // Stop level event
+                                                this.deliveryStop.assignStopLevelEvent(it)
+                                                        .observeOnMainThread()
+                                                        .subscribeBy(
+                                                                onComplete = {
+                                                                    this.parcelListAdapter.selectedSection = sectionByEvent.getValue(it)
+                                                                })
+                                            }
+                                        }
                                     }
 
                             eventDialog.show()
                         }
 
                         R.id.action_deliver_neighbour -> {
-                            this.closeStop(reason = org.deku.leoz.model.EventDeliveredReason.NEIGHBOR)
+                            this.closeStop(variant = org.deku.leoz.model.EventDeliveredReason.NEIGHBOR)
                         }
 
                         R.id.action_deliver_postbox -> {
-                            this.closeStop(reason = org.deku.leoz.model.EventDeliveredReason.POSTBOX)
+                            this.closeStop(variant = org.deku.leoz.model.EventDeliveredReason.POSTBOX)
                         }
 
                         R.id.action_delivery_close_stop -> {
@@ -414,7 +476,27 @@ class DeliveryStopProcessScreen :
                     }
                 }
 
-        // Initially selected section
+        //region Dynamic sections
+        this.deliveryStop.damagedParcels
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribe {
+                    if (it.count() > 0) {
+                        this.parcelListAdapter.addSection(
+                                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                vmItemProvider = { it.toFlexibleItem() }
+                        )
+                    } else {
+                        this.parcelListAdapter.removeSection(this.damagedSection)
+
+                        if (this.parcelListAdapter.selectedSection == null) {
+                            this.parcelListAdapter.selectedSection = this.deliveredSection
+                        }
+                    }
+                }
+        //endregion
+
+        //region Initially selected section
         val sectionWithMaxEvents = this.sectionByEvent.map {
             Pair(it.value, it.value.items.blockingFirst())
         }
@@ -423,6 +505,7 @@ class DeliveryStopProcessScreen :
                 ?.first
 
         this.parcelListAdapter.selectedSection = sectionWithMaxEvents ?: deliveredSection
+        // endregion
 
         this.parcelListAdapter.selectedSectionProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -451,6 +534,37 @@ class DeliveryStopProcessScreen :
                             }
                         }
                     }
+                }
+
+        this.parcelListAdapter.itemClickEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe { item ->
+                    log.debug("ONITEMCLICK")
+
+                    ((item as? FlexibleSectionableVmItem<*>)
+                            ?.viewModel as? OrderTaskViewModel)
+                            ?.also { orderTaskViewModel ->
+                                val eventDialog = EventDialog.Builder(this.context)
+                                        .events(this.deliveryStop.allowedOrderEvents)
+                                        .listener(this)
+                                        .build()
+
+                                eventDialog.selectedItemEvent
+                                        .bindToLifecycle(this)
+                                        .subscribe {
+                                            eventDialog.hide()
+
+                                            // Stop level event
+                                            this.deliveryStop.assignOrderLevelEvent(orderTaskViewModel.orderTask.order, it)
+                                                    .observeOnMainThread()
+                                                    .subscribeBy(
+                                                            onComplete = {
+                                                                this.parcelListAdapter.selectedSection = sectionByEvent.getValue(it)
+                                                            })
+                                        }
+
+                                eventDialog.show()
+                            }
                 }
 
         this.syntheticInputs = listOf(
@@ -575,12 +689,47 @@ class DeliveryStopProcessScreen :
      */
     fun onParcel(parcel: ParcelEntity) {
         when (parcelListAdapter.selectedSection) {
+
             deliveredSection, pendingSection, orderSection -> {
                 this.deliveryStop.deliver(parcel)
                         .subscribe()
 
                 if (this.parcelListAdapter.selectedSection != deliveredSection)
                     this.parcelListAdapter.selectedSection = deliveredSection
+            }
+
+            damagedSection -> {
+                if (parcel.isDamaged) {
+                    this.tones.warningBeep()
+                    this.aidcReader.enabled = false
+
+                    MaterialDialog.Builder(this.context)
+                            .title(R.string.question_remove_damaged_status_title)
+                            .content(R.string.question_remove_damaged_status)
+                            .negativeText(getString(android.R.string.no))
+                            .positiveText(getString(android.R.string.yes))
+                            .dismissListener {
+                                this.aidcReader.enabled = true
+                            }
+                            .onPositive { _, _ ->
+                                // Removed damaged parcel status
+                                parcel.isDamaged = false
+
+                                this.parcelRepository.update(parcel)
+                                        .subscribeOn(Schedulers.computation())
+                                        .subscribe()
+                            }
+                            .show()
+                } else {
+                    this.currentDamagedParcel = parcel
+
+                    /** Show camera screen */
+                    this.activity.showScreen(DamagedParcelCameraScreen(target = this).apply {
+                        parameters = DamagedParcelCameraScreen.Parameters(
+                                parcelId = parcel.id
+                        )
+                    })
+                }
             }
             else -> {
                 // TODO: add support for scanning/adding parcel to damaged section
@@ -589,63 +738,123 @@ class DeliveryStopProcessScreen :
         }
     }
 
-    private fun closeStop(reason: EventDeliveredReason) {
-        //TODO: To be "managed" by a/the model
-        val serviceList: List<MaterialDialog>? = delivery.activeStop?.services?.filter { it.mobile.ackMessage != null }?.map {
-            MaterialDialog.Builder(context)
-                    .content(this.getString(it.mobile.ackMessage!!))
-                    .cancelable(false)
-                    .positiveText(R.string.ok)
-                    .build()
+    override fun onCameraImageTaken(jpeg: ByteArray) {
+        this.currentDamagedParcel?.also { parcel ->
+            parcelRepository.markDamaged(
+                    parcel = parcel,
+                    jpegPictureData = jpeg
+            )
+                    .subscribeOn(Schedulers.computation())
+                    .subscribe()
         }
+    }
 
-        serviceList?.forEach {
+    override fun onSignatureSubmitted(signatureSvg: String) {
+        // Complement active stop and finalize
+        this.deliveryStop.signatureSvg = signatureSvg
+        this.finalizeStop()
+    }
+
+
+    override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
+        this.deliveryStop.signOnPaper(signatureJpeg)
+        this.finalizeStop()
+    }
+
+    private fun finalizeStop() {
+        this.deliveryStop.finalize()
+                .subscribeOn(Schedulers.computation())
+                .observeOnMainThread()
+                .subscribeBy(
+                        onComplete = {
+                            this.delivery.activeStop = null
+
+                            this.activity.supportFragmentManager.popBackStack(
+                                    DeliveryStopListScreen::class.java.canonicalName,
+                                    0)
+                        },
+                        onError = {
+                            log.error(it.message, it)
+                        }
+                )
+    }
+
+    private fun closeStop(variant: EventDeliveredReason) {
+        this.currentCloseStopType = variant
+
+        // Show notification dialogs
+        val dialogs: List<MaterialDialog> = this.deliveryStop.services
+                .filter { it.mobile.ackMessage != null }
+                .map {
+                    MaterialDialog.Builder(context)
+                            .content(this.getString(it.mobile.ackMessage!!))
+                            .cancelable(false)
+                            .positiveText(R.string.ok)
+                            .build()
+                }
+
+        // TODO: this will certainly not work. must be reactive
+        dialogs.forEach {
             it.show()
         }
 
-
-        if (delivery.activeStop!!.cashAmountToCollect > 0) {
-            //Requires CashScreen to be shown
-            this.activity.showScreen(CashScreen().also {
-                it.parameters = CashScreen.Parameters(
-                        stopId = this.stop.id,
-                        deliveryReason = reason
-                )
-            })
-        } else {
-            when (reason) {
-                EventDeliveredReason.NEIGHBOR -> {
-                    this.activity.showScreen(NeighbourDeliveryScreen().also {
+        when (variant) {
+            EventDeliveredReason.NEIGHBOR -> {
+                if (this.deliveryStop.cashAmountToCollect > 0) {
+                    this.activity.showScreen(CashScreen(target = this).also {
+                        it.parameters = CashScreen.Parameters(
+                                stopId = this.stop.id,
+                                deliveryReason = variant
+                        )
+                    })
+                } else {
+                    this.activity.showScreen(NeighbourDeliveryScreen(target = this).also {
                         it.parameters = NeighbourDeliveryScreen.Parameters(
                                 stopId = this.stop.id
                         )
                     })
                 }
+            }
 
-                EventDeliveredReason.POSTBOX -> {
-                    //TODO
-                }
+            EventDeliveredReason.POSTBOX -> {
+                //TODO
+            }
 
-                EventDeliveredReason.NORMAL -> {
-                    if (this.deliveryStop.isSignatureRequired) {
-                        MaterialDialog.Builder(context)
-                                .title(R.string.recipient)
-                                .cancelable(true)
-                                .content(R.string.recipient_dialog_content)
-                                .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
-                                .input("Max Mustermann", null, false, { _, charSequence ->
-                                    this.deliveryStop.recipientName = charSequence.toString()
-
-                                    this.activity.showScreen(SignatureScreen().also {
-                                        it.parameters = SignatureScreen.Parameters(
-                                                stopId = this.stop.id,
-                                                deliveryReason = EventDeliveredReason.NORMAL,
-                                                recipient = this.deliveryStop.recipientName ?: ""
-                                        )
-                                    })
+            EventDeliveredReason.NORMAL -> {
+                when {
+                    this.deliveryStop.isSignatureRequired -> {
+                        when {
+                            this.deliveryStop.cashAmountToCollect > 0 -> {
+                                //Requires CashScreen to be shown
+                                this.activity.showScreen(CashScreen(target = this).also {
+                                    it.parameters = CashScreen.Parameters(
+                                            stopId = this.stop.id,
+                                            deliveryReason = variant
+                                    )
                                 })
-                                .build().show()
-                    } else {
+                            }
+                            else -> {
+                                MaterialDialog.Builder(context)
+                                        .title(R.string.recipient)
+                                        .cancelable(true)
+                                        .content(R.string.recipient_dialog_content)
+                                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME or InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+                                        .input("Max Mustermann", null, false, { _, charSequence ->
+                                            this.deliveryStop.recipientName = charSequence.toString()
+
+                                            this.activity.showScreen(SignatureScreen(target = this).also {
+                                                it.parameters = SignatureScreen.Parameters(
+                                                        stopId = this.stop.id,
+                                                        deliveryReason = EventDeliveredReason.NORMAL,
+                                                        recipient = this.deliveryStop.recipientName ?: ""
+                                                )
+                                            })
+                                        })
+                                        .build().show()
+                            }
+                        }
+                    }
+                    else -> {
                         this.deliveryStop.finalize()
                                 .observeOnMainThread()
                                 .subscribeBy(
@@ -660,8 +869,57 @@ class DeliveryStopProcessScreen :
                 }
             }
         }
-
     }
+
+    override fun onNeighbourDeliveryScreenContinue(neighbourName: String) {
+        this.deliveryStop.recipientName = neighbourName
+
+        this.activity.showScreen(
+                SignatureScreen(target = this).also {
+                    it.parameters = SignatureScreen.Parameters(
+                            stopId = this.stop.id,
+                            deliveryReason = EventDeliveredReason.NEIGHBOR,
+                            recipient = neighbourName
+                    )
+                }
+        )
+    }
+
+    override fun onCashScreenContinue() {
+        when (this.currentCloseStopType) {
+            EventDeliveredReason.NORMAL -> {
+                MaterialDialog.Builder(context)
+                        .title(R.string.recipient)
+                        .cancelable(true)
+                        .content(R.string.recipient_dialog_content)
+                        .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
+                        .input("Max Mustermann", null, false, { _, charSequence ->
+                            this.deliveryStop.recipientName = charSequence.toString()
+
+                            this.activity.showScreen(SignatureScreen(target = this).also {
+                                it.parameters = SignatureScreen.Parameters(
+                                        stopId = this.stop.id,
+                                        deliveryReason = EventDeliveredReason.NORMAL,
+                                        recipient = this.deliveryStop.recipientName ?: ""
+                                )
+                            })
+                        })
+                        .build().show()
+            }
+
+            EventDeliveredReason.NEIGHBOR -> {
+                this.activity.showScreen(NeighbourDeliveryScreen(target = this).also {
+                    it.parameters = NeighbourDeliveryScreen.Parameters(
+                            stopId = this.stop.id
+                    )
+                })
+            }
+
+            else -> {
+            }
+        }
+    }
+
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
         log.trace("SELECTEDITEAM VIA LISTENER")

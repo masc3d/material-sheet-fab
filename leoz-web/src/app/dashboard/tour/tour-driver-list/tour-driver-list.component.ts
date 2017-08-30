@@ -1,15 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/timer';
+
+import { SelectItem } from 'primeng/primeng';
 
 import { Driver } from '../driver.model';
 import { TourService } from '../tour.service';
 import { DriverService } from '../driver.service';
 import { RoleGuard } from '../../../core/auth/role.guard';
 import { UserService } from '../../user/user.service';
-import { SelectItem } from 'primeng/primeng';
-import { Subscription } from 'rxjs/Subscription';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 
@@ -46,7 +47,7 @@ interface CallbackArguments {
           {{'hs' | translate}}
         </div>
         <div class="ui-g-12 ui-lg-5 no-pad">
-          {{'latestRefresh' | translate}}: {{latestRefresh | date:dateFormatEvenLonger}}
+          {{'latestRefresh' | translate}}: {{latestRefresh | dateMomentjs:dateFormatEvenLonger}}
         </div>
         <div class="ui-g-12 ui-lg-7 no-pad">
           {{'selectedformap' | translate}}: {{displayedMapmode | translate}}
@@ -54,11 +55,11 @@ interface CallbackArguments {
       </div>
     </div>
     <p-dataTable *ngIf="tableIsVisible" [value]="drivers | async | driverfilter: [filterName]" resizableColumns="true"
-                 [responsive]="true">
+                 [responsive]="true" sortField="lastName" [sortOrder]="1">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phoneoffice' | translate}}" [sortable]="true"></p-column>
-      <p-column field="phoneMobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
+      <p-column field="mobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
       <p-column header="">
         <ng-template let-driver="rowData" pTemplate="body">
           <i class="fa fa-crosshairs fa-fw" aria-hidden="true" (click)="showPositionPeriodically(driver)"></i>
@@ -71,7 +72,7 @@ interface CallbackArguments {
 export class TourDriverListComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
   intervalOptions: SelectItem[];
   refreshOptions: SelectItem[];
-  selectedInterval = '>24';
+  selectedInterval = '24';
   selectedRefresh = 10;
 
   latestRefresh: Date;
@@ -98,7 +99,6 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   ngOnInit() {
     super.ngOnInit();
     this.intervalOptions = [
-      { label: '>24', value: '>24' },
       { label: '1', value: '1' },
       { label: '2', value: '2' },
       { label: '6', value: '6' },
@@ -116,7 +116,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.drivers = this.driverService.drivers;
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.tourService.resetMarkerAndRoute();
-    this.tableIsVisible = true;
+    this.tableIsVisible = false;
     this.allDrivers();
   }
 
@@ -129,6 +129,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   allDrivers() {
+    this.tableIsVisible = false;
     this.clearTimerMapdisplay();
     this.driverService.getDrivers();
     this.filterName = 'driverfilter';
@@ -141,6 +142,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   allUsers() {
+    this.tableIsVisible = false;
     this.clearTimerMapdisplay();
     this.userService.getUsers();
     this.filterName = 'userfilter';
@@ -198,6 +200,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   showPositionPeriodically( driver: Driver ) {
+    this.toggleVisibility();
     this.periodicallyUsedFilter = null;
     this.periodicallyUsedDriver = driver;
     this.periodicallyUsedCallback = this.showPosition;
@@ -206,24 +209,23 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   showRoutePeriodically( driver: Driver ) {
+    this.toggleVisibility();
     this.periodicallyUsedFilter = null;
     this.periodicallyUsedDriver = driver;
     this.periodicallyUsedCallback = this.showRoute;
     this.showPeriodically();
-    this.displayedMapmode = `${this.periodicallyUsedDriver.firstName} ${this.periodicallyUsedDriver.lastName}`;
+
   }
 
   showAllPositions( args: CallbackArguments ) {
-    args.tourService.fetchAllPositions( this.periodicallyUsedFilter );
+    args.tourService.fetchAllPositions( this.periodicallyUsedFilter, Number.parseInt( this.selectedInterval, 10 ) * 60 );
   }
 
   showPosition( args: CallbackArguments ) {
-    args.tourService.changeActiveMarker( args.driver );
+    args.tourService.changeActiveMarker( args.driver, Number.parseInt( this.selectedInterval, 10 ) * 60 );
   }
 
   showRoute( args: CallbackArguments ) {
-    const asInt = Number.parseInt( args.interval, 10 );
-    const duration = asInt ? String( asInt * 60 ) : '300000';
-    args.tourService.changeActiveRoute( args.driver, duration );
+    args.tourService.changeActiveRoute( args.driver, Number.parseInt( this.selectedInterval, 10 ) * 60 );
   }
 }

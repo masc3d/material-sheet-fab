@@ -1,17 +1,19 @@
 package org.deku.leoz.mobile.model.repository
 
-import android.databinding.Observable
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.toSingle
-import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
-import org.deku.leoz.mobile.model.entity.*
+import org.deku.leoz.mobile.model.entity.Order
+import org.deku.leoz.mobile.model.entity.OrderEntity
+import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.entity.Stop
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
-import sx.rx.ObservableRxProperty
+import sx.requery.scalar
+import sx.time.plusHours
+import sx.time.plusMinutes
+import java.util.*
 
 /**
  * Order repository
@@ -26,8 +28,21 @@ class OrderRepository(
     /**
      * Find order by id
      */
-    fun findById(id: Long): Order? {
-        return store.select(OrderEntity::class).where(OrderEntity.ID.eq(id)).get().firstOrNull()
+    fun findById(id: Long): Order? =
+            store.select(OrderEntity::class).where(OrderEntity.ID.eq(id)).get().firstOrNull()
+
+    /**
+     * Find oldest order creation time
+     */
+    fun hasOutdatedOrders(): Boolean {
+        val minTime = store.select(OrderEntity.CREATION_TIME.min())
+                .get()
+                .scalar<Date>()
+
+        if (minTime == null)
+            return false
+
+        return minTime.plusHours(20) < Date()
     }
 
     /**
@@ -58,9 +73,17 @@ class OrderRepository(
 
                     order.parcels.forEach {
                         val existing = existingOrderParcelNumbers.get(it.number)
+
                         if (existing != null) {
-                            it.loadingState = existing.loadingState
-                            it.deliveryState = existing.deliveryState
+                            // Only override local state if we had one (not pending)
+                            if (existing.state != Parcel.State.PENDING) {
+                                it.state = existing.state
+                            }
+
+                            // Only override damaged state if it was already set locally
+                            if (existing.isDamaged) {
+                                it.isDamaged = true
+                            }
                         }
                     }
 

@@ -14,12 +14,15 @@
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginBottom="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
-            app:srcCompat="@drawable/ic_stop" />
+            app:srcCompat="@drawable/ic_person" />
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:errorEnabled="true"
+            >
 
             <EditText
                 android:id="@+id/uxNeighboursName"
@@ -28,10 +31,13 @@
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
                 android:hint="@string/name"
+                android:inputType="text|textCapWords"
+                android:maxLines="1"
                 android:completionThreshold="1"
                 android:imeOptions="actionNext"
                 android:nextFocusRight="@+id/uxNeighboursStreet"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
@@ -43,7 +49,8 @@
         <ImageView
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
-            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
             app:srcCompat="@drawable/ic_stop" />
 
@@ -54,7 +61,7 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_weight="10"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content">
 
             <AutoCompleteTextView
@@ -63,6 +70,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
+                android:inputType="text|textCapWords"
+                android:maxLines="1"
                 android:completionThreshold="1"
                 android:imeOptions="actionNext"
                 android:hint="@string/street"
@@ -73,7 +82,9 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="50dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:errorEnabled="true"
+                >
 
                 <EditText
                     android:id="@+id/uxNeighboursStreetNo"
@@ -81,8 +92,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
-                    android:hint="@string/number_short_no"
+                    android:inputType="number|text"
                     android:maxLines="1"
+                    android:hint="@string/number_short_no"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             </android.support.design.widget.TextInputLayout>
@@ -90,13 +102,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/uxContinue"
-        style="@style/AppTheme.Button.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/continue_text"/>
 
 </LinearLayout>

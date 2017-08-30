@@ -8,16 +8,19 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.tinsuke.icekick.extension.serialState
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.fragment_aidc_camera.*
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.mobile.ui.Fragment
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader
+import sx.android.view.setBackgroundTint
 import sx.android.view.setIconTint
 
 /**
@@ -48,21 +51,34 @@ class AidcCameraFragment : Fragment<Any>() {
         } else listOf()
     }
 
+    private var isPinnedEventSubject = PublishSubject.create<Boolean>()
+    /**
+     * Indicates if aidc fragment is pinned
+     */
+    var isPinned by serialState(false, afterChange = { o, v ->
+        this.isPinnedEventSubject.onNext(v)
+    })
+        private set
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_aidc_camera, container, false)
-    }
+                              savedInstanceState: Bundle?): View? =
+            // Inflate the layout for this fragment
+            inflater.inflate(R.layout.fragment_aidc_camera, container, false)
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.fab_aidc_camera_torch.setOnClickListener {
             this.cameraReader.torch = !this.cameraReader.torch
+        }
+
+        this.fab_aidc_camera_pin.setOnClickListener {
+            this.isPinned = !this.isPinned
         }
     }
 
@@ -79,6 +95,23 @@ class AidcCameraFragment : Fragment<Any>() {
                                 R.color.colorAccent
                             else
                                 android.R.color.black)
+                }
+
+        this.isPinnedEventSubject
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    this.fab_aidc_camera_pin.also { fab ->
+                        when (it) {
+                            true -> {
+                                fab.setBackgroundTint(R.color.colorPrimary)
+                                fab.setIconTint(android.R.color.white)
+                            }
+                            false -> {
+                                fab.setBackgroundTint(R.color.colorDarkGrey)
+                                fab.setIconTint(android.R.color.black)
+                            }
+                        }
+                    }
                 }
 
         // Disable all but the camera reader

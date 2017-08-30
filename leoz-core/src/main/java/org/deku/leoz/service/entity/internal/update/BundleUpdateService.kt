@@ -17,6 +17,7 @@ import sx.platform.PlatformId
 import sx.time.Duration
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
+import kotlin.NoSuchElementException
 
 /**
  * Updater suoporting async/background updates of bundles.
@@ -185,10 +186,15 @@ class BundleUpdateService(
         val latestDesignatedPlatforms: List<PlatformId>
 
         if (this.alwaysQueryRepository) {
-            // Query remote repository directly
-            latestDesignatedVersion = remoteRepository.queryLatestMatchingVersion(
-                    bundleName,
-                    updateInfo.bundleVersionPattern)
+            try {
+                // Query remote repository directly
+                latestDesignatedVersion = remoteRepository.queryLatestMatchingVersion(
+                        bundleName,
+                        updateInfo.bundleVersionPattern)
+            } catch(e: NoSuchElementException) {
+                log.warn(e.message)
+                return
+            }
 
             latestDesignatedPlatforms = remoteRepository.listPlatforms(bundleName, latestDesignatedVersion)
         } else {

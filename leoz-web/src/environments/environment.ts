@@ -5,6 +5,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:13000/rs/api',
+   apiUrl: 'https://leox.derkurier.de:13000/rs/api', // testing system
+  // apiUrl: 'https://leoz.derkurier.de:13000/rs/api', // live system
+  // apiUrl: 'http://localhost:13000/rs/api',          // local system
   defLang: 'de',
 };

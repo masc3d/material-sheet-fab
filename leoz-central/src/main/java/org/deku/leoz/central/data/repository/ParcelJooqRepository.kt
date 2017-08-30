@@ -40,13 +40,14 @@ class ParcelJooqRepository {
         return (eventRecord.store() > 0)
     }
 
-    fun statusExist(unitNo:Double,creator:String,status:Int):Boolean{
-        val exist =dslContext.selectCount().from(Tblstatus.TBLSTATUS)
+    fun statusExist(unitNo: Double, creator: String, status: Int, reason: Int): Boolean {
+        val exist = dslContext.selectCount().from(Tblstatus.TBLSTATUS)
                 .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo))
-                        .and(Tables.TBLSTATUS.KZ_STATUSERZEUGER.eq(creator))
-                        .and(Tables.TBLSTATUS.KZ_STATUS.eq(status.toUInteger()))
-                .fetchOne(0,Int::class.java)
-        return exist!=0
+                .and(Tables.TBLSTATUS.KZ_STATUSERZEUGER.eq(creator))
+                .and(Tables.TBLSTATUS.KZ_STATUS.eq(status.toUInteger()))
+                .and(Tables.TBLSTATUS.FEHLERCODE.eq(reason.toUInteger()))
+                .fetchOne(0, Int::class.java)
+        return exist != 0
     }
 
     /**

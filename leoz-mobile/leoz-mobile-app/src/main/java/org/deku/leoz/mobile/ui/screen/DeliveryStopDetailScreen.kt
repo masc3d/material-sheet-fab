@@ -31,6 +31,7 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
@@ -59,12 +60,19 @@ class DeliveryStopDetailScreen
             var stopId: Int
     )
 
+    interface Listener {
+        fun onDeliveryStopDetailUnitNumberInput(unitNumber: UnitNumber)
+    }
+
+    private val listener by lazy { this.activity as? Listener }
+
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
 
     // Model classes
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val stop: Stop by lazy {
@@ -123,7 +131,9 @@ class DeliveryStopDetailScreen
         // Build detail list
 
         //region Services
-        val services = stop.tasks.flatMap { it.services }.filter { it != ParcelService.NO_ADDITIONAL_SERVICE && it.mobile.text != null }.distinct()
+        val services = stop.tasks.flatMap { it.services }
+                .filter { it != ParcelService.NO_ADDITIONAL_SERVICE && it.mobile.text != null }
+                .distinct()
 
         val serviceSection = SectionViewModel<Any>(
                 icon = R.drawable.ic_service,
@@ -338,29 +348,7 @@ class DeliveryStopDetailScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        val stop = this.delivery.pendingStops.blockingFirst().value
-                .plus(this.delivery.closedStops.blockingFirst().value)
-                .flatMap { it.tasks }
-                .firstOrNull {
-                    it.order.parcels.any { it.number == unitNumber.value }
-                }
-                ?.stop
-
-        if (stop == null) {
-            tones.warningBeep()
-
-            this.activity.snackbarBuilder
-                    .message(R.string.error_no_corresponding_stop)
-                    .build().show()
-
-            return
-        }
-
-        this.activity.showScreen(
-                DeliveryStopProcessScreen().also {
-                    it.parameters = DeliveryStopProcessScreen.Parameters(stopId = stop.id)
-                }
-        )
+        this.listener?.onDeliveryStopDetailUnitNumberInput(unitNumber)
     }
 
     override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {

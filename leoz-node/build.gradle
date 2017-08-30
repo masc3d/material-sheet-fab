@@ -263,6 +263,7 @@ dependencies {
 
             // serialization
             "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers",
 
             // TODO: for testing jinq
             "org.jinq:jinq-jpa:+",

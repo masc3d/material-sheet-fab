@@ -162,33 +162,29 @@ class LoginFragment : Fragment<Any>() {
         }
     }
 
-    private fun validateMailAddress(): Boolean {
-        return when {
-            uxMailaddress.text.isEmpty() -> {
-                this.uxMailaddressLayout.error = getString(R.string.error_empty_field)
-                false
-            }
-            !uxMailaddress.text.toString().isValidEmailAddress() && !uxMailaddress.text.matches(internalLoginRegex) -> {
-                this.uxMailaddressLayout.error = getString(R.string.error_format_mail)
-                false
-            }
-            else -> {
-                this.uxMailaddressLayout.error = null
-                true
-            }
+    private fun validateMailAddress(): Boolean = when {
+        uxMailaddress.text.isEmpty() -> {
+            this.uxMailaddressLayout.error = getString(R.string.error_empty_field)
+            false
+        }
+        !uxMailaddress.text.toString().isValidEmailAddress() && !uxMailaddress.text.matches(internalLoginRegex) -> {
+            this.uxMailaddressLayout.error = getString(R.string.error_format_mail)
+            false
+        }
+        else -> {
+            this.uxMailaddressLayout.error = null
+            true
         }
     }
 
-    private fun validatePassword(): Boolean {
-        return when {
-            this.uxPassword.text.isEmpty() -> {
-                this.uxPasswordLayout.error = getString(R.string.error_empty_field)
-                false
-            }
-            else -> {
-                this.uxPasswordLayout.error = null
-                true
-            }
+    private fun validatePassword(): Boolean = when {
+        this.uxPassword.text.isEmpty() -> {
+            this.uxPasswordLayout.error = getString(R.string.error_empty_field)
+            false
+        }
+        else -> {
+            this.uxPasswordLayout.error = null
+            true
         }
     }
 

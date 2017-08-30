@@ -22,6 +22,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.android.fragment.util.withTransaction
 
 /**
+ * Main screen
  * Created by n3 on 26/02/2017.
  */
 class MainScreen : ScreenFragment<Any>() {

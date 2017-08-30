@@ -4,6 +4,8 @@ version '0.1'
 buildscript {
     ext {
         v_kotlin = '1.1.4-2'
+        v_kryo = '4.0.1'
+        v_kryo_serializers = '0.42'
     }
 
     repositories {
@@ -40,10 +42,13 @@ dependencies {
     compile(
             project(':sx-common'),
             project(':sx-serialization'),
+
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
             // Kryo
-            "com.esotericsoftware:kryo:4.0.1"
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers"
     )
 
     testCompile(

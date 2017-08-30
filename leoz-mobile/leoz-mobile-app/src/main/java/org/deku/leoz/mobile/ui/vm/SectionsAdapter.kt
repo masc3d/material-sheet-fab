@@ -6,6 +6,7 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.utils.Log
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmHolder
@@ -37,6 +38,9 @@ class SectionsAdapter
     val selectedSectionProperty = ObservableRxProperty<SectionViewModel<*>?>(null)
     var selectedSection by selectedSectionProperty
 
+    private val itemClickEventSubject by lazy { PublishSubject.create<Any>() }
+    val itemClickEvent by lazy { itemClickEventSubject.hide() }
+
     init {
         if (BuildConfig.DEBUG) {
             // Only in DBEUG, as flexible adapter logging is broken when classes in stacktrace are obfuscated
@@ -50,29 +54,32 @@ class SectionsAdapter
                 val adapter = this@SectionsAdapter
                 val item: Any? = adapter.getItem(position)
 
-                if (item != null &&
-                        item is FlexibleExpandableVmItem<*, *> && item.viewModel is SectionViewModel<*>) {
+                if (item != null) {
+                    this@SectionsAdapter.itemClickEventSubject.onNext(item)
 
-                    val section = item.viewModel as SectionViewModel<*>
+                    if (item is FlexibleExpandableVmItem<*, *> && item.viewModel is SectionViewModel<*>) {
 
-                    if (item.isSelectable && !isSectionSelected(section)) {
-                        this@SectionsAdapter.selectedSection = section
-                        adapter.expand(item)
-                        adapter.recyclerView.scrollToPosition(0)
-                    } else {
-                        log.trace("SELECTABLE ${item.isSelectable}")
-                        if (adapter.isSelected(position) || !item.isSelectable) {
-                            if (adapter.isExpanded(position)) {
-                                adapter.collapse(position)
-                            } else {
-                                // TODO: after expanding and fast scrolling to bottom, item click event doesn't fire unless the list is nudged a second time. glitchy, needs investigation
-                                adapter.collapseAll()
-                                adapter.expand(position)
-                                adapter.recyclerView.scrollToPosition(0)
-                            }
+                        val section = item.viewModel as SectionViewModel<*>
+
+                        if (item.isSelectable && !isSectionSelected(section)) {
+                            this@SectionsAdapter.selectedSection = section
+                            adapter.expand(item)
+                            adapter.recyclerView.scrollToPosition(0)
                         } else {
-                            log.trace("SELECT")
-                            select(section)
+                            log.trace("SELECTABLE ${item.isSelectable}")
+                            if (adapter.isSelected(position) || !item.isSelectable) {
+                                if (adapter.isExpanded(position)) {
+                                    adapter.collapse(position)
+                                } else {
+                                    // TODO: after expanding and fast scrolling to bottom, item click event doesn't fire unless the list is nudged a second time. glitchy, needs investigation
+                                    adapter.collapseAll()
+                                    adapter.expand(position)
+                                    adapter.recyclerView.scrollToPosition(0)
+                                }
+                            } else {
+                                log.trace("SELECT")
+                                select(section)
+                            }
                         }
                     }
                 }
@@ -151,8 +158,11 @@ class SectionsAdapter
                         }
                     } else {
                         if (sectionViewModel.showIfEmpty || !items.isEmpty()) {
-                            sectionItem = createSectionItem()
-                            this.addItem(sectionItem)
+                            // The section could have been removed prior to item change
+                            if (this.sections.contains(sectionViewModel)) {
+                                sectionItem = createSectionItem()
+                                this.addItem(sectionItem)
+                            }
                         }
                     }
 
@@ -187,7 +197,7 @@ class SectionsAdapter
     fun itemOf(section: SectionViewModel<*>): FlexibleExpandableVmItem<*, *>? {
         return this.headerItems.firstOrNull {
             it is FlexibleExpandableVmItem<*, *> && it.viewModel == section
-        } as FlexibleExpandableVmItem<*, *>
+        } as? FlexibleExpandableVmItem<*, *>
     }
 
     /**
@@ -217,11 +227,16 @@ class SectionsAdapter
     fun removeSection(section: SectionViewModel<*>) {
         val item = this.itemOf(section)
 
+        if (this.isSectionSelected(section))
+            this.selectedSection = null
+
         if (item != null) {
-            this.removeItem(this.getGlobalPositionOf(item))
+            val pos = this.getGlobalPositionOf(item)
+            this.removeItem(pos)
         }
 
         this.sections.remove(section)
+
     }
 
     /**

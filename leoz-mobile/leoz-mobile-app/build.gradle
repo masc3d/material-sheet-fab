@@ -61,7 +61,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 2
-        versionName "0.57-SNAPSHOT"
+        versionName "0.66-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -254,7 +254,10 @@ dependencies {
             'net.gotev:uploadservice:3.4',
 
             // Kryo
-            dependencies.create("com.esotericsoftware:kryo:4.0.1") {
+            dependencies.create("com.esotericsoftware:kryo:$v_kryo") {
+                exclude group: 'org.ow2.asm', module: 'asm'
+            },
+            dependencies.create("de.javakaffee:kryo-serializers:$v_kryo_serializers") {
                 exclude group: 'org.ow2.asm', module: 'asm'
             },
 

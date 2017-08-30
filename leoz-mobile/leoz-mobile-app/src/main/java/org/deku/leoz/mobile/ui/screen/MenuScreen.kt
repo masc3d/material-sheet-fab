@@ -39,7 +39,13 @@ class MenuScreen : ScreenFragment<Any>() {
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
-    data class MenuEntry(val entryType: Entry, val description: String, var counter: Int, var counter2: Int, val icon: Drawable) {
+    data class MenuEntry(
+            val entryType: Entry,
+            val description: String,
+            var counter: Int,
+            var counter2: Int,
+            val icon: Drawable) {
+        
         enum class Entry(val value: Long) {
             DELIVERY(0),
             LOADING(1)
@@ -79,17 +85,11 @@ class MenuScreen : ScreenFragment<Any>() {
             return v
         }
 
-        override fun getItem(position: Int): Any {
-            return entries[position]
-        }
+        override fun getItem(position: Int): Any = entries[position]
 
-        override fun getItemId(position: Int): Long {
-            return entries[position].entryType.value
-        }
+        override fun getItemId(position: Int): Long = entries[position].entryType.value
 
-        override fun getCount(): Int {
-            return entries.size
-        }
+        override fun getCount(): Int = entries.size
     }
 
     private val listener by lazy { this.activity as? Listener }
@@ -104,9 +104,8 @@ class MenuScreen : ScreenFragment<Any>() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.screen_menu, container, false)
-    }
+                              savedInstanceState: Bundle?): View? =
+            inflater.inflate(R.layout.screen_menu, container, false)
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -118,7 +117,7 @@ class MenuScreen : ScreenFragment<Any>() {
                                 entryType = MenuEntry.Entry.LOADING,
                                 description = this.getText(R.string.vehicle_loading).toString(),
                                 counter = deliveryList.pendingParcels.get().count(),
-                                counter2 = delivery.undeliveredParcels.blockingFirst().count(),
+                                counter2 = deliveryList.loadedParcels.blockingFirst().value.count(),
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_pickup)!!
                         ),
                         MenuEntry(

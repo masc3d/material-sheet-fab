@@ -2,7 +2,6 @@ package sx.time
 
 import java.sql.Timestamp
 import java.time.LocalDate
-import java.time.ZoneId
 import java.util.*
 
 val utcTimezone = TimeZone.getTimeZone("UTC")
@@ -10,25 +9,15 @@ val utcTimezone = TimeZone.getTimeZone("UTC")
 /**
  * Date/time conversion functions
  */
-fun LocalDate.toTimestamp(): Timestamp {
-    return this.toDate().toTimestamp()
-}
+fun LocalDate.toTimestamp(): Timestamp = this.toDate().toTimestamp()
 
-fun LocalDate.toDate(): Date {
-    return java.sql.Date.valueOf(this)
-}
+fun LocalDate.toDate(): Date = java.sql.Date.valueOf(this)
 
-fun Date.toTimestamp(): Timestamp {
-    return Timestamp(this.time)
-}
+fun Date.toTimestamp(): Timestamp = Timestamp(this.time)
 
-fun Date.toSqlDate(): java.sql.Date {
-    return java.sql.Date(this.time)
-}
+fun Date.toSqlDate(): java.sql.Date = java.sql.Date(this.time)
 
-fun Date.toLocalDate(): LocalDate {
-    return java.sql.Date(this.time).toLocalDate()
-}
+fun Date.toLocalDate(): LocalDate = java.sql.Date(this.time).toLocalDate()
 
 /**
  * Replaces the date portion of a specific date and keeps the time
@@ -67,7 +56,7 @@ fun Date.replaceTime(time: Date, timezone: TimeZone = TimeZone.getDefault()): Da
 /**
  * Convenience method for perfoming `add` modifications on calendar fields
  */
-private fun Date.add(field: Int, amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
+private fun Date.plus(field: Int, amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
     val cal = this.toCalendar(timezone)
     cal.add(field, amount)
     return cal.time
@@ -76,9 +65,21 @@ private fun Date.add(field: Int, amount: Int, timezone: TimeZone = TimeZone.getD
 /**
  * Add days
  */
-fun Date.plusDays(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
-    return this.add(Calendar.DATE, amount, timezone = timezone)
-}
+fun Date.plusDays(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date =
+        this.plus(Calendar.DATE, amount, timezone = timezone)
+
+/**
+ * Add hours
+ */
+fun Date.plusHours(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date =
+        this.plus(Calendar.HOUR, amount, timezone = timezone)
+
+/**
+ * Add minutes
+ */
+fun Date.plusMinutes(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date =
+        this.plus(Calendar.MINUTE, amount, timezone = timezone)
+
 
 /**
  * Convenience method for converting date to calendar
@@ -93,6 +94,5 @@ fun Date.toCalendar(timezone: TimeZone = TimeZone.getDefault()): Calendar {
 /**
  * Minus minutes
  */
-fun Date.minusMinutes(amount:Int,timezone: TimeZone= TimeZone.getDefault()): Date {
-    return this.add(Calendar.MINUTE,Math.abs(amount)*-1, timezone = timezone)
-}
+fun Date.minusMinutes(amount:Int,timezone: TimeZone= TimeZone.getDefault()): Date =
+        this.plus(Calendar.MINUTE,Math.abs(amount)*-1, timezone = timezone)

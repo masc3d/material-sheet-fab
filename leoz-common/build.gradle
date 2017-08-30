@@ -73,7 +73,8 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
 
             // Kryo
-            "com.esotericsoftware:kryo:4.0.1",
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers",
 
             // Logging
             "ch.qos.logback:logback-classic:$v_logback"

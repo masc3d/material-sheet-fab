@@ -13,7 +13,9 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.EventNotDeliveredReason
@@ -26,6 +28,7 @@ import sx.requery.ObservableQuery
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.behave
 import sx.rx.bind
+import java.util.*
 
 /**
  * Mobile delivery stop
@@ -43,13 +46,13 @@ class DeliveryStop(
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
-    private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
+    private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
 
     private val identity: Identity by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
 
     /**
-     * Allowed events for this stop
+     * Allowed events for this stop (all levels)
      */
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         mutableListOf(
@@ -78,6 +81,38 @@ class DeliveryStop(
                     }
                 }
                 .distinct()
+    }
+
+    /**
+     * Allowed parcel level events
+     */
+    val allowedParcelEvents by lazy {
+        this.allowedEvents.filter {
+            when (it) {
+                EventNotDeliveredReason.DAMAGED -> true
+                else -> false
+            }
+        }
+    }
+
+    /**
+     * Allowed order level events
+     */
+    val allowedOrderEvents by lazy {
+        this.allowedEvents.filter {
+            when (it) {
+                EventNotDeliveredReason.REFUSED,
+                EventNotDeliveredReason.XC_OBJECT_NOT_READY -> true
+                else -> false
+            }
+        }
+    }
+
+    /**
+     * Allowed stop level events
+     */
+    val allowedStopEvents by lazy {
+        this.allowedEvents.subtract(this.allowedParcelEvents).toList()
     }
 
     /**
@@ -144,21 +179,23 @@ class DeliveryStop(
             .behave(this)
 
     /** Loaded parcels for this stop */
-    val loadedParcels = this.parcels.map {
-        /** Automatically excludes missing parcels */
-        it.filter { it.loadingState == Parcel.LoadingState.LOADED }
-    }
+    val loadedParcels = this.parcels.map { it.filter { it.state == Parcel.State.LOADED } }
+            .behave(this)
 
     /** Parcels pending delivery for this stop */
-    val pendingParcels = this.loadedParcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.PENDING } }
+    val pendingParcels = this.loadedParcels.map { it.filter { it.reason == null } }
+            .behave(this)
+
+    /** Missing parcels */
+    val missingParcels = this.parcels.map { it.filter { it.state == Parcel.State.MISSING } }
+            .behave(this)
+
+    /** Damaged parcels */
+    val damagedParcels = this.parcels.map { it.filter { it.isDamaged } }
             .behave(this)
 
     /** Delivered parcels of this stop */
-    val deliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.DELIVERED } }
-            .behave(this)
-
-    /** Undelivered parcels of this stop */
-    val undeliveredParcels = this.parcels.map { it.filter { it.deliveryState == Parcel.DeliveryState.UNDELIVERED } }
+    val deliveredParcels = this.parcels.map { it.filter { it.state == Parcel.State.DELIVERED } }
             .behave(this)
 
     val parcelsByEvent by lazy {
@@ -178,7 +215,8 @@ class DeliveryStop(
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelTotalAmount = this.loadedParcels.map { it.count() }
+    val parcelTotalAmount = this.parcels
+            .map { it.filter { it.state != Parcel.State.MISSING }.count() }
             .distinctUntilChanged()
             .behave(this)
 
@@ -186,7 +224,7 @@ class DeliveryStop(
             .distinctUntilChanged()
             .behave(this)
 
-    val deliveredOrdersAmount = this.orders.map { it.filter { it.parcels.all { it.deliveryState == Parcel.DeliveryState.DELIVERED } }.count() }
+    val deliveredOrdersAmount = this.orders.map { it.filter { it.parcels.all { it.state == Parcel.State.DELIVERED } }.count() }
             .distinctUntilChanged()
             .behave(this)
 
@@ -199,8 +237,11 @@ class DeliveryStop(
             .behave(this)
     //endregion
 
-    /** Signature as svg */
+    /** Signature handwriting as svg */
     var signatureSvg: String? = null
+
+    /** Signature camera image */
+    var signatureOnPaperImageUid: UUID? = null
 
     /** Recipient name */
     var recipientName: String? = null
@@ -260,7 +301,7 @@ class DeliveryStop(
             stop.tasks
                     .flatMap { it.order.parcels }
                     .forEach { parcel ->
-                        parcel.deliveryState = Parcel.DeliveryState.PENDING
+                        parcel.state = Parcel.State.LOADED
                         parcel.reason = null
                         update(parcel)
                     }
@@ -277,27 +318,36 @@ class DeliveryStop(
 
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
-            if (stop.state == Stop.State.CLOSED) {
-                stop.state = Stop.State.PENDING
-                update(stop)
+            open()
+
+            // Check if all stop parcel have the (same) event
+            val stopParcels = parcels.blockingFirst()
+
+            if (parcel.reason != null) {
+                val parcelsToReset = when {
+                    // Reset event for all stop parcels if event matches
+                    stopParcels.all { it.reason == parcel.reason } -> {
+                        stopParcels
+                    }
+                    // Reset event for all parcels of this order if event matches
+                    parcel.order.parcels.all { it.reason == parcel.reason } -> {
+                        parcel.order.parcels
+                    }
+                    else -> listOf()
+                }
+
+                parcelsToReset
+                        .filter {
+                            it.state == Parcel.State.LOADED
+                        }
+                        .forEach {
+                            it.reason = null
+                            update(it)
+                        }
             }
 
-            // TODO: support order level events
-            parcels.blockingFirst()
-                    .filter {
-                        it.deliveryState == Parcel.DeliveryState.UNDELIVERED
-                    }
-                    .forEach {
-                        it.deliveryState = Parcel.DeliveryState.PENDING
-                        it.reason = null
-                        update(it)
-                    }
-
             /** Mark parcel delivered */
-            parcel.deliveryState = Parcel.DeliveryState.DELIVERED
-
-            /** In case the parcel was missing, make sure to correct the loading state */
-            parcel.loadingState = Parcel.LoadingState.LOADED
+            parcel.state = Parcel.State.DELIVERED
 
             update(parcel)
         }
@@ -306,26 +356,64 @@ class DeliveryStop(
     }
 
     /**
+     * (Re-)open stop
+     */
+    private fun open() {
+        val stop = this.entity
+        if (stop.state == Stop.State.CLOSED) {
+            stop.state = Stop.State.PENDING
+            db.store.toBlocking().update(stop)
+        }
+    }
+
+    /**
      * Assign event reason to entire stop
      */
-    fun assignEventReason(reason: EventNotDeliveredReason): Completable {
+    fun assignStopLevelEvent(reason: EventNotDeliveredReason): Completable {
         val stop = this.entity
 
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
-            if (stop.state == Stop.State.CLOSED) {
-                stop.state = Stop.State.PENDING
-                update(stop)
-            }
+            open()
 
             parcels.blockingFirst().forEach {
-                it.deliveryState = Parcel.DeliveryState.UNDELIVERED
+                it.state = Parcel.State.LOADED
                 it.reason = reason
                 update(it)
             }
         }
                 .toCompletable()
                 .subscribeOn(Schedulers.computation())
+    }
+
+    /**
+     * Assign event reason to entire stop
+     */
+    fun assignOrderLevelEvent(order: Order, reason: EventNotDeliveredReason): Completable {
+        val stop = this.entity
+
+        return db.store.withTransaction {
+            // In case the stop has been closed before, re-open on delivery
+            open()
+
+            order.parcels.forEach {
+                it.state = Parcel.State.LOADED
+                it.reason = reason
+                update(it)
+            }
+        }
+                .toCompletable()
+                .subscribeOn(Schedulers.computation())
+    }
+
+
+    /**
+     * Sends the image and stores the file uid internally, which will be passed
+     * with close stop ParcelMessage on finalize
+     */
+    fun signOnPaper(signatureOnPaperImageJpeg: ByteArray) {
+        // Send file
+        this.signatureOnPaperImageUid = mqttEndpoints.central.main.channel().sendFile(signatureOnPaperImageJpeg, MimeType.JPEG.value)
     }
 
     fun finalize(): Completable {
@@ -345,18 +433,28 @@ class DeliveryStop(
 
                     // TODO: unify parcel message send, as this is replicated eg., in DeliveryStop
                     // Send compound closing stop parcel message
-                    mqttChannels.central.main.channel().send(
+                    mqttEndpoints.central.main.channel().send(
                             ParcelServiceV1.ParcelMessage(
                                     userId = this.login.authenticatedUser?.id,
                                     nodeId = this.identity.uid.value,
-                                    deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(
-                                            signature = signatureSvg,
-                                            recipient = recipientName
-                                    ),
+                                    deliveredInfo = when {
+                                        signatureSvg != null -> ParcelServiceV1.ParcelMessage.DeliveredInfo(
+                                                signature = signatureSvg,
+                                                recipient = recipientName
+                                        )
+                                        else -> null
+                                    },
+                                    signatureOnPaperInfo = when {
+                                        signatureOnPaperImageUid != null -> ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(
+                                                recipient = recipientName,
+                                                pictureFileUid = this.signatureOnPaperImageUid
+                                        )
+                                        else -> null
+                                    },
                                     events = parcels.map {
                                         ParcelServiceV1.Event(
                                                 event = when {
-                                                    it.deliveryState == Parcel.DeliveryState.DELIVERED -> Event.DELIVERED.value
+                                                    it.state == Parcel.State.DELIVERED -> Event.DELIVERED.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
                                                 reason = it.reason?.reason?.id ?: Reason.NORMAL.id,

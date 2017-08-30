@@ -210,7 +210,7 @@
     <string name="signature_conclusion">Ich quittiere den Empfang von\nAufträge: %1$s\nPakete: %2$s\nEmpfänger: %3$s</string>
     <string name="signature_signed_by_name">Name: %s</string>
 
-    <string name="signed_on_paper">Unters. auf Papier</string>
+    <string name="signature_on_paper">Unterschrift auf Papier</string>
 
     <string name="skip">Überspringen</string>
 
@@ -221,7 +221,7 @@
     <string name="submit">Absenden</string>
 
     <string name="title_activity_delivery">Zustellung</string>
-    <string name="title_alternativedelivery">Alternative delivery</string>
+    <string name="title_alternativedelivery">Alternativ-Zustellung</string>
     <string name="title_cash_collection">Nachnahme</string>
     <string name="title_confirm_call">Anruf bestätigen</string>
     <string name="title_missing_signature">Unterschrift fehlt</string>
@@ -253,4 +253,7 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
+    <string name="title_reset_data">Daten zurücksetzen</string>
+    <string name="dialog_content_outdated_orders">Aufträge sind veraltet. Um fortzufahren müssen alle Daten gelöscht werden. Fortfahjren?</string>
+    <string name="error_unknown_parcel">Unbekanntes Paket</string>
 </resources>

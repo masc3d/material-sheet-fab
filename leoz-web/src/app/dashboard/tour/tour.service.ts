@@ -11,6 +11,7 @@ import { MarkerModel } from './tour-map/marker.model';
 import { TranslateService } from '../../core/translate/translate.service';
 import { DriverService } from './driver.service';
 import RoleEnum = Driver.RoleEnum;
+import * as moment from 'moment';
 
 @Injectable()
 export class TourService {
@@ -38,14 +39,17 @@ export class TourService {
   public activeRoute = this.activeRouteSubject.asObservable().distinctUntilChanged();
 
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
+  private locationFromToUrl = `${environment.apiUrl}/internal/v2/location`;
 
   private drivers: Driver[];
+  private duration: number;
 
   constructor( private http: Http,
                private msgService: MsgService,
                private translate: TranslateService,
                private driverService: DriverService ) {
     driverService.drivers.subscribe( ( drivers: Driver[] ) => this.drivers = drivers );
+    this.duration = 0;
   }
 
   private getLocation( userId: number ): Observable<Response> {
@@ -53,6 +57,14 @@ export class TourService {
 
     const queryParameters = new URLSearchParams();
     queryParameters.set( 'user-id', String( userId ) );
+    if (this.duration > 0) {
+      // Eingrezung für datumsauswahl siehe Kalenderfeature
+      // const from = moment().subtract(this.duration, 'minutes');
+      // queryParameters.set( 'from', from.format('MM/DD/YYYY HH:mm:ss') );
+      // queryParameters.set( 'to', from.format('MM/DD/YYYY HH:mm:ss') );
+      // return this.http.get( this.locationFromToUrl, options );
+      queryParameters.set( 'duration', String( this.duration ) );
+    }
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
@@ -67,6 +79,14 @@ export class TourService {
 
     const queryParameters = new URLSearchParams();
     queryParameters.set( 'debitor-id', String( currUser.user.debitorId ) );
+    if (this.duration > 0) {
+      // Eingrezung für datumsauswahl siehe Kalenderfeature
+      // const from = moment().subtract(this.duration, 'minutes');
+      // queryParameters.set( 'from', from.format('MM/DD/YYYY HH:mm:ss') );
+      // queryParameters.set( 'to', from.format('MM/DD/YYYY HH:mm:ss') );
+      // return this.http.get( this.locationFromToUrl, options );
+      queryParameters.set( 'duration', String( this.duration ) );
+    }
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
@@ -76,12 +96,19 @@ export class TourService {
     return this.http.get( this.locationUrl, options );
   }
 
-  private getRoute( userId: number, duration: string ): Observable<Response> {
+  private getRoute( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
     const queryParameters = new URLSearchParams();
     queryParameters.set( 'user-id', String( userId ) );
-    queryParameters.set( 'duration', duration );  // hardcoded for developement
+    if (this.duration > 0) {
+      // Eingrezung für datumsauswahl siehe Kalenderfeature
+      // const from = moment().subtract(this.duration, 'minutes');
+      // queryParameters.set( 'from', from.format('MM/DD/YYYY HH:mm:ss') );
+      // queryParameters.set( 'to', from.format('MM/DD/YYYY HH:mm:ss') );
+      // return this.http.get( this.locationFromToUrl, options );
+      queryParameters.set( 'duration', String( this.duration ) );
+    }
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
@@ -107,7 +134,8 @@ export class TourService {
     this.activeRouteSubject.next( <Position[]> [] );
   }
 
-  changeActiveMarker( selectedDriver: Driver ) {
+  changeActiveMarker( selectedDriver: Driver, duration: number ) {
+    this.duration = duration;
     this.resetDisplay();
     this.getLocation( selectedDriver.id )
       .subscribe( ( response: Response ) => {
@@ -116,7 +144,7 @@ export class TourService {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
               this.displayMarkerSubject.next( true );
-              this.activeMarkerSubject.next( <MarkerModel> { position: positions[ 0 ], driver: selectedDriver } );
+              this.activeMarkerSubject.next( <MarkerModel> { position: positions[ positions.length - 1 ], driver: selectedDriver } );
               this.msgService.clear();
             } else {
               this.locationError();
@@ -128,9 +156,10 @@ export class TourService {
         ( error: Response ) => this.msgService.handleResponse( error ) );
   }
 
-  changeActiveRoute( selectedDriver: Driver, duration: string ) {
+  changeActiveRoute( selectedDriver: Driver, duration: number ) {
+    this.duration = duration;
     this.resetDisplay();
-    this.getRoute( selectedDriver.id, duration )
+    this.getRoute( selectedDriver.id )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
@@ -163,7 +192,8 @@ export class TourService {
     this.msgService.error( this.translate.instant( 'could not get route' ) );
   }
 
-  fetchAllPositions( filter: string ) {
+  fetchAllPositions( filter: string, duration: number ) {
+    this.duration = duration;
     this.resetDisplay();
     this.driverService.getDrivers();
     this.getAllLocations()
@@ -177,7 +207,7 @@ export class TourService {
                 if (filtered.length > 0) {
                   const driver = filtered[ 0 ];
                   if (driver.active) {
-                    const position = <Position> userLocation.gpsDataPoints[ 0 ];
+                    const position = <Position> userLocation.gpsDataPoints[ userLocation.gpsDataPoints.length - 1 ];
                     if (filter === 'allusers'
                       || (filter === 'alldrivers' && driver.role === RoleEnum.DRIVER)) {
                       allMarkers.push( <MarkerModel> { position: position, driver: driver } )

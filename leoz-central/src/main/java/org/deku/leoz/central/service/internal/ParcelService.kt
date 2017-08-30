@@ -1,54 +1,49 @@
 package org.deku.leoz.central.service.internal
 
-import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.TblstatusRecord
-import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.central.data.toUInteger
-import org.deku.leoz.node.rest.DefaultProblem
-import sx.mq.MqChannel
-import sx.mq.MqHandler
-import sx.rs.auth.ApiKey
-import java.util.*
-import javax.inject.Named
-import javax.ws.rs.Path
-import org.deku.leoz.service.internal.ParcelServiceV1
-import org.jooq.DSLContext
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
-import sx.time.toLocalDate
-import java.text.SimpleDateFormat
-import javax.inject.Inject
-import javax.ws.rs.core.Response
-import org.deku.leoz.central.data.jooq.Routines
-import org.deku.leoz.node.Storage
-import org.deku.leoz.time.toShortTime
-import org.springframework.transaction.annotation.Transactional
-import sx.time.toSqlDate
-import sx.time.toTimestamp
-import java.io.ByteArrayInputStream
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.OpenOption
-import java.nio.file.Paths
-import java.sql.Timestamp
-import javax.imageio.ImageIO
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
-import org.apache.batik.transcoder.*
-import org.deku.leoz.model.*
+import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.repository.FieldHistoryJooqRepository
+import org.deku.leoz.central.data.repository.ParcelJooqRepository
+import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.central.data.repository.setDate
+import org.deku.leoz.central.data.repository.setTime
+import org.deku.leoz.central.data.toUInteger
+import org.deku.leoz.model.AdditionalInfo
+import org.deku.leoz.model.Event
+import org.deku.leoz.model.FileName
+import org.deku.leoz.model.Location
+import org.deku.leoz.model.Reason
+import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.node.Storage
+import org.deku.leoz.node.rest.DefaultProblem
+import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.time.toDateOnlyTime
 import org.deku.leoz.time.toDateWithoutTime
+import org.deku.leoz.time.toShortTime
 import org.deku.leoz.time.toString_ddMMyyyy_PointSeparated
+import org.jooq.DSLContext
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.transaction.annotation.Transactional
+import sx.mq.MqChannel
+import sx.mq.MqHandler
+import sx.rs.auth.ApiKey
+import sx.time.toTimestamp
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.FileOutputStream
-import javax.imageio.IIOImage
+import java.nio.file.Files
+import java.util.*
+import javax.imageio.ImageIO
+import javax.inject.Inject
+import javax.inject.Named
+import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
-import javax.imageio.*
-import javax.imageio.plugins.bmp.BMPImageWriteParam
+import javax.ws.rs.core.Response
 
 /**
  * Parcel service v1 implementation
@@ -73,6 +68,9 @@ open class ParcelServiceV1 :
 
     @Inject
     private lateinit var storage: Storage
+
+    @Inject
+    private lateinit var userRepository: UserJooqRepository
 
     /**
      * Parcel service message handler
@@ -125,7 +123,7 @@ open class ParcelServiceV1 :
             r.poslat = it.latitude
             r.poslong = it.longitude
 
-            r.infotext = message.nodeId.toString().substringBefore("-")// "ScannerXY"
+            r.infotext = "MOB " + message.userId.toString()
 
             //TODO: Die Werte kz_status und -erzeuger sollten vermutlich über die Enumeration gesetzt werden, damit man die (aktuellen) Primärschlüssel nicht an mehreren Stellen pflegen muss, oder?
             val eventId = it.event
@@ -142,6 +140,13 @@ open class ParcelServiceV1 :
             if (it.fromStation) {
                 if (from != null) {
                     r.erzeugerstation = from
+                }
+            }
+            val userId = message.userId
+            if (userId != null) {
+                val station = userRepository.findStationNrByUserId(userId)
+                if (station != null) {
+                    r.erzeugerstation = station.toString().padStart(3, '0')
                 }
             }
 
@@ -169,28 +174,37 @@ open class ParcelServiceV1 :
                     val recipientInfo = StringBuilder()
                     var signature: String? = null
                     var mimetype = "svg"
+                    var pictureFileUid : UUID? = null
                     when (reason) {
                         Reason.POSTBOX -> {
                             recipientInfo.append("Postbox")
                         }
                         Reason.NORMAL -> {
-                            //if (it.deliveredInfo == null)
-//                            if (it.additionalInfo == null)
-//                                throw DefaultProblem(
-//                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-//                                )
-                            if (message.deliveredInfo == null)
-                                throw DefaultProblem(
-                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                )
-                            recipientInfo.append((message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).recipient ?: "")
-                            signature = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).signature
-                            mimetype = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).mimetype
-                            //val addInfo = it. additionalInfo
-                            //recipientInfo.append(.deliveredInfo.recipient ?: "")
-                            //signature = event.declaringClass.  message.deliveredInfo.signature
-                            //mimetype = message.deliveredInfo.mimetype
-/*
+                            when (message.deliveredInfo) {
+                                null -> {
+                                    when (message.signatureOnPaperInfo) {
+                                        null -> {
+                                            throw DefaultProblem(
+                                                    title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                        }
+                                        else -> {
+                                            recipientInfo.append((message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).recipient ?: "")
+                                            pictureFileUid =   (message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).pictureFileUid
+                                        }
+                                    }
+                                }
+                                else -> {
+                                    recipientInfo.append((message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).recipient ?: "")
+                                    signature = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).signature
+                                    mimetype = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).mimetype
+                                }
+                            }
+
+/*                            val addInfo = it.additionalInfo
+                            recipientInfo.append(.deliveredInfo.recipient ?: "")
+                            signature = event.declaringClass.message.deliveredInfo.signature
+                            mimetype = message.deliveredInfo.mimetype
+
 
                             val addInfo = it.additionalInfo
                             when (addInfo) {
@@ -549,12 +563,20 @@ open class ParcelServiceV1 :
                 }
                 Event.IN_DELIVERY -> {
                     //ticket #260
-                    var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "H", 2)
+                    var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "H", 2, 0)
                     if (!existStatus)
-                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "H", 4)
+                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "H", 4, 0)
                     if (!existStatus)
-                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 1)
+                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 1, 0)
                     if (!existStatus)
+                        insertStatus = false
+                    existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 7, 0)
+                    if (existStatus)
+                        insertStatus = false
+                }
+                Event.NOT_IN_DEIVERY -> {
+                    var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr, "E", 11, 0)
+                    if (existStatus)
                         insertStatus = false
                 }
                 Event.EXPORT_LOADED -> {
