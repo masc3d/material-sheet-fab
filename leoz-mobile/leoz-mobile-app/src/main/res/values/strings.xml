@@ -269,7 +269,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="submit">Submit</string>
 
     <string name="title_activity_delivery">Delivery</string>
-    <string name="title_alternativedelivery">Alternativzustellung</string>
+    <string name="title_alternativedelivery">Alternative Recipient</string>
     <string name="title_cash_collection">Cash collection</string>
     <string name="title_confirm_call">Confirm call</string>
     <string name="title_missing_signature">Signature missing</string>

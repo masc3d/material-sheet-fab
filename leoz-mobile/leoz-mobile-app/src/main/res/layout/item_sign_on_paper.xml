@@ -64,7 +64,7 @@
                         android:layout_height="@dimen/icon_size"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="@dimen/medium_margin"
-                        android:src="@drawable/ic_user"
+                        android:src="@drawable/ic_person"
                         android:tint="@color/colorGrey"
                         />
 

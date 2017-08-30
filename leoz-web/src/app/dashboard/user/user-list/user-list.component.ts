@@ -9,11 +9,13 @@ import { TranslateService } from '../../../core/translate/translate.service';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { PermissionCheck } from '../../../core/auth/permission-check';
 import { RoleGuard } from '../../../core/auth/role.guard';
+import { SortMeta } from 'primeng/primeng';
 
 @Component( {
   selector: 'app-user-list',
   template: `
-    <p-dataTable [value]="users | async | userfilter" resizableColumns="true" [responsive]="true">
+    <p-dataTable [value]="users | async | userfilter" resizableColumns="true" [responsive]="true"
+                 sortMode="multiple" [multiSortMeta]="multiSortMeta">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
       <p-column field="role" header="{{'role' | translate}}" [sortable]="true">
@@ -41,8 +43,10 @@ import { RoleGuard } from '../../../core/auth/role.guard';
       </p-column>
       <p-column header="">
         <ng-template let-user="rowData" pTemplate="body">
-          <i *ngIf="myself(user) || checkPermission(user)" class="fa fa-pencil fa-fw" aria-hidden="true" (click)="selected(user)"></i>
-          <i *ngIf="checkPermission(user)" class="fa fa-trash-o fa-fw" aria-hidden="true" (click)="deactivate(user)"></i>
+          <i *ngIf="myself(user) || checkPermission(user)" class="fa fa-pencil fa-fw" aria-hidden="true"
+             (click)="selected(user)"></i>
+          <i *ngIf="checkPermission(user)" class="fa fa-trash-o fa-fw" aria-hidden="true"
+             (click)="deactivate(user)"></i>
         </ng-template>
       </p-column>
     </p-dataTable>
@@ -53,6 +57,8 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
   users: Observable<User[]>;
   dateFormat: string;
 
+  multiSortMeta: SortMeta[] = [];
+
   constructor( private userService: UserService,
                private msgService: MsgService,
                public translate: TranslateService,
@@ -62,6 +68,9 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
 
   ngOnInit() {
     super.ngOnInit();
+
+    this.multiSortMeta.push( { field: 'active', order: -1 } );
+    this.multiSortMeta.push( { field: 'lastName', order: 1 } );
 
     this.deactivate( <User> {} );
     this.selected( <User> {} );
@@ -96,11 +105,11 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
     }
   }
 
-  myself(user: User): boolean {
-    return PermissionCheck.myself(user);
+  myself( user: User ): boolean {
+    return PermissionCheck.myself( user );
   }
 
-  checkPermission(user: User): boolean {
-    return PermissionCheck.hasLessPermissions(this.roleGuard.userRole, user.role);
+  checkPermission( user: User ): boolean {
+    return PermissionCheck.hasLessPermissions( this.roleGuard.userRole, user.role );
   }
 }

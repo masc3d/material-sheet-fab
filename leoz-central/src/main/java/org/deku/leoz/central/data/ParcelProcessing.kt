@@ -67,7 +67,7 @@ class ParcelProcessing {
                 r.poslong = it.longitude
 //MOB_B userid
 //MOB userid
-                r.infotext = "MOB_" + (it.userId?.toString() ?: "")
+                r.infotext = "MOB " + (it.userId?.toString() ?: "")
 
                 val eventId = it.eventValue
                 val event = Event.values().find { it.value == eventId }!!
@@ -385,7 +385,7 @@ class ParcelProcessing {
                         if (addInfo != null) {
                             when (addInfo) {
                                 is AdditionalInfo.NotDeliveredInfo -> {
-                                    r.infotext = addInfo.text ?: ""
+                                    r.text = addInfo.text ?: ""
                                 }
                             }
                         }
@@ -397,7 +397,7 @@ class ParcelProcessing {
                                             title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
                                     )
                                     is AdditionalInfo.NotDeliveredRefusedInfo -> {
-                                        r.infotext = addInfo.cause ?: ""
+                                        r.text = addInfo.cause ?: ""
                                     }
 
                                 }
@@ -405,7 +405,7 @@ class ParcelProcessing {
                             Reason.PARCEL_DAMAGED -> {
                                 when (addInfo) {
                                     is AdditionalInfo.DamagedInfo -> {
-                                        r.infotext = addInfo.description ?: ""
+                                        r.text = addInfo.description ?: ""
                                         if (addInfo.photo != null) {
 //                                        val path = SimpleDateFormat("yyyy").format(it.time) + "/sca_pic/" +
 //                                                SimpleDateFormat("MM").format(it.time) + "/" +
@@ -467,7 +467,7 @@ class ParcelProcessing {
                     }
                     Event.NOT_IN_DEIVERY -> {
 
-                        var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 1, 0)
+                        var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 11, 0)
 
                         //var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 11)
 

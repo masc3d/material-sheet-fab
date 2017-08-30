@@ -85,31 +85,15 @@ open class ParcelServiceV1 :
         log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
 
         events.forEach {
-            var insertStatus = true
-            val r = dslContext.newRecord(Tables.TBLSTATUS)
-            //val parcelScan = it.parcelScancode
-            /*if (parcelScan.isEmpty())
-                throw DefaultProblem(
-                        title = "Missing parcelScan"
-                )
-                */
-            val parcelNo: Long?
-            //if (!parcelScan.all { it.isDigit() })
-            parcelNo = parcelRepository.getUnitNo(it.parcelId)
-            /*else {
-                parcelNo = parcelScan.toDouble()
-            }*/
-            parcelNo ?:
-                    throw DefaultProblem(
-                            title = "Missing parcelId"
-                    )
 
-            val parcelScan = parcelNo.toLong().toString()
+            val parcelNo = parcelRepository.getUnitNo(it.parcelId)
 
             parcelNo ?:
                     throw DefaultProblem(
                             title = "Missing parcelNo"
                     )
+
+            val parcelScan = parcelNo.toString()
 
 
             val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
@@ -122,13 +106,10 @@ open class ParcelServiceV1 :
             recordMessages.reasonId = it.reason
             recordMessages.latitude = it.latitude
             recordMessages.longitude = it.longitude
-            recordMessages.isProccessed=0
+            recordMessages.isProccessed = 0
             if (!messagesRepository.saveMsg(recordMessages)) {
                 log.error("Problem saving parcel-messages")
             }
-
-
-
 
 
             //TODO: Die Werte kz_status und -erzeuger sollten vermutlich über die Enumeration gesetzt werden, damit man die (aktuellen) Primärschlüssel nicht an mehreren Stellen pflegen muss, oder?
@@ -136,7 +117,6 @@ open class ParcelServiceV1 :
             val event = Event.values().find { it.value == eventId }!!
             val reasonId = it.reason
             val reason = Reason.values().find { it.id == reasonId }!!
-
 
 
             val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
@@ -155,26 +135,58 @@ open class ParcelServiceV1 :
                     val recipientInfo = StringBuilder()
                     var signature: String? = null
                     var mimetype = "svg"
+                    var pictureFileUid: UUID? = null
                     when (reason) {
                         Reason.POSTBOX -> {
                             recipientInfo.append("Postbox")
+                            recordMessages.additionalInfo = "{\"recipient\":\"" + recipientInfo.toString() + "\"}"
+                            messagesRepository.saveMsg(recordMessages)
                         }
                         Reason.NORMAL -> {
 
-                            val addInfo = message.deliveredInfo
-                            addInfo ?:
-                                    throw DefaultProblem(
-                                            title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                    )
+                            when (message.deliveredInfo) {
+                                null -> {
+                                    when (message.signatureOnPaperInfo) {
+                                        null -> {
+                                            throw DefaultProblem(
+                                                    title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                        }
+                                        else -> {
+                                            val addInfo = message.signatureOnPaperInfo
+                                            addInfo ?:
+                                                    throw DefaultProblem(
+                                                            title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                                    )
 
-                            recipientInfo.append((addInfo.recipient ?: ""))
-                            signature = addInfo.signature
-                            mimetype = addInfo.mimetype
+                                            recipientInfo.append(addInfo.recipient)
+                                            //recipientInfo.append((message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).recipient ?: "")
+                                            //pictureFileUid =   (message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).pictureFileUid
+                                            pictureFileUid = addInfo.pictureFileUid
+                                        }
+                                    }
+                                }
+                                else -> {
+                                    //recipientInfo.append((message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).recipient ?: "")
+                                    //signature = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).signature
+                                    //mimetype = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).mimetype
 
-                            recordMessages.additionalInfo="{\"recipient\":\""+recipientInfo.toString()+"\"}"
+                                    val addInfo = message.deliveredInfo
+                                    addInfo ?:
+                                            throw DefaultProblem(
+                                                    title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                            )
+
+                                    recipientInfo.append(addInfo.recipient)
+                                    signature = addInfo.signature
+                                    mimetype = addInfo.mimetype
+
+
+                                }
+                            }
+
+
+                            recordMessages.additionalInfo = "{\"recipient\":\"" + recipientInfo.toString() + "\"}"
                             messagesRepository.saveMsg(recordMessages)
-
-
 
                         }
                         Reason.NEIGHBOUR -> {
@@ -188,7 +200,7 @@ open class ParcelServiceV1 :
                                     signature = addInfo.signature
                                     mimetype = addInfo.mimetype
 
-                                    recordMessages.additionalInfo="{\"name\":\""+recipientInfo.toString()+"\",\"address\":\""+(addInfo.address ?:"")+"\"}"
+                                    recordMessages.additionalInfo = "{\"name\":\"" + recipientInfo.toString() + "\",\"address\":\"" + (addInfo.address ?: "") + "\"}"
                                     messagesRepository.saveMsg(recordMessages)
                                 }
                             }
@@ -199,11 +211,11 @@ open class ParcelServiceV1 :
 
                     if (signature != null) {
                         val sigPath = saveImage(it.time, Location.SB, signature, parcelScan, message.userId, mimetype, Location.SB_Original)
-                        if (sigPath != "")
+                        if (sigPath != "") {
                             parcelRecord.bmpfilename = sigPath
-                        parcelRecord.store()
+                            parcelRecord.store()
+                        }
                     }
-
 
 
                 }
@@ -216,7 +228,7 @@ open class ParcelServiceV1 :
                         when (addInfo) {
                             is AdditionalInfo.NotDeliveredInfo -> {
                                 //r.infotext = addInfo.text ?: ""
-                                recordMessages.additionalInfo="{\"text\":\""+addInfo.text+"\"}"
+                                recordMessages.additionalInfo = "{\"text\":\"" + addInfo.text + "\"}"
                                 messagesRepository.saveMsg(recordMessages)
                             }
                         }
@@ -230,7 +242,7 @@ open class ParcelServiceV1 :
                                 )
                                 is AdditionalInfo.NotDeliveredRefusedInfo -> {
                                     //r.infotext = addInfo.cause ?: ""
-                                    recordMessages.additionalInfo="{\"text\":\""+addInfo.cause+"\"}"
+                                    recordMessages.additionalInfo = "{\"text\":\"" + addInfo.cause + "\"}"
                                     messagesRepository.saveMsg(recordMessages)
                                 }
 
@@ -240,7 +252,7 @@ open class ParcelServiceV1 :
                             when (addInfo) {
                                 is AdditionalInfo.DamagedInfo -> {
                                     //r.infotext = addInfo.description ?: ""
-                                    recordMessages.additionalInfo="{\"text\":\""+addInfo.description+"\"}"
+                                    recordMessages.additionalInfo = "{\"text\":\"" + addInfo.description + "\"}"
                                     messagesRepository.saveMsg(recordMessages)
                                     if (addInfo.photo != null) {
 //                                        val path = SimpleDateFormat("yyyy").format(it.time) + "/sca_pic/" +
@@ -259,15 +271,12 @@ open class ParcelServiceV1 :
                 Event.IMPORT_RECEIVE -> {
 
 
-
                 }
                 Event.IN_DELIVERY -> {
 
 
-
                 }
                 Event.NOT_IN_DEIVERY -> {
-
 
                 }
                 Event.EXPORT_LOADED -> {
@@ -283,7 +292,7 @@ open class ParcelServiceV1 :
                         )
                         is AdditionalInfo.LoadingListInfo -> {
                             //r.text = addInfo.loadingListNo.toString()
-                            recordMessages.additionalInfo="{\"text\":\""+addInfo.loadingListNo.toString()+"\"}"
+                            recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"
                             messagesRepository.saveMsg(recordMessages)
 
                         }
@@ -293,7 +302,7 @@ open class ParcelServiceV1 :
 
 
         }
-        if(!parcelProcessing.processMessages()){
+        if (!parcelProcessing.processMessages()) {
             log.error("Problem processing parcel-messages")
         }
     }

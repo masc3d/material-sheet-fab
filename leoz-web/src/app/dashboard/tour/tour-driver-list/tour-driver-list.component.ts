@@ -1,15 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/timer';
+
+import { SelectItem } from 'primeng/primeng';
 
 import { Driver } from '../driver.model';
 import { TourService } from '../tour.service';
 import { DriverService } from '../driver.service';
 import { RoleGuard } from '../../../core/auth/role.guard';
 import { UserService } from '../../user/user.service';
-import { SelectItem } from 'primeng/primeng';
-import { Subscription } from 'rxjs/Subscription';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 
@@ -54,7 +55,7 @@ interface CallbackArguments {
       </div>
     </div>
     <p-dataTable *ngIf="tableIsVisible" [value]="drivers | async | driverfilter: [filterName]" resizableColumns="true"
-                 [responsive]="true">
+                 [responsive]="true" sortField="lastName" [sortOrder]="1">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phoneoffice' | translate}}" [sortable]="true"></p-column>
@@ -115,7 +116,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.drivers = this.driverService.drivers;
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.tourService.resetMarkerAndRoute();
-    this.tableIsVisible = true;
+    this.tableIsVisible = false;
     this.allDrivers();
   }
 
@@ -128,6 +129,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   allDrivers() {
+    this.tableIsVisible = false;
     this.clearTimerMapdisplay();
     this.driverService.getDrivers();
     this.filterName = 'driverfilter';
@@ -140,6 +142,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   allUsers() {
+    this.tableIsVisible = false;
     this.clearTimerMapdisplay();
     this.userService.getUsers();
     this.filterName = 'userfilter';
@@ -215,14 +218,14 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   showAllPositions( args: CallbackArguments ) {
-    args.tourService.fetchAllPositions( this.periodicallyUsedFilter, Number.parseInt(this.selectedInterval, 10) * 60 );
+    args.tourService.fetchAllPositions( this.periodicallyUsedFilter, Number.parseInt( this.selectedInterval, 10 ) * 60 );
   }
 
   showPosition( args: CallbackArguments ) {
-    args.tourService.changeActiveMarker( args.driver, Number.parseInt(this.selectedInterval, 10) * 60 );
+    args.tourService.changeActiveMarker( args.driver, Number.parseInt( this.selectedInterval, 10 ) * 60 );
   }
 
   showRoute( args: CallbackArguments ) {
-    args.tourService.changeActiveRoute( args.driver, Number.parseInt(this.selectedInterval, 10) * 60 );
+    args.tourService.changeActiveRoute( args.driver, Number.parseInt( this.selectedInterval, 10 ) * 60 );
   }
 }

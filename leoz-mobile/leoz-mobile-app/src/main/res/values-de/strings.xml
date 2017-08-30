@@ -221,7 +221,7 @@
     <string name="submit">Absenden</string>
 
     <string name="title_activity_delivery">Zustellung</string>
-    <string name="title_alternativedelivery">Alternative delivery</string>
+    <string name="title_alternativedelivery">Alternativ-Zustellung</string>
     <string name="title_cash_collection">Nachnahme</string>
     <string name="title_confirm_call">Anruf bestätigen</string>
     <string name="title_missing_signature">Unterschrift fehlt</string>
