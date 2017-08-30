@@ -56,8 +56,10 @@ class DeliveryStop(
      */
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         mutableListOf(
-                EventNotDeliveredReason.ABSENT,
+                // Ordered by frequency of appearance
+
                 EventNotDeliveredReason.REFUSED,
+                EventNotDeliveredReason.ABSENT,
                 EventNotDeliveredReason.VACATION,
                 EventNotDeliveredReason.ADDRESS_WRONG,
                 EventNotDeliveredReason.MOVED,
@@ -102,7 +104,9 @@ class DeliveryStop(
         this.allowedEvents.filter {
             when (it) {
                 EventNotDeliveredReason.REFUSED,
-                EventNotDeliveredReason.XC_OBJECT_NOT_READY -> true
+                EventNotDeliveredReason.XC_OBJECT_DAMAGED,
+                EventNotDeliveredReason.XC_OBJECT_NOT_READY,
+                EventNotDeliveredReason.XC_OBJECT_WRONG -> true
                 else -> false
             }
         }

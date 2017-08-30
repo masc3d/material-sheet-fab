@@ -421,9 +421,9 @@ class DeliveryStopProcessScreen :
                         R.id.action_delivery_select_event -> {
                             val eventDialog = EventDialog.Builder(this.context)
                                     .events(
-                                            this.deliveryStop
-                                                    .allowedStopEvents
-                                                    .plus(this.deliveryStop.allowedParcelEvents))
+                                            this.deliveryStop.allowedParcelEvents
+                                                    .plus(this.deliveryStop.allowedStopEvents)
+                                    )
                                     .listener(this)
                                     .build()
 
