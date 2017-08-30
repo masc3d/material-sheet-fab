@@ -374,10 +374,7 @@ class DeliveryList : CompositeDisposableSupplier {
                                                     it.state == Parcel.State.MISSING -> Event.NOT_IN_DELIVERY.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
-                                                reason = when {
-                                                    it.isDamaged -> Reason.PARCEL_DAMAGED.id
-                                                    else -> Reason.NORMAL.id
-                                                },
+                                                reason = Reason.NORMAL.id,
                                                 parcelId = it.id,
                                                 latitude = lastLocation?.latitude,
                                                 longitude = lastLocation?.longitude,
