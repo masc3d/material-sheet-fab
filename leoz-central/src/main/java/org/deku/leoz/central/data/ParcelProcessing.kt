@@ -465,7 +465,7 @@ class ParcelProcessing {
                         if (existStatus)
                             insertStatus = false
                     }
-                    Event.NOT_IN_DEIVERY -> {
+                    Event.NOT_IN_DELIVERY -> {
 
                         var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 11, 0)
 

@@ -276,7 +276,7 @@ open class ParcelServiceV1 :
 
 
                 }
-                Event.NOT_IN_DEIVERY -> {
+                Event.NOT_IN_DELIVERY -> {
 
                 }
                 Event.EXPORT_LOADED -> {
