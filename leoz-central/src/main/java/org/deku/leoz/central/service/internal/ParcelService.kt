@@ -192,9 +192,9 @@ open class ParcelServiceV1 :
                         Reason.NEIGHBOUR -> {
                             val addInfo = it.additionalInfo
                             when (addInfo) {
-                                is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                )
+                                //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                                //        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                //)
                                 is AdditionalInfo.DeliveredAtNeighborInfo -> {
                                     recipientInfo.append(addInfo.name ?: "")//.append(";adr ").append(addInfo.address ?: "")
                                     signature = addInfo.signature
@@ -237,9 +237,9 @@ open class ParcelServiceV1 :
                         Reason.CUSTOMER_REFUSED -> {
 
                             when (addInfo) {
-                                is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                )
+                                //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                                //        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                //)
                                 is AdditionalInfo.NotDeliveredRefusedInfo -> {
                                     //r.infotext = addInfo.cause ?: ""
                                     recordMessages.additionalInfo = "{\"text\":\"" + addInfo.cause + "\"}"
@@ -280,16 +280,16 @@ open class ParcelServiceV1 :
 
                 }
                 Event.EXPORT_LOADED -> {
-                    if (it.additionalInfo == null)
-                        throw DefaultProblem(
-                                title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
-                        )
+                    //if (it.additionalInfo == null)
+                     //   throw DefaultProblem(
+                     //           title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
+                      //  )
 
                     val addInfo = it.additionalInfo
                     when (addInfo) {
-                        is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                                title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
-                        )
+                        //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                        //        title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
+                        //)
                         is AdditionalInfo.LoadingListInfo -> {
                             //r.text = addInfo.loadingListNo.toString()
                             recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"
