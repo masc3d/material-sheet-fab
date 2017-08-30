@@ -241,7 +241,10 @@ class DeliveryStop(
     var signatureSvg: String? = null
 
     /** Signature camera image */
-    var signatureOnPaperImageUid: UUID? = null
+    private var signatureOnPaperImageUid: UUID? = null
+
+    /** Postbox camera image */
+    private var postboxImageUid: UUID? = null
 
     /** Recipient name */
     var recipientName: String? = null
@@ -413,7 +416,18 @@ class DeliveryStop(
      */
     fun signOnPaper(signatureOnPaperImageJpeg: ByteArray) {
         // Send file
-        this.signatureOnPaperImageUid = mqttEndpoints.central.main.channel().sendFile(signatureOnPaperImageJpeg, MimeType.JPEG.value)
+        this.signatureOnPaperImageUid =
+                mqttEndpoints.central.main.channel().sendFile(signatureOnPaperImageJpeg, MimeType.JPEG.value)
+    }
+
+    /**
+     * Sends the postbox delivery image and stores the file uid internally,
+     * lateron passing it with the ParcelMessage when closing/finalizing the stop
+     */
+    fun postboxDelivery(postboxImageJpeg: ByteArray) {
+        // Send file
+        this.postboxImageUid =
+                mqttEndpoints.central.main.channel().sendFile(postboxImageJpeg, MimeType.JPEG.value)
     }
 
     fun finalize(): Completable {
@@ -448,6 +462,12 @@ class DeliveryStop(
                                         signatureOnPaperImageUid != null -> ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(
                                                 recipient = recipientName,
                                                 pictureFileUid = this.signatureOnPaperImageUid
+                                        )
+                                        else -> null
+                                    },
+                                    postboxDeliveryInfo = when {
+                                        postboxImageUid != null -> ParcelServiceV1.ParcelMessage.PostboxDeliveryInfo(
+                                                pictureFileUid = this.postboxImageUid
                                         )
                                         else -> null
                                     },

@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.flurgle.camerakit.CameraKit
 import com.flurgle.camerakit.CameraListener
-import com.flurgle.camerakit.Size
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -52,7 +51,7 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
     }
 
     interface Listener {
-        fun onCameraImageTaken(jpeg: ByteArray)
+        fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray)
     }
 
     private val torchEnabledProperty = ObservableRxProperty(false)
@@ -197,7 +196,12 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
                         }
 
                         R.id.action_camera_save -> {
-                            this@BaseCameraScreen.listener?.onCameraImageTaken(this.pictureJpeg!!)
+                            this.pictureJpeg?.also {
+                                this@BaseCameraScreen.listener?.onCameraScreenImageSubmitted(
+                                        sender = this,
+                                        jpeg = it)
+                            } ?: log.warn("Image save invoked without picture data being available")
+
                             this.showCaptureActions()
                         }
                     }

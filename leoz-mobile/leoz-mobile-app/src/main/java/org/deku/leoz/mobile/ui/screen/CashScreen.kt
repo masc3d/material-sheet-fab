@@ -43,6 +43,7 @@ import java.text.DecimalFormat
  */
 class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameters>() {
 
+    /** Screen parameters */
     @Parcel(Parcel.Serialization.BEAN)
     class Parameters @ParcelConstructor constructor(
             var stopId: Int,
@@ -50,6 +51,7 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
             var recipient: String = ""
     )
 
+    /** Screen listener */
     interface Listener {
         fun onCashScreenContinue()
     }
@@ -61,10 +63,12 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
     }
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val db: Database by Kodein.global.lazy.instance()
+
+    // Model classes
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
-    val decimalFormat = DecimalFormat("#0.00")
+
+    private val decimalFormat = DecimalFormat("#0.00")
 
     private val deliveryStop: DeliveryStop by lazy {
         delivery.activeStop!!
@@ -152,6 +156,7 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
 
         this.uxCashGiven.setOnEditorActionListener { textView, i, keyEvent ->
             val entered: Double? = this.uxCashGiven.text.toString().toDoubleOrNull()
+
             if (entered != null) {
                 if (entered >= this.deliveryStop.cashAmountToCollect) {
                     this.uxCashChange.text = decimalFormat.format((entered - this.deliveryStop.cashAmountToCollect)).toString()

@@ -165,7 +165,7 @@ class SignatureScreen(target: Fragment? = null)
         this.update()
     }
 
-    override fun onCameraImageTaken(jpeg: ByteArray) {
+    override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
         this.listener?.onSignatureImageSubmitted(jpeg)
     }
 

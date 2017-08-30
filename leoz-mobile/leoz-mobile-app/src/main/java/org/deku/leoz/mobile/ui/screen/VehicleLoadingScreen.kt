@@ -672,7 +672,7 @@ class VehicleLoadingScreen :
         }
     }
 
-    override fun onCameraImageTaken(jpeg: ByteArray) {
+    override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
         this.currentDamagedParcel?.also { parcel ->
             parcelRepository.markDamaged(
                     parcel = parcel,

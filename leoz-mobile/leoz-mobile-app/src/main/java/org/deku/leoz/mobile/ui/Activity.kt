@@ -151,7 +151,7 @@ open class Activity : BaseActivity(),
         SnackbarBuilder(this.uxCoordinatorLayout)
     }
 
-    override fun onCameraImageTaken(jpeg: ByteArray) {
+    override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
         mqttEndpoints.central.main.channel().sendFile(jpeg, MimeType.JPEG.value)
     }
 

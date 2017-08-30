@@ -127,7 +127,7 @@ class DeliveryStopProcessScreen :
     private var currentDamagedParcel: ParcelEntity? = null
 
     /** Current close stop variant */
-    private var currentCloseStopType: EventDeliveredReason? = null
+    private var currentCloseStopVariatn: EventDeliveredReason? = null
     //endregion
 
     //region Sections
@@ -738,29 +738,6 @@ class DeliveryStopProcessScreen :
         }
     }
 
-    override fun onCameraImageTaken(jpeg: ByteArray) {
-        this.currentDamagedParcel?.also { parcel ->
-            parcelRepository.markDamaged(
-                    parcel = parcel,
-                    jpegPictureData = jpeg
-            )
-                    .subscribeOn(Schedulers.computation())
-                    .subscribe()
-        }
-    }
-
-    override fun onSignatureSubmitted(signatureSvg: String) {
-        // Complement active stop and finalize
-        this.deliveryStop.signatureSvg = signatureSvg
-        this.finalizeStop()
-    }
-
-
-    override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
-        this.deliveryStop.signOnPaper(signatureJpeg)
-        this.finalizeStop()
-    }
-
     private fun finalizeStop() {
         this.deliveryStop.finalize()
                 .subscribeOn(Schedulers.computation())
@@ -780,7 +757,7 @@ class DeliveryStopProcessScreen :
     }
 
     private fun closeStop(variant: EventDeliveredReason) {
-        this.currentCloseStopType = variant
+        this.currentCloseStopVariatn = variant
 
         // Show notification dialogs
         val dialogs: List<MaterialDialog> = this.deliveryStop.services
@@ -817,7 +794,7 @@ class DeliveryStopProcessScreen :
             }
 
             EventDeliveredReason.POSTBOX -> {
-                //TODO
+                this.activity.showScreen(PostboxCameraScreen(target = this))
             }
 
             EventDeliveredReason.NORMAL -> {
@@ -871,6 +848,38 @@ class DeliveryStopProcessScreen :
         }
     }
 
+    override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
+        when(sender) {
+            is DamagedParcelCameraScreen -> {
+                this.currentDamagedParcel?.also { parcel ->
+                    parcelRepository.markDamaged(
+                            parcel = parcel,
+                            jpegPictureData = jpeg
+                    )
+                            .subscribeOn(Schedulers.computation())
+                            .subscribe()
+                }
+            }
+
+            is PostboxCameraScreen -> {
+                this.deliveryStop.postboxDelivery(jpeg)
+                this.finalizeStop()
+            }
+        }
+    }
+
+    override fun onSignatureSubmitted(signatureSvg: String) {
+        // Complement active stop and finalize
+        this.deliveryStop.signatureSvg = signatureSvg
+        this.finalizeStop()
+    }
+
+
+    override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
+        this.deliveryStop.signOnPaper(signatureJpeg)
+        this.finalizeStop()
+    }
+
     override fun onNeighbourDeliveryScreenContinue(neighbourName: String) {
         this.deliveryStop.recipientName = neighbourName
 
@@ -886,7 +895,7 @@ class DeliveryStopProcessScreen :
     }
 
     override fun onCashScreenContinue() {
-        when (this.currentCloseStopType) {
+        when (this.currentCloseStopVariatn) {
             EventDeliveredReason.NORMAL -> {
                 MaterialDialog.Builder(context)
                         .title(R.string.recipient)

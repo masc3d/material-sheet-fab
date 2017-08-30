@@ -6,22 +6,13 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
-import org.deku.leoz.model.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
-import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
-import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.screen.NeighbourDeliveryScreen
-import org.deku.leoz.mobile.ui.screen.PostboxDeliveryScreen
-import org.deku.leoz.mobile.ui.screen.SignatureScreen
 import org.slf4j.LoggerFactory
 import sx.requery.ObservableQuery
 import sx.rx.CompositeDisposableSupplier
-import sx.rx.ObservableRxProperty
-import sx.rx.behave
 import sx.rx.bind
 import kotlin.properties.Delegates
 
