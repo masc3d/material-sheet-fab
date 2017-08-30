@@ -21,10 +21,10 @@ class FieldHistoryJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dslContext: DSLContext
 
-    fun addEntry(orderId: Double, unitNo: Double, fieldName: String, oldValue: String, newValue: String, changer: String, point: String) {
+    fun addEntry(orderId: Long, unitNo: Long, fieldName: String, oldValue: String, newValue: String, changer: String, point: String) {
         val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
-        fieldHistoryRecord.orderid = orderId
-        fieldHistoryRecord.belegnummer = unitNo
+        fieldHistoryRecord.orderid = orderId.toDouble()
+        fieldHistoryRecord.belegnummer = unitNo.toDouble()
         fieldHistoryRecord.feldname = fieldName
         fieldHistoryRecord.oldvalue = oldValue
         fieldHistoryRecord.newvalue = newValue

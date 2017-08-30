@@ -29,8 +29,8 @@ persistence:
     central:
         datasource:
             url: jdbc:mysql://10.0.10.10:3306/dekuclient?useSSL=false
-            username: leoz
-            password: leoz
+            username: root
+            password: root
 
 # leoz-central is final destination, doesn't have a peer
 remote:
