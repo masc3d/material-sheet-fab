@@ -6,6 +6,8 @@ import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
 
 /**
  * Flexible view model item
@@ -15,16 +17,18 @@ class FlexibleVmItem<VM>(
         @LayoutRes val view: Int,
         @AnyRes val variable: Int,
         val viewModel: VM
-)
-    : AbstractFlexibleItem<FlexibleVmHolder>() {
+) : AbstractFlexibleItem<FlexibleVmHolder>() {
 
-    override fun equals(other: Any?): Boolean {
-        return this === other
-    }
+    override fun equals(other: Any?): Boolean = (this === other)
 
-    override fun hashCode(): Int{
-        return super.hashCode()
-    }
+    override fun hashCode(): Int = super.hashCode()
+
+    /** Composite disposable for maintaining view holder subscriptions */
+    private val viewHolderSubscriptions = CompositeDisposable()
+
+    private val itemReleasedEventSubject by lazy { PublishSubject.create<Int>() }
+    /** Item released event */
+    val itemReleasedEvent by lazy { itemReleasedEventSubject.hide() }
 
     override fun bindViewHolder(
             adapter: FlexibleAdapter<out IFlexible<*>>,
@@ -34,13 +38,23 @@ class FlexibleVmItem<VM>(
 
         viewHolder.binding.setVariable(this.variable, this.viewModel)
         viewHolder.binding.executePendingBindings()
+
+        // Dispose previous view holder subscriptions
+        viewHolderSubscriptions.clear()
+
+        // Register and pass-through view holder events
+        viewHolderSubscriptions.add(
+                viewHolder.itemReleasedEvent
+                        .subscribe {
+                            itemReleasedEventSubject.onNext(it)
+                        }
+        )
     }
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
-        return FlexibleVmHolder(view, adapter)
+        val holder = FlexibleVmHolder(view, adapter)
+        return holder
     }
 
-    override fun getLayoutRes(): Int {
-        return this.view
-    }
+    override fun getLayoutRes(): Int = this.view
 }
