@@ -40,15 +40,28 @@ class ParcelJooqRepository {
         return (eventRecord.store() > 0)
     }
 
-    fun statusExist(unitNo: Double, creator: String, status: Int, reason: Int): Boolean {
+
+    fun statusExist(unitNo: Long, creator: String, status: Int, reason: Int): Boolean {
         val exist = dslContext.selectCount().from(Tblstatus.TBLSTATUS)
-                .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo))
+                .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo.toDouble()))
                 .and(Tables.TBLSTATUS.KZ_STATUSERZEUGER.eq(creator))
                 .and(Tables.TBLSTATUS.KZ_STATUS.eq(status.toUInteger()))
                 .and(Tables.TBLSTATUS.FEHLERCODE.eq(reason.toUInteger()))
                 .fetchOne(0, Int::class.java)
         return exist != 0
     }
+        /*
+    fun statusExist(unitNo:Long,creator:String,status:Int):Boolean{
+        val exist =dslContext.selectCount().from(Tblstatus.TBLSTATUS)
+                .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo.toDouble()))
+                        .and(Tables.TBLSTATUS.KZ_STATUSERZEUGER.eq(creator))
+                        .and(Tables.TBLSTATUS.KZ_STATUS.eq(status.toUInteger()))
+                .fetchOne(0,Int::class.java)
+        return exist!=0
+        }
+        */
+
+
 
     /**
     fun setSignaturePath(parcelNumber: String, path: String): Boolean {
@@ -58,12 +71,12 @@ class ParcelJooqRepository {
     }
      **/
 
-    fun getUnitNo(parcelId: Long): Double? {
+    fun getUnitNo(parcelId: Long): Long? {
         if (parcelId == 0L) return null
         return dslContext.select(Tables.TAD_V_ORDER_PARCEL.SCAN_ID)
                 .from(Tables.TAD_V_ORDER_PARCEL)
                 .where(Tables.TAD_V_ORDER_PARCEL.ID.eq(parcelId.toDouble()))
-                .fetchOneInto(Double::class.java)
+                .fetchOneInto(Long::class.java)
         /**
         val parcel=parcelId.toString()
         val orderpos=parcel.substring(11,parcel.length-11)
@@ -76,28 +89,28 @@ class ParcelJooqRepository {
          **/
     }
 
-    fun findParcelByUnitNumber(unitNo: Double): TblauftragcolliesRecord? {
+    fun findParcelByUnitNumber(unitNo: Long): TblauftragcolliesRecord? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
-                .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(unitNo))
+                .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(unitNo.toDouble()))
                 .and(Tables.TBLAUFTRAGCOLLIES.ORDERPOS.greaterThan(0))
                 .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.greaterThan(0.0))
                 ?.fetchOneInto(Tblauftragcollies.TBLAUFTRAGCOLLIES)
     }
 
-    fun findOrderByOrderNumber(orderNo: Double): TblauftragRecord? {
+    fun findOrderByOrderNumber(orderNo: Long): TblauftragRecord? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAG)
-                .where(Tables.TBLAUFTRAG.ORDERID.eq(orderNo))
+                .where(Tables.TBLAUFTRAG.ORDERID.eq(orderNo.toDouble()))
                 .and(Tables.TBLAUFTRAG.ORDERID.greaterThan(0.0))
                 ?.fetchOneInto(Tblauftrag.TBLAUFTRAG)
     }
 
 
-    fun findUnitsInBagByBagUnitNumber(bagUnitNo: Double): List<TblauftragcolliesRecord>? {
+    fun findUnitsInBagByBagUnitNumber(bagUnitNo: Long): List<TblauftragcolliesRecord>? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
-                .where(Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRABC.eq(bagUnitNo))
+                .where(Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRABC.eq(bagUnitNo.toDouble()))
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 }

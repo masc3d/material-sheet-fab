@@ -450,7 +450,7 @@ class LocationServiceV2 :
 
         return v1Result.map {
             LocationServiceV2.GpsData(
-                    userId = userId,
+                    userId = it.userId,
                     gpsDataPoints = it.gpsDataPoints
             )
         }

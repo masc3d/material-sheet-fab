@@ -196,7 +196,7 @@ class OrderService : OrderService {
         p.lastDeliveryListId = r.lastDeliveryListId.toInt()
         p.isDelivered = r.deliveredStatus.toInt() == 4
         p.isMissing = r.deliveredStatus.toInt() == 8 && r.lastDeliveredEventReason.toInt() == 30
-        p.isDamaged = parcelRepository.statusExist(r.scanId, "E", 8, 31)
+        p.isDamaged = parcelRepository.statusExist(r.scanId.toLong(), "E", 8, 31)
         p.dimension.weight = r.dimentionWeight
         p.dimension.height = r.dimensionHeight.toInt()
         p.dimension.length = r.dimensionLength.toInt()
