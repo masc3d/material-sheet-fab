@@ -35,6 +35,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
+import javax.json.Json
 
 /**
  * Parcel service v1 implementation
@@ -110,13 +111,18 @@ open class ParcelServiceV1 :
             if (!messagesRepository.saveMsg(recordMessages)) {
                 log.error("Problem saving parcel-messages")
             }
+            val recipientInfo = StringBuilder()
+            val jsonObject = Json.createObjectBuilder()
 
-            var damagedInfo = message.deliveredInfo
-            when (damagedInfo) {
-//                is damagedInfo. -> {
-//                    recordMessages.additionalInfo = "{\"text\":\"" + addInfo.text + "\"}"
-//                    messagesRepository.saveMsg(recordMessages)
+            var damagedInfo = it.damagedInfo//message.deliveredInfo
+            if (damagedInfo != null) {
+                if (damagedInfo.pictureFileUids != null) {
+                    val jsonArray = Json.createArrayBuilder()
+                    damagedInfo.pictureFileUids.forEach { j -> jsonArray.add(j.toString()) }
+                    jsonObject.add("damagedFileUIDs", jsonArray.build())
                 }
+
+            }
 
 
 
@@ -140,15 +146,14 @@ open class ParcelServiceV1 :
 
             when (event) {
                 Event.DELIVERED -> {
-                    val recipientInfo = StringBuilder()
+
                     var signature: String? = null
                     var mimetype = "svg"
                     var pictureFileUid: UUID? = null
                     when (reason) {
                         Reason.POSTBOX -> {
-                            recipientInfo.append("Postbox")
-                            recordMessages.additionalInfo = "{\"recipient\":\"" + recipientInfo.toString() + "\"}"
-                            messagesRepository.saveMsg(recordMessages)
+
+                            jsonObject.add("recipient", "Postbox")
                         }
                         Reason.NORMAL -> {
 
@@ -160,51 +165,82 @@ open class ParcelServiceV1 :
                                         }
                                         else -> {
                                             val addInfo = message.signatureOnPaperInfo
-                                            addInfo ?:
-                                                    throw DefaultProblem(title = "Missing structure [DeliveredInfo] for event [$event].[$reason]")
 
-                                            recipientInfo.append(addInfo.recipient)
-                                            //recipientInfo.append((message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).recipient ?: "")
-                                            //pictureFileUid =   (message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).pictureFileUid
-                                            pictureFileUid = addInfo.pictureFileUid
+                                            if (addInfo != null) {
+                                                if (addInfo.recipient != null) {
+                                                    jsonObject.add("recipient", addInfo.recipient)
+                                                }
+                                                if (addInfo.pictureFileUid != null) {
+                                                    jsonObject.add("pictureFileUID", addInfo.pictureFileUid.toString())
+                                                }
+                                            }
                                         }
                                     }
                                 }
                                 else -> {
-                                    //recipientInfo.append((message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).recipient ?: "")
-                                    //signature = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).signature
-                                    //mimetype = (message.deliveredInfo as ParcelServiceV1.ParcelMessage.DeliveredInfo).mimetype
+
 
                                     val addInfo = message.deliveredInfo
-                                    addInfo ?:
-                                            throw DefaultProblem(title = "Missing structure [DeliveredInfo] for event [$event].[$reason]")
 
-                                    recipientInfo.append(addInfo.recipient)
-                                    signature = addInfo.signature
-                                    mimetype = addInfo.mimetype
+
+                                    if (addInfo != null) {
+                                        if (addInfo.recipient != null) {
+                                            jsonObject.add("recipient", addInfo.recipient)
+                                        }
+                                        if (addInfo.signature != null) {
+                                            signature = addInfo.signature
+                                        }
+                                        if (addInfo.mimetype != null) {
+                                            mimetype = addInfo.mimetype
+                                        }
+                                    }
 
 
                                 }
                             }
 
 
-                            recordMessages.additionalInfo = "{\"recipient\":\"" + recipientInfo.toString() + "\"}"
-                            messagesRepository.saveMsg(recordMessages)
+
 
                         }
                         Reason.NEIGHBOUR -> {
-                            val addInfo = it.additionalInfo
-                            when (addInfo) {
-                            //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                            //        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                            //)
-                                is AdditionalInfo.DeliveredAtNeighborInfo -> {
-                                    recipientInfo.append(addInfo.name ?: "")//.append(";adr ").append(addInfo.address ?: "")
-                                    signature = addInfo.signature
-                                    mimetype = addInfo.mimetype
+                            when (message.deliveredInfo) {
+                                null -> {
+                                    when (message.signatureOnPaperInfo) {
+                                        null -> {
+                                            // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                        }
+                                        else -> {
+                                            val addInfo = message.signatureOnPaperInfo
 
-                                    recordMessages.additionalInfo = "{\"name\":\"" + recipientInfo.toString() + "\",\"address\":\"" + (addInfo.address ?: "") + "\"}"
-                                    messagesRepository.saveMsg(recordMessages)
+                                            if (addInfo != null) {
+                                                if (addInfo.recipient != null) {
+                                                    jsonObject.add("recipient", addInfo.recipient)
+                                                }
+                                                if (addInfo.pictureFileUid != null) {
+                                                    jsonObject.add("pictureFileUID", addInfo.pictureFileUid.toString())
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else -> {
+
+                                    val addInfo = message.deliveredInfo
+
+                                    if (addInfo != null) {
+                                        if (addInfo.recipient != null) {
+                                            jsonObject.add("recipient", addInfo.recipient)
+                                        }
+                                        if (addInfo.signature != null) {
+                                            signature = addInfo.signature
+                                        }
+                                        if (addInfo.mimetype != null) {
+                                            mimetype = addInfo.mimetype
+                                        }
+                                    }
+
+
                                 }
                             }
                         }
@@ -254,15 +290,10 @@ open class ParcelServiceV1 :
                         Reason.PARCEL_DAMAGED -> {
                             when (addInfo) {
                                 is AdditionalInfo.DamagedInfo -> {
-                                    //r.infotext = addInfo.description ?: ""
                                     recordMessages.additionalInfo = "{\"text\":\"" + addInfo.description + "\"}"
                                     messagesRepository.saveMsg(recordMessages)
                                     if (addInfo.photo != null) {
-//                                        val path = SimpleDateFormat("yyyy").format(it.time) + "/sca_pic/" +
-//                                                SimpleDateFormat("MM").format(it.time) + "/" +
-//                                                SimpleDateFormat("dd").format(it.time) + "/"
-//
-//                                        saveImage(it.time, addInfo.photo, parcelScan, message.nodeId, addInfo.mimetype)
+
                                     }
                                 }
                             }
@@ -283,16 +314,11 @@ open class ParcelServiceV1 :
 
                 }
                 Event.EXPORT_LOADED -> {
-                    //if (it.additionalInfo == null)
-                    //   throw DefaultProblem(
-                    //           title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
-                    //  )
+
 
                     val addInfo = it.additionalInfo
                     when (addInfo) {
-                    //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                    //        title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
-                    //)
+
                         is AdditionalInfo.LoadingListInfo -> {
                             //r.text = addInfo.loadingListNo.toString()
                             recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"
@@ -302,7 +328,8 @@ open class ParcelServiceV1 :
                     }
                 }
             }
-
+            recordMessages.additionalInfo = jsonObject.build().toString()
+            messagesRepository.saveMsg(recordMessages)
 
         }
         if (!parcelProcessing.processMessages()) {
