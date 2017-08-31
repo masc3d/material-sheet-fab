@@ -40,11 +40,18 @@ interface CallbackArguments {
                       (onChange)="changeRefreshRate()"></p-dropdown>
           {{'mins' | translate}}
         </div>
-        <div class="ui-g-12 ui-lg-7 no-pad">
+        <div class="ui-g-12 ui-lg-3 no-pad">
           {{'last' | translate}}
           <p-dropdown [options]="intervalOptions" [(ngModel)]="selectedInterval"
                       (onChange)="changeInterval()"></p-dropdown>
           {{'hs' | translate}}
+        </div>
+        <div class="ui-g-12 ui-lg-4 no-pad">
+          <div style="width:130px;" *ngIf="calendarIsVisible">
+            <p-calendar [showIcon]="true" [readonlyInput]="true" [dateFormat]="dateFormatPrimeng" [locale]="locale"
+                        [(ngModel)]="tourDate" (onSelect)="changeTourDate()" [maxDate]="maxDateValue"
+                        [selectOtherMonths]="true"></p-calendar>
+          </div>
         </div>
         <div class="ui-g-12 ui-lg-5 no-pad">
           {{'latestRefresh' | translate}}: {{latestRefresh | dateMomentjs:dateFormatEvenLonger}}
@@ -72,14 +79,19 @@ interface CallbackArguments {
 export class TourDriverListComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
   intervalOptions: SelectItem[];
   refreshOptions: SelectItem[];
-  selectedInterval = '24';
+  selectedInterval = 24;
   selectedRefresh = 10;
+  tourDate = null;
 
+  maxDateValue: Date;
   latestRefresh: Date;
   drivers: Observable<Driver[]>;
   isPermitted: boolean;
   filterName: string;
   tableIsVisible: boolean;
+  calendarIsVisible: boolean;
+  dateFormatPrimeng: string;
+  locale: any;
 
   private refreshTimer: Observable<number>;
   private subscription: Subscription;
@@ -93,17 +105,28 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
                private userService: UserService,
                protected translate: TranslateService,
                private roleGuard: RoleGuard ) {
-    super( translate );
+    super( translate, () => {
+      this.intervalOptions = this.createIntervalOptions();
+      if (this.tourDate) {
+        this.tourDate = new Date( this.tourDate );
+      }
+    } );
+  }
+
+  createIntervalOptions() {
+    return [
+      { label: '1', value: 1 },
+      { label: '2', value: 2 },
+      { label: '6', value: 6 },
+      { label: '12', value: 12 },
+      { label: '24', value: 24 },
+      { label: this.translate.instant( 'day' ), value: 0 } ];
   }
 
   ngOnInit() {
     super.ngOnInit();
-    this.intervalOptions = [
-      { label: '1', value: '1' },
-      { label: '2', value: '2' },
-      { label: '6', value: '6' },
-      { label: '12', value: '12' },
-      { label: '24', value: '24' } ];
+    this.intervalOptions = this.createIntervalOptions();
+    this.maxDateValue = new Date();
 
     this.refreshOptions = [
       { label: '1', value: 1 },
@@ -117,6 +140,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.tourService.resetMarkerAndRoute();
     this.tableIsVisible = false;
+    this.calendarIsVisible = false;
     this.allDrivers();
   }
 
@@ -130,11 +154,15 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   allDrivers() {
     this.tableIsVisible = false;
-    this.clearTimerMapdisplay();
     this.driverService.getDrivers();
     this.filterName = 'driverfilter';
     this.displayedMapmode = 'alldrivers';
-    this.showAllPositionsPeriodically( 'alldrivers' );
+    if (this.selectedInterval > 0) {
+      this.clearTimerMapdisplay();
+      this.showAllPositionsPeriodically( 'alldrivers' );
+    } else {
+      this.changeTourDate();
+    }
   }
 
   toggleVisibility(): void {
@@ -143,11 +171,15 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   allUsers() {
     this.tableIsVisible = false;
-    this.clearTimerMapdisplay();
     this.userService.getUsers();
     this.filterName = 'userfilter';
     this.displayedMapmode = 'allusers';
-    this.showAllPositionsPeriodically( 'allusers' );
+    if (this.selectedInterval > 0) {
+      this.clearTimerMapdisplay();
+      this.showAllPositionsPeriodically( 'allusers' );
+    } else {
+      this.changeTourDate();
+    }
   }
 
   private clearTimerMapdisplay() {
@@ -163,11 +195,32 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   changeInterval() {
-    this.restartShowPeriodically();
+    if (this.selectedInterval > 0) {
+      this.calendarIsVisible = false;
+      this.tourDate = null;
+      this.restartShowPeriodically();
+    } else {
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
+      this.calendarIsVisible = true;
+    }
+  }
+
+  changeTourDate() {
+    if (this.tourDate) {
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
+      this.tourService.fetchAllPositions( this.displayedMapmode, 0, this.tourDate );
+      this.latestRefresh = new Date();
+    }
   }
 
   changeRefreshRate() {
-    this.restartShowPeriodically();
+    if (this.selectedInterval > 0) {
+      this.restartShowPeriodically();
+    }
   }
 
   private restartShowPeriodically() {
@@ -218,14 +271,14 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   }
 
   showAllPositions( args: CallbackArguments ) {
-    args.tourService.fetchAllPositions( this.periodicallyUsedFilter, Number.parseInt( this.selectedInterval, 10 ) * 60 );
+    args.tourService.fetchAllPositions( this.periodicallyUsedFilter, this.selectedInterval * 60, this.tourDate );
   }
 
   showPosition( args: CallbackArguments ) {
-    args.tourService.changeActiveMarker( args.driver, Number.parseInt( this.selectedInterval, 10 ) * 60 );
+    args.tourService.changeActiveMarker( args.driver, this.selectedInterval * 60, this.tourDate );
   }
 
   showRoute( args: CallbackArguments ) {
-    args.tourService.changeActiveRoute( args.driver, Number.parseInt( this.selectedInterval, 10 ) * 60 );
+    args.tourService.changeActiveRoute( args.driver, this.selectedInterval * 60, this.tourDate );
   }
 }

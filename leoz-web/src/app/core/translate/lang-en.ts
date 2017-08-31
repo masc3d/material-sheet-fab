@@ -82,6 +82,7 @@ export const LANG_EN_TRANS = {
   'latestRefresh': 'Latest refresh',
   'showlist': 'list fade in/out',
   'selectedformap': 'Selected for Map',
+  'day': 'Day',
   // stationloading form - loadinglist
   'loadingcontrol': 'Loading control',
   'newloadlist': 'New loadlist',

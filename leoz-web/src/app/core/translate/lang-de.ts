@@ -82,6 +82,7 @@ export const LANG_DE_TRANS = {
   'latestRefresh': 'Zuletzt aktualisiert',
   'showlist': 'Liste ein-/ausblenden',
   'selectedformap': 'Ausgewählt für Karte',
+  'day': 'Tag',
   // stationloading form - loadinglist
   'loadingcontrol': 'Verladesteuerung',
   'newloadlist': 'Neue Ladeliste',
