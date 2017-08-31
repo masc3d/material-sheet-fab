@@ -92,9 +92,11 @@ class FileServiceV1 :
 
         FileChannel.open(
                 metaFile.toPath(),
-                StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE).use { metaFileChannel ->
+                StandardOpenOption.READ,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.CREATE).use { metaFileChannel ->
 
-            // Lock against meta to synchronize access
+            // Lock against meta file to synchronize access
             metaFileChannel.lock().use {
                 val serializer = JacksonSerializer(this.objectMapper)
 
@@ -108,11 +110,11 @@ class FileServiceV1 :
                     FileMeta(total = total)
                 }
 
-                val newFile = tempFile.exists()
+                val isNewFile = tempFile.exists()
 
                 // Use random access file, allowing creation of fixed size file and writing to specific positions
                 RandomAccessFile(tempFile, "rw").use { tempRaFile ->
-                    if (newFile) {
+                    if (isNewFile) {
                         // Create file with fixed total size initially
                         tempRaFile.setLength(totalSize.toLong())
                     }
