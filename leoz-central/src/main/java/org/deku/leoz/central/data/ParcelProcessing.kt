@@ -24,7 +24,7 @@ import javax.json.JsonObjectBuilder
 import javax.json.JsonReader
 
 @Named
-class ParcelProcessing {
+open class ParcelProcessing {
 
     @Inject
     private lateinit var messagesRepository: MessagesJooqRepository
@@ -42,7 +42,8 @@ class ParcelProcessing {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
-    fun processMessages(): Boolean {
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    open fun processMessages(): Boolean {
         var result = true
         try {
 
@@ -104,27 +105,72 @@ class ParcelProcessing {
                     pasCleared = false
                 var pasReset = false
 
+                val addInfo = it.additionalInfo?.toString() ?: "{}"
+
+                var json: JsonObject? = null
+                Json.createReader(StringReader(addInfo)).use { k ->
+                    json = k.readObject()
+                }
+                val checkDamaged = json?.containsKey("damagedFileUIDs") ?: false
+                if (checkDamaged) {
+                    val uids = json?.getJsonArray("damagedFileUIDs")
+                    if (uids != null) {
+                        for (i in 0..uids.size - 1) {
+                            //uids?.forEach {u ->
+                            //  val damagedFileUID=u.toString()  //mit doppel-Anführungsstriche
+                            val damagedFileUID = uids.getString(i)
+                        }
+                        val rDamaged = dslContext.newRecord(Tables.TBLSTATUS)
+
+                        rDamaged.packstuecknummer =r.packstuecknummer
+                        rDamaged.datum= r.datum
+                        rDamaged.zeit= r.zeit
+                        rDamaged.poslat= r.poslat
+                        rDamaged.poslong= r.poslong
+                        rDamaged.infotext= r.infotext
+
+                        val damaged_eventId = Event.DELIVERY_FAIL.value
+                        val damaged_event = Event.values().find { d->d.value == damaged_eventId }!!
+                        rDamaged.kzStatuserzeuger = damaged_event.creator.toString()
+                        rDamaged.kzStatus = damaged_event.concatId.toUInteger()
+                        rDamaged.timestamp2 =r.timestamp2
+                        val damaged_reasonId = Reason.PARCEL_DAMAGED.id
+                        val damaged_reason = Reason.values().find { it.id == damaged_reasonId }!!
+                        rDamaged.fehlercode = damaged_reason.oldValue.toUInteger()
+
+                        rDamaged.erzeugerstation=r.erzeugerstation
+                        var damaged_existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 8, 31)
+                        if (!damaged_existStatus){
+                            parcelRepository.saveEvent(rDamaged)
+                        }
+                    }
+                }
+
+                val checkPictureFile = json?.containsKey("pictureFileUID") ?: false
+                if(checkPictureFile){
+                    val pictureUID=json?.getString("pictureFileUID")
+                }
+
                 when (event) {
                     Event.DELIVERED -> {
                         pasReset = true
                         val recipientInfo = StringBuilder()
+                        val check = json?.containsKey("recipient") ?: false
+                        if (check) {
+                            val recipient = json?.getString("recipient") ?: ""
+                            recipientInfo.append(recipient)
+                            //recipientInfo.append(addInfo)
+                        } else {
+                            recipientInfo.append("")
+                        }
                         when (reason) {
                             Reason.POSTBOX -> {
-                                recipientInfo.append("Postbox")
+                                //recipientInfo.append("Postbox")
                             }
                             Reason.NORMAL -> {
 
-                                val addInfo = it.additionalInfo?.toString() ?: "{}"
 
 //json mit empf-name parsen und setzen
-                                var json: JsonObject? = null
-                                Json.createReader(StringReader(addInfo)).use {
-                                    json = it.readObject()
-                                }
-
-
-                                recipientInfo.append(json?.getString("recipient"))
-                                //recipientInfo.append(addInfo)
 
 
                             }
