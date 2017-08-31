@@ -46,3 +46,9 @@ update:
     # Run updater on broker connection and message notification
     automatic: false
     cleanup: false
+
+# Sevice Settings
+service:
+    #ParcelService
+    parcelservice:
+        reset-deliveries-after-receive: false

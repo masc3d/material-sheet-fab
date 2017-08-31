@@ -98,3 +98,10 @@ ssh:
 #                password: MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8
 #                port: 13003
 #                username: leoz
+
+# Sevice Settings
+service:
+    #ParcelService
+    parcelservice:
+        reset-deliveries-after-receive: false
+
