@@ -32,25 +32,21 @@ interface FileServiceV1 {
             var fileUid: UUID? = null,
             /** Mime type of this file */
             var mimeType: String? = null,
-            /** Zero-based index of fragment */
+            /** Zero-based index of chunk/fragment */
             var index: Int? = null,
-            /** Total amount of fragments of the file this fragment belongs to */
+            /** Total amount of chunks/fragments of the file this fragment belongs to */
             var total: Int? = null,
-            /** Payload of this fragment */
+            /** Total file size */
+            var totalSize: Int? = null,
+            /** Maximum chunk size */
+            var chunkSize: Int? = null,
+            /** Payload of this fragment. Size of the last part/fragment can be smaller than chunk size */
             var payload: ByteArray? = null
     ) {
         override fun toString(): String =
-                "${this.javaClass.simpleName}(nodeUid=${nodeUid}, fileUid=${fileUid}, index=${index}, total=${total}, mime-type=${mimeType}, payload.size=${payload?.size})"
+                "${this.javaClass.simpleName}(nodeUid=${nodeUid}, fileUid=${fileUid}, mime-type=${mimeType}, chunkSize=${chunkSize}, totalSize=${totalSize}, index=${index}, total=${total}, payload.size=${payload?.size})"
     }
 }
-
-val FileServiceV1.FileFragmentMessage.isLastFragment: Boolean
-    get() {
-        val index = index ?: 0
-        val total = total ?: 0
-
-        return index == (total - 1)
-    }
 
 /**
  * Creates file fragment messages from in-memory data
@@ -70,6 +66,8 @@ fun ByteArray.toFileFragmentMessages(
                 mimeType = mimeType,
                 index = index,
                 total = chunks.size,
+                chunkSize = maxChunkSize,
+                totalSize = this.size,
                 payload = bytes)
     }
 }
