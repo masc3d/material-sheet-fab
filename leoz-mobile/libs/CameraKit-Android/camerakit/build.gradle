@@ -44,7 +44,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:26.0.1'
+    compile 'com.android.support:appcompat-v7:26.0.2'
 
 
     compile 'android.arch.lifecycle:runtime:1.0.0-alpha1'
