@@ -111,6 +111,14 @@ open class ParcelServiceV1 :
                 log.error("Problem saving parcel-messages")
             }
 
+            var damagedInfo = message.deliveredInfo
+            when (damagedInfo) {
+//                is damagedInfo. -> {
+//                    recordMessages.additionalInfo = "{\"text\":\"" + addInfo.text + "\"}"
+//                    messagesRepository.saveMsg(recordMessages)
+                }
+
+
 
             //TODO: Die Werte kz_status und -erzeuger sollten vermutlich über die Enumeration gesetzt werden, damit man die (aktuellen) Primärschlüssel nicht an mehreren Stellen pflegen muss, oder?
             val eventId = it.event
@@ -148,15 +156,12 @@ open class ParcelServiceV1 :
                                 null -> {
                                     when (message.signatureOnPaperInfo) {
                                         null -> {
-                                            throw DefaultProblem(
-                                                    title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                            // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
                                         }
                                         else -> {
                                             val addInfo = message.signatureOnPaperInfo
                                             addInfo ?:
-                                                    throw DefaultProblem(
-                                                            title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                                    )
+                                                    throw DefaultProblem(title = "Missing structure [DeliveredInfo] for event [$event].[$reason]")
 
                                             recipientInfo.append(addInfo.recipient)
                                             //recipientInfo.append((message.signatureOnPaperInfo as ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo).recipient ?: "")
@@ -172,9 +177,7 @@ open class ParcelServiceV1 :
 
                                     val addInfo = message.deliveredInfo
                                     addInfo ?:
-                                            throw DefaultProblem(
-                                                    title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                            )
+                                            throw DefaultProblem(title = "Missing structure [DeliveredInfo] for event [$event].[$reason]")
 
                                     recipientInfo.append(addInfo.recipient)
                                     signature = addInfo.signature
@@ -192,9 +195,9 @@ open class ParcelServiceV1 :
                         Reason.NEIGHBOUR -> {
                             val addInfo = it.additionalInfo
                             when (addInfo) {
-                                //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                                //        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                //)
+                            //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                            //        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                            //)
                                 is AdditionalInfo.DeliveredAtNeighborInfo -> {
                                     recipientInfo.append(addInfo.name ?: "")//.append(";adr ").append(addInfo.address ?: "")
                                     signature = addInfo.signature
@@ -237,9 +240,9 @@ open class ParcelServiceV1 :
                         Reason.CUSTOMER_REFUSED -> {
 
                             when (addInfo) {
-                                //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                                //        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                //)
+                            //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                            //        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                            //)
                                 is AdditionalInfo.NotDeliveredRefusedInfo -> {
                                     //r.infotext = addInfo.cause ?: ""
                                     recordMessages.additionalInfo = "{\"text\":\"" + addInfo.cause + "\"}"
@@ -281,15 +284,15 @@ open class ParcelServiceV1 :
                 }
                 Event.EXPORT_LOADED -> {
                     //if (it.additionalInfo == null)
-                     //   throw DefaultProblem(
-                     //           title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
-                      //  )
+                    //   throw DefaultProblem(
+                    //           title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
+                    //  )
 
                     val addInfo = it.additionalInfo
                     when (addInfo) {
-                        //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                        //        title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
-                        //)
+                    //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                    //        title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
+                    //)
                         is AdditionalInfo.LoadingListInfo -> {
                             //r.text = addInfo.loadingListNo.toString()
                             recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"

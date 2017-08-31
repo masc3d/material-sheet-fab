@@ -117,7 +117,7 @@ class ParcelProcessing {
                                 val addInfo = it.additionalInfo?.toString() ?: "{}"
 
 //json mit empf-name parsen und setzen
-                                var json: JsonObject?=null
+                                var json: JsonObject? = null
                                 Json.createReader(StringReader(addInfo)).use {
                                     json = it.readObject()
                                 }
