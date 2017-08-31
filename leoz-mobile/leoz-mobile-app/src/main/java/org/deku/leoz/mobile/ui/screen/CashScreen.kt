@@ -57,7 +57,6 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     // Model classes
-    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
 
     private val deliveryStop: DeliveryStop by lazy {
@@ -198,10 +197,7 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<Any>() {
         val ovCashTextChanges = RxTextView.textChanges(this.uxCashGiven)
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
 
-        Observable.mergeArray(
-                ovEditorAction,
-                ovCashTextChanges
-        )
+        ovCashTextChanges
                 .subscribe {
                     this.cashAmountGiven = this.uxCashGiven.rawValue / 100.0
 
@@ -212,6 +208,8 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<Any>() {
                         first { it.id == R.id.action_continue }
                                 .visible = this@CashScreen.cashAmountSufficient
                     }
+
+                    this.uxCashGiven.error = null
                 }
 
         ovEditorAction
