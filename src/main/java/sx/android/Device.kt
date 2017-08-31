@@ -73,6 +73,11 @@ open class Device(private val context: Context) {
         Settings.Secure.getString(this.context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
+    /** Aggregated android version string */
+    val androidVersion: String by lazy {
+        "${Build.VERSION.CODENAME} ${Build.VERSION.RELEASE} ${Build.VERSION.INCREMENTAL} SDK [${Build.VERSION.SDK_INT}]"
+    }
+
     val vmHeapSize: Long by lazy {
         Runtime.getRuntime().maxMemory()
     }
