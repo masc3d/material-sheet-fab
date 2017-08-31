@@ -133,9 +133,13 @@ class StartupActivity : BaseActivity() {
                                     // Log device info/serial
                                     val device: Device = Kodein.global.instance()
                                     log.info(device.toString())
+                                    log.info("Android version ${device.androidVersion}")
 
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
+
+                                    val locale = resources.configuration.locale
+                                    log.info("Current locale [${locale.displayName}] country [${locale.displayCountry}] language [${locale.displayLanguage}]")
 
                                     // Prepare database
                                     val database: Database = Kodein.global.instance()
