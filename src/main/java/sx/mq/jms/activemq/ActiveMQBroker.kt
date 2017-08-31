@@ -26,6 +26,7 @@ import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter
 import org.apache.activemq.store.kahadb.disk.journal.Journal
 import org.apache.activemq.transport.TransportServer
 import sx.mq.MqBroker
+import sx.time.Duration
 import java.io.File
 import java.net.URI
 import java.net.URISyntaxException
@@ -46,7 +47,8 @@ class ActiveMQBroker private constructor()
         private val NATIVE_TCP_PORT = 61616
 
         /** Singleton */
-        @JvmStatic val instance by lazy({ ActiveMQBroker() })
+        @JvmStatic
+        val instance by lazy({ ActiveMQBroker() })
 
         /**
          * Create ActiveMQ URI
@@ -233,10 +235,20 @@ class ActiveMQBroker private constructor()
 
             // TODO: define sensible values for redelivery of messages
             val rp = RedeliveryPolicy()
-            rp.maximumRedeliveries = 3
-            rp.initialRedeliveryDelay = 2000
-            rp.backOffMultiplier = 2.0
             rp.isUseExponentialBackOff = true
+            rp.initialRedeliveryDelay = Duration.ofSeconds(5).toMillis()
+            rp.backOffMultiplier = 2.0
+            rp.maximumRedeliveryDelay = Duration.ofMinutes(15).toMillis()
+
+            val maxRedeliveryTime = Duration.ofDays(1).toMillis()
+
+            // Calculate maximum redeliveries from above parameters
+
+            val maxRedeliveries = (maxRedeliveryTime / rp.maximumRedeliveryDelay) +
+                    // Add approximate retries for exponential backoff
+                    (Math.log(rp.maximumRedeliveryDelay.toDouble() / rp.initialRedeliveryDelay) / Math.log(rp.backOffMultiplier))
+
+            rp.maximumRedeliveries = Math.ceil(maxRedeliveries).toInt()
 
             rpm.defaultEntry = rp
             pRedelivery.redeliveryPolicyMap = rpm
@@ -248,7 +260,7 @@ class ActiveMQBroker private constructor()
         fun createNotificationPlugin(): BrokerPlugin {
             return object : BrokerPluginSupport() {
 
-                private val peerBrokersByName = ConcurrentHashMap <String, PeerBroker>()
+                private val peerBrokersByName = ConcurrentHashMap<String, PeerBroker>()
 
                 /**
                  * Convert remote ip string from ActiveMQ to valid URI
@@ -275,7 +287,7 @@ class ActiveMQBroker private constructor()
                                 listenerEventDispatcher.emit { e -> e.onConnectedToBrokerNetwork() }
                             }
                         }
-                    } catch(e: Exception) {
+                    } catch (e: Exception) {
                         log.info(remoteIp)
                         log.error(e.message, e)
                     }
