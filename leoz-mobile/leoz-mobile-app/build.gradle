@@ -295,7 +295,7 @@ dependencies {
             "com.eightbitlab:blurview:1.3.3",
             "com.github.andrewlord1990:snackbarbuilder:0.9.0",
 
-            "com.redmadrobot:inputmask:2.3.0",
+            "com.github.BlacKCaT27:CurrencyEditText:2.0.1",
 
             //
             // FOR TESTING

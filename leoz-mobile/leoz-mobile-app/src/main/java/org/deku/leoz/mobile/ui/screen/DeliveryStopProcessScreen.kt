@@ -399,12 +399,7 @@ class DeliveryStopProcessScreen :
                         }
 
                         R.id.action_delivery_process_dev_show_cash_screen -> {
-                            this.activity.showScreen(CashScreen().also {
-                                it.parameters = CashScreen.Parameters(
-                                        stopId = this.stop.id,
-                                        deliveryReason = EventDeliveredReason.NORMAL
-                                )
-                            })
+                            this.activity.showScreen(CashScreen())
                         }
                     }
                 }
@@ -783,12 +778,7 @@ class DeliveryStopProcessScreen :
         when (variant) {
             EventDeliveredReason.NEIGHBOR -> {
                 if (this.deliveryStop.cashAmountToCollect > 0) {
-                    this.activity.showScreen(CashScreen(target = this).also {
-                        it.parameters = CashScreen.Parameters(
-                                stopId = this.stop.id,
-                                deliveryReason = variant
-                        )
-                    })
+                    this.activity.showScreen(CashScreen(target = this))
                 } else {
                     this.activity.showScreen(NeighbourDeliveryScreen(target = this).also {
                         it.parameters = NeighbourDeliveryScreen.Parameters(
@@ -808,12 +798,7 @@ class DeliveryStopProcessScreen :
                         when {
                             this.deliveryStop.cashAmountToCollect > 0 -> {
                                 //Requires CashScreen to be shown
-                                this.activity.showScreen(CashScreen(target = this).also {
-                                    it.parameters = CashScreen.Parameters(
-                                            stopId = this.stop.id,
-                                            deliveryReason = variant
-                                    )
-                                })
+                                this.activity.showScreen(CashScreen(target = this))
                             }
                             else -> {
                                 MaterialDialog.Builder(context)

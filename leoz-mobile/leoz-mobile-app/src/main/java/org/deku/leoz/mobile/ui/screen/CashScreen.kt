@@ -9,13 +9,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.BR
-import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
@@ -35,21 +35,13 @@ import sx.android.hideSoftInput
 import sx.android.showSoftInput
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
-import java.text.DecimalFormat
-
+import java.text.NumberFormat
 
 /**
- * A simple [Fragment] subclass.
+ * Cash screen
+ * @param target Event listener target fragment
  */
-class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameters>() {
-
-    /** Screen parameters */
-    @Parcel(Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var stopId: Int,
-            var deliveryReason: EventDeliveredReason,
-            var recipient: String = ""
-    )
+class CashScreen(target: Fragment? = null) : ScreenFragment<Any>() {
 
     /** Screen listener */
     interface Listener {
@@ -68,30 +60,43 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
 
-    private val decimalFormat = DecimalFormat("#0.00")
-
     private val deliveryStop: DeliveryStop by lazy {
-        delivery.activeStop!!
+        delivery.activeStop ?: throw IllegalStateException("Active delivery stop not set")
     }
 
-    private val stop: Stop by lazy {
-        stopRepository.findById(this.parameters.stopId)
-                ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
+    /** Cash amount to collect */
+    private val cashAmountToCollect by lazy {
+        this.deliveryStop.cashAmountToCollect
     }
 
+    /** Cash amount given */
+    private var cashAmountGiven: Double = 0.0
+
+    /** Indicates if given cash amount is sufficient */
+    private val cashAmountSufficient: Boolean
+        get() = this.cashAmountGiven >= this.cashAmountToCollect
+
+    /** Cash amount to return */
+    private val cashAmountToReturn: Double
+        get() = (this.cashAmountGiven - this.cashAmountToCollect).let {
+            when {
+                it >= 0.0 -> it
+                else -> 0.0
+            }
+        }
+    
     init {
         this.setTargetFragment(target, 0)
     }
+
+    /** Current locale currency format */
+    private val currencyFormat by lazy { NumberFormat.getCurrencyInstance(resources.configuration.locale) }
 
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
             FlexibleExpandableVmItem<
                     SectionViewModel<Any>, *>
             >>({
-        FlexibleAdapter(
-                listOf(),
-                //Listener
-                this
-        )
+        FlexibleAdapter(listOf())
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
@@ -106,12 +111,15 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
         this.title = getString(R.string.title_cash_collection)
         this.headerImage = R.drawable.img_money_a
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
+        this.toolbarCollapsed = true
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxCashValue.text = "${decimalFormat.format(delivery.activeStop?.cashAmountToCollect)} €"
+        this.uxCashValue.text = this.currencyFormat.format(this.cashAmountToCollect)
+
+        //"${decimalFormat.format(delivery.activeStop?.cashAmountToCollect)} €"
         this.flexibleAdapterInstance.reset()
         this.uxOrderCashList.adapter = flexibleAdapter
         this.uxOrderCashList.layoutManager = LinearLayoutManager(context)
@@ -121,7 +129,7 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
         flexibleAdapter.isSwipeEnabled = false
 
         //region Orders
-        val orders = stop.tasks.map { it.order }.distinct()
+        val orders = this.deliveryStop.entity.tasks.map { it.order }.distinct()
 
         flexibleAdapter.addItem(
                 FlexibleExpandableVmItem<SectionViewModel<Any>, Any>(
@@ -137,7 +145,8 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
                 ).also {
                     it.subItems = orders.map {
                         FlexibleSectionableVmItem<Any>(
-                                view = R.layout.item_ordertask, //TODO: To be replaced by an item which includes the cash value (hide zip-code and city)
+                                //TODO: To be replaced by an item which includes the cash value (hide zip-code and city)
+                                view = R.layout.item_ordertask,
                                 variable = BR.orderTask,
                                 viewModel = OrderTaskViewModel(it.pickupTask)
                         )
@@ -154,30 +163,18 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
             flexibleAdapter.expand(it)
         }
 
-        this.uxCashGiven.setOnEditorActionListener { textView, i, keyEvent ->
-            val entered: Double? = this.uxCashGiven.text.toString().toDoubleOrNull()
+        // Action items
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_continue,
+                        colorRes = R.color.colorPrimary,
+                        iconTintRes = android.R.color.white,
+                        iconRes = R.drawable.ic_delivery,
+                        visible = false
+                )
+        )
 
-            if (entered != null) {
-                if (entered >= this.deliveryStop.cashAmountToCollect) {
-                    this.uxCashChange.text = decimalFormat.format((entered - this.deliveryStop.cashAmountToCollect)).toString()
-                    this.actionItems = listOf(
-                            ActionItem(
-                                    id = R.id.action_continue,
-                                    colorRes = R.color.colorPrimary,
-                                    iconTintRes = android.R.color.white,
-                                    iconRes = R.drawable.ic_delivery
-                            )
-                    )
-                } else {
-                    this.uxCashGiven.error = "Weniger eingegeben als notwendig!"
-                }
-            } else {
-                this.uxCashGiven.error = "Nur nummerische Eingaben zulässig!"
-            }
-            this.context.inputMethodManager.hideSoftInput()
-            true
-        }
-
+        // Initiali focus
         this.uxCashGiven.requestFocus()
         this.context.inputMethodManager.showSoftInput()
     }
@@ -192,6 +189,38 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<CashScreen.Parameter
                         R.id.action_continue -> {
                             this.listener?.onCashScreenContinue()
                         }
+                    }
+                }
+
+        val ovEditorAction = RxTextView.editorActions(this.uxCashGiven)
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+
+        val ovCashTextChanges = RxTextView.textChanges(this.uxCashGiven)
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+
+        Observable.mergeArray(
+                ovEditorAction,
+                ovCashTextChanges
+        )
+                .subscribe {
+                    this.cashAmountGiven = this.uxCashGiven.rawValue / 100.0
+
+                    this.uxCashChange.text = this.currencyFormat.format(this.cashAmountToReturn)
+
+                    // Update action items
+                    this.actionItems = this.actionItems.apply {
+                        first { it.id == R.id.action_continue }
+                                .visible = this@CashScreen.cashAmountSufficient
+                    }
+                }
+
+        ovEditorAction
+                .subscribe {
+                    this.context.inputMethodManager.hideSoftInput()
+
+                    when (this@CashScreen.cashAmountSufficient) {
+                        true -> this.uxCashGiven.error = null
+                        else -> this.uxCashGiven.error = this.getString(R.string.cash_not_sufficient)
                     }
                 }
     }

@@ -256,4 +256,5 @@
     <string name="title_reset_data">Daten zurücksetzen</string>
     <string name="dialog_content_outdated_orders">Aufträge sind veraltet. Um fortzufahren müssen alle Daten gelöscht werden. Fortfahjren?</string>
     <string name="error_unknown_parcel">Unbekanntes Paket</string>
+    <string name="cash_not_sufficient">Betrag nicht ausreichend</string>
 </resources>
