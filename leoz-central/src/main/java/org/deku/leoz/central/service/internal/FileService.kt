@@ -8,6 +8,7 @@ import org.deku.leoz.service.internal.FileServiceV1
 import org.slf4j.LoggerFactory
 import sx.io.serialization.JacksonSerializer
 import sx.io.serialization.Serializable
+import sx.io.serialization.Serializer
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.auth.ApiKey
@@ -39,6 +40,10 @@ class FileServiceV1 :
             var total: Int = 0,
             var parts: Array<Int> = arrayOf()
     )
+
+    init {
+        Serializer.types.register(FileMeta::class.java)
+    }
 
     @Inject
     private lateinit var storage: Storage
