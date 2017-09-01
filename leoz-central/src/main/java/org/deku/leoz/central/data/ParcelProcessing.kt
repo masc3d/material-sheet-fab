@@ -175,23 +175,15 @@ open class ParcelProcessing {
                         when (reason) {
                             Reason.POSTBOX -> {
                                 //recipientInfo.append("Postbox")
+                                recipientInfo.append("BK")
                             }
                             Reason.NORMAL -> {
-
-
-//json mit empf-name parsen und setzen
-
-
                             }
                             Reason.NEIGHBOUR -> {
                                 val addInfo = it.additionalInfo
-
                             }
-
-
                         }
                         r.text = recipientInfo.toString()
-
 
                         val oldValue = parcelRecord.lieferstatus
                         parcelRecord.lieferstatus = r.kzStatus.toShort() //4
