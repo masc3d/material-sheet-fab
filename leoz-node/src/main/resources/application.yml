@@ -99,9 +99,3 @@ ssh:
 #                port: 13003
 #                username: leoz
 
-# Sevice Settings
-service:
-    #ParcelService
-    parcelservice:
-        reset-deliveries-after-receive: false
-

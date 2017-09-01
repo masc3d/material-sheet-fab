@@ -49,6 +49,8 @@ update:
 
 # Sevice Settings
 service:
-    #ParcelService
-    parcelservice:
-        reset-deliveries-after-receive: false
+    # Parcel Service
+    parcel-service:
+        # Test/debug option which skips effective parcel data processing
+        skip-parcel-processing: false
+

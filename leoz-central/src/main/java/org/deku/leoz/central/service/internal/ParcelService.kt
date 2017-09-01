@@ -35,8 +35,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Bean
+import sx.io.serialization.Serializable
 import javax.json.Json
 
 /**
@@ -50,10 +49,15 @@ open class ParcelServiceV1 :
         org.deku.leoz.service.internal.ParcelServiceV1,
         MqHandler<ParcelServiceV1.ParcelMessage> {
 
-    open class ParcelServiceSettings {
-        var resetDeliveriesAfterReceive: Boolean = false
-    }
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    @Serializable(0x5880838e3ce330)
+    private data class MessageInfo(
+            var total: Int = 0,
+            var parts: Array<Int> = arrayOf()
+    )
+
+
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
@@ -74,10 +78,6 @@ open class ParcelServiceV1 :
 
     @Inject
     private lateinit var parcelProcessing: ParcelProcessing
-    //reset-deliveries-after-receive
-    @get:ConfigurationProperties("service.parcelservice")
-    @get:Bean
-    open val parcelServiceSettings: ParcelServiceSettings = ParcelServiceSettings()
 
     /**
      * Parcel service message handler
@@ -92,9 +92,6 @@ open class ParcelServiceV1 :
                 detail = "Missing data",
                 status = Response.Status.BAD_REQUEST)
 
-        if (doResetDeliveriesAfterReceive)
-            log.trace("Reset after Receive")
-
         log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
 
         events.forEach {
@@ -105,10 +102,7 @@ open class ParcelServiceV1 :
                     throw DefaultProblem(
                             title = "Missing parcelNo"
                     )
-
             val parcelScan = parcelNo.toString()
-
-
             val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
             recordMessages.userId = message.userId
             recordMessages.nodeId = message.nodeId
@@ -126,24 +120,19 @@ open class ParcelServiceV1 :
             val recipientInfo = StringBuilder()
             val jsonObject = Json.createObjectBuilder()
 
-            var damagedInfo = it.damagedInfo//message.deliveredInfo
+            var damagedInfo = it.damagedInfo
             if (damagedInfo != null) {
                 if (damagedInfo.pictureFileUids != null) {
                     val jsonArray = Json.createArrayBuilder()
                     damagedInfo.pictureFileUids.forEach { j -> jsonArray.add(j.toString()) }
                     jsonObject.add("damagedFileUIDs", jsonArray.build())
                 }
-
             }
 
-
-            //TODO: Die Werte kz_status und -erzeuger sollten vermutlich über die Enumeration gesetzt werden, damit man die (aktuellen) Primärschlüssel nicht an mehreren Stellen pflegen muss, oder?
             val eventId = it.event
             val event = Event.values().find { it.value == eventId }!!
             val reasonId = it.reason
             val reason = Reason.values().find { it.id == reasonId }!!
-
-
             val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
             parcelRecord ?:
                     throw DefaultProblem(
@@ -160,14 +149,23 @@ open class ParcelServiceV1 :
 
                     var signature: String? = null
                     var mimetype = "svg"
-                    var pictureFileUid: UUID? = null
+                    //var pictureFileUid: UUID? = null
                     when (reason) {
                         Reason.POSTBOX -> {
-
-                            jsonObject.add("recipient", "Postbox")
+                            when (message.postboxDeliveryInfo) {
+                                null -> {
+                                }
+                                else -> {
+                                    val addInfo = message.postboxDeliveryInfo
+                                    if (addInfo != null) {
+                                        if (addInfo.pictureFileUid != null) {
+                                            jsonObject.add("pictureFileUID", addInfo.pictureFileUid.toString())
+                                        }
+                                    }
+                                }
+                            }
                         }
                         Reason.NORMAL -> {
-
                             when (message.deliveredInfo) {
                                 null -> {
                                     when (message.signatureOnPaperInfo) {
@@ -176,7 +174,6 @@ open class ParcelServiceV1 :
                                         }
                                         else -> {
                                             val addInfo = message.signatureOnPaperInfo
-
                                             if (addInfo != null) {
                                                 if (addInfo.recipient != null) {
                                                     jsonObject.add("recipient", addInfo.recipient)
@@ -189,11 +186,7 @@ open class ParcelServiceV1 :
                                     }
                                 }
                                 else -> {
-
-
                                     val addInfo = message.deliveredInfo
-
-
                                     if (addInfo != null) {
                                         if (addInfo.recipient != null) {
                                             jsonObject.add("recipient", addInfo.recipient)
@@ -205,12 +198,8 @@ open class ParcelServiceV1 :
                                             mimetype = addInfo.mimetype
                                         }
                                     }
-
-
                                 }
                             }
-
-
                         }
                         Reason.NEIGHBOUR -> {
                             when (message.deliveredInfo) {
@@ -234,7 +223,6 @@ open class ParcelServiceV1 :
                                     }
                                 }
                                 else -> {
-
                                     val addInfo = message.deliveredInfo
 
                                     if (addInfo != null) {
@@ -248,13 +236,9 @@ open class ParcelServiceV1 :
                                             mimetype = addInfo.mimetype
                                         }
                                     }
-
-
                                 }
                             }
                         }
-
-
                     }
 
                     if (signature != null) {
@@ -264,13 +248,9 @@ open class ParcelServiceV1 :
                             parcelRecord.store()
                         }
                     }
-
-
                 }
 
                 Event.DELIVERY_FAIL -> {
-
-
                     val addInfo = it.additionalInfo
                     if (addInfo != null) {
                         when (addInfo) {
@@ -309,10 +289,8 @@ open class ParcelServiceV1 :
                         }
 
                     }
-
                 }
                 Event.IMPORT_RECEIVE -> {
-
 
                 }
                 Event.IN_DELIVERY -> {
@@ -323,11 +301,8 @@ open class ParcelServiceV1 :
 
                 }
                 Event.EXPORT_LOADED -> {
-
-
                     val addInfo = it.additionalInfo
                     when (addInfo) {
-
                         is AdditionalInfo.LoadingListInfo -> {
                             //r.text = addInfo.loadingListNo.toString()
                             recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"
@@ -482,12 +457,5 @@ open class ParcelServiceV1 :
         return jpgFile.toPath()
 
     }
-
-    @get:Bean
-    open val doResetDeliveriesAfterReceive: Boolean
-        get() {
-            return this.parcelServiceSettings.resetDeliveriesAfterReceive
-        }
-
 }
 
