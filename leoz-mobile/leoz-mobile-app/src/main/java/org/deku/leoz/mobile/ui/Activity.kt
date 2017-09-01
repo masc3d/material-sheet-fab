@@ -69,6 +69,7 @@ import org.deku.leoz.mobile.ui.screen.CameraScreen
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import org.jetbrains.anko.backgroundColor
+import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
 import sx.android.*
@@ -534,7 +535,6 @@ open class Activity : BaseActivity(),
      */
     private var cameraAidcFragmentVisible: Boolean
         get() = this.cameraAidcFragment != null
-
         set(value) {
             if (value == this.cameraAidcFragmentVisible)
                 return
@@ -985,8 +985,15 @@ open class Activity : BaseActivity(),
                     .show()
         }
 
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        val locationManager = this.locationManager
+        if (sequenceOf(
+                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER).also {
+                    log.trace("LOCATION PROVIDER GPS $it")
+                },
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER).also {
+                    log.trace("LOCATION PROVIDER NETWORK $it")
+                }
+        ).all { false }) {
             MaterialDialog.Builder(this)
                     .title("GPS location provider is not enabled")
                     .content("The GPS location on your device is disabled. To continue, you must enable GPS location!")
