@@ -23,7 +23,7 @@ import org.parceler.ParcelConstructor
  * Damaged parcel camera screen
  * Created by masc on 24.08.17.
  */
-class DamagedParcelCameraScreen(target: Fragment) : BaseCameraScreen<DamagedParcelCameraScreen.Parameters>(target) {
+class DamagedParcelCameraScreen : BaseCameraScreen<DamagedParcelCameraScreen.Parameters>() {
 
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 

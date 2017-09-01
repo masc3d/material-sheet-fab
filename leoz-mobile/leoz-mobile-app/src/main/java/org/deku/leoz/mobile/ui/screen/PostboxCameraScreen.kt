@@ -17,7 +17,7 @@ import org.parceler.ParcelConstructor
  * Postbox delivery camera screen
  * Created by masc on 24.08.17.
  */
-class PostboxCameraScreen(target: Fragment) : BaseCameraScreen<Any>(target) {
+class PostboxCameraScreen : BaseCameraScreen<Any>() {
 
     override fun createOverlayView(viewGroup: ViewGroup): View? {
         return this.activity.layoutInflater

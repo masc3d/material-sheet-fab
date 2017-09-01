@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutorService
  * @param P Parameter type
  * Created by phpr on 03.08.2017.
  */
-abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>() {
+abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val executorService: ExecutorService by Kodein.global.lazy.instance()
@@ -56,10 +56,6 @@ abstract class BaseCameraScreen<P>(target: Fragment? = null) : ScreenFragment<P>
 
     private val torchEnabledProperty = ObservableRxProperty(false)
     private var torchEnabled: Boolean by torchEnabledProperty
-
-    init {
-        this.setTargetFragment(target, 0)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

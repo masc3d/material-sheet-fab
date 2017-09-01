@@ -41,7 +41,7 @@ import java.text.NumberFormat
  * Cash screen
  * @param target Event listener target fragment
  */
-class CashScreen(target: Fragment? = null) : ScreenFragment<Any>() {
+class CashScreen : ScreenFragment<Any>() {
 
     /** Screen listener */
     interface Listener {
@@ -84,10 +84,6 @@ class CashScreen(target: Fragment? = null) : ScreenFragment<Any>() {
             }
         }
     
-    init {
-        this.setTargetFragment(target, 0)
-    }
-
     /** Current locale currency format */
     private val currencyFormat by lazy { NumberFormat.getCurrencyInstance(resources.configuration.locale) }
 

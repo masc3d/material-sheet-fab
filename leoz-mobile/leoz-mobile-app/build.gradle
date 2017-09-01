@@ -201,6 +201,7 @@ dependencies {
     compile(
             project(':sx-common'),
             project(':sx-serialization'),
+            project(':sx-mq'),
             project(':leoz-common'),
             project(':material-sheet-fab'),
             project(':camerakit'),

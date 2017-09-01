@@ -17,7 +17,7 @@ import org.parceler.ParcelConstructor
  * Signature on paper camera screen
  * Created by masc on 24.08.17.
  */
-class SignOnPaperCameraScreen(target: Fragment) : BaseCameraScreen<SignOnPaperCameraScreen.Parameters>(target) {
+class SignOnPaperCameraScreen : BaseCameraScreen<SignOnPaperCameraScreen.Parameters>() {
 
     @Parcel(Parcel.Serialization.BEAN)
     class Parameters @ParcelConstructor constructor(

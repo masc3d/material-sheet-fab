@@ -735,8 +735,9 @@ class DeliveryStopProcessScreen :
                     this.currentDamagedParcel = parcel
 
                     /** Show camera screen */
-                    this.activity.showScreen(DamagedParcelCameraScreen(target = this).apply {
-                        parameters = DamagedParcelCameraScreen.Parameters(
+                    this.activity.showScreen(DamagedParcelCameraScreen().also {
+                        it.setTargetFragment(this, 0)
+                        it.parameters = DamagedParcelCameraScreen.Parameters(
                                 parcelId = parcel.id
                         )
                     })
@@ -791,9 +792,12 @@ class DeliveryStopProcessScreen :
         when (variant) {
             EventDeliveredReason.NEIGHBOR -> {
                 if (this.deliveryStop.cashAmountToCollect > 0) {
-                    this.activity.showScreen(CashScreen(target = this))
+                    this.activity.showScreen(CashScreen().also {
+                        it.setTargetFragment(this, 0)
+                    })
                 } else {
-                    this.activity.showScreen(NeighbourDeliveryScreen(target = this).also {
+                    this.activity.showScreen(NeighbourDeliveryScreen().also {
+                        it.setTargetFragment(this, 0)
                         it.parameters = NeighbourDeliveryScreen.Parameters(
                                 stopId = this.stop.id
                         )
@@ -802,7 +806,9 @@ class DeliveryStopProcessScreen :
             }
 
             EventDeliveredReason.POSTBOX -> {
-                this.activity.showScreen(PostboxCameraScreen(target = this))
+                this.activity.showScreen(PostboxCameraScreen().also {
+                    it.setTargetFragment(this, 0)
+                })
             }
 
             EventDeliveredReason.NORMAL -> {
@@ -811,7 +817,9 @@ class DeliveryStopProcessScreen :
                         when {
                             this.deliveryStop.cashAmountToCollect > 0 -> {
                                 //Requires CashScreen to be shown
-                                this.activity.showScreen(CashScreen(target = this))
+                                this.activity.showScreen(CashScreen().also {
+                                    it.setTargetFragment(this, 0)
+                                })
                             }
                             else -> {
                                 MaterialDialog.Builder(context)
@@ -822,7 +830,8 @@ class DeliveryStopProcessScreen :
                                         .input("Max Mustermann", null, false, { _, charSequence ->
                                             this.deliveryStop.recipientName = charSequence.toString()
 
-                                            this.activity.showScreen(SignatureScreen(target = this).also {
+                                            this.activity.showScreen(SignatureScreen().also {
+                                                it.setTargetFragment(this, 0)
                                                 it.parameters = SignatureScreen.Parameters(
                                                         stopId = this.stop.id,
                                                         deliveryReason = EventDeliveredReason.NORMAL,
@@ -887,7 +896,8 @@ class DeliveryStopProcessScreen :
         this.deliveryStop.deliveredReason = EventDeliveredReason.NEIGHBOR
 
         this.activity.showScreen(
-                SignatureScreen(target = this).also {
+                SignatureScreen().also {
+                    it.setTargetFragment(this, 0)
                     it.parameters = SignatureScreen.Parameters(
                             stopId = this.stop.id,
                             deliveryReason = EventDeliveredReason.NEIGHBOR,
@@ -908,7 +918,8 @@ class DeliveryStopProcessScreen :
                         .input("Max Mustermann", null, false, { _, charSequence ->
                             this.deliveryStop.recipientName = charSequence.toString()
 
-                            this.activity.showScreen(SignatureScreen(target = this).also {
+                            this.activity.showScreen(SignatureScreen().also {
+                                it.setTargetFragment(this, 0)
                                 it.parameters = SignatureScreen.Parameters(
                                         stopId = this.stop.id,
                                         deliveryReason = EventDeliveredReason.NORMAL,
@@ -920,7 +931,8 @@ class DeliveryStopProcessScreen :
             }
 
             EventDeliveredReason.NEIGHBOR -> {
-                this.activity.showScreen(NeighbourDeliveryScreen(target = this).also {
+                this.activity.showScreen(NeighbourDeliveryScreen().also {
+                    it.setTargetFragment(this, 0)
                     it.parameters = NeighbourDeliveryScreen.Parameters(
                             stopId = this.stop.id
                     )

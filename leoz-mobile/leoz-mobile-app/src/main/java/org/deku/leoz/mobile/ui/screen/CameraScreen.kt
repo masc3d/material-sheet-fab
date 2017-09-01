@@ -30,4 +30,4 @@ import java.util.concurrent.ExecutorService
  * Generic camera screen
  * Created by phpr on 03.08.2017.
  */
-open class CameraScreen(target: Fragment? = null) : BaseCameraScreen<Any>(target) { }
+open class CameraScreen : BaseCameraScreen<Any>()
