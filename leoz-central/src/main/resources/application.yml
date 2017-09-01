@@ -29,8 +29,8 @@ persistence:
     central:
         datasource:
             url: jdbc:mysql://10.0.10.10:3306/dekuclient?useSSL=false
-            username: leoz
-            password: leoz
+            username: root
+            password: root
 
 # leoz-central is final destination, doesn't have a peer
 remote:
@@ -46,3 +46,11 @@ update:
     # Run updater on broker connection and message notification
     automatic: false
     cleanup: false
+
+# Sevice Settings
+service:
+    # Parcel Service
+    parcel-service:
+        # Test/debug option which skips effective parcel data processing
+        skip-parcel-processing: false
+

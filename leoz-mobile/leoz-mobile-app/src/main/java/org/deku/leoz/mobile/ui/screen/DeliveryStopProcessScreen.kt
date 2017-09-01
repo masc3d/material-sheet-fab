@@ -18,6 +18,7 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.item_stop.*
@@ -127,7 +128,7 @@ class DeliveryStopProcessScreen :
     private var currentDamagedParcel: ParcelEntity? = null
 
     /** Current close stop variant */
-    private var currentCloseStopType: EventDeliveredReason? = null
+    private var currentCloseStopVariatn: EventDeliveredReason? = null
     //endregion
 
     //region Sections
@@ -399,12 +400,7 @@ class DeliveryStopProcessScreen :
                         }
 
                         R.id.action_delivery_process_dev_show_cash_screen -> {
-                            this.activity.showScreen(CashScreen().also {
-                                it.parameters = CashScreen.Parameters(
-                                        stopId = this.stop.id,
-                                        deliveryReason = EventDeliveredReason.NORMAL
-                                )
-                            })
+                            this.activity.showScreen(CashScreen())
                         }
                     }
                 }
@@ -420,7 +416,10 @@ class DeliveryStopProcessScreen :
 
                         R.id.action_delivery_select_event -> {
                             val eventDialog = EventDialog.Builder(this.context)
-                                    .events(this.deliveryStop.allowedEvents)
+                                    .events(
+                                            this.deliveryStop.allowedParcelEvents
+                                                    .plus(this.deliveryStop.allowedStopEvents)
+                                    )
                                     .listener(this)
                                     .build()
 
@@ -477,7 +476,19 @@ class DeliveryStopProcessScreen :
                 }
 
         //region Dynamic sections
-        this.deliveryStop.damagedParcels
+
+        // Damaged parcels
+        Observable.combineLatest(
+                this.deliveryStop.damagedParcels,
+                // Also fire when selected section changes */
+                this.parcelListAdapter.selectedSectionProperty.filter {
+                    it.value != this.damagedSection
+                },
+
+                BiFunction { a: Any, b: Any ->
+                    this.deliveryStop.damagedParcels.blockingFirst()
+                }
+        )
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOnMainThread()
                 .subscribe {
@@ -691,7 +702,7 @@ class DeliveryStopProcessScreen :
         when (parcelListAdapter.selectedSection) {
 
             deliveredSection, pendingSection, orderSection -> {
-                this.deliveryStop.deliver(parcel)
+                this.deliveryStop.deliverParcel(parcel)
                         .subscribe()
 
                 if (this.parcelListAdapter.selectedSection != deliveredSection)
@@ -724,8 +735,9 @@ class DeliveryStopProcessScreen :
                     this.currentDamagedParcel = parcel
 
                     /** Show camera screen */
-                    this.activity.showScreen(DamagedParcelCameraScreen(target = this).apply {
-                        parameters = DamagedParcelCameraScreen.Parameters(
+                    this.activity.showScreen(DamagedParcelCameraScreen().also {
+                        it.setTargetFragment(this, 0)
+                        it.parameters = DamagedParcelCameraScreen.Parameters(
                                 parcelId = parcel.id
                         )
                     })
@@ -736,29 +748,6 @@ class DeliveryStopProcessScreen :
                 tones.warningBeep()
             }
         }
-    }
-
-    override fun onCameraImageTaken(jpeg: ByteArray) {
-        this.currentDamagedParcel?.also { parcel ->
-            parcelRepository.markDamaged(
-                    parcel = parcel,
-                    jpegPictureData = jpeg
-            )
-                    .subscribeOn(Schedulers.computation())
-                    .subscribe()
-        }
-    }
-
-    override fun onSignatureSubmitted(signatureSvg: String) {
-        // Complement active stop and finalize
-        this.deliveryStop.signatureSvg = signatureSvg
-        this.finalizeStop()
-    }
-
-
-    override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
-        this.deliveryStop.signOnPaper(signatureJpeg)
-        this.finalizeStop()
     }
 
     private fun finalizeStop() {
@@ -780,7 +769,9 @@ class DeliveryStopProcessScreen :
     }
 
     private fun closeStop(variant: EventDeliveredReason) {
-        this.currentCloseStopType = variant
+        this.deliveryStop.resetCloseStopState()
+
+        this.currentCloseStopVariatn = variant
 
         // Show notification dialogs
         val dialogs: List<MaterialDialog> = this.deliveryStop.services
@@ -801,14 +792,12 @@ class DeliveryStopProcessScreen :
         when (variant) {
             EventDeliveredReason.NEIGHBOR -> {
                 if (this.deliveryStop.cashAmountToCollect > 0) {
-                    this.activity.showScreen(CashScreen(target = this).also {
-                        it.parameters = CashScreen.Parameters(
-                                stopId = this.stop.id,
-                                deliveryReason = variant
-                        )
+                    this.activity.showScreen(CashScreen().also {
+                        it.setTargetFragment(this, 0)
                     })
                 } else {
-                    this.activity.showScreen(NeighbourDeliveryScreen(target = this).also {
+                    this.activity.showScreen(NeighbourDeliveryScreen().also {
+                        it.setTargetFragment(this, 0)
                         it.parameters = NeighbourDeliveryScreen.Parameters(
                                 stopId = this.stop.id
                         )
@@ -817,7 +806,9 @@ class DeliveryStopProcessScreen :
             }
 
             EventDeliveredReason.POSTBOX -> {
-                //TODO
+                this.activity.showScreen(PostboxCameraScreen().also {
+                    it.setTargetFragment(this, 0)
+                })
             }
 
             EventDeliveredReason.NORMAL -> {
@@ -826,11 +817,8 @@ class DeliveryStopProcessScreen :
                         when {
                             this.deliveryStop.cashAmountToCollect > 0 -> {
                                 //Requires CashScreen to be shown
-                                this.activity.showScreen(CashScreen(target = this).also {
-                                    it.parameters = CashScreen.Parameters(
-                                            stopId = this.stop.id,
-                                            deliveryReason = variant
-                                    )
+                                this.activity.showScreen(CashScreen().also {
+                                    it.setTargetFragment(this, 0)
                                 })
                             }
                             else -> {
@@ -842,7 +830,8 @@ class DeliveryStopProcessScreen :
                                         .input("Max Mustermann", null, false, { _, charSequence ->
                                             this.deliveryStop.recipientName = charSequence.toString()
 
-                                            this.activity.showScreen(SignatureScreen(target = this).also {
+                                            this.activity.showScreen(SignatureScreen().also {
+                                                it.setTargetFragment(this, 0)
                                                 it.parameters = SignatureScreen.Parameters(
                                                         stopId = this.stop.id,
                                                         deliveryReason = EventDeliveredReason.NORMAL,
@@ -871,11 +860,44 @@ class DeliveryStopProcessScreen :
         }
     }
 
+    override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
+        when (sender) {
+            is DamagedParcelCameraScreen -> {
+                this.currentDamagedParcel?.also { parcel ->
+                    parcelRepository.markDamaged(
+                            parcel = parcel,
+                            jpegPictureData = jpeg
+                    )
+                            .subscribeOn(Schedulers.computation())
+                            .subscribe()
+                }
+            }
+
+            is PostboxCameraScreen -> {
+                this.deliveryStop.deliverToPostbox(jpeg)
+                this.finalizeStop()
+            }
+        }
+    }
+
+    override fun onSignatureSubmitted(signatureSvg: String) {
+        this.deliveryStop.signatureSvg = signatureSvg
+        this.finalizeStop()
+    }
+
+
+    override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
+        this.deliveryStop.deliverWithSignatureOnPaper(signatureJpeg)
+        this.finalizeStop()
+    }
+
     override fun onNeighbourDeliveryScreenContinue(neighbourName: String) {
         this.deliveryStop.recipientName = neighbourName
+        this.deliveryStop.deliveredReason = EventDeliveredReason.NEIGHBOR
 
         this.activity.showScreen(
-                SignatureScreen(target = this).also {
+                SignatureScreen().also {
+                    it.setTargetFragment(this, 0)
                     it.parameters = SignatureScreen.Parameters(
                             stopId = this.stop.id,
                             deliveryReason = EventDeliveredReason.NEIGHBOR,
@@ -886,7 +908,7 @@ class DeliveryStopProcessScreen :
     }
 
     override fun onCashScreenContinue() {
-        when (this.currentCloseStopType) {
+        when (this.currentCloseStopVariatn) {
             EventDeliveredReason.NORMAL -> {
                 MaterialDialog.Builder(context)
                         .title(R.string.recipient)
@@ -896,7 +918,8 @@ class DeliveryStopProcessScreen :
                         .input("Max Mustermann", null, false, { _, charSequence ->
                             this.deliveryStop.recipientName = charSequence.toString()
 
-                            this.activity.showScreen(SignatureScreen(target = this).also {
+                            this.activity.showScreen(SignatureScreen().also {
+                                it.setTargetFragment(this, 0)
                                 it.parameters = SignatureScreen.Parameters(
                                         stopId = this.stop.id,
                                         deliveryReason = EventDeliveredReason.NORMAL,
@@ -908,7 +931,8 @@ class DeliveryStopProcessScreen :
             }
 
             EventDeliveredReason.NEIGHBOR -> {
-                this.activity.showScreen(NeighbourDeliveryScreen(target = this).also {
+                this.activity.showScreen(NeighbourDeliveryScreen().also {
+                    it.setTargetFragment(this, 0)
                     it.parameters = NeighbourDeliveryScreen.Parameters(
                             stopId = this.stop.id
                     )

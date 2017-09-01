@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory
 /**
  * Signature screen
  */
-class SignatureScreen(target: Fragment? = null)
+class SignatureScreen
     :
         ScreenFragment<SignatureScreen.Parameters>(),
         SignaturePad.OnSignedListener,
@@ -69,10 +69,6 @@ class SignatureScreen(target: Fragment? = null)
     private val stop: Stop by lazy {
         stopRepository.findById(this.parameters.stopId)
                 ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
-    }
-
-    init {
-        this.setTargetFragment(target, 0)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,7 +131,8 @@ class SignatureScreen(target: Fragment? = null)
                             this.uxSignaturePad.clear()
                         }
                         R.id.action_signature_paper -> {
-                            this.activity.showScreen(SignOnPaperCameraScreen(target = this).also {
+                            this.activity.showScreen(SignOnPaperCameraScreen().also {
+                                it.setTargetFragment(this, 0)
                                 it.parameters = SignOnPaperCameraScreen.Parameters(
                                         name = this.parameters.recipient
                                 )
@@ -165,7 +162,7 @@ class SignatureScreen(target: Fragment? = null)
         this.update()
     }
 
-    override fun onCameraImageTaken(jpeg: ByteArray) {
+    override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
         this.listener?.onSignatureImageSubmitted(jpeg)
     }
 

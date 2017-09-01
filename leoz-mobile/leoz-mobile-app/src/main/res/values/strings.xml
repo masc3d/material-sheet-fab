@@ -27,6 +27,7 @@
 
     <string name="cash_service">Cash-Service</string>
     <string name="cash_value">Cash value</string>
+    <string name="cash_not_sufficient">Cash amount not sufficient</string>
 
     <string name="change">Change</string>
 

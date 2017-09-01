@@ -36,7 +36,7 @@ apply plugin: 'org.flywaydb.flyway'
 apply plugin: 'sx-packager'
 
 sourceCompatibility = 1.8
-version = '0.117-SNAPSHOT'
+version = '0.118-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
@@ -44,7 +44,7 @@ def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
 def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'//&noAccessToProcedureBodies=true'
 
 // Flyway constants
-def FLYWAY_TARGET = 34
+def FLYWAY_TARGET = 36
 def FLYWAY_MIGRATION_DIR = new File(project.rootDir, 'leoz-central-schema/db/migration')
 def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration')
 

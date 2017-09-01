@@ -36,7 +36,7 @@ class StopRepository(
                 .get()
                 .firstOrNull()
     }
-    
+
     /**
      * Finds a suitabtle existing stop compatible with this task
      * @param task Order task
@@ -100,9 +100,42 @@ class StopRepository(
             val store = this.store.toBlocking()
 
             target.tasks.addAll(source.tasks)
-            
+
             store.delete(source)
             store.update(target)
+        }
+    }
+
+    /**
+     * Updates stop order, placing a stop after another one
+     * @param after Stop
+     */
+    fun move(stop: Stop, after: Stop?): Completable {
+        return Completable.fromCallable {
+            val store = this.store.toBlocking()
+
+            val afterPosition = after?.position ?: 0.0
+
+            // Get first stop where position is greater or null if there's none (last position)
+            val nextAfter = store
+                    .select(StopEntity::class)
+                    .where(StopEntity.POSITION.gt(afterPosition))
+                    .orderBy(StopEntity.POSITION.asc())
+                    .limit(1)
+                    .get()
+                    .firstOrNull()
+
+            when {
+                nextAfter != null -> {
+                    stop.position = (nextAfter.position + afterPosition) / 2
+                }
+                else -> {
+                    // The stop after is the last one, simply increase position
+                    stop.position = afterPosition + 1.0
+                }
+            }
+
+            store.update(stop)
         }
     }
 

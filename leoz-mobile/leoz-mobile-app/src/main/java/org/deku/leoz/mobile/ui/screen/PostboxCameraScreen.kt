@@ -14,21 +14,15 @@ import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 
 /**
- * Signature on paper camera screen
+ * Postbox delivery camera screen
  * Created by masc on 24.08.17.
  */
-class SignOnPaperCameraScreen : BaseCameraScreen<SignOnPaperCameraScreen.Parameters>() {
-
-    @Parcel(Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var name: String
-    )
+class PostboxCameraScreen : BaseCameraScreen<Any>() {
 
     override fun createOverlayView(viewGroup: ViewGroup): View? {
         return this.activity.layoutInflater
-                .inflate(R.layout.view_delivery_sign_on_paper, viewGroup, false)
+                .inflate(R.layout.view_delivery_postbox, viewGroup, false)
                 .also {
-                    it.uxName.text = this.parameters.name
                     it.alpha = 0.75F
                 }
     }

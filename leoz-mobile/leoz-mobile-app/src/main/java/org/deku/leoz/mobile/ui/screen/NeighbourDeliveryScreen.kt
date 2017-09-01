@@ -39,7 +39,7 @@ import sx.android.showSoftInput
  * Neighbour delivery screen
  * Created by phpr on 10.07.2017.
  */
-class NeighbourDeliveryScreen(target: Fragment? = null) : ScreenFragment<NeighbourDeliveryScreen.Parameters>() {
+class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameters>() {
 
     @Parcel(Parcel.Serialization.BEAN)
     class Parameters @ParcelConstructor constructor(
@@ -63,10 +63,6 @@ class NeighbourDeliveryScreen(target: Fragment? = null) : ScreenFragment<Neighbo
     private val stop: Stop by lazy {
         stopRepository.findById(this.parameters.stopId)
                 ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
-    }
-
-    init {
-        this.setTargetFragment(target, 0)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -32,7 +32,8 @@ interface ParcelServiceV1 {
             var events: Array<Event>? = null,
 
             val deliveredInfo: DeliveredInfo? = null,
-            val signatureOnPaperInfo: SignatureOnPaperInfo? = null
+            val signatureOnPaperInfo: SignatureOnPaperInfo? = null,
+            val postboxDeliveryInfo: PostboxDeliveryInfo? = null
     ) {
         data class DeliveredInfo(
                 val recipient: String? = null,
@@ -42,6 +43,10 @@ interface ParcelServiceV1 {
 
         data class SignatureOnPaperInfo(
                 val recipient: String? = null,
+                val pictureFileUid: UUID? = null
+        )
+
+        data class PostboxDeliveryInfo(
                 val pictureFileUid: UUID? = null
         )
     }

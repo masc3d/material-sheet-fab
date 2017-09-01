@@ -121,10 +121,6 @@ class ActionOverlayView : RelativeLayout {
     /** Default button alpha */
     var buttonAlpha: Float = 1.0F
 
-    private val itemsSubject = PublishSubject.create<List<ActionItem>>()
-    private val backpressuredItems = itemsSubject
-            .debounce(50, TimeUnit.MILLISECONDS)
-
     /**
      * Action items
      */
@@ -133,6 +129,13 @@ class ActionOverlayView : RelativeLayout {
             field = value
             this.itemsSubject.onNext(value)
         }
+
+    private val itemsSubject = PublishSubject.create<List<ActionItem>>()
+
+    /** Debounced items observable, avoids unnecessary re-layout when items are assigned
+     * multiple times during a single ui loop */
+    private val backpressuredItems = itemsSubject
+            .debounce(50, TimeUnit.MILLISECONDS)
 
     init {
         this.backpressuredItems

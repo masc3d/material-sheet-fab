@@ -631,8 +631,9 @@ class VehicleLoadingScreen :
                     this.currentDamagedParcel = parcel
 
                     /** Show camera screen */
-                    this.activity.showScreen(DamagedParcelCameraScreen(target = this).apply {
-                        parameters = DamagedParcelCameraScreen.Parameters(
+                    this.activity.showScreen(DamagedParcelCameraScreen().also {
+                        it.setTargetFragment(this, 0)
+                        it.parameters = DamagedParcelCameraScreen.Parameters(
                                 parcelId = parcel.id
                         )
                     })
@@ -672,7 +673,7 @@ class VehicleLoadingScreen :
         }
     }
 
-    override fun onCameraImageTaken(jpeg: ByteArray) {
+    override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
         this.currentDamagedParcel?.also { parcel ->
             parcelRepository.markDamaged(
                     parcel = parcel,

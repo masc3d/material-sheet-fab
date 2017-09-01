@@ -43,6 +43,7 @@ export class TourService {
 
   private drivers: Driver[];
   private duration: number;
+  private selectedDate: Date;
 
   constructor( private http: Http,
                private msgService: MsgService,
@@ -50,72 +51,91 @@ export class TourService {
                private driverService: DriverService ) {
     driverService.drivers.subscribe( ( drivers: Driver[] ) => this.drivers = drivers );
     this.duration = 0;
+    this.selectedDate = null;
   }
 
   private getLocation( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    let usedUrl = this.locationUrl;
 
     const queryParameters = new URLSearchParams();
+
     queryParameters.set( 'user-id', String( userId ) );
     if (this.duration > 0) {
-      // Eingrezung für datumsauswahl siehe Kalenderfeature
-      // const from = moment().subtract(this.duration, 'minutes');
-      // queryParameters.set( 'from', from.format('MM/DD/YYYY HH:mm:ss') );
-      // queryParameters.set( 'to', from.format('MM/DD/YYYY HH:mm:ss') );
-      // return this.http.get( this.locationFromToUrl, options );
       queryParameters.set( 'duration', String( this.duration ) );
+    } else {
+      if (this.selectedDate) {
+        // Eingrezung wenn datumsauswahl im Kalender
+        const from = moment( this.selectedDate ).hours( 0 ).minutes( 0 ).seconds( 0 );
+        const to = moment( this.selectedDate ).hours( 23 ).minutes( 59 ).seconds( 59 );
+        queryParameters.set( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
+        queryParameters.set( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
+        usedUrl = this.locationFromToUrl;
+      }
+      // soll nix passieren
+      // oder bei keiner Datumsauswahl => bereits vorher abprüfen
     }
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
       params: queryParameters
     } );
-
-    return this.http.get( this.locationUrl, options );
+    return this.http.get( usedUrl, options );
   }
 
   private getAllLocations(): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-
+    let usedUrl = this.locationUrl;
     const queryParameters = new URLSearchParams();
+
     queryParameters.set( 'debitor-id', String( currUser.user.debitorId ) );
     if (this.duration > 0) {
-      // Eingrezung für datumsauswahl siehe Kalenderfeature
-      // const from = moment().subtract(this.duration, 'minutes');
-      // queryParameters.set( 'from', from.format('MM/DD/YYYY HH:mm:ss') );
-      // queryParameters.set( 'to', from.format('MM/DD/YYYY HH:mm:ss') );
-      // return this.http.get( this.locationFromToUrl, options );
       queryParameters.set( 'duration', String( this.duration ) );
+    } else {
+      // Eingrezung wenn datumsauswahl im Kalender
+      const from = moment( this.selectedDate ).hours( 0 ).minutes( 0 ).seconds( 0 );
+      const to = moment( this.selectedDate ).hours( 23 ).minutes( 59 ).seconds( 59 );
+      queryParameters.set( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
+      queryParameters.set( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
+      usedUrl = this.locationFromToUrl;
+
+      // oder bei keiner Datumsauswahl => bereits vorher abprüfen
+      // soll nix passieren
     }
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
       params: queryParameters
     } );
-
-    return this.http.get( this.locationUrl, options );
+    return this.http.get( usedUrl, options );
   }
 
   private getRoute( userId: number ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    let usedUrl = this.locationUrl;
 
     const queryParameters = new URLSearchParams();
+
     queryParameters.set( 'user-id', String( userId ) );
     if (this.duration > 0) {
-      // Eingrezung für datumsauswahl siehe Kalenderfeature
-      // const from = moment().subtract(this.duration, 'minutes');
-      // queryParameters.set( 'from', from.format('MM/DD/YYYY HH:mm:ss') );
-      // queryParameters.set( 'to', from.format('MM/DD/YYYY HH:mm:ss') );
-      // return this.http.get( this.locationFromToUrl, options );
       queryParameters.set( 'duration', String( this.duration ) );
+    } else {
+      // Eingrezung wenn datumsauswahl im Kalender
+      const from = moment( this.selectedDate ).hours( 0 ).minutes( 0 ).seconds( 0 );
+      const to = moment( this.selectedDate ).hours( 23 ).minutes( 59 ).seconds( 59 );
+      queryParameters.set( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
+      queryParameters.set( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
+      usedUrl = this.locationFromToUrl;
+
+      // oder bei keiner Datumsauswahl => bereits vorher abprüfen
+      // soll nix passieren
     }
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
       params: queryParameters
     } );
-
-    return this.http.get( this.locationUrl, options );
+    return this.http.get( usedUrl, options );
   }
 
   resetMsgs() {
@@ -134,8 +154,9 @@ export class TourService {
     this.activeRouteSubject.next( <Position[]> [] );
   }
 
-  changeActiveMarker( selectedDriver: Driver, duration: number ) {
+  changeActiveMarker( selectedDriver: Driver, duration: number, selectedDate: Date ) {
     this.duration = duration;
+    this.selectedDate = selectedDate;
     this.resetDisplay();
     this.getLocation( selectedDriver.id )
       .subscribe( ( response: Response ) => {
@@ -144,7 +165,10 @@ export class TourService {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
               this.displayMarkerSubject.next( true );
-              this.activeMarkerSubject.next( <MarkerModel> { position: positions[ positions.length - 1 ], driver: selectedDriver } );
+              this.activeMarkerSubject.next( <MarkerModel> {
+                position: positions[ positions.length - 1 ],
+                driver: selectedDriver
+              } );
               this.msgService.clear();
             } else {
               this.locationError();
@@ -156,8 +180,9 @@ export class TourService {
         ( error: Response ) => this.msgService.handleResponse( error ) );
   }
 
-  changeActiveRoute( selectedDriver: Driver, duration: number ) {
+  changeActiveRoute( selectedDriver: Driver, duration: number, selectedDate: Date ) {
     this.duration = duration;
+    this.selectedDate = selectedDate;
     this.resetDisplay();
     this.getRoute( selectedDriver.id )
       .subscribe( ( response: Response ) => {
@@ -192,8 +217,9 @@ export class TourService {
     this.msgService.error( this.translate.instant( 'could not get route' ) );
   }
 
-  fetchAllPositions( filter: string, duration: number ) {
+  fetchAllPositions( filter: string, duration: number, selectedDate: Date ) {
     this.duration = duration;
+    this.selectedDate = selectedDate;
     this.resetDisplay();
     this.driverService.getDrivers();
     this.getAllLocations()

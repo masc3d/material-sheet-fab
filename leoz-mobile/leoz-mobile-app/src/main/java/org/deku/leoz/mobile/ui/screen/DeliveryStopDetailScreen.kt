@@ -70,9 +70,7 @@ class DeliveryStopDetailScreen
     private val tones: Tones by Kodein.global.lazy.instance()
 
     // Model classes
-    private val delivery: Delivery by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
-    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val stop: Stop by lazy {
@@ -105,11 +103,9 @@ class DeliveryStopDetailScreen
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.screen_delivery_detail, container, false)
-    }
+                              savedInstanceState: Bundle?): View? =
+            // Inflate the layout for this fragment
+            inflater.inflate(R.layout.screen_delivery_detail, container, false)
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

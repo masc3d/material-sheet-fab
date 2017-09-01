@@ -61,7 +61,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 2
-        versionName "0.66-SNAPSHOT"
+        versionName "0.68-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -177,11 +177,13 @@ dependencies {
             project(':leoz-common'),
             project(':sx-common'),
             project(':sx-serialization'),
+            project(':sx-mq'),
             project(':leoz-common'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             // Android
             "com.android.support:support-annotations:$v_android_support",
+            "com.android.support:support-v13:$v_android_support",
             "com.android.support:appcompat-v7:$v_android_support",
             "com.android.support:design:$v_android_support",
             "com.android.support:cardview-v7:$v_android_support",
@@ -248,7 +250,7 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
-            'com.github.pwittchen:reactivenetwork-rx2:0.11.0',
+            'com.github.pwittchen:reactivenetwork-rx2:0.12.0',
 
             // Android (multipart) upload service
             'net.gotev:uploadservice:3.4',
@@ -272,6 +274,8 @@ dependencies {
 
             "com.eightbitlab:blurview:1.3.3",
             "com.github.andrewlord1990:snackbarbuilder:0.9.0",
+
+            "com.github.BlacKCaT27:CurrencyEditText:2.0.1",
 
             //
             // FOR TESTING
@@ -329,7 +333,7 @@ dependencies {
             "org.jetbrains.anko:anko-sqlite:$v_anko",
 
             "com.fenchtose:tooltip:0.1.5",
-            "net.cachapa.expandablelayout:expandablelayout:2.9.1"
+            "net.cachapa.expandablelayout:expandablelayout:2.9.2"
     )
 
     debugImplementation(

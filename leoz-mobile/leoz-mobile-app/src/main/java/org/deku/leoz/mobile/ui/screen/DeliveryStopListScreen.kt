@@ -22,6 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.Parcel
@@ -44,8 +45,7 @@ import sx.android.ui.flexibleadapter.customizeScrollBehavior
  */
 class DeliveryStopListScreen
     :
-        ScreenFragment<Any>(),
-        FlexibleAdapter.OnItemMoveListener {
+        ScreenFragment<Any>() {
 
     interface Listener {
         fun onDeliveryStopListUnitNumberInput(unitNumber: UnitNumber)
@@ -59,6 +59,7 @@ class DeliveryStopListScreen
     private val listener by lazy { this.activity as? Listener }
 
     // Model classes
+    private val db: Database by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
@@ -68,26 +69,7 @@ class DeliveryStopListScreen
             FlexibleAdapter<
                     FlexibleVmItem<
                             StopViewModel>>>({
-        val adapter = FlexibleAdapter(
-                // Items
-                delivery.pendingStops.blockingFirst().value
-                        .map {
-                            val item = FlexibleVmItem(
-                                    view = R.layout.item_stop,
-                                    variable = BR.stop,
-                                    viewModel = StopViewModel(it)
-                            )
-
-                            item.isEnabled = true
-                            item.isDraggable = true
-                            item.isSwipeable = false
-
-                            item
-                        },
-                // Listener
-                this)
-
-        adapter
+        FlexibleAdapter(listOf<FlexibleVmItem<StopViewModel>>())
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
@@ -134,42 +116,6 @@ class DeliveryStopListScreen
         )
     }
 
-    //region Listener interface implementation
-    override fun onActionStateChanged(p0: RecyclerView.ViewHolder?, p1: Int) {
-        log.debug("ONACTIONSTATECHANGED")
-        log.debug("ViewHolder [${p0.toString()}] Value [$p1]")
-    }
-
-    @CallSuper
-    override fun onItemMove(p0: Int, p1: Int) {
-        log.debug("ONITEMMOVE value [$p0] value [$p1]")
-        // TODO: implement position change/persistence
-    }
-
-    override fun shouldMoveItem(p0: Int, p1: Int): Boolean {
-        log.debug("SHOULDMOVEITEM value [$p0] value [$p1]")
-        return true
-    }
-
-    private val onItemClickListener = FlexibleAdapter.OnItemClickListener { item ->
-        log.debug("ONITEMCLICK")
-
-        val stop = flexibleAdapter.getItem(item)?.viewModel?.stop
-
-        if (stop != null) {
-            activity.showScreen(
-                    DeliveryStopDetailScreen().also {
-                        it.parameters = DeliveryStopDetailScreen.Parameters(
-                                stopId = stop.id
-                        )
-                    }
-            )
-        }
-
-        true
-    }
-    //endregion
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
             // Inflate the layout for this fragment
@@ -192,7 +138,77 @@ class DeliveryStopListScreen
         flexibleAdapter.isHandleDragEnabled = true
         flexibleAdapter.isSwipeEnabled = true
 
-        flexibleAdapter.addListener(onItemClickListener)
+        flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { item ->
+            log.trace("ONITEMCLICK")
+
+            val stop = flexibleAdapter.getItem(item)?.viewModel?.stop
+
+            if (stop != null) {
+                activity.showScreen(
+                        DeliveryStopDetailScreen().also {
+                            it.parameters = DeliveryStopDetailScreen.Parameters(
+                                    stopId = stop.id
+                            )
+                        }
+                )
+            }
+
+            true
+        })
+
+        flexibleAdapter.addListener(object : FlexibleAdapter.OnItemMoveListener {
+            override fun onActionStateChanged(p0: RecyclerView.ViewHolder?, p1: Int) {
+            }
+
+            override fun onItemMove(fromPosition: Int, toPosition: Int) {
+                log.trace("ONITEMMOVE value [$fromPosition] value [$toPosition]")
+            }
+
+            override fun shouldMoveItem(fromPosition: Int, toPosition: Int): Boolean {
+                log.trace("ONITEMSHOULDMOVE value [$fromPosition] value [$toPosition]")
+                return true
+            }
+
+        })
+
+        flexibleAdapter.addListener(FlexibleAdapter.OnUpdateListener { item ->
+            log.trace("ONITEMUPDATE")
+        })
+
+        // Items
+        flexibleAdapter.addItems(0, delivery.pendingStops.blockingFirst().value
+                .map {
+                    val item = FlexibleVmItem(
+                            view = R.layout.item_stop,
+                            variable = BR.stop,
+                            viewModel = StopViewModel(it)
+                    )
+
+                    item.isEnabled = true
+                    item.isDraggable = true
+                    item.isSwipeable = false
+
+                    item.itemReleasedEvent
+                            .bindUntilEvent(this@DeliveryStopListScreen, FragmentEvent.PAUSE)
+                            .subscribe { position ->
+                                // Get the item it was moved after
+                                val previousItem = when {
+                                    position > 0 -> flexibleAdapter.getItem(position - 1)
+                                    else -> null
+                                }
+
+                                // Update entity stop postiion acoordingly
+                                db.store.withTransaction {
+                                    stopRepository
+                                            .move(stop = item.viewModel.stop, after = previousItem?.viewModel?.stop)
+                                            .blockingAwait()
+                                }
+                                        .subscribeOn(Schedulers.computation())
+                                        .subscribe()
+                            }
+
+                    item
+                })
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {

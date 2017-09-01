@@ -76,7 +76,7 @@
                     android:layout_gravity="center"
                     app:srcCompat="@drawable/ic_money_handover" />
 
-                <EditText
+                <com.blackcat.currencyedittext.CurrencyEditText
                     android:id="@+id/uxCashGiven"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -86,6 +86,8 @@
                     android:ems="10"
                     android:hint="00,00"
                     android:inputType="numberDecimal"
+                    app:allow_negative_values="false"
+                    app:decimal_digits="2"
                     tools:ignore="HardcodedText" />
 
             </LinearLayout>

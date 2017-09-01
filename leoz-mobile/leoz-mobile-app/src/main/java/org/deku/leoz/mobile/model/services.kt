@@ -18,13 +18,11 @@ data class ParcelServiceMeta(
     /**
      * Returns mobile translation and for unknown values the enum value name
      */
-    fun textOrName(context: Context): String {
-        return if (this.text != null) context.getString(this.text) else this.value.name
-    }
+    fun textOrName(context: Context): String =
+            if (this.text != null) context.getString(this.text) else this.value.name
 
-    fun acknowledgeMessage(context: Context): String? {
-        return if (this.ackMessage == null) null else context.getString(this.ackMessage)
-    }
+    fun acknowledgeMessage(context: Context): String? =
+            if (this.ackMessage == null) null else context.getString(this.ackMessage)
 }
 
 /**

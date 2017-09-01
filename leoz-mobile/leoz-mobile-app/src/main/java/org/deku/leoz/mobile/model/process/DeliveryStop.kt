@@ -11,16 +11,14 @@ import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
+import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.service.LocationCache
-import org.deku.leoz.model.Event
-import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.ParcelService
-import org.deku.leoz.model.Reason
+import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
@@ -51,13 +49,16 @@ class DeliveryStop(
     private val identity: Identity by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
 
+
     /**
      * Allowed events for this stop (all levels)
      */
     val allowedEvents: List<EventNotDeliveredReason> by lazy {
         mutableListOf(
-                EventNotDeliveredReason.ABSENT,
+                // Ordered by frequency of appearance
+
                 EventNotDeliveredReason.REFUSED,
+                EventNotDeliveredReason.ABSENT,
                 EventNotDeliveredReason.VACATION,
                 EventNotDeliveredReason.ADDRESS_WRONG,
                 EventNotDeliveredReason.MOVED,
@@ -102,7 +103,9 @@ class DeliveryStop(
         this.allowedEvents.filter {
             when (it) {
                 EventNotDeliveredReason.REFUSED,
-                EventNotDeliveredReason.XC_OBJECT_NOT_READY -> true
+                EventNotDeliveredReason.XC_OBJECT_DAMAGED,
+                EventNotDeliveredReason.XC_OBJECT_NOT_READY,
+                EventNotDeliveredReason.XC_OBJECT_WRONG -> true
                 else -> false
             }
         }
@@ -241,10 +244,16 @@ class DeliveryStop(
     var signatureSvg: String? = null
 
     /** Signature camera image */
-    var signatureOnPaperImageUid: UUID? = null
+    private var signatureOnPaperImageUid: UUID? = null
+
+    /** Postbox camera image */
+    private var postboxImageUid: UUID? = null
 
     /** Recipient name */
     var recipientName: String? = null
+
+    /** Delivery reason type */
+    var deliveredReason: EventDeliveredReason = EventDeliveredReason.NORMAL
 
     /**
      * Services for this stop
@@ -289,9 +298,21 @@ class DeliveryStop(
     }
 
     /**
+     * Reset all closing stop related state variables
+     */
+    fun resetCloseStopState() {
+        this.postboxImageUid = null
+        this.signatureOnPaperImageUid = null
+        this.signatureSvg = null
+        this.deliveredReason = EventDeliveredReason.NORMAL
+    }
+
+    /**
      * Resets all parcels to pending state and removes all event information
      */
     fun reset(): Completable {
+        this.resetCloseStopState()
+
         val stop = this.entity
 
         return db.store.withTransaction {
@@ -311,9 +332,20 @@ class DeliveryStop(
     }
 
     /**
+     * (Re-)open stop
+     */
+    private fun open() {
+        val stop = this.entity
+        if (stop.state == Stop.State.CLOSED) {
+            stop.state = Stop.State.PENDING
+            db.store.toBlocking().update(stop)
+        }
+    }
+
+    /**
      * Deliver a single parcel
      */
-    fun deliver(parcel: ParcelEntity): Completable {
+    fun deliverParcel(parcel: ParcelEntity): Completable {
         val stop = this.entity
 
         return db.store.withTransaction {
@@ -325,11 +357,11 @@ class DeliveryStop(
 
             if (parcel.reason != null) {
                 val parcelsToReset = when {
-                    // Reset event for all stop parcels if event matches
+                // Reset event for all stop parcels if event matches
                     stopParcels.all { it.reason == parcel.reason } -> {
                         stopParcels
                     }
-                    // Reset event for all parcels of this order if event matches
+                // Reset event for all parcels of this order if event matches
                     parcel.order.parcels.all { it.reason == parcel.reason } -> {
                         parcel.order.parcels
                     }
@@ -353,17 +385,6 @@ class DeliveryStop(
         }
                 .toCompletable()
                 .subscribeOn(Schedulers.computation())
-    }
-
-    /**
-     * (Re-)open stop
-     */
-    private fun open() {
-        val stop = this.entity
-        if (stop.state == Stop.State.CLOSED) {
-            stop.state = Stop.State.PENDING
-            db.store.toBlocking().update(stop)
-        }
     }
 
     /**
@@ -411,9 +432,22 @@ class DeliveryStop(
      * Sends the image and stores the file uid internally, which will be passed
      * with close stop ParcelMessage on finalize
      */
-    fun signOnPaper(signatureOnPaperImageJpeg: ByteArray) {
+    fun deliverWithSignatureOnPaper(signatureOnPaperImageJpeg: ByteArray) {
         // Send file
-        this.signatureOnPaperImageUid = mqttEndpoints.central.main.channel().sendFile(signatureOnPaperImageJpeg, MimeType.JPEG.value)
+        this.signatureOnPaperImageUid =
+                mqttEndpoints.central.main.channel().sendFile(signatureOnPaperImageJpeg, MimeType.JPEG.value)
+    }
+
+    /**
+     * Sends the postbox delivery image and stores the file uid internally,
+     * lateron passing it with the ParcelMessage when closing/finalizing the stop
+     */
+    fun deliverToPostbox(postboxImageJpeg: ByteArray) {
+        this.deliveredReason = EventDeliveredReason.POSTBOX
+
+        // Send file
+        this.postboxImageUid =
+                mqttEndpoints.central.main.channel().sendFile(postboxImageJpeg, MimeType.JPEG.value)
     }
 
     fun finalize(): Completable {
@@ -446,8 +480,14 @@ class DeliveryStop(
                                     },
                                     signatureOnPaperInfo = when {
                                         signatureOnPaperImageUid != null -> ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(
-                                                recipient = recipientName,
-                                                pictureFileUid = this.signatureOnPaperImageUid
+                                                pictureFileUid = this.signatureOnPaperImageUid,
+                                                recipient = recipientName
+                                        )
+                                        else -> null
+                                    },
+                                    postboxDeliveryInfo = when {
+                                        this.deliveredReason == EventDeliveredReason.POSTBOX -> ParcelServiceV1.ParcelMessage.PostboxDeliveryInfo(
+                                                pictureFileUid = this.postboxImageUid
                                         )
                                         else -> null
                                     },
@@ -455,12 +495,35 @@ class DeliveryStop(
                                         ParcelServiceV1.Event(
                                                 event = when {
                                                     it.state == Parcel.State.DELIVERED -> Event.DELIVERED.value
+                                                    it.state == Parcel.State.MISSING -> Event.NOT_IN_DELIVERY.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
-                                                reason = it.reason?.reason?.id ?: Reason.NORMAL.id,
+                                                reason = when {
+                                                    it.state == Parcel.State.DELIVERED -> {
+                                                        when {
+                                                            this.deliveredReason == EventDeliveredReason.POSTBOX -> Reason.POSTBOX.id
+                                                            this.deliveredReason == EventDeliveredReason.NEIGHBOR -> Reason.NEIGHBOUR.id
+                                                            else -> it.reason?.reason?.id ?: Reason.NORMAL.id
+                                                        }
+                                                    }
+                                                    else -> it.reason?.reason?.id ?: Reason.NORMAL.id
+                                                },
                                                 parcelId = it.id,
                                                 latitude = lastLocation?.latitude,
-                                                longitude = lastLocation?.longitude
+                                                longitude = lastLocation?.longitude,
+                                                damagedInfo = when {
+                                                    it.isDamaged -> {
+                                                        ParcelServiceV1.Event.DamagedInfo(
+                                                                pictureFileUids = it.meta
+                                                                        .filterValuesByType(Parcel.DamagedInfo::class.java)
+                                                                        .mapNotNull {
+                                                                            it.pictureFileUid
+                                                                        }
+                                                                        .toTypedArray()
+                                                        )
+                                                    }
+                                                    else -> null
+                                                }
                                         )
                                     }.toTypedArray()
                             )

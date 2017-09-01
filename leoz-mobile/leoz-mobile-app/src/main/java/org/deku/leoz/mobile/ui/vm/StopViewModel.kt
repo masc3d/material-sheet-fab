@@ -3,6 +3,8 @@ package org.deku.leoz.mobile.ui.vm
 import android.databinding.BaseObservable
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
+import org.deku.leoz.mobile.model.mobile
+import org.deku.leoz.model.ParcelService
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,5 +40,12 @@ class StopViewModel(val stop: Stop) : BaseObservable() {
 
     val parcelAmount: String by lazy {
         stop.tasks.flatMap { it.order.parcels }.count().toString()
+    }
+
+    val services: List<ParcelService> by lazy {
+        stop.tasks
+                .flatMap { it.services }
+                .distinct()
+                .filter { it.mobile.text != null }
     }
 }
