@@ -35,8 +35,6 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Bean
 import javax.json.Json
 
 /**
@@ -50,9 +48,6 @@ open class ParcelServiceV1 :
         org.deku.leoz.service.internal.ParcelServiceV1,
         MqHandler<ParcelServiceV1.ParcelMessage> {
 
-    open class ParcelServiceSettings {
-        var resetDeliveriesAfterReceive: Boolean = false
-    }
     private val log = LoggerFactory.getLogger(this.javaClass)
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
@@ -74,10 +69,6 @@ open class ParcelServiceV1 :
 
     @Inject
     private lateinit var parcelProcessing: ParcelProcessing
-    //reset-deliveries-after-receive
-    @get:ConfigurationProperties("service.parcelservice")
-    @get:Bean
-    open val parcelServiceSettings: ParcelServiceSettings = ParcelServiceSettings()
 
     /**
      * Parcel service message handler
@@ -91,9 +82,6 @@ open class ParcelServiceV1 :
                 ?: throw DefaultProblem(
                 detail = "Missing data",
                 status = Response.Status.BAD_REQUEST)
-
-        if (doResetDeliveriesAfterReceive)
-            log.trace("Reset after Receive")
 
         log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
 
@@ -482,12 +470,5 @@ open class ParcelServiceV1 :
         return jpgFile.toPath()
 
     }
-
-    @get:Bean
-    open val doResetDeliveriesAfterReceive: Boolean
-        get() {
-            return this.parcelServiceSettings.resetDeliveriesAfterReceive
-        }
-
 }
 

@@ -1,6 +1,7 @@
 package org.deku.leoz.central.data
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.config.ParcelMessageServiceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
@@ -10,7 +11,6 @@ import org.deku.leoz.time.toDateWithoutTime
 import org.deku.leoz.time.toShortTime
 import org.deku.leoz.time.toString_ddMMyyyy_PointSeparated
 import org.jooq.DSLContext
-import org.json.simple.JSONObject
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
 import sx.time.toTimestamp
@@ -20,8 +20,8 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.json.Json
 import javax.json.JsonObject
-import javax.json.JsonObjectBuilder
-import javax.json.JsonReader
+import org.slf4j.LoggerFactory
+
 
 @Named
 open class ParcelProcessing {
@@ -39,12 +39,23 @@ open class ParcelProcessing {
     private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
 
     @Inject
+    private lateinit var parcelMessageServiceConfiguration: ParcelMessageServiceConfiguration
+
+    @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun processMessages(): Boolean {
         var result = true
+
+        if (parcelMessageServiceConfiguration.doSkipParcelProcessing) {
+            log.trace("Reset after Receive")
+            return result
+        }
+
         try {
 
             val events = messagesRepository.findUnprocessedMsg()
@@ -66,8 +77,6 @@ open class ParcelProcessing {
                 r.setTime(it.scanned)
                 r.poslat = it.latitude
                 r.poslong = it.longitude
-//MOB_B userid
-//MOB userid
                 r.infotext = "MOB " + (it.userId?.toString() ?: "")
 
                 val eventId = it.eventValue
@@ -122,33 +131,33 @@ open class ParcelProcessing {
                         }
                         val rDamaged = dslContext.newRecord(Tables.TBLSTATUS)
 
-                        rDamaged.packstuecknummer =r.packstuecknummer
-                        rDamaged.datum= r.datum
-                        rDamaged.zeit= r.zeit
-                        rDamaged.poslat= r.poslat
-                        rDamaged.poslong= r.poslong
-                        rDamaged.infotext= r.infotext
+                        rDamaged.packstuecknummer = r.packstuecknummer
+                        rDamaged.datum = r.datum
+                        rDamaged.zeit = r.zeit
+                        rDamaged.poslat = r.poslat
+                        rDamaged.poslong = r.poslong
+                        rDamaged.infotext = r.infotext
 
                         val damaged_eventId = Event.DELIVERY_FAIL.value
-                        val damaged_event = Event.values().find { d->d.value == damaged_eventId }!!
+                        val damaged_event = Event.values().find { d -> d.value == damaged_eventId }!!
                         rDamaged.kzStatuserzeuger = damaged_event.creator.toString()
                         rDamaged.kzStatus = damaged_event.concatId.toUInteger()
-                        rDamaged.timestamp2 =r.timestamp2
+                        rDamaged.timestamp2 = r.timestamp2
                         val damaged_reasonId = Reason.PARCEL_DAMAGED.id
                         val damaged_reason = Reason.values().find { it.id == damaged_reasonId }!!
                         rDamaged.fehlercode = damaged_reason.oldValue.toUInteger()
 
-                        rDamaged.erzeugerstation=r.erzeugerstation
+                        rDamaged.erzeugerstation = r.erzeugerstation
                         var damaged_existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 8, 31)
-                        if (!damaged_existStatus){
+                        if (!damaged_existStatus) {
                             parcelRepository.saveEvent(rDamaged)
                         }
                     }
                 }
 
                 val checkPictureFile = json?.containsKey("pictureFileUID") ?: false
-                if(checkPictureFile){
-                    val pictureUID=json?.getString("pictureFileUID")
+                if (checkPictureFile) {
+                    val pictureUID = json?.getString("pictureFileUID")
                 }
 
                 when (event) {
