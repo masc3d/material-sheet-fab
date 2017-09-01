@@ -18,6 +18,7 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.item_stop.*
@@ -475,7 +476,19 @@ class DeliveryStopProcessScreen :
                 }
 
         //region Dynamic sections
-        this.deliveryStop.damagedParcels
+
+        // Damaged parcels
+        Observable.combineLatest(
+                this.deliveryStop.damagedParcels,
+                // Also fire when selected section changes */
+                this.parcelListAdapter.selectedSectionProperty.filter {
+                    it.value != this.damagedSection
+                },
+
+                BiFunction { a: Any, b: Any ->
+                    this.deliveryStop.damagedParcels.blockingFirst()
+                }
+        )
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOnMainThread()
                 .subscribe {
