@@ -9,14 +9,12 @@ import android.util.DisplayMetrics
 import android.util.TypedValue
 
 /** Convert dp to pixels */
-fun Context.convertDpToPx(dp: Float): Int {
-    return (dp * this.resources.displayMetrics.density).toInt();
-}
+fun Context.convertDpToPx(dp: Float): Int =
+        (dp * this.resources.displayMetrics.density).toInt()
 
-fun Context.convertPxToDp(px: Int): Float {
-    return px / this.resources.displayMetrics.density;
-}
-
+/** Convert pixels to do */
+fun Context.convertPxToDp(px: Int): Float =
+        px / this.resources.displayMetrics.density
 
 /**
  * Scale bitmap to square image, cropping as needed
