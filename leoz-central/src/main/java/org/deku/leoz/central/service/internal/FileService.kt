@@ -107,9 +107,9 @@ class FileServiceV1 :
 
                 val meta = if (metaFileChannel.size() > 0) {
                     // Deserialize meta data
-                    metaFile.inputStream().use { stream ->
-                        serializer.deserialize(stream) as FileMeta
-                    }
+                    val buffer = ByteBuffer.allocate(metaFileChannel.size().toInt())
+                    metaFileChannel.read(buffer, 0)
+                    serializer.deserializeFrom(buffer.array()) as FileMeta
                 } else {
                     // Create new meta structure
                     FileMeta(total = total)
@@ -137,9 +137,8 @@ class FileServiceV1 :
 
                     // Serialize meta back to file (if necessary)
                     if (!isFileComplete) {
-                        metaFile.outputStream().use { stream ->
-                            serializer.serialize(stream, meta)
-                        }
+                        metaFileChannel.position(0)
+                        metaFileChannel.write(ByteBuffer.wrap(serializer.serializeToByteArray(meta)))
                     }
                 }
             }
