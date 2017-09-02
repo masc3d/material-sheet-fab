@@ -125,8 +125,6 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         }
 
         this.torchEnabled = false
-
-        this.uxCameraView.start()
     }
 
     override fun onDestroyView() {
@@ -202,6 +200,8 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                         }
                     }
                 }
+
+        this.uxCameraView.start()
     }
 
     private fun showCaptureActions() {

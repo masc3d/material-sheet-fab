@@ -13,6 +13,7 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.auth.ApiKey
 import java.io.File
+import java.io.FileOutputStream
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.channels.Channels
@@ -74,11 +75,9 @@ class FileServiceV1 :
         val total = message.total ?:
                 throw IllegalArgumentException("File UID must not be null")
 
-        val chunkSize = message.chunkSize ?:
-                throw IllegalArgumentException("Chunk size must not be null")
-
-        val totalSize = message.totalSize ?:
-                throw IllegalArgumentException("Total size must not be null")
+        // Arguments which are optional for backward compatibility
+        val chunkSize = message.chunkSize
+        val totalSize = message.totalSize
 
         // File names/extensions
 
@@ -107,9 +106,9 @@ class FileServiceV1 :
 
                 val meta = if (metaFileChannel.size() > 0) {
                     // Deserialize meta data
-                    metaFile.inputStream().use { stream ->
-                        serializer.deserialize(stream) as FileMeta
-                    }
+                    val buffer = ByteBuffer.allocate(metaFileChannel.size().toInt())
+                    metaFileChannel.read(buffer, 0)
+                    serializer.deserializeFrom(buffer.array()) as FileMeta
                 } else {
                     // Create new meta structure
                     FileMeta(total = total)
@@ -117,31 +116,43 @@ class FileServiceV1 :
 
                 val isNewFile = tempFile.exists()
 
-                // Use random access file, allowing creation of fixed size file and writing to specific positions
-                RandomAccessFile(tempFile, "rw").use { tempRaFile ->
-                    if (isNewFile) {
-                        // Create file with fixed total size initially
-                        tempRaFile.setLength(totalSize.toLong())
-                    }
+                when {
+                    chunkSize != null && totalSize != null -> {
+                        // Use random access file, allowing creation of fixed size file and writing to specific positions
+                        RandomAccessFile(tempFile, "rw").use { tempRaFile ->
+                            if (isNewFile) {
+                                // Create file with fixed total size initially
+                                tempRaFile.setLength(totalSize.toLong())
+                            }
 
-                    // Write chunk to file
-                    tempRaFile.channel.use { tempFileChannel ->
-                        tempFileChannel.position(index.toLong() * chunkSize)
-                        tempFileChannel.write(ByteBuffer.wrap(payload))
-                    }
+                            // Write chunk to file
+                            tempRaFile.channel.use { tempFileChannel ->
+                                tempFileChannel.position(index.toLong() * chunkSize)
+                                tempFileChannel.write(ByteBuffer.wrap(payload))
+                            }
 
-                    // Update meta
-                    meta.parts = meta.parts.plus(index)
+                            // Update meta
+                            meta.parts = meta.parts.plus(index)
 
-                    isFileComplete = meta.total == meta.parts.size
+                            isFileComplete = meta.total == meta.parts.size
 
-                    // Serialize meta back to file (if necessary)
-                    if (!isFileComplete) {
-                        metaFile.outputStream().use { stream ->
-                            serializer.serialize(stream, meta)
+                            // Serialize meta back to file (if necessary)
+                            if (!isFileComplete) {
+                                metaFileChannel.truncate(0)
+                                metaFileChannel.write(ByteBuffer.wrap(serializer.serializeToByteArray(meta)))
+                            }
                         }
                     }
+                    else -> {
+                        // Legacy support for older clients, which are not providing chunkSize & totalSize
+                        FileOutputStream(tempFile, true).use { stream ->
+                            stream.write(payload)
+                        }
+
+                        isFileComplete = index == (total - 1)
+                    }
                 }
+
             }
         }
 

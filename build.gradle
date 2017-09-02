@@ -15,6 +15,7 @@ import sx.ProcessExecutor
 import sx.ProcessExecutor.ProcessRunException
 import sx.packager.BundleRepository
 import sx.platform.PlatformId
+import sx.platform.OperatingSystem
 import sx.rsync.Rsync
 import sx.ssh.SshHost
 import sx.ssh.SshTunnelProvider
@@ -217,6 +218,34 @@ subprojects {
                     if (Files.exists(dst)) dst.deleteDir()
                     g_vm_dist_path.mkdirs()
                     Files.move(src, dst)
+                }
+            }
+        }
+    }
+
+    plugins.withType(ApplicationPlugin).whenPluginAdded {
+        // Workaround for windows path limit (CreateProcess error 206)
+        if (PlatformId.current().operatingSystem == OperatingSystem.WINDOWS) {
+            task pathingJar(type: Jar) {
+                dependsOn configurations.runtime
+                appendix = 'pathing'
+
+                doFirst {
+                    manifest {
+                        // Build the Class-Path for absolute paths based on runtime dependencies.
+                        attributes "Class-Path": configurations.runtime.files.collect {
+                            it.toURL().toString().replaceFirst(/file:\/+/, '/')
+                        }.join(' ')
+                    }
+                }
+            }
+
+            // Do the same for like for bootRun for the run task executable by `gradle run`.
+            run {
+                dependsOn pathingJar
+                doFirst {
+                    classpath = files(sourceSets.main.output.classesDirs
+                            .plus(pathingJar.archivePath))
                 }
             }
         }
