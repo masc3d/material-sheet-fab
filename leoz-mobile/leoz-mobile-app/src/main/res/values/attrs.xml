@@ -3,5 +3,6 @@
     <declare-styleable name="ServicesView">
         <attr name="imageSize" format="dimension" />
         <attr name="imageMargin" format="dimension" />
+        <attr name="imageTint" format="color" />
     </declare-styleable>
 </resources>

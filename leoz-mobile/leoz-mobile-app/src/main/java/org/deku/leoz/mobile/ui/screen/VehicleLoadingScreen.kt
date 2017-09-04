@@ -135,7 +135,7 @@ class VehicleLoadingScreen :
     val loadedSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_truck,
-                color = R.color.colorGreen,
+                color = android.R.color.black,
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.loaded).toString(),
                 items = this.deliveryList.loadedParcels.map { it.value }
@@ -145,7 +145,7 @@ class VehicleLoadingScreen :
     val damagedSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_damaged,
-                color = R.color.colorAccent,
+                color = android.R.color.black,
                 background = R.drawable.section_background_accent,
                 title = this.getString(R.string.event_reason_damaged),
                 items = this.deliveryList.damagedParcels.map { it.value }
@@ -155,7 +155,6 @@ class VehicleLoadingScreen :
     val pendingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
-                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
@@ -167,7 +166,6 @@ class VehicleLoadingScreen :
     val missingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_missing,
-                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
@@ -390,7 +388,11 @@ class VehicleLoadingScreen :
                 .subscribe {
                     val section = it.value
 
-                    this.accentColor = section?.color ?: R.color.colorGrey
+                    this.accentColor = when(section) {
+                        loadedSection -> R.color.colorGreen
+                        damagedSection -> R.color.colorAccent
+                        else -> R.color.colorGrey
+                    }
 
                     when (section) {
                         this.loadedSection -> {

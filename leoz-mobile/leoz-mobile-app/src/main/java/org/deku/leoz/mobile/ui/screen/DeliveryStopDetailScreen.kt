@@ -133,7 +133,6 @@ class DeliveryStopDetailScreen
 
         val serviceSection = SectionViewModel<Any>(
                 icon = R.drawable.ic_service,
-                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 title = this.getText(R.string.services).toString(),
                 items = Observable.fromIterable(listOf(services)))
@@ -169,7 +168,6 @@ class DeliveryStopDetailScreen
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
                                 icon = R.drawable.ic_order,
-                                color = R.color.colorGrey,
                                 background = R.drawable.section_background_grey,
                                 title = this.getText(R.string.orders).toString(),
                                 items = Observable.fromIterable(listOf(orders))
@@ -195,7 +193,6 @@ class DeliveryStopDetailScreen
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
                                 icon = R.drawable.ic_package_variant_closed,
-                                color = R.color.colorGrey,
                                 background = R.drawable.section_background_grey,
                                 title = this.getText(R.string.parcels).toString(),
                                 items = Observable.fromIterable(listOf(parcels))

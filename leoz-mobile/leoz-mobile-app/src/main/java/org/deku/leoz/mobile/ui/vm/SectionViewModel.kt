@@ -1,8 +1,15 @@
 package org.deku.leoz.mobile.ui.vm
 
+import android.content.Context
 import android.databinding.BaseObservable
+import android.graphics.Color
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
+import android.support.v4.content.ContextCompat
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.ParcelEntity
@@ -17,7 +24,7 @@ import sx.android.databinding.toField
  */
 open class SectionViewModel<T>(
         @DrawableRes val icon: Int = R.drawable.ic_truck,
-        @ColorRes val color: Int = R.color.colorAccent,
+        @ColorRes val color: Int = R.color.colorGrey,
         @DrawableRes val background: Int = R.drawable.section_background_accent,
         val title: String,
         val showIfEmpty: Boolean = true,
@@ -26,5 +33,9 @@ open class SectionViewModel<T>(
 )
     : BaseObservable() {
 
+    private val context: Context by Kodein.global.lazy.instance()
+
     val amountText = items.map { it.count().toString() }.toField()
+
+    val colorInt: Int by lazy { ContextCompat.getColor(context, color) }
 }

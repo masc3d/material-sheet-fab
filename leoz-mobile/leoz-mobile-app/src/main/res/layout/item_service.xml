@@ -35,9 +35,9 @@
                     android:layout_width="@dimen/icon_size"
                     android:layout_height="@dimen/icon_size"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/margin"
+                    android:layout_marginEnd="@dimen/medium_margin"
                     android:src="@{service.icon, default=@drawable/ic_service}"
-                    android:tint="@color/colorGrey"
+                    android:tint="@color/colorService"
                     />
 
                 <TextView
