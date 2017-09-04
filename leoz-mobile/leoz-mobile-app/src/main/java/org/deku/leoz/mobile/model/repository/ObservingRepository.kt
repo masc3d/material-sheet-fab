@@ -18,7 +18,7 @@ abstract class ObservingRepository<E : Persistable>(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val query = ObservableQuery<E>(
-            name = "Reposiotry [${entityType.java.simpleName}]",
+            name = "Repository [${entityType.java.simpleName}]",
             query = store.select(this.entityType).get()
     )
 
