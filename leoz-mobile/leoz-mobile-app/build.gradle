@@ -272,7 +272,7 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
-            'com.github.pwittchen:reactivenetwork-rx2:0.12.0',
+            'com.github.pwittchen:reactivenetwork-rx2:0.12.1',
 
             // Android (multipart) upload service
             'net.gotev:uploadservice:3.4',
