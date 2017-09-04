@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
@@ -78,7 +77,7 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
-import sx.android.view.setIconTint
+import sx.android.view.setIconTintRes
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
 import java.util.*
@@ -606,12 +605,12 @@ open class Activity : BaseActivity(),
                         when (value) {
                             true -> {
                                 if (it.id == R.id.action_aidc_camera)
-                                    it.setIconTint(R.color.colorAccent)
+                                    it.setIconTintRes(R.color.colorAccent)
 
                                 it.alpha = 0.6F
                             }
                             false -> {
-                                it.setIconTint(AIDC_ACTION_ITEM_TINT)
+                                it.setIconTintRes(AIDC_ACTION_ITEM_TINT)
                                 it.alpha = this.uxActionOverlay.buttonAlpha
                             }
                         }

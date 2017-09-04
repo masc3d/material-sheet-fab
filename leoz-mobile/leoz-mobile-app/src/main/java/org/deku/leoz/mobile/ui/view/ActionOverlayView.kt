@@ -23,7 +23,6 @@ import com.gordonwong.materialsheetfab.MaterialSheetFab
 import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_actionoverlay.view.*
 import kotlinx.android.synthetic.main.view_actionoverlay_sheet.view.*
@@ -32,8 +31,8 @@ import org.jetbrains.anko.itemsSequence
 import org.jetbrains.anko.layoutInflater
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
-import sx.android.view.setBackgroundTint
-import sx.android.view.setIconTint
+import sx.android.view.setBackgroundTintRes
+import sx.android.view.setIconTintRes
 import java.util.concurrent.TimeUnit
 
 /**
@@ -362,14 +361,14 @@ class ActionOverlayView : RelativeLayout {
                         fab.id = item.id
 
                         item.colorRes?.also {
-                            fab.setBackgroundTint(it)
+                            fab.setBackgroundTintRes(it)
                         }
 
                         if (item.iconRes != null)
                             fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
 
                         item.iconTintRes?.also {
-                            fab.setIconTint(it)
+                            fab.setIconTintRes(it)
                         }
 
                         fab.alpha = item.alpha ?: this.buttonAlpha
