@@ -29,10 +29,6 @@ class StopViewModel(
 
     val address = AddressViewModel(stop.address)
 
-    val addressLine2Visibility by lazy {
-        if (this.address.line2.length > 0) View.VISIBLE else View.GONE
-    }
-
     val appointmentFrom: String
         get() = simpleDateFormat.format(stop.dateStart)
 

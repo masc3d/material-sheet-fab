@@ -231,6 +231,7 @@ class DeliveryStopDetailScreen
                         id = R.id.action_call,
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_phone,
+                        visible = !this.stop.address.phone.isBlank(),
                         alignEnd = false
                 ),
                 ActionItem(

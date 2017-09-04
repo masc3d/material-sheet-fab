@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
+import android.view.View
 import org.deku.leoz.mobile.model.entity.Address
 import org.deku.leoz.mobile.model.entity.address
 
@@ -21,4 +22,10 @@ class AddressViewModel(val address: Address) : BaseObservable() {
 
     val city: String
         get() = "${this.address.zipCode} ${this.address.city}"
+
+    val hasAddressLine2
+        get() = !this.address.line2.isBlank()
+
+    val hasPhoneNumber
+        get() = !this.address.phone.isBlank()
 }

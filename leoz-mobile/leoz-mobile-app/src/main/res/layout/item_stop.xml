@@ -235,7 +235,7 @@
                         android:layout_marginBottom="@dimen/medium_margin"
                         android:text="@{stop.address.line2, default = `Address Line 2`}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                        android:visibility="@{stop.addressLine2Visibility}"
+                        android:visibility="@{stop.address.hasAddressLine2 ? View.VISIBLE : View.GONE}"
                         />
 
                     <TextView
@@ -250,11 +250,26 @@
                         android:id="@+id/uxCity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/small_margin"
                         android:text="@{stop.address.city, default = `City`}"
                         android:textAlignment="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    >
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_small"
+                        android:layout_height="@dimen/icon_size_small"
+                        android:layout_gravity="center_vertical"
+                        android:visibility="@{stop.address.hasPhoneNumber ? View.VISIBLE : View.GONE}"
+                        android:src="@drawable/ic_phone"
+                        android:tint="@color/colorGrey"/>
 
                 </LinearLayout>
 
