@@ -29,12 +29,18 @@ import java.util.zip.ZipFile
 
 /**
  * Application/APK update service
+ * @param executorService Executor service to use
+ * @property bundleName Bundle name
+ * @property versionAlias Bundle version alias override
+ * @property identity This node's identity
+ * @param period Update period interval
+ * @param restClientProxy Feign client proxy to use
  * Created by masc on 10/02/2017.
  */
 class UpdateService(
         executorService: ScheduledExecutorService,
         val bundleName: String,
-        val versionAlias: String,
+        val versionAlias: String? = null,
         val identity: Identity,
         period: Duration,
         private val restClientProxy: FeignClientProxy
@@ -64,9 +70,8 @@ class UpdateService(
             }
         }
 
-        override fun toString(): String {
-            return "${bundleName}-${version}.apk"
-        }
+        override fun toString(): String
+                = "${bundleName}-${version}.apk"
     }
 
     private val storage: Storage by Kodein.global.lazy.instance()
@@ -113,7 +118,7 @@ class UpdateService(
     }
 
     override fun run() {
-        log.info("Update cycle")
+        log.info("Update cycle [${bundleName}] version alias [${this.versionAlias}] node uid [${this.identity.shortUid}]")
 
         try {
             val bundleService = this.restClientProxy.create(BundleServiceV2::class.java)
@@ -144,7 +149,7 @@ class UpdateService(
             }
 
             if (updateInfo.latestDesignatedVersion == null) {
-                log.warn("Remote repository doesn't have a designated version for alias [${versionAlias}] pattern [${updateInfo.bundleVersionPattern}]")
+                log.warn("Remote repository doesn't have a designated version for node [${identity.shortUid}] alias [${versionAlias}] pattern [${updateInfo.bundleVersionPattern}]")
                 return
             }
 

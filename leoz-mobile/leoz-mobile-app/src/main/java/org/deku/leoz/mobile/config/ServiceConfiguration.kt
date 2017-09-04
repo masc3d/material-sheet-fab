@@ -44,7 +44,7 @@ class ServiceConfiguration {
                 class Settings(private val map: ConfigurationMap) {
                     val enabled: Boolean by map.value(true)
                     val bundleName: String by map.value("")
-                    val versionAlias: String by map.value("")
+                    val versionAlias: String? by map.value<String?>(null)
                     val force: Boolean by map.value(false)
                     val period: Int by map.value(3600)
 
