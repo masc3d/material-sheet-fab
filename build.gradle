@@ -107,6 +107,10 @@ dependencies {
             "com.trello.rxlifecycle2:rxlifecycle-android:$v_rxlifecycle",
             "com.jakewharton.rxbinding2:rxbinding:2.0.0",
 
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
+
             // JavaMail
             "com.sun.mail:android-mail:$v_javamail",
             "com.sun.mail:android-activation:$v_javamail",
