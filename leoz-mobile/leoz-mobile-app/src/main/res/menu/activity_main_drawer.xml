@@ -7,11 +7,6 @@
         android:id="@+id/nav_group_1"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_delivery"
-            android:icon="@drawable/ic_truck_delivery"
-            android:title="@string/delivery"
-            android:visible="false"/>
-        <item
             android:id="@+id/nav_dev_prototype"
             android:icon="@drawable/ic_dev"
             android:title="@string/prototype"

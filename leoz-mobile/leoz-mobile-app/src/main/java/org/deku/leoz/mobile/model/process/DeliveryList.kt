@@ -40,20 +40,14 @@ class DeliveryList : CompositeDisposableSupplier {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val db: Database by Kodein.global.lazy.instance()
+
+    // Services
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
     private val orderService: OrderService by Kodein.global.lazy.instance()
-    private val locationCache: LocationCache by Kodein.global.lazy.instance()
 
-    //region Repositories
+    // Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
-    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
-    //endregion
-
-    private val identity: Identity by Kodein.global.lazy.instance()
-    private val login: Login by Kodein.global.lazy.instance()
-
-    private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
 
     //region Self-observing queries
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
@@ -123,53 +117,6 @@ class DeliveryList : CompositeDisposableSupplier {
      * Missing parcels
      */
     val missingParcels = missingParcelsQuery.result
-
-    /**
-     * Stops with loaded parcels
-     */
-    val stops = loadedParcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct() }
-            .behave(this)
-
-    //region Counters
-    val orderTotalAmount = orderRepository.entitiesProperty.map { it.value.count() }
-            .distinctUntilChanged()
-            .behave(this)
-
-    val stopTotalAmount = stopRepository.entitiesProperty.map { it.value.count() }
-            .distinctUntilChanged()
-            .behave(this)
-
-    val parcelTotalAmount = parcelRepository.entitiesProperty.map { it.value.count() }
-            .distinctUntilChanged()
-            .behave(this)
-
-    val totalWeight = parcelRepository.entitiesProperty.map { it.value.sumByDouble { it.weight } }
-            .distinctUntilChanged()
-            .behave(this)
-
-    val orderAmount = loadedParcels.map { it.value.map { it.order }.distinct().count() }
-            .distinctUntilChanged()
-            .behave(this)
-
-    val parcelAmount = loadedParcels.map { it.value.count() }
-            .distinctUntilChanged()
-            .behave(this)
-
-    val stopAmount = this.stops.map { it.count() }
-            .distinctUntilChanged()
-            .behave(this)
-
-    val weight = loadedParcels.map { it.value.sumByDouble { it.weight } }
-            .distinctUntilChanged()
-            .behave(this)
-    //endregion
-
-    val allowedEvents: List<EventNotDeliveredReason> by lazy {
-        listOf(
-                EventNotDeliveredReason.DAMAGED
-                //TODO "Missing" reason is not present yet
-        )
-    }
 
     /**
      * Extension method for filtering distinct service orders
@@ -314,88 +261,6 @@ class DeliveryList : CompositeDisposableSupplier {
             }
         }
                 .toCompletable()
-                .subscribeOn(Schedulers.computation())
-    }
-
-    /**
-     * Finalizes the loading process, marking all parcels with pending loading state as missing
-     */
-    fun finalize(): Completable {
-        return db.store.withTransaction {
-            // Set all pending parcels to MISSING
-            val pendingParcels = parcelRepository.entities.filter { it.state == Parcel.State.PENDING }
-
-            pendingParcels.forEach {
-                it.state = Parcel.State.MISSING
-                update(it)
-            }
-
-            // Set all stops which contain LOADED parcels to PENDING
-            val stopsWithLoadedParcels = parcelRepository.entities
-                    .filter { it.state == Parcel.State.LOADED }
-                    .flatMap { it.order.tasks.mapNotNull { it.stop } }
-                    .filter { it.state != Stop.State.CLOSED }
-                    .distinct()
-
-            stopsWithLoadedParcels.forEach {
-                it.state = Stop.State.PENDING
-                update(it)
-            }
-
-            // Reset state for remaining stops
-            stopRepository.entities
-                    .subtract(stopsWithLoadedParcels)
-                    .filter { it.state != Stop.State.CLOSED }
-                    .forEach {
-                        it.state = Stop.State.NONE
-                        update(it)
-                    }
-        }
-                .toCompletable()
-                .concatWith(Completable.fromCallable {
-                    // Select parcels for which to send status events
-                    val parcels = parcelRepository.entities.filter {
-                        it.state == Parcel.State.LOADED ||
-                                it.state == Parcel.State.MISSING
-                    }
-
-                    val lastLocation = this@DeliveryList.locationCache.lastLocation
-
-                    // TODO: unify parcel message send, as this is replicated eg., in DeliveryStop
-                    // Send compound parcel message with loading states
-                    mqttChannels.central.main.channel().send(
-                            ParcelServiceV1.ParcelMessage(
-                                    userId = this.login.authenticatedUser?.id,
-                                    nodeId = this.identity.uid.value,
-                                    events = parcels.map {
-                                        ParcelServiceV1.Event(
-                                                event = when {
-                                                    it.state == Parcel.State.LOADED -> Event.IN_DELIVERY.value
-                                                    it.state == Parcel.State.MISSING -> Event.NOT_IN_DELIVERY.value
-                                                    else -> Event.DELIVERY_FAIL.value
-                                                },
-                                                reason = Reason.NORMAL.id,
-                                                parcelId = it.id,
-                                                latitude = lastLocation?.latitude,
-                                                longitude = lastLocation?.longitude,
-                                                damagedInfo = when {
-                                                    it.isDamaged -> {
-                                                        ParcelServiceV1.Event.DamagedInfo(
-                                                                pictureFileUids = it.meta
-                                                                        .filterValuesByType(Parcel.DamagedInfo::class.java)
-                                                                        .mapNotNull {
-                                                                            it.pictureFileUid
-                                                                        }
-                                                                        .toTypedArray()
-                                                        )
-                                                    }
-                                                    else -> null
-                                                }
-                                        )
-                                    }.toTypedArray()
-                            )
-                    )
-                })
                 .subscribeOn(Schedulers.computation())
     }
 }

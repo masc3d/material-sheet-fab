@@ -72,7 +72,7 @@
     <string name="error_imager_scan_failed">Unvollständiger oder fehlerhafter Scan</string>
     <string name="error_incorrect_password">Das Passwort ist falsch</string>
     <string name="error_invalid_barcode">Ungültiger barcode</string>
-    <string name="error_invalid_credentials">Email &amp; Passwort Kombination konnte nicht gefunden werden.</string>
+    <string name="error_invalid_credentials">Email/Passwort Kombination konnte nicht gefunden werden.</string>
     <string name="error_invalid_delivery_list">Ungültige Rollkarte</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
     <string name="error_invalid_parcel">Ungültiges Paket</string>
@@ -241,9 +241,9 @@
 
     <string name="user">Benutzer:</string>
 
-    <string name="vehicle_loading">Fahrzeugbeladung</string>
+    <string name="vehicle_loading">Beladung</string>
     <string name="vehicle_loading_finalize_dialog">Alle ausstehenden Pakete werden als fehlend markiert.</string>
-    <string name="vehicle_loading_finalize_dialog_title">Fahrzeugbeladung abgeschlossen?</string>
+    <string name="vehicle_loading_finalize_dialog_title">Beladung abgeschlossen?</string>
     <string name="vehicle_loading_unload_parcel_dialog">Paket entladen?</string>
     <string name="vehicle_loading_unload_parcel_dialog_title">Paket wurde beladen</string>
 
@@ -257,4 +257,9 @@
     <string name="dialog_content_outdated_orders">Aufträge sind veraltet. Um fortzufahren müssen alle Daten gelöscht werden.</string>
     <string name="error_unknown_parcel">Unbekanntes Paket</string>
     <string name="cash_not_sufficient">Betrag nicht ausreichend</string>
+    <string name="unloaded">Entladen</string>
+    <string name="vehicle_unloading">Entladung</string>
+    <string name="vehicle_unloading_finalize_dialog_title">Entladung abgeschlossen?</string>
+    <string name="vehicle_unloading_finalize_dialog">Alle ausstehenden Pakete werden als fehlend markiert</string>
+    <string name="tour">Tour</string>
 </resources>

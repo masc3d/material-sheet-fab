@@ -11,45 +11,33 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
-import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
-import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.screen_vehicleloading.*
+import kotlinx.android.synthetic.main.screen_vehicleunloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
+import org.deku.leoz.mobile.databinding.ScreenVehicleunloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.entity.ParcelMeta
-import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.process.DeliveryList
-import org.deku.leoz.mobile.model.process.VehicleLoading
+import org.deku.leoz.mobile.model.process.VehicleUnloading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
-import org.deku.leoz.mobile.mq.MimeType
-import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.mobile.mq.sendFile
-import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.composeAsRest
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.mobile.ui.vm.SectionsAdapter
-import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.assertAny
-import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
@@ -62,23 +50,18 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
-import sx.mq.mqtt.channel
 import java.util.concurrent.ExecutorService
 
 /**
- * Vehicle loading screen
+ * Vehicle unloading screen
  */
-class VehicleLoadingScreen :
+class VehicleUnloadingScreen :
         ScreenFragment<Any>(),
         BaseCameraScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    companion object {
-        val SUPPORT_UNLOAD_ON_SCAN = false
-    }
-
     interface Listener {
-        fun onVehicleLoadingFinalized()
+        fun onVehicleUnloadingFinalized()
     }
 
     val listener by lazy { this.activity as? Listener }
@@ -87,31 +70,19 @@ class VehicleLoadingScreen :
      * Created by masc on 10.07.17.
      */
     class StatsViewModel(
-            val vehicleLoading: VehicleLoading
+            val vehicleUnloading: VehicleUnloading
     ) : BaseObservable() {
-
-        val stopCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_stop,
-                amount = this.vehicleLoading.stopAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.stopTotalAmount.map { it.toString() }.toField()
-        )
-
-        val orderCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_order,
-                amount = this.vehicleLoading.orderAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.orderTotalAmount.map { it.toString() }.toField()
-        )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_variant_closed,
-                amount = this.vehicleLoading.parcelAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.parcelTotalAmount.map { it.toString() }.toField()
+                amount = this.vehicleUnloading.parcelAmount.map { it.toString() }.toField(),
+                totalAmount = this.vehicleUnloading.parcelTotalAmount.map { it.toString() }.toField()
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_weight_scale,
-                amount = this.vehicleLoading.weight.map { "${it.format(2)}kg" }.toField(),
-                totalAmount = this.vehicleLoading.totalWeight.map { "${it.format(2)}kg" }.toField()
+                amount = this.vehicleUnloading.weight.map { "${it.format(2)}kg" }.toField(),
+                totalAmount = this.vehicleUnloading.totalWeight.map { "${it.format(2)}kg" }.toField()
         )
     }
 
@@ -129,19 +100,19 @@ class VehicleLoadingScreen :
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
 
-    private val vehicleLoading: VehicleLoading by Kodein.global.lazy.instance()
+    private val vehicleUnloading: VehicleUnloading by Kodein.global.lazy.instance()
 
     /** The current/most recently selected damaged parcel */
     private var currentDamagedParcel: ParcelEntity? = null
 
     // region Sections
-    val loadedSection by lazy {
+    val unloadedSection by lazy {
         SectionViewModel<ParcelEntity>(
-                icon = R.drawable.ic_truck_loading,
+                icon = R.drawable.ic_truck_unloading,
                 color = android.R.color.black,
                 background = R.drawable.section_background_green,
-                title = this.getText(R.string.loaded).toString(),
-                items = this.deliveryList.loadedParcels.map { it.value }
+                title = this.getText(R.string.unloaded).toString(),
+                items = this.deliveryList.pendingParcels.map { it.value }
         )
     }
 
@@ -162,7 +133,7 @@ class VehicleLoadingScreen :
                 showIfEmpty = false,
                 expandOnSelection = true,
                 title = getString(R.string.pending),
-                items = this.deliveryList.pendingParcels.map { it.value }
+                items = this.deliveryList.loadedParcels.map { it.value }
         )
     }
 
@@ -204,7 +175,7 @@ class VehicleLoadingScreen :
         val adapter = SectionsAdapter()
 
         adapter.addSection(
-                sectionVmItemProvider = { this.loadedSection.toFlexibleItem() },
+                sectionVmItemProvider = { this.unloadedSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
@@ -230,7 +201,7 @@ class VehicleLoadingScreen :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.title = this.getText(R.string.vehicle_loading).toString()
+        this.title = this.getText(R.string.vehicle_unloading).toString()
         this.headerImage = R.drawable.img_parcels_1a
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
 
@@ -241,13 +212,13 @@ class VehicleLoadingScreen :
                               container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
 
-        val binding: ScreenVehicleloadingBinding = DataBindingUtil.inflate(
+        val binding: ScreenVehicleunloadingBinding = DataBindingUtil.inflate(
                 inflater,
-                R.layout.screen_vehicleloading,
+                R.layout.screen_vehicleunloading,
                 container, false)
 
         // Setup bindings
-        binding.stats = StatsViewModel(this.vehicleLoading)
+        binding.stats = StatsViewModel(this.vehicleUnloading)
 
         return binding.root
     }
@@ -258,9 +229,9 @@ class VehicleLoadingScreen :
         this.uxRecyclerView.adapter = parcelListAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        this.menu = this.inflateMenu(R.menu.menu_vehicleloading).also {
+        this.menu = this.inflateMenu(R.menu.menu_vehicleunloading).also {
             if (this.debugSettings.enabled) {
-                it.add(0, R.id.action_vehicle_loading_dev_mark_all_loaded, 0, "Mark all as loaded").also {
+                it.add(0, R.id.action_vehicle_unloading_dev_mark_all_unloaded, 0, "Mark all as unloaded").also {
                     it.setIcon(R.drawable.ic_dev)
                 }
             }
@@ -268,19 +239,19 @@ class VehicleLoadingScreen :
 
         this.actionItems = listOf(
                 ActionItem(
-                        id = R.id.action_vehicle_loading_finished,
+                        id = R.id.action_vehicle_unloading_finished,
                         colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_finish,
                         iconTintRes = android.R.color.white
                 ),
                 ActionItem(
-                        id = R.id.action_vehicle_loading_load,
+                        id = R.id.action_vehicle_unloading_unload,
                         colorRes = R.color.colorGreen,
-                        iconRes = R.drawable.ic_truck_loading,
+                        iconRes = R.drawable.ic_truck_unloading,
                         visible = false
                 ),
                 ActionItem(
-                        id = R.id.action_vehicle_loading_damaged,
+                        id = R.id.action_vehicle_unloading_damaged,
                         colorRes = R.color.colorAccent,
                         iconRes = R.drawable.ic_damaged,
                         visible = true
@@ -330,7 +301,7 @@ class VehicleLoadingScreen :
                                     .subscribe()
                         }
 
-                        R.id.action_vehicle_loading_dev_mark_all_loaded -> {
+                        R.id.action_vehicle_unloading_dev_mark_all_unloaded -> {
                             db.store.withTransaction {
                                 select(ParcelEntity::class)
                                         .where(ParcelEntity.STATE.eq(Parcel.State.PENDING))
@@ -350,27 +321,27 @@ class VehicleLoadingScreen :
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it) {
-                        R.id.action_vehicle_loading_damaged -> {
+                        R.id.action_vehicle_unloading_damaged -> {
                             this.parcelListAdapter.selectedSection = this.damagedSection
                         }
 
-                        R.id.action_vehicle_loading_load -> {
-                            this.parcelListAdapter.selectedSection = this.loadedSection
+                        R.id.action_vehicle_unloading_unload -> {
+                            this.parcelListAdapter.selectedSection = this.unloadedSection
                         }
 
-                        R.id.action_vehicle_loading_finished -> {
+                        R.id.action_vehicle_unloading_finished -> {
                             MaterialDialog.Builder(context)
-                                    .title(R.string.vehicle_loading_finalize_dialog_title)
-                                    .content(R.string.vehicle_loading_finalize_dialog)
+                                    .title(R.string.vehicle_unloading_finalize_dialog_title)
+                                    .content(R.string.vehicle_unloading_finalize_dialog)
                                     .negativeText(R.string.no_go_back)
-                                    .positiveText(R.string.yes_start_tour)
+                                    .positiveText(android.R.string.yes)
                                     .onPositive { _, _ ->
-                                        this.vehicleLoading
+                                        this.vehicleUnloading
                                                 .finalize()
                                                 .observeOnMainThread()
                                                 .subscribeBy(
                                                         onComplete = {
-                                                            this.listener?.onVehicleLoadingFinalized()
+                                                            this.listener?.onVehicleUnloadingFinalized()
                                                         },
                                                         onError = {
                                                             log.error(it.message, it)
@@ -385,34 +356,34 @@ class VehicleLoadingScreen :
                 }
         //endregion
 
-        this.parcelListAdapter.selectedSection = this.loadedSection
+        this.parcelListAdapter.selectedSection = this.unloadedSection
         this.parcelListAdapter.selectedSectionProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     val section = it.value
 
-                    this.accentColor = when(section) {
-                        loadedSection -> R.color.colorGreen
+                    this.accentColor = when (section) {
+                        unloadedSection -> R.color.colorGreen
                         damagedSection -> R.color.colorAccent
                         else -> R.color.colorGrey
                     }
 
                     when (section) {
-                        this.loadedSection -> {
+                        this.unloadedSection -> {
                             this.actionItems = this.actionItems.apply {
-                                first { it.id == R.id.action_vehicle_loading_load }
+                                first { it.id == R.id.action_vehicle_unloading_unload }
                                         .visible = false
 
-                                first { it.id == R.id.action_vehicle_loading_damaged }
+                                first { it.id == R.id.action_vehicle_unloading_damaged }
                                         .visible = true
                             }
                         }
                         else -> {
                             this.actionItems = this.actionItems.apply {
-                                first { it.id == R.id.action_vehicle_loading_load }
+                                first { it.id == R.id.action_vehicle_unloading_unload }
                                         .visible = true
 
-                                first { it.id == R.id.action_vehicle_loading_damaged }
+                                first { it.id == R.id.action_vehicle_unloading_damaged }
                                         .visible = false
                             }
                         }
@@ -436,40 +407,10 @@ class VehicleLoadingScreen :
                         )
                     }
 
-            // Synthetic inputs for delivery lists, retrieved via online service
-            val ovDeliveryLists = Observable.fromCallable {
-                this.deliveryListService.get(ShortDate("2017-08-10"))
-            }
-                    .toHotIoObservable()
-                    .composeAsRest(this.activity)
-                    .doOnError {
-                        log.error(it.message, it)
-                    }
-                    .map {
-                        SyntheticInput(
-                                name = "Delivery lists",
-                                entries = it.map {
-                                    SyntheticInput.Entry(
-                                            symbologyType = SymbologyType.Interleaved25,
-                                            data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
-                                    )
-                                }
-                        )
-                    }
-                    .onErrorResumeNext(Observable.empty())
-
-            // Final synthetic inputs observable
-            Observable.combineLatest(
-                    ovParcels,
-                    ovDeliveryLists,
-
-                    BiFunction { a: SyntheticInput, b: SyntheticInput ->
-                        listOf<SyntheticInput>(a, b)
-                    }
-            )
+            ovParcels
                     .bindUntilEvent(this, FragmentEvent.PAUSE)
                     .subscribe {
-                        this.syntheticInputs = it
+                        this.syntheticInputs = listOf(it)
                     }
 
         }
@@ -487,9 +428,7 @@ class VehicleLoadingScreen :
                                     UnitNumber.Type.Parcel,
                                     UnitNumber.Type.Bag)
                 },
-                Observable.fromCallable {
-                    DekuDeliveryListNumber.parseLabel(event.data)
-                }
+                Observable.empty()
         )
                 .takeUntil { !it.hasError }
                 .last(Result(error = IllegalArgumentException("Invalid barcode")))
@@ -508,38 +447,9 @@ class VehicleLoadingScreen :
                     is UnitNumber -> {
                         this.onInput(resultValue)
                     }
-                    is DekuDeliveryListNumber -> {
-                        this.onInput(resultValue)
-                    }
                 }
             }
         }
-    }
-
-    /**
-     * On delivery list input
-     */
-    fun onInput(deliveryListNumber: DekuDeliveryListNumber) {
-        var loaded = false
-        deliveryList.load(deliveryListNumber)
-                .bindToLifecycle(this)
-                .composeAsRest(this.activity, R.string.error_invalid_delivery_list)
-                .subscribeBy(
-                        onNext = {
-                            loaded = true
-                            log.info("Current delivery lists [${this.deliveryList.ids.joinToString(", ")}")
-                        },
-                        onComplete = {
-                            // Can't rely on complete alone due to rxlifecycle
-                            if (loaded) {
-                                tones.beep()
-                            }
-                        },
-                        onError = {
-                            log.error(it.message, it)
-                            tones.errorBeep()
-                        }
-                )
     }
 
     /**
@@ -556,51 +466,11 @@ class VehicleLoadingScreen :
                 this.onParcel(parcel)
             }
             else -> {
-                // No corresponding order (yet)
-                this.deliveryList.retrieveOrder(unitNumber)
-                        .bindToLifecycle(this)
-                        .composeAsRest(this.activity, R.string.error_no_corresponding_order)
-                        .subscribeBy(
-                                onNext = { order ->
-                                    tones.beep()
+                tones.errorBeep()
 
-                                    fun mergeOrder() {
-                                        this.deliveryList
-                                                .mergeOrder(order)
-                                                .observeOnMainThread()
-                                                .subscribeBy(
-                                                        onComplete = {
-                                                            this.onParcel(
-                                                                    parcel = this.parcelRepository.entities.first { it.number == unitNumber.value }
-                                                            )
-                                                        },
-                                                        onError = {
-                                                            log.error("Merging order failed. ${it.message}", it)
-                                                            tones.errorBeep()
-                                                        }
-                                                )
-                                    }
-
-                                    if (this.deliveryList.ids.get().isEmpty()) {
-                                        mergeOrder()
-                                    } else {
-                                        MaterialDialog.Builder(this.activity)
-                                                .title(R.string.order_not_on_delivery_list)
-                                                .content(R.string.order_not_on_delivery_list_confirmation)
-                                                .positiveText(android.R.string.yes)
-                                                .negativeText(android.R.string.no)
-                                                .onPositive { _, _ ->
-                                                    mergeOrder()
-                                                }
-                                                .build().show()
-                                    }
-
-                                },
-                                onError = {
-                                    tones.errorBeep()
-                                }
-                        )
-
+                this.activity.snackbarBuilder
+                        .message(R.string.error_invalid_parcel)
+                        .build().show()
             }
         }
     }
@@ -646,34 +516,13 @@ class VehicleLoadingScreen :
             }
             else -> {
                 if (parcel.state == Parcel.State.LOADED) {
-                    if (SUPPORT_UNLOAD_ON_SCAN) {
-                        this.tones.warningBeep()
-                        this.aidcReader.enabled = false
-
-                        MaterialDialog.Builder(this.context)
-                                .title(R.string.vehicle_loading_unload_parcel_dialog_title)
-                                .content(R.string.vehicle_loading_unload_parcel_dialog)
-                                .negativeText(getString(android.R.string.no))
-                                .positiveText(getString(android.R.string.yes))
-                                .dismissListener {
-                                    this.aidcReader.enabled = true
-                                }
-                                .onPositive { _, _ ->
-                                    parcel.state = Parcel.State.PENDING
-                                    this.parcelRepository.update(parcel)
-                                            .subscribeOn(Schedulers.computation())
-                                            .subscribe()
-                                }
-                                .show()
-                    }
-                } else {
-                    parcel.state = Parcel.State.LOADED
+                    parcel.state = Parcel.State.PENDING
                     this.parcelRepository.update(parcel)
                             .subscribeOn(Schedulers.computation())
                             .subscribe()
                 }
 
-                this.parcelListAdapter.selectedSection = loadedSection
+                this.parcelListAdapter.selectedSection = unloadedSection
             }
         }
     }

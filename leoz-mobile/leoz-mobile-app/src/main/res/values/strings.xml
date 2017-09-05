@@ -281,21 +281,28 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="title_stop_merge">Stop merge</string>
     <string name="title_stop_process">Delivery</string>
 
+    <string name="tour">Tour</string>
+
     <string name="to_neighbour">To neighbour</string>
     <string name="to_postbox">To postbox</string>
     <string name="to_recipient">To recipient</string>
 
     <string name="unknown">Unknown</string>
+    <string name="unloaded">Unloaded</string>
 
     <string name="update">Update</string>
 
     <string name="user">User</string>
 
-    <string name="vehicle_loading">Vehicle loading</string>
+    <string name="vehicle_loading">Loading</string>
     <string name="vehicle_loading_finalize_dialog">All pending parcels will be marked missing.</string>
-    <string name="vehicle_loading_finalize_dialog_title">Finalize vehicle loading</string>
+    <string name="vehicle_loading_finalize_dialog_title">Finalize loading</string>
     <string name="vehicle_loading_unload_parcel_dialog">Unload parcel?</string>
     <string name="vehicle_loading_unload_parcel_dialog_title">Parcel has been loaded</string>
+
+    <string name="vehicle_unloading">Unloading</string>
+    <string name="vehicle_unloading_finalize_dialog_title">Finalize unloading</string>
+    <string name="vehicle_unloading_finalize_dialog">All pending parcels will be marked missing.</string>
 
     <string name="version">Version</string>
     <string name="version_available">v%s is available</string>

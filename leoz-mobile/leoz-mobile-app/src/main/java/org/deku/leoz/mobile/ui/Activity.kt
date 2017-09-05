@@ -487,10 +487,6 @@ open class Activity : BaseActivity(),
         val id = item.itemId
 
         when (id) {
-            R.id.nav_delivery -> {
-
-            }
-
             R.id.nav_camera -> {
                 // Handle the camera action
                 this.showScreen(CameraScreen())
