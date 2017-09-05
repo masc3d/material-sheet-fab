@@ -97,17 +97,14 @@ fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null, schedu
             .connected(composite)
 }
 
-fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null): Observable<T> {
-    return this.toHotReplay(composite = composite, scheduler = null)
-}
+fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null): Observable<T> =
+        this.toHotReplay(composite = composite, scheduler = null)
 
-fun <T> Observable<T>.behave(composite: CompositeDisposable): Observable<T> {
-    return this.replay(1).connected(composite)
-}
+fun <T> Observable<T>.behave(composite: CompositeDisposable): Observable<T> =
+        this.replay(1).connected(composite)
 
-fun <T> Observable<T>.behave(supplier: CompositeDisposableSupplier): Observable<T> {
-    return this.replay(1).connected(supplier.compositeDisposable)
-}
+fun <T> Observable<T>.behave(supplier: CompositeDisposableSupplier? = null): Observable<T> =
+        this.replay(1).connected(supplier?.compositeDisposable)
 
 /**
  * Retry with specific count, action handler and timer provider
