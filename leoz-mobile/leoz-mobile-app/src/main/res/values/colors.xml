@@ -11,8 +11,9 @@
     <color name="colorGreenTransparent">#dd28d228</color>
     <color name="colorGrey">#797979</color>
     <color name="colorGreyTransparent">#dd797979</color>
-    <color name="colorLightGrey">#b9b9b9</color>
-    <color name="colorLightGreyTransparent">#ddb9b9b9</color>
+    <color name="colorLighterGrey">#cecece</color>
+    <color name="colorLightGrey">#a6a6a6</color>
+    <color name="colorLightGreyTransparent">#dda6a6a6</color>
     <color name="colorPrimary">#2D5682</color>
     <color name="colorPrimaryDark">#214066</color>
     <color name="colorPrimaryTransparent">#dd2D5682</color>
