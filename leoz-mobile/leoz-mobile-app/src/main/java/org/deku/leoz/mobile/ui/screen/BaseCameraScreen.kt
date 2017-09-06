@@ -160,8 +160,8 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    when (it) {
+                .subscribe { actionId ->
+                    when (actionId) {
                         R.id.action_camera_trigger -> {
                             // Hide trigger button
                             this.actionItems = this.actionItems.apply {
@@ -189,6 +189,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                             this.showCaptureActions()
                         }
 
+                        R.id.action_camera_save_finish,
                         R.id.action_camera_save -> {
                             this.pictureJpeg?.also {
                                 this@BaseCameraScreen.listener?.onCameraScreenImageSubmitted(
@@ -196,7 +197,10 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                                         jpeg = it)
                             } ?: log.warn("Image save invoked without picture data being available")
 
-                            this.showCaptureActions()
+                            when (actionId) {
+                                R.id.action_camera_save_finish -> this.fragmentManager.popBackStack()
+                                else -> this.showCaptureActions()
+                            }
                         }
                     }
                 }
@@ -227,8 +231,14 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         this.uxPreviewImage.visibility = View.VISIBLE
         this.actionItems = listOf(
                 ActionItem(
-                        id = R.id.action_camera_save,
+                        id = R.id.action_camera_save_finish,
                         iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary
+                ),
+                ActionItem(
+                        id = R.id.action_camera_save,
+                        iconRes = R.drawable.ic_done_plus,
                         iconTintRes = android.R.color.white,
                         colorRes = R.color.colorPrimary
                 ),
