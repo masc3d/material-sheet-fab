@@ -128,6 +128,10 @@ interface UserService {
     @ApiOperation(value = "Update user")
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
-               @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?,
-               @QueryParam(value = SEND_CRED) @ApiParam(value = "Send credentials to newly created user?", required = false, hidden = true) sendCredentials: Boolean = false)
+               @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?)
+
+    @POST
+    @Path("/{$USER_ID}/sendAppLink")
+    @ApiOperation(value = "Send App download-link")
+    fun sendDownloadLink(@PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): Boolean
 }

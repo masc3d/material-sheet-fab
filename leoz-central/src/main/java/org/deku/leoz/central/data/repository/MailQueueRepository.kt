@@ -1,6 +1,7 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.central.data.jooq.Tables
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
@@ -23,6 +24,7 @@ class MailQueueRepository {
         }
 
         val r = dslContext.newRecord(Tables.TBLMAILQUEUE).also {
+            it.id = dslContext.select(Routines.fTan(54)).fetch().first().value1().toInt()
             it.station = 2
             it.queue = message
             it.status = Status.NEW

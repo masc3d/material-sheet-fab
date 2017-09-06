@@ -52,5 +52,5 @@ dependencies {
     annotationProcessor 'android.arch.lifecycle:compiler:1.0.0-alpha1'
 }
 
-apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
+//apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
 

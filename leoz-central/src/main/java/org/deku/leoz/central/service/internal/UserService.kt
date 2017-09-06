@@ -2,11 +2,11 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.repository.MailQueueRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.isActive
 import org.deku.leoz.central.data.repository.toUser
-import org.deku.leoz.model.UserPreferenceKey
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.UserService.User
 import org.jooq.DSLContext
@@ -36,6 +36,9 @@ class UserService : UserService {
 
     @Inject
     private lateinit var userRepository: UserJooqRepository
+
+    @Inject
+    private lateinit var mailRepository: MailQueueRepository
 
     override fun get(email: String?, debitorId: Int?, apiKey: String?): List<User> {
         var debitor_id = debitorId
@@ -125,9 +128,20 @@ class UserService : UserService {
         }
 
         update(user.email, user, apiKey)
+
+        if (sendCredentials) {
+            //TODO If SendCredentials is true, the user will receive his credentials via SMS
+            val receiver = user.phoneMobile!!.also {
+                it.removePrefix("+")
+                it.removePrefix("00")
+                if (it.first() == '0')
+                    it.replaceFirst("0", "49")
+            }
+            mailRepository.insertSms(receiver = receiver, message = "Ihnen wurde ein neues Benutzerkonto für mobileX angelegt. Benutzername: '${user.email}' Passwort: '${user.password}' (Ohne Anführungszeichen)")
+        }
     }
 
-    override fun update(email: String, user: User, apiKey: String?, sendCredentials: Boolean) {
+    override fun update(email: String, user: User, apiKey: String?) {
         apiKey ?:
                 throw DefaultProblem(
                         status = Response.Status.BAD_REQUEST,
@@ -322,11 +336,6 @@ class UserService : UserService {
             throw DefaultProblem(
                     status = Response.Status.BAD_REQUEST,
                     title = "Problem on update")
-
-        if (sendCredentials) {
-            //TODO If SendCredentials is true, the user will receive his credentials via SMS
-        }
-
     }
 
     override fun getById(userId: Int, apiKey: String?): User {
@@ -336,6 +345,23 @@ class UserService : UserService {
         )
 
         return this.get(email = u.email, apiKey = apiKey).first()
+    }
+
+    override fun sendDownloadLink(userId: Int): Boolean {
+        return try {
+            var phone = userRepository.findById(userId)!!.phoneMobile!!.also {
+                it.removePrefix("+")
+                it.removePrefix("00")
+                if (it.first() == '0')
+                    it.replaceFirst("0", "49")
+            }
+
+            mailRepository.insertSms(receiver = phone, message = "Download mobileX-App: https://play.google.com/derkurier")
+
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
 }
