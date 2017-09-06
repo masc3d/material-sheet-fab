@@ -159,7 +159,6 @@ class VehicleLoadingScreen :
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
                 background = R.drawable.section_background_grey,
-                showIfEmpty = false,
                 expandOnSelection = true,
                 title = getString(R.string.pending),
                 items = this.deliveryList.pendingParcels.map { it.value }
@@ -205,11 +204,6 @@ class VehicleLoadingScreen :
 
         adapter.addSection(
                 sectionVmItemProvider = { this.loadedSection.toFlexibleItem() },
-                vmItemProvider = { it.toFlexibleItem() }
-        )
-
-        adapter.addSection(
-                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
@@ -351,6 +345,11 @@ class VehicleLoadingScreen :
                 .subscribe {
                     when (it) {
                         R.id.action_vehicle_loading_damaged -> {
+                            this.parcelListAdapter.addSection(
+                                    sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                    vmItemProvider = { it.toFlexibleItem() }
+                            )
+
                             this.parcelListAdapter.selectedSection = this.damagedSection
                         }
 
@@ -418,6 +417,36 @@ class VehicleLoadingScreen :
                         }
                     }
                 }
+
+        // Damaged parcels
+        Observable.combineLatest(
+                this.deliveryList.damagedParcels,
+                // Also fire when selected section changes */
+                this.parcelListAdapter.selectedSectionProperty.filter {
+                    it.value != this.damagedSection
+                },
+
+                BiFunction { a: Any, b: Any ->
+                    this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
+                }
+        )
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribe {
+                    if (it.count() > 0) {
+                        this.parcelListAdapter.addSection(
+                                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                vmItemProvider = { it.toFlexibleItem() }
+                        )
+                    } else {
+                        this.parcelListAdapter.removeSection(this.damagedSection)
+
+                        if (this.parcelListAdapter.selectedSection == null) {
+                            this.parcelListAdapter.selectedSection = this.loadedSection
+                        }
+                    }
+                }
+        //endregion
 
         //region Synthetic inputs
         run {

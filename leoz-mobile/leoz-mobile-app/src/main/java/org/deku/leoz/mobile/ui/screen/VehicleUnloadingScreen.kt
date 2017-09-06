@@ -14,6 +14,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_vehicleunloading.*
@@ -130,7 +131,6 @@ class VehicleUnloadingScreen :
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
                 background = R.drawable.section_background_grey,
-                showIfEmpty = false,
                 expandOnSelection = true,
                 title = getString(R.string.pending),
                 items = this.deliveryList.loadedParcels.map { it.value }
@@ -176,11 +176,6 @@ class VehicleUnloadingScreen :
 
         adapter.addSection(
                 sectionVmItemProvider = { this.unloadedSection.toFlexibleItem() },
-                vmItemProvider = { it.toFlexibleItem() }
-        )
-
-        adapter.addSection(
-                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
@@ -322,6 +317,11 @@ class VehicleUnloadingScreen :
                 .subscribe {
                     when (it) {
                         R.id.action_vehicle_unloading_damaged -> {
+                            this.parcelListAdapter.addSection(
+                                    sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                    vmItemProvider = { it.toFlexibleItem() }
+                            )
+
                             this.parcelListAdapter.selectedSection = this.damagedSection
                         }
 
@@ -386,6 +386,35 @@ class VehicleUnloadingScreen :
                                 first { it.id == R.id.action_vehicle_unloading_damaged }
                                         .visible = false
                             }
+                        }
+                    }
+                }
+
+        // Damaged parcels
+        Observable.combineLatest(
+                this.deliveryList.damagedParcels,
+                // Also fire when selected section changes */
+                this.parcelListAdapter.selectedSectionProperty.filter {
+                    it.value != this.damagedSection
+                },
+
+                BiFunction { a: Any, b: Any ->
+                    this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
+                }
+        )
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribe {
+                    if (it.count() > 0) {
+                        this.parcelListAdapter.addSection(
+                                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                vmItemProvider = { it.toFlexibleItem() }
+                        )
+                    } else {
+                        this.parcelListAdapter.removeSection(this.damagedSection)
+
+                        if (this.parcelListAdapter.selectedSection == null) {
+                            this.parcelListAdapter.selectedSection = this.unloadedSection
                         }
                     }
                 }
