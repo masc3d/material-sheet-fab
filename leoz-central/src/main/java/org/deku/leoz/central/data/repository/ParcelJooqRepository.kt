@@ -19,7 +19,9 @@ import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.Reason
 import org.deku.leoz.node.rest.DefaultProblem
+import org.jooq.Converter
 import org.jooq.Field
+import org.jooq.impl.SQLDataType
 import sx.time.toLocalDate
 import sx.time.toTimestamp
 import java.text.SimpleDateFormat
@@ -50,17 +52,16 @@ class ParcelJooqRepository {
                 .fetchOne(0, Int::class.java)
         return exist != 0
     }
-        /*
-    fun statusExist(unitNo:Long,creator:String,status:Int):Boolean{
-        val exist =dslContext.selectCount().from(Tblstatus.TBLSTATUS)
-                .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo.toDouble()))
-                        .and(Tables.TBLSTATUS.KZ_STATUSERZEUGER.eq(creator))
-                        .and(Tables.TBLSTATUS.KZ_STATUS.eq(status.toUInteger()))
-                .fetchOne(0,Int::class.java)
-        return exist!=0
-        }
-        */
-
+    /*
+fun statusExist(unitNo:Long,creator:String,status:Int):Boolean{
+    val exist =dslContext.selectCount().from(Tblstatus.TBLSTATUS)
+            .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo.toDouble()))
+                    .and(Tables.TBLSTATUS.KZ_STATUSERZEUGER.eq(creator))
+                    .and(Tables.TBLSTATUS.KZ_STATUS.eq(status.toUInteger()))
+            .fetchOne(0,Int::class.java)
+    return exist!=0
+    }
+    */
 
 
     /**
@@ -70,6 +71,12 @@ class ParcelJooqRepository {
     return true
     }
      **/
+    fun setSignaturePath(parcelNumber: String, path: String) {
+        val result=dslContext.update(Tables.TBLAUFTRAGCOLLIES)
+                .set(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME, path)
+                .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(parcelNumber.toDouble()))
+                .execute()
+    }
 
     fun getUnitNo(parcelId: Long): Long? {
         if (parcelId == 0L) return null
@@ -88,6 +95,21 @@ class ParcelJooqRepository {
         .fetchOneInto(Double::class.java)
          **/
     }
+
+    fun getUnitNumbers(ids: List<Long>): Map<Double, Double> {
+
+
+        var mapDouble = dslContext.select()
+                .from(Tables.TAD_V_ORDER_PARCEL)
+                //.where(Tables.TAD_V_ORDER_PARCEL.ID.`in`(ids.map { it.toDouble() })).fetchMap(Tables.TAD_V_ORDER_PARCEL.ID,Tables.TAD_V_ORDER_PARCEL.SCAN_ID)//,Long::class.java)
+                .where(Tables.TAD_V_ORDER_PARCEL.ID.`in`(ids.map { it.toDouble() })).fetch().intoMap(Tables.TAD_V_ORDER_PARCEL.ID, Tables.TAD_V_ORDER_PARCEL.SCAN_ID)//,Long::class.java)
+        //.sortedWith(compareBy { set.indexOf(it.id) })
+        //mapDouble.mapKeys { it.key.toLong() }
+        //mapDouble.mapValues { it.value.toLong() }
+        //mapDouble.entries.associate { it.key.toLong() to it.value.toLong() }
+        return mapDouble
+    }
+
 
     fun findParcelByUnitNumber(unitNo: Long): TblauftragcolliesRecord? {
         return dslContext.select()
