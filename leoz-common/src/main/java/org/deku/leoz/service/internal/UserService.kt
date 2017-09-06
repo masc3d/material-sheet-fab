@@ -116,7 +116,7 @@ interface UserService {
     @POST
     @Path("/")
     @ApiOperation(value = "Create user")
-    fun create(@ApiParam(value = "User") user: User, @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?, @QueryParam(value = SEND_CRED) @ApiParam(value = "Send credentials to newly created user?", required = false) sendCredentials: Boolean = false)
+    fun create(@ApiParam(value = "User") user: User, @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?, @QueryParam(value = SEND_CRED) @ApiParam(value = "Send credentials to newly created user?", required = false) sendCredentials: Boolean = true)
 
     /**
      * Update user (replaces entire user)
