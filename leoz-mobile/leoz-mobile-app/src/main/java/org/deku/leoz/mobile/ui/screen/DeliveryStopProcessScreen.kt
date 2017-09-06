@@ -395,6 +395,8 @@ class DeliveryStopProcessScreen :
                         R.id.action_reset -> {
                             this.deliveryStop.reset()
                                     .subscribe()
+
+                            this.parcelListAdapter.selectedSection = this.deliveredSection
                         }
 
                         R.id.action_delivery_process_dev_show_cash_screen -> {
