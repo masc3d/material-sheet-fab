@@ -314,6 +314,8 @@ class DeliveryStopProcessScreen :
                 }
             }
 
+        this.parcelListAdapterInstance.reset()
+
         this.uxRecyclerView.adapter = parcelListAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -362,7 +364,6 @@ class DeliveryStopProcessScreen :
 
     override fun onDestroyView() {
         this.parcelListAdapter.dispose()
-        this.parcelListAdapterInstance.reset()
 
         super.onDestroyView()
     }

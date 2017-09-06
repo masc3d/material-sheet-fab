@@ -221,6 +221,8 @@ class VehicleUnloadingScreen :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        this.parcelListAdapterInstance.reset()
+
         this.uxRecyclerView.adapter = parcelListAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -257,7 +259,6 @@ class VehicleUnloadingScreen :
     override fun onDestroyView() {
         log.trace("DESTROY VIEW")
         this.parcelListAdapter.dispose()
-        this.parcelListAdapterInstance.reset()
 
         super.onDestroyView()
     }
