@@ -118,7 +118,7 @@ class UserService : UserService {
     }
 
 
-    override fun create(user: User, apiKey: String?, sendCredentials: Boolean) {
+    override fun create(user: User, apiKey: String?, sendAppLink: Boolean) {
 
         var rec = userRepository.findByMail(user.email)
         if (rec != null) {
@@ -129,15 +129,8 @@ class UserService : UserService {
 
         update(user.email, user, apiKey)
 
-        if (sendCredentials) {
-            //TODO If SendCredentials is true, the user will receive his credentials via SMS
-            val receiver = user.phoneMobile!!.also {
-                it.removePrefix("+")
-                it.removePrefix("00")
-                if (it.first() == '0')
-                    it.replaceFirst("0", "49")
-            }
-            mailRepository.insertSms(receiver = receiver, message = "Ihnen wurde ein neues Benutzerkonto für mobileX angelegt. Benutzername: '${user.email}' Passwort: '${user.password}' (Ohne Anführungszeichen)")
+        if (sendAppLink) {
+            sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)
         }
     }
 
@@ -349,14 +342,15 @@ class UserService : UserService {
 
     override fun sendDownloadLink(userId: Int): Boolean {
         return try {
-            var phone = userRepository.findById(userId)!!.phoneMobile!!.also {
-                it.removePrefix("+")
-                it.removePrefix("00")
-                if (it.first() == '0')
-                    it.replaceFirst("0", "49")
-            }
+            var phone = userRepository.findById(userId)!!.phoneMobile!!
+            phone = phone.removePrefix("+")
+            phone = phone.removePrefix("00")
+            if (phone.first() == '0')
+                phone = phone.replaceFirst("0", "49")
 
-            mailRepository.insertSms(receiver = phone, message = "Download mobileX-App: https://play.google.com/derkurier")
+
+            val bundleService = BundleServiceV2()
+            mailRepository.insertSms(receiver = phone, message = "Hallo und Willkommen bei mobileX. Download: https://derkurier.de/mobileX Zugangsdaten erhalten Sie in Ihrer Station.")
 
             true
         } catch (e: Exception) {
