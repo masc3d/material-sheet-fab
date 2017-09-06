@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.support.annotation.ColorInt
 import android.support.annotation.Dimension
+import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -14,7 +15,6 @@ import org.jetbrains.anko.imageResource
 import org.slf4j.LoggerFactory
 import sx.android.convertDpToPx
 import sx.android.view.setIconTint
-import sx.android.view.setIconTintRes
 import java.util.*
 
 /**
@@ -67,7 +67,7 @@ class ServicesView : LinearLayout {
             context.obtainStyledAttributes(attrs, R.styleable.ServicesView).also {
                 imageSize = it.getDimension(R.styleable.ServicesView_imageSize, this.imageSize.toFloat()).toInt()
                 imageMargin = it.getDimension(R.styleable.ServicesView_imageMargin, this.imageMargin.toFloat()).toInt()
-                imageTint = it.getColor(R.styleable.ServicesView_imageTint, android.R.color.black)
+                imageTint = it.getColor(R.styleable.ServicesView_imageTint, ResourcesCompat.getColor(this.resources, android.R.color.black, null))
                 it.recycle()
             }
         }
