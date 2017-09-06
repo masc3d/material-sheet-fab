@@ -60,7 +60,7 @@
                             android:layout_width="@dimen/icon_size_large"
                             android:layout_height="@dimen/icon_size_large"
                             android:layout_gravity="center_vertical"
-                            android:src="@drawable/ic_stop"
+                            android:src="@drawable/ic_delivery"
                             android:tint="@color/colorGrey"/>
 
                         <!-- Order count -->
