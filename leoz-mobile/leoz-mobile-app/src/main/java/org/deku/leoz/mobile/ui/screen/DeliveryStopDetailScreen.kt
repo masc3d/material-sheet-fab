@@ -29,6 +29,7 @@ import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -231,7 +232,7 @@ class DeliveryStopDetailScreen
                         id = R.id.action_call,
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_phone,
-                        visible = !this.stop.address.phone.isBlank(),
+                        visible = this.stop.address.hasValidPhoneNumber,
                         alignEnd = false
                 ),
                 ActionItem(
