@@ -21,7 +21,7 @@ interface UserService {
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
         const val PREF_TYPE = "preference-type"
-        const val SEND_CRED = "send-credentials"
+        const val SEND_APP_LINK_SMS = "send-app-sms"
         //const val DEBITOR_NO = "debitor-no"
         //const val HEADERPARAM_APIKEY = "x-api-key"
     }
@@ -119,7 +119,7 @@ interface UserService {
     fun create(
             @ApiParam(value = "User") user: User,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?,
-            @QueryParam(value = SEND_CRED) @ApiParam(value = "Send credentials to newly created user?", required = false, defaultValue = "true") sendAppLink: Boolean = true
+            @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "true") sendAppLink: Boolean = true
     )
 
     /**
@@ -132,7 +132,8 @@ interface UserService {
     @ApiOperation(value = "Update user")
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
-               @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?)
+               @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?,
+               @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "false", hidden = true) sendAppLink: Boolean = false)
 
     @POST
     @Path("/{$USER_ID}/sendAppLink")

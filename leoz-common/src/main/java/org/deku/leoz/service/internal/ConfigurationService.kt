@@ -42,7 +42,7 @@ interface ConfigurationServiceV1 {
     fun getUserConfiguration(
             @PathParam(value = USER_ID) @ApiParam(value = "The requested users ID", required = true) userId: Int,
             @QueryParam(value = SCHEMA_VERSION) @ApiParam(value = "The schema version of the configuration") schemaVersion: Int,
-            @ApiParam(value = "Scope of the configuration") scope: Configuration.Scope
+            @ApiParam(value = "Scope of the configuration", required = false) scope: Configuration.Scope? = null
     ): UserConfiguration?
 
     @GET
