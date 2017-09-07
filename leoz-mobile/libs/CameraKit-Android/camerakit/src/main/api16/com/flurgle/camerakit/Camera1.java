@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
+import android.media.CameraProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
@@ -325,12 +326,18 @@ public class Camera1 extends CameraImpl {
     // https://github.com/sandrios/sandriosCamera/blob/master/sandriosCamera/src/main/java/com/sandrios/sandriosCamera/internal/manager/impl/Camera1Manager.java#L212
     void initResolutions() {
         List<Size> previewSizes = sizesFromList(mCameraParameters.getSupportedPreviewSizes());
+        List<Size> pictureSize = (Build.VERSION.SDK_INT > 10) ? sizesFromList(mCameraParameters.getSupportedPictureSizes()) : previewSizes;
         List<Size> videoSizes = (Build.VERSION.SDK_INT > 10) ? sizesFromList(mCameraParameters.getSupportedVideoSizes()) : previewSizes;
 
         CamcorderProfile camcorderProfile = getCamcorderProfile(mVideoQuality);
 
+        //Replaced resolution gathering on VideoSize with PictureSize
+//        mCaptureSize = getSizeWithClosestRatio(
+//                (videoSizes == null || videoSizes.isEmpty()) ? previewSizes : videoSizes,
+//                camcorderProfile.videoFrameWidth, camcorderProfile.videoFrameHeight);
+
         mCaptureSize = getSizeWithClosestRatio(
-                (videoSizes == null || videoSizes.isEmpty()) ? previewSizes : videoSizes,
+                (pictureSize == null || pictureSize.isEmpty()) ? previewSizes : pictureSize,
                 camcorderProfile.videoFrameWidth, camcorderProfile.videoFrameHeight);
 
         mPreviewSize = getSizeWithClosestRatio(previewSizes, mCaptureSize.getWidth(), mCaptureSize.getHeight());
