@@ -127,14 +127,10 @@ class UserService : UserService {
                     title = "email exists")
         }
 
-        update(user.email, user, apiKey)
-
-        if (sendAppLink) {
-            sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)
-        }
+        update(email = user.email, user = user, apiKey = apiKey, sendAppLink = sendAppLink)
     }
 
-    override fun update(email: String, user: User, apiKey: String?) {
+    override fun update(email: String, user: User, apiKey: String?, sendAppLink: Boolean) {
         apiKey ?:
                 throw DefaultProblem(
                         status = Response.Status.BAD_REQUEST,
@@ -329,6 +325,10 @@ class UserService : UserService {
             throw DefaultProblem(
                     status = Response.Status.BAD_REQUEST,
                     title = "Problem on update")
+
+        if (sendAppLink) {
+            sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)
+        }
     }
 
     override fun getById(userId: Int, apiKey: String?): User {
@@ -341,21 +341,20 @@ class UserService : UserService {
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {
-        return try {
-            var phone = userRepository.findById(userId)!!.phoneMobile!!
-            phone = phone.removePrefix("+")
-            phone = phone.removePrefix("00")
-            if (phone.first() == '0')
-                phone = phone.replaceFirst("0", "49")
+        var phone = userRepository.findById(userId)!!.phoneMobile!!
+        phone = phone.removePrefix("+")
+        phone = phone.removePrefix("00")
+        if (phone.first() == '0')
+            phone = phone.replaceFirst("0", "49")
 
-
-            val bundleService = BundleServiceV2()
-            mailRepository.insertSms(receiver = phone, message = "Hallo und Willkommen bei mobileX. Download: https://derkurier.de/mobileX Zugangsdaten erhalten Sie in Ihrer Station.")
-
-            true
+        //val bundleService = BundleServiceV2()
+        try {
+            mailRepository.insertSms(receiver = phone, message = "Hallo und Willkommen bei mobileX. Download: http://derkurier.de/mobileX/ Zugangsdaten erhalten Sie in Ihrer Station.")
         } catch (e: Exception) {
-            false
+            return false
         }
+
+        return true
     }
 
 }
