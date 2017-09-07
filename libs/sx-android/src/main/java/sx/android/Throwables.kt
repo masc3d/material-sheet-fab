@@ -2,6 +2,7 @@ package sx.android
 
 import java.net.ConnectException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 /**
  * Created by masc on 31.07.17.
@@ -10,6 +11,7 @@ val Throwable.isConnectivityException: Boolean
     get() {
         return when(this) {
             is SocketTimeoutException,
+            is UnknownHostException,
             is ConnectException -> true
             else -> {
                 when (this.cause) {
