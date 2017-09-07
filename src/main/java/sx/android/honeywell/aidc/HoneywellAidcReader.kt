@@ -236,7 +236,7 @@ class HoneywellAidcReader private constructor(
     }
 
     override fun onFailureEvent(evt: BarcodeFailureEvent) {
-        log.error(evt.toString())
+        log.error("Honeywell aidc failure event ${evt}")
     }
 
     override fun onTriggerEvent(evt: TriggerStateChangeEvent) {
