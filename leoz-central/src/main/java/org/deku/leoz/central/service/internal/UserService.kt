@@ -341,21 +341,17 @@ class UserService : UserService {
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {
-        return try {
-            var phone = userRepository.findById(userId)!!.phoneMobile!!
-            phone = phone.removePrefix("+")
-            phone = phone.removePrefix("00")
-            if (phone.first() == '0')
-                phone = phone.replaceFirst("0", "49")
+        var phone = userRepository.findById(userId)!!.phoneMobile!!
+        phone = phone.removePrefix("+")
+        phone = phone.removePrefix("00")
+        if (phone.first() == '0')
+            phone = phone.replaceFirst("0", "49")
 
 
-            val bundleService = BundleServiceV2()
-            mailRepository.insertSms(receiver = phone, message = "Hallo und Willkommen bei mobileX. Download: https://derkurier.de/mobileX Zugangsdaten erhalten Sie in Ihrer Station.")
+        val bundleService = BundleServiceV2()
+        mailRepository.insertSms(receiver = phone, message = "Hallo und Willkommen bei mobileX. Download: http://derkurier.de/mobileX/ Zugangsdaten erhalten Sie in Ihrer Station.")
 
-            true
-        } catch (e: Exception) {
-            false
-        }
+        return true
     }
 
 }
