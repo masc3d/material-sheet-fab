@@ -118,7 +118,7 @@ open class ParcelProcessing {
                 val addInfo = it.additionalInfo?.toString() ?: "{}"
 
                 val mapper = ObjectMapper()
-                val parcelAddInfo: ParcelAdditionalinfo = mapper.readValue(addInfo, ParcelAdditionalinfo::class.java)
+                val parcelAddInfo: ParcelDeliveryAdditionalinfo = mapper.readValue(addInfo, ParcelDeliveryAdditionalinfo::class.java)
                 val checkDamaged = parcelAddInfo.damagedFileUIDs != null
 
                 if (checkDamaged) {

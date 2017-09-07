@@ -118,7 +118,7 @@ open class ParcelServiceV1 :
             if (!messagesRepository.saveMsg(recordMessages)) {
                 log.error("Problem saving parcel-messages")
             }
-            var parcelAddInfo = ParcelAdditionalinfo()
+            var parcelAddInfo = ParcelDeliveryAdditionalinfo()
 
             var damagedInfo = it.damagedInfo
             if (damagedInfo != null) {
