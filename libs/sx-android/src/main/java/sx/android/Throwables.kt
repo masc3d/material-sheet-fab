@@ -5,20 +5,19 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 /**
+ * Indicates if this or the causing exception relates to a connectivity problem
  * Created by masc on 31.07.17.
  */
-val Throwable.isConnectivityException: Boolean
+val Throwable.isConnectivityProblem: Boolean
     get() {
-        return when(this) {
-            is SocketTimeoutException,
-            is UnknownHostException,
-            is ConnectException -> true
-            else -> {
-                when (this.cause) {
-                    is SocketTimeoutException,
-                    is ConnectException -> true
-                    else -> false
-                }
-            }
+        val connectivityExceptions = listOf(
+                SocketTimeoutException::class.java,
+                UnknownHostException::class.java,
+                ConnectException::class.java
+        )
+
+        return connectivityExceptions.any {
+            it.isInstance(this) ||
+                    it.isInstance(this.cause)
         }
     }

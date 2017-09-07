@@ -1031,7 +1031,7 @@ fun <T> Observable<T>.composeAsRest(activity: Activity, @StringRes errorMessage:
                 if (errorMessage != 0) {
                     activity.snackbarBuilder
                             .message(
-                                    if (it.isConnectivityException)
+                                    if (it.isConnectivityProblem)
                                         R.string.error_connectivity
                                     else
                                         errorMessage
