@@ -81,7 +81,58 @@ class VehicleUnloading : CompositeDisposableSupplier {
     //endregion
 
     /**
-     * Finalizes the loading process, marking all parcels with pending loading state as missing
+     * Unload parcel
+     * @param parcel Parcel to unload
+     */
+    fun unload(parcel: ParcelEntity): Completable {
+
+        return if (parcel.state == Parcel.State.LOADED) {
+
+            // When parcle is unloaded, it's state is set back to PENDING
+            parcel.state = Parcel.State.PENDING
+
+            val lastLocation = this.locationCache.lastLocation
+
+            this.parcelRepository.update(parcel)
+                    .toCompletable()
+                    .concatWith(Completable.fromCallable {
+                        mqttChannels.central.main.channel().send(
+                                ParcelServiceV1.ParcelMessage(
+                                        userId = this.login.authenticatedUser?.id,
+                                        nodeId = this.identity.uid.value,
+                                        events = listOf(parcel).map {
+                                            ParcelServiceV1.Event(
+                                                    event = Event.TOUR_UNLOADED.value,
+                                                    reason = Reason.NORMAL.id,
+                                                    parcelId = it.id,
+                                                    latitude = lastLocation?.latitude,
+                                                    longitude = lastLocation?.longitude,
+                                                    damagedInfo = when {
+                                                        it.isDamaged -> {
+                                                            ParcelServiceV1.Event.DamagedInfo(
+                                                                    pictureFileUids = it.meta
+                                                                            .filterValuesByType(Parcel.DamagedInfo::class.java)
+                                                                            .mapNotNull {
+                                                                                it.pictureFileUid
+                                                                            }
+                                                                            .toTypedArray()
+                                                            )
+                                                        }
+                                                        else -> null
+                                                    }
+                                            )
+                                        }.toTypedArray()
+                                )
+                        )
+                    })
+        } else {
+            Completable.complete()
+        }
+                .subscribeOn(Schedulers.computation())
+    }
+
+    /**
+     * Finalizes the unloading process, marking all parcels which have not been unloaded as missing
      */
     fun finalize(): Completable {
         return db.store.withTransaction {
@@ -94,52 +145,5 @@ class VehicleUnloading : CompositeDisposableSupplier {
             }
         }
                 .toCompletable()
-                .concatWith(Completable.fromCallable {
-                    // Select parcels for which to send status events
-                    val parcels = parcelRepository.entities.filter {
-                        it.state == Parcel.State.PENDING ||
-                                it.state == Parcel.State.MISSING
-                    }
-
-                    val lastLocation = this@VehicleUnloading.locationCache.lastLocation
-
-                    Unit
-
-                    // TODO: status events for unloading
-                    // Send compound parcel message with loading states
-//                    mqttChannels.central.main.channel().send(
-//                            ParcelServiceV1.ParcelMessage(
-//                                    userId = this.login.authenticatedUser?.id,
-//                                    nodeId = this.identity.uid.value,
-//                                    events = parcels.map {
-//                                        ParcelServiceV1.Event(
-//                                                event = when {
-//                                                    it.state == Parcel.State.PENDING -> Event.IN_DELIVERY.value
-//                                                    it.state == Parcel.State.MISSING -> Event.NOT_IN_DELIVERY.value
-//                                                    else -> Event.DELIVERY_FAIL.value
-//                                                },
-//                                                reason = Reason.NORMAL.id,
-//                                                parcelId = it.id,
-//                                                latitude = lastLocation?.latitude,
-//                                                longitude = lastLocation?.longitude,
-//                                                damagedInfo = when {
-//                                                    it.isDamaged -> {
-//                                                        ParcelServiceV1.Event.DamagedInfo(
-//                                                                pictureFileUids = it.meta
-//                                                                        .filterValuesByType(Parcel.DamagedInfo::class.java)
-//                                                                        .mapNotNull {
-//                                                                            it.pictureFileUid
-//                                                                        }
-//                                                                        .toTypedArray()
-//                                                        )
-//                                                    }
-//                                                    else -> null
-//                                                }
-//                                        )
-//                                    }.toTypedArray()
-//                            )
-//                    )
-                })
-                .subscribeOn(Schedulers.computation())
     }
 }

@@ -545,12 +545,8 @@ class VehicleUnloadingScreen :
                 }
             }
             else -> {
-                if (parcel.state == Parcel.State.LOADED) {
-                    parcel.state = Parcel.State.PENDING
-                    this.parcelRepository.update(parcel)
-                            .subscribeOn(Schedulers.computation())
-                            .subscribe()
-                }
+                this.vehicleUnloading.unload(parcel)
+                        .subscribe()
 
                 this.parcelListAdapter.selectedSection = unloadedSection
             }
