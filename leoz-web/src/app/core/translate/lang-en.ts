@@ -21,8 +21,10 @@ export const LANG_EN_TRANS = {
   'firstname': 'First Name',
   'surname': 'Surname',
   'email': 'Email',
+  'emailOrLogin': 'Email/Login',
   'phone': 'Phone',
   'alias': 'Alias',
+  'aliasOrDriver': 'Alias/DriverNo',
   'role': 'Role',
   'active': 'Active',
   'inactive': 'Inactive',
@@ -59,6 +61,8 @@ export const LANG_EN_TRANS = {
   'station': 'Station',
   'line': 'Line',
   'homebase': 'Home',
+  'forExample': 'eg:',
+  'egMail': 'DriverNo@StationNo',
   // map form
   'allusers': 'all users',
   'drivers': 'drivers',
@@ -159,5 +163,11 @@ export const LANG_EN_TRANS = {
   'infoMsgfield': 'Open the scanning panel with F2.' + '<br>' +
   'Clear fields with F3.' + '<br>' +
   'Finish processing with F5.' + '<br>' +
-  'Replace regular seal with emergency seal with F10.'
+  'Replace regular seal with emergency seal with F10.',
+  'maxBagWeightReached': 'Maximum bagweight reached',
+  'caution': 'Caution',
+  'activateBlueSeal': 'Activate the blue seal if you have an important reason',
+  'scanBlueSeal': 'Scan Seal (blue)',
+  'reason': 'Reason',
+  'saveF7': 'Save (F7)'
 };

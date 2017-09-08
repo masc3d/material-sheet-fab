@@ -21,8 +21,10 @@ export const LANG_DE_TRANS = {
   'firstname': 'Vorname',
   'surname': 'Nachname',
   'email': 'Email',
+  'emailOrLogin': 'Email/Login',
   'phone': 'Telefon',
   'alias': 'Alias',
+  'aliasOrDriver': 'Alias/FahrerNr',
   'role': 'Rolle',
   'active': 'Aktiv',
   'inactive': 'nicht aktiv',
@@ -59,6 +61,8 @@ export const LANG_DE_TRANS = {
   'station': 'Station',
   'line': 'Line',
   'homebase': 'Home',
+  'forExample': 'z.B.:',
+  'egMail': 'FahrerNr@StationNr',
   // map form
   'allusers': 'alle Mitarbeiter',
   'drivers': 'Fahrer',
@@ -158,6 +162,12 @@ export const LANG_DE_TRANS = {
   'infoMsgfield': 'Belegscanfeld öffnen mit F2.' + '<br>' +
                       'Felder leeren mit F3.' + '<br>' +
                       'Bearbeitung abschliessen mit F5.' + '<br>' +
-                      'Tausch auf Notfallplombe mit F10.'
+                      'Tausch auf Notfallplombe mit F10.',
+  'maxBagWeightReached': 'Maximalgewicht erreicht',
+  'caution': 'Achtung',
+  'activateBlueSeal': 'Aktivieren der blauen Plombe, wenn Sie einen wichtigen Grund haben',
+  'scanBlueSeal': 'Scan Notfallplombe (blau)',
+  'reason': 'Grund',
+  'saveF7': 'Speichern (F7)'
 };
 

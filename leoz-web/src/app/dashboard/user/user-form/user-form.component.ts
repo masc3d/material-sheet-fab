@@ -83,6 +83,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
       phoneMobile: [ null, [ Validators.required ] ],
+      /*phoneMobile: [ null, [ Validators.required, Validators.pattern('^[0-9\\-\\+]{9,15}$') ] ],*/
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
       expiresOn: [ null ]

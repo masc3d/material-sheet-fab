@@ -19,6 +19,15 @@
         </div>
       </div>
 
+
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'emailOrLogin' | translate}}:</div>
+        <div><input pInputText formControlName="email" placeholder="{{'forExample' | translate}} {{'egMail' | translate}}"></div>
+          <div *ngIf="!userForm.controls['email'].untouched && userForm.controls['email'].hasError('email')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'EmailFormat' | translate}}.
+        </div>
+      </div>
+
       <div class="ui-g-12 ui-md-6">
         <div>{{'password' | translate}}:</div>
         <div><input pInputText formControlName="password"></div>
@@ -29,23 +38,16 @@
           {{'PwdMinLength' | translate}}.
         </div>
       </div>
-      <div class="ui-g-12 ui-md-6">
-        <div>{{'email' | translate}}:</div>
-        <div><input pInputText formControlName="email"></div>
-          <div *ngIf="!userForm.controls['email'].untouched && userForm.controls['email'].hasError('email')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
-          {{'EmailFormat' | translate}}.
-        </div>
-      </div>
 
       <div class="ui-g-12 ui-md-6">
         <div>{{'phoneoffice' | translate}}:</div>
-        <div><input pInputText formControlName="phone"></div>
+        <div><input pInputText formControlName="phone" placeholder="{{'forExample' | translate}} +49 1234567890"></div>
         <div *ngIf="userForm.controls['phone'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'PhoneMaxLength' | translate}}.
         </div>
       </div>
       <div class="ui-g-12 ui-md-6">
-        <div>{{'alias' | translate}}:</div>
+        <div>{{'aliasOrDriver' | translate}}:</div>
         <div><input pInputText formControlName="alias"></div>
         <div *ngIf="userForm.controls['alias'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'AliasMaxLength' | translate}}.
@@ -54,7 +56,7 @@
 
       <div class="ui-g-12 ui-md-6">
         <div>{{'phonemobile' | translate}}:</div>
-        <div><input pInputText formControlName="phoneMobile"></div>
+        <div><input pInputText formControlName="phoneMobile" placeholder="{{'forExample' | translate}} +49 1234567890"></div>
         <div *ngIf="userForm.controls['phoneMobile'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
           {{'PhoneMaxLength' | translate}}.
         </div>
