@@ -51,6 +51,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -68,6 +69,7 @@ import org.deku.leoz.mobile.ui.screen.BaseCameraScreen
 import org.deku.leoz.mobile.ui.screen.CameraScreen
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
+import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
 import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
@@ -129,6 +131,8 @@ open class Activity : BaseActivity(),
 
     // Process models
     private val login: Login by Kodein.global.lazy.instance()
+
+    private val connectivity: Connectivity by Kodein.global.lazy.instance()
 
     private val mqttDispatcher: MqttDispatcher by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
@@ -296,6 +300,9 @@ open class Activity : BaseActivity(),
             )
         }
 
+        DataBindingUtil.bind<ViewConnectivityIndicatorBinding>(this.uxConnectivityIndicator).also {
+            it.connectivity = ConnectivityViewModel(this.connectivity)
+        }
         //endregion
 
         //region Progress bar / activity indicator

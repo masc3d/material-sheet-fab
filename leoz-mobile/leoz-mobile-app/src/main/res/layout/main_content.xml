@@ -83,8 +83,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|end"
-                    android:layout_marginEnd="@dimen/margin"
+                    android:layout_marginEnd="@dimen/small_margin"
                     >
+
+                    <ProgressBar
+                        android:id="@+id/uxProgressBar"
+                        android:layout_width="@dimen/progress_size_medium"
+                        android:layout_height="@dimen/progress_size_medium"
+                        android:layout_gravity="center"
+                        android:visibility="gone"
+                        />
 
                     <include
                         android:id="@+id/uxUpdateIndicator"
@@ -96,12 +104,9 @@
                         layout="@layout/view_mq_indicator"
                         />
 
-                    <ProgressBar
-                        android:id="@+id/uxProgressBar"
-                        android:layout_width="@dimen/progress_size_medium"
-                        android:layout_height="@dimen/progress_size_medium"
-                        android:layout_gravity="center"
-                        android:visibility="gone"
+                    <include
+                        android:id="@+id/uxConnectivityIndicator"
+                        layout="@layout/view_connectivity_indicator"
                         />
 
                 </LinearLayout>
