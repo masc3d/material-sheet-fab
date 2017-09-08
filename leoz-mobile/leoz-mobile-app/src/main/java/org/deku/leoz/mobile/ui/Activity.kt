@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
@@ -15,8 +16,7 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
-import android.support.transition.Fade
-import android.support.transition.TransitionManager
+import android.support.transition.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
@@ -24,10 +24,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.text.InputType
 import android.util.TypedValue
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
@@ -46,12 +43,15 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
+import kotlinx.android.synthetic.main.view_update_indicator.*
+import kotlinx.android.synthetic.main.view_update_indicator.view.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
@@ -67,6 +67,7 @@ import org.deku.leoz.mobile.ui.screen.BaseCameraScreen
 import org.deku.leoz.mobile.ui.screen.CameraScreen
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
+import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
@@ -158,14 +159,16 @@ open class Activity : BaseActivity(),
     /**
      * Ref counting progress indicator, wrapping a progress bar
      */
-    class ProgressIndicator(
+    inner class ProgressIndicator(
             val progressBar: ProgressBar
     ) {
         private var refCount = 0
 
         fun show() {
             refCount++
-            this.progressBar.post { this.progressBar.visibility = View.VISIBLE }
+            this.progressBar.post {
+                this.progressBar.visibility = View.VISIBLE
+            }
         }
 
         fun hide() {
@@ -174,7 +177,9 @@ open class Activity : BaseActivity(),
 
             refCount--
             if (refCount == 0)
-                this.progressBar.post { this.progressBar.visibility = View.GONE }
+                this.progressBar.post {
+                    this.progressBar.visibility = View.GONE
+                }
         }
     }
 
@@ -274,16 +279,26 @@ open class Activity : BaseActivity(),
 
         this.setContentView(R.layout.main)
 
-        this.uxNavView.setNavigationItemSelectedListener(this)
+        //region Manual bindings
+        DataBindingUtil.bind<ViewUpdateIndicatorBinding>(this.uxUpdateIndicator).also {
+            it.updateService = UpdateServiceViewModel(this.updateService)
+        }
+        //endregion
 
         //region Progress bar / activity indicator
-
         // Change progress bar color, as this is apparently not themable and there's no proper
         // way to do this in xml layout that is compatible down to 4.x
+        // TODO: this rather hacky solution should be removed when API level 21 is minimum, which supports `indeterminateTint` attributes
         this.uxProgressBar.indeterminateDrawable.setColorFilter(
                 ContextCompat.getColor(this, R.color.colorDarkGrey),
                 PorterDuff.Mode.SRC_IN);
+
+        this.uxUpdateIndicator.uxUpdateProgressBar.indeterminateDrawable.setColorFilter(
+                ContextCompat.getColor(this, R.color.colorGrey),
+                PorterDuff.Mode.SRC_IN);
         //endregion
+
+        this.uxNavView.setNavigationItemSelectedListener(this)
 
         //region Action bar
         this.setSupportActionBar(this.uxToolbar)

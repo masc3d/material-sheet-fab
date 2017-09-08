@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.view.View
 import android.widget.ImageView
+import sx.android.view.CircularProgressView
 
 /**
  * Data binding adatpers
@@ -39,6 +40,11 @@ class DataBindingAdatpers {
         @BindingAdapter("android:background")
         @JvmStatic fun setBackground(view: View, resource: Int){
             view.setBackgroundResource(resource)
+        }
+
+        @BindingAdapter("cpv_progress")
+        @JvmStatic fun setProgress(view: CircularProgressView, progress: Float) {
+            view.progress = progress
         }
     }
 }

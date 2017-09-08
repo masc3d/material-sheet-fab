@@ -73,18 +73,35 @@
                 android:id="@+id/uxToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:animateLayoutChanges="true"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
                 >
 
-                <ProgressBar
-                    android:id="@+id/uxProgressBar"
-                    android:visibility="gone"
-                    android:layout_width="@dimen/progress_size_medium"
-                    android:layout_height="@dimen/progress_size_medium"
+                <LinearLayout
+                    android:id="@+id/uxStatusBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="top|end"
                     android:layout_marginEnd="@dimen/margin"
-                    />
+                    android:animateLayoutChanges="true"
+                    >
+
+                    <include
+                        android:id="@+id/uxUpdateIndicator"
+                        layout="@layout/view_update_indicator"
+                        />
+
+                    <ProgressBar
+                        android:id="@+id/uxProgressBar"
+                        android:layout_width="@dimen/progress_size_medium"
+                        android:layout_height="@dimen/progress_size_medium"
+                        android:layout_gravity="center"
+                        android:visibility="gone"
+                        />
+
+                </LinearLayout>
+
 
             </android.support.v7.widget.Toolbar>
 

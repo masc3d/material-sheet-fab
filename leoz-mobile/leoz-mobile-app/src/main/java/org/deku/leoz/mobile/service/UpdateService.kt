@@ -107,11 +107,19 @@ class UpdateService(
 
     data class AvailableUpdateEvent(val apk: ApplicationPackage, val version: String)
 
+    data class DownloadProgressEvent(val progress: Float)
+
     /**
      * Available update event (behaviour subject, most recent event will be fire on registration)
      */
     val availableUpdateEvent by lazy { this.availableUpdateEventSubject.hide() }
     private val availableUpdateEventSubject by lazy { BehaviorSubject.create<AvailableUpdateEvent>().toSerialized() }
+
+    /**
+     * Download progress event
+     */
+    val downloadProgressEvent by lazy { this.downloadProgressEventSubject.hide() }
+    private val downloadProgressEventSubject by lazy { BehaviorSubject.create<DownloadProgressEvent>().toSerialized() }
 
     override fun onStart() {
         super.onStart()
@@ -171,6 +179,7 @@ class UpdateService(
                             output = stream,
                             progressCallback = { p: Float, bytesCopied: Long ->
                                 log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")
+                                this@UpdateService.downloadProgressEventSubject.onNext(DownloadProgressEvent(p))
                             })
 
                     bundleService.download(
