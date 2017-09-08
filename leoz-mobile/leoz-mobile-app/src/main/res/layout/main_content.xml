@@ -92,6 +92,11 @@
                         layout="@layout/view_update_indicator"
                         />
 
+                    <include
+                        android:id="@+id/uxMqIndicator"
+                        layout="@layout/view_mq_indicator"
+                        />
+
                     <ProgressBar
                         android:id="@+id/uxProgressBar"
                         android:layout_width="@dimen/progress_size_medium"

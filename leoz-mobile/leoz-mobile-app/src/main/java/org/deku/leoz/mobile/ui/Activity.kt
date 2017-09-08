@@ -51,6 +51,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
@@ -67,6 +68,7 @@ import org.deku.leoz.mobile.ui.screen.BaseCameraScreen
 import org.deku.leoz.mobile.ui.screen.CameraScreen
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
+import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.locationManager
@@ -79,6 +81,7 @@ import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTintRes
+import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
 import java.util.*
@@ -126,6 +129,8 @@ open class Activity : BaseActivity(),
 
     // Process models
     private val login: Login by Kodein.global.lazy.instance()
+
+    private val mqttDispatcher: MqttDispatcher by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
 
     /** Action items */
@@ -283,6 +288,14 @@ open class Activity : BaseActivity(),
         DataBindingUtil.bind<ViewUpdateIndicatorBinding>(this.uxUpdateIndicator).also {
             it.updateService = UpdateServiceViewModel(this.updateService)
         }
+
+        DataBindingUtil.bind<ViewMqIndicatorBinding>(this.uxMqIndicator).also {
+            it.mqStatistics = MqStatisticsViewModel(
+                    mqttDispatcher = this.mqttDispatcher,
+                    mqttEndpoints = this.mqttEndpoints
+            )
+        }
+
         //endregion
 
         //region Progress bar / activity indicator
