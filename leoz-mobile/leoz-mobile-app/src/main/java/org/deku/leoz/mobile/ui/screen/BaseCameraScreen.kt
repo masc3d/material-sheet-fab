@@ -23,6 +23,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.jetbrains.anko.imageBitmap
 import org.slf4j.LoggerFactory
 import sx.android.Device
+import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
 import sx.rx.subscribeOn
 import java.util.concurrent.ExecutorService
@@ -124,6 +125,45 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
             this.uxContainer.addView(overlayView)
         }
 
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_camera_trigger,
+                        iconRes = android.R.drawable.ic_menu_camera,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary
+                ),
+                ActionItem(
+                        id = R.id.action_camera_flash,
+                        iconRes = R.drawable.ic_flash,
+                        iconTintRes = android.R.color.black,
+                        colorRes = R.color.colorDarkGrey,
+                        alignEnd = false
+                ),
+                ActionItem(
+                        id = R.id.action_camera_save_finish,
+                        iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary,
+                        visible = false
+                ),
+                ActionItem(
+                        id = R.id.action_camera_save,
+                        iconRes = R.drawable.ic_done_plus,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary,
+                        visible = false
+                ),
+                ActionItem
+                (
+                        id = R.id.action_camera_discard,
+                        iconRes = R.drawable.ic_circle_cancel,
+                        iconTintRes = android.R.color.black,
+                        colorRes = R.color.colorAccent,
+                        alignEnd = false,
+                        visible = false
+                )
+        )
+
         this.torchEnabled = false
     }
 
@@ -140,6 +180,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
         this.torchEnabledProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
                 .subscribe {
                     this.uxCameraView.flash = when (it.value) {
                         true -> CameraKit.Constants.FLASH_TORCH
@@ -211,47 +252,29 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
     private fun showCaptureActions() {
         this.uxPreviewImage.visibility = View.GONE
         this.uxCameraView.visibility = View.VISIBLE
-        this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_camera_trigger,
-                        iconRes = android.R.drawable.ic_menu_camera,
-                        iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary
-                ),
-                ActionItem(
-                        id = R.id.action_camera_flash,
-                        iconRes = R.drawable.ic_flash,
-                        iconTintRes = android.R.color.black,
-                        colorRes = R.color.colorDarkGrey,
-                        alignEnd = false
-                )
-        )
+
+        this.actionItems = this.actionItems.apply {
+            forEach {
+                when (it.id) {
+                    R.id.action_camera_trigger,
+                    R.id.action_camera_flash -> it.visible = true
+                    else -> it.visible = false
+                }
+            }
+        }
     }
 
     private fun showImageActions() {
         this.uxPreviewImage.visibility = View.VISIBLE
         this.uxCameraView.visibility = View.GONE
-        this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_camera_save_finish,
-                        iconRes = R.drawable.ic_finish,
-                        iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary
-                ),
-                ActionItem(
-                        id = R.id.action_camera_save,
-                        iconRes = R.drawable.ic_done_plus,
-                        iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary
-                ),
-                ActionItem
-                (
-                        id = R.id.action_camera_discard,
-                        iconRes = R.drawable.ic_circle_cancel,
-                        iconTintRes = android.R.color.black,
-                        colorRes = R.color.colorAccent,
-                        alignEnd = false
-                )
-        )
+        this.actionItems = this.actionItems.apply {
+            forEach {
+                when (it.id) {
+                    R.id.action_camera_trigger,
+                    R.id.action_camera_flash -> it.visible = false
+                    else -> it.visible = true
+                }
+            }
+        }
     }
 }
