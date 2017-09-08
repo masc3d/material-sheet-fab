@@ -133,7 +133,6 @@ class StartupActivity : BaseActivity() {
                                     // Log device info/serial
                                     val device: Device = Kodein.global.instance()
                                     log.info(device.toString())
-                                    log.info("Android version ${device.androidVersion}")
 
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
