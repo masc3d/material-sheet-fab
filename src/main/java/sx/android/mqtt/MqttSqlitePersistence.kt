@@ -23,8 +23,7 @@ import sx.mq.mqtt.toPersistentMessage
  */
 class MqttSqlitePersistence constructor(
         private val databaseFile: File
-)
-    : IMqttPersistence {
+) : IMqttPersistence {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -105,7 +104,7 @@ class MqttSqlitePersistence constructor(
                     asMapSequence().forEach {
                         onSubscribe.onNext(parser.parseRow(it))
                     }
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     onSubscribe.onError(e)
                     return@exec
                 }
@@ -121,4 +120,30 @@ class MqttSqlitePersistence constructor(
                 args = COL_ID to message.persistentId
         )
     }
+
+    override fun count(): Map<String, Int> {
+        // Aggregate column
+        val COL_ID_COUNT = "COUNT(${COL_ID})"
+
+        return this.db
+                .select(
+                        tableName = TABLE_NAME,
+                        columns = *arrayOf(COL_ID_COUNT, COL_TOPIC)
+                )
+                .groupBy(COL_TOPIC)
+                .exec {
+                    // Parser for aggregate result
+                    val parser = object : MapRowParser<Pair<String, Int>> {
+                        override fun parseRow(columns: Map<String, Any?>): Pair<String, Int> =
+                                Pair(columns.getString(COL_TOPIC), columns.getInt(COL_ID_COUNT))
+                    }
+
+                    // Convert to map
+                    asMapSequence().map {
+                        parser.parseRow(it)
+                    }
+                            .toMap()
+                }
+    }
+
 }
