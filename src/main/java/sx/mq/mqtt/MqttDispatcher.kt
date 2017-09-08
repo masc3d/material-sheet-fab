@@ -1,30 +1,25 @@
 package sx.mq.mqtt
 
-import io.reactivex.BackpressureStrategy
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.BiFunction
-import io.reactivex.rxkotlin.flatMapSequence
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.toSingle
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttException.REASON_CODE_CLIENT_CONNECTED
 import org.eclipse.paho.client.mqttv3.MqttMessage
-import org.eclipse.paho.client.mqttv3.internal.wire.MqttPublish
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
-import sx.rx.*
+import sx.rx.retryWithExponentialBackoff
+import sx.rx.subscribeOn
+import sx.rx.toHotCache
 import sx.time.Duration
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.properties.Delegates
 
 /**
  * MQTT dispatcher
@@ -41,7 +36,22 @@ class MqttDispatcher(
 
     private val lock = ReentrantLock()
 
+    /** Statistics update event. Provides a map of topic -> count */
+    val statisticsUpdateEvent by lazy { this.statisticsUpdatEventSubject.hide() }
+    private val statisticsUpdatEventSubject by lazy { BehaviorSubject.create<Map<String, Int>>() }
+
+    /** Statistics/message count cache by topic name */
+    private var statistics by Delegates.observable<MutableMap<String, Int>>(
+            initialValue = mutableMapOf(),
+            onChange = { p, o, v ->
+                // Mainly for intiail event
+                this.statisticsUpdatEventSubject.onNext(v.toMap())
+            })
+
     init {
+        // Get current statistics initially from persistence layer
+        this.statistics = this.persistence.count().toMutableMap()
+
         this.client.statusEvent.subscribe { it ->
             when (it) {
                 is MqttRxClient.Status.ConnectionLost -> {
@@ -56,6 +66,20 @@ class MqttDispatcher(
                 }
             }
         }
+    }
+
+    /**
+     * Internal helper for maintaining statistics.
+     * Updates counter cache and emits event.
+     * @param topicName Topic name
+     * @param messageAmountAdded Amount of messages added. This can be a negative value when messages have been removed
+     */
+    private fun updateStatistics(topicName: String, messageAmountAdded: Int) {
+        val count = this.statistics.getOrPut(topicName, { 0 })
+        this.statistics.put(topicName, count + messageAmountAdded)
+
+        // Emit a copy of the statistics map
+        this.statisticsUpdatEventSubject.onNext(this.statistics.toMap())
     }
 
     /**
@@ -115,6 +139,12 @@ class MqttDispatcher(
                                         .concatWith(Completable.fromAction {
                                             // Remove from persistence when publish was successful
                                             this.persistence.remove(it)
+
+                                            this.updateStatistics(
+                                                    topicName = it.topicName,
+                                                    messageAmountAdded = -1
+                                            )
+
                                             log.trace("Removed [m${it.persistentId}]")
                                         })
                                         .toSingleDefault(it)
@@ -146,6 +176,10 @@ class MqttDispatcher(
             this.persistence.add(
                     topicName = topicName,
                     message = message)
+
+            this.updateStatistics(
+                    topicName = topicName,
+                    messageAmountAdded = 1)
 
             if (this.isConnected) {
                 // Trigger dequeue flow
