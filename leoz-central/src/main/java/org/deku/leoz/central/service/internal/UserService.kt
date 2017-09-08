@@ -127,7 +127,7 @@ class UserService : UserService {
                     title = "email exists")
         }
 
-        update(email = user.email, user = user, apiKey = apiKey, sendAppLink = (sendAppLink || true))
+        update(email = user.email, user = user, apiKey = apiKey, sendAppLink = sendAppLink)
     }
 
     override fun update(email: String, user: User, apiKey: String?, sendAppLink: Boolean) {
@@ -349,7 +349,7 @@ class UserService : UserService {
 
         //val bundleService = BundleServiceV2()
         try {
-            mailRepository.insertSms(receiver = phone, message = "Hallo und Willkommen bei mobileX. Download: http://derkurier.de/mobileX/ Zugangsdaten erhalten Sie in Ihrer Station.")
+            mailRepository.insertSms(receiver = phone, message = "Hallo und willkommen bei mobileX. Download: http://derkurier.de/mobileX/ Zugangsdaten erhalten Sie in Ihrer Station.")
         } catch (e: Exception) {
             return false
         }
