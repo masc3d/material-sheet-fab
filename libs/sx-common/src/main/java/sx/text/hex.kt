@@ -1,6 +1,7 @@
 package sx.text
 
 import java.math.BigInteger
+import javax.print.attribute.IntegerSyntax
 
 /**
  *  Extension functions to format bytes as Hex values.
@@ -45,3 +46,9 @@ fun String.parseHex(): ByteArray {
     else
         signedBytes
 }
+
+/** Convert long to hex string */
+fun Long.toHexString(): String = java.lang.Long.toHexString(this)
+
+/** Convert integer to hex string */
+fun Int.toHexString(): String = java.lang.Integer.toHexString(this)
