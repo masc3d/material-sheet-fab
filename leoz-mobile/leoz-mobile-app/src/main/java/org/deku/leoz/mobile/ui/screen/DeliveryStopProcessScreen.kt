@@ -790,13 +790,13 @@ class DeliveryStopProcessScreen :
                             .build()
                 }
 
-        // TODO: this will certainly not work. must be reactive
-        dialogs.forEach {
-            it.show()
-        }
-
         when (variant) {
             EventDeliveredReason.NEIGHBOR -> {
+                // TODO: this will certainly not work. must be reactive
+                dialogs.forEach {
+                    it.show()
+                }
+
                 if (this.deliveryStop.cashAmountToCollect > 0) {
                     this.activity.showScreen(CashScreen().also {
                         it.setTargetFragment(this, 0)
@@ -820,6 +820,11 @@ class DeliveryStopProcessScreen :
             EventDeliveredReason.NORMAL -> {
                 when {
                     this.deliveryStop.isSignatureRequired -> {
+                        // TODO: this will certainly not work. must be reactive
+                        dialogs.forEach {
+                            it.show()
+                        }
+
                         when {
                             this.deliveryStop.cashAmountToCollect > 0 -> {
                                 //Requires CashScreen to be shown
