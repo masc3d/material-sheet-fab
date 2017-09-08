@@ -17,7 +17,7 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="@{updateService.isVisible ? View.VISIBLE : View.GONE}"
+        android:visibility="@{safeUnbox(updateService.isVisible) ? View.VISIBLE : View.GONE}"
         >
 
         <sx.android.view.CircularProgressView
@@ -28,7 +28,7 @@
             app:cpv_color="@color/colorAccent"
             app:cpv_indeterminate="false"
             app:cpv_maxProgress="100"
-            app:cpv_progress="@{updateService.progress, default = 60}"
+            app:cpv_progress="@{safeUnbox(updateService.progress), default = 60}"
             app:cpv_thickness="18dp"
             />
 
