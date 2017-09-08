@@ -18,6 +18,9 @@ class AddressViewModel(val address: Address) : BaseObservable() {
     val line2: String
         get() = this.address.line2
 
+    val line3: String
+        get() = this.address.line3
+
     val street: String
         get() = "${this.address.street} ${this.address.streetNo}"
 
@@ -26,6 +29,9 @@ class AddressViewModel(val address: Address) : BaseObservable() {
 
     val hasAddressLine2
         get() = !this.address.line2.isBlank()
+
+    val hasAddressLine3
+        get() = !this.address.line3.isBlank()
 
     val hasValidPhoneNumber
         get() = this.address.hasValidPhoneNumber

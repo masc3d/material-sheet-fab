@@ -230,11 +230,19 @@
                         android:id="@+id/uxAddressLine2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/medium_margin"
                         android:text="@{stop.address.line2, default = `Address Line 2`}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                         android:visibility="@{stop.address.hasAddressLine2 ? View.VISIBLE : View.GONE}"
                         />
+
+                    <TextView
+                        android:id="@+id/uxAddressLine3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/medium_margin"
+                        android:text="@{stop.address.line3, default = `Address Line 3`}"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:visibility="@{stop.address.hasAddressLine3 ? View.VISIBLE : View.GONE}" />
 
                     <TextView
                         android:id="@+id/uxStreet"
