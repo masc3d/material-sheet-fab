@@ -960,7 +960,7 @@ open class Activity : BaseActivity(),
      */
     private fun onForeground() {
         // Check developer settings
-        if (!debugSettings.enabled && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
+        if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
             MaterialDialog.Builder(this)
                     .title("Developer options enabled")
                     .content("Developer options are enabled on your device. To continue, you must disable developer options!")
