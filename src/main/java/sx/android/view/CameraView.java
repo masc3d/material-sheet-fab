@@ -20,6 +20,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
 
     boolean mHasSurface = false;
 
+    private static final String TAG = "CAMERAVIEW";
+
     public CameraView(Context context, Function<Void, Camera> cameraProvider) {
         super(context);
         mCameraProvider = cameraProvider;
@@ -105,7 +107,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
         Camera.Size previewSize = this.getOptimalPreviewSize(previewSizes, this.getWidth(), this.getHeight());
 
         parameters.setPreviewSize(previewSize.width, previewSize.height);
-        parameters.setRotation(degrees);
+        Log.v(TAG, String.format("UPDATE ROTATION %d", rotation));
+        parameters.setRotation(rotation);
 
         mCamera.setParameters(parameters);
         mCamera.startPreview();
