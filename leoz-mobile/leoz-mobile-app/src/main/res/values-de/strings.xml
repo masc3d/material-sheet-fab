@@ -227,7 +227,7 @@
     <string name="title_missing_signature">Unterschrift fehlt</string>
     <string name="title_specify_deliverylist">Geben Sie eine Rollkarten an</string>
     <string name="title_stop_detailt">Stop Details</string>
-    <string name="title_stop_list">Stops</string>
+    <string name="title_stop_list">Tour</string>
     <string name="title_stop_merge">Stops zusammenführen</string>
     <string name="title_stop_process">Zustellung</string>
 

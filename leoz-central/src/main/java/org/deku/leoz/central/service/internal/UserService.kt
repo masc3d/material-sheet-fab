@@ -127,7 +127,7 @@ class UserService : UserService {
                     title = "email exists")
         }
 
-        update(email = user.email, user = user, apiKey = apiKey, sendAppLink = sendAppLink)
+        update(email = user.email, user = user, apiKey = apiKey, sendAppLink = (sendAppLink || true))
     }
 
     override fun update(email: String, user: User, apiKey: String?, sendAppLink: Boolean) {
