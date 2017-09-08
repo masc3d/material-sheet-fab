@@ -2,11 +2,13 @@ package org.deku.leoz.mobile
 
 import io.swagger.annotations.ApiModelProperty
 import sx.android.Device
+import sx.io.serialization.Serializable
 
 /**
  * Mobile system information, sent with authorization message
  * Created by masc on 08.09.17.
  */
+@Serializable
 data class SystemInformation(
         /** Device model */
         var model: String = "",

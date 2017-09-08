@@ -27,10 +27,10 @@
 # Required for JAX/RS, Feign
 -keep class com.fasterxml.** { *; }
 -keep class javax.ws.rs.** { *; }
--keep class org.deku.leoz.model.** { *; }
 -keep class org.deku.leoz.rest.** { *; }
 -keep class org.deku.leoz.service.** { *; }
 -keep class sx.rs.PATCH { *; }
+-keep @sx.io.serialization.Serializable public class * { *; }
 
 # Logback classes must be kept for correct function (especially when using xml configuration)
 # -keep class ch.qos.logback.classic.** { *; }
