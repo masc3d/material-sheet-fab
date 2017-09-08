@@ -210,6 +210,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
     private fun showCaptureActions() {
         this.uxPreviewImage.visibility = View.GONE
+        this.uxCameraView.visibility = View.VISIBLE
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_camera_trigger,
@@ -229,6 +230,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
     private fun showImageActions() {
         this.uxPreviewImage.visibility = View.VISIBLE
+        this.uxCameraView.visibility = View.GONE
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_camera_save_finish,
