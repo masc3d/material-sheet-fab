@@ -27,6 +27,7 @@
 # Required for JAX/RS, Feign
 -keep class com.fasterxml.** { *; }
 -keep class javax.ws.rs.** { *; }
+-keep class org.deku.leoz.model.** { *; }
 -keep class org.deku.leoz.rest.** { *; }
 -keep class org.deku.leoz.service.** { *; }
 -keep class sx.rs.PATCH { *; }
