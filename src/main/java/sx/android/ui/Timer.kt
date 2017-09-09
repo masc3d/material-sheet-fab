@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.Lifecycle
 import sx.time.Duration
@@ -17,6 +18,8 @@ import java.util.concurrent.TimeUnit
  */
 class Timer(
         val interval: Duration) : Disposable {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val intervalMillis by lazy {
         interval.toMillis()
@@ -52,10 +55,12 @@ class Timer(
     }
 
     @Synchronized private fun start() {
+        log.trace("Starting timer")
         handler.postDelayed(this.callback, intervalMillis)
     }
 
     @Synchronized private fun stop() {
+        log.trace("Stopping timer")
         handler.removeCallbacks(this.callback)
     }
 
