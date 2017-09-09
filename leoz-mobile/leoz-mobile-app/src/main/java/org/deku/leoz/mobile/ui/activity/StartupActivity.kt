@@ -133,7 +133,6 @@ class StartupActivity : BaseActivity() {
                                     // Log device info/serial
                                     val device: Device = Kodein.global.instance()
                                     log.info(device.toString())
-                                    log.info("Android version ${device.androidVersion}")
 
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
@@ -184,7 +183,7 @@ class StartupActivity : BaseActivity() {
                                                 AuthorizationService.NodeRequest(
                                                         key = identity.uid.value,
                                                         name = BundleType.LeozMobile.value,
-                                                        systemInfo = AuthorizationService.Mobile.create(device).let {
+                                                        systemInfo = SystemInformation.create(this.app, device).let {
                                                             ObjectMapper().writeValueAsString(it)
                                                         }
                                                 )

@@ -7,6 +7,7 @@
     <item name="action_camera_discard" type="id"/>
     <item name="action_camera_flash" type="id"/>
     <item name="action_camera_save" type="id"/>
+    <item name="action_camera_save_finish" type="id"/>
     <item name="action_camera_trigger" type="id"/>
     <item name="action_call" type="id"/>
     <item name="action_continue" type="id" />
@@ -30,4 +31,8 @@
     <item name="action_vehicle_loading_dev_mark_all_loaded" type="id"/>
     <item name="action_vehicle_loading_damaged" type="id"/>
     <item name="action_vehicle_loading_finished" type="id"/>
+    <item name="action_vehicle_unloading_dev_mark_all_unloaded" type="id"/>
+    <item name="action_vehicle_unloading_unload" type="id"/>
+    <item name="action_vehicle_unloading_damaged" type="id"/>
+    <item name="action_vehicle_unloading_finished" type="id"/>
 </resources>

@@ -125,4 +125,10 @@
         <item name="android:paddingTop">18dp</item>
         <item name="android:paddingBottom">18dp</item>
     </style>
+
+    <style name="AppTheme.TextAppearance.AppointmentLarge" parent="TextAppearance.AppCompat.Title">
+    </style>
+
+    <style name="AppTheme.TextAppearance.AppointmentSmall" parent="TextAppearance.AppCompat.Body2">
+    </style>
 </resources>

@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
 
     <group
         android:id="@+id/nav_group_1"
         android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_delivery"
-            android:icon="@drawable/ic_truck_delivery"
-            android:title="@string/delivery"
-            android:visible="false"/>
         <item
             android:id="@+id/nav_dev_prototype"
             android:icon="@drawable/ic_dev"
@@ -25,13 +20,14 @@
             android:title="@string/capture_image"/>
         <item
             android:id="@+id/nav_check_updates"
-            android:actionViewClass="android.widget.TextView"
-            android:icon="@android:drawable/ic_popup_sync"
+            android:icon="@drawable/ic_update"
             android:title="@string/check_for_updates"/>
         <item
             android:id="@+id/nav_send"
+            android:enabled="false"
             android:icon="@drawable/ic_bug"
-            android:title="@string/report_bug"/>
+            android:title="@string/report_bug"
+            android:visible="false" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
@@ -45,7 +41,7 @@
             android:icon="@drawable/ic_service_exchange"
             android:title="Remote settings"
             android:visible="false"
-            tools:ignore="HardcodedText" />
+            tools:ignore="HardcodedText"/>
     </group>
 
 </menu>

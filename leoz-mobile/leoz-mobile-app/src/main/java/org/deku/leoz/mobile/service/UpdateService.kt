@@ -29,12 +29,18 @@ import java.util.zip.ZipFile
 
 /**
  * Application/APK update service
+ * @param executorService Executor service to use
+ * @property bundleName Bundle name
+ * @property versionAlias Bundle version alias override
+ * @property identity This node's identity
+ * @param period Update period interval
+ * @param restClientProxy Feign client proxy to use
  * Created by masc on 10/02/2017.
  */
 class UpdateService(
         executorService: ScheduledExecutorService,
         val bundleName: String,
-        val versionAlias: String,
+        val versionAlias: String? = null,
         val identity: Identity,
         period: Duration,
         private val restClientProxy: FeignClientProxy
@@ -64,9 +70,8 @@ class UpdateService(
             }
         }
 
-        override fun toString(): String {
-            return "${bundleName}-${version}.apk"
-        }
+        override fun toString(): String
+                = "${bundleName}-${version}.apk"
     }
 
     private val storage: Storage by Kodein.global.lazy.instance()
@@ -102,18 +107,26 @@ class UpdateService(
 
     data class AvailableUpdateEvent(val apk: ApplicationPackage, val version: String)
 
+    data class DownloadProgressEvent(val progress: Float)
+
     /**
      * Available update event (behaviour subject, most recent event will be fire on registration)
      */
     val availableUpdateEvent by lazy { this.availableUpdateEventSubject.hide() }
     private val availableUpdateEventSubject by lazy { BehaviorSubject.create<AvailableUpdateEvent>().toSerialized() }
 
+    /**
+     * Download progress event
+     */
+    val downloadProgressEvent by lazy { this.downloadProgressEventSubject.hide() }
+    private val downloadProgressEventSubject by lazy { BehaviorSubject.create<DownloadProgressEvent>().toSerialized() }
+
     override fun onStart() {
         super.onStart()
     }
 
     override fun run() {
-        log.info("Update cycle")
+        log.info("Update cycle [${bundleName}] version alias [${this.versionAlias}] node uid [${this.identity.shortUid}]")
 
         try {
             val bundleService = this.restClientProxy.create(BundleServiceV2::class.java)
@@ -144,7 +157,7 @@ class UpdateService(
             }
 
             if (updateInfo.latestDesignatedVersion == null) {
-                log.warn("Remote repository doesn't have a designated version for alias [${versionAlias}] pattern [${updateInfo.bundleVersionPattern}]")
+                log.warn("Remote repository doesn't have a designated version for node [${identity.shortUid}] alias [${versionAlias}] pattern [${updateInfo.bundleVersionPattern}]")
                 return
             }
 
@@ -166,6 +179,7 @@ class UpdateService(
                             output = stream,
                             progressCallback = { p: Float, bytesCopied: Long ->
                                 log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")
+                                this@UpdateService.downloadProgressEventSubject.onNext(DownloadProgressEvent(p))
                             })
 
                     bundleService.download(

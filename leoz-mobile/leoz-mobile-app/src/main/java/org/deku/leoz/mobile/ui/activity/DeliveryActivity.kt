@@ -40,6 +40,7 @@ import java.util.*
 class DeliveryActivity : Activity(),
         MenuScreen.Listener,
         VehicleLoadingScreen.Listener,
+        VehicleUnloadingScreen.Listener,
         VehicleLoadingDialog.OnDialogResultListener,
         DeliveryStopListScreen.Listener,
         DeliveryStopDetailScreen.Listener
@@ -161,6 +162,10 @@ class DeliveryActivity : Activity(),
             MenuScreen.MenuEntry.Entry.DELIVERY -> {
                 this.showScreen(DeliveryStopListScreen())
             }
+
+            MenuScreen.MenuEntry.Entry.UNLOADING -> {
+                this.showScreen(VehicleUnloadingScreen())
+            }
         }
     }
 
@@ -170,6 +175,12 @@ class DeliveryActivity : Activity(),
                 FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
         this.showScreen(DeliveryStopListScreen())
+    }
+
+    override fun onVehicleUnloadingFinalized() {
+        this.supportFragmentManager.popBackStack(
+                VehicleUnloadingScreen::class.java.canonicalName,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     /**

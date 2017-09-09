@@ -193,7 +193,7 @@ class OrderService : OrderService {
         p.id = r.id.toLong()
         p.number = toUnitNo(r.scanId)
         p.parcelType = ParcelType.valueMap.getValue(r.parcelType)
-        p.lastDeliveryListId = r.lastDeliveryListId.toInt()
+        p.lastDeliveryListId = r.lastDeliveryListId?.toInt()
         p.isDelivered = r.deliveredStatus.toInt() == 4
         p.isMissing = r.deliveredStatus.toInt() == 8 && r.lastDeliveredEventReason.toInt() == 30
         p.isDamaged = parcelRepository.statusExist(r.scanId.toLong(), "E", 8, 31)

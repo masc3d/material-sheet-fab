@@ -20,7 +20,9 @@ database:
 update:
    enabled: true
    bundle-name: 'leoz-mobile'
-   version-alias: 'snapshot'
+   # Version alias override should not be set for productive versions
+   # This setting is still required when testing on dev/integration servers
+   # version-alias: 'snapshot'
    force: false
    # Cycle period in seconds
    period: 3600

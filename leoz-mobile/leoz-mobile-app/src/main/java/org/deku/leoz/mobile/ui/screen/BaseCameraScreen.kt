@@ -23,6 +23,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.jetbrains.anko.imageBitmap
 import org.slf4j.LoggerFactory
 import sx.android.Device
+import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
 import sx.rx.subscribeOn
 import java.util.concurrent.ExecutorService
@@ -83,8 +84,8 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
         // Currently only set higher resolutions for honeywell devices
         // TODO: Regular phones may crash with either VIDEO_QUALITY_1080P or VIDEO_QUALITY_HIGHEST, this seems ot be an issue with CameraKit and needs to be fixed there.
-        if (this.device.manufacturer.type == Device.Manufacturer.Type.Honeywell)
-            this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_1080P)
+        //if (true || this.device.manufacturer.type == Device.Manufacturer.Type.Honeywell)
+        this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_1080P)
 
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
         this.uxCameraView.setFlash(CameraKit.Constants.FLASH_OFF)
@@ -124,6 +125,45 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
             this.uxContainer.addView(overlayView)
         }
 
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_camera_trigger,
+                        iconRes = android.R.drawable.ic_menu_camera,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary
+                ),
+                ActionItem(
+                        id = R.id.action_camera_flash,
+                        iconRes = R.drawable.ic_flash,
+                        iconTintRes = android.R.color.black,
+                        colorRes = R.color.colorDarkGrey,
+                        alignEnd = false
+                ),
+                ActionItem(
+                        id = R.id.action_camera_save_finish,
+                        iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary,
+                        visible = false
+                ),
+                ActionItem(
+                        id = R.id.action_camera_save,
+                        iconRes = R.drawable.ic_done_plus,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary,
+                        visible = false
+                ),
+                ActionItem
+                (
+                        id = R.id.action_camera_discard,
+                        iconRes = R.drawable.ic_circle_cancel,
+                        iconTintRes = android.R.color.black,
+                        colorRes = R.color.colorAccent,
+                        alignEnd = false,
+                        visible = false
+                )
+        )
+
         this.torchEnabled = false
     }
 
@@ -140,6 +180,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
         this.torchEnabledProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
                 .subscribe {
                     this.uxCameraView.flash = when (it.value) {
                         true -> CameraKit.Constants.FLASH_TORCH
@@ -160,8 +201,8 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    when (it) {
+                .subscribe { actionId ->
+                    when (actionId) {
                         R.id.action_camera_trigger -> {
                             // Hide trigger button
                             this.actionItems = this.actionItems.apply {
@@ -189,6 +230,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                             this.showCaptureActions()
                         }
 
+                        R.id.action_camera_save_finish,
                         R.id.action_camera_save -> {
                             this.pictureJpeg?.also {
                                 this@BaseCameraScreen.listener?.onCameraScreenImageSubmitted(
@@ -196,7 +238,10 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                                         jpeg = it)
                             } ?: log.warn("Image save invoked without picture data being available")
 
-                            this.showCaptureActions()
+                            when (actionId) {
+                                R.id.action_camera_save_finish -> this.fragmentManager.popBackStack()
+                                else -> this.showCaptureActions()
+                            }
                         }
                     }
                 }
@@ -206,40 +251,30 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
     private fun showCaptureActions() {
         this.uxPreviewImage.visibility = View.GONE
-        this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_camera_trigger,
-                        iconRes = android.R.drawable.ic_menu_camera,
-                        iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary
-                ),
-                ActionItem(
-                        id = R.id.action_camera_flash,
-                        iconRes = R.drawable.ic_flash,
-                        iconTintRes = android.R.color.black,
-                        colorRes = R.color.colorDarkGrey,
-                        alignEnd = false
-                )
-        )
+        this.uxCameraView.visibility = View.VISIBLE
+
+        this.actionItems = this.actionItems.apply {
+            forEach {
+                when (it.id) {
+                    R.id.action_camera_trigger,
+                    R.id.action_camera_flash -> it.visible = true
+                    else -> it.visible = false
+                }
+            }
+        }
     }
 
     private fun showImageActions() {
         this.uxPreviewImage.visibility = View.VISIBLE
-        this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_camera_save,
-                        iconRes = R.drawable.ic_finish,
-                        iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary
-                ),
-                ActionItem
-                (
-                        id = R.id.action_camera_discard,
-                        iconRes = R.drawable.ic_circle_cancel,
-                        iconTintRes = android.R.color.black,
-                        colorRes = R.color.colorAccent,
-                        alignEnd = false
-                )
-        )
+        this.uxCameraView.visibility = View.GONE
+        this.actionItems = this.actionItems.apply {
+            forEach {
+                when (it.id) {
+                    R.id.action_camera_trigger,
+                    R.id.action_camera_flash -> it.visible = false
+                    else -> it.visible = true
+                }
+            }
+        }
     }
 }

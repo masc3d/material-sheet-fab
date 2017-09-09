@@ -16,3 +16,9 @@ fun Address.isCompatibleStopAddressFor(other: Address): Boolean {
             { this.city.equals(other.city, ignoreCase = true) }
     ).all { it.invoke() }
 }
+
+val Address.hasValidPhoneNumber: Boolean
+    get() = when {
+        this.phone.filter { it.isDigit() }.length > 4 -> true
+        else -> false
+    }

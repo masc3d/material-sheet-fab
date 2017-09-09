@@ -1,8 +1,8 @@
 package org.deku.leoz.mobile.ui
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
@@ -16,8 +16,7 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
-import android.support.transition.Fade
-import android.support.transition.TransitionManager
+import android.support.transition.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
@@ -25,10 +24,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.text.InputType
 import android.util.TypedValue
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
@@ -47,12 +43,17 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
+import kotlinx.android.synthetic.main.view_update_indicator.*
+import kotlinx.android.synthetic.main.view_update_indicator.view.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
+import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
+import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
@@ -68,6 +69,9 @@ import org.deku.leoz.mobile.ui.screen.BaseCameraScreen
 import org.deku.leoz.mobile.ui.screen.CameraScreen
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
+import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
+import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
+import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
@@ -78,7 +82,8 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
-import sx.android.view.setIconTint
+import sx.android.view.setIconTintRes
+import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
 import java.util.*
@@ -126,6 +131,10 @@ open class Activity : BaseActivity(),
 
     // Process models
     private val login: Login by Kodein.global.lazy.instance()
+
+    private val connectivity: Connectivity by Kodein.global.lazy.instance()
+
+    private val mqttDispatcher: MqttDispatcher by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
 
     /** Action items */
@@ -159,14 +168,16 @@ open class Activity : BaseActivity(),
     /**
      * Ref counting progress indicator, wrapping a progress bar
      */
-    class ProgressIndicator(
+    inner class ProgressIndicator(
             val progressBar: ProgressBar
     ) {
         private var refCount = 0
 
         fun show() {
             refCount++
-            this.progressBar.post { this.progressBar.visibility = View.VISIBLE }
+            this.progressBar.post {
+                this.progressBar.visibility = View.VISIBLE
+            }
         }
 
         fun hide() {
@@ -175,7 +186,9 @@ open class Activity : BaseActivity(),
 
             refCount--
             if (refCount == 0)
-                this.progressBar.post { this.progressBar.visibility = View.GONE }
+                this.progressBar.post {
+                    this.progressBar.visibility = View.GONE
+                }
         }
     }
 
@@ -275,16 +288,37 @@ open class Activity : BaseActivity(),
 
         this.setContentView(R.layout.main)
 
-        this.uxNavView.setNavigationItemSelectedListener(this)
+        //region Manual bindings
+        DataBindingUtil.bind<ViewUpdateIndicatorBinding>(this.uxUpdateIndicator).also {
+            it.updateService = UpdateServiceViewModel(this.updateService)
+        }
+
+        DataBindingUtil.bind<ViewMqIndicatorBinding>(this.uxMqIndicator).also {
+            it.mqStatistics = MqStatisticsViewModel(
+                    mqttDispatcher = this.mqttDispatcher,
+                    mqttEndpoints = this.mqttEndpoints
+            )
+        }
+
+        DataBindingUtil.bind<ViewConnectivityIndicatorBinding>(this.uxConnectivityIndicator).also {
+            it.connectivity = ConnectivityViewModel(this.connectivity)
+        }
+        //endregion
 
         //region Progress bar / activity indicator
-
         // Change progress bar color, as this is apparently not themable and there's no proper
         // way to do this in xml layout that is compatible down to 4.x
+        // TODO: this rather hacky solution should be removed when API level 21 is minimum, which supports `indeterminateTint` attributes
         this.uxProgressBar.indeterminateDrawable.setColorFilter(
                 ContextCompat.getColor(this, R.color.colorDarkGrey),
                 PorterDuff.Mode.SRC_IN);
+
+        this.uxUpdateIndicator.uxUpdateProgressBar.indeterminateDrawable.setColorFilter(
+                ContextCompat.getColor(this, R.color.colorGrey),
+                PorterDuff.Mode.SRC_IN);
         //endregion
+
+        this.uxNavView.setNavigationItemSelectedListener(this)
 
         //region Action bar
         this.setSupportActionBar(this.uxToolbar)
@@ -488,10 +522,6 @@ open class Activity : BaseActivity(),
         val id = item.itemId
 
         when (id) {
-            R.id.nav_delivery -> {
-
-            }
-
             R.id.nav_camera -> {
                 // Handle the camera action
                 this.showScreen(CameraScreen())
@@ -606,12 +636,12 @@ open class Activity : BaseActivity(),
                         when (value) {
                             true -> {
                                 if (it.id == R.id.action_aidc_camera)
-                                    it.setIconTint(R.color.colorAccent)
+                                    it.setIconTintRes(R.color.colorAccent)
 
                                 it.alpha = 0.6F
                             }
                             false -> {
-                                it.setIconTint(AIDC_ACTION_ITEM_TINT)
+                                it.setIconTintRes(AIDC_ACTION_ITEM_TINT)
                                 it.alpha = this.uxActionOverlay.buttonAlpha
                             }
                         }
@@ -965,7 +995,7 @@ open class Activity : BaseActivity(),
      */
     private fun onForeground() {
         // Check developer settings
-        if (!debugSettings.enabled && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
+        if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
             MaterialDialog.Builder(this)
                     .title("Developer options enabled")
                     .content("Developer options are enabled on your device. To continue, you must disable developer options!")
@@ -1036,7 +1066,7 @@ fun <T> Observable<T>.composeAsRest(activity: Activity, @StringRes errorMessage:
                 if (errorMessage != 0) {
                     activity.snackbarBuilder
                             .message(
-                                    if (it.isConnectivityException)
+                                    if (it.isConnectivityProblem)
                                         R.string.error_connectivity
                                     else
                                         errorMessage

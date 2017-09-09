@@ -99,6 +99,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   private periodicallyUsedCallback: Function;
   private periodicallyUsedFilter: string;
   private displayedMapmode: string;
+  private selectedLocationFlag: string;
 
   constructor( private driverService: DriverService,
                private tourService: TourService,
@@ -157,6 +158,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.driverService.getDrivers();
     this.filterName = 'driverfilter';
     this.displayedMapmode = 'alldrivers';
+    this.selectedLocationFlag = null;
     if (this.selectedInterval > 0) {
       this.clearTimerMapdisplay();
       this.showAllPositionsPeriodically( 'alldrivers' );
@@ -174,6 +176,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.userService.getUsers();
     this.filterName = 'userfilter';
     this.displayedMapmode = 'allusers';
+    this.selectedLocationFlag = null;
     if (this.selectedInterval > 0) {
       this.clearTimerMapdisplay();
       this.showAllPositionsPeriodically( 'allusers' );
@@ -212,8 +215,16 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
-      this.tourService.fetchAllPositions( this.displayedMapmode, 0, this.tourDate );
       this.latestRefresh = new Date();
+      if (this.displayedMapmode === 'alldrivers' || this.displayedMapmode === 'allusers') {
+        this.tourService.fetchAllPositions( this.displayedMapmode, 0, this.tourDate );
+      } else {
+        if(this.selectedLocationFlag === 'position') {
+          this.tourService.changeActiveMarker(this.periodicallyUsedDriver, 0, this.tourDate);
+        } else {
+          this.tourService.changeActiveRoute(this.periodicallyUsedDriver, 0, this.tourDate);
+        }
+      }
     }
   }
 
@@ -259,6 +270,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.periodicallyUsedCallback = this.showPosition;
     this.showPeriodically();
     this.displayedMapmode = `${this.periodicallyUsedDriver.firstName} ${this.periodicallyUsedDriver.lastName}`;
+    this.selectedLocationFlag = 'position';
   }
 
   showRoutePeriodically( driver: Driver ) {
@@ -267,7 +279,8 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.periodicallyUsedDriver = driver;
     this.periodicallyUsedCallback = this.showRoute;
     this.showPeriodically();
-
+    this.displayedMapmode = `${this.periodicallyUsedDriver.firstName} ${this.periodicallyUsedDriver.lastName}`;
+    this.selectedLocationFlag = 'route';
   }
 
   showAllPositions( args: CallbackArguments ) {

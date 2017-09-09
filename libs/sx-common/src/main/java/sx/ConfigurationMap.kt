@@ -79,7 +79,7 @@ abstract class ConfigurationMap(vararg sources: InputStream) {
         }
     }
 
-    inline fun <reified T : Any> value(default: T) = MapValue<T>(default, T::class.java)
+    inline fun <reified T : Any?> value(default: T) = MapValue<T>(default, T::class.java)
 }
 
 /**

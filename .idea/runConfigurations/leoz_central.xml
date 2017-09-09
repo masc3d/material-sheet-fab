@@ -12,6 +12,9 @@
     <option name="PASS_PARENT_ENVS" value="true" />
     <module name="leoz-central_main" />
     <envs />
-    <method />
+    <method>
+      <option name="Make" enabled="false" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="classes" externalProjectPath="$PROJECT_DIR$/leoz-central" vmOptions="" scriptParameters="" />
+    </method>
   </configuration>
 </component>

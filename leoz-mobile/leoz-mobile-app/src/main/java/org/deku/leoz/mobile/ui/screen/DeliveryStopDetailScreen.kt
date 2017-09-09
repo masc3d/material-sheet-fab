@@ -29,6 +29,7 @@ import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -133,8 +134,7 @@ class DeliveryStopDetailScreen
 
         val serviceSection = SectionViewModel<Any>(
                 icon = R.drawable.ic_service,
-                color = R.color.colorGrey,
-                background = R.drawable.section_background_red,
+                background = R.drawable.section_background_grey,
                 title = this.getText(R.string.services).toString(),
                 items = Observable.fromIterable(listOf(services)))
 
@@ -169,7 +169,6 @@ class DeliveryStopDetailScreen
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
                                 icon = R.drawable.ic_order,
-                                color = R.color.colorGrey,
                                 background = R.drawable.section_background_grey,
                                 title = this.getText(R.string.orders).toString(),
                                 items = Observable.fromIterable(listOf(orders))
@@ -195,7 +194,6 @@ class DeliveryStopDetailScreen
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
                                 icon = R.drawable.ic_package_variant_closed,
-                                color = R.color.colorGrey,
                                 background = R.drawable.section_background_grey,
                                 title = this.getText(R.string.parcels).toString(),
                                 items = Observable.fromIterable(listOf(parcels))
@@ -234,6 +232,7 @@ class DeliveryStopDetailScreen
                         id = R.id.action_call,
                         colorRes = R.color.colorGreen,
                         iconRes = R.drawable.ic_phone,
+                        visible = this.stop.address.hasValidPhoneNumber,
                         alignEnd = false
                 ),
                 ActionItem(

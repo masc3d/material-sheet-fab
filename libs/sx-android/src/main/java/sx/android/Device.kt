@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.provider.Settings
+import sx.text.toHexString
 import java.util.*
 
 /**
@@ -97,7 +98,7 @@ open class Device(private val context: Context) {
                         .let {
                             when (it) {
                                 null -> {
-                                    val deviceId = "EMU-${UUID.randomUUID().mostSignificantBits.toString(16)}"
+                                    val deviceId = "EMU-${UUID.randomUUID().mostSignificantBits.toHexString()}"
                                     sharedPrefs.edit().also {
                                         it.putString(SHAREDPREFS_KEY_EMUSERIAL, deviceId)
                                         it.apply()
@@ -114,6 +115,6 @@ open class Device(private val context: Context) {
     val model: Model = Model()
 
     override fun toString(): String {
-        return "Device(imei=${imei}, androidId=${androidId}) serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"
+        return "Device(imei=${imei}, androidId=${androidId}) androidVersion=${androidVersion} serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"
     }
 }

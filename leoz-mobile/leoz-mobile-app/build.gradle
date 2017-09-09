@@ -61,7 +61,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 2
-        versionName "0.69-SNAPSHOT"
+        versionName "0.77-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -196,6 +196,7 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-android:$v_kodein",
             // Kodein implementation using erased types (no generics support, but much faster on android)
             "com.github.salomonbrys.kodein:kodein-erased:$v_kodein",
@@ -252,7 +253,7 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
-            'com.github.pwittchen:reactivenetwork-rx2:0.12.0',
+            'com.github.pwittchen:reactivenetwork-rx2:0.12.1',
 
             // Android (multipart) upload service
             'net.gotev:uploadservice:3.4',

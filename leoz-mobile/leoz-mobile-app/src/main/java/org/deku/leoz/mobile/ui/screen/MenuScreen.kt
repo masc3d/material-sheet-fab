@@ -45,10 +45,11 @@ class MenuScreen : ScreenFragment<Any>() {
             var counter: Int,
             var counter2: Int,
             val icon: Drawable) {
-        
-        enum class Entry(val value: Long) {
-            DELIVERY(0),
-            LOADING(1)
+
+        enum class Entry {
+            DELIVERY,
+            LOADING,
+            UNLOADING
         }
 
         constructor(entryType: Entry, description: String, counter: Int, icon: Drawable) : this(entryType, description, counter, 0, icon)
@@ -59,7 +60,7 @@ class MenuScreen : ScreenFragment<Any>() {
      */
     class MenuListAdapter(
             val context: Context,
-            val entries: List<MenuEntry>): BaseAdapter() {
+            val entries: List<MenuEntry>) : BaseAdapter() {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val inflater = context.getLayoutInflater()
@@ -87,7 +88,7 @@ class MenuScreen : ScreenFragment<Any>() {
 
         override fun getItem(position: Int): Any = entries[position]
 
-        override fun getItemId(position: Int): Long = entries[position].entryType.value
+        override fun getItemId(position: Int): Long = entries[position].entryType.hashCode().toLong()
 
         override fun getCount(): Int = entries.size
     }
@@ -110,7 +111,7 @@ class MenuScreen : ScreenFragment<Any>() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-       this.uxMenuList.adapter = MenuListAdapter(
+        this.uxMenuList.adapter = MenuListAdapter(
                 context = context,
                 entries = mutableListOf(
                         MenuEntry(
@@ -118,13 +119,20 @@ class MenuScreen : ScreenFragment<Any>() {
                                 description = this.getText(R.string.vehicle_loading).toString(),
                                 counter = deliveryList.pendingParcels.get().count(),
                                 counter2 = deliveryList.loadedParcels.blockingFirst().value.count(),
-                                icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_pickup)!!
+                                icon = this.context.getDrawable(R.drawable.ic_truck_loading)
                         ),
                         MenuEntry(
                                 entryType = MenuEntry.Entry.DELIVERY,
-                                description = this.getText(R.string.delivery).toString(),
+                                description = this.getText(R.string.tour).toString(),
                                 counter = delivery.pendingStops.blockingFirst().value.count(),
-                                icon = AppCompatResources.getDrawable(context, R.drawable.ic_format_list_bulleted)!!
+                                icon = this.context.getDrawable(R.drawable.ic_format_list_bulleted)
+                        ),
+                        MenuEntry(
+                                entryType = MenuEntry.Entry.UNLOADING,
+                                description = this.getText(R.string.vehicle_unloading).toString(),
+                                counter = deliveryList.loadedParcels.get().count(),
+                                counter2 = deliveryList.pendingParcels.blockingFirst().value.count(),
+                                icon = this.context.getDrawable(R.drawable.ic_truck_unloading)
                         )
                 ))
 

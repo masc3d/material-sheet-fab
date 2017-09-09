@@ -21,7 +21,7 @@ interface UserService {
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
         const val PREF_TYPE = "preference-type"
-        const val SEND_CRED = "send-credentials"
+        const val SEND_APP_LINK_SMS = "send-app-sms"
         //const val DEBITOR_NO = "debitor-no"
         //const val HEADERPARAM_APIKEY = "x-api-key"
     }
@@ -105,7 +105,7 @@ interface UserService {
     @Path("/{$USER_ID}")
     @ApiOperation(value = "Get user by ID")
     fun getById(
-            @QueryParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
+            @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
     ): User
 
@@ -116,7 +116,11 @@ interface UserService {
     @POST
     @Path("/")
     @ApiOperation(value = "Create user")
-    fun create(@ApiParam(value = "User") user: User, @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?, @QueryParam(value = SEND_CRED) @ApiParam(value = "Send credentials to newly created user?", required = false) sendCredentials: Boolean = false)
+    fun create(
+            @ApiParam(value = "User") user: User,
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?,
+            @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "true") @DefaultValue("true") sendAppLink: Boolean = true
+    )
 
     /**
      * Update user (replaces entire user)
@@ -129,5 +133,10 @@ interface UserService {
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
                @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?,
-               @QueryParam(value = SEND_CRED) @ApiParam(value = "Send credentials to newly created user?", required = false, hidden = true) sendCredentials: Boolean = false)
+               @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "false", hidden = true) @DefaultValue("false") sendAppLink: Boolean = false)
+
+    @POST
+    @Path("/{$USER_ID}/sendAppLink")
+    @ApiOperation(value = "Send App download-link")
+    fun sendDownloadLink(@PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): Boolean
 }

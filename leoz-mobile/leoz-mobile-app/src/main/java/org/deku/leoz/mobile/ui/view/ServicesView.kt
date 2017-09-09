@@ -1,23 +1,20 @@
 package org.deku.leoz.mobile.ui.view
 
 import android.content.Context
-import android.databinding.Bindable
-import android.databinding.BindingMethod
-import android.databinding.BindingMethods
-import android.support.annotation.DimenRes
+import android.graphics.Color
+import android.support.annotation.ColorInt
 import android.support.annotation.Dimension
+import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
 import org.jetbrains.anko.imageResource
 import org.slf4j.LoggerFactory
 import sx.android.convertDpToPx
+import sx.android.view.setIconTint
 import java.util.*
 
 /**
@@ -48,10 +45,14 @@ class ServicesView : LinearLayout {
     }
 
     @Dimension(unit = Dimension.PX)
-    var imageMargin: Int = this.context.convertDpToPx(8.0F)
+    private var imageMargin: Int = this.context.convertDpToPx(8.0F)
 
     @Dimension(unit = Dimension.PX)
-    var imageSize: Int = this.context.convertDpToPx(24.0F)
+    private var imageSize: Int = this.context.convertDpToPx(24.0F)
+
+    private var imageTint: Int = Color.BLACK
+        @ColorInt get
+        @ColorInt set
 
     var services: List<ParcelService> = listOf()
         set(value: List<ParcelService>) {
@@ -66,6 +67,7 @@ class ServicesView : LinearLayout {
             context.obtainStyledAttributes(attrs, R.styleable.ServicesView).also {
                 imageSize = it.getDimension(R.styleable.ServicesView_imageSize, this.imageSize.toFloat()).toInt()
                 imageMargin = it.getDimension(R.styleable.ServicesView_imageMargin, this.imageMargin.toFloat()).toInt()
+                imageTint = it.getColor(R.styleable.ServicesView_imageTint, ResourcesCompat.getColor(this.resources, android.R.color.black, null))
                 it.recycle()
             }
         }
@@ -91,10 +93,10 @@ class ServicesView : LinearLayout {
                 .map { imageResource ->
                     ImageView(this.context).also {
                         it.imageResource = imageResource
+                        it.setIconTint(this.imageTint)
                         it.layoutParams = LinearLayout.LayoutParams(
                                 this.imageSize,
                                 this.imageSize).also {
-                        }.also {
                             it.marginEnd = this.imageMargin
                         }
                     }

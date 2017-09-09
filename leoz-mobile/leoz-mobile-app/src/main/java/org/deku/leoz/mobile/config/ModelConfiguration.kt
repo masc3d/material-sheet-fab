@@ -2,9 +2,7 @@ package org.deku.leoz.mobile.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
-import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.process.DeliveryList
-import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.model.process.*
 
 /**
  * Model configuration
@@ -23,6 +21,14 @@ class ModelConfiguration {
 
             bind<DeliveryList>() with singleton {
                 DeliveryList()
+            }
+
+            bind<VehicleLoading>() with singleton {
+                VehicleLoading()
+            }
+
+            bind<VehicleUnloading>() with singleton {
+                VehicleUnloading()
             }
         }
     }

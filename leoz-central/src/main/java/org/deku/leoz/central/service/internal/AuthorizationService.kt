@@ -140,6 +140,7 @@ class AuthorizationService
 
             val identityKey = Identity.Uid(message.key)
             var record = nodeJooqRepository.findByKey(message.key)
+
             if (record == null) {
                 val conflictingRecord = nodeJooqRepository.findByKeyStartingWith(identityKey.short)
                 if (conflictingRecord != null) {
@@ -154,9 +155,12 @@ class AuthorizationService
                     record.sysInfo = message.systemInfo
                     record.store()
                 }
-            }
+            } else {
+                // Update record
+                record.bundle = message.name
+                record.sysInfo = message.systemInfo
+                record.store()
 
-            if (record != null) {
                 val isAuthorized = record.authorized != null && record.authorized != 0
 
                 if (isAuthorized)

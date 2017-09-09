@@ -48,6 +48,7 @@
                 android:layout_width="@dimen/icon_size"
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center_vertical"
+                android:tint="@{header.colorInt}"
                 android:src="@{header.icon, default=@drawable/ic_truck}"
                 android:layout_marginEnd="@dimen/large_margin"
                 />

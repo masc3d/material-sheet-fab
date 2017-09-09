@@ -38,6 +38,8 @@ def assertJvmVersion(String vmVersion) {
 assertJvmVersion(v_jvm)
 
 buildscript {
+    apply from: 'versions.gradle'
+
     ext {
         v_jgit = '4.8.0.201706111038-r'
         v_jsch = '0.0.9'
@@ -56,6 +58,7 @@ buildscript {
         classpath "sx:sx-common:0.1"
         classpath "sx:sx-packager-gradle:0.1"
         classpath "sx:sx-serialization:0.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
 
         classpath(
                 "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0",
@@ -94,6 +97,7 @@ ext {
 
 // Common configuration for all subprojects (including android)
 subprojects {
+
     // Common subproject buildscript configuration
     buildscript {
         repositories {
@@ -121,6 +125,10 @@ subprojects {
     }
 
     ext {
+        // Unified classes dir
+        classesDir = new File(buildDir, "classes/main")
+        testClassesDir = new File(buildDir, "classes/test")
+
         globalPlatformDir = new File(project.rootDir, 'platform')
         rsyncPlatformDir = new File(project(':sx-rsync').projectDir, 'platform')
 
@@ -129,13 +137,24 @@ subprojects {
         projectPlatformDir = new File(project.projectDir, 'platform')
     }
 
+    plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper).whenPluginAdded {
+        kotlin.copyClassesToJavaOutput = true
+        sourceSets.main.kotlin.outputDir = classesDir
+        sourceSets.test.kotlin.outputDir = testClassesDir
+    }
+
     plugins.withType(JavaPlugin).whenPluginAdded {
         //region Since IJ-2017.2, default output path is `out`. Unify so both build toolchains share the same output path
         // REMARK: possibly a better approach would be to synchronize gradle build output to IJ out directories
         project.apply plugin: 'idea'
+
+        sourceSets.main.java.outputDir = classesDir
+        sourceSets.test.java.outputDir = testClassesDir
+
         project.idea {
             module {
                 outputDir = project.sourceSets.main.output.classesDir
+                testOutputDir = project.sourceSets.test.output.classesDir
             }
         }
         //endregion

@@ -405,6 +405,7 @@ enum class Event(val value: Int, val creator: Char, val concatId: Int) {
     IMPORT_RECEIVE(103, 'E', 1),
     IN_DELIVERY(120, 'E', 7),
     NOT_IN_DELIVERY(174,'E',11),
+    TOUR_UNLOADED(175,'E',12),
     INFO(127, 'H', 127),
     LEADSEAL_DOES_NOT_MATCH(171, 'H', 171),
     LINE_DELAY(147, 'H', 147),

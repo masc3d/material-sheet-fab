@@ -20,8 +20,8 @@ import org.deku.leoz.mobile.ui.Fragment
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader
-import sx.android.view.setBackgroundTint
-import sx.android.view.setIconTint
+import sx.android.view.setBackgroundTintRes
+import sx.android.view.setIconTintRes
 
 /**
  * Aidc camera fragment
@@ -90,7 +90,7 @@ class AidcCameraFragment : Fragment<Any>() {
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    this.fab_aidc_camera_torch.setIconTint(
+                    this.fab_aidc_camera_torch.setIconTintRes(
                             if (it.value)
                                 R.color.colorAccent
                             else
@@ -103,12 +103,12 @@ class AidcCameraFragment : Fragment<Any>() {
                     this.fab_aidc_camera_pin.also { fab ->
                         when (it) {
                             true -> {
-                                fab.setBackgroundTint(R.color.colorPrimary)
-                                fab.setIconTint(android.R.color.white)
+                                fab.setBackgroundTintRes(R.color.colorPrimary)
+                                fab.setIconTintRes(android.R.color.white)
                             }
                             false -> {
-                                fab.setBackgroundTint(R.color.colorDarkGrey)
-                                fab.setIconTint(android.R.color.black)
+                                fab.setBackgroundTintRes(R.color.colorDarkGrey)
+                                fab.setIconTintRes(android.R.color.black)
                             }
                         }
                     }

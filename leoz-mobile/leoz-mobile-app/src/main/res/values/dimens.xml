@@ -4,6 +4,7 @@
     <dimen name="nav_header_height">176dp</dimen>
 
     <!-- Icons -->
+    <dimen name="icon_size_small">20dp</dimen>
     <dimen name="icon_size">24dp</dimen>
     <dimen name="icon_size_large">32dp</dimen>
 
