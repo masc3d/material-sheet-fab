@@ -20,7 +20,7 @@ class Storage(val context: Context) {
 
     val externalDir: File by lazy {
         val dirs = ContextCompat.getExternalFilesDirs(this.context, null)
-        log.info("Eexternal storage dirs [${dirs.joinToString(", ")}]")
+        log.info("External storage dirs [${dirs.joinToString(", ")}]")
         dirs.filter { it != null }.first()
     }
 
