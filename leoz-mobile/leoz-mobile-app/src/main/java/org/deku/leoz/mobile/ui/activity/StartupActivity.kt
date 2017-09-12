@@ -140,7 +140,11 @@ class StartupActivity : BaseActivity() {
 
                                     // Write device management identity
                                     val deviceManagement: DeviceManagmeent = Kodein.global.instance()
-                                    deviceManagement.saveIdentityFile()
+
+                                    // Save device management identity file for specific models/manufacturers
+                                    if (device.manufacturer.type == Device.Manufacturer.Type.Honeywell) {
+                                        deviceManagement.saveIdentityFile()
+                                    }
 
                                     // Setup locale
                                     val locale = resources.configuration.locale
