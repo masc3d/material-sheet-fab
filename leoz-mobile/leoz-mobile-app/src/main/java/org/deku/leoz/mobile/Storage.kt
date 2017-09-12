@@ -24,6 +24,12 @@ class Storage(val context: Context) {
         dirs.filter { it != null }.first()
     }
 
+    val deviceMgmtDir: File by lazy {
+        val deviceMgmtDir = File(this.externalDir, "mdm${File.separator}")
+        deviceMgmtDir.mkdirs()
+        deviceMgmtDir
+    }
+
     val cacheDir: File by lazy {
         val cachePath = this.context.cacheDir
         log.info("Cache path [${cachePath}]")

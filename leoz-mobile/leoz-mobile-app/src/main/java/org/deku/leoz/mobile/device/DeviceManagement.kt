@@ -12,7 +12,7 @@ import java.io.FileWriter
  * @property path Base directory for device management related files
  * @property identity Device identity
  */
-class DeviceManagmeent(
+class DeviceManagement(
         val path: File,
         val identity: Identity
 ) {
