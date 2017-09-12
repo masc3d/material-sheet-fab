@@ -18,6 +18,9 @@ export class DriverService {
   private driversSubject = new BehaviorSubject<Driver[]>( [] );
   public drivers = this.driversSubject.asObservable().distinctUntilChanged();
 
+  private currentDriversSubject = new BehaviorSubject<Driver>( <Driver> {} );
+  public currentDriver = this.currentDriversSubject.asObservable().distinctUntilChanged();
+
   constructor( private http: Http,
                private msgService: MsgService ) {
   }
@@ -31,9 +34,16 @@ export class DriverService {
     } );
 
     this.http.get( this.driverListUrl, options )
-      .subscribe( ( response: Response ) => this.driversSubject.next( <Driver[]> response.json() ),
+      .subscribe( ( response: Response ) => {
+          const drivers = <Driver[]> response.json();
+          const onlyCurrDriver = drivers.filter( ( driver: Driver ) => driver.email === currUser.user.email );
+          const currDriver = onlyCurrDriver.length > 0 ? onlyCurrDriver[0] : <Driver> {};
+          this.driversSubject.next( drivers );
+          this.currentDriversSubject.next( currDriver );
+        },
         ( error: Response ) => {
           this.driversSubject.next( <Driver[]> [] );
+          this.currentDriversSubject.next( <Driver> {} );
           this.msgService.handleResponse( error );
         } );
   }

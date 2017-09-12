@@ -23,12 +23,12 @@ interface CallbackArguments {
 @Component( {
   selector: 'app-tour-driver-list',
   template: `
-    <div class="ui-fluid" *ngIf="isPermitted" style="margin-bottom: 10px">
+    <div class="ui-fluid" style="margin-bottom: 10px">
       <div class="ui-g">
         <div class="ui-g-12 no-pad">
-          <button pButton type="button" (click)="allUsers()" label="{{'allusers' | translate}}"
+          <button *ngIf="isPermitted" pButton type="button" (click)="allUsers()" label="{{'allusers' | translate}}"
                   style="width:190px"></button>
-          <button pButton type="button" (click)="allDrivers()" label="{{'alldrivers' | translate}}"
+          <button *ngIf="isPermitted" pButton type="button" (click)="allDrivers()" label="{{'alldrivers' | translate}}"
                   style="width:190px"></button>
           <button pButton type="button" (click)="toggleVisibility()" label="{{'showlist' | translate}}"
                   style="width:190px"></button>
@@ -142,7 +142,19 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     this.tourService.resetMarkerAndRoute();
     this.tableIsVisible = false;
     this.calendarIsVisible = false;
-    this.allDrivers();
+    if (this.isPermitted) {
+      this.allDrivers();
+    } else if (this.roleGuard.isDriver()) {
+      this.driverService.currentDriver
+        .takeUntil( this.ngUnsubscribe )
+        .subscribe( ( currentDriver: Driver ) => {
+          // empty Driver object could be returned
+          if (currentDriver.role) {
+            this.showPositionPeriodically( currentDriver );
+          }
+        } );
+      this.driverService.getDrivers();
+    }
   }
 
   ngOnDestroy() {
@@ -219,10 +231,10 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       if (this.displayedMapmode === 'alldrivers' || this.displayedMapmode === 'allusers') {
         this.tourService.fetchAllPositions( this.displayedMapmode, 0, this.tourDate );
       } else {
-        if(this.selectedLocationFlag === 'position') {
-          this.tourService.changeActiveMarker(this.periodicallyUsedDriver, 0, this.tourDate);
+        if (this.selectedLocationFlag === 'position') {
+          this.tourService.changeActiveMarker( this.periodicallyUsedDriver, 0, this.tourDate );
         } else {
-          this.tourService.changeActiveRoute(this.periodicallyUsedDriver, 0, this.tourDate);
+          this.tourService.changeActiveRoute( this.periodicallyUsedDriver, 0, this.tourDate );
         }
       }
     }
