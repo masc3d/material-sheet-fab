@@ -37,7 +37,6 @@ class DeviceConfiguration {
 
             bind<DeviceManagmeent>() with singleton {
                 val storage = instance<Storage>()
-                val device = instance<Device>()
                 val identity = instance<Identity>()
 
                 DeviceManagmeent(
