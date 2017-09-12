@@ -98,7 +98,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   private periodicallyUsedDriver: Driver;
   private periodicallyUsedCallback: Function;
   private periodicallyUsedFilter: string;
-  private displayedMapmode: string;
+  displayedMapmode: string;
   private selectedLocationFlag: string;
 
   constructor( private driverService: DriverService,
