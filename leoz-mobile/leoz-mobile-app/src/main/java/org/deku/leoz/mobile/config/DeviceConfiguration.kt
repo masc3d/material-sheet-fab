@@ -8,13 +8,11 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.mobile.Storage
 import org.deku.leoz.mobile.device.HardwareTones
-import org.deku.leoz.mobile.device.DeviceManagmeent
+import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.device.MutedTones
 import org.deku.leoz.mobile.device.Tones
 import sx.android.Connectivity
 import sx.android.Device
-import java.io.File
-import java.io.FileWriter
 
 /**
  * Created by n3 on 26/02/2017.
@@ -35,12 +33,12 @@ class DeviceConfiguration {
                 ).create()
             }
 
-            bind<DeviceManagmeent>() with singleton {
+            bind<DeviceManagement>() with singleton {
                 val storage = instance<Storage>()
                 val identity = instance<Identity>()
 
-                DeviceManagmeent(
-                        path = storage.externalDir,
+                DeviceManagement(
+                        path = storage.deviceMgmtDir,
                         identity = identity
                 )
             }
