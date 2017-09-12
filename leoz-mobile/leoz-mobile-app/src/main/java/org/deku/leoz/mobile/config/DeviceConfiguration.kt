@@ -15,6 +15,7 @@ import sx.android.Connectivity
 import sx.android.Device
 
 /**
+ * Device related configuration
  * Created by n3 on 26/02/2017.
  */
 class DeviceConfiguration {
@@ -38,7 +39,7 @@ class DeviceConfiguration {
                 val identity = instance<Identity>()
 
                 DeviceManagement(
-                        path = storage.deviceMgmtDir,
+                        path = storage.deviceManagementDir,
                         identity = identity
                 )
             }
