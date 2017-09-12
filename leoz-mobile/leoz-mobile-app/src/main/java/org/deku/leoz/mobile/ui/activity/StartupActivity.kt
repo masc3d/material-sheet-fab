@@ -22,6 +22,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.config.LogConfiguration
+import org.deku.leoz.mobile.device.DeviceManagmeent
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
@@ -137,6 +138,11 @@ class StartupActivity : BaseActivity() {
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
 
+                                    // Write device management identity
+                                    val deviceManagement: DeviceManagmeent = Kodein.global.instance()
+                                    deviceManagement.saveIdentityFile()
+
+                                    // Setup locale
                                     val locale = resources.configuration.locale
                                     log.info("Current locale [${locale.displayName}] country [${locale.displayCountry}] language [${locale.displayLanguage}]")
 
