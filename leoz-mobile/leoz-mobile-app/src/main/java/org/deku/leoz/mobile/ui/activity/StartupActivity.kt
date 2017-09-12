@@ -138,7 +138,7 @@ class StartupActivity : BaseActivity() {
 
                                     // Save device management identity file for specific models/manufacturers
                                     if (device.manufacturer.type == Device.Manufacturer.Type.Honeywell) {
-                                        deviceManagement.saveIdentityFile()
+                                        deviceManagement.saveDeviceFile()
                                     }
 
                                     // Setup locale

@@ -18,28 +18,27 @@ class DeviceManagement(
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val identityFile = File(path, "data.xml")
+    private val deviceFile = File(path, "device.xml")
 
-    fun saveIdentityFile() {
-        val TAG_ROOT = "mobilex"
+    /**
+     * Save device information file for mobile device management
+     */
+    fun saveDeviceFile() {
+        val TAG_ROOT = "device"
         val TAG_IDENTITY = "identity"
-        val TAG_DEVICE_ID_SHORT = "device-id-short"
-        val TAG_DEVICE_ID = "device-id"
+        val TAG_DEVICE_UID = "uid"
+        val TAG_DEVICE_UID_SHORT = "short-uid"
 
-        log.trace("Writing identity file [${identityFile}]")
+        log.trace("Writing device information file [${deviceFile}]")
 
-        FileWriter(identityFile).use { writer ->
+        FileWriter(deviceFile).use { writer ->
             Xml.newSerializer().also {
                 it.setOutput(writer)
                 it.startDocument(Charsets.UTF_8.name(), null)
                 it.startTag(null, TAG_ROOT)
                 it.startTag(null, TAG_IDENTITY)
-                it.startTag(null, TAG_DEVICE_ID_SHORT)
-                it.text(identity.shortUid)
-                it.endTag(null, TAG_DEVICE_ID_SHORT)
-                it.startTag(null, TAG_DEVICE_ID)
-                it.text(identity.uid.value)
-                it.endTag(null, TAG_DEVICE_ID)
+                it.attribute(null, TAG_DEVICE_UID, identity.uid.value)
+                it.attribute(null, TAG_DEVICE_UID_SHORT, identity.shortUid)
                 it.endTag(null, TAG_IDENTITY)
                 it.endTag(null, TAG_ROOT)
                 it.endDocument()
