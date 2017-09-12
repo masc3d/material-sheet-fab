@@ -19,13 +19,14 @@ class Storage(val context: Context) {
     }
 
     val externalDir: File by lazy {
-        val dirs = ContextCompat.getExternalFilesDirs(this.context, null)
-        log.info("External storage dirs [${dirs.joinToString(", ")}]")
-        dirs.filter { it != null }.first()
+        ContextCompat.getExternalFilesDirs(this.context, null).let {
+            log.info("External storage dirs [${it.joinToString(", ")}]")
+            it.filter { it != null }.first()
+        }
     }
 
     val deviceManagementDir: File by lazy {
-        File(this.externalDir, "mdm").also {
+        this.externalDir.resolve("mdm").also {
             log.info("Device management dir [${it}]")
             it.mkdirs()
         }
