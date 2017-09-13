@@ -250,7 +250,9 @@ class DeliveryList : CompositeDisposableSupplier {
                 return@withTransaction
 
             val task = order.deliveryTask
-            var stop = stopRepository.findStopForTask(task)
+            var stop = stopRepository
+                    .findStopForTask(task)
+                    .blockingGet()
 
             if (stop != null) {
                 stop.tasks.add(task)
