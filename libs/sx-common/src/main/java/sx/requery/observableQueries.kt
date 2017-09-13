@@ -36,9 +36,7 @@ abstract class BaseObservableQuery<Q, T>(
                 }
     }
 
-    override fun isDisposed(): Boolean {
-        return this.subscription.isDisposed
-    }
+    override fun isDisposed(): Boolean = this.subscription.isDisposed
 
     override fun dispose() {
         this.subscription.dispose()
