@@ -43,7 +43,7 @@ class MqttDispatcher(
     /** Statistics/message count cache by topic name */
     private var statistics by Delegates.observable<MutableMap<String, Int>>(
             initialValue = mutableMapOf(),
-            onChange = { p, o, v ->
+            onChange = { _, _, v ->
                 // Mainly for intiail event
                 this.statisticsUpdatEventSubject.onNext(v.toMap())
             })
