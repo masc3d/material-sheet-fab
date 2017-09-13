@@ -50,7 +50,7 @@ buildscript {
         v_spring_data_commons = '1.13.7.RELEASE'
         v_springboot = '1.5.7.RELEASE'
         // masc20172404. must not be updated to > 1.2.0 until upstream issue is resolved. https://git.derkurier.de/leoz/leoz/issues/100
-        v_sshd = '1.2.0'
+        v_sshd = '1.6.0'
         v_swagger = '1.5.16'
         v_vaadin = '7.7.7'
         v_xstream = '1.4.10'

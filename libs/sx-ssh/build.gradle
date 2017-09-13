@@ -42,7 +42,7 @@ dependencies {
             project(':sx-common'),
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             // Mina/SSHD
-            "org.apache.sshd:sshd-core:1.2.0"
+            "org.apache.sshd:sshd-core:1.6.0"
     )
 
     testCompile(
