@@ -111,6 +111,8 @@ class DeliveryStopProcessScreen :
 
     //region Model classes
     private val db: Database by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
+
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
@@ -679,7 +681,7 @@ class DeliveryStopProcessScreen :
                                         .blockingAwait()
                             }
                                     .toCompletable()
-                                    .subscribeOn(Schedulers.computation())
+                                    .subscribeOn(schedulers.database)
                                     .subscribeBy(
                                             onError = {
                                                 log.error(it.message, it)
@@ -733,7 +735,7 @@ class DeliveryStopProcessScreen :
                                 parcel.isDamaged = false
 
                                 this.parcelRepository.update(parcel)
-                                        .subscribeOn(Schedulers.computation())
+                                        .subscribeOn(schedulers.database)
                                         .subscribe()
                             }
                             .show()
@@ -758,7 +760,7 @@ class DeliveryStopProcessScreen :
 
     private fun finalizeStop() {
         this.deliveryStop.finalize()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
                 .observeOnMainThread()
                 .subscribeBy(
                         onComplete = {
@@ -879,7 +881,7 @@ class DeliveryStopProcessScreen :
                             parcel = parcel,
                             jpegPictureData = jpeg
                     )
-                            .subscribeOn(Schedulers.computation())
+                            .subscribeOn(schedulers.database)
                             .subscribe()
                 }
             }

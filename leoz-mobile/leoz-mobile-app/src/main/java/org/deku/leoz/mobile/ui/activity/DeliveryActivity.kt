@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -51,6 +51,8 @@ class DeliveryActivity : Activity(),
     private val tones: Tones by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
+
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
@@ -135,7 +137,7 @@ class DeliveryActivity : Activity(),
             MenuScreen.MenuEntry.Entry.LOADING -> {
                 this.orderRepository.hasOutdatedOrders()
                         .bindToLifecycle(this)
-                        .subscribeOn(Schedulers.computation())
+                        .subscribeOn(schedulers.database)
                         .observeOnMainThread()
                         .subscribeBy(
                                 onError =  {
@@ -157,7 +159,7 @@ class DeliveryActivity : Activity(),
                                                                     .blockingAwait()
                                                         }
                                                                 .toCompletable()
-                                                                .subscribeOn(Schedulers.computation())
+                                                                .subscribeOn(schedulers.database)
                                                                 .observeOnMainThread()
                                                                 .subscribeBy(onComplete = {
                                                                     this.showScreen(VehicleLoadingScreen())
@@ -231,7 +233,7 @@ class DeliveryActivity : Activity(),
         if (parcel.state == Parcel.State.MISSING) {
             parcel.state = Parcel.State.LOADED
             parcelRepository.update(parcel as ParcelEntity)
-                    .subscribeOn(Schedulers.computation())
+                    .subscribeOn(schedulers.database)
                     .subscribe()
         }
 

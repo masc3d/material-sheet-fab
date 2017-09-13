@@ -40,6 +40,7 @@ class DeliveryList : CompositeDisposableSupplier {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val db: Database by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     // Services
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
@@ -215,7 +216,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
                 stops
             }
-                    .subscribeOn(Schedulers.computation())
+                    .subscribeOn(schedulers.database)
                     .blockingGet()
         }
                 .toHotIoObservable(log)
@@ -265,6 +266,6 @@ class DeliveryList : CompositeDisposableSupplier {
             }
         }
                 .toCompletable()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
     }
 }

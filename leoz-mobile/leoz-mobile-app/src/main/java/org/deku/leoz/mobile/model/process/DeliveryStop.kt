@@ -40,15 +40,13 @@ class DeliveryStop(
     override val compositeDisposable = CompositeDisposable()
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
-    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
 
     private val identity: Identity by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
-
 
     /**
      * Allowed events for this stop (all levels)
@@ -328,7 +326,7 @@ class DeliveryStop(
                     }
         }
                 .toCompletable()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
     }
 
     /**
@@ -384,7 +382,7 @@ class DeliveryStop(
             update(parcel)
         }
                 .toCompletable()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
     }
 
     /**
@@ -404,7 +402,7 @@ class DeliveryStop(
             }
         }
                 .toCompletable()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
     }
 
     /**
@@ -424,7 +422,7 @@ class DeliveryStop(
             }
         }
                 .toCompletable()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
     }
 
 
@@ -530,6 +528,6 @@ class DeliveryStop(
                     )
                     //endregion
                 })
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
     }
 }

@@ -119,6 +119,7 @@ class VehicleLoadingScreen :
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val tones: Tones by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
@@ -321,7 +322,7 @@ class VehicleLoadingScreen :
                                 orderRepository.removeAll()
                                         .blockingAwait()
                             }
-                                    .subscribeOn(Schedulers.computation())
+                                    .subscribeOn(schedulers.database)
                                     .subscribe()
                         }
 
@@ -335,7 +336,7 @@ class VehicleLoadingScreen :
                                             parcelRepository.update(it).blockingGet()
                                         }
                             }
-                                    .subscribeOn(Schedulers.computation())
+                                    .subscribeOn(schedulers.database)
                                     .subscribe()
                         }
                     }
@@ -661,7 +662,7 @@ class VehicleLoadingScreen :
                                 parcel.isDamaged = false
 
                                 this.parcelRepository.update(parcel)
-                                        .subscribeOn(Schedulers.computation())
+                                        .subscribeOn(schedulers.database)
                                         .subscribe()
                             }
                             .show()
@@ -694,7 +695,7 @@ class VehicleLoadingScreen :
                                 .onPositive { _, _ ->
                                     parcel.state = Parcel.State.PENDING
                                     this.parcelRepository.update(parcel)
-                                            .subscribeOn(Schedulers.computation())
+                                            .subscribeOn(schedulers.database)
                                             .subscribe()
                                 }
                                 .show()
@@ -702,7 +703,7 @@ class VehicleLoadingScreen :
                 } else {
                     parcel.state = Parcel.State.LOADED
                     this.parcelRepository.update(parcel)
-                            .subscribeOn(Schedulers.computation())
+                            .subscribeOn(schedulers.database)
                             .subscribe()
                 }
 
@@ -717,7 +718,7 @@ class VehicleLoadingScreen :
                     parcel = parcel,
                     jpegPictureData = jpeg
             )
-                    .subscribeOn(Schedulers.computation())
+                    .subscribeOn(schedulers.database)
                     .subscribe()
         }
     }
