@@ -90,9 +90,3 @@ fun Date.toCalendar(timezone: TimeZone = TimeZone.getDefault()): Calendar {
     cal.time = this
     return cal
 }
-
-/**
- * Minus minutes
- */
-fun Date.minusMinutes(amount:Int,timezone: TimeZone= TimeZone.getDefault()): Date =
-        this.plus(Calendar.MINUTE,Math.abs(amount)*-1, timezone = timezone)

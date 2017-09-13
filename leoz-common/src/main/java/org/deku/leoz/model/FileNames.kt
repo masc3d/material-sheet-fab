@@ -1,6 +1,6 @@
 package org.deku.leoz.model
 
-import sx.time.minusMinutes
+import sx.time.plusMinutes
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,7 +19,7 @@ class FileName(val value: String, val date: Date, val type: Location, val basePa
 
     fun getPath(): Path {
         val workdate: Date = when (type) {
-            Location.QubeVu, Location.HUB -> date.minusMinutes(360)
+            Location.QubeVu, Location.HUB -> date.plusMinutes(-360)
             else -> date
         }
 
