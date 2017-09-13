@@ -186,7 +186,9 @@ class DeliveryList : CompositeDisposableSupplier {
                 val stops = deliveryList.stops.map {
                     Stop.create(
                             tasks = it.tasks.map {
-                                val order = orderRepository.findById(it.orderId)
+                                val order = orderRepository
+                                        .findById(it.orderId)
+                                        .blockingGet()
 
                                 when {
                                     order != null -> {

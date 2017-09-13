@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.model.repository
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
@@ -28,21 +29,27 @@ class OrderRepository(
     /**
      * Find order by id
      */
-    fun findById(id: Long): Order? =
-            store.select(OrderEntity::class).where(OrderEntity.ID.eq(id)).get().firstOrNull()
+    fun findById(id: Long): Maybe<OrderEntity> =
+            store.select(OrderEntity::class)
+                    .where(OrderEntity.ID.eq(id))
+                    .get().observable().firstElement()
 
     /**
      * Find oldest order creation time
      */
-    fun hasOutdatedOrders(): Boolean {
-        val minTime = store.select(OrderEntity.CREATION_TIME.min())
+    fun hasOutdatedOrders(): Single<Boolean> {
+        val MAX_AGE_HOURS = 20
+
+        return store.select(OrderEntity.CREATION_TIME.min())
                 .get()
                 .scalar<Date>()
-
-        if (minTime == null)
-            return false
-
-        return minTime.plusHours(20) < Date()
+                .map {
+                    log.trace("HERE1.1")
+                    it.plusHours(MAX_AGE_HOURS) < Date()
+                }
+                .doOnSuccess { log.trace("HERE2") }
+                .defaultIfEmpty(false)
+                .toSingle()
     }
 
     /**

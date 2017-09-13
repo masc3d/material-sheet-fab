@@ -61,7 +61,9 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val stop: Stop by lazy {
-        stopRepository.findById(this.parameters.stopId)
+        stopRepository
+                .findById(this.parameters.stopId)
+                .blockingGet()
                 ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
     }
 

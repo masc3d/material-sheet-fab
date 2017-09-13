@@ -391,7 +391,7 @@ class VehicleLoadingScreen :
                 .subscribe {
                     val section = it.value
 
-                    this.accentColor = when(section) {
+                    this.accentColor = when (section) {
                         loadedSection -> R.color.colorGreen
                         damagedSection -> R.color.colorAccent
                         else -> R.color.colorGrey
@@ -592,17 +592,20 @@ class VehicleLoadingScreen :
                         .composeAsRest(this.activity, R.string.error_no_corresponding_order)
                         .subscribeBy(
                                 onNext = { order ->
+                                    log.trace("RETRIEVED ORDER")
                                     tones.beep()
 
                                     fun mergeOrder() {
                                         this.deliveryList
                                                 .mergeOrder(order)
+                                                .andThen(
+                                                        this.parcelRepository.findByNumber(unitNumber.value))
+                                                .bindToLifecycle(this)
                                                 .observeOnMainThread()
                                                 .subscribeBy(
-                                                        onComplete = {
-                                                            this.onParcel(
-                                                                    parcel = this.parcelRepository.entities.first { it.number == unitNumber.value }
-                                                            )
+                                                        onSuccess = {
+                                                            log.trace("MERGED ORDER")
+                                                            this.onParcel(it)
                                                         },
                                                         onError = {
                                                             log.error("Merging order failed. ${it.message}", it)

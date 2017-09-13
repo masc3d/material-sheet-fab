@@ -6,6 +6,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
@@ -30,27 +31,29 @@ class StopRepository(
      * Find stop by id
      * @param id Stop id
      */
-    fun findById(id: Int): Stop? {
+    fun findById(id: Int): Maybe<StopEntity> {
         return store.select(StopEntity::class)
                 .where(StopEntity.ID.eq(id))
-                .get()
-                .firstOrNull()
+                .get().observable().firstElement()
     }
 
     /**
      * Finds a suitabtle existing stop compatible with this task
      * @param task Order task
      */
-    fun findStopForTask(task: OrderTask): Stop? {
-        return entities
-                .flatMap { it.tasks }
-                .firstOrNull {
-                    it.services.size == task.services.size &&
+    fun findStopForTask(task: OrderTask): Maybe<Stop> {
+        return store.select(OrderTaskEntity::class)
+                .get()
+                .observable()
+                .filter {
+                    it.stop != null &&
+                            it.services.size == task.services.size &&
                             it.services.containsAll(task.services) &&
                             it.hasCompatibleAppointmentsWith(task) &&
                             it.address.isCompatibleStopAddressFor(task.address)
                 }
-                ?.stop
+                .map { it.stop ?: throw IllegalArgumentException() }
+                .firstElement()
     }
 
     /**
