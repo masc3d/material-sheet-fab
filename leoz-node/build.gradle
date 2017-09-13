@@ -22,12 +22,6 @@ buildscript {
         v_rest_problem = '0.20.0'
     }
 
-    repositories {
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
-    }
-
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
         // Flyway
@@ -39,8 +33,6 @@ buildscript {
         classpath "org.jboss.forge.roaster:roaster-api:$v_roaster"
         classpath "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
         classpath "org.apache.commons:commons-lang3:$v_commons_lang"
-        // Agent plugin
-        classpath "gradle.plugin.com.zoltu:application-agent:1.0.12"
         // QueryDSL SQL codegen
         classpath "com.querydsl:querydsl-sql-codegen:$v_querydsl"
         // JOOQ
