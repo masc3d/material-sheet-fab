@@ -18,8 +18,8 @@ buildscript {
     ext {
         v_aspectj = '1.8.10'
         v_querydsl = '4.1.4'
-        v_jaxb = '2.2.11'
         v_rest_problem = '0.11.0'
+        v_jaxb = '2.3.0'
     }
 
     repositories {
