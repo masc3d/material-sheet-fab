@@ -8,18 +8,21 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
 import sx.rx.ObservableRxProperty
-import java.util.concurrent.TimeUnit
+import sx.time.Duration
 
 /**
  * Barcode reader implementation using the internal camera
  * Created by masc on 28/02/2017.
  */
 class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
+
+    /** The duration/threshold for distinct aidc reads */
+    private val distinctThreshold = Duration.ofSeconds(2)
+
     /**
      * Barcode view, tightly coupled to its parent class {@link CameraAidcReader}
      */
@@ -113,14 +116,30 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     }
 
     //region Zxing barcode callback
-    private val debounceReadEventSubject = PublishSubject.create<ReadEvent>()
-    private val debounceReadEvent = debounceReadEventSubject
+    private var distinctTimestamp = 0L
+
+    private val filteredReadEventSubject = PublishSubject.create<ReadEvent>()
+    private val filteredReadEvent = filteredReadEventSubject
             .hide()
-            .throttleFirst(500, TimeUnit.MILLISECONDS)
+            .distinctUntilChanged { previous, current ->
+                if (previous.data == current.data) {
+                    val diff = Duration.ofMillis(current.timestamp.time - distinctTimestamp)
+
+                    if (diff >= distinctThreshold)
+                        distinctTimestamp = current.timestamp.time
+
+                    diff < distinctThreshold
+                } else {
+                    distinctTimestamp = current.timestamp.time
+                    false
+                }
+            }
 
     override fun barcodeResult(result: BarcodeResult) {
         val barcodeType = barcodeTypeByFormat[result.barcodeFormat] ?: SymbologyType.Unknown
-        this.debounceReadEventSubject.onNext(ReadEvent(data = result.text, symbologyType = barcodeType))
+
+        // Forward to filter
+        this.filteredReadEventSubject.onNext(ReadEvent(data = result.text, symbologyType = barcodeType))
     }
 
     override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>) {
@@ -128,7 +147,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     //endregion
 
     init {
-        this.debounceReadEvent
+        this.filteredReadEvent
                 .subscribe {
                     this.readEventSubject.onNext(it)
                 }
