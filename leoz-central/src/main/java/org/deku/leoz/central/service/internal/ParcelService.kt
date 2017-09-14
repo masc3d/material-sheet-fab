@@ -60,16 +60,12 @@ open class ParcelServiceV1 :
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
     @Inject
-    private lateinit var parcelRepository: ParcelJooqRepository
+    private lateinit var orderRepository: OrderJooqRepository
 
-    @Inject
-    private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
 
     @Inject
     private lateinit var storage: Storage
 
-    @Inject
-    private lateinit var userRepository: UserJooqRepository
 
     @Inject
     private lateinit var messagesRepository: MessagesJooqRepository
@@ -92,7 +88,7 @@ open class ParcelServiceV1 :
         log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
 
         val parcelIds = events.map { it.parcelId }.toList()
-        val mapParcels = parcelRepository.getUnitNumbers(parcelIds)
+        val mapParcels = orderRepository.getUnitNumbers(parcelIds)
 
         events.forEach {
 
@@ -232,7 +228,8 @@ open class ParcelServiceV1 :
                     if (signature != null) {
                         val sigPath = saveImage(it.time, Location.SB, signature, parcelScan, message.userId, mimetype, Location.SB_Original)
                         if (sigPath != "") {
-                            parcelRepository.setSignaturePath(parcelScan, sigPath)
+                            //parcelRepository.setSignaturePath(parcelScan, sigPath)
+                            parcelAddInfo.picturePath=sigPath
                         }
                     }
                 }

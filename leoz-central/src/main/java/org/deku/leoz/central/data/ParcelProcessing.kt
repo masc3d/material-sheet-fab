@@ -37,7 +37,13 @@ open class ParcelProcessing {
     private lateinit var parcelRepository: ParcelJooqRepository
 
     @Inject
+    private lateinit var statusRepository: StatusJooqRepository
+
+    @Inject
     private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
+
+    @Inject
+    private lateinit var orderRepository: OrderTableJooqRepository
 
     @Inject
     private lateinit var parcelMessageServiceConfiguration: ParcelMessageServiceConfiguration
@@ -103,7 +109,7 @@ open class ParcelProcessing {
                 val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
                 parcelRecord ?:
                         return false
-                val orderRecord = parcelRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
+                val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
                 orderRecord ?:
                         return false
 
@@ -144,9 +150,9 @@ open class ParcelProcessing {
                         rDamaged.fehlercode = damaged_reason.oldValue.toUInteger()
 
                         rDamaged.erzeugerstation = r.erzeugerstation
-                        var damaged_existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 8, 31)
+                        var damaged_existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 8, 31)
                         if (!damaged_existStatus) {
-                            parcelRepository.saveEvent(rDamaged)
+                            statusRepository.saveEvent(rDamaged)
                         }
                     }
                 }
@@ -154,6 +160,12 @@ open class ParcelProcessing {
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
+                }
+
+                val checkPicturePath = parcelAddInfo.picturePath != null
+                if (checkPicturePath) {
+                    parcelRecord.bmpfilename = parcelAddInfo.picturePath
+                    parcelRecord.store()
                 }
 
                 when (event) {
@@ -277,7 +289,7 @@ open class ParcelProcessing {
                                             unitInBagStatusRecord.infotext = r.infotext
                                             r.store()
 
-                                            val unitInBagOrderRecord = parcelRepository.findOrderByOrderNumber(it.orderid.toLong())
+                                            val unitInBagOrderRecord = orderRepository.findOrderByOrderNumber(it.orderid.toLong())
                                             if (unitInBagOrderRecord != null) {
                                                 val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
                                                 val unitInBagPasCleared: Boolean
@@ -476,14 +488,14 @@ open class ParcelProcessing {
                     Event.IN_DELIVERY -> {
                         //ticket #260
 
-                        var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "H", 2, 0)
+                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "H", 2, 0)
                         if (!existStatus)
-                            existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "H", 4, 0)
+                            existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "H", 4, 0)
                         if (!existStatus)
-                            existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 1, 0)
+                            existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 1, 0)
                         if (!existStatus)
                             insertStatus = false
-                        existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 7, 0)
+                        existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 7, 0)
 
 
 
@@ -492,7 +504,7 @@ open class ParcelProcessing {
                     }
                     Event.NOT_IN_DELIVERY -> {
 
-                        var existStatus = parcelRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 11, 0)
+                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 11, 0)
 
 
                         if (existStatus)
@@ -570,7 +582,7 @@ open class ParcelProcessing {
                 }
 
                 if (insertStatus) {
-                    parcelRepository.saveEvent(r)
+                    statusRepository.saveEvent(r)
                 }
 
                 if (result) {

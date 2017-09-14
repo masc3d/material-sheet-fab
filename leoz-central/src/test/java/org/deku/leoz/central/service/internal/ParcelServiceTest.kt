@@ -2,6 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import elemental.util.ArrayOf
 import org.deku.leoz.central.config.DataTestConfiguration
+import org.deku.leoz.central.config.ParcelMessageServiceConfiguration
 import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.Reason
@@ -23,14 +24,17 @@ import java.util.Base64
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
+        ParcelMessageServiceConfiguration::class,
         org.deku.leoz.central.service.internal.ParcelServiceV1::class
 ))
 class ParcelServiceTest {
     @Inject
     lateinit var parcelService: org.deku.leoz.central.service.internal.ParcelServiceV1
 
+
     @Test
     fun testOnMessage() {
+
         val img = File("/Users/helke/Documents/outOfMemory.jpg").readBytes()
         val encoder = Base64.getEncoder()
         val img64: String = encoder.encodeToString(img)
@@ -53,7 +57,7 @@ class ParcelServiceTest {
         //val event = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.PARCEL_DAMAGED.id, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DamagedInfo(description = "aufgerissen", photo = img64))
 
         //val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event))
-        val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event),userId = 24, nodeId = "abcf-tzt", deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "müllerSchmidtIgor", signature = svgDirect))
+        val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event),userId = 3, nodeId = "abcf-tzt", deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "müllerSchmidtIgor", signature = svgDirect))
         //val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event), nodeId = "abcf-tzt", deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "müllerSchmidtIgor", signature = img64,mimetype="jpg"))
 
 
