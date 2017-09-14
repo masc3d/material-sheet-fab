@@ -969,12 +969,14 @@ open class Activity : BaseActivity(),
 
             val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
-            layoutParams.scrollFlags =
-                    scrollFlag or collapsingScrollFlag or scrollSnapFlag
+            this.uxCollapsingToolbarLayout.postDelayed({
+                layoutParams.scrollFlags =
+                        scrollFlag or collapsingScrollFlag or scrollSnapFlag
 
-            log.trace("SCROLL FLAGS ${layoutParams.scrollFlags}")
+                log.trace("SCROLL FLAGS ${layoutParams.scrollFlags}")
 
-            this.uxCollapsingToolbarLayout.requestLayout()
+                this.uxCollapsingToolbarLayout.requestLayout()
+            }, 500)
         }
 
         // Apply requested orientation
