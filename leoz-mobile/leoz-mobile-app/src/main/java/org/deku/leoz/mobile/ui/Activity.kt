@@ -73,6 +73,7 @@ import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
 import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
+import org.jetbrains.anko.design.appBarLayout
 import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
@@ -824,6 +825,9 @@ open class Activity : BaseActivity(),
         }
     }
 
+    /** Most recently set scroll flags */
+    private var scrollFlags: Int = 0
+
     override fun onScreenFragmentResume(fragment: ScreenFragment<*>) {
         this.aidcReader.enabled = fragment.aidcEnabled
 
@@ -925,16 +929,6 @@ open class Activity : BaseActivity(),
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
 
-        // Apply action bar changes
-        run {
-            // Make sure app bar is visible (eg. when screen changes)
-            // otherwise transitioning from a scrolling to a static content screen
-            // may leave the app bar hidden.
-            log.trace("APPBAR EXPAND ${expandAppBar}")
-
-            this.uxAppBarLayout.setExpanded(expandAppBar, true)
-        }
-
         // Apply header changes
         run {
             // TODO: don't expand when scroll position is not top on pre-existing fragment
@@ -967,16 +961,20 @@ open class Activity : BaseActivity(),
                 false -> 0
             }
 
+            log.trace("APPBAR EXPAND ${expandAppBar}")
+            this.uxAppBarLayout.setExpanded(expandAppBar, true)
+
             val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
+            this.scrollFlags = scrollFlag or collapsingScrollFlag or scrollSnapFlag
+            log.trace("SCROLL FLAGS ${layoutParams.scrollFlags} ${scrollFlags}")
+
             this.uxCollapsingToolbarLayout.postDelayed({
-                layoutParams.scrollFlags =
-                        scrollFlag or collapsingScrollFlag or scrollSnapFlag
-
-                log.trace("SCROLL FLAGS ${layoutParams.scrollFlags}")
-
-                this.uxCollapsingToolbarLayout.requestLayout()
-            }, 500)
+                if (layoutParams.scrollFlags != this.scrollFlags) {
+                    layoutParams.scrollFlags = this.scrollFlags
+                    this.uxAppBarLayout.setExpanded(expandAppBar)
+                }
+            }, 300)
         }
 
         // Apply requested orientation
