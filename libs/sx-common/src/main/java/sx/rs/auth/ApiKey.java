@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * Created by masc on 25.06.15.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface ApiKey {
     boolean value() default true;
 }
