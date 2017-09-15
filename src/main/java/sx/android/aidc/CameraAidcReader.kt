@@ -10,9 +10,9 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
 import sx.rx.ObservableRxProperty
-import sx.time.Duration
 
 /**
  * Barcode reader implementation using the internal camera

@@ -85,6 +85,8 @@ dependencies {
 
             fileTree(dir: 'libs', include: ['*.jar']),
 
+            "com.jakewharton.threetenabp:threetenabp:1.0.5",
+
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Anko
@@ -120,7 +122,7 @@ dependencies {
     provided(
             project(':sx-mq'),
 
-            'com.journeyapps:zxing-android-embedded:3.5.0',
+            "com.journeyapps:zxing-android-embedded:3.5.0",
 
             // MQTT persistence
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
