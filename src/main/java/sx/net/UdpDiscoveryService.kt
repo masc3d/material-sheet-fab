@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
+import org.threeten.bp.Duration
 import sx.Disposable
 import sx.LazyInstance
 import sx.concurrent.Service
@@ -12,7 +13,6 @@ import sx.io.serialization.KryoSerializer
 import sx.io.serialization.Serializable
 import sx.io.serialization.Serializer
 import java.net.*
-import sx.time.Duration
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
