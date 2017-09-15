@@ -9,9 +9,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
@@ -25,7 +23,6 @@ import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
-import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
@@ -40,7 +37,6 @@ class DeliveryActivity : Activity(),
         MenuScreen.Listener,
         VehicleLoadingScreen.Listener,
         VehicleUnloadingScreen.Listener,
-        VehicleLoadingDialog.OnDialogResultListener,
         DeliveryStopListScreen.Listener,
         DeliveryStopDetailScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -196,22 +192,6 @@ class DeliveryActivity : Activity(),
         this.supportFragmentManager.popBackStack(
                 VehicleUnloadingScreen::class.java.canonicalName,
                 FragmentManager.POP_BACK_STACK_INCLUSIVE)
-    }
-
-    /**
-     * Dialog listener
-     * TODO: To be removed / use RX instead
-     */
-
-    override fun onDeliveryListEntered(listId: String) {
-        //Get delivery list synchronously and continue to VehicleLoadingFragment after process finished
-    }
-
-    override fun onDeliveryListSkipped() {
-        this.showScreen(VehicleLoadingScreen())
-    }
-
-    override fun onCanceled() {
     }
 
     private fun onDeliveryUnitNumberInput(unitNumber: UnitNumber) {
