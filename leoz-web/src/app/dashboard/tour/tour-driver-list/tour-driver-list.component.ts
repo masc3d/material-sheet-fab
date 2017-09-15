@@ -218,6 +218,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
+      this.tourDate = new Date();
       this.calendarIsVisible = true;
     }
   }
