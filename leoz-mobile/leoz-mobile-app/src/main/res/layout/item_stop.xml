@@ -146,7 +146,7 @@
                                 android:layout_height="22dp"
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginEnd="@dimen/margin"
-                                android:visibility="@{stop.isClockVisible ? View.VISIBLE : View.GONE}"
+                                android:visibility="@{safeUnbox(stop.isClockVisible) ? View.VISIBLE : View.GONE}"
                                 app:color="@{stop.clockColor}"
                                 app:hour="@{stop.appointmentHour}"
                                 app:minute="@{stop.appointmentMinute}"
@@ -156,8 +156,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:text="00:59"
-                                android:visibility="@{stop.isCountdownVisible ? View.VISIBLE : View.GONE}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                android:textColor="@{stop.countdownColor}"
+                                android:text="@{stop.countdownText, default = `59:59`}"
+                                android:visibility="@{safeUnbox(stop.isCountdownVisible) ? View.VISIBLE : View.GONE}"
                                 />
 
                         </LinearLayout>
