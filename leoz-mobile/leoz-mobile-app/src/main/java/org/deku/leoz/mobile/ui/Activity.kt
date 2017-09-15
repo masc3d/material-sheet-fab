@@ -997,8 +997,8 @@ open class Activity : BaseActivity(),
         // Check developer settings
         if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
             MaterialDialog.Builder(this)
-                    .title("Developer options enabled")
-                    .content("Developer options are enabled on your device. To continue, you must disable developer options!")
+                    .title(getString(R.string.dialog_title_developer_enabled))
+                    .content(getString(R.string.dialog_text_developer_enabled))
                     .positiveText("Settings")
                     .negativeText("Abort")
                     .onPositive { materialDialog, dialogAction ->
@@ -1025,8 +1025,8 @@ open class Activity : BaseActivity(),
                 }
         ).all { false }) {
             MaterialDialog.Builder(this)
-                    .title("GPS location provider is not enabled")
-                    .content("The GPS location on your device is disabled. To continue, you must enable GPS location!")
+                    .title(getString(R.string.dialog_title_gps_disabled))
+                    .content(getString(R.string.dialog_text_gps_disabled))
                     .positiveText("Settings")
                     .negativeText("Abort")
                     .onPositive { materialDialog, dialogAction ->
