@@ -63,7 +63,7 @@ class DeliveryActivity : Activity(),
             //Show vehicle selection dialog
             //TODO Call the function when the disclaimer is dismissed
             //Check if the changelog dialog should be displayed TODO: Call this function when the vehicle selection is done.
-            queryChangelogDisplay()
+            //queryChangelogDisplay()
         }
     }
 
