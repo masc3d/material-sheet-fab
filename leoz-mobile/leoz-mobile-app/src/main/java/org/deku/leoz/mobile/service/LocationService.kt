@@ -16,9 +16,9 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
-import sx.time.Duration
 import java.util.*
 
 class LocationService(

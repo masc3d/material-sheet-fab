@@ -1,23 +1,28 @@
 package sx.time
 
+import org.threeten.bp.*
 import java.sql.Timestamp
-import java.time.LocalDate
 import java.util.*
 
 val utcTimezone = TimeZone.getTimeZone("UTC")
 
-/**
- * Date/time conversion functions
- */
-fun LocalDate.toTimestamp(): Timestamp = this.toDate().toTimestamp()
+// JDK8 java.time conversion methods
 
-fun LocalDate.toDate(): Date = java.sql.Date.valueOf(this)
+fun java.time.LocalDate.toTimestamp(): Timestamp = this.toDate().toTimestamp()
+
+fun java.time.LocalDate.toDate(): Date = java.sql.Date.valueOf(this)
 
 fun Date.toTimestamp(): Timestamp = Timestamp(this.time)
 
 fun Date.toSqlDate(): java.sql.Date = java.sql.Date(this.time)
 
-fun Date.toLocalDate(): LocalDate = java.sql.Date(this.time).toLocalDate()
+fun Date.toLocalDate(): java.time.LocalDate = java.sql.Date(this.time).toLocalDate()
+
+// JSR-310 replacement / threetenbp conversion methods
+
+fun Date.toLocalDateTime(): LocalDateTime = Instant.ofEpochMilli(this.time).let { LocalDateTime.ofInstant(it, ZoneOffset.UTC) }
+
+fun LocalDateTime.toDate(): Date = Date(this.toInstant(ZoneOffset.UTC).toEpochMilli())
 
 /**
  * Replaces the date portion of a specific date and keeps the time

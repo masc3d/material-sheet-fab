@@ -51,6 +51,11 @@ dependencies {
             "de.javakaffee:kryo-serializers:$v_kryo_serializers"
     )
 
+    compileOnly(
+            // JSR-310 / java.time drop-in replacements
+            "org.threeten:threetenbp:1.3.6"
+    )
+
     testCompile(
             "junit:junit:4.12",
             "ch.qos.logback:logback-classic:1.2.3"

@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
+import org.threeten.bp.Duration
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.platform.PlatformId
-import sx.time.Duration
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import kotlin.NoSuchElementException

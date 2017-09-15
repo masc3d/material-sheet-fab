@@ -11,10 +11,10 @@ import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.mobile.service.NotificationService
 import org.deku.leoz.mobile.service.UpdateService
+import org.threeten.bp.Duration
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
 import sx.rs.proxy.FeignClientProxy
-import sx.time.seconds
 
 /**
  * Service configuration
@@ -72,7 +72,7 @@ class ServiceConfiguration {
                         bundleName = settings.bundleName,
                         versionAlias = settings.versionAlias,
                         identity = instance(),
-                        period = settings.period.seconds,
+                        period = Duration.ofSeconds(settings.period.toLong()),
                         restClientProxy = restClientConfiguration.createClientProxy(
                                 uri = restClientConfiguration.createUri(
                                         host = settings.remote.host,

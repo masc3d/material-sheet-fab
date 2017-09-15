@@ -207,6 +207,8 @@ dependencies {
             project(':camerakit'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
+            "com.jakewharton.threetenabp:threetenabp:1.0.5",
+
             // Android
             "com.android.support:support-annotations:$v_android_support",
             "com.android.support:support-v13:$v_android_support",

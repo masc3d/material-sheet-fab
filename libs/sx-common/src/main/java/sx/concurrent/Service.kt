@@ -1,9 +1,9 @@
 package sx.concurrent
 
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.Lifecycle
 import sx.concurrent.task.DynamicScheduledExecutorService
-import sx.time.Duration
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger

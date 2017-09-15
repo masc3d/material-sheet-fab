@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.*
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.deku.leoz.mobile.service.UpdateService
 import org.slf4j.LoggerFactory
@@ -132,6 +133,9 @@ class StartupActivity : BaseActivity() {
 
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
+
+                                    // Initialize ThreeTen (java.time / JSR-310 compatibility drop-in)
+                                    AndroidThreeTen.init(this.application)
 
                                     // Write device management identity
                                     val deviceManagement: DeviceManagement = Kodein.global.instance()

@@ -46,6 +46,10 @@ dependencies {
             // Watchservice replacement for OSX
             project(':barbarywatchservice'),
             project(':leoz-common'),
+
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:$v_threeten",
+
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",

@@ -17,8 +17,6 @@ import sx.util.zip.verify
 import sx.concurrent.Service
 import sx.rs.proxy.FeignClientProxy
 import sx.rs.proxy.RestClientProxy
-import sx.time.Duration
-import sx.time.seconds
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileFilter
@@ -26,6 +24,7 @@ import java.io.FileOutputStream
 import java.net.ConnectException
 import java.util.concurrent.ScheduledExecutorService
 import java.util.zip.ZipFile
+import org.threeten.bp.Duration
 
 /**
  * Application/APK update service
@@ -46,7 +45,7 @@ class UpdateService(
         private val restClientProxy: FeignClientProxy
 ) : Service(
         executorService = executorService,
-        initialDelay = 1.seconds,
+        initialDelay = Duration.ofSeconds(1),
         period = period
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
