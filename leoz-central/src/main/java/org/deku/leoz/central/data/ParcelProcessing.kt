@@ -6,6 +6,7 @@ import org.deku.leoz.central.config.ParcelMessageServiceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
+import org.deku.leoz.node.Storage
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.time.toDateOnlyTime
 import org.deku.leoz.time.toDateWithoutTime
@@ -26,6 +27,9 @@ import org.slf4j.LoggerFactory
 
 @Named
 open class ParcelProcessing {
+
+    @Inject
+    private lateinit var storage: Storage
 
     @Inject
     private lateinit var messagesRepository: MessagesJooqRepository
@@ -162,9 +166,22 @@ open class ParcelProcessing {
                     val pictureUID = parcelAddInfo.pictureFileUID
                 }
 
-                val checkPicturePath = parcelAddInfo.picturePath != null
+                val checkPicturePath = parcelAddInfo.pictureLocation != null
                 if (checkPicturePath) {
-                    parcelRecord.bmpfilename = parcelAddInfo.picturePath
+
+                    val pathMobile = storage.mobileDataDirectory.toPath()
+
+                    val addInfo = userId.toString()//.substringBefore("-")
+                    val loc=Location.valueOf(parcelAddInfo.pictureLocation!!)
+
+                    val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, addInfo)
+                    val relPathMobile = mobileFilename.getPath()
+                    //val file = mobileFilename.getFilenameWithoutExtension() + ".bmp"
+                    val file=parcelAddInfo.pictureFileName!!
+                    val pathFileMobile = relPathMobile.resolve(file).toFile().toPath()
+                    val bmp=pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+
+                    parcelRecord.bmpfilename = bmp
                     parcelRecord.store()
                 }
 

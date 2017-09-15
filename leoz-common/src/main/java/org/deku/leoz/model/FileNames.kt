@@ -6,12 +6,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-enum class Location {
-    HUB,
-    SB,
-    SB_Original,
-    RK,
-    QubeVu
+
+enum class Location (val value:String){
+    HUB("HUB"),
+    SB("SB"),
+    SB_Original("SB_Original"),
+    RK("RK"),
+    QubeVu("QubeVu")
 }
 
 class FileName(val value: String, val date: Date, val type: Location, val basePath: Path, val additionalInfo: String? = null) {
@@ -38,10 +39,10 @@ class FileName(val value: String, val date: Date, val type: Location, val basePa
     fun getFilenameWithoutExtension(): String {
         val addInfo = additionalInfo ?: ""
         val filenameWithoutExtension = when (type) {
-            Location.SB, Location.SB_Original -> value + "_" + addInfo + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date) + "_MOB"
+            Location.SB, Location.SB_Original -> "${value}_${addInfo}_${SimpleDateFormat("yyyyMMddHHmmssSSS").format(date)}_MOB"
             Location.HUB -> value //line eg. 1010.bmp
-            Location.QubeVu -> addInfo + "_" + value + SimpleDateFormat("yyyyMMddHHmmss").format(date) + "QVT"  //addInfo="Q_IP[3]" eg "Q_242"
-            Location.RK -> "RK_" + value + "_" + addInfo + "_" + SimpleDateFormat("yyyyMMddHHmmssSSS").format(date)
+            Location.QubeVu -> "${addInfo}_${value}_${SimpleDateFormat("yyyyMMddHHmmss").format(date)}QVT"  //addInfo="Q_IP[3]" eg "Q_242"
+            Location.RK -> "RK_${value}_${addInfo}_${SimpleDateFormat("yyyyMMddHHmmssSSS").format(date)}"
         }
 
         return filenameWithoutExtension
