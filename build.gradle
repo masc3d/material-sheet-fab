@@ -60,6 +60,9 @@ dependencies {
     )
 
     compileOnly(
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
+
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",

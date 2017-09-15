@@ -2,7 +2,7 @@ package sx.mq.mqtt
 
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
-import sx.time.Duration
+import org.threeten.bp.Duration
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.TimeUnit
 

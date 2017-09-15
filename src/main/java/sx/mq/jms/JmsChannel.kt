@@ -1,9 +1,9 @@
 package sx.mq.jms
 
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.LazyInstance
 import sx.io.serialization.Serializer
-import sx.time.Duration
 import java.util.*
 import java.util.concurrent.TimeoutException
 import javax.jms.Connection
