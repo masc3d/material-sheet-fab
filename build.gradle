@@ -50,6 +50,9 @@ dependencies {
     )
 
     compileOnly(
+            // JSR-310 / java.time substitute.
+            // Declared as compileOnly as android projects may want to include `com.jakewharton.threetenabp:threetenabp:1.0.5` instead.
+            "org.threeten:threetenbp:1.3.6",
             // Misc
             "org.apache.commons:commons-lang3:3.6",
             // JAX-RS
