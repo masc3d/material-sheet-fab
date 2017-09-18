@@ -4,7 +4,7 @@ buildscript {
     }
     ext {
         v_android_buildtools = '26.0.1'
-        v_android_support = '26.0.2'
+        v_android_support = '26.1.0'
         v_android_test = '1.0.1'
         v_anko = '0.10.1'
         v_javamail = '1.6.0'
