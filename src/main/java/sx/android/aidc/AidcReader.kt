@@ -9,13 +9,14 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import sx.rx.ObservableRxProperty
 import sx.aidc.SymbologyType
+import java.util.*
 
 /**
  * Abstract barcode reader
  * Created by masc on 28/02/2017.
  */
 abstract class AidcReader {
-    private val log = LoggerFactory.getLogger(this.javaClass)
+    protected val log = LoggerFactory.getLogger(this.javaClass)
 
     inner class Decoders : Iterable<Decoder> {
         /**
@@ -38,7 +39,14 @@ abstract class AidcReader {
         }
     }
 
-    data class ReadEvent(val data: String, val symbologyType: SymbologyType)
+    /**
+     * AIDC read event
+     */
+    data class ReadEvent(
+            val data: String,
+            val symbologyType: SymbologyType) {
+        val timestamp: Date = Date()
+    }
 
     val enabledProperty = ObservableRxProperty(false)
     /**
@@ -55,14 +63,20 @@ abstract class AidcReader {
     /**
      * On subscription of reader events
      */
-    protected open fun onBind() { }
-    internal fun onBindInternal() { this.onBind() }
+    protected open fun onBind() {}
+
+    internal fun onBindInternal() {
+        this.onBind()
+    }
 
     /**
      * On unsubscription of reader eventrs
      */
-    protected open fun onUnbind() { }
-    internal fun onUnbindInternal() { this.onUnbind() }
+    protected open fun onUnbind() {}
+
+    internal fun onUnbindInternal() {
+        this.onUnbind()
+    }
 
     private var bindRefCount = 0
 
