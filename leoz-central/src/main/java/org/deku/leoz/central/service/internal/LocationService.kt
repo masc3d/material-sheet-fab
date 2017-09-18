@@ -18,10 +18,10 @@ import org.deku.leoz.model.VehicleType
 import org.deku.leoz.service.internal.LocationServiceV2
 import sx.mq.MqChannel
 import sx.mq.MqHandler
-import sx.time.minusMinutes
 import sx.time.toTimestamp
 import javax.ws.rs.core.Response
 import org.slf4j.LoggerFactory
+import sx.time.plusMinutes
 import sx.time.toLocalDate
 import java.text.SimpleDateFormat
 
@@ -221,7 +221,7 @@ open class LocationServiceV1
                         val posList: List<TadNodeGeopositionRecord>?
                         if (duration != null) {
                             val pos_to = Date()
-                            val pos_from = Date().minusMinutes(duration)
+                            val pos_from = Date().plusMinutes(duration * -1)
                             posList = posRepository.findByUserId(it.id, pos_from, pos_to)
                         } else {
                             posList = posRepository.findRecentByUserId(it.id)
@@ -258,7 +258,7 @@ open class LocationServiceV1
                     val posList: List<TadNodeGeopositionRecord>?
                     if (duration != null) {
                         val pos_to = Date()
-                        val pos_from = Date().minusMinutes(duration)
+                        val pos_from = Date().plusMinutes(duration * -1)
                         posList = posRepository.findByUserId(userRecord.id, pos_from, pos_to)
                     } else {
                         posList = posRepository.findRecentByUserId(userRecord.id)

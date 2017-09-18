@@ -10,11 +10,11 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.node.Storage
 import org.deku.leoz.service.internal.AuthorizationService
+import org.threeten.bp.Duration
 import sx.mq.MqChannel
 import sx.mq.jms.JmsEndpoint
 import sx.mq.MqHandler
 import sx.mq.jms.channel
-import sx.time.Duration
 
 /**
  * Authorization client service, performing background authorization via message bus

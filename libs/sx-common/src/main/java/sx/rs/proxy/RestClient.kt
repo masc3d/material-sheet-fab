@@ -11,12 +11,12 @@ import org.glassfish.jersey.client.JerseyClientBuilder
 import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget
+import org.threeten.bp.Duration
 import sx.net.TrustingSSLSocketFactory
 import java.io.OutputStream
 import java.net.URI
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
-import sx.time.Duration
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
 

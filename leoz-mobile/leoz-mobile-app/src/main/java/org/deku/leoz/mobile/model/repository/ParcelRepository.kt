@@ -6,6 +6,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -36,11 +37,10 @@ class ParcelRepository(
      * Find parcel by unit number
      * @param number Unit number
      */
-    fun findByNumber(number: String): Parcel? {
+    fun findByNumber(number: String): Maybe<ParcelEntity> {
         return store.select(ParcelEntity::class)
                 .where(ParcelEntity.NUMBER.eq(number))
-                .get()
-                .firstOrNull()
+                .get().observable().firstElement()
     }
 
     override fun update(entity: ParcelEntity): Single<ParcelEntity> {

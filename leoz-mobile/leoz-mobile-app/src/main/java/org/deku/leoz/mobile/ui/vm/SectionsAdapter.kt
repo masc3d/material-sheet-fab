@@ -216,9 +216,8 @@ class SectionsAdapter
      * Determine if section is currently selected
      * @param section Section
      */
-    fun isSectionSelected(section: SectionViewModel<*>): Boolean {
-        return this.isSelected(positionOf(section))
-    }
+    fun isSectionSelected(section: SectionViewModel<*>): Boolean =
+            this.isSelected(positionOf(section))
 
     /**
      * Remove section
@@ -231,8 +230,7 @@ class SectionsAdapter
             this.selectedSection = null
 
         if (item != null) {
-            val pos = this.getGlobalPositionOf(item)
-            this.removeItem(pos)
+            this.removeItemWithDelay(item, 200, true)
         }
 
         this.sections.remove(section)

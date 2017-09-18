@@ -60,7 +60,8 @@ class DeliveryStopListScreen
 
     // Model classes
     private val db: Database by Kodein.global.lazy.instance()
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
+
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
@@ -203,7 +204,7 @@ class DeliveryStopListScreen
                                             .move(stop = item.viewModel.stop, after = previousItem?.viewModel?.stop)
                                             .blockingAwait()
                                 }
-                                        .subscribeOn(Schedulers.computation())
+                                        .subscribeOn(schedulers.database)
                                         .subscribe()
                             }
 

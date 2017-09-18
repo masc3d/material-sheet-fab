@@ -9,11 +9,11 @@ import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttException.REASON_CODE_CLIENT_CONNECTED
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.Stopwatch
 import sx.rx.retryWithExponentialBackoff
 import sx.rx.subscribeOn
 import sx.rx.toHotCache
-import sx.time.Duration
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -43,7 +43,7 @@ class MqttDispatcher(
     /** Statistics/message count cache by topic name */
     private var statistics by Delegates.observable<MutableMap<String, Int>>(
             initialValue = mutableMapOf(),
-            onChange = { p, o, v ->
+            onChange = { _, _, v ->
                 // Mainly for intiail event
                 this.statisticsUpdatEventSubject.onNext(v.toMap())
             })

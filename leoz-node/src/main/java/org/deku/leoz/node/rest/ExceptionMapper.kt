@@ -20,7 +20,7 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun toResponse(e: Exception): javax.ws.rs.core.Response {
-        val status: Response.StatusType
+        val status: Int
         val entity: Any?
 
         when(e) {
@@ -35,11 +35,12 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
                 } else {
                     entity = null
                 }
-                status = e.status
+                status = e.status.statusCode
             }
             is ThrowableProblem -> {
                 entity = e
-                status = e.status ?: Response.Status.BAD_REQUEST
+                status = e.status?.statusCode ?: Response.Status.BAD_REQUEST.statusCode
+
             }
             is JsonMappingException -> {
                 //region JsonMappingException
@@ -47,7 +48,7 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
                 val locationMessage = e.path.map { it.fieldName }.joinToString(".")
                 val cause = e.cause?.message ?: "unknown"
 
-                status = Response.Status.BAD_REQUEST
+                status = Response.Status.BAD_REQUEST.statusCode
                 entity = ServiceError(message = "JSON mapping error [${locationMessage}]: ${cause}")
                 //endregion
             }
@@ -57,13 +58,13 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
                 val jl = e.location
 
                 val locationMessage: String = if (jl != null) " in line ${jl.lineNr} column ${jl.columnNr}" else ""
-                status = Response.Status.BAD_REQUEST
+                status = Response.Status.BAD_REQUEST.statusCode
                 entity = ServiceError(message = "JSON processing error${locationMessage}: ${e.originalMessage}")
                 //endregion
             }
             else -> {
                 log.error(e.message, e)
-                status = Response.Status.BAD_REQUEST
+                status = Response.Status.BAD_REQUEST.statusCode
                 entity = ServiceError(cause = e)
             }
         }

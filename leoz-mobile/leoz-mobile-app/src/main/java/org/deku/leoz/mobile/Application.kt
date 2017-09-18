@@ -63,7 +63,6 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(DeviceConfiguration.module)
         Kodein.global.addImport(AidcConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
-        Kodein.global.addImport(SoundConfiguration.module)
         Kodein.global.addImport(MqttConfiguration.module)
         //endregion
 

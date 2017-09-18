@@ -6,12 +6,10 @@ import android.support.v4.app.FragmentManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle2.android.ActivityEvent
-import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
@@ -25,11 +23,9 @@ import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
-import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.screen.*
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
-import sx.android.getSubscriptionManager
 import sx.android.rx.observeOnMainThread
 import java.util.*
 
@@ -41,10 +37,8 @@ class DeliveryActivity : Activity(),
         MenuScreen.Listener,
         VehicleLoadingScreen.Listener,
         VehicleUnloadingScreen.Listener,
-        VehicleLoadingDialog.OnDialogResultListener,
         DeliveryStopListScreen.Listener,
-        DeliveryStopDetailScreen.Listener
-{
+        DeliveryStopDetailScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
@@ -53,6 +47,8 @@ class DeliveryActivity : Activity(),
     private val tones: Tones by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
+
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
@@ -67,7 +63,7 @@ class DeliveryActivity : Activity(),
             //Show vehicle selection dialog
             //TODO Call the function when the disclaimer is dismissed
             //Check if the changelog dialog should be displayed TODO: Call this function when the vehicle selection is done.
-            queryChangelogDisplay()
+            //queryChangelogDisplay()
         }
     }
 
@@ -135,28 +131,43 @@ class DeliveryActivity : Activity(),
     override fun onDeliveryMenuSelection(entryType: MenuScreen.MenuEntry.Entry) {
         when (entryType) {
             MenuScreen.MenuEntry.Entry.LOADING -> {
-                if (this.orderRepository.hasOutdatedOrders()) {
-                    MaterialDialog.Builder(this)
-                            .title(R.string.title_reset_data)
-                            .content(R.string.dialog_content_outdated_orders)
-                            .positiveText(android.R.string.yes)
-                            .negativeText(android.R.string.no)
-                            .onPositive { _, _->
-                                db.store.withTransaction {
-                                    orderRepository.removeAll()
-                                            .blockingAwait()
-                                }
-                                        .toCompletable()
-                                        .subscribeOn(Schedulers.computation())
-                                        .observeOnMainThread()
-                                        .subscribeBy(onComplete = {
+                this.orderRepository.hasOutdatedOrders()
+                        .bindToLifecycle(this)
+                        .subscribeOn(schedulers.database)
+                        .observeOnMainThread()
+                        .subscribeBy(
+                                onError =  {
+                                    log.error(it.message, it)
+                                },
+                                onSuccess = {
+                                    log.trace("OUTDATED ${it}")
+
+                                    when (it) {
+                                        true -> {
+                                            MaterialDialog.Builder(this)
+                                                    .title(R.string.title_reset_data)
+                                                    .content(R.string.dialog_content_outdated_orders)
+                                                    .positiveText(android.R.string.yes)
+                                                    .negativeText(android.R.string.no)
+                                                    .onPositive { _, _ ->
+                                                        db.store.withTransaction {
+                                                            orderRepository.removeAll()
+                                                                    .blockingAwait()
+                                                        }
+                                                                .toCompletable()
+                                                                .subscribeOn(schedulers.database)
+                                                                .observeOnMainThread()
+                                                                .subscribeBy(onComplete = {
+                                                                    this.showScreen(VehicleLoadingScreen())
+                                                                })
+                                                    }
+                                                    .build().show()
+                                        }
+                                        else -> {
                                             this.showScreen(VehicleLoadingScreen())
-                                        })
-                            }
-                            .build().show()
-                } else {
-                    this.showScreen(VehicleLoadingScreen())
-                }
+                                        }
+                                    }
+                                })
             }
 
             MenuScreen.MenuEntry.Entry.DELIVERY -> {
@@ -183,25 +194,10 @@ class DeliveryActivity : Activity(),
                 FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
-    /**
-     * Dialog listener
-     * TODO: To be removed / use RX instead
-     */
-
-    override fun onDeliveryListEntered(listId: String) {
-        //Get delivery list synchronously and continue to VehicleLoadingFragment after process finished
-    }
-
-    override fun onDeliveryListSkipped() {
-        this.showScreen(VehicleLoadingScreen())
-    }
-
-    override fun onCanceled() {
-    }
-
     private fun onDeliveryUnitNumberInput(unitNumber: UnitNumber) {
         val parcel = this.parcelRepository
                 .findByNumber(unitNumber.value)
+                .blockingGet()
 
         if (parcel == null) {
             tones.warningBeep()
@@ -217,7 +213,7 @@ class DeliveryActivity : Activity(),
         if (parcel.state == Parcel.State.MISSING) {
             parcel.state = Parcel.State.LOADED
             parcelRepository.update(parcel as ParcelEntity)
-                    .subscribeOn(Schedulers.computation())
+                    .subscribeOn(schedulers.database)
                     .subscribe()
         }
 

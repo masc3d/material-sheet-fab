@@ -119,6 +119,7 @@ class VehicleLoadingScreen :
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val tones: Tones by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
@@ -321,7 +322,7 @@ class VehicleLoadingScreen :
                                 orderRepository.removeAll()
                                         .blockingAwait()
                             }
-                                    .subscribeOn(Schedulers.computation())
+                                    .subscribeOn(schedulers.database)
                                     .subscribe()
                         }
 
@@ -335,7 +336,7 @@ class VehicleLoadingScreen :
                                             parcelRepository.update(it).blockingGet()
                                         }
                             }
-                                    .subscribeOn(Schedulers.computation())
+                                    .subscribeOn(schedulers.database)
                                     .subscribe()
                         }
                     }
@@ -391,7 +392,7 @@ class VehicleLoadingScreen :
                 .subscribe {
                     val section = it.value
 
-                    this.accentColor = when(section) {
+                    this.accentColor = when (section) {
                         loadedSection -> R.color.colorGreen
                         damagedSection -> R.color.colorAccent
                         else -> R.color.colorGrey
@@ -592,17 +593,20 @@ class VehicleLoadingScreen :
                         .composeAsRest(this.activity, R.string.error_no_corresponding_order)
                         .subscribeBy(
                                 onNext = { order ->
+                                    log.trace("RETRIEVED ORDER")
                                     tones.beep()
 
                                     fun mergeOrder() {
                                         this.deliveryList
                                                 .mergeOrder(order)
+                                                .andThen(
+                                                        this.parcelRepository.findByNumber(unitNumber.value))
+                                                .bindToLifecycle(this)
                                                 .observeOnMainThread()
                                                 .subscribeBy(
-                                                        onComplete = {
-                                                            this.onParcel(
-                                                                    parcel = this.parcelRepository.entities.first { it.number == unitNumber.value }
-                                                            )
+                                                        onSuccess = {
+                                                            log.trace("MERGED ORDER")
+                                                            this.onParcel(it)
                                                         },
                                                         onError = {
                                                             log.error("Merging order failed. ${it.message}", it)
@@ -658,7 +662,7 @@ class VehicleLoadingScreen :
                                 parcel.isDamaged = false
 
                                 this.parcelRepository.update(parcel)
-                                        .subscribeOn(Schedulers.computation())
+                                        .subscribeOn(schedulers.database)
                                         .subscribe()
                             }
                             .show()
@@ -691,7 +695,7 @@ class VehicleLoadingScreen :
                                 .onPositive { _, _ ->
                                     parcel.state = Parcel.State.PENDING
                                     this.parcelRepository.update(parcel)
-                                            .subscribeOn(Schedulers.computation())
+                                            .subscribeOn(schedulers.database)
                                             .subscribe()
                                 }
                                 .show()
@@ -699,7 +703,7 @@ class VehicleLoadingScreen :
                 } else {
                     parcel.state = Parcel.State.LOADED
                     this.parcelRepository.update(parcel)
-                            .subscribeOn(Schedulers.computation())
+                            .subscribeOn(schedulers.database)
                             .subscribe()
                 }
 
@@ -714,7 +718,7 @@ class VehicleLoadingScreen :
                     parcel = parcel,
                     jpegPictureData = jpeg
             )
-                    .subscribeOn(Schedulers.computation())
+                    .subscribeOn(schedulers.database)
                     .subscribe()
         }
     }

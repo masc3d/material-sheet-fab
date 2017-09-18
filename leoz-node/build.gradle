@@ -18,14 +18,8 @@ buildscript {
     ext {
         v_aspectj = '1.8.10'
         v_querydsl = '4.1.4'
-        v_jaxb = '2.2.11'
-        v_rest_problem = '0.11.0'
-    }
-
-    repositories {
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
+        v_jaxb = '2.3.0'
+        v_rest_problem = '0.20.0'
     }
 
     dependencies {
@@ -39,8 +33,6 @@ buildscript {
         classpath "org.jboss.forge.roaster:roaster-api:$v_roaster"
         classpath "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
         classpath "org.apache.commons:commons-lang3:$v_commons_lang"
-        // Agent plugin
-        classpath "gradle.plugin.com.zoltu:application-agent:1.0.12"
         // QueryDSL SQL codegen
         classpath "com.querydsl:querydsl-sql-codegen:$v_querydsl"
         // JOOQ
@@ -194,6 +186,7 @@ dependencies {
             "com.fasterxml.jackson.core:jackson-core:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
 
             "org.zalando:problem:$v_rest_problem",

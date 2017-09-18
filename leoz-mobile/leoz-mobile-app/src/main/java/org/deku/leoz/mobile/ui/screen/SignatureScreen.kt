@@ -67,7 +67,9 @@ class SignatureScreen
     }
 
     private val stop: Stop by lazy {
-        stopRepository.findById(this.parameters.stopId)
+        stopRepository
+                .findById(this.parameters.stopId)
+                .blockingGet()
                 ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
     }
 

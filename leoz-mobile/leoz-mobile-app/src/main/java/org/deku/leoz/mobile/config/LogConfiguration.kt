@@ -18,8 +18,8 @@ import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.Storage
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.mq.mqtt.channel
-import sx.time.Duration
 
 /**
  * Log configuration

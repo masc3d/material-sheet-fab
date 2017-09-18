@@ -6,10 +6,10 @@ import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.AppenderBase
 import org.deku.leoz.identity.Identity
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.Disposable
 import sx.Lifecycle
 import sx.mq.MqChannel
-import sx.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService

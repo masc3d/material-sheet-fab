@@ -40,6 +40,7 @@ class DeliveryList : CompositeDisposableSupplier {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val db: Database by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     // Services
     private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
@@ -186,7 +187,9 @@ class DeliveryList : CompositeDisposableSupplier {
                 val stops = deliveryList.stops.map {
                     Stop.create(
                             tasks = it.tasks.map {
-                                val order = orderRepository.findById(it.orderId)
+                                val order = orderRepository
+                                        .findById(it.orderId)
+                                        .blockingGet()
 
                                 when {
                                     order != null -> {
@@ -213,7 +216,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
                 stops
             }
-                    .subscribeOn(Schedulers.computation())
+                    .subscribeOn(schedulers.database)
                     .blockingGet()
         }
                 .toHotIoObservable(log)
@@ -248,7 +251,9 @@ class DeliveryList : CompositeDisposableSupplier {
                 return@withTransaction
 
             val task = order.deliveryTask
-            var stop = stopRepository.findStopForTask(task)
+            var stop = stopRepository
+                    .findStopForTask(task)
+                    .blockingGet()
 
             if (stop != null) {
                 stop.tasks.add(task)
@@ -261,6 +266,6 @@ class DeliveryList : CompositeDisposableSupplier {
             }
         }
                 .toCompletable()
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
     }
 }

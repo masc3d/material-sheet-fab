@@ -24,4 +24,20 @@ class TimeSpan(
     companion object {
         fun between(a: Date, b: Date): TimeSpan = TimeSpan(a.time - b.time)
     }
+
+    fun format(withSeconds: Boolean = true): String {
+        val sign = if (this.totalMillis < 0) "-" else ""
+
+        val components = arrayOf(
+                "%02d".format(this.absHours),
+                "%02d".format(this.absMinutes),
+                if (withSeconds) "%02d".format(this.absSeconds) else ""
+        )
+
+        return "${sign}${components.filter { it.isNotBlank() }.joinToString(":")}"
+    }
+
+    override fun toString(): String {
+        return this.format()
+    }
 }

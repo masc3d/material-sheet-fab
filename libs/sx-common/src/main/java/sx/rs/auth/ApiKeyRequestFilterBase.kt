@@ -23,12 +23,17 @@ abstract class ApiKeyRequestFilterBase(
 
     @Throws(IOException::class)
     override fun filter(requestContext: ContainerRequestContext) {
-        var verifyApiKey = true
+        // Don't verify by default (eg. annotation is missing)
+        var verifyApiKey = false
 
-        // Check for ApiKey annotation
-        if (resourceInfo.resourceClass.isAnnotationPresent(ApiKey::class.java)) {
-            val ak = resourceInfo.resourceClass.getAnnotation(ApiKey::class.java)
-            verifyApiKey = ak.value
+        // ApiKey annotation on class level
+        resourceInfo.resourceClass.getAnnotation(ApiKey::class.java)?.also {
+            verifyApiKey = it.value
+        }
+
+        // ApiKey annotation on method level (overrides class level)
+        resourceInfo.resourceMethod.getAnnotation(ApiKey::class.java)?.also {
+            verifyApiKey = it.value
         }
 
         if (verifyApiKey) {

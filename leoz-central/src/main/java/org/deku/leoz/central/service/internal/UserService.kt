@@ -342,12 +342,13 @@ class UserService : UserService {
 
     override fun sendDownloadLink(userId: Int): Boolean {
         var phone = userRepository.findById(userId)!!.phoneMobile!!
-        phone = phone.removePrefix("+")
+
+        phone = phone.replace("\\D".toRegex(), "")
         phone = phone.removePrefix("00")
+
         if (phone.first() == '0')
             phone = phone.replaceFirst("0", "49")
 
-        //val bundleService = BundleServiceV2()
         try {
             mailRepository.insertSms(receiver = phone, message = "Hallo und willkommen bei mobileX. Download: http://derkurier.de/mobileX/ Zugangsdaten erhalten Sie in Ihrer Station.")
         } catch (e: Exception) {

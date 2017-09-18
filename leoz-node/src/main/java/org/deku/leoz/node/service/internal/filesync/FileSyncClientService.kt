@@ -1,13 +1,13 @@
 package org.deku.leoz.node.service.internal.filesync
 
 import org.deku.leoz.identity.Identity
+import org.threeten.bp.Duration
 import sx.concurrent.Service
 import sx.mq.MqChannel
 import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.channel
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
-import sx.time.Duration
 import java.io.File
 import java.nio.file.StandardWatchEventKinds
 import java.util.concurrent.ScheduledExecutorService

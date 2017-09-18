@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.cast
+import org.threeten.bp.Duration
 import sx.packager.Bundle
 import sx.packager.BundleInstaller
 import sx.packager.BundleRepository
@@ -26,7 +27,6 @@ import sx.rsync.RsyncClient
 import sx.rx.task
 import sx.ssh.SshTunnelProvider
 import java.io.File
-import sx.time.Duration
 import java.util.*
 
 /**

@@ -38,6 +38,9 @@ dependencies {
     )
 
     compileOnly(
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
+
             // Kryo
             "com.esotericsoftware:kryo:$v_kryo",
             "de.javakaffee:kryo-serializers:$v_kryo_serializers",

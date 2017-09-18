@@ -6,7 +6,10 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
+import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.android.ApplicationStateMonitor
+import sx.android.ui.Timer
 
 /**
  * Application configuration
@@ -14,9 +17,16 @@ import sx.android.ApplicationStateMonitor
  */
 class ApplicationConfiguration {
     companion object {
+        private val log = LoggerFactory.getLogger(this.javaClass)
+
         val module = Kodein.Module {
             bind<ApplicationStateMonitor>() with eagerSingleton {
                 ApplicationStateMonitor(instance<Application>())
+            }
+
+            /** Application wide main thread timer, suitable for chonologically updating clocks */
+            bind<Timer>() with eagerSingleton {
+                Timer(interval = Duration.ofSeconds(1))
             }
         }
     }

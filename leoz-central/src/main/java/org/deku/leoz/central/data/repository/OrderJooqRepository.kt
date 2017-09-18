@@ -73,4 +73,20 @@ open class OrderJooqRepository {
                 Tables.TAD_V_ORDER_PARCEL.ORDER_ID.`in`(ids.map { it.toDouble() })
         )
     }
+
+    fun getUnitNo(parcelId: Long): Long? {
+        if (parcelId == 0L) return null
+        return dslContext.select(Tables.TAD_V_ORDER_PARCEL.SCAN_ID)
+                .from(Tables.TAD_V_ORDER_PARCEL)
+                .where(Tables.TAD_V_ORDER_PARCEL.ID.eq(parcelId.toDouble()))
+                .fetchOneInto(Long::class.java)
+    }
+
+    fun getUnitNumbers(ids: List<Long>): Map<Double, Double> {
+
+        var mapDouble = dslContext.select()
+                .from(Tables.TAD_V_ORDER_PARCEL)
+                .where(Tables.TAD_V_ORDER_PARCEL.ID.`in`(ids.map { it.toDouble() })).fetch().intoMap(Tables.TAD_V_ORDER_PARCEL.ID, Tables.TAD_V_ORDER_PARCEL.SCAN_ID)//,Long::class.java)
+        return mapDouble
+    }
 }

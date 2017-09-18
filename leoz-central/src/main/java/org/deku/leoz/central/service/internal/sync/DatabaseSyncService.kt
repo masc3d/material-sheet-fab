@@ -9,8 +9,8 @@ import org.deku.leoz.node.data.repository.system.PropertyRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.PlatformTransactionManager
+import org.threeten.bp.Duration
 import sx.concurrent.Service
-import sx.time.Duration
 import java.util.concurrent.ScheduledExecutorService
 
 /**

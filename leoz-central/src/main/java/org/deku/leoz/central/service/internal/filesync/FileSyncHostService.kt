@@ -2,9 +2,9 @@ package org.deku.leoz.central.service.internal.filesync
 
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.io.*
-import sx.time.Duration
 import java.io.File
 import org.deku.leoz.node.service.internal.filesync.*
+import org.threeten.bp.Duration
 import sx.mq.MqChannel
 import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.channel

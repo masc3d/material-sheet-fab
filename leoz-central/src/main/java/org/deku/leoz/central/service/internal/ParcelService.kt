@@ -60,16 +60,12 @@ open class ParcelServiceV1 :
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
     @Inject
-    private lateinit var parcelRepository: ParcelJooqRepository
+    private lateinit var orderRepository: OrderJooqRepository
 
-    @Inject
-    private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
 
     @Inject
     private lateinit var storage: Storage
 
-    @Inject
-    private lateinit var userRepository: UserJooqRepository
 
     @Inject
     private lateinit var messagesRepository: MessagesJooqRepository
@@ -92,9 +88,11 @@ open class ParcelServiceV1 :
         log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
 
         val parcelIds = events.map { it.parcelId }.toList()
-        val mapParcels = parcelRepository.getUnitNumbers(parcelIds)
+        val mapParcels = orderRepository.getUnitNumbers(parcelIds)
 
         events.forEach {
+
+            val scannedDate=it.time.toTimestamp()
 
             //val parcelNo = parcelRepository.getUnitNo(it.parcelId)
             val parcelNo = mapParcels[it.parcelId.toDouble()]?.toLong()
@@ -109,7 +107,7 @@ open class ParcelServiceV1 :
             recordMessages.nodeId = message.nodeId
             recordMessages.parcelId = it.parcelId
             recordMessages.parcelNo = parcelScan
-            recordMessages.scanned = it.time.toTimestamp()
+            recordMessages.scanned = scannedDate
             recordMessages.eventValue = it.event
             recordMessages.reasonId = it.reason
             recordMessages.latitude = it.latitude
@@ -230,9 +228,11 @@ open class ParcelServiceV1 :
                     }
 
                     if (signature != null) {
-                        val sigPath = saveImage(it.time, Location.SB, signature, parcelScan, message.userId, mimetype, Location.SB_Original)
-                        if (sigPath != "") {
-                            parcelRepository.setSignaturePath(parcelScan, sigPath)
+                        val sigFilename = saveImage(scannedDate, Location.SB, signature, parcelScan, message.userId, mimetype, Location.SB_Original)
+                        if (sigFilename != "") {
+                            //parcelRepository.setSignaturePath(parcelScan, sigPath)
+                            parcelAddInfo.pictureLocation=Location.SB.toString()
+                            parcelAddInfo.pictureFileName=sigFilename
                         }
                     }
                 }
@@ -363,15 +363,19 @@ open class ParcelServiceV1 :
                 if (fileExtension.equals("svg")) {
                     if (writeAsBMP(imgPath, bmpFile.toPath())) {
                         Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
-                        ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+                        //ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+                        ret =bmpFileMobile.absoluteFile.name
                     } else
-                        ret = pathFile.toString().substringAfter(path.toString()).substring(1)
+                        //ret = pathFile.toString().substringAfter(path.toString()).substring(1)
+                        ret = pathFile.toFile().absoluteFile.name
                 } else {
                     if (writePhotoAsBMP(imgPath, bmpFile.toPath())) {
                         Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
-                        ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+                        //ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+                        ret = bmpFileMobile.absoluteFile.name
                     } else
-                        ret = pathFile.toString().substringAfter(path.toString()).substring(1)
+                        //ret = pathFile.toString().substringAfter(path.toString()).substring(1)
+                        ret = pathFile.toFile().absoluteFile.name
                 }
                 if (!imgPath.equals(pathFile)) {
                     Files.delete(imgPath)

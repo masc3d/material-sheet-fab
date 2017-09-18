@@ -7,7 +7,7 @@ buildscript {
     ext {
         v_android_buildtools = '26.0.1'
         v_android_support = '26.0.2'
-        v_android_test = '1.0.0'
+        v_android_test = '1.0.1'
         v_anko = '0.10.1'
         v_javamail = '1.6.0'
         v_junit = '4.12'
@@ -15,7 +15,7 @@ buildscript {
         v_ormlite = '5.0'
         v_paho = '1.1.1'
         v_roboelectric = '3.3.2'
-        v_rxlifecycle = '2.1.0'
+        v_rxlifecycle = '2.2.0'
     }
 
     dependencies {
@@ -94,6 +94,8 @@ dependencies {
 
             fileTree(dir: 'libs', include: ['*.jar']),
 
+            "com.jakewharton.threetenabp:threetenabp:1.0.5",
+
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Anko
@@ -129,7 +131,7 @@ dependencies {
     compileOnly(
             project(':sx-mq'),
 
-            'com.journeyapps:zxing-android-embedded:3.5.0',
+            "com.journeyapps:zxing-android-embedded:3.5.0",
 
             // MQTT persistence
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",

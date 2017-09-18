@@ -24,7 +24,7 @@ buildscript {
         v_material_dialogs = '0.9.4.7'
         v_parceler = '1.1.9'
         v_roboelectric = '3.3.2'
-        v_rxlifecycle = '2.1.0'
+        v_rxlifecycle = '2.2.0'
         v_stetho = '1.5.0'
     }
 }
@@ -61,7 +61,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 2
-        versionName "0.77-SNAPSHOT"
+        versionName "0.80-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -182,6 +182,8 @@ dependencies {
             project(':sx-mq'),
             project(':leoz-common'),
             fileTree(dir: 'libs', include: ['*.jar']),
+
+            "com.jakewharton.threetenabp:threetenabp:1.0.5",
 
             // Android
             "com.android.support:support-annotations:$v_android_support",

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import org.zalando.problem.ProblemModule
 
 import javax.inject.Named
@@ -30,9 +31,13 @@ class ObjectMapperProvider : ContextResolver<ObjectMapper> {
         mapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, false)
         mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, false)
         mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, false)
+
+        mapper.setDateFormat(ISO8601DateFormat())
+        mapper.registerModule(Jdk8Module())
         // Enable support for java.time (java 8)
 //        mapper.registerModule(JavaTimeModule());
-        mapper.setDateFormat(ISO8601DateFormat())
+
+        // REST default problem module
         mapper.registerModule(ProblemModule()
                 //.withStackTraces()
         )

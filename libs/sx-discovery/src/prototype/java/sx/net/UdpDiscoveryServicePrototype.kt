@@ -3,9 +3,9 @@ package sx.net
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import io.reactivex.rxkotlin.subscribeBy
+import org.threeten.bp.Duration
 import sx.Copyable
 import sx.io.serialization.Serializable
-import sx.time.Duration
 import java.util.concurrent.Executors
 
 /**

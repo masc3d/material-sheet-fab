@@ -41,9 +41,9 @@ class VehicleUnloading : CompositeDisposableSupplier {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val db: Database by Kodein.global.lazy.instance()
+    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     // Repositories
-    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
@@ -128,7 +128,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
         } else {
             Completable.complete()
         }
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(schedulers.database)
     }
 
     /**
@@ -144,6 +144,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
                 update(it)
             }
         }
+                .subscribeOn(schedulers.database)
                 .toCompletable()
     }
 }

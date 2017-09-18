@@ -262,4 +262,8 @@
     <string name="vehicle_unloading_finalize_dialog_title">Entladung abgeschlossen?</string>
     <string name="vehicle_unloading_finalize_dialog">Alle ausstehenden Pakete werden als fehlend markiert</string>
     <string name="tour">Tour</string>
+    <string name="dialog_title_gps_disabled">GPS Standort ist deaktiviert</string>
+    <string name="dialog_text_gps_disabled">Der GPS Standortdienst ist deaktiviert. Um fortzufahren, muss GPS aktiviert werden.</string>
+    <string name="dialog_title_developer_enabled">Entwickleroptionen aktiviert</string>
+    <string name="dialog_text_developer_enabled">Entwickleroptionen sind aktiviert. Um fortzufahren müssen diese deaktiviert werden.</string>
 </resources>
