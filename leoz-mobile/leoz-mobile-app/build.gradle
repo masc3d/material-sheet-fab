@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath(
-                "com.android.tools.build:gradle:3.0.0-beta5",
+                "com.android.tools.build:gradle:3.0.0-beta6",
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.3",
                 "com.trello:victor:1.0.0",
@@ -367,7 +367,7 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:3.0.0-beta5"
+            "com.android.databinding:compiler:3.0.0-beta6"
             // TODO: auto-value requires specific annotations processor setup with CANARY
     )
 }
