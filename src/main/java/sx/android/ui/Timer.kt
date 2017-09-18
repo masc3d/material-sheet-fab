@@ -1,15 +1,11 @@
 package sx.android.ui
 
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.Disposable
-import sx.Lifecycle
-import sx.time.Duration
-import java.util.concurrent.TimeUnit
 
 /**
  * Android main looper timer
