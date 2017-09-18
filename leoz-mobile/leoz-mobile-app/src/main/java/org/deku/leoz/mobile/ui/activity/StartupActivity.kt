@@ -68,9 +68,6 @@ class StartupActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Restore state
-        this.app.unfreezeInstanceState(this)
-
         // Load some more heavy-weight instances on startup/splash
 
         // Load log configuration first
@@ -221,15 +218,5 @@ class StartupActivity : BaseActivity() {
         } else {
             this.startMainActivity(withAnimation = false)
         }
-    }
-
-    /**
-     * Activity pause
-     */
-    override fun onPause() {
-        super.onPause()
-
-        // Save state
-        this.app.freezeInstanceState(this)
     }
 }

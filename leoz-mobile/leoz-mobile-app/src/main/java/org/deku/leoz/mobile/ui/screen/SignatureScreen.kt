@@ -144,10 +144,6 @@ class SignatureScreen
                 }
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-    }
-
     // SignaturePad listeners
     override fun onStartSigning() {
         log.debug("ONSTARTSIGNING")

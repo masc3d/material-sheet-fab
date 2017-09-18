@@ -3,6 +3,8 @@ package org.deku.leoz.mobile.ui
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import com.tinsuke.icekick.extension.freezeInstanceState
+import com.tinsuke.icekick.extension.unfreezeInstanceState
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import org.parceler.Parcels
 import org.slf4j.LoggerFactory
@@ -83,5 +85,19 @@ open class Fragment<P> : RxAppCompatDialogFragment() {
     override fun onResume() {
         super.onResume()
         log.trace("ONRESUME")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        // IceKick integration
+        freezeInstanceState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        // IceKick integration
+        unfreezeInstanceState(savedInstanceState)
     }
 }

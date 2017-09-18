@@ -156,24 +156,3 @@ open class Application : MultiDexApplication() {
 }
 
 val BaseActivity.app: Application get() = this.application as Application
-
-/**
- * Freezes instance state within application bundle
- */
-fun Application.freezeInstanceState(activity: Activity) {
-    // Save state
-    val bundle = Bundle()
-    activity.freezeInstanceState(bundle)
-    this.bundle.putBundle(activity.localClassName, bundle)
-}
-
-/**
- * Unfreeze instance state from application bundle
- */
-fun Application.unfreezeInstanceState(activity: Activity) {
-    // Restore state
-    val bundle = this.bundle.getBundle(activity.localClassName)
-    if (bundle != null) {
-        activity.unfreezeInstanceState(bundle)
-    }
-}
