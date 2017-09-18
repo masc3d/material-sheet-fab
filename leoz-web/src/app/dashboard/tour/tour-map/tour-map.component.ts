@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import 'rxjs/add/operator/takeUntil';
 
 import { MapComponent } from '@yaga/leaflet-ng2';
