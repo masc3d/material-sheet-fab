@@ -135,11 +135,15 @@ class StartupActivity : BaseActivity() {
                                     AndroidThreeTen.init(this.application)
 
                                     // Write device management identity
-                                    val deviceManagement: DeviceManagement = Kodein.global.instance()
+                                    try {
+                                        val deviceManagement: DeviceManagement = Kodein.global.instance()
 
-                                    // Save device management identity file for specific models/manufacturers
-                                    if (device.manufacturer.type == Device.Manufacturer.Type.Honeywell) {
-                                        deviceManagement.saveDeviceFile()
+                                        // Save device management identity file for specific models/manufacturers
+                                        if (device.manufacturer.type == Device.Manufacturer.Type.Honeywell) {
+                                            deviceManagement.saveDeviceFile()
+                                        }
+                                    } catch(e: Exception) {
+                                        log.warn("Device management not available", e)
                                     }
 
                                     // Setup locale

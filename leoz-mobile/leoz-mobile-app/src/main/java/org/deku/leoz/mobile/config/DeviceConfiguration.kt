@@ -3,7 +3,7 @@ package org.deku.leoz.mobile.config
 import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
-import com.tnt.innight.mobile.Sounds
+import org.deku.leoz.mobile.device.Sounds
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.mobile.Storage

@@ -4,6 +4,7 @@ package org.deku.leoz.mobile.ui.screen
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.content.res.AppCompatResources
 import android.view.LayoutInflater
 import android.view.View
@@ -119,20 +120,20 @@ class MenuScreen : ScreenFragment<Any>() {
                                 description = this.getText(R.string.vehicle_loading).toString(),
                                 counter = deliveryList.pendingParcels.get().count(),
                                 counter2 = deliveryList.loadedParcels.blockingFirst().value.count(),
-                                icon = this.context.getDrawable(R.drawable.ic_truck_loading)
+                                icon = ContextCompat.getDrawable(this.context, R.drawable.ic_truck_loading)
                         ),
                         MenuEntry(
                                 entryType = MenuEntry.Entry.DELIVERY,
                                 description = this.getText(R.string.tour).toString(),
                                 counter = delivery.pendingStops.blockingFirst().value.count(),
-                                icon = this.context.getDrawable(R.drawable.ic_format_list_bulleted)
+                                icon = ContextCompat.getDrawable(this.context, R.drawable.ic_format_list_bulleted)
                         ),
                         MenuEntry(
                                 entryType = MenuEntry.Entry.UNLOADING,
                                 description = this.getText(R.string.vehicle_unloading).toString(),
                                 counter = deliveryList.loadedParcels.get().count(),
                                 counter2 = deliveryList.pendingParcels.blockingFirst().value.count(),
-                                icon = this.context.getDrawable(R.drawable.ic_truck_unloading)
+                                icon = ContextCompat.getDrawable(this.context, R.drawable.ic_truck_unloading)
                         )
                 ))
 

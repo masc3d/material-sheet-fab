@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
@@ -93,7 +94,7 @@ import java.util.*
  * Leoz activity base class
  * Created by n3 on 23/02/2017.
  */
-open class Activity : BaseActivity(),
+abstract class Activity : BaseActivity(),
         NavigationView.OnNavigationItemSelectedListener,
         ScreenFragment.Listener,
         ActionOverlayView.Listener,
@@ -216,7 +217,7 @@ open class Activity : BaseActivity(),
         /** The default header drawable */
         val defaultDrawable by lazy {
             // Prepare default image
-            val sourceImage = this@Activity.getDrawable(R.drawable.img_street_1a).toBitmap()
+            val sourceImage = ContextCompat.getDrawable(this@Activity, R.drawable.img_street_1a).toBitmap()
 
             val ydp = this@Activity.convertPxToDp(sourceImage.height)
             val xdp = this@Activity.convertPxToDp(sourceImage.width)
@@ -437,7 +438,7 @@ open class Activity : BaseActivity(),
                         syntheticInputs.name
                 )
 
-                item.icon = this.getDrawable(R.drawable.ic_barcode_scan)
+                item.icon = ContextCompat.getDrawable(this, R.drawable.ic_barcode_scan)
             }
         }
         //endregion
@@ -1005,12 +1006,7 @@ open class Activity : BaseActivity(),
                         val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                         this.startActivityForResult(intent, 0)
                     }
-                    .onNegative { materialDialog, dialogAction ->
-                        when (android.os.Build.VERSION.SDK_INT) {
-                            android.os.Build.VERSION_CODES.LOLLIPOP -> this.finishAndRemoveTask()
-                            else -> this.finishAffinity()
-                        }
-                    }
+                    .onNegative { materialDialog, dialogAction -> this.finishAffinity() }
                     .cancelable(false)
                     .show()
         }
@@ -1033,12 +1029,7 @@ open class Activity : BaseActivity(),
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                         this.startActivityForResult(intent, 0)
                     }
-                    .onNegative { materialDialog, dialogAction ->
-                        when (android.os.Build.VERSION.SDK_INT) {
-                            android.os.Build.VERSION_CODES.LOLLIPOP -> this.finishAndRemoveTask()
-                            else -> this.finishAffinity()
-                        }
-                    }
+                    .onNegative { materialDialog, dialogAction -> this.finishAffinity() }
                     .cancelable(false)
                     .show()
         }

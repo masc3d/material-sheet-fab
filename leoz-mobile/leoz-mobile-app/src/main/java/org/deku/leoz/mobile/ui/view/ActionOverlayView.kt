@@ -10,12 +10,12 @@ import android.support.transition.Explode
 import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
+import android.view.ContextThemeWrapper
 import android.view.Menu
 import android.view.View
 import android.widget.RelativeLayout
 import org.deku.leoz.mobile.R
 import android.view.Gravity
-import android.support.v7.view.ContextThemeWrapper
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.gordonwong.materialsheetfab.DimOverlayFrameLayout
@@ -361,7 +361,7 @@ class ActionOverlayView : RelativeLayout {
                         fab.id = item.id
 
                         item.colorRes?.also {
-                            fab.setBackgroundTintRes(it)
+                            fab.backgroundTintList = ContextCompat.getColorStateList(this.context, it)
                         }
 
                         if (item.iconRes != null)
