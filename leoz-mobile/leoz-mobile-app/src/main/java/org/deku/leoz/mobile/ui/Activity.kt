@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
@@ -44,7 +43,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
-import kotlinx.android.synthetic.main.view_update_indicator.*
 import kotlinx.android.synthetic.main.view_update_indicator.view.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
@@ -61,7 +59,6 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
-import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.activity.StartupActivity
@@ -74,7 +71,6 @@ import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
 import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.design.appBarLayout
 import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
@@ -529,11 +525,6 @@ abstract class Activity : BaseActivity(),
                 this.showScreen(CameraScreen())
             }
 
-            R.id.nav_dev_prototype -> {
-                this.startActivity(
-                        Intent(applicationContext, ProtoMainActivity::class.java))
-            }
-
             R.id.nav_dev_remote_settings -> {
                 MaterialDialog.Builder(this)
                         .content("Remote settings:\n${remoteSettings}\n\nDebug settings:\n${debugSettings}")
@@ -663,7 +654,6 @@ abstract class Activity : BaseActivity(),
         navHeaderView.uxDeviceId.text = this.identity.shortUid.toString()
 
         if (this.debugSettings.enabled) {
-            this.uxNavView.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
             this.uxNavView.menu.findItem(R.id.nav_dev_remote_settings).setVisible(true)
         }
 
@@ -733,10 +723,6 @@ abstract class Activity : BaseActivity(),
                                     .findItem(R.id.nav_logout)
                                     .setVisible(true)
 
-                            this.uxNavView.menu
-                                    .findItem(R.id.nav_dev_prototype)
-                                    .setVisible(this.debugSettings.enabled)
-
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
                             navHeaderView.uxActiveUser.text = user.email
@@ -745,10 +731,6 @@ abstract class Activity : BaseActivity(),
                         else -> {
                             this.uxNavView.menu
                                     .findItem(R.id.nav_logout)
-                                    .setVisible(false)
-
-                            this.uxNavView.menu
-                                    .findItem(R.id.nav_dev_prototype)
                                     .setVisible(false)
 
                             // Hide navigation header

@@ -4,8 +4,7 @@
               style="@style/AppTheme.Layout.Screen"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
+              android:orientation="vertical">
 
     <include layout="@layout/item_stop"/>
 
