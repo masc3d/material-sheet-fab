@@ -107,14 +107,19 @@ class StopViewModel(
     }
 
     val isCountdownVisible: ObservableField<Boolean> by lazy {
-        countdownTimespan.map { it.totalMinutes < 60 }
-                .toField()
+            countdownTimespan.map { it.totalSeconds in 0..3599 }
+                    .toField()
+    }
+
+    val isCountdownExpired: ObservableField<Boolean> by lazy {
+            countdownTimespan.map { it.totalSeconds < 0 }
+                    .toField()
     }
 
     val countdownColor: ObservableField<Int> by lazy {
         countdownTimespan.map {
             when {
-                it.totalMinutes <= 15 -> Color.RED
+                it.totalSeconds <= 1800 -> Color.RED
                 else -> Color.BLACK
             }
         }
@@ -122,7 +127,7 @@ class StopViewModel(
     }
 
     val countdownText: ObservableField<String> by lazy {
-        countdownTimespan.map { it.format(withSeconds = true) }
+        countdownTimespan.map { it.format(withSeconds = true).removePrefix("00:") }
                 .toField()
     }
     //endregion

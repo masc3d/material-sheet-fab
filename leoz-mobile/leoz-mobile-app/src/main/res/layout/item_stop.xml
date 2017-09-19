@@ -156,7 +156,7 @@
                                     android:layout_height="22dp"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="@dimen/margin"
-                                    android:visibility="@{safeUnbox(stop.isClockVisible) ? View.VISIBLE : View.GONE}"
+                                    android:visibility="@{safeUnbox(stop.isClockVisible) || safeUnbox(stop.isCountdownExpired) ? View.VISIBLE : View.GONE}"
                                     app:color="@{stop.clockColor}"
                                     app:hour="@{stop.appointmentHour}"
                                     app:minute="@{stop.appointmentMinute}"
