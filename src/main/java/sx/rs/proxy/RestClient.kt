@@ -6,6 +6,7 @@ import feign.Request
 import feign.Retryer
 import feign.jackson.JacksonDecoder
 import feign.jaxrs.JAXRSContract
+import feign.okhttp.OkHttpClient
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.JerseyClientBuilder
 import org.glassfish.jersey.client.proxy.WebResourceFactory
@@ -41,15 +42,9 @@ abstract class RestClientProxy(
     protected val ignoringCertificateSslContext by lazy {
         val ignoringCertificateSslContext = SSLContext.getInstance("TLS")
         ignoringCertificateSslContext.init(null, arrayOf<TrustManager>(object : X509TrustManager {
-            override fun checkServerTrusted(p0: Array<out X509Certificate>?, p1: String?) {
-            }
-
-            override fun checkClientTrusted(p0: Array<out X509Certificate>?, p1: String?) {
-            }
-
-            override fun getAcceptedIssuers(): Array<X509Certificate> {
-                return arrayOf<X509Certificate>()
-            }
+            override fun checkServerTrusted(p0: Array<out X509Certificate>?, p1: String?) = Unit
+            override fun checkClientTrusted(p0: Array<out X509Certificate>?, p1: String?) = Unit
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf<X509Certificate>()
         }), SecureRandom())
         ignoringCertificateSslContext
     }
@@ -131,19 +126,29 @@ class FeignClientProxy(
      * A client without https cerfificate validation
      */
     private val clientWithoutSslValidation: Client by lazy {
-        Client.Default(
-                TrustingSSLSocketFactory.get(),
-                object : HostnameVerifier {
-                    override fun verify(s: String, sslSession: SSLSession): Boolean {
-                        return true
-                    }
-                })
+        OkHttpClient(
+                okhttp3.OkHttpClient.Builder()
+                        .sslSocketFactory(TrustingSSLSocketFactory.get())
+                        .hostnameVerifier(object : HostnameVerifier {
+                            override fun verify(s: String, sslSession: SSLSession): Boolean = true
+                        })
+                        .build()
+        )
+//        Client.Default(
+//                TrustingSSLSocketFactory.get(),
+//                object : HostnameVerifier {
+//                    override fun verify(s: String, sslSession: SSLSession): Boolean {
+//                        return true
+//                    }
+//                })
     }
 
     /**
      * Default feign client
      */
-    private val client: Client by lazy { Client.Default(null, null) }
+    private val client: Client by lazy {
+        OkHttpClient()
+    }
 
     val builder by lazy {
         Feign.builder()
@@ -155,9 +160,8 @@ class FeignClientProxy(
                 .contract(JAXRSContract())
     }
 
-    override fun <T> create(serviceClass: Class<T>): T {
-        return this.builder.target(serviceClass, this.baseUri.toString())
-    }
+    override fun <T> create(serviceClass: Class<T>): T =
+            this.builder.target(serviceClass, this.baseUri.toString())
 
     /**
      * Convenience extension method for creating feign target with streaming support
