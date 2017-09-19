@@ -168,7 +168,7 @@
                                     android:layout_gravity="center_vertical"
                                     android:text="@{stop.countdownText, default = `59:59`}"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                                    android:textColor="@{stop.countdownColor}"
+                                    android:textColor="@{safeUnbox(stop.countdownColor)}"
                                     android:visibility="@{safeUnbox(stop.isCountdownVisible) ? View.VISIBLE : View.GONE}"
                                     />
 
