@@ -22,6 +22,15 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
 
 /**
+ * Ignoring X509 trust manager, typically used when disabling SSL certificate checks
+ */
+private class IgnoringX509TrustManager : X509TrustManager {
+    override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) = Unit
+    override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) = Unit
+    override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf<X509Certificate>()
+}
+
+/**
  * REST client proxy base clas
  *
  * Reasoning behind this abstraction:
@@ -41,11 +50,7 @@ abstract class RestClientProxy(
 
     protected val ignoringCertificateSslContext by lazy {
         val ignoringCertificateSslContext = SSLContext.getInstance("TLS")
-        ignoringCertificateSslContext.init(null, arrayOf<TrustManager>(object : X509TrustManager {
-            override fun checkServerTrusted(p0: Array<out X509Certificate>?, p1: String?) = Unit
-            override fun checkClientTrusted(p0: Array<out X509Certificate>?, p1: String?) = Unit
-            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf<X509Certificate>()
-        }), SecureRandom())
+        ignoringCertificateSslContext.init(null, arrayOf<TrustManager>(IgnoringX509TrustManager()), SecureRandom())
         ignoringCertificateSslContext
     }
 
@@ -53,7 +58,7 @@ abstract class RestClientProxy(
 }
 
 /**
- *
+ * Jersey client proxy implementation
  */
 class JerseyClientProxy(
         baseUri: URI,
@@ -80,7 +85,7 @@ class JerseyClientProxy(
 }
 
 /**
- *
+ * RESTEasy client proxy implementation
  */
 class RestEasyClientProxy(
         baseUri: URI,
@@ -113,7 +118,7 @@ class RestEasyClientProxy(
 }
 
 /**
- *
+ * Feign client proxy implementation
  */
 class FeignClientProxy(
         baseUri: URI,
@@ -128,19 +133,12 @@ class FeignClientProxy(
     private val clientWithoutSslValidation: Client by lazy {
         OkHttpClient(
                 okhttp3.OkHttpClient.Builder()
-                        .sslSocketFactory(TrustingSSLSocketFactory.get())
+                        .sslSocketFactory(TrustingSSLSocketFactory.get(), IgnoringX509TrustManager())
                         .hostnameVerifier(object : HostnameVerifier {
                             override fun verify(s: String, sslSession: SSLSession): Boolean = true
                         })
                         .build()
         )
-//        Client.Default(
-//                TrustingSSLSocketFactory.get(),
-//                object : HostnameVerifier {
-//                    override fun verify(s: String, sslSession: SSLSession): Boolean {
-//                        return true
-//                    }
-//                })
     }
 
     /**
