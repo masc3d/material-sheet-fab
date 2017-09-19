@@ -121,20 +121,21 @@ class DeliveryStopListScreen
                 )
         )
 
-        this.editModeProperty
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    it.value.also { editMode ->
-                        // Update action items
-                        this.actionItems = this.actionItems.apply {
-                            first { it.id == R.id.action_edit }
-                                    .visible = !editMode
-
-                            first { it.id == R.id.action_done }
-                                    .visible = editMode
-                        }
-                    }
-                }
+        // TODO: complete edit mode implementation
+//        this.editModeProperty
+//                .bindUntilEvent(this, FragmentEvent.PAUSE)
+//                .subscribe {
+//                    it.value.also { editMode ->
+//                        // Update action items
+//                        this.actionItems = this.actionItems.apply {
+//                            first { it.id == R.id.action_edit }
+//                                    .visible = !editMode
+//
+//                            first { it.id == R.id.action_done }
+//                                    .visible = editMode
+//                        }
+//                    }
+//                }
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
