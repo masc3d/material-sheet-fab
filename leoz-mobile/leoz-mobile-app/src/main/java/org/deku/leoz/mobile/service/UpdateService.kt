@@ -55,7 +55,7 @@ class UpdateService(
      */
     class ApplicationPackageName(val bundleName: String, val version: String) {
         companion object {
-            private val regex = Regex("^([-a-zA-Z]+)-([0-9]+[-0-9a-zA-Z\\.]+)\\.apk$")
+            private val regex = Regex("^([-a-zA-Z]+)-([0-9]+[-0-9a-zA-Z.]+)\\.apk$")
 
             fun parse(name: String): ApplicationPackageName {
                 val matchResult = regex.find(name)

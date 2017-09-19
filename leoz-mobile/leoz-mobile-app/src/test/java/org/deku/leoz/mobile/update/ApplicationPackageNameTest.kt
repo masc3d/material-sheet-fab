@@ -5,8 +5,8 @@ import org.junit.Assert
 import org.junit.Test
 
 /**
- * Created by n3 on 19/02/2017.
- */
+* Created by masc on 19/02/2017.
+*/
 class ApplicationPackageNameTest {
     @Test
     fun testToString() {

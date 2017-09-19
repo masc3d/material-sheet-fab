@@ -34,7 +34,8 @@
                 android:layout_height="match_parent"
                 android:clickable="true"
                 android:longClickable="false"
-                android:scrollbars="none"/>
+                android:scrollbars="none"
+                android:focusable="true"/>
 
         </FrameLayout>
 

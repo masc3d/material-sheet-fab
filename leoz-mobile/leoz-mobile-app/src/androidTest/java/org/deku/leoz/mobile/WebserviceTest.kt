@@ -6,8 +6,8 @@ import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.config.RestClientConfiguration
 
 /**
- * Created by n3 on 05/02/2017.
- */
+* Created by masc on 05/02/2017.
+*/
 abstract class WebserviceTest {
     companion object {
         init {

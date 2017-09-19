@@ -14,7 +14,8 @@
         android:layout_height="100dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/ic_account_card_details" />
+        app:srcCompat="@drawable/ic_account_card_details"
+        android:contentDescription="TODO"/>
 
     <TextView
         android:id="@+id/uxTitle"

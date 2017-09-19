@@ -16,8 +16,8 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 
 /**
- * Created by n3 on 06/03/2017.
- */
+* Created by masc on 06/03/2017.
+*/
 class ProtoSsoFragment
     :
         ScreenFragment<Any>(),

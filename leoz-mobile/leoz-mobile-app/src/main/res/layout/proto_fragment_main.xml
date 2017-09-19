@@ -28,7 +28,8 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                app:srcCompat="@drawable/img_deku_logo" />
+                app:srcCompat="@drawable/img_deku_logo"
+                android:contentDescription="TODO"/>
 
         </LinearLayout>
 
@@ -51,7 +52,8 @@
                     android:background="@android:color/transparent"
                     android:layout_weight="1"
                     android:adjustViewBounds="true"
-                    android:scaleType="fitCenter" />
+                    android:scaleType="fitCenter"
+                    android:contentDescription="TODO"/>
 
                 <ImageButton
                     android:layout_width="match_parent"
@@ -59,7 +61,8 @@
                     app:srcCompat="@drawable/ic_launcher"
                     android:id="@+id/uxSsoButton"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent" />
+                    android:background="@android:color/transparent"
+                    android:contentDescription="TODO"/>
 
             </LinearLayout>
 
@@ -73,14 +76,16 @@
                     android:layout_height="100dp"
                     app:srcCompat="@drawable/ic_launcher"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent" />
+                    android:background="@android:color/transparent"
+                    android:contentDescription="TODO"/>
 
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="100dp"
                     app:srcCompat="@drawable/ic_launcher"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent" />
+                    android:background="@android:color/transparent"
+                    android:contentDescription="TODO"/>
             </LinearLayout>
 
             <LinearLayout
@@ -93,7 +98,8 @@
                     android:layout_height="100dp"
                     app:srcCompat="@drawable/ic_launcher"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent" />
+                    android:background="@android:color/transparent"
+                    android:contentDescription="TODO"/>
             </LinearLayout>
         </LinearLayout>
 

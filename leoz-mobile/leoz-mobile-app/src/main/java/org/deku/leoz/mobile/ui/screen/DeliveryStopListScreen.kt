@@ -32,6 +32,7 @@ import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.android.ui.flexibleadapter.FlexibleVmItem
 import org.deku.leoz.mobile.ui.vm.StopViewModel
 import org.deku.leoz.model.UnitNumber
@@ -39,6 +40,7 @@ import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.customizeScrollBehavior
+import sx.rx.ObservableRxProperty
 
 /**
  * Delivery stop list screen
@@ -65,6 +67,9 @@ class DeliveryStopListScreen
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+
+    private val editModeProperty = ObservableRxProperty(false)
+    private var editMode by editModeProperty
 
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
@@ -115,6 +120,35 @@ class DeliveryStopListScreen
                         }
                 )
         )
+
+        this.editModeProperty
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    it.value.also { editMode ->
+                        // Update action items
+                        this.actionItems = this.actionItems.apply {
+                            first { it.id == R.id.action_edit }
+                                    .visible = !editMode
+
+                            first { it.id == R.id.action_done }
+                                    .visible = editMode
+                        }
+                    }
+                }
+
+        this.activity.actionEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it) {
+                        R.id.action_edit -> {
+                            this.editMode = true
+                        }
+
+                        R.id.action_done -> {
+                            this.editMode = false
+                        }
+                    }
+                }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -124,6 +158,21 @@ class DeliveryStopListScreen
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_edit,
+                        iconRes = R.drawable.ic_pencil,
+                        colorRes = R.color.colorAccent
+                ),
+                ActionItem(
+                        id = R.id.action_done,
+                        iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white,
+                        colorRes = R.color.colorPrimary,
+                        visible = false
+                )
+        )
 
         // Flexible adapter needs to be re-created with views
         flexibleAdapterInstance.reset()
@@ -182,7 +231,8 @@ class DeliveryStopListScreen
                     val item = FlexibleVmItem(
                             view = R.layout.item_stop,
                             variable = BR.stop,
-                            viewModel = StopViewModel(it)
+                            viewModel = StopViewModel(it),
+                            handleViewId = R.id.uxHandle
                     )
 
                     item.isEnabled = true

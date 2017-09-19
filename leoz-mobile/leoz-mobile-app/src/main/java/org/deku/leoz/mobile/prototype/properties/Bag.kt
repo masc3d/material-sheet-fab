@@ -1,8 +1,8 @@
 package org.deku.leoz.mobile.prototype.properties
 
 /**
- * Created by 27694066 on 10.02.2017.
- */
+* Created by masc on 10.02.2017.
+*/
 object Bag{
     const val BAG_ORDERNO_HUB2STATION: Int = 1
     const val BAG_ORDERNO_STATION2HUB: Int = 2

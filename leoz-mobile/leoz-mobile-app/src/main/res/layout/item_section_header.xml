@@ -51,7 +51,7 @@
                 android:tint="@{header.colorInt}"
                 android:src="@{header.icon, default=@drawable/ic_truck}"
                 android:layout_marginEnd="@dimen/large_margin"
-                />
+                android:contentDescription="TODO"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_expand"
                     android:tint="@color/colorDarkGrey"
-                    >
+                    android:contentDescription="TODO">
 
                 </ImageView>
 

@@ -33,7 +33,7 @@
                     android:layout_marginEnd="@dimen/medium_margin"
                     android:src="@drawable/ic_service_postbox"
                     android:tint="@color/colorGrey"
-                    />
+                    android:contentDescription="TODO"/>
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -16,7 +16,8 @@
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_marginBottom="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
-            app:srcCompat="@drawable/ic_person" />
+            app:srcCompat="@drawable/ic_person"
+            android:contentDescription="TODO"/>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -52,7 +53,8 @@
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
-            app:srcCompat="@drawable/ic_stop" />
+            app:srcCompat="@drawable/ic_stop"
+            android:contentDescription="TODO"/>
 
         <LinearLayout
             android:orientation="horizontal"

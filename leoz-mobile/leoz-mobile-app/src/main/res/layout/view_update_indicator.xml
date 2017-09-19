@@ -38,7 +38,7 @@
             android:layout_gravity="center"
             android:src="@drawable/ic_update"
             android:tint="@android:color/black"
-            />
+            android:contentDescription="TODO"/>
 
         <ProgressBar
             android:id="@+id/uxUpdateProgressBar"

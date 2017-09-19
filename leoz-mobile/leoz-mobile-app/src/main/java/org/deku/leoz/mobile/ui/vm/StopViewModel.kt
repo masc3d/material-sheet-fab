@@ -62,50 +62,6 @@ class StopViewModel(
     val isFixedAppointment: Boolean
         get() = stop.tasks.any { it.isFixedAppointment }
 
-    @get:ColorInt
-    val clockColor: Int
-        get() = if (this.isFixedAppointment) Color.RED else Color.GRAY
-
-    private val countdownTimespan: Observable<TimeSpan> by lazy {
-        val end: Date? = stop.dateEnd
-        when {
-            end != null -> this.tickEvent.map {
-                TimeSpan.between(end, Date())
-            }
-            else -> Observable.empty()
-        }
-    }
-
-    val isCountdownVisible: ObservableField<Boolean> by lazy {
-        countdownTimespan.map {
-            it.totalMinutes < 60
-        }
-                .toField()
-    }
-
-    val countdownColor: ObservableField<Int> by lazy {
-        countdownTimespan.map {
-            when {
-                it.totalMinutes <= 15 -> Color.RED
-                else -> Color.BLACK
-            }
-        }
-                .toField()
-    }
-
-    val countdownText: ObservableField<String> by lazy {
-        countdownTimespan.map {
-            it.format(withSeconds = true)
-        }
-                .toField()
-    }
-
-    val isClockVisible: ObservableField<Boolean> by lazy {
-        when {
-            isFixedAppointment -> Observable.just(true).toField()
-            else -> isCountdownVisible
-        }
-    }
 
     val orderAmount: String
         get() = stop.tasks.map { it.order }.distinct().count().toString()
@@ -124,6 +80,52 @@ class StopViewModel(
     val hasServices: Boolean by lazy {
         this.services.count() > 0
     }
+
+    //region Clock
+    @get:ColorInt
+    val clockColor: Int
+        get() = if (this.isFixedAppointment)
+            Color.RED
+        else
+            Color.GRAY
+
+    val isClockVisible: ObservableField<Boolean> by lazy {
+        when {
+            isFixedAppointment -> Observable.just(true).toField()
+            else -> isCountdownVisible
+        }
+    }
+    //endregion
+
+    //region Countdown
+    private val countdownTimespan: Observable<TimeSpan> by lazy {
+        val end: Date? = stop.dateEnd
+        when {
+            end != null -> this.tickEvent.map { TimeSpan.between(end, Date()) }
+            else -> Observable.empty()
+        }
+    }
+
+    val isCountdownVisible: ObservableField<Boolean> by lazy {
+        countdownTimespan.map { it.totalMinutes < 60 }
+                .toField()
+    }
+
+    val countdownColor: ObservableField<Int> by lazy {
+        countdownTimespan.map {
+            when {
+                it.totalMinutes <= 15 -> Color.RED
+                else -> Color.BLACK
+            }
+        }
+                .toField()
+    }
+
+    val countdownText: ObservableField<String> by lazy {
+        countdownTimespan.map { it.format(withSeconds = true) }
+                .toField()
+    }
+    //endregion
 
     override fun removeOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {
         log.trace("SVM REMOVECALLBACK ${isFixedAppointment}")

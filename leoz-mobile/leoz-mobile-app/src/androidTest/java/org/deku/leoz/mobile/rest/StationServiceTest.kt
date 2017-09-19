@@ -18,8 +18,8 @@ import org.deku.leoz.service.internal.StationService
 import sx.rx.task
 
 /**
- * Created by n3 on 06/12/2016.
- */
+* Created by masc on 06/12/2016.
+*/
 @RunWith(AndroidJUnit4::class)
 class StationServiceTest : WebserviceTest() {
 

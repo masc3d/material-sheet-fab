@@ -38,7 +38,7 @@
                     android:layout_marginEnd="@dimen/medium_margin"
                     android:src="@{service.icon, default=@drawable/ic_service}"
                     android:tint="@color/colorService"
-                    />
+                    android:contentDescription="TODO"/>
 
                 <TextView
                     android:layout_width="wrap_content"
