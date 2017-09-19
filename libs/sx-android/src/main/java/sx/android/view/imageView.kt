@@ -5,6 +5,8 @@ import android.support.annotation.ColorRes
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v4.view.ViewCompat
+import android.support.v4.widget.ImageViewCompat
 import android.widget.ImageView
 
 /**
@@ -12,7 +14,7 @@ import android.widget.ImageView
  * @param colorRes Color resource
  */
 fun ImageView.setBackgroundTintRes(@ColorRes colorRes: Int) {
-    this.setBackgroundTintList(ContextCompat.getColorStateList(this.context, colorRes))
+    ViewCompat.setBackgroundTintList(this, ContextCompat.getColorStateList(this.context, colorRes))
 }
 
 /**
