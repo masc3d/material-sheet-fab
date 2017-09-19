@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    style="@style/AppTheme.Layout.Screen"
-    tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
+    style="@style/AppTheme.Layout.Screen">
 
     <!-- TODO: Update blank fragment layout -->
 
