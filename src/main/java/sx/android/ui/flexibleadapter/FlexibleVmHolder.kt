@@ -2,6 +2,8 @@ package sx.android.ui.flexibleadapter
 
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
+import android.support.annotation.IdRes
+import android.support.annotation.LayoutRes
 import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
@@ -15,7 +17,8 @@ import io.reactivex.subjects.PublishSubject
 class FlexibleVmHolder(
         val view: View,
         val adapter: FlexibleAdapter<out IFlexible<*>>,
-        isStickyHeader: Boolean = false)
+        isStickyHeader: Boolean = false,
+        @IdRes handleViewId: Int = 0)
     :
         FlexibleViewHolder(view, adapter, isStickyHeader) {
 
@@ -26,6 +29,9 @@ class FlexibleVmHolder(
 
     init {
         this.binding = DataBindingUtil.bind(view)
+        if (handleViewId != 0) {
+            this.setDragHandleView(view.findViewById(handleViewId))
+        }
     }
 
     override fun onItemReleased(position: Int) {
