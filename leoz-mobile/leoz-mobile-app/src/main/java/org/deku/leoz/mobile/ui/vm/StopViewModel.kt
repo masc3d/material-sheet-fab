@@ -138,8 +138,8 @@ class StopViewModel(
     val countdownColor: ObservableField<Int> by lazy {
         countdownTimespan.map {
             when {
-                it.totalMinutes <= 30 -> ContextCompat.getColor(this.context, R.color.colorOrange)
                 it.totalMinutes < 0 -> ContextCompat.getColor(this.context, R.color.colorRed)
+                it.totalMinutes <= 30 -> ContextCompat.getColor(this.context, R.color.colorOrange)
                 else -> ContextCompat.getColor(this.context, android.R.color.black)
             }
         }
