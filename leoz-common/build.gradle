@@ -68,6 +68,7 @@ dependencies {
             // REST
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jaxrs:$v_feign",
+            "io.github.openfeign:feign-okhttp:$v_feign",
 
             // YAML
             "org.yaml:snakeyaml:$v_snakeyaml",
@@ -91,6 +92,7 @@ dependencies {
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-jaxrs:$v_feign",
+            "io.github.openfeign:feign-okhttp:$v_feign",
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
