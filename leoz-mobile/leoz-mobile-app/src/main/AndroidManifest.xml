@@ -44,12 +44,6 @@
             android:name=".ui.activity.MainActivity"
             android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name=".prototype.activities.ProtoMainActivity"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity
-            android:name=".prototype.activities.smallsort.ProtoSsoActivity"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity
             android:name=".ui.activity.DeliveryActivity"
             android:label="@string/title_activity_delivery"
             android:windowSoftInputMode="adjustResize"/>

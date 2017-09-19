@@ -17,7 +17,7 @@ import sx.LazyInstance
 /**
  * Created by phpr on 24.06.2017.
  */
-class ChangelogDialog private constructor(): Dialog(R.layout.dialog_whatsnew) {
+class ChangelogDialog: Dialog(R.layout.dialog_whatsnew) {
 
     private lateinit var items: List<ChangelogItem>
 
