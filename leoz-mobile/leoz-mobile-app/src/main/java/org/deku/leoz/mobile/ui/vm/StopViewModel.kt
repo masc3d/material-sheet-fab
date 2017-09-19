@@ -1,14 +1,17 @@
 package org.deku.leoz.mobile.ui.vm
 
+import android.content.Context
 import android.databinding.BaseObservable
 import android.databinding.ObservableField
 import android.graphics.Color
 import android.support.annotation.ColorInt
+import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.dateEnd
@@ -18,7 +21,7 @@ import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
 import sx.time.TimeSpan
-import sx.time.plusMinutes
+import sx.time.replaceTime
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
 import java.util.*
@@ -32,6 +35,7 @@ class StopViewModel(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    private val context: Context by Kodein.global.lazy.instance()
     private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
 
     private val tickEvent = Observable.merge(
@@ -39,18 +43,33 @@ class StopViewModel(
             timer.tickEvent
     )
 
-    val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val timeFormat: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     val address = AddressViewModel(stop.address)
 
+    /** The actual appointment date is always displayed as today */
+    private val appointmentDate by lazy { Date() }
+
+    private val appointmentFromDate by lazy {
+        stop.dateStart?.also {
+            this.appointmentDate.replaceTime(it)
+        }
+    }
+
+    private val appointmentToDate by lazy {
+        stop.dateEnd?.let {
+            this.appointmentDate.replaceTime(it)
+        }
+    }
+
     val appointmentFrom: String
-        get() = simpleDateFormat.format(stop.dateStart)
+        get() = timeFormat.format(appointmentFromDate)
 
     val appointmentTo: String
-        get() = simpleDateFormat.format(stop.dateEnd)
+        get() = timeFormat.format(appointmentToDate)
 
     private val appointmentEndCalendar by lazy {
-        stop.dateEnd?.toCalendar()
+        this.appointmentToDate?.toCalendar()
     }
 
     val appointmentHour: Int
@@ -85,9 +104,9 @@ class StopViewModel(
     @get:ColorInt
     val clockColor: Int
         get() = if (this.isFixedAppointment)
-            Color.RED
+            ContextCompat.getColor(this.context, R.color.colorRed)
         else
-            Color.GRAY
+            ContextCompat.getColor(this.context, R.color.colorLightGrey)
 
     val isClockVisible: ObservableField<Boolean> by lazy {
         when {
@@ -99,7 +118,7 @@ class StopViewModel(
 
     //region Countdown
     private val countdownTimespan: Observable<TimeSpan> by lazy {
-        val end: Date? = stop.dateEnd
+        val end: Date? = this.appointmentToDate
         when {
             end != null -> this.tickEvent.map { TimeSpan.between(end, Date()) }
             else -> Observable.empty()
@@ -107,27 +126,28 @@ class StopViewModel(
     }
 
     val isCountdownVisible: ObservableField<Boolean> by lazy {
-            countdownTimespan.map { it.totalSeconds in 0..3599 }
-                    .toField()
+        countdownTimespan.map { it.totalMinutes < 60 }
+                .toField()
     }
 
     val isCountdownExpired: ObservableField<Boolean> by lazy {
-            countdownTimespan.map { it.totalSeconds < 0 }
-                    .toField()
+        countdownTimespan.map { it.totalSeconds < 0 }
+                .toField()
     }
 
     val countdownColor: ObservableField<Int> by lazy {
         countdownTimespan.map {
             when {
-                it.totalSeconds <= 1800 -> Color.RED
-                else -> Color.BLACK
+                it.totalMinutes <= 30 -> ContextCompat.getColor(this.context, R.color.colorOrange)
+                it.totalMinutes < 0 -> ContextCompat.getColor(this.context, R.color.colorRed)
+                else -> ContextCompat.getColor(this.context, android.R.color.black)
             }
         }
                 .toField()
     }
 
     val countdownText: ObservableField<String> by lazy {
-        countdownTimespan.map { it.format(withSeconds = true).removePrefix("00:") }
+        countdownTimespan.map { it.format(withHours = false, withSeconds = true) }
                 .toField()
     }
     //endregion
