@@ -17,27 +17,31 @@ class TimeSpan(
     val absMinutes by lazy { Math.abs(this.minutes) }
     val absSeconds by lazy { Math.abs(this.seconds) }
 
-    val totalSeconds by lazy { totalMillis / 1000 }
-    val totalMinutes by lazy { totalMillis / (1000 * 60) }
-    val totalHours by lazy { totalMillis / (1000 * 60 * 60) }
+    val totalSeconds: Double by lazy { totalMillis.toDouble() / 1000 }
+    val totalMinutes: Double by lazy { totalMillis.toDouble() / (1000 * 60) }
+    val totalHours: Double by lazy { totalMillis.toDouble() / (1000 * 60 * 60) }
 
     companion object {
         fun between(a: Date, b: Date): TimeSpan = TimeSpan(a.time - b.time)
     }
 
-    fun format(withSeconds: Boolean = true): String {
+    fun format(withHours: Boolean = true, withSeconds: Boolean = true): String {
         val sign = if (this.totalMillis < 0) "-" else ""
 
-        val components = arrayOf(
-                "%02d".format(this.absHours),
-                "%02d".format(this.absMinutes),
-                if (withSeconds) "%02d".format(this.absSeconds) else ""
-        )
+        val components = when (withHours) {
+            true -> arrayOf(
+                    // Only include hours when greater than zero
+                    if (this.absHours > 0) "%02d".format(this.absHours) else "",
+                    "%02d".format(this.absMinutes)
+            )
+            false -> arrayOf(
+                    "%02d".format(this.absHours * 60 + this.absMinutes)
+            )
+        }.plus(if (withSeconds) "%02d".format(this.absSeconds) else "")
 
         return "${sign}${components.filter { it.isNotBlank() }.joinToString(":")}"
+
     }
 
-    override fun toString(): String {
-        return this.format()
-    }
+    override fun toString(): String = this.format()
 }
