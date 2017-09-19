@@ -159,20 +159,21 @@ class DeliveryStopListScreen
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_edit,
-                        iconRes = R.drawable.ic_pencil,
-                        colorRes = R.color.colorAccent
-                ),
-                ActionItem(
-                        id = R.id.action_done,
-                        iconRes = R.drawable.ic_finish,
-                        iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary,
-                        visible = false
-                )
-        )
+        // TODO: complete edit mode implementation
+//        this.actionItems = listOf(
+//                ActionItem(
+//                        id = R.id.action_edit,
+//                        iconRes = R.drawable.ic_pencil,
+//                        colorRes = R.color.colorAccent
+//                ),
+//                ActionItem(
+//                        id = R.id.action_done,
+//                        iconRes = R.drawable.ic_finish,
+//                        iconTintRes = android.R.color.white,
+//                        colorRes = R.color.colorPrimary,
+//                        visible = false
+//                )
+//        )
 
         // Flexible adapter needs to be re-created with views
         flexibleAdapterInstance.reset()
