@@ -101,6 +101,10 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError true
+    }
+
     buildTypes {
         release {
             minifyEnabled true
