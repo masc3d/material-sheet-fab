@@ -22,6 +22,7 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Order
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
@@ -100,7 +101,7 @@ class MenuScreen : ScreenFragment<Any>() {
         super.onCreate(savedInstanceState)
 
         this.title = "mobileX Tour"
-        this.headerImage = R.drawable.img_street_1a
+        this.headerImage = Headers.street
 
         this.aidcEnabled = true
     }

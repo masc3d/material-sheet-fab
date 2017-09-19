@@ -31,6 +31,7 @@ import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.VehicleUnloading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
@@ -198,7 +199,7 @@ class VehicleUnloadingScreen :
         super.onCreate(savedInstanceState)
 
         this.title = this.getText(R.string.vehicle_unloading).toString()
-        this.headerImage = R.drawable.img_parcels_1a
+        this.headerImage = Headers.parcels
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
 
         this.aidcEnabled = true

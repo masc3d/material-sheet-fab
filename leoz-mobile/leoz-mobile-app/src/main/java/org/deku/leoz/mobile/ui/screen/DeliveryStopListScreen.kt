@@ -31,6 +31,7 @@ import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.android.ui.flexibleadapter.FlexibleVmItem
@@ -84,7 +85,7 @@ class DeliveryStopListScreen
 
         this.title = getString(R.string.title_stop_list)
         this.aidcEnabled = true
-        this.headerImage = R.drawable.img_street_1a
+        this.headerImage = Headers.street
 
         this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed

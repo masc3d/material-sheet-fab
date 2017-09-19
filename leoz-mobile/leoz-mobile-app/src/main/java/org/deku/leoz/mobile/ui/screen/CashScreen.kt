@@ -21,11 +21,13 @@ import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.OrderTaskViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.model.EventDeliveredReason
+import org.jetbrains.anko.coroutines.experimental.asReference
 import org.jetbrains.anko.inputMethodManager
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
@@ -104,7 +106,7 @@ class CashScreen : ScreenFragment<Any>() {
         super.onCreate(savedInstanceState)
 
         this.title = getString(R.string.title_cash_collection)
-        this.headerImage = R.drawable.img_money_a
+        this.headerImage = Headers.cash
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
         this.toolbarCollapsed = true
     }

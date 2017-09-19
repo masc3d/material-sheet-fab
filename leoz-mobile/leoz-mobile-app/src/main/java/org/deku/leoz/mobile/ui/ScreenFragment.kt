@@ -2,6 +2,8 @@ package org.deku.leoz.mobile.ui
 
 import android.content.pm.ActivityInfo
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
@@ -88,8 +90,7 @@ open class ScreenFragment<P> : Fragment<P>() {
     /**
      * Header image
      */
-    var headerImage: Int = 0
-        @DrawableRes get
+    var headerImage: Drawable? = null
 
     /** The initial aidc reader setting for this screen */
     var aidcEnabled: Boolean = false

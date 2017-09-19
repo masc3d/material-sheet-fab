@@ -39,6 +39,7 @@ import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.rx.toHotIoObservable
+import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.composeAsRest
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -226,7 +227,7 @@ class VehicleLoadingScreen :
         super.onCreate(savedInstanceState)
 
         this.title = this.getText(R.string.vehicle_loading).toString()
-        this.headerImage = R.drawable.img_parcels_1a
+        this.headerImage = Headers.parcels
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
 
         this.aidcEnabled = true

@@ -40,6 +40,7 @@ import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
@@ -283,7 +284,7 @@ class DeliveryStopProcessScreen :
 
         this.title = getString(R.string.title_stop_process)
         this.aidcEnabled = true
-        this.headerImage = R.drawable.img_parcels_1a
+        this.headerImage = Headers.parcels
         this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
 

@@ -211,25 +211,8 @@ abstract class Activity : BaseActivity(),
         }
 
         /** The default header drawable */
-        val defaultDrawable by lazy {
-            // Prepare default image
-            val sourceImage = ContextCompat.getDrawable(this@Activity, R.drawable.img_street_1a).toBitmap()
-
-            val ydp = this@Activity.convertPxToDp(sourceImage.height)
-            val xdp = this@Activity.convertPxToDp(sourceImage.width)
-
-            val bitmap = Bitmap.createBitmap(
-                    sourceImage,
-                    0,
-                    this@Activity.convertDpToPx(ydp / 10).toInt(),
-                    sourceImage.width,
-                    this@Activity.convertDpToPx(ydp / 2.1F).toInt()
-            )
-
-            val drawable = BitmapDrawable(this@Activity.resources, bitmap)
-
-            drawable
-        }
+        val defaultDrawable
+                get() = Headers.street
 
         /** Header drawable */
         var headerDrawable: Drawable? = null
@@ -916,8 +899,9 @@ abstract class Activity : BaseActivity(),
         run {
             // TODO: don't expand when scroll position is not top on pre-existing fragment
 
-            this.header.headerDrawable = if (fragment.headerImage != 0)
-                ContextCompat.getDrawable(baseContext, fragment.headerImage)
+            log.trace("HEADER IMAGE SET ${fragment.headerImage}")
+            this.header.headerDrawable = if (fragment.headerImage != null)
+                fragment.headerImage
             else
                 this.header.defaultDrawable
         }

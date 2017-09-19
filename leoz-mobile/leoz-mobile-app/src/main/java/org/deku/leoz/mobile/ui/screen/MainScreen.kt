@@ -15,6 +15,7 @@ import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.extension.inflateMenu
@@ -39,7 +40,7 @@ class MainScreen : ScreenFragment<Any>() {
         super.onCreate(savedInstanceState)
 
         this.title = "mobileX"
-        this.headerImage = R.drawable.img_street_1a
+        this.headerImage = Headers.street
     }
 
     /**
