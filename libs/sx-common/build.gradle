@@ -65,15 +65,20 @@ dependencies {
             // Jersey REST client
             "org.glassfish.jersey.core:jersey-client:$v_jersey",
             "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey",
+
             // RESTeasy client
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
+
             // Feign REST
             "io.github.openfeign:feign-jackson:$v_feign",
+            "io.github.openfeign:feign-okhttp:$v_feign",
             dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
                 exclude group: "javax.ws.rs", module: "jsr311-api"
             },
+
             // YAML
             "org.yaml:snakeyaml:1.18",
+
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
