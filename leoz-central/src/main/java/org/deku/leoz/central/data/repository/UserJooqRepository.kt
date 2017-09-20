@@ -12,9 +12,6 @@ import javax.inject.Inject
 import javax.inject.Named
 import org.deku.leoz.service.internal.UserService
 
-//import sun.tools.jconsole.Tab
-
-
 /**
  * User repository
  * Created by 27694066 on 25.04.2017.

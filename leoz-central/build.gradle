@@ -44,7 +44,7 @@ def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
 def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'//&noAccessToProcedureBodies=true'
 
 // Flyway constants
-def FLYWAY_TARGET = 37
+def FLYWAY_TARGET = 38
 def FLYWAY_MIGRATION_DIR = new File(project.rootDir, 'leoz-central-schema/db/migration')
 def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration')
 

@@ -11,8 +11,10 @@ import java.util.*
 /**
  * Created by masc on 18.06.17.
  */
+/*
+
 class MockDeliveryListService : DeliveryListService {
-    override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
+    override fun get( deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -20,6 +22,10 @@ class MockDeliveryListService : DeliveryListService {
             id = 1,
             date = ShortDate(Date())
     )
+
+    override fun getById(id: Long, apiKey: String?): DeliveryListService.DeliveryList {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun getById(id: Long): DeliveryListService.DeliveryList {
 
@@ -72,3 +78,4 @@ class MockDeliveryListService : DeliveryListService {
 //        return listOf(info)
 //    }
 }
+*/

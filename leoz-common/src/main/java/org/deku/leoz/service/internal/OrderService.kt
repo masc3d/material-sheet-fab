@@ -2,6 +2,7 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
 import org.deku.leoz.model.*
+import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -34,12 +35,21 @@ interface OrderService {
             @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long
     ): Order
 
+    @GET
+    @Path("/{$ORDERID}")
+    @ApiOperation(value = "Get order by order ID")
+    fun getById(
+            @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long,
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+    ): Order
+
     /**
      * Get orders
      * @param labelRef Label reference (optional query param)
      * @param custRef Custom reference (optional query param)
      * @param ref Order reference (optional query param)
      */
+
     @GET
     @Path("/")
     @ApiOperation(value = "Get orders")
@@ -47,6 +57,17 @@ interface OrderService {
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
             @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String? = null
+    ): List<Order>
+
+
+    @GET
+    @Path("/")
+    @ApiOperation(value = "Get orders")
+    fun get(
+            @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
+            @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
+            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String? = null,
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
     ): List<Order>
 
     @ApiModel(description = "Order Model")
@@ -64,7 +85,7 @@ interface OrderService {
             @get:ApiModelProperty(example = "DELIVERY", position = 40, required = true, value = "OrderClassification")
             var orderClassification: OrderClassification = OrderClassification.DELIVERY,
 
-            @get:ApiModelProperty(position = 60, required = true, value = "appointmentPickup")
+            @get:ApiModelProperty(position = 60, required = true, value = "Pickup appointment")
             var pickupAppointment: Appointment = Appointment(),
             @get:ApiModelProperty(required = true, position = 70, value = "Pickup address")
             var pickupAddress: Address = Address(),
@@ -72,19 +93,21 @@ interface OrderService {
             var pickupServices: List<ParcelService>? = listOf(),
             @get:ApiModelProperty(required = true, position = 90, value = "Pickup text information")
             var pickupNotice: String? = null,
+            @get:ApiModelProperty(required = true, position = 95, value = "Pickup Station")
+            var pickupStation: Long = 0,
 
-            @get:ApiModelProperty(position = 100, required = true, value = "appointmentDelivery")
+            @get:ApiModelProperty(position = 100, required = true, value = "Delivery appointment")
             var deliveryAppointment: Appointment = Appointment(),
             @ApiModelProperty(required = true, position = 110, value = "Delivery address")
             var deliveryAddress: Address = Address(),
-            @get:ApiModelProperty(required = true, position = 50, value = "delivery services")
+            @get:ApiModelProperty(required = true, position = 50, value = "Delivery services")
             var deliveryServices: List<ParcelService>? = listOf(),
-            @get:ApiModelProperty(required = true, position = 130, value = "delivery Cash information")
+            @get:ApiModelProperty(required = true, position = 130, value = "Delivery Cash information")
             var deliveryCashService: CashService? = null,
-
-            @get:ApiModelProperty(required = true, position = 140, value = "delivery text information")
+            @get:ApiModelProperty(required = true, position = 140, value = "Delivery text information")
             var deliveryNotice: String? = null,
-
+            @get:ApiModelProperty(required = true, position = 145, value = "Delivery Station")
+            var deliveryStation: Long = 0,
 
             @get:ApiModelProperty(position = 150, required = false, value = "Parcels")
             var parcels: List<Parcel> = listOf()
@@ -125,15 +148,7 @@ interface OrderService {
             )
         }
 
-//        @ApiModel(value = "Service", description = "Service")
-//        data class Service(
-//                @get:ApiModelProperty(example = "xChange", position = 40, required = false, value = "Order Service")
-//                var services: List<ParcelService>? = null
-//        )
-
-
         data class CashService(
-                //                @get:ApiModelProperty(example = "take cash in currency €", position = 120, required = false, value = "information")
                 @get:ApiModelProperty(example = "10.99", position = 130, required = false, value = "cashAmount")
                 var cashAmount: Double = 0.0,
                 /** Currency code according to ISO 4217 https://en.wikipedia.org/wiki/ISO_4217 */
