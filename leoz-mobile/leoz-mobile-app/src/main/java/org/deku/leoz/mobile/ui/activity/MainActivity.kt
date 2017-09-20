@@ -66,20 +66,20 @@ class MainActivity
     }
 
     private fun showExitDialog() {
-        val builder = AlertDialog.Builder(this)
-
-        builder.setTitle(R.string.exit_application)
-                .setMessage(R.string.exit_application_prompt)
-                .setPositiveButton(android.R.string.yes, { dialog, which -> this.app.terminate() })
-                .setNegativeButton(android.R.string.no, null)
-
-        builder.create().show()
+        MaterialDialog.Builder(this)
+                .title(R.string.exit_application)
+                .content(R.string.exit_application_prompt)
+                .positiveText(android.R.string.yes)
+                .onPositive { dialog, which -> this.app.terminate() }
+                .negativeText(android.R.string.no)
+                .build().show()
     }
 
     val loginPendingDialog by lazy {
         MaterialDialog.Builder(this)
                 .title(R.string.login_pending)
                 .content(R.string.please_wait)
+                .cancelable(false)
                 .progress(true, 0)
                 .build()
     }
