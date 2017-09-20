@@ -149,6 +149,7 @@ subprojects {
         project.apply plugin: 'idea'
 
         sourceSets.main.java.outputDir = classesDir
+        sourceSets.main.output.resourcesDir = classesDir
         sourceSets.test.java.outputDir = testClassesDir
 
         project.idea {
