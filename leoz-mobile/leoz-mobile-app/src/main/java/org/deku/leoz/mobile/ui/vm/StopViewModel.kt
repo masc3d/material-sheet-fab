@@ -153,7 +153,7 @@ class StopViewModel(
     //endregion
 
     override fun removeOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {
-        log.trace("SVM REMOVECALLBACK ${isFixedAppointment}")
+        log.trace("SVM REMOVECALLBACK")
         super.removeOnPropertyChangedCallback(callback)
     }
 
