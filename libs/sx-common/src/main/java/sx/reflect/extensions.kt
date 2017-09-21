@@ -1,5 +1,6 @@
 package sx.reflect
 
+import org.apache.commons.lang3.ClassUtils
 import java.lang.reflect.Type
 
 /**
@@ -20,3 +21,10 @@ val Class<*>.allGenericInterfaces: List<Type>
 
         return interfaces
     }
+
+/**
+ * All interfaces of a class
+ * Created by masc on 12.05.17.
+ */
+val Class<*>.allInterfaces: List<Class<*>>
+    get() = ClassUtils.getAllInterfaces(this)
