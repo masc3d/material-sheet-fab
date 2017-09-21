@@ -17,9 +17,8 @@ import java.net.URI
  * Created by n3 on 15/02/2017.
  */
 class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
-    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
-        return FeignClientProxy(baseUri, ignoreSsl, JacksonEncoder(), JacksonDecoder())
-    }
+    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy =
+            FeignClientProxy(baseUri, ignoreSsl, JacksonEncoder(), JacksonDecoder())
 
     companion object {
         private val log = LoggerFactory.getLogger(RestClientConfiguration::class.java)

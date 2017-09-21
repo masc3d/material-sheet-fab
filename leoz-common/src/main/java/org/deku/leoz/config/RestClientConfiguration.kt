@@ -31,9 +31,9 @@ abstract class RestClientConfiguration {
     /**
      * HTTP/S port
      */
-    var port: Int = RestConfiguration.DEFAULT_PORT
+    var port: Int = Rest.DEFAULT_PORT
 
-    fun createUri(https: Boolean, host: String, port: Int, basePath: String = RestConfiguration.MAPPING_PREFIX): URI {
+    fun createUri(https: Boolean, host: String, port: Int, basePath: String = Rest.MAPPING_PREFIX): URI {
         val scheme = when (https) {
             true -> "https"
             false -> "http"
@@ -68,9 +68,8 @@ abstract class RestClientConfiguration {
             /**
              * Helper for creating service proxy
              */
-            fun <T> createServiceProxy(config: RestClientConfiguration, serviceType: Class<T>): T {
-                return config.createDefaultClientProxy().create(serviceType)
-            }
+            fun <T> createServiceProxy(config: RestClientConfiguration, serviceType: Class<T>): T =
+                    config.createDefaultClientProxy().create(serviceType)
 
             bind<StationService>() with provider {
                 createServiceProxy(config = instance(), serviceType = StationService::class.java)

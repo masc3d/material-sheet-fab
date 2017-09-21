@@ -12,7 +12,11 @@ import java.net.URI
  */
 class RestClientTestConfiguration : org.deku.leoz.config.RestClientConfiguration() {
     override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
-        return FeignClientProxy(baseUri, ignoreSsl, JacksonEncoder(), JacksonDecoder())
+        return FeignClientProxy(
+                baseUri = baseUri,
+                ignoreSslCertificate = ignoreSsl,
+                encoder = JacksonEncoder(),
+                decoder = JacksonDecoder())
     }
 
     companion object {

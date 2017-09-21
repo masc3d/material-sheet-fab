@@ -2,7 +2,7 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
 import org.deku.leoz.model.*
-import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
+import org.deku.leoz.config.Rest
 import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*
@@ -41,7 +41,7 @@ interface OrderService {
     @ApiOperation(value = "Get order by order ID")
     fun getById(
             @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long,
-            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
     ): Order
 
     /**
@@ -68,7 +68,7 @@ interface OrderService {
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
             @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String? = null,
-            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
     ): List<Order>
 
     @ApiModel(description = "Order Model")

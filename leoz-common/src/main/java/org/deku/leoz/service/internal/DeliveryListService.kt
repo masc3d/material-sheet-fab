@@ -1,8 +1,8 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
+import org.deku.leoz.config.Rest
 import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -43,7 +43,7 @@ interface DeliveryListService {
     @ApiOperation(value = "Get delivery list by id")
     fun getById(
             @PathParam(ID) @ApiParam(example = "89586115", value = "Delivery list id", required = true) id: Long,
-            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
     ): DeliveryList
 
     @GET
@@ -60,7 +60,7 @@ interface DeliveryListService {
     fun get(
             //todo not jet implemented            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null,
             @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false) deliveryDate: ShortDate? = null,
-            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
     ): List<DeliveryListInfo>
 
     @ApiModel(description = "Delivery list")

@@ -1,7 +1,7 @@
 package org.deku.leoz.ui.config
 
 import com.github.salomonbrys.kodein.*
-import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.config.Rest
 import sx.rs.proxy.RestClientProxy
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.StationService
@@ -21,7 +21,7 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
     init {
         this.host = "localhost"
         this.https = false
-        this.port = RestConfiguration.DEFAULT_PORT
+        this.port = Rest.DEFAULT_PORT
     }
 
     companion object {
