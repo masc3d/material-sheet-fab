@@ -123,6 +123,7 @@ class RestEasyClientProxy(
 class FeignClientProxy(
         baseUri: URI,
         ignoreSslCertificate: Boolean = false,
+        val headers: Map<String, String>? = null,
         val encoder: feign.codec.Encoder,
         val decoder: feign.codec.Decoder)
     : RestClientProxy(baseUri, ignoreSslCertificate) {
@@ -152,10 +153,22 @@ class FeignClientProxy(
         Feign.builder()
                 .client(if (!this.ignoreSslCertificate) client else clientWithoutSslValidation)
                 .retryer(Retryer.NEVER_RETRY)
-                .options(Request.Options(connectTimeout.toMillis().toInt(), socketTimeout.toMillis().toInt()))
+                .options(Request.Options(
+                        connectTimeout.toMillis().toInt(),
+                        socketTimeout.toMillis().toInt()))
                 .encoder(this.encoder)
                 .decoder(this.decoder)
                 .contract(JAXRSContract())
+                .also {
+                    when {
+                        this.headers != null -> {
+                            // Intercept request to set headers
+                            it.requestInterceptor {
+                                it.headers(this.headers.mapValues { listOf(it.value) })
+                            }
+                        }
+                    }
+                }
     }
 
     override fun <T> create(serviceClass: Class<T>): T =

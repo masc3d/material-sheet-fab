@@ -16,7 +16,7 @@ abstract class RestClientConfiguration {
     /**
      * Overridden in derived configurations to provide a specific proxy client
      */
-    abstract fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy
+    abstract fun createClientProxy(baseUri: URI, ignoreSsl: Boolean, apiKey: String? = null): RestClientProxy
 
     /**
      * HTTP host to use for rest clients
@@ -27,6 +27,11 @@ abstract class RestClientConfiguration {
      * Connect via HTTPS
      */
     var https: Boolean = false
+
+    /**
+     * Header API key
+     */
+    var apiKey: String? = null
 
     /**
      * HTTP/S port
@@ -50,7 +55,7 @@ abstract class RestClientConfiguration {
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
         val ignoreSslCertificate = !uri.host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)
 
-        return this.createClientProxy(uri, ignoreSslCertificate)
+        return this.createClientProxy(uri, ignoreSslCertificate, this.apiKey)
     }
 
     /**

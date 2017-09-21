@@ -6,7 +6,9 @@ import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.erased.*
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
+import org.deku.leoz.config.Rest
 import org.deku.leoz.mobile.RemoteSettings
+import org.deku.leoz.mobile.model.process.Login
 import org.slf4j.LoggerFactory
 import sx.rs.proxy.FeignClientProxy
 import sx.rs.proxy.RestClientProxy
@@ -17,8 +19,13 @@ import java.net.URI
  * Created by n3 on 15/02/2017.
  */
 class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
-    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy =
-            FeignClientProxy(baseUri, ignoreSsl, JacksonEncoder(), JacksonDecoder())
+    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean, apiKey: String?): RestClientProxy =
+            FeignClientProxy(
+                    baseUri = baseUri,
+                    ignoreSslCertificate = ignoreSsl,
+                    headers = apiKey?.let { mapOf(Rest.API_KEY to apiKey) },
+                    encoder = JacksonEncoder(),
+                    decoder = JacksonDecoder())
 
     companion object {
         private val log = LoggerFactory.getLogger(RestClientConfiguration::class.java)
