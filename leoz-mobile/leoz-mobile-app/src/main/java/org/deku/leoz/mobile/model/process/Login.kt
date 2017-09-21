@@ -50,6 +50,8 @@ class Login {
     private val db: Database by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
+    private val restConfiguration: org.deku.leoz.config.RestClientConfiguration by Kodein.global.lazy.instance()
+
     /**
      * SALT for hashing passwords locally
      */
@@ -57,20 +59,25 @@ class Login {
 
     // Consumers can observe this property for changes
     val authenticatedUserProperty = ObservableRxProperty<User?>(null)
+
     // Delegated property for convenient access
     var authenticatedUser: User? by authenticatedUserProperty
+
 
     /** c'tor */
     init {
         this.authenticatedUserProperty
                 .observeOnMainThread()
                 .subscribe { user ->
+                    // Update rest configuration / API key
+                    restConfiguration.apiKey = user.value?.apiKey
 
-            sharedPrefs.edit().also {
-                it.putInt(SharedPreference.AUTHENTICATED_USER_ID.key, user.value?.id ?: 0)
-                it.apply()
-            }
-        }
+                    // Persistently store authenticated user id
+                    sharedPrefs.edit().also {
+                        it.putInt(SharedPreference.AUTHENTICATED_USER_ID.key, user.value?.id ?: 0)
+                        it.apply()
+                    }
+                }
 
         // Restore model state
         val store = db.store.toBlocking()
