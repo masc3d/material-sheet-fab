@@ -121,11 +121,6 @@ class DeliveryListService : DeliveryListService {
         return deliveryList
     }
 
-    override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
-        return get(deliveryDate, null)
-    }
-
-
     override fun get(deliveryDate: ShortDate?, apiKey: String?): List<DeliveryListService.DeliveryListInfo> {
         val dlInfos: List<TadVDeliverylistRecord>
         var listInfos = listOf<DeliveryListService.DeliveryListInfo>()
@@ -138,8 +133,7 @@ class DeliveryListService : DeliveryListService {
                             throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
                     val authorizedUserRecord = userRepository.findByKey(apiKey)
-                    authorizedUserRecord ?:
-                            throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+                            ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
                     listInfos = deliveryListRepository.findInfoByDateDebitorList(deliveryDate.date, authorizedUserRecord.debitorId).map()
                     {
