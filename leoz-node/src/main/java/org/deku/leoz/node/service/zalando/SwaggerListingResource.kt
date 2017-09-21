@@ -11,6 +11,5 @@ import javax.ws.rs.Path
  * Created by masc on 20.05.15.
  */
 @Named
-@ApiKey(false)
 @Path("/zalando")
 class SwaggerListingResource : SwaggerListingResourceBase()

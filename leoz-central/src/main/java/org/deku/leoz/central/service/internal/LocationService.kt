@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat
  * Created by helke on 24.05.17.
  */
 @Named
-@ApiKey(true)
 @Path("internal/v1/location")
 open class LocationServiceV1
     :
@@ -402,7 +401,6 @@ open class LocationServiceV1
  * Location service v2
  */
 @Named
-@ApiKey(true)
 @Path("internal/v2/location")
 class LocationServiceV2 :
         org.deku.leoz.service.internal.LocationServiceV2 {

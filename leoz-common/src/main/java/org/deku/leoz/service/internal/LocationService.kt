@@ -6,6 +6,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.model.VehicleType
 import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import sx.io.serialization.Serializable
+import sx.rs.auth.ApiKey
 import java.util.*
 
 /**
@@ -16,6 +17,7 @@ import java.util.*
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Location service")
+@ApiKey(true)
 interface LocationServiceV1 {
     companion object {
         const val EMAIL = "email"
@@ -106,6 +108,7 @@ interface LocationServiceV1 {
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Location service")
+@ApiKey(true)
 interface LocationServiceV2 {
     companion object {
         const val USER_ID = "user-id"

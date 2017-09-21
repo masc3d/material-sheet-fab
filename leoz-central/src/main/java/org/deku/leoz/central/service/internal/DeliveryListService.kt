@@ -8,7 +8,6 @@ import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
-import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path

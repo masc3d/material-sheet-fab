@@ -10,7 +10,6 @@ import javax.ws.rs.Path
  * Delivers swagger.json schema information
  * Created by masc on 20.05.15.
  */
-@javax.inject.Named
-@sx.rs.auth.ApiKey(false)
-@javax.ws.rs.Path("/internal")
+@Named
+@Path("/internal")
 class SwaggerListingResource : org.deku.leoz.node.rest.swagger.SwaggerListingResourceBase()

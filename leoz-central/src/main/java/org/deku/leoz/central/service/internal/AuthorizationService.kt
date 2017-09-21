@@ -25,7 +25,6 @@ import javax.ws.rs.core.Response
  * Created by masc on 01.07.15.
  */
 @Named
-@ApiKey(false)
 @Path("internal/v1/authorize")
 class AuthorizationService
     :

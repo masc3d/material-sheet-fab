@@ -8,6 +8,7 @@ import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagNumberRange
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
+import sx.rs.auth.ApiKey
 
 /**
  * Created by 27694066 on 20.02.2017.
@@ -16,6 +17,7 @@ import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Bag operations")
+@ApiKey(false)
 interface BagService {
 
     companion object {

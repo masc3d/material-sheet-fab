@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.*
 import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
+import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -14,7 +15,7 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Order service")
-
+@ApiKey(false)
 interface OrderService {
     companion object {
         const val PARCELSCAN = "parcel-scan"

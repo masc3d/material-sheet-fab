@@ -41,7 +41,6 @@ import javax.json.Json
  * Created by JT on 17.07.17.
  */
 @Named
-@ApiKey(false)
 @Path("internal/v1/event")
 open class ParcelServiceV1 :
         org.deku.leoz.service.internal.ParcelServiceV1,

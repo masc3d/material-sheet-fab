@@ -11,7 +11,6 @@ import javax.ws.rs.*
  * Created by masc on 17.02.16.
  */
 @Named
-@ApiKey(false)
 @Path("internal/v1/node")
 class NodeService : org.deku.leoz.service.internal.NodeService {
     private val log = LoggerFactory.getLogger(this.javaClass)

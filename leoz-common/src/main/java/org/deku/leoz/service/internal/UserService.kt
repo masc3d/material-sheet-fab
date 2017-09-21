@@ -5,6 +5,7 @@ import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.model.UserPreferenceKey
+import sx.rs.auth.ApiKey
 
 /**
  * User service
@@ -14,6 +15,7 @@ import org.deku.leoz.model.UserPreferenceKey
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "User operations")
+@ApiKey(true)
 interface UserService {
     companion object {
         //const val ID = "id"

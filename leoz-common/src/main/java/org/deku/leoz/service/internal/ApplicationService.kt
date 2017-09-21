@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 import io.swagger.annotations.*
+import sx.rs.auth.ApiKey
 
 /**
  * Application service
@@ -12,6 +13,7 @@ import io.swagger.annotations.*
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Application operations")
+@ApiKey
 interface ApplicationService {
     /**
      * Created by masc on 09.10.15.
@@ -27,6 +29,7 @@ interface ApplicationService {
     @GET
     @Path("/version")
     @ApiOperation(value = "Get application version")
+    @ApiKey(false)
     fun getVersion(): Version
 
     @GET

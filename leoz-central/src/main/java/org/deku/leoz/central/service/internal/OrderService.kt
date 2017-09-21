@@ -23,7 +23,6 @@ import javax.ws.rs.core.Response
  * Created by JT on 30.06.17.
  */
 @Named
-@ApiKey(false)
 @Path("internal/v1/order")
 class OrderService : OrderService {
     private val log = LoggerFactory.getLogger(this.javaClass)

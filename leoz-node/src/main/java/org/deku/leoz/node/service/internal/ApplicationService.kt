@@ -7,7 +7,6 @@ import org.deku.leoz.service.entity.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.ApplicationService.Version
 import sx.mq.jms.channel
-import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -16,7 +15,6 @@ import javax.ws.rs.Path
  * Created by masc on 09.10.15.
  */
 @Named
-@ApiKey(false)
 @Path("internal/v1/application")
 class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
 

@@ -15,7 +15,6 @@ import javax.ws.rs.Path
  * Created by masc on 01/11/2016.
  */
 @Named
-@ApiKey(false)
 @Profile(org.deku.leoz.central.Application.Companion.PROFILE_CENTRAL)
 @Path("internal/v1/bundle")
 open class BundleServiceV1 : org.deku.leoz.node.service.internal.BundleServiceV1() {
@@ -42,7 +41,6 @@ open class BundleServiceV1 : org.deku.leoz.node.service.internal.BundleServiceV1
  * Created by masc on 01/11/2016.
  */
 @Named
-@ApiKey(false)
 @Profile(Application.PROFILE_CENTRAL)
 @Path("internal/v2/bundle")
 class BundleServiceV2 : BundleServiceV2() { }

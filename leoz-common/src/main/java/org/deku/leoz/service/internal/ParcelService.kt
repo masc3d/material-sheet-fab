@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.Api
 import org.deku.leoz.model.AdditionalInfo
 import sx.io.serialization.Serializable
+import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.Consumes
 import javax.ws.rs.Path
@@ -17,6 +18,7 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Parcel service")
+@ApiKey(false)
 interface ParcelServiceV1 {
     companion object {
         const val EVENT = 1

@@ -5,6 +5,7 @@ import org.deku.leoz.service.zalando.entity.DeliveryOption
 import org.deku.leoz.service.zalando.entity.DeliveryOrder
 import org.deku.leoz.service.zalando.entity.NotifiedDeliveryOrder
 import org.deku.leoz.service.zalando.entity.Problem
+import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Response
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Api(value = "Carrier integration operations")
+@ApiKey(true)
 interface CarrierIntegrationService {
 
     @GET

@@ -1,6 +1,7 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
+import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 
@@ -11,6 +12,7 @@ import javax.ws.rs.core.*
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @io.swagger.annotations.Api(value = "Node operations")
+@ApiKey(false)
 interface NodeService {
 
     @GET
