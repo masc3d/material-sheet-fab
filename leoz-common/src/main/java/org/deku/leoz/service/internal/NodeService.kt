@@ -15,11 +15,4 @@ import javax.ws.rs.core.*
 @ApiKey(false)
 interface NodeService {
 
-    @GET
-    @Path("/entity-sync")
-    @ApiOperation(value = "Trigger entity sync")
-    fun sync(
-            @QueryParam("clean")
-            @ApiParam(defaultValue = "false", value = "Perform clean sync (drop data prior to entity requst)")
-            clean: Boolean)
 }

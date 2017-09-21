@@ -24,10 +24,10 @@ import javax.persistence.PersistenceUnit
  * Sets up entity/database synchronization over the message bus.
  * Created by masc on 20.06.15.
  */
-@Configuration(Application.PROFILE_CLIENT_NODE)
+@Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Lazy(false)
-open class EntitySyncConfiguration {
+open class EntitySyncNodeConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -59,15 +59,15 @@ open class EntitySyncConfiguration {
     private val brokerEventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
             log.info("Detected broker start, initializing entity sync")
-            this@EntitySyncConfiguration.entityConsumer.start()
+            this@EntitySyncNodeConfiguration.entityConsumer.start()
         }
 
         override fun onStop() {
-            this@EntitySyncConfiguration.entityConsumer.stop()
+            this@EntitySyncNodeConfiguration.entityConsumer.stop()
         }
 
         override fun onConnectedToBrokerNetwork() {
-            this@EntitySyncConfiguration.requestEntities()
+            this@EntitySyncNodeConfiguration.requestEntities()
         }
     }
 

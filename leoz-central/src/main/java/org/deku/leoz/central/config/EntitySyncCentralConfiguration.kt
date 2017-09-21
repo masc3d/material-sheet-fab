@@ -21,9 +21,9 @@ import javax.persistence.PersistenceUnit
  * Leoz-central entity sync configuration
  * Created by masc on 20.06.15.
  */
-@Configuration(Application.PROFILE_CENTRAL)
+@Configuration
 @Lazy(false)
-open class EntitySyncConfiguration {
+open class EntitySyncCentralConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -44,18 +44,18 @@ open class EntitySyncConfiguration {
     /** Broker event listener  */
     private val brokerEventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
-            this@EntitySyncConfiguration.entityPublisher.start()
+            this@EntitySyncCentralConfiguration.entityPublisher.start()
         }
 
         override fun onStop() {
-            this@EntitySyncConfiguration.entityPublisher.close()
+            this@EntitySyncCentralConfiguration.entityPublisher.close()
         }
     }
 
     /** Database sync event listener */
     private val databaseSyncEvent = object : DatabaseSyncService.EventListener {
         override fun onUpdate(entityType: Class<out Any?>, currentSyncId: Long?) {
-            this@EntitySyncConfiguration.entityPublisher.publish(entityType, currentSyncId);
+            this@EntitySyncCentralConfiguration.entityPublisher.publish(entityType, currentSyncId);
         }
     }
 
