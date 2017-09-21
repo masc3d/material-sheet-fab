@@ -18,11 +18,8 @@ import { DateMomentjsPipe } from '../../../core/translate/date-momentjs.pipe';
       <yaga-zoom-control></yaga-zoom-control>
       <yaga-scale-control [metric]="true" [imperial]="false"></yaga-scale-control>
       <yaga-attribution-control></yaga-attribution-control>
-      <!-- <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"
-                        [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>-->
-      <yaga-tile-layer [url]="'http://tiles.derkurier.de/styles/osm-bright/rendered/{z}/{x}/{y}.png'"
+      <yaga-tile-layer [url]="'https://tiles.derkurier.de/styles/osm-bright/rendered/{z}/{x}/{y}.png'"
                        [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
-      <!--<yaga-geojson [data]="routeGeoJson"></yaga-geojson>-->
       <yaga-marker [lat]="markerLat" [lng]="markerLng" [display]="displayMarker">
         <yaga-popup>
           <p>
@@ -57,7 +54,6 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
   yagaMap: MapComponent;
 
   private bbox: L.LatLngBounds;
-  private allMarkers: MarkerModel[];
   private allCustomMarkers: L.Marker[];
   private geoJsonLayer: L.GeoJSON;
 
@@ -70,7 +66,6 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
   ngOnInit(): void {
     super.ngOnInit();
 
-    this.allMarkers = [];
     this.allCustomMarkers = [];
     this.tourService.displayMarker
       .takeUntil( this.ngUnsubscribe )
