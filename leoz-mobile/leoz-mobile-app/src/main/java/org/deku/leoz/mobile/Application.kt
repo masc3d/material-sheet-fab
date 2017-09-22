@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile
 
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -14,8 +13,6 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import com.github.salomonbrys.kodein.lazy
-import com.tinsuke.icekick.extension.freezeInstanceState
-import com.tinsuke.icekick.extension.unfreezeInstanceState
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.deku.leoz.mobile.ui.BaseActivity

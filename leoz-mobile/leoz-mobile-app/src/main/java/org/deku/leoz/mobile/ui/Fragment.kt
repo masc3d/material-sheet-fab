@@ -8,7 +8,6 @@ import com.tinsuke.icekick.extension.unfreezeInstanceState
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import org.parceler.Parcels
 import org.slf4j.LoggerFactory
-import sx.rx.ObservableRxProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty

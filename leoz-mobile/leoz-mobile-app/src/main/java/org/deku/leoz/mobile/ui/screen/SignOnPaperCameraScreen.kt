@@ -1,15 +1,9 @@
 package org.deku.leoz.mobile.ui.screen
 
-import android.support.v4.app.Fragment
 import android.view.View
 import android.view.ViewGroup
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
-import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.view_delivery_sign_on_paper.view.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 

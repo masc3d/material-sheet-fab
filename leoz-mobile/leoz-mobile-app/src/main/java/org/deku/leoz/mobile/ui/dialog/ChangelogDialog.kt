@@ -5,11 +5,8 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
-import kotlinx.android.synthetic.main.dialog_whatsnew.*
 import kotlinx.android.synthetic.main.dialog_whatsnew.view.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.Order
-import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.Dialog
 import sx.LazyInstance

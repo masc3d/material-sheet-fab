@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.LayoutRes
@@ -9,7 +8,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
-import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 

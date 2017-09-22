@@ -26,13 +26,11 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
-import org.deku.leoz.mobile.model.entity.address
-import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
-import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.dialog.EventDialog

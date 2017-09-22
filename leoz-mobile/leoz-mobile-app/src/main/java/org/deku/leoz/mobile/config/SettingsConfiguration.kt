@@ -2,7 +2,9 @@ package org.deku.leoz.mobile.config
 
 import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.erased.bind
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.LocationSettings

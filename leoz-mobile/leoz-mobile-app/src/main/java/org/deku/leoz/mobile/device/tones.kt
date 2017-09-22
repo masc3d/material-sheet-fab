@@ -2,13 +2,9 @@ package org.deku.leoz.mobile.device
 
 import android.media.AudioFormat
 import android.media.AudioManager
-import android.media.ToneGenerator
-import android.media.AudioTrack.MODE_STATIC
-import android.media.AudioFormat.ENCODING_PCM_16BIT
-import android.media.AudioFormat.CHANNEL_CONFIGURATION_MONO
 import android.media.AudioTrack
-import sx.Stopwatch
-import kotlin.experimental.and
+import android.media.AudioTrack.MODE_STATIC
+import android.media.ToneGenerator
 
 /**
  * Tones, generic interface

@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.net.NetworkInfo
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -36,7 +36,6 @@ class Login {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
-        val DEV_ID = 0
         val DEV_EMAIL = "dev@leoz"
         val DEV_PASSWORD = "password"
     }

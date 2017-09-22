@@ -3,9 +3,7 @@ package org.deku.leoz.mobile.ui
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
-import android.graphics.Bitmap
 import android.graphics.PorterDuff
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.location.LocationManager
@@ -16,7 +14,8 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
-import android.support.transition.*
+import android.support.transition.Fade
+import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
@@ -24,7 +23,10 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.text.InputType
 import android.util.TypedValue
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowManager
 import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
@@ -48,8 +50,6 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
@@ -74,11 +74,14 @@ import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
-import sx.android.*
+import sx.android.ApplicationStateMonitor
+import sx.android.Connectivity
+import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
+import sx.android.isConnectivityProblem
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTintRes
 import sx.mq.mqtt.MqttDispatcher

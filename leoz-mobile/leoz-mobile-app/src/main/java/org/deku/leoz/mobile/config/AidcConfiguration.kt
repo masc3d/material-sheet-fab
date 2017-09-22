@@ -1,10 +1,11 @@
 package org.deku.leoz.mobile.config
 
-import android.hardware.Camera
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.erased.bind
+import com.github.salomonbrys.kodein.erased.eagerSingleton
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.singleton
 import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
@@ -12,8 +13,6 @@ import sx.android.aidc.CompositeAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.honeywell.aidc.HoneywellAidcReader
 import sx.rx.toHotReplay
-import sx.rx.toSingletonObservable
-import java.util.concurrent.TimeUnit
 
 /**
  * Honeywell configuration

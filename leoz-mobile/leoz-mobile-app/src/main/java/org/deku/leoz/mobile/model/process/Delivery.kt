@@ -5,9 +5,9 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.model.entity.*
+import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.slf4j.LoggerFactory

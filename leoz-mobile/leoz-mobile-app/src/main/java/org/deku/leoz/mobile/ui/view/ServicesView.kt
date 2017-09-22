@@ -6,7 +6,6 @@ import android.support.annotation.ColorInt
 import android.support.annotation.Dimension
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.MarginLayoutParamsCompat
-import android.support.v7.widget.LinearLayoutCompat
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout

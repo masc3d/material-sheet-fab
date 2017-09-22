@@ -16,7 +16,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_vehicleunloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database

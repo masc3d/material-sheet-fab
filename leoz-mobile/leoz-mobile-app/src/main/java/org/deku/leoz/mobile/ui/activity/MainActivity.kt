@@ -1,23 +1,22 @@
 package org.deku.leoz.mobile.ui.activity
 
-import android.app.AlertDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
-import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.ui.screen.MainScreen
-import org.slf4j.LoggerFactory
-import android.content.SharedPreferences
 import com.github.salomonbrys.kodein.lazy
+import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.app
+import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
-import com.afollestad.materialdialogs.MaterialDialog
-import org.deku.leoz.mobile.app
-import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.ui.screen.MainScreen
+import org.slf4j.LoggerFactory
 
 
 class MainActivity
@@ -25,10 +24,7 @@ class MainActivity
         Activity(),
         LoginFragment.Listener {
 
-    private val log = LoggerFactory.getLogger(this.javaClass)
     private val login: Login by Kodein.global.lazy.instance()
-
-    private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {

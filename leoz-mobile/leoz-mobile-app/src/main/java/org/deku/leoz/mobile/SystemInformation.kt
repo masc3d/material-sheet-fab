@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile
 
-import io.swagger.annotations.ApiModelProperty
 import sx.android.Device
 import sx.io.serialization.Serializable
 

@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.content.res.AppCompatResources
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +15,8 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.item_delivery_menu_entry.view.*
 import kotlinx.android.synthetic.main.screen_menu.*
-
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.entity.Order
-import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment

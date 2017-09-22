@@ -1,21 +1,12 @@
 package org.deku.leoz.mobile.model.repository
 
-import android.databinding.Observable
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
-import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Maybe
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.model.entity.*
 import org.slf4j.LoggerFactory
-import sx.Stopwatch
 import sx.requery.scalarOr
-import sx.rx.ObservableRxProperty
 
 /**
  * Stop repository

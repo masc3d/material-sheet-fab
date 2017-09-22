@@ -1,19 +1,13 @@
 package org.deku.leoz.mobile.ui
 
 import android.content.pm.ActivityInfo
-import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.v4.content.ContextCompat
 import android.view.Menu
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle2.android.FragmentEvent
-import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.RemoteSettings
 import org.deku.leoz.mobile.dev.SyntheticInput

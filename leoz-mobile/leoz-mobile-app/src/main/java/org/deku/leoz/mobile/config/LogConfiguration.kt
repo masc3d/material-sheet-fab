@@ -11,12 +11,14 @@ import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.*
-import org.deku.leoz.mobile.mq.MqttEndpoints
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.singleton
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.Storage
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.mq.mqtt.channel

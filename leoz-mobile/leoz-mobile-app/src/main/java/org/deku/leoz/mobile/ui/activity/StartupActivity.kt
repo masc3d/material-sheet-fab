@@ -7,11 +7,9 @@ import android.os.Handler
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.erased.instance
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
-import org.deku.leoz.mobile.service.UpdateService
-import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -23,10 +21,12 @@ import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
 import org.deku.leoz.service.internal.AuthorizationService
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
+import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.android.Device
 import sx.android.aidc.AidcReader

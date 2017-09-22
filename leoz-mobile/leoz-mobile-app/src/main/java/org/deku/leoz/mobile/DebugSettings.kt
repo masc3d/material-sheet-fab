@@ -1,9 +1,5 @@
 package org.deku.leoz.mobile
 
-import org.deku.leoz.mobile.BuildConfig
-import sx.ConfigurationMap
-import sx.ConfigurationMapPath
-
 /**
  * Debug sewttings
  * Created by masc on 31.05.17.

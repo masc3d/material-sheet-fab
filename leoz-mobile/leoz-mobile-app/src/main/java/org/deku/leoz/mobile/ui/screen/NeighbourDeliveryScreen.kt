@@ -1,8 +1,6 @@
 package org.deku.leoz.mobile.ui.screen
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,19 +13,15 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function
 import kotlinx.android.synthetic.main.screen_neighbour_delivery.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
-import org.deku.leoz.model.EventDeliveredReason
 import org.jetbrains.anko.inputMethodManager
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor

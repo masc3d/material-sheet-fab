@@ -1,8 +1,6 @@
 package org.deku.leoz.mobile
 
 import android.content.Context
-import android.database.sqlite.SQLiteOpenHelper
-import org.slf4j.LoggerFactory
 import io.requery.Persistable
 import io.requery.android.database.sqlite.SQLiteDatabase
 import io.requery.android.sqlitex.SqlitexDatabaseSource
@@ -12,6 +10,7 @@ import io.requery.sql.ConfigurationBuilder
 import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.TableCreationMode
 import org.deku.leoz.mobile.model.entity.Models
+import org.slf4j.LoggerFactory
 
 /**
  * Database

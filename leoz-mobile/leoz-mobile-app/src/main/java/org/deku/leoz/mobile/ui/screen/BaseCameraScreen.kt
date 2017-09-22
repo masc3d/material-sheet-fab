@@ -11,12 +11,12 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import org.deku.leoz.mobile.device.Sounds
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_camera.*
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.device.Sounds
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.jetbrains.anko.imageBitmap

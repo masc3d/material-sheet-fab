@@ -3,7 +3,6 @@ package org.deku.leoz.mobile.ui.vm
 import android.content.Context
 import android.databinding.BaseObservable
 import android.databinding.ObservableField
-import android.graphics.Color
 import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein

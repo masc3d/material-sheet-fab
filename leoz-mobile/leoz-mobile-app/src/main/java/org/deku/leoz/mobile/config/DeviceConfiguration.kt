@@ -2,15 +2,14 @@ package org.deku.leoz.mobile.config
 
 import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.erased.*
-import org.deku.leoz.mobile.device.Sounds
+import com.github.salomonbrys.kodein.erased.bind
+import com.github.salomonbrys.kodein.erased.eagerSingleton
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.mobile.Storage
-import org.deku.leoz.mobile.device.HardwareTones
-import org.deku.leoz.mobile.device.DeviceManagement
-import org.deku.leoz.mobile.device.MutedTones
-import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.device.*
 import sx.android.Connectivity
 import sx.android.Device
 

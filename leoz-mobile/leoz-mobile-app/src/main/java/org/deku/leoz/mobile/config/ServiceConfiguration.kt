@@ -1,12 +1,10 @@
 package org.deku.leoz.mobile.config
 
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.mobile.service.NotificationService
