@@ -111,15 +111,12 @@ class Login {
             fun authorizeOnline(): User {
                 log.info("Authorizing user [${email}] online")
 
-                val request = AuthorizationService.MobileRequest(
-                        user = AuthorizationService.Credentials(
-                                email = email,
-                                password = password
-                        ),
-                        mobile = AuthorizationService.Mobile.create(device)
+                val request = AuthorizationService.Credentials(
+                        email = email,
+                        password = password
                 )
 
-                val authResponse = authService.authorizeMobile(request)
+                val authResponse = authService.authorize(request)
 
                 val user = User.create(
                         id = authResponse.user?.id!!,

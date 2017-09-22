@@ -12,7 +12,6 @@ import sx.event.EventDispatcher
 import sx.event.EventListener
 import sx.mq.MqHandler
 import sx.logging.slf4j.info
-import sx.rs.auth.ApiKey
 import java.text.DecimalFormat
 import java.util.*
 import javax.inject.Inject
@@ -48,29 +47,12 @@ class AuthorizationService
     }
 
     // TODO: replace with rx event
-    private val dispatcher = EventDispatcher.createThreadSafe<Listener>()
-    public val delegate: EventDelegate<Listener> = dispatcher
+    private val eventSubject = EventDispatcher.createThreadSafe<Listener>()
+    val event: EventDelegate<Listener> = eventSubject
 
     /**
-     * Mobile authorization request
+     *
      */
-    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.Response {
-        val serial = request.mobile?.serial
-        val imei = request.mobile?.imei
-
-        if (serial.isNullOrEmpty() || imei.isNullOrEmpty())
-            throw DefaultProblem(title = "At least one of serial or imei must be provided")
-
-        // TODO: handle mobile info as required
-        
-        val user = request.user
-
-        user ?:
-                throw DefaultProblem(title = "User is required")
-
-        return authorize(AuthorizationService.Credentials(user.email, user.password))
-    }
-
     override fun authorize(request: AuthorizationService.Credentials): AuthorizationService.Response {
         val user = request
 
@@ -163,7 +145,7 @@ class AuthorizationService
                 val isAuthorized = record.authorized != null && record.authorized != 0
 
                 if (isAuthorized)
-                    this.dispatcher.emit { it.onAuthorized(identityKey) }
+                    this.eventSubject.emit { it.onAuthorized(identityKey) }
 
                 if (replyChannel != null) {
                     am.authorized = isAuthorized
