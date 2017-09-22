@@ -26,13 +26,9 @@ class Identity constructor(
             this.value.substring(0, SHORT_UID_LENGTH)
         }
 
-        override fun toString(): String {
-            return this.value
-        }
+        override fun toString(): String = this.value
 
-        override fun hashCode(): Int {
-            return this.value.hashCode()
-        }
+        override fun hashCode(): Int = this.value.hashCode()
 
         override fun equals(other: Any?): Boolean {
             if (other is Uid)
@@ -96,7 +92,5 @@ class Identity constructor(
         YamlPersistence.save(obj = State(this), toFile = destinationFile, skipNulls = true)
     }
 
-    override fun toString(): String {
-        return "Identity name [${this.name}] uid [${this.shortUid}]"
-    }
+    override fun toString(): String = "Identity name [${this.name}] uid [${this.shortUid}]"
 }
