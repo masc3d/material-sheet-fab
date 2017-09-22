@@ -84,7 +84,7 @@ class DeliveryListService : DeliveryListService {
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
 
-//to be removed if mobile supports apikeys
+// TODO to be removed if mobile supports apikeys
         if (apiKey != null) {
 //--<
             apiKey ?:
