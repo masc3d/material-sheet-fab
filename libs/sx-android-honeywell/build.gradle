@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     ext {
-        v_kotlin = '1.1.4-3'
+        v_kotlin = '1.1.50'
         v_android_buildtools = '26.0.1'
         v_android_support = '26.1.0'
         v_android_test = '1.0.0'
