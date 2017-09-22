@@ -60,34 +60,41 @@ constructor(
          * @param ds
          * @return
          */
-        private fun convert(ds: TbldepotlisteRecord): MstStation {
+        private fun convert(ds: MstStationRecord): MstStation {
             val s = MstStation()
 
-            s.stationNr = ds.depotnr
+            s.stationNr = ds.stationNr
             s.timestamp = ds.timestamp
-            s.address1 = ds.firma1
-            s.address2 = ds.firma2
-            s.city = ds.ort
-            s.contactPerson1 = ds.anprechpartner1
-            s.contactPerson2 = ds.anprechpartner2
-            s.country = ds.lkz
+            s.address1 = ds.address1
+            s.address2 = ds.address2
+            s.billingAddress1 = ds.billingAddress1
+            s.billingAddress2 = ds.billingAddress2
+            s.billingCity = ds.billingCity
+            s.billingCountry = ds.billingCountry
+            s.billingHouseNr = ds.billingHouseNr
+            s.billingStreet = ds.billingStreet
+            s.billingZip = ds.billingZip
+            s.city = ds.city
+            s.contactPerson1 = ds.contactPerson1
+            s.contactPerson2 = ds.contactPerson2
+            s.country = ds.country
             s.email = ds.email
-            s.houseNr = ds.strnr
-            s.mobile = ds.mobil
-            s.phone1 = ds.telefon1
-            s.phone2 = ds.telefon2
+            s.houseNr = ds.houseNr
+            s.mobile = ds.mobile
+            s.phone1 = ds.phone1
+            s.phone2 = ds.phone2
             s.posLat = ds.poslat
             s.posLong = ds.poslong
-            s.sector = ds.sektor
-            s.servicePhone1 = ds.nottelefon1
-            s.servicePhone2 = ds.nottelefon2
+            s.sector = ds.sectors
+            s.servicePhone1 = ds.servicePhone1
+            s.servicePhone2 = ds.servicePhone2
             // TODO: strang? strange? ;)
             s.strang = null
-            s.street = ds.strasse
+            s.street = ds.street
             s.telefax = ds.telefax
             s.ustid = ds.ustid
-            s.webAddress = ds.webadresse
-            s.zip = ds.plz
+            s.webAddress = ds.webAddress
+            s.zip = ds.zip
             s.syncId = ds.syncId
             return s
         }
@@ -281,9 +288,9 @@ constructor(
                 { s -> convert(s) },
                 clean)
 
-        this.updateEntities<TbldepotlisteRecord, MstStation>(
-                Tables.TBLDEPOTLISTE,
-                org.deku.leoz.central.data.jooq.tables.Tbldepotliste.TBLDEPOTLISTE.SYNC_ID,
+        this.updateEntities<MstStationRecord, MstStation>(
+                Tables.MST_STATION,
+                org.deku.leoz.central.data.jooq.tables.MstStation.MST_STATION.SYNC_ID,
                 stationRepository,
                 QMstStation.mstStation,
                 QMstStation.mstStation.syncId,
