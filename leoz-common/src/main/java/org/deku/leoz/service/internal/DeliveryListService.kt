@@ -51,9 +51,8 @@ interface DeliveryListService {
     @ApiOperation(value = "Get delivery list info")
     fun get(
             //todo not jet implemented            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null,
-            @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false) deliveryDate: ShortDate? = null,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
-    ): List<DeliveryListInfo>
+            @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false) deliveryDate: ShortDate? = null)
+    : List<DeliveryListInfo>
 
     @ApiModel(description = "Delivery list")
     data class DeliveryList(

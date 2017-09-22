@@ -5,12 +5,15 @@ import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistinfoRecord
 import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
 import org.deku.leoz.central.data.repository.DepotJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.config.Rest
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 /**
@@ -20,6 +23,10 @@ import javax.ws.rs.core.Response
 //@ApiKey(false) custom API Key Check
 @Path("internal/v1/deliverylist")
 class DeliveryListService : DeliveryListService {
+
+    @Context
+    private lateinit var httpHeaders: HttpHeaders
+
     @Inject
     private lateinit var deliveryListRepository: DeliveryListJooqRepository
 
@@ -121,7 +128,9 @@ class DeliveryListService : DeliveryListService {
         return deliveryList
     }
 
-    override fun get(deliveryDate: ShortDate?, apiKey: String?): List<DeliveryListService.DeliveryListInfo> {
+    override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
+        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
+
         val dlInfos: List<TadVDeliverylistRecord>
         var listInfos = listOf<DeliveryListService.DeliveryListInfo>()
         when {
