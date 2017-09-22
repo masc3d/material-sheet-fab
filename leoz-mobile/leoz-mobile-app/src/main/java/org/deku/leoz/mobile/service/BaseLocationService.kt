@@ -58,7 +58,7 @@ abstract class BaseLocationService: Service() {
         Notification.Builder(this)
                 .setContentTitle(getString(R.string.app_name_long))
                 .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
-                .setAutoCancel(true)
+                .setAutoCancel(false)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .build().also {
             it.flags += Notification.FLAG_NO_CLEAR + Notification.FLAG_FOREGROUND_SERVICE + Notification.FLAG_ONGOING_EVENT
