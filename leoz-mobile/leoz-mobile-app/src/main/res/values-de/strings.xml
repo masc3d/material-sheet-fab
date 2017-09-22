@@ -266,4 +266,5 @@
     <string name="dialog_text_gps_disabled">Der GPS Standortdienst ist deaktiviert. Um fortzufahren, muss GPS aktiviert werden.</string>
     <string name="dialog_title_developer_enabled">Entwickleroptionen aktiviert</string>
     <string name="dialog_text_developer_enabled">Entwickleroptionen sind aktiviert. Um fortzufahren müssen diese deaktiviert werden.</string>
+    <string name="running">läuft</string>
 </resources>

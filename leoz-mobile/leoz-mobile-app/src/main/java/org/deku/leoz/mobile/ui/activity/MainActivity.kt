@@ -9,10 +9,12 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.screen.MainScreen
@@ -82,6 +84,13 @@ class MainActivity
 
     //region LoginFragment listener
     override fun onLoginSuccessful() {
+        val locationSettings = Kodein.global.instance<LocationSettings>()
+
+        if (locationSettings.enabled) {
+            this.startService(
+                    Intent(applicationContext, LocationService::class.java))
+        }
+
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))

@@ -59,6 +59,7 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
+import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.activity.StartupActivity
@@ -527,6 +528,11 @@ abstract class Activity : BaseActivity(),
             }
 
             R.id.nav_logout -> {
+                try {
+                    stopService(Intent(this.applicationContext, LocationService::class.java))
+                } catch (e: Exception) {
+                    log.warn("Stopping location service failed", e)
+                }
                 this.login.logout()
             }
         }

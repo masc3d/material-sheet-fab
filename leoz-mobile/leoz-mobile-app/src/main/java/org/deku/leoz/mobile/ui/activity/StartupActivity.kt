@@ -176,16 +176,6 @@ class StartupActivity : BaseActivity() {
                                         it.dispatcher.start()
                                     }
 
-                                    // Initialize location service
-                                    run {
-                                        val locationSettings = Kodein.global.instance<LocationSettings>()
-
-                                        if (locationSettings.enabled) {
-                                            this.startService(
-                                                    Intent(applicationContext, LocationService::class.java))
-                                        }
-                                    }
-
                                     // Send authorization message
                                     run {
                                         val mqEndpoints = Kodein.global.instance<MqttEndpoints>()
