@@ -7,25 +7,18 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.OrderRepository
-import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
-import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
-import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
-import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
-import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
 import sx.rx.*
@@ -49,6 +42,8 @@ class DeliveryList : CompositeDisposableSupplier {
     // Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+
+    private val restConfiguration: org.deku.leoz.config.RestClientConfiguration by Kodein.global.lazy.instance()
 
     //region Self-observing queries
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
@@ -167,7 +162,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
             // Retrieve delivery list
             val deliveryListId = deliveryListNumber.value.toLong()
-            val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
+            val deliveryList = this.deliveryListServive.getById(id = deliveryListId, apiKey = restConfiguration.apiKey)
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
             // Process orders

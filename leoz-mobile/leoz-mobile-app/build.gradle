@@ -349,6 +349,9 @@ dependencies {
             "org.jetbrains.anko:anko-recyclerview-v7:$v_anko",
             "org.jetbrains.anko:anko-recyclerview-v7-coroutines:$v_anko",
 
+            // ShowcaseView
+            "com.github.amlcurran.showcaseview:library:5.4.3",
+
             // Support-v4 (only Anko Commons)
             "org.jetbrains.anko:anko-support-v4-commons:$v_anko",
 

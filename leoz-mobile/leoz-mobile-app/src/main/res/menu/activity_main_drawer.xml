@@ -25,6 +25,15 @@
             android:visible="false"/>
     </group>
 
+    <group>
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_home"
+            android:title="@string/help"
+            android:visible="false"
+            />
+    </group>
+
     <group android:id="@+id/nav_group_dev">
         <item
             android:id="@+id/nav_dev_remote_settings"
