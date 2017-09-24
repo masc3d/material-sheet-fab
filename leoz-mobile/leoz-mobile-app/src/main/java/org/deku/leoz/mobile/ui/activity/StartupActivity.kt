@@ -1,13 +1,20 @@
 package org.deku.leoz.mobile.ui.activity
 
 import android.Manifest
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import com.afollestad.materialdialogs.MaterialDialog
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.api.GoogleApi
+import com.google.android.gms.common.api.GoogleApiClient
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
@@ -23,15 +30,19 @@ import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
+import org.deku.leoz.mobile.ui.Dialog
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
 import org.deku.leoz.service.internal.AuthorizationService
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
+import org.reactivestreams.Subscriber
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.mq.mqtt.channel
 import java.util.concurrent.TimeUnit
+
+
 
 
 /**
@@ -112,10 +123,13 @@ class StartupActivity : BaseActivity() {
                         throw IllegalStateException("AidcReader initialization timed out", it)
                     }
 
+            val ovGoogleApi = isGoogleApiAvailable()
+
             // Merge and subscribe
             Observable.mergeArray(
                     ovPermissions.cast(Any::class.java),
-                    ovAidcReader.cast(Any::class.java)
+                    ovAidcReader.cast(Any::class.java),
+                    ovGoogleApi.cast(Any::class.java)
             )
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
@@ -211,6 +225,32 @@ class StartupActivity : BaseActivity() {
                             })
         } else {
             this.startMainActivity(withAnimation = false)
+        }
+    }
+
+    fun isGoogleApiAvailable(): Observable<Boolean> {
+        return Observable.create {
+            val subscriber = it
+            val connResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
+            when {
+                connResult != ConnectionResult.SUCCESS -> {
+                    val dialog = GoogleApiAvailability.getInstance().getErrorDialog(this, connResult, 0, DialogInterface.OnCancelListener {
+                        subscriber.onError(IllegalStateException("Google API not available. Dialog canceled"))
+                    })
+                    dialog.setOnDismissListener {
+                        subscriber.onError(IllegalStateException("Google API not available. Dialog canceled"))
+                    }
+
+                    dialog.show()
+
+                    subscriber.onNext(false)
+                    subscriber.onComplete()
+                }
+                else -> {
+                    it.onNext(true)
+                    it.onComplete()
+                }
+            }
         }
     }
 }
