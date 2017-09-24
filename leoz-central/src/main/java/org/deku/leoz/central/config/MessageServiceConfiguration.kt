@@ -1,12 +1,11 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.config.MessageListenerConfiguration
 import org.deku.leoz.central.service.internal.AuthorizationService
 import org.deku.leoz.central.service.internal.FileServiceV1
 import org.deku.leoz.central.service.internal.LocationServiceV1
 import org.deku.leoz.central.service.internal.LogService
 import org.deku.leoz.central.service.internal.ParcelServiceV1
-import org.slf4j.LoggerFactory
+import org.deku.leoz.central.service.internal.NodeServiceV1
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import javax.annotation.PostConstruct
@@ -36,8 +35,12 @@ open class ParcelServiceConfiguration {
     @Inject
     private lateinit var fileService: FileServiceV1
 
+    @Inject
+    private lateinit var nodeService: NodeServiceV1
+
     @PostConstruct
     fun onInitialize() {
+        // Register message handlers
         this.messageListenerConfiguration.apply {
             centralQueueListener.addDelegate(
                     authorizationService)
@@ -53,6 +56,10 @@ open class ParcelServiceConfiguration {
 
             centralQueueListener.addDelegate(
                     fileService)
+
+            centralQueueListener.addDelegate(
+                    nodeService
+            )
         }
     }
 }

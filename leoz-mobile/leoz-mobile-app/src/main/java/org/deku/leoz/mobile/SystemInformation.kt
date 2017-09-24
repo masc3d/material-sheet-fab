@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile
 
-import io.swagger.annotations.ApiModelProperty
 import sx.android.Device
 import sx.io.serialization.Serializable
 
@@ -16,6 +15,8 @@ data class SystemInformation(
         var serial: String = "",
         /** Device IMEI */
         var imei: String = "",
+        /** Android version */
+        var androidVersion: String = "",
         /** Current application version */
         val applicationVersion: String
 ) {
@@ -37,6 +38,7 @@ fun SystemInformation.Companion.create(
             model = device.model.name,
             serial = device.serial,
             imei = if (device.imei.isNotBlank()) device.imei else DUMMY_IMEI,
+            androidVersion = device.androidVersion,
             applicationVersion = application.version
     )
 }

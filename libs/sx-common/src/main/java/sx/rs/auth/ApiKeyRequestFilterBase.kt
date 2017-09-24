@@ -1,5 +1,6 @@
 package sx.rs.auth
 
+import sx.reflect.allInterfaces
 import java.io.IOException
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.container.ContainerRequestContext
@@ -26,8 +27,8 @@ abstract class ApiKeyRequestFilterBase(
         // Don't verify by default (eg. annotation is missing)
         var verifyApiKey = false
 
-        // ApiKey annotation on class level
-        resourceInfo.resourceClass.getAnnotation(ApiKey::class.java)?.also {
+        // ApiKey annotation on interface level (first strike)
+        resourceInfo.resourceClass.allInterfaces.map { it.getAnnotation(ApiKey::class.java) }.firstOrNull()?.also {
             verifyApiKey = it.value
         }
 

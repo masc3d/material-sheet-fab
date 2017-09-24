@@ -1,7 +1,7 @@
 package org.deku.leoz.ui.config
 
 import com.github.salomonbrys.kodein.*
-import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.config.Rest
 import sx.rs.proxy.RestClientProxy
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.StationService
@@ -14,14 +14,14 @@ import java.net.URI
  * Created by masc on 08/11/2016.
  */
 class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
-    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
+    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean, apiKey: String?): RestClientProxy {
         return JerseyClientProxy(baseUri, ignoreSsl)
     }
 
     init {
         this.host = "localhost"
         this.https = false
-        this.port = RestConfiguration.DEFAULT_PORT
+        this.port = Rest.DEFAULT_PORT
     }
 
     companion object {

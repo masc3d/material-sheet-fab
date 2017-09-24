@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.net.NetworkInfo
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -36,7 +36,6 @@ class Login {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
-        val DEV_ID = 0
         val DEV_EMAIL = "dev@leoz"
         val DEV_PASSWORD = "password"
     }
@@ -50,6 +49,8 @@ class Login {
     private val db: Database by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
+    private val restConfiguration: org.deku.leoz.config.RestClientConfiguration by Kodein.global.lazy.instance()
+
     /**
      * SALT for hashing passwords locally
      */
@@ -57,20 +58,25 @@ class Login {
 
     // Consumers can observe this property for changes
     val authenticatedUserProperty = ObservableRxProperty<User?>(null)
+
     // Delegated property for convenient access
     var authenticatedUser: User? by authenticatedUserProperty
+
 
     /** c'tor */
     init {
         this.authenticatedUserProperty
                 .observeOnMainThread()
                 .subscribe { user ->
+                    // Update rest configuration / API key
+                    restConfiguration.apiKey = user.value?.apiKey
 
-            sharedPrefs.edit().also {
-                it.putInt(SharedPreference.AUTHENTICATED_USER_ID.key, user.value?.id ?: 0)
-                it.apply()
-            }
-        }
+                    // Persistently store authenticated user id
+                    sharedPrefs.edit().also {
+                        it.putInt(SharedPreference.AUTHENTICATED_USER_ID.key, user.value?.id ?: 0)
+                        it.apply()
+                    }
+                }
 
         // Restore model state
         val store = db.store.toBlocking()
@@ -105,15 +111,12 @@ class Login {
             fun authorizeOnline(): User {
                 log.info("Authorizing user [${email}] online")
 
-                val request = AuthorizationService.MobileRequest(
-                        user = AuthorizationService.Credentials(
-                                email = email,
-                                password = password
-                        ),
-                        mobile = AuthorizationService.Mobile.create(device)
+                val request = AuthorizationService.Credentials(
+                        email = email,
+                        password = password
                 )
 
-                val authResponse = authService.authorizeMobile(request)
+                val authResponse = authService.authorize(request)
 
                 val user = User.create(
                         id = authResponse.user?.id!!,

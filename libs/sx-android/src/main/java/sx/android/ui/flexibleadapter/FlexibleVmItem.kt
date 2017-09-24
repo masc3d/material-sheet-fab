@@ -1,6 +1,7 @@
 package sx.android.ui.flexibleadapter
 
 import android.support.annotation.AnyRes
+import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
 import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
@@ -16,7 +17,8 @@ import io.reactivex.subjects.PublishSubject
 class FlexibleVmItem<VM>(
         @LayoutRes val view: Int,
         @AnyRes val variable: Int,
-        val viewModel: VM
+        val viewModel: VM,
+        @IdRes private val handleViewId: Int = 0
 ) : AbstractFlexibleItem<FlexibleVmHolder>() {
 
     override fun equals(other: Any?): Boolean = (this === other)
@@ -52,7 +54,11 @@ class FlexibleVmItem<VM>(
     }
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
-        val holder = FlexibleVmHolder(view, adapter)
+        val holder = FlexibleVmHolder(
+                view = view,
+                adapter = adapter,
+                handleViewId = handleViewId)
+
         return holder
     }
 

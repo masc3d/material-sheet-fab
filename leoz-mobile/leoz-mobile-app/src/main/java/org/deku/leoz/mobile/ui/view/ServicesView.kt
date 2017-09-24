@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.support.annotation.ColorInt
 import android.support.annotation.Dimension
 import android.support.v4.content.res.ResourcesCompat
+import android.support.v4.view.MarginLayoutParamsCompat
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -97,7 +98,7 @@ class ServicesView : LinearLayout {
                         it.layoutParams = LinearLayout.LayoutParams(
                                 this.imageSize,
                                 this.imageSize).also {
-                            it.marginEnd = this.imageMargin
+                            MarginLayoutParamsCompat.setMarginEnd(it, this.imageMargin)
                         }
                     }
                 }

@@ -18,7 +18,6 @@ import org.deku.leoz.service.internal.LocationServiceV1
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.mq.mqtt.channel
-import sx.rx.ObservableRxProperty
 import java.util.*
 
 class LocationService(

@@ -46,4 +46,12 @@ open class DepotJooqRepository {
          */
     }
 
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    open fun findDebitor(StationNr: Long): Int {
+        return dslContext
+                .select(Tables.TBLDEPOTLISTE.DEBITOR_ID)
+                .from(Tables.TBLDEPOTLISTE)
+                .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(StationNr.toInt())
+                ).fetchOne(Tables.TBLDEPOTLISTE.DEBITOR_ID)
+    }
 }

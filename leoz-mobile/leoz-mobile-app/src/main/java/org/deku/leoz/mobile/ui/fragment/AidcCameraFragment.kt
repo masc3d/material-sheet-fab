@@ -11,12 +11,12 @@ import com.github.salomonbrys.kodein.lazy
 import com.tinsuke.icekick.extension.serialState
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import kotlinx.android.synthetic.main.fragment_aidc_camera.*
-import org.deku.leoz.mobile.R
-import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_aidc_camera.*
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.Fragment
+import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader

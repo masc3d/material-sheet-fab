@@ -1,10 +1,11 @@
 package org.deku.leoz.service.internal
 
-import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
+import org.deku.leoz.config.Rest
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.model.UserPreferenceKey
+import sx.rs.auth.ApiKey
 
 /**
  * User service
@@ -14,6 +15,7 @@ import org.deku.leoz.model.UserPreferenceKey
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "User operations")
+@ApiKey(true)
 interface UserService {
     companion object {
         //const val ID = "id"
@@ -23,7 +25,7 @@ interface UserService {
         const val PREF_TYPE = "preference-type"
         const val SEND_APP_LINK_SMS = "send-app-sms"
         //const val DEBITOR_NO = "debitor-no"
-        //const val HEADERPARAM_APIKEY = "x-api-key"
+        //const val Rest.AUTH_APIKEY_NAME = "x-api-key"
     }
 
     /**
@@ -98,7 +100,7 @@ interface UserService {
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
     ): List<User>
 
     @GET
@@ -106,7 +108,7 @@ interface UserService {
     @ApiOperation(value = "Get user by ID")
     fun getById(
             @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
-            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
     ): User
 
     /**
@@ -118,7 +120,7 @@ interface UserService {
     @ApiOperation(value = "Create user")
     fun create(
             @ApiParam(value = "User") user: User,
-            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?,
+            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
             @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "true") @DefaultValue("true") sendAppLink: Boolean = true
     )
 
@@ -132,7 +134,7 @@ interface UserService {
     @ApiOperation(value = "Update user")
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
-               @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?,
+               @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
                @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "false", hidden = true) @DefaultValue("false") sendAppLink: Boolean = false)
 
     @POST

@@ -3,9 +3,7 @@ package org.deku.leoz.mobile.ui
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
-import android.graphics.Bitmap
 import android.graphics.PorterDuff
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.location.LocationManager
@@ -16,7 +14,8 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
-import android.support.transition.*
+import android.support.transition.Fade
+import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
@@ -24,7 +23,10 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.text.InputType
 import android.util.TypedValue
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowManager
 import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
@@ -43,14 +45,11 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
-import kotlinx.android.synthetic.main.view_update_indicator.*
 import kotlinx.android.synthetic.main.view_update_indicator.view.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
@@ -60,7 +59,6 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
-import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.activity.StartupActivity
@@ -73,15 +71,17 @@ import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
 import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.design.appBarLayout
 import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
-import sx.android.*
+import sx.android.ApplicationStateMonitor
+import sx.android.Connectivity
+import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
+import sx.android.isConnectivityProblem
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTintRes
 import sx.mq.mqtt.MqttDispatcher
@@ -93,7 +93,7 @@ import java.util.*
  * Leoz activity base class
  * Created by n3 on 23/02/2017.
  */
-open class Activity : BaseActivity(),
+abstract class Activity : BaseActivity(),
         NavigationView.OnNavigationItemSelectedListener,
         ScreenFragment.Listener,
         ActionOverlayView.Listener,
@@ -214,25 +214,8 @@ open class Activity : BaseActivity(),
         }
 
         /** The default header drawable */
-        val defaultDrawable by lazy {
-            // Prepare default image
-            val sourceImage = this@Activity.getDrawable(R.drawable.img_street_1a).toBitmap()
-
-            val ydp = this@Activity.convertPxToDp(sourceImage.height)
-            val xdp = this@Activity.convertPxToDp(sourceImage.width)
-
-            val bitmap = Bitmap.createBitmap(
-                    sourceImage,
-                    0,
-                    this@Activity.convertDpToPx(ydp / 10).toInt(),
-                    sourceImage.width,
-                    this@Activity.convertDpToPx(ydp / 2.1F).toInt()
-            )
-
-            val drawable = BitmapDrawable(this@Activity.resources, bitmap)
-
-            drawable
-        }
+        val defaultDrawable
+                get() = Headers.street
 
         /** Header drawable */
         var headerDrawable: Drawable? = null
@@ -437,7 +420,7 @@ open class Activity : BaseActivity(),
                         syntheticInputs.name
                 )
 
-                item.icon = this.getDrawable(R.drawable.ic_barcode_scan)
+                item.icon = ContextCompat.getDrawable(this, R.drawable.ic_barcode_scan)
             }
         }
         //endregion
@@ -526,11 +509,6 @@ open class Activity : BaseActivity(),
             R.id.nav_camera -> {
                 // Handle the camera action
                 this.showScreen(CameraScreen())
-            }
-
-            R.id.nav_dev_prototype -> {
-                this.startActivity(
-                        Intent(applicationContext, ProtoMainActivity::class.java))
             }
 
             R.id.nav_dev_remote_settings -> {
@@ -662,7 +640,6 @@ open class Activity : BaseActivity(),
         navHeaderView.uxDeviceId.text = this.identity.shortUid.toString()
 
         if (this.debugSettings.enabled) {
-            this.uxNavView.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
             this.uxNavView.menu.findItem(R.id.nav_dev_remote_settings).setVisible(true)
         }
 
@@ -732,10 +709,6 @@ open class Activity : BaseActivity(),
                                     .findItem(R.id.nav_logout)
                                     .setVisible(true)
 
-                            this.uxNavView.menu
-                                    .findItem(R.id.nav_dev_prototype)
-                                    .setVisible(this.debugSettings.enabled)
-
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
                             navHeaderView.uxActiveUser.text = user.email
@@ -744,10 +717,6 @@ open class Activity : BaseActivity(),
                         else -> {
                             this.uxNavView.menu
                                     .findItem(R.id.nav_logout)
-                                    .setVisible(false)
-
-                            this.uxNavView.menu
-                                    .findItem(R.id.nav_dev_prototype)
                                     .setVisible(false)
 
                             // Hide navigation header
@@ -933,8 +902,9 @@ open class Activity : BaseActivity(),
         run {
             // TODO: don't expand when scroll position is not top on pre-existing fragment
 
-            this.header.headerDrawable = if (fragment.headerImage != 0)
-                ContextCompat.getDrawable(baseContext, fragment.headerImage)
+            log.trace("HEADER IMAGE SET ${fragment.headerImage}")
+            this.header.headerDrawable = if (fragment.headerImage != null)
+                fragment.headerImage
             else
                 this.header.defaultDrawable
         }
@@ -1005,12 +975,7 @@ open class Activity : BaseActivity(),
                         val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                         this.startActivityForResult(intent, 0)
                     }
-                    .onNegative { materialDialog, dialogAction ->
-                        when (android.os.Build.VERSION.SDK_INT) {
-                            android.os.Build.VERSION_CODES.LOLLIPOP -> this.finishAndRemoveTask()
-                            else -> this.finishAffinity()
-                        }
-                    }
+                    .onNegative { materialDialog, dialogAction -> this.finishAffinity() }
                     .cancelable(false)
                     .show()
         }
@@ -1033,12 +998,7 @@ open class Activity : BaseActivity(),
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                         this.startActivityForResult(intent, 0)
                     }
-                    .onNegative { materialDialog, dialogAction ->
-                        when (android.os.Build.VERSION.SDK_INT) {
-                            android.os.Build.VERSION_CODES.LOLLIPOP -> this.finishAndRemoveTask()
-                            else -> this.finishAffinity()
-                        }
-                    }
+                    .onNegative { materialDialog, dialogAction -> this.finishAffinity() }
                     .cancelable(false)
                     .show()
         }

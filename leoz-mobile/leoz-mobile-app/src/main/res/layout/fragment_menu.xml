@@ -33,7 +33,8 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:tint="@color/colorPrimaryDark"
-                    app:srcCompat="@drawable/ic_home" />
+                    app:srcCompat="@drawable/ic_home"
+                    android:contentDescription="TODO"/>
 
                 <TextView
                     android:id="@+id/textView4"
@@ -66,7 +67,8 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:tint="@color/colorPrimaryDark"
-                    app:srcCompat="@drawable/ic_truck_fast" />
+                    app:srcCompat="@drawable/ic_truck_fast"
+                    android:contentDescription="TODO"/>
 
                 <TextView
                     android:id="@+id/textView7"
@@ -98,7 +100,8 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:tint="@color/colorPrimaryDark"
-                    app:srcCompat="@drawable/ic_highway" />
+                    app:srcCompat="@drawable/ic_highway"
+                    android:contentDescription="TODO"/>
 
                 <TextView
                     android:id="@+id/textView8"
@@ -129,7 +132,8 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_station"
-                    android:tint="@color/colorPrimaryDark" />
+                    android:tint="@color/colorPrimaryDark"
+                    android:contentDescription="TODO"/>
 
                 <TextView
                     android:id="@+id/textView9"

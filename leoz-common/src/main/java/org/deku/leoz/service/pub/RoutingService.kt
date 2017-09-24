@@ -7,6 +7,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.entity.ShortTime
 import org.deku.leoz.service.entity.DayType
+import sx.rs.auth.ApiKey
 
 /**
  * Created by masc on 17.09.14.
@@ -15,6 +16,7 @@ import org.deku.leoz.service.entity.DayType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Routing operations")
+@ApiKey(false)
 interface RoutingService {
     /**
      * Routing service specific error codes

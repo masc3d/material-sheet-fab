@@ -3,7 +3,7 @@ package org.deku.leoz.central.rest
 import org.deku.leoz.central.data.repository.KeyJooqRepository
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
-import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.config.Rest
 import sx.rs.auth.ApiKeyRequestFilterBase
 
 import javax.inject.Inject
@@ -17,7 +17,7 @@ import javax.ws.rs.ext.Provider
 @Named
 @Provider
 class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
-        apiKeyParameterName = RestConfiguration.AUTH_APIKEY_NAME) {
+        apiKeyParameterName = Rest.API_KEY) {
 
     @Inject
     private lateinit var nodeJooqRepository: NodeJooqRepository

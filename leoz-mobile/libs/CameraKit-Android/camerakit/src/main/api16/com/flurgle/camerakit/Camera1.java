@@ -323,10 +323,14 @@ public class Camera1 extends CameraImpl {
     }
 
     private String sizeListToString(List<Size> sizes) {
+        if (sizes == null)
+            return "";
+
         ArrayList<String> sizeTexts = new ArrayList<String>();
         for (Size size : sizes) {
             sizeTexts.add(size.toString());
         }
+
         return TextUtils.join(", ", sizeTexts);
     }
 

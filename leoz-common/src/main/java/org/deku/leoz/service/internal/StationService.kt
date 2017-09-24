@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import io.swagger.annotations.*
 import org.deku.leoz.service.internal.entity.Station
+import sx.rs.auth.ApiKey
 import javax.ws.rs.core.MediaType
 
 /**
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Station operations")
+@ApiKey(false)
 interface StationService {
     @GET
     @Path("/")

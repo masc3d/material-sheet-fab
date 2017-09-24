@@ -5,26 +5,23 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import feign.FeignException
+import io.reactivex.subjects.BehaviorSubject
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.Storage
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
-import io.reactivex.subjects.BehaviorSubject
-import org.deku.leoz.identity.Identity
-import org.deku.leoz.mobile.config.RestClientConfiguration
+import org.threeten.bp.Duration
 import sx.android.ApplicationPackage
-import sx.util.zip.verify
 import sx.concurrent.Service
 import sx.rs.proxy.FeignClientProxy
-import sx.rs.proxy.RestClientProxy
-import java.io.ByteArrayOutputStream
+import sx.util.zip.verify
 import java.io.File
 import java.io.FileFilter
 import java.io.FileOutputStream
 import java.net.ConnectException
 import java.util.concurrent.ScheduledExecutorService
 import java.util.zip.ZipFile
-import org.threeten.bp.Duration
 
 /**
  * Application/APK update service
@@ -55,7 +52,7 @@ class UpdateService(
      */
     class ApplicationPackageName(val bundleName: String, val version: String) {
         companion object {
-            private val regex = Regex("^([-a-zA-Z]+)-([0-9]+[-0-9a-zA-Z\\.]+)\\.apk$")
+            private val regex = Regex("^([-a-zA-Z]+)-([0-9]+[-0-9a-zA-Z.]+)\\.apk$")
 
             fun parse(name: String): ApplicationPackageName {
                 val matchResult = regex.find(name)

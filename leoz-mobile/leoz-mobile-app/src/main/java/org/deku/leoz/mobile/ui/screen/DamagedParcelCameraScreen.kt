@@ -1,8 +1,6 @@
 package org.deku.leoz.mobile.ui.screen
 
 import android.databinding.DataBindingUtil
-import android.support.v4.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.salomonbrys.kodein.Kodein
@@ -11,11 +9,9 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.item_parcel_card.view.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.databinding.ItemParcelBinding
 import org.deku.leoz.mobile.databinding.ItemParcelCardBinding
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
-import org.deku.leoz.model.EventDeliveredReason
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 

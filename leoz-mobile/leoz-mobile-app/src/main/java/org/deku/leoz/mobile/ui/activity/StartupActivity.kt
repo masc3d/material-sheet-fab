@@ -7,11 +7,9 @@ import android.os.Handler
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.erased.instance
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
-import org.deku.leoz.mobile.service.UpdateService
-import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -23,10 +21,12 @@ import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
 import org.deku.leoz.service.internal.AuthorizationService
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
+import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.android.Device
 import sx.android.aidc.AidcReader
@@ -67,9 +67,6 @@ class StartupActivity : BaseActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Restore state
-        this.app.unfreezeInstanceState(this)
 
         // Load some more heavy-weight instances on startup/splash
 
@@ -138,11 +135,15 @@ class StartupActivity : BaseActivity() {
                                     AndroidThreeTen.init(this.application)
 
                                     // Write device management identity
-                                    val deviceManagement: DeviceManagement = Kodein.global.instance()
+                                    try {
+                                        val deviceManagement: DeviceManagement = Kodein.global.instance()
 
-                                    // Save device management identity file for specific models/manufacturers
-                                    if (device.manufacturer.type == Device.Manufacturer.Type.Honeywell) {
-                                        deviceManagement.saveDeviceFile()
+                                        // Save device management identity file for specific models/manufacturers
+                                        if (device.manufacturer.type == Device.Manufacturer.Type.Honeywell) {
+                                            deviceManagement.saveDeviceFile()
+                                        }
+                                    } catch(e: Exception) {
+                                        log.warn("Device management not available", e)
                                     }
 
                                     // Setup locale
@@ -221,15 +222,5 @@ class StartupActivity : BaseActivity() {
         } else {
             this.startMainActivity(withAnimation = false)
         }
-    }
-
-    /**
-     * Activity pause
-     */
-    override fun onPause() {
-        super.onPause()
-
-        // Save state
-        this.app.freezeInstanceState(this)
     }
 }

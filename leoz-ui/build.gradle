@@ -9,7 +9,7 @@ mainClassName = "org.deku.leoz.ui.Application"
 
 buildscript {
     ext {
-        v_grizzly = '2.3.29'
+        v_grizzly = '2.4.2'
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"

@@ -25,7 +25,6 @@ import javax.ws.rs.core.Response
  * Created by helke on 15.05.17.
  */
 @Named
-@ApiKey(true)
 @Path("internal/v1/user")
 class UserService : UserService {
     //private val log = LoggerFactory.getLogger(this.javaClass)

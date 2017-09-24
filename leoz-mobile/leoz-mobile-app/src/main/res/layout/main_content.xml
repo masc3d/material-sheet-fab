@@ -42,8 +42,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/img_street_1a"
-                    />
+                    android:src="@drawable/img_street_1"
+                    android:contentDescription="TODO"/>
 
                 <!-- Header overlay -->
                 <FrameLayout

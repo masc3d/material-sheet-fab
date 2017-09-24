@@ -3,20 +3,23 @@ package org.deku.leoz.node.service.internal
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.mq.jms.channel
+import sx.rs.auth.ApiKey
+import javax.inject.Inject
+import javax.inject.Named
+import javax.ws.rs.Path
 
 /**
  * Created by masc on 09.10.15.
  */
-@javax.inject.Named
-@sx.rs.auth.ApiKey(false)
-@javax.ws.rs.Path("internal/v1/test")
+@Named
+@Path("internal/v1/test")
 class TestService : org.deku.leoz.service.internal.TestService {
     private val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
-    @javax.inject.Inject
+    @Inject
     private lateinit var blzService: org.deku.leoz.ws.blz.BLZServicePortType
 
-    @javax.inject.Inject
+    @Inject
     private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
 
     /**

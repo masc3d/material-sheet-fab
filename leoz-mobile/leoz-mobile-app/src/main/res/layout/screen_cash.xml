@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    style="@style/AppTheme.Layout.Screen"
-    tools:context="org.deku.leoz.mobile.ui.screen.IdentityCheckScreen">
+    style="@style/AppTheme.Layout.Screen">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -35,7 +34,7 @@
                     android:layout_marginEnd="@dimen/medium_margin"
                     android:layout_gravity="center"
                     app:srcCompat="@drawable/ic_sigma"
-                    />
+                    android:contentDescription="TODO"/>
 
                 <TextView
                     android:id="@+id/uxCashValue"
@@ -74,7 +73,8 @@
                     android:layout_height="@dimen/icon_size"
                     android:layout_marginEnd="@dimen/medium_margin"
                     android:layout_gravity="center"
-                    app:srcCompat="@drawable/ic_money_handover" />
+                    app:srcCompat="@drawable/ic_money_handover"
+                    android:contentDescription="TODO"/>
 
                 <com.blackcat.currencyedittext.CurrencyEditText
                     android:id="@+id/uxCashGiven"
@@ -113,7 +113,8 @@
                     android:layout_height="@dimen/icon_size"
                     android:layout_gravity="center"
                     android:layout_marginEnd="@dimen/medium_margin"
-                    app:srcCompat="@drawable/ic_return" />
+                    app:srcCompat="@drawable/ic_return"
+                    android:contentDescription="TODO"/>
 
                 <TextView
                     android:id="@+id/uxCashChange"

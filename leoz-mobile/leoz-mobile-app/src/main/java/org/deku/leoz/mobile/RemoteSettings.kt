@@ -1,8 +1,5 @@
 package org.deku.leoz.mobile
 
-import sx.ConfigurationMap
-import sx.ConfigurationMapPath
-
 /**
  * Remote settings block
  * Created by n3 on 10.05.17.

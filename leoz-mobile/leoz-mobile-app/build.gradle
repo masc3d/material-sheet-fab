@@ -23,7 +23,7 @@ buildscript {
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.4.7'
         v_parceler = '1.1.9'
-        v_roboelectric = '3.3.2'
+        v_roboelectric = '3.4.2'
         v_rxlifecycle = '2.2.0'
         v_stetho = '1.5.0'
     }
@@ -39,9 +39,6 @@ apply plugin: 'sx-packager-android'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
-
-def sdk = android.getSdkDirectory().toString()
-def adb = android.getAdbExe().toString()
 
 def GENERATED_DIR = project.projectDir.toPath()
         .resolve('src')
@@ -61,7 +58,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 2
-        versionName "0.80-SNAPSHOT"
+        versionName "0.82-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -96,6 +93,10 @@ android {
             storeFile new File(project.projectDir, '../leoz-mobile.jks')
             storePassword 'QzIKjZeRkct3B0on'
         }
+    }
+
+    lintOptions {
+        abortOnError true
     }
 
     buildTypes {
@@ -229,6 +230,7 @@ dependencies {
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-jaxrs:$v_feign",
+            "io.github.openfeign:feign-okhttp:$v_feign",
 
             // Requery
             "io.requery:requery:$v_requery",
@@ -327,6 +329,9 @@ dependencies {
             "org.jetbrains.anko:anko-recyclerview-v7:$v_anko",
             "org.jetbrains.anko:anko-recyclerview-v7-coroutines:$v_anko",
 
+            // ShowcaseView
+            "com.github.amlcurran.showcaseview:library:5.4.3",
+
             // Support-v4 (only Anko Commons)
             "org.jetbrains.anko:anko-support-v4-commons:$v_anko",
 
@@ -353,7 +358,7 @@ dependencies {
             "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
 
             "org.robolectric:robolectric:$v_roboelectric",
-            "org.robolectric:shadows-multidex:$v_roboelectric",
+            "org.robolectric:shadows-multidex:3.4-rc2",
     )
 
     androidTestImplementation(

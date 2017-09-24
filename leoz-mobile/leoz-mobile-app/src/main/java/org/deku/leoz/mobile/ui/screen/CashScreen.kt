@@ -2,7 +2,6 @@ package org.deku.leoz.mobile.ui.screen
 
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.github.salomonbrys.kodein.Kodein
@@ -17,18 +16,14 @@ import io.reactivex.Observable
 import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryStop
-import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.OrderTaskViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
-import org.deku.leoz.model.EventDeliveredReason
 import org.jetbrains.anko.inputMethodManager
-import org.parceler.Parcel
-import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.hideSoftInput
@@ -104,7 +99,7 @@ class CashScreen : ScreenFragment<Any>() {
         super.onCreate(savedInstanceState)
 
         this.title = getString(R.string.title_cash_collection)
-        this.headerImage = R.drawable.img_money_a
+        this.headerImage = Headers.cash
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
         this.toolbarCollapsed = true
     }

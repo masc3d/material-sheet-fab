@@ -17,7 +17,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
 
         // JOOQ plugin
-        classpath "nu.studer:gradle-jooq-plugin:2.0.6"
+        classpath "nu.studer:gradle-jooq-plugin:2.0.7"
         classpath "org.jooq:jooq:$v_jooq"
         classpath "org.jooq:jooq-meta:$v_jooq"
         classpath "org.jooq:jooq-codegen:$v_jooq"
@@ -44,7 +44,7 @@ def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
 def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'//&noAccessToProcedureBodies=true'
 
 // Flyway constants
-def FLYWAY_TARGET = 37
+def FLYWAY_TARGET = 38
 def FLYWAY_MIGRATION_DIR = new File(project.rootDir, 'leoz-central-schema/db/migration')
 def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration')
 
@@ -91,7 +91,7 @@ dependencies {
             // FOR TESTING
 
             // Kalium
-            "org.abstractj.kalium:kalium:0.6.0",
+            "org.abstractj.kalium:kalium:0.7.0",
 
             //group: 'org.apache.xmlgraphics', name: 'batik-rasterizer', version: '1.9.1'
             group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.9.1'

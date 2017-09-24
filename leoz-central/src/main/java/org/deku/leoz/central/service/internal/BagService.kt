@@ -33,7 +33,6 @@ import org.deku.leoz.service.internal.entity.SectionDepotsLeft
  * Created by masc on 01/11/2016.
  **/
 @Named
-@ApiKey(false)
 @Path("internal/v1/bag")
 class BagService : BagService {
     //private val log = LoggerFactory.getLogger(this.javaClass)

@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory
 import sx.Stopwatch
 
 /**
- * Created by masc on 11.07.17.
- */
+* Created by masc on 11.07.17.
+*/
 class DataBindingTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 

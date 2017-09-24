@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation
 import org.deku.leoz.service.internal.UserService.User
 import sx.io.serialization.Serializable
 import sx.rs.PATCH
+import sx.rs.auth.ApiKey
 import javax.ws.rs.Consumes
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
@@ -19,6 +20,7 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Authorization operations")
+@ApiKey(false)
 interface AuthorizationService {
     /**
      * Authorization request, sent from nodes to central
@@ -57,50 +59,12 @@ interface AuthorizationService {
     )
 
     /**
-     * Mobile device info
-     */
-    data class Mobile(
-            /** Device model */
-            @ApiModelProperty(value = "Mobile device model", example = "CT-50", required = true)
-            var model: String = "",
-            /** Device serial number */
-            @ApiModelProperty(value = "Mobile device serial", example = "ABCDEFGH", required = true)
-            var serial: String = "",
-            /** Device IMEI */
-            @ApiModelProperty(value = "Mobile device imei", example = "990000862471854", required = true)
-            var imei: String = ""
-    ) {
-        /** Empty companion for attaching extension methods */
-        companion object {}
-    }
-
-    /**
-     * Mobile authorization request
-     */
-    data class MobileRequest(
-            @ApiModelProperty(value = "User credentials", required = true)
-            var user: Credentials? = null,
-            @ApiModelProperty(value = "Mobile device info", required = true)
-            var mobile: Mobile? = null
-    )
-
-
-    /**
      * Web authorization response
      */
     data class Response(
             var key: String = "",
             var user: User? = null
     )
-
-    /**
-     * Request authorization
-     * @param request Authorization request
-     */
-    @PATCH
-    @Path("/mobile")
-    @ApiOperation(value = "Request mobile device authorization")
-    fun authorizeMobile(request: MobileRequest): Response
 
     /**
      * Request authorization

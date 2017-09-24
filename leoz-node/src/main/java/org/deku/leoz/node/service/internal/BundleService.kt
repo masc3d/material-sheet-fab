@@ -34,7 +34,6 @@ import javax.ws.rs.core.Response
  * Created by masc on 01/11/2016.
  */
 @Named
-@ApiKey(false)
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v1/bundle")
 @Api(value = "Bundle operations")
@@ -154,7 +153,6 @@ open class BundleServiceV1 : BundleServiceV1 {
  * Created by masc on 01/11/2016.
  */
 @Named
-@ApiKey(false)
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v2/bundle")
 @Api(value = "Bundle operations")

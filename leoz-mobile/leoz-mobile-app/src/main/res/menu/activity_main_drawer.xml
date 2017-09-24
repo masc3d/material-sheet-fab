@@ -3,16 +3,6 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools">
 
-    <group
-        android:id="@+id/nav_group_1"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_dev_prototype"
-            android:icon="@drawable/ic_dev"
-            android:title="@string/prototype"
-            android:visible="false"/>
-    </group>
-
     <group android:id="@+id/nav_group_2">
         <item
             android:id="@+id/nav_camera"
@@ -33,6 +23,15 @@
             android:icon="@drawable/ic_logout"
             android:title="@string/logout"
             android:visible="false"/>
+    </group>
+
+    <group>
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_home"
+            android:title="@string/help"
+            android:visible="false"
+            />
     </group>
 
     <group android:id="@+id/nav_group_dev">

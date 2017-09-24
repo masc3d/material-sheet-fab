@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile
 
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -14,8 +13,6 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import com.github.salomonbrys.kodein.lazy
-import com.tinsuke.icekick.extension.freezeInstanceState
-import com.tinsuke.icekick.extension.unfreezeInstanceState
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.deku.leoz.mobile.ui.BaseActivity
@@ -156,24 +153,3 @@ open class Application : MultiDexApplication() {
 }
 
 val BaseActivity.app: Application get() = this.application as Application
-
-/**
- * Freezes instance state within application bundle
- */
-fun Application.freezeInstanceState(activity: Activity) {
-    // Save state
-    val bundle = Bundle()
-    activity.freezeInstanceState(bundle)
-    this.bundle.putBundle(activity.localClassName, bundle)
-}
-
-/**
- * Unfreeze instance state from application bundle
- */
-fun Application.unfreezeInstanceState(activity: Activity) {
-    // Restore state
-    val bundle = this.bundle.getBundle(activity.localClassName)
-    if (bundle != null) {
-        activity.unfreezeInstanceState(bundle)
-    }
-}

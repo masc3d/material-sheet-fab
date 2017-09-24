@@ -34,7 +34,8 @@
                 android:layout_marginEnd="@dimen/large_margin"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_cancel_black"/>
+                app:srcCompat="@drawable/ic_cancel_black"
+                android:contentDescription="TODO"/>
 
             <TextView
                 android:id="@+id/uxMenuDescription"

@@ -4,6 +4,7 @@ import javax.ws.rs.core.*
 import javax.ws.rs.*
 import io.swagger.annotations.*
 import sx.rs.PATCH
+import sx.rs.auth.ApiKey
 
 /**
  * Created by masc on 09.10.15.
@@ -12,6 +13,7 @@ import sx.rs.PATCH
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Test operations")
+@ApiKey(false)
 interface TestService {
     /**
      * Get entry by name

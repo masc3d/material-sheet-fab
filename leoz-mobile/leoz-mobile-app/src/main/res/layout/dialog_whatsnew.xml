@@ -41,7 +41,8 @@
             android:clickable="true"
             android:dividerHeight="0dp"
             android:longClickable="false"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical"
+            android:focusable="true"/>
 
     </LinearLayout>
 

@@ -29,7 +29,6 @@ import javax.ws.rs.core.Response
  * Created by 27694066 on 02.03.2017.
  */
 @Named
-@ApiKey(true)
 @Path("zalando/v1/ldn")
 class CarrierIntegrationService : CarrierIntegrationService {
 

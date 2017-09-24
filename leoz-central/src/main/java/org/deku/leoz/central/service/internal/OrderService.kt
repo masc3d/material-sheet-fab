@@ -3,9 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
-import org.deku.leoz.central.data.repository.OrderJooqRepository
-import org.deku.leoz.central.data.repository.ParcelJooqRepository
-import org.deku.leoz.central.data.repository.StatusJooqRepository
+import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.OrderService
@@ -25,7 +23,6 @@ import javax.ws.rs.core.Response
  * Created by JT on 30.06.17.
  */
 @Named
-@ApiKey(false)
 @Path("internal/v1/order")
 class OrderService : OrderService {
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -39,7 +36,17 @@ class OrderService : OrderService {
     @Inject
     private lateinit var statusRepository: StatusJooqRepository
 
+    @Inject
+    private lateinit var userRepository: UserJooqRepository
+
+    @Inject
+    private lateinit var depotRepository: DepotJooqRepository
+
     override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
+        return get(labelRef, custRef, parcelScan, null)
+    }
+
+    override fun get(labelRef: String?, custRef: String?, parcelScan: String?, apiKey: String?): List<OrderService.Order> {
         val orders: List<Order>
 
         when {
@@ -50,6 +57,21 @@ class OrderService : OrderService {
                         ?: throw DefaultProblem(
                         title = "Order not found",
                         status = Response.Status.NOT_FOUND)
+//to be removed if mobile supports apikeys
+                if (apiKey != null) {
+//--<
+                    apiKey ?:
+                            throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+
+                    val authorizedUserRecord = userRepository.findByKey(apiKey)
+                    authorizedUserRecord ?:
+                            throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+                    when {
+                        order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId
+                        ->
+                            throw DefaultProblem(status = Response.Status.FORBIDDEN)
+                    }
+                }
                 orders = listOf(order)
             }
             else -> TODO("Handle other query types here")
@@ -65,12 +87,31 @@ class OrderService : OrderService {
     }
 
     override fun getById(id: Long): OrderService.Order {
+        return getById(id, null)
+    }
+
+    override fun getById(id: Long, apiKey: String?): OrderService.Order {
 
         val order = this.orderRepository.findById(id)
                 ?.toOrder()
                 ?: throw DefaultProblem(
                 title = "Order not found",
                 status = Response.Status.NOT_FOUND)
+//to be removed if mobile supports apikeys
+        if (apiKey != null) {
+//--<
+            apiKey ?:
+                    throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+
+            val authorizedUserRecord = userRepository.findByKey(apiKey)
+            authorizedUserRecord ?:
+                    throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+            when {
+                order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId
+                ->
+                    throw DefaultProblem(status = Response.Status.FORBIDDEN)
+            }
+        }
 
         order.parcels = this.orderRepository
                 .findParcelsByOrderId(order.id)
@@ -95,6 +136,23 @@ class OrderService : OrderService {
         }
     }
 
+    fun Order.findOrderDebitorId(pickupDeliver: Type): Int {
+        var station: Long
+
+        when (pickupDeliver) {
+            Type.PICKUP -> station = this.pickupStation
+            Type.DELIVERY -> station = this.deliveryStation
+        }
+//                depotRepository.findDebitorDepots(authorizedUserRecord.debitorId).map { (deliveryListRecord.deliveryStation.toInt()) }.isEmpty()
+
+        return depotRepository.findDebitor(station)
+    }
+
+    enum class Type {
+        PICKUP,
+        DELIVERY
+    }
+
     /**
      * Order record conversion extension
      */
@@ -109,6 +167,7 @@ class OrderService : OrderService {
             o.orderClassification = OrderClassification.PICKUP_DELIVERY
         else
             o.orderClassification = OrderClassification.DELIVERY
+        o.pickupStation = r.pickupStation.toLong()
         o.pickupAddress.line1 = r.pickupAddressLine1
         o.pickupAddress.line2 = r.pickupAddressLine2
         o.pickupAddress.line3 = r.pickupAddressLine3
@@ -144,6 +203,7 @@ class OrderService : OrderService {
         o.pickupAppointment.dateEnd = r.appointmentPickupEnd
         o.pickupAppointment.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
 
+        o.deliveryStation = r.deliveryStation.toLong()
         o.deliveryAddress.line1 = r.deliveryAddressLine1
         o.deliveryAddress.line2 = r.deliveryAddressLine2
         o.deliveryAddress.line3 = r.deliveryAddressLine3

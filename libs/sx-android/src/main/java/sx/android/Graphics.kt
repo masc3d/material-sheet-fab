@@ -3,6 +3,7 @@ package sx.android
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
@@ -71,4 +72,20 @@ fun Drawable.toBitmap(): Bitmap {
     drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
     drawable.draw(canvas)
     return bitmap
+}
+
+/**
+ * Creates a new bitmap with opacity applied
+ */
+fun Bitmap.copyWithOpacity(alpha: Double): Bitmap {
+    val transBitmap = Bitmap.createBitmap(this.width, this.height, Bitmap.Config.ARGB_8888)
+
+    val canvas = Canvas(transBitmap)
+    canvas.drawARGB(0, 0, 0, 0)
+
+    val paint = Paint()
+    paint.setAlpha((alpha * 255).toInt())
+    canvas.drawBitmap(this, 0F, 0F, paint)
+
+    return transBitmap
 }

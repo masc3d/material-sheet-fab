@@ -28,7 +28,6 @@ import javax.ws.rs.Path
  * Created by masc on 25.08.17.
  */
 @Named
-@ApiKey(false)
 @Path("internal/v1/file")
 class FileServiceV1 :
         FileServiceV1,

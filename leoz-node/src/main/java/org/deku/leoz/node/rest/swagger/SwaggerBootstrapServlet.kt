@@ -7,7 +7,7 @@ import io.swagger.models.Info
 import io.swagger.models.Swagger
 import io.swagger.models.auth.ApiKeyAuthDefinition
 import io.swagger.models.auth.In
-import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.config.Rest
 import org.deku.leoz.service.zalando.Package
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -41,7 +41,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
                         .version("1.0.2")
                         .contact(Contact()
                                 .email("it-service@derkurier.de")),
-                mappingPrefix = RestConfiguration.MAPPING_PREFIX,
+                mappingPrefix = Rest.MAPPING_PREFIX,
                 packageNames = listOf(
                         org.deku.leoz.service.pub.Package.name
                 ))
@@ -54,7 +54,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
                         .version("1.0.1")
                         .contact(Contact()
                                 .email("it-service@derkurier.de")),
-                mappingPrefix = RestConfiguration.MAPPING_PREFIX,
+                mappingPrefix = Rest.MAPPING_PREFIX,
                 basePath = "/internal",
                 packageNames = listOf(
                         org.deku.leoz.service.internal.Package.name
@@ -68,7 +68,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
                         .version("1.0.1")
                         .contact(Contact()
                                 .email("philipp.prangenberg@gls-germany.com")),
-                mappingPrefix = RestConfiguration.MAPPING_PREFIX,
+                mappingPrefix = Rest.MAPPING_PREFIX,
                 basePath = "/zalando",
                 packageNames = listOf(
                         Package.name
@@ -87,7 +87,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
             basePath: String = "",
             packageNames: List<String>) {
 
-        val AUTH_APIKEY = RestConfiguration.AUTH_APIKEY_NAME
+        val AUTH_APIKEY = Rest.API_KEY
         val swagger = Swagger()
                 .securityDefinition(AUTH_APIKEY, ApiKeyAuthDefinition(AUTH_APIKEY, In.HEADER))
                 .info(info)

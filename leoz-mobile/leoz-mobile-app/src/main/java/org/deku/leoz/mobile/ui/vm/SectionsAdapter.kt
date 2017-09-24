@@ -3,13 +3,11 @@ package org.deku.leoz.mobile.ui.vm
 import android.support.v7.widget.RecyclerView
 import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
-import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.flexibleadapter.utils.Log
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.FlexibleExpandableVmHolder
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.rx.CompositeDisposableSupplier

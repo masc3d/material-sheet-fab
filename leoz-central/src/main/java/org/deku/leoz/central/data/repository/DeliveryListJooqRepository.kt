@@ -30,10 +30,18 @@ open class DeliveryListJooqRepository {
                 Tables.TAD_V_DELIVERYLIST.ID.eq(id.toDouble()))
     }
 
-    fun findInfoByDate(deliveryDate: Date): List<TadVDeliverylistinfoRecord> {
+    fun findInfoByDate(deliveryDate: Date): List<TadVDeliverylistRecord> {
         return dslContext.fetch(
-                Tables.TAD_V_DELIVERYLISTINFO,
-                Tables.TAD_V_DELIVERYLISTINFO.DELIVERY_LIST_DATE.equal(deliveryDate.toTimestamp()))
+                Tables.TAD_V_DELIVERYLIST,
+                Tables.TAD_V_DELIVERYLIST.DELIVERY_LIST_DATE.equal(deliveryDate.toTimestamp()))
+    }
+
+    fun findInfoByDateDebitorList(deliveryDate: Date, debitorId: Int): List<TadVDeliverylistRecord> {
+        return dslContext.fetch(
+                Tables.TAD_V_DELIVERYLIST,
+                Tables.TAD_V_DELIVERYLIST.DELIVERY_LIST_DATE.equal(deliveryDate.toTimestamp())
+                        .and(Tables.TAD_V_DELIVERYLIST.DEBITOR_ID.eq(debitorId.toLong()))
+        )
     }
 
     fun findDetailsById(id: Long): List<TadVDeliverylistDetailsRecord> {

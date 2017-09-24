@@ -1,10 +1,8 @@
-package com.tnt.innight.mobile;
+package org.deku.leoz.mobile.device;
 
-import android.app.Application
 import android.content.Context
-import android.media.AudioAttributes
-import android.media.AudioManager;
-import android.media.SoundPool;
+import android.media.AudioManager
+import android.media.SoundPool
 import org.deku.leoz.mobile.R
 
 /**
@@ -17,12 +15,10 @@ class Sounds(private val context: Context) {
     private val cameraSoundId: Int
 
     init {
-        soundPool = SoundPool.Builder()
-                .setMaxStreams(5)
-                .setAudioAttributes(AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build())
-                .build()
+        soundPool = SoundPool(
+                5,
+                AudioManager.STREAM_MUSIC,
+                0)
 
         cameraSoundId = soundPool.load(context, R.raw.sound_camera_click, 0);
     }

@@ -10,7 +10,7 @@ import java.net.URI
  * Created by masc on 08/11/2016.
  */
 class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
-    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
+    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean, apiKey: String?): RestClientProxy {
         return RestEasyClientProxy(baseUri, ignoreSsl)
     }
 

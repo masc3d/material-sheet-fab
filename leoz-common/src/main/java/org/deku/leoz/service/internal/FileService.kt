@@ -4,6 +4,7 @@ import io.swagger.annotations.Api
 import org.deku.leoz.model.AdditionalInfo
 import sx.collections.chunked
 import sx.io.serialization.Serializable
+import sx.rs.auth.ApiKey
 import java.util.*
 import javax.activation.MimeType
 import javax.ws.rs.Consumes
@@ -19,6 +20,7 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "File service")
+@ApiKey(false)
 interface FileServiceV1 {
 
     /**

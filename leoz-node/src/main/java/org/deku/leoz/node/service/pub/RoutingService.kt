@@ -36,7 +36,6 @@ import javax.ws.rs.Path
  * Created by masc on 23.07.14.
  */
 @Named
-@ApiKey(false)
 @Path("v1/routing")
 class RoutingService : org.deku.leoz.service.pub.RoutingService {
     private val log = LoggerFactory.getLogger(this.javaClass)

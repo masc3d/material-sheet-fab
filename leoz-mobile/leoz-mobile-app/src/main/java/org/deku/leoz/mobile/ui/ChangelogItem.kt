@@ -1,8 +1,6 @@
 package org.deku.leoz.mobile.ui
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible

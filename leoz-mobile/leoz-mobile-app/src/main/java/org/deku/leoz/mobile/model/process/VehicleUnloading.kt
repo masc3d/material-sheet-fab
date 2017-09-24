@@ -8,28 +8,21 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
-import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.mobile.model.repository.OrderRepository
+import org.deku.leoz.mobile.model.entity.ParcelEntity
+import org.deku.leoz.mobile.model.entity.filterValuesByType
 import org.deku.leoz.mobile.model.repository.ParcelRepository
-import org.deku.leoz.mobile.model.repository.StopRepository
-import org.deku.leoz.mobile.model.service.toOrder
 import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.service.LocationCache
-import org.deku.leoz.model.*
-import org.deku.leoz.service.internal.DeliveryListService
-import org.deku.leoz.service.internal.OrderService
+import org.deku.leoz.model.Event
+import org.deku.leoz.model.Reason
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
-import sx.Stopwatch
 import sx.mq.mqtt.channel
-import sx.requery.ObservableQuery
-import sx.requery.ObservableTupleQuery
-import sx.rx.*
+import sx.rx.CompositeDisposableSupplier
+import sx.rx.behave
 
 /**
  * Delivery list model

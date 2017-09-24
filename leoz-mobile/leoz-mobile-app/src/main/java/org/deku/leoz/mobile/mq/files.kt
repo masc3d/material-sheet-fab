@@ -7,7 +7,6 @@ import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.internal.toFileFragmentMessages
 import sx.mq.mqtt.MqttChannel
-import sx.mq.mqtt.channel
 import java.util.*
 
 /**

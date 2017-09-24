@@ -2,7 +2,6 @@ package org.deku.leoz.mobile.ui.vm
 
 import android.content.Context
 import android.databinding.BaseObservable
-import android.graphics.Color
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
@@ -12,7 +11,6 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.ParcelEntity
 import sx.android.databinding.toField
 
 /**

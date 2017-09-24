@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.mq
 
-import org.deku.leoz.config.MqConfiguration
 import org.deku.leoz.config.MqEndpoints
 import sx.mq.mqtt.MqttContext
 import sx.mq.mqtt.toMqtt

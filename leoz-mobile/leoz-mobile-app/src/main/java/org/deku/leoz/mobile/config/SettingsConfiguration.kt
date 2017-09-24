@@ -2,7 +2,9 @@ package org.deku.leoz.mobile.config
 
 import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.erased.bind
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.LocationSettings
@@ -13,8 +15,8 @@ import java.io.IOException
 import java.io.InputStream
 
 /**
- * Created by n3 on 15/02/2017.
- */
+* Created by masc on 15/02/2017.
+*/
 class SettingsConfiguration {
     companion object {
         val ASSET_SETTINGS = "application.yml"

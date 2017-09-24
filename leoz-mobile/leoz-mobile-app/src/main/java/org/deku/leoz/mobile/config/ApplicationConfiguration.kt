@@ -5,7 +5,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
-import com.github.salomonbrys.kodein.erased.singleton
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.android.ApplicationStateMonitor

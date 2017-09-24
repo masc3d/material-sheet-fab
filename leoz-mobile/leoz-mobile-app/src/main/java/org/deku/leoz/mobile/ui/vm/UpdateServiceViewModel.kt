@@ -2,11 +2,6 @@ package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
 import android.databinding.ObservableField
-import android.graphics.PorterDuff
-import android.support.v4.content.ContextCompat
-import android.view.View
-import kotlinx.android.synthetic.main.view_update_indicator.view.*
-import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.service.UpdateService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField

@@ -16,7 +16,7 @@ abstract class RestClientConfiguration {
     /**
      * Overridden in derived configurations to provide a specific proxy client
      */
-    abstract fun createClientProxy(baseUri: URI, ignoreSsl: Boolean): RestClientProxy
+    abstract fun createClientProxy(baseUri: URI, ignoreSsl: Boolean, apiKey: String? = null): RestClientProxy
 
     /**
      * HTTP host to use for rest clients
@@ -29,11 +29,16 @@ abstract class RestClientConfiguration {
     var https: Boolean = false
 
     /**
+     * Header API key
+     */
+    var apiKey: String? = null
+
+    /**
      * HTTP/S port
      */
-    var port: Int = RestConfiguration.DEFAULT_PORT
+    var port: Int = Rest.DEFAULT_PORT
 
-    fun createUri(https: Boolean, host: String, port: Int, basePath: String = RestConfiguration.MAPPING_PREFIX): URI {
+    fun createUri(https: Boolean, host: String, port: Int, basePath: String = Rest.MAPPING_PREFIX): URI {
         val scheme = when (https) {
             true -> "https"
             false -> "http"
@@ -50,7 +55,7 @@ abstract class RestClientConfiguration {
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
         val ignoreSslCertificate = !uri.host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)
 
-        return this.createClientProxy(uri, ignoreSslCertificate)
+        return this.createClientProxy(uri, ignoreSslCertificate, this.apiKey)
     }
 
     /**
@@ -68,9 +73,8 @@ abstract class RestClientConfiguration {
             /**
              * Helper for creating service proxy
              */
-            fun <T> createServiceProxy(config: RestClientConfiguration, serviceType: Class<T>): T {
-                return config.createDefaultClientProxy().create(serviceType)
-            }
+            fun <T> createServiceProxy(config: RestClientConfiguration, serviceType: Class<T>): T =
+                    config.createDefaultClientProxy().create(serviceType)
 
             bind<StationService>() with provider {
                 createServiceProxy(config = instance(), serviceType = StationService::class.java)
