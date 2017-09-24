@@ -1,5 +1,6 @@
 package sx.android
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -40,9 +41,7 @@ open class Device(private val context: Context) {
                 Type.Generic
         }
 
-        override fun toString(): String {
-            return "Manufacturer(name=${name}, type=${type})"
-        }
+        override fun toString(): String = "Manufacturer(name=${name}, type=${type})"
     }
 
     /**
@@ -58,16 +57,19 @@ open class Device(private val context: Context) {
     /**
      * Device model
      */
-    data class Model(val name: String = Build.MODEL) {}
+    data class Model(
+            /** Model name */
+            val name: String = Build.MODEL
+    )
 
     val imei: String by lazy {
         val telephonyManager = this.context.getTelephonyManager()
-        telephonyManager.deviceId ?: ""
+        try { telephonyManager.deviceId ?: "" } catch(e: SecurityException) { throw e }
     }
 
     val phone: String by lazy {
         val telephonyManager = this.context.getTelephonyManager()
-        telephonyManager.line1Number ?: ""
+        try { telephonyManager.line1Number ?: "" } catch(e: SecurityException) { throw e }
     }
 
     val androidId: String by lazy {
@@ -111,10 +113,10 @@ open class Device(private val context: Context) {
             }
         }
     }
+
     val manufacturer: Manufacturer = Manufacturer()
     val model: Model = Model()
 
-    override fun toString(): String {
-        return "Device(imei=${imei}, androidId=${androidId}) androidVersion=${androidVersion} serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"
-    }
+    override fun toString(): String =
+            "Device(imei=${imei}, androidId=${androidId}) androidVersion=${androidVersion} serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"
 }
