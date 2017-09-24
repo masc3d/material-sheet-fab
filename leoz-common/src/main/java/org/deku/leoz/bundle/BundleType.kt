@@ -7,9 +7,9 @@ import sx.io.serialization.Serializable
  */
 @Serializable(0x4a62227da5484b)
 enum class BundleType(val value: String) {
-    LeozCentral("leoz-central"),
-    LeozNode("leoz-node"),
-    LeozUI("leoz-ui"),
-    LeozBoot("leoz-boot"),
-    LeozMobile("leoz-mobile")
+    LEOZ_CENTRAL("leoz-central"),
+    LEOZ_NODE("leoz-node"),
+    LEOZ_UI("leoz-ui"),
+    LEOZ_BOOT("leoz-boot"),
+    LEOZ_MOBILE("leoz-mobile")
 }

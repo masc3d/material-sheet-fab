@@ -25,7 +25,7 @@ class ConnectionConfiguration {
                 val discoveryService: DiscoveryService = instance()
                 discoveryService.updatedEvent.subscribe {
                     config.node = discoveryService.directory.firstOrNull {
-                        it.info?.bundleType == BundleType.LeozNode
+                        it.info?.bundleType == BundleType.LEOZ_NODE
                     }
                 }
                 config

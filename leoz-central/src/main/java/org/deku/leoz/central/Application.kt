@@ -18,7 +18,7 @@ class Application : org.deku.leoz.node.Application() {
         get() = Application::class.java
 
     override val bundleType: BundleType
-        get() = BundleType.LeozCentral
+        get() = BundleType.LEOZ_CENTRAL
 
     override fun initialize() {
         // No JMS logging for leoz-central
