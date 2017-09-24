@@ -23,7 +23,7 @@ buildscript {
         v_anko = '0.10.1'
         v_material_dialogs = '0.9.4.7'
         v_parceler = '1.1.9'
-        v_roboelectric = '3.3.2'
+        v_roboelectric = '3.4.2'
         v_rxlifecycle = '2.2.0'
         v_stetho = '1.5.0'
     }
@@ -217,7 +217,7 @@ dependencies {
             "com.android.support:design:$v_android_support",
             "com.android.support:cardview-v7:$v_android_support",
             "com.android.support:recyclerview-v7:$v_android_support",
-            'com.android.support:multidex:1.0.1',
+            'com.android.support:multidex:1.0.2',
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
@@ -376,7 +376,7 @@ dependencies {
             "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
 
             "org.robolectric:robolectric:$v_roboelectric",
-            "org.robolectric:shadows-multidex:$v_roboelectric",
+            "org.robolectric:shadows-multidex:3.4-rc2",
     )
 
     androidTestCompile(

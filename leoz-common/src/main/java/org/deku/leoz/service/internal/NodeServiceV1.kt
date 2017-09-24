@@ -22,8 +22,10 @@ interface NodeServiceV1 {
     @Serializable(0xd0479c08b29be4)
     data class MobileStatus(
             /** Node uid */
-            val uid: String? = "",
+            val uid: String = "",
+            /** Mobile application version */
+            val applicationVersion: String = "",
             /** Mobile device serial number */
             val serialNumber: String = ""
-    )
+    ) { companion object }
 }

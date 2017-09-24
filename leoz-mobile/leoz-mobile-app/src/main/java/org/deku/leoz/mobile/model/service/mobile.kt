@@ -1,21 +1,15 @@
 package org.deku.leoz.mobile.model.service
 
+import org.deku.leoz.identity.Identity
+import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.service.internal.AuthorizationService
+import org.deku.leoz.service.internal.NodeServiceV1
 import sx.android.Device
 
-/**
- * Mobile device info factory method
- * Created by masc on 18.08.17.
- */
-fun AuthorizationService.Mobile.Companion.create(device: Device): AuthorizationService.Mobile {
-    /**
-     * This IMEI is provided in case the device has none (eg newer emulators)
-     */
-    val DUMMY_IMEI = "000000000000000"
-
-    return AuthorizationService.Mobile(
-            model = device.model.name,
-            serial = device.serial,
-            imei = if (device.imei.isNotBlank()) device.imei else DUMMY_IMEI
+fun NodeServiceV1.MobileStatus.Companion.create(identity: Identity, device: Device): NodeServiceV1.MobileStatus {
+    return NodeServiceV1.MobileStatus(
+            uid = identity.uid.value,
+            applicationVersion = BuildConfig.VERSION_NAME,
+            serialNumber = device.serial
     )
 }
