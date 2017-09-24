@@ -17,9 +17,8 @@ data class NotDeliveredReasonMeta(
     /**
      * Returns mobile translation and for unknown values the enum value name
      */
-    fun textOrName(context: Context): String {
-        return if (this.text != null) context.getString(this.text) else this.value.name
-    }
+    fun textOrName(context: Context): String =
+            if (this.text != null) context.getString(this.text) else this.value.name
 }
 
 private val meta = listOf(
