@@ -284,6 +284,9 @@ dependencies {
 
             "com.github.BlacKCaT27:CurrencyEditText:2.0.1",
 
+            // Should be pulled in via :material-sheet-fab, but isn't in 3.0.0-beta6
+            "com.github.asyl.animation:arcanimator:1.0.0",
+
             //
             // FOR TESTING
             //
