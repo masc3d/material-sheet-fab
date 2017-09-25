@@ -15,6 +15,7 @@ import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.LocationServiceV1
+import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.mq.mqtt.channel
@@ -139,9 +140,9 @@ class LocationService(
             // TODO: Store location data in database and send it as an set of multiple positions once.
 
             mqttChannels.central.transient.channel().send(
-                    message = LocationServiceV1.GpsMessage(
+                    message = LocationServiceV2.GpsMessage(
                             userId = this@LocationService.login.authenticatedUser?.id,
-                            nodeId = this@LocationService.identity.uid.value,
+                            nodeKey = this@LocationService.identity.uid.value,
                             dataPoints = arrayOf(currentPosition)
                     )
             )
