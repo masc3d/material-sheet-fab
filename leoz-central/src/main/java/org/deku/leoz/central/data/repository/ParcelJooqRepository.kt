@@ -22,7 +22,7 @@ class ParcelJooqRepository {
 
 
     fun setSignaturePath(parcelNumber: String, path: String) {
-        val result = dslContext.update(Tables.TBLAUFTRAGCOLLIES)
+        dslContext.update(Tables.TBLAUFTRAGCOLLIES)
                 .set(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME, path)
                 .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(parcelNumber.toDouble()))
                 .execute()
