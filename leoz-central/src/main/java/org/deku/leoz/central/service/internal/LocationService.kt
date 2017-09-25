@@ -60,6 +60,8 @@ open class LocationServiceV1
     private lateinit var posRepository: PositionJooqRepository
     @Inject
     private lateinit var nodeRepository: NodeJooqRepository
+    @Inject
+    private lateinit var v2: org.deku.leoz.central.service.internal.LocationServiceV2
 
     override fun get(email: String?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationServiceV1.GpsData> {
         var debitor_id = debitorId
@@ -302,29 +304,11 @@ open class LocationServiceV1
     override fun onMessage(message: LocationServiceV1.GpsMessage, replyChannel: MqChannel?) {
         // TODO: from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
 
-        val dataPoints = message.dataPoints?.toList()
-                ?: throw DefaultProblem(
-                detail = "Missing data points",
-                status = Response.Status.BAD_REQUEST)
-
-        log.trace("Received ${dataPoints.count()} from [${message.nodeId}] user [${message.userId}]")
-
-        dataPoints.forEach {
-            val r = dslContext.newRecord(Tables.TAD_NODE_GEOPOSITION)
-
-            r.userId = message.userId
-            r.nodeId = nodeRepository.findByKey(message.nodeId ?: "")?.nodeId
-            r.latitude = it.latitude
-            r.longitude = it.longitude
-            r.positionDatetime = it.time?.toTimestamp()
-            r.speed = it.speed?.toDouble()
-            r.bearing = it.bearing?.toDouble()
-            r.altitude = it.altitude
-            r.accuracy = it.accuracy?.toDouble()
-            r.vehicleType = it.vehicleType?.value?.toUpperCase()
-
-            posRepository.save(r)
-        }
+        return v2.onMessage(message = LocationServiceV2.GpsMessage(
+                message.userId,
+                message.nodeId,
+                message.dataPoints
+        ), replyChannel = replyChannel)
     }
 
     fun geoFilter(posList: List<TadNodeGeopositionRecord>): MutableList<LocationServiceV1.GpsDataPoint> {
