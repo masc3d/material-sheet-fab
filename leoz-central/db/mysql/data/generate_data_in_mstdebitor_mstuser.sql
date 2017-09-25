@@ -24,4 +24,4 @@ INSERT INTO mst_user (debitor_id, email, password, alias, expires_on, role, acti
   ((SELECT debitor_id
     FROM tbldepotliste
     WHERE depotnr = 89),
-   'dev@leoz', 'e03c1faf96e4484bba2d63cfada94d88d3cdf8ff', 'dev', '2099-12-31', ' USER ', 1, 'leoz', 'leoz');
+   'dev@leoz', 'e03c1faf96e4484bba2d63cfada94d88d3cdf8ff', 'dev', '2099-12-31', 'USER', 1, 'leoz', 'leoz');
