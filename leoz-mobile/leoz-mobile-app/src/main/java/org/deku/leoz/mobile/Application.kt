@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -150,6 +151,16 @@ open class Application : MultiDexApplication() {
         super.onTrimMemory(level)
     }
     //endregion
+
+    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 val BaseActivity.app: Application get() = this.application as Application

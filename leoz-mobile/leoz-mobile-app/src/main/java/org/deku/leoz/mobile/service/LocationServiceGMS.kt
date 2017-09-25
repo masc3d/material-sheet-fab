@@ -15,6 +15,7 @@ import org.threeten.bp.Duration
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStatusCodes
 import android.content.IntentSender
+import android.location.Location
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -27,18 +28,15 @@ import com.google.android.gms.common.api.ApiException
 /**
  * Created by 27694066 on 22.09.2017.
  */
-class LocationServiceGMS(
-        var period: Duration = Duration.ofSeconds(30),
-        var enabled: Boolean = true
-):
+class LocationServiceGMS:
         BaseLocationService(),
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     val locationRequest = LocationRequest().also {
-        it.interval = this.period.toMillis()
+        it.interval = Duration.ofSeconds(this.locationSettings.period).toMillis()
         it.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        it.smallestDisplacement = 200F
+        it.smallestDisplacement = locationSettings.smallestDisplacement
     }
 
     var builder: LocationSettingsRequest.Builder = LocationSettingsRequest.Builder()
@@ -52,35 +50,6 @@ class LocationServiceGMS(
                 .build()
     }
 
-    val settingsClient = LocationServices.getSettingsClient(this)
-    val task = settingsClient.checkLocationSettings(builder.build()).also {
-        it.addOnSuccessListener {
-
-        }
-
-        it.addOnFailureListener {
-            val statusCode = (it as ApiException).statusCode
-            when (statusCode) {
-                CommonStatusCodes.RESOLUTION_REQUIRED ->
-                    // Location settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
-                    try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
-                        val resolvable = it as ResolvableApiException
-                        resolvable.startResolutionForResult(this@Activity,
-                                REQUEST_CHECK_SETTINGS)
-                    } catch (sendEx: IntentSender.SendIntentException) {
-                        // Ignore the error.
-                    }
-
-                LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
-                }
-            }// Location settings are not satisfied. However, we have no way
-            // to fix the settings so we won't show the dialog.
-        }
-    }
-
     override fun onBind(intent: Intent?) = null
 
     override fun onCreate() {
@@ -89,8 +58,8 @@ class LocationServiceGMS(
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         googleApiClient.disconnect()
+        super.onDestroy()
     }
 
     override fun onConnected(p0: Bundle?) {

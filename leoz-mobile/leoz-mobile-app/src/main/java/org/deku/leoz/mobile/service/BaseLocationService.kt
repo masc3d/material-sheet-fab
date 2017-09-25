@@ -4,10 +4,12 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Icon
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
+import android.os.IBinder
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -37,18 +39,6 @@ abstract class BaseLocationService: Service() {
     protected val locationSettings: LocationSettings by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
     private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
-
-    private val defaultCriteria by lazy {
-        Criteria().also {
-            it.powerRequirement = Criteria.POWER_MEDIUM
-            it.accuracy = Criteria.ACCURACY_FINE
-            it.isSpeedRequired = true
-            it.isAltitudeRequired = false
-            it.isAltitudeRequired = false
-            it.isBearingRequired = true
-            it.isCostAllowed = true
-        }
-    }
 
     companion object {
         const val NOTIFICATION_ID = 0
@@ -86,7 +76,7 @@ abstract class BaseLocationService: Service() {
         }
     }
 
-    protected fun reportLocation(location: Location) {
+    fun reportLocation(location: Location) {
         log.trace("New location reported")
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -120,11 +110,5 @@ abstract class BaseLocationService: Service() {
                         dataPoints = arrayOf(currentPosition)
                 )
         )
-    }
-
-    protected fun getProviderName(criteria: Criteria = defaultCriteria): String {
-        val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-        return locationManager.getBestProvider(criteria, false)
     }
 }

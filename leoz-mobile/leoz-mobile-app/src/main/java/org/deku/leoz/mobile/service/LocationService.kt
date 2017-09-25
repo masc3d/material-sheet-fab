@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.service
 
 import android.content.Context
 import android.content.Intent
+import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -16,18 +17,23 @@ import org.threeten.bp.Duration
 import sx.mq.mqtt.channel
 import java.util.*
 
-class LocationService(
-        var period: Duration = Duration.ofSeconds(30),
-        var minDistance: Float = 250F,
-        var enabled: Boolean = true
-)
+class LocationService
     : BaseLocationService() {
 
     private var locationListener: LocationListener? = null
+    val period = Duration.ofSeconds(locationSettings.period).toMillis()
+    val minDistance = locationSettings.minDistance.toFloat()
 
-    init {
-        this.period = Duration.ofSeconds(locationSettings.period)
-        this.minDistance = locationSettings.minDistance.toFloat()
+    private val defaultCriteria by lazy {
+        Criteria().also {
+            it.powerRequirement = Criteria.POWER_MEDIUM
+            it.accuracy = Criteria.ACCURACY_FINE
+            it.isSpeedRequired = true
+            it.isAltitudeRequired = false
+            it.isAltitudeRequired = false
+            it.isBearingRequired = true
+            it.isCostAllowed = true
+        }
     }
 
     override fun onBind(intent: Intent?) = null
@@ -46,7 +52,7 @@ class LocationService(
         locationListener = LocationListener()
 
         try {
-            locationManager.requestLocationUpdates(provider, period.toMillis(), minDistance, locationListener)
+            locationManager.requestLocationUpdates(provider, period, minDistance, locationListener)
         } catch (e: SecurityException) {
             log.error("Fail to request location update on provider [$provider]", e)
         } catch (e: IllegalArgumentException) {
@@ -55,8 +61,13 @@ class LocationService(
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         locationManager.removeUpdates(locationListener)
+        super.onDestroy()
+    }
+
+    private fun getProviderName(criteria: Criteria = defaultCriteria): String {
+        val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.getBestProvider(criteria, false)
     }
 
     inner class LocationListener : android.location.LocationListener {

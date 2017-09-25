@@ -10,5 +10,6 @@ class LocationSettings(map: sx.ConfigurationMap) {
     val force: Boolean by map.value(true)
     val period: Long by map.value(120)
     val allowMockLocation: Boolean by map.value(false)
+    val smallestDisplacement: Float by map.value(250F)
 
 }

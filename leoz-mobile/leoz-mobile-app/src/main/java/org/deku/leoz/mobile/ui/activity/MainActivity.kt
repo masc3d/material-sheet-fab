@@ -15,6 +15,7 @@ import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.screen.MainScreen
@@ -88,7 +89,7 @@ class MainActivity
 
         if (locationSettings.enabled) {
             this.startService(
-                    Intent(applicationContext, LocationService::class.java))
+                    Intent(applicationContext, LocationServiceGMS::class.java))
         }
 
         this.startActivity(
