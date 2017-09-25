@@ -36,9 +36,7 @@ interface DeliveryListService {
     @ApiOperation(value = "Get delivery list by id")
     fun getById(
             @PathParam(ID) @ApiParam(example = "89586115", value = "Delivery list id", required = true)
-            id: Long,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true)
-            apiKey: String?
+            id: Long
     ): DeliveryList
 
     @GET

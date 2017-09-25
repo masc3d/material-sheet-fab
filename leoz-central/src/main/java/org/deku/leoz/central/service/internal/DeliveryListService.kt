@@ -36,7 +36,9 @@ class DeliveryListService : DeliveryListService {
     @Inject
     private lateinit var userRepository: UserJooqRepository
 
-    override fun getById(id: Long, apiKey: String?): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
+    override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
+        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
+
         val deliveryList: DeliveryListService.DeliveryList
         val deliveryListRecord: TadVDeliverylistRecord?
 
