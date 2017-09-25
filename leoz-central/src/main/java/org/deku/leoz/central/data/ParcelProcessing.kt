@@ -171,15 +171,15 @@ open class ParcelProcessing {
 
                     val pathMobile = storage.mobileDataDirectory.toPath()
 
-                    val addInfo = userId.toString()//.substringBefore("-")
-                    val loc=Location.valueOf(parcelAddInfo.pictureLocation!!)
+                    val fileNameInfo = userId.toString()//.substringBefore("-")
+                    val loc = Location.valueOf(parcelAddInfo.pictureLocation!!)
 
-                    val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, addInfo)
+                    val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
                     val relPathMobile = mobileFilename.getPath()
                     //val file = mobileFilename.getFilenameWithoutExtension() + ".bmp"
-                    val file=parcelAddInfo.pictureFileName!!
+                    val file = parcelAddInfo.pictureFileName!!
                     val pathFileMobile = relPathMobile.resolve(file).toFile().toPath()
-                    val bmp=pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+                    val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
 
                     parcelRecord.bmpfilename = bmp
                     parcelRecord.store()
@@ -202,7 +202,9 @@ open class ParcelProcessing {
                             Reason.NORMAL -> {
                             }
                             Reason.NEIGHBOUR -> {
-                                val addInfo = it.additionalInfo
+                                //val addInfo = it.additionalInfo
+                            }
+                            else -> {
                             }
                         }
                         r.text = recipientInfo.toString()
@@ -441,18 +443,18 @@ open class ParcelProcessing {
                                 }
                             }
                         }
-                        val addInfo = it.additionalInfo
+                        /*val addInfo = it.additionalInfo
                         if (addInfo != null) {
                             when (addInfo) {
                                 is AdditionalInfo.NotDeliveredInfo -> {
                                     r.text = addInfo.text ?: ""
                                 }
                             }
-                        }
+                        }*/
                         when (reason) {
                             Reason.CUSTOMER_REFUSED -> {
 
-                                when (addInfo) {
+                                /*when (addInfo) {
                                     is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
                                             title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
                                     )
@@ -460,17 +462,19 @@ open class ParcelProcessing {
                                         r.text = addInfo.cause ?: ""
                                     }
 
-                                }
+                                }*/
                             }
                             Reason.PARCEL_DAMAGED -> {
-                                when (addInfo) {
+                                /*when (addInfo) {
                                     is AdditionalInfo.DamagedInfo -> {
                                         r.text = addInfo.description ?: ""
                                         if (addInfo.photo != null) {
 
                                         }
                                     }
-                                }
+                                }*/
+                            }
+                            else -> {
                             }
 
                         }
@@ -527,7 +531,7 @@ open class ParcelProcessing {
                         if (existStatus)
                             insertStatus = false
                     }
-                    Event.EXPORT_LOADED -> {
+                    Event.EXPORT_LOADED -> {/*
                         if (it.additionalInfo == null)
                             throw DefaultProblem(
                                     title = "Missing structure [LoadingListInfo] for event [$event].[$reason]"
@@ -594,7 +598,9 @@ open class ParcelProcessing {
                                     }
                                 }
                             }
-                        }
+                        }*/
+                    }
+                    else -> {
                     }
                 }
 
