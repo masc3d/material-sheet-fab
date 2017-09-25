@@ -35,15 +35,10 @@ interface DeliveryListService {
     @Path("/{${ID}}")
     @ApiOperation(value = "Get delivery list by id")
     fun getById(
-            @PathParam(ID) @ApiParam(example = "89586115", value = "Delivery list id", required = true) id: Long
-    ): DeliveryList
-
-    @GET
-    @Path("/{${ID}}")
-    @ApiOperation(value = "Get delivery list by id")
-    fun getById(
-            @PathParam(ID) @ApiParam(example = "89586115", value = "Delivery list id", required = true) id: Long,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @PathParam(ID) @ApiParam(example = "89586115", value = "Delivery list id", required = true)
+            id: Long,
+            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true)
+            apiKey: String?
     ): DeliveryList
 
     @GET
@@ -51,7 +46,8 @@ interface DeliveryListService {
     @ApiOperation(value = "Get delivery list info")
     fun get(
             //todo not jet implemented            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null,
-            @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false) deliveryDate: ShortDate? = null)
+            @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false)
+            deliveryDate: ShortDate?)
     : List<DeliveryListInfo>
 
     @ApiModel(description = "Delivery list")
