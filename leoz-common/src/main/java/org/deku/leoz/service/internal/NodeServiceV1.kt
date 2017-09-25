@@ -17,15 +17,19 @@ import javax.ws.rs.core.*
 interface NodeServiceV1 {
 
     /**
-     * Mobile device status message, sent by mobile nodes
+     * Node status/information message
      */
     @Serializable(0xd0479c08b29be4)
-    data class MobileStatus(
+    data class Info(
             /** Node uid */
             val uid: String = "",
-            /** Mobile application version */
-            val applicationVersion: String = "",
-            /** Mobile device serial number */
-            val serialNumber: String = ""
+            /** Bundle name */
+            val bundleName: String = "",
+            /** Application bundle version */
+            val bundleVersion: String = "",
+            /** Node hardware device serial number */
+            val hardwareSerialNumber: String? = null,
+            /** Opaque system info (usually json blob) */
+            var systemInformation: String = ""
     ) { companion object }
 }

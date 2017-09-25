@@ -11,9 +11,6 @@ import org.slf4j.LoggerFactory
 class Application : org.deku.leoz.node.Application() {
     private val log = LoggerFactory.getLogger(Application::class.java)
 
-    override val name: String
-        get() = "leoz-central"
-
     override val type: Class<out Any>
         get() = Application::class.java
 

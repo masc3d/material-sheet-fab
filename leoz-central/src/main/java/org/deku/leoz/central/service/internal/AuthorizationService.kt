@@ -123,23 +123,14 @@ class AuthorizationService
             var record = nodeJooqRepository.findByKey(message.key)
 
             if (record == null) {
-                val conflictingRecord = nodeJooqRepository.findByKeyStartingWith(identityKey.short)
-                if (conflictingRecord != null) {
-                    // Short key conflict, reject
-                    am.rejected = true
-                    log.warn("Node [${message.key}] has short key conflicting with [${conflictingRecord.key}] and will be rejected")
-                } else {
-                    // Store new node record
-                    record = nodeJooqRepository.createNew()
-                    record.key = message.key
-                    record.bundle = message.name
-                    record.sysInfo = message.systemInfo
-                    record.store()
-                }
+                // Store new node record
+                record = nodeJooqRepository.createNew()
+                record.key = message.key
+                record.bundle = message.name
+                record.store()
             } else {
                 // Update record
                 record.bundle = message.name
-                record.sysInfo = message.systemInfo
                 record.store()
 
                 val isAuthorized = record.authorized != null && record.authorized != 0
