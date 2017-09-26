@@ -56,8 +56,7 @@ abstract class JmsListener(
         try {
             messageObject = converter.fromMessage(message)
         } catch(e: Exception) {
-            log.error("Error converting message [${message}] ${e.message}")
-            throw e
+            throw MqListener.HandlingException("Error converting message [${message}] ${e.message}", e)
         }
 
         // Prepare reply channel if applicable

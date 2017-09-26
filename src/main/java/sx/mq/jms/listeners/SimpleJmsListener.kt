@@ -1,6 +1,8 @@
 package sx.mq.jms.listeners
 
+import org.springframework.messaging.MessageHandlingException
 import sx.LazyInstance
+import sx.mq.MqListener
 import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.JmsListener
 import javax.jms.Connection
@@ -48,14 +50,17 @@ open class SimpleJmsListener(endpoint: JmsEndpoint)
                     this@SimpleJmsListener.onMessage(message, session)
                     if (session.transacted)
                         session.commit()
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     // TODO: verify if exception is routed to onException handler when not caught here
-                    log.error(e.message, e)
+                    when (e) {
+                        is MqListener.HandlingException -> log.error(e.message)
+                        else -> log.error(e.message, e)
+                    }
 
                     if (session.transacted) {
                         try {
                             session.rollback()
-                        } catch (e1: JMSException) {
+                        } catch (e: JMSException) {
                             log.error(e.message, e)
                         }
                     }
