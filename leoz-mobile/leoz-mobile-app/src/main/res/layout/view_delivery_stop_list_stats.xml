@@ -5,6 +5,7 @@
     >
 
     <data>
+
         <import type="android.view.View"/>
 
         <variable
@@ -13,104 +14,113 @@
 
     </data>
 
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/uxBlurView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:blurOverlayColor="@color/colorBlurOverlay"
         >
 
-        <LinearLayout
-            style="@style/AppTheme.Layout.List"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
+                style="@style/AppTheme.Layout.List"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 >
 
                 <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        >
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_large"
+                            android:layout_height="@dimen/icon_size_large"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/margin"
+                            android:contentDescription="TODO"
+                            android:src="@drawable/ic_stop"
+                            android:tint="@color/colorGrey"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{stats.stopCount, default = 100}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                            />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     >
 
-                    <ImageView
-                        android:layout_width="@dimen/icon_size_large"
-                        android:layout_height="@dimen/icon_size_large"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="@dimen/margin"
-                        android:contentDescription="TODO"
-                        android:src="@drawable/ic_stop"
-                        android:tint="@color/colorGrey"
+                    <sx.android.view.ClockView
+                        android:id="@+id/uxAppointmentClock"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        app:color="@color/colorDarkGrey"
                         />
 
-                    <TextView
+                    <sx.android.view.BadgeTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{stats.stopCount, default = 100}"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:layout_marginStart="@dimen/small_margin"
+                        android:background="@color/colorGrey"
+                        android:text="@{stats.appointmentUpcomingCount, default = 60}"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@android:color/white"
+                        android:visibility="@{stats.appointmentUpcomingCountVisible ? View.VISIBLE : View.GONE}"
+                        />
+
+                    <sx.android.view.BadgeTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/small_margin"
+                        android:background="@color/colorOrange"
+                        android:text="@{stats.appointmentSoonCount, default = 60}"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@android:color/white"
+                        android:visibility="@{stats.appointmentSoonCountVisible ? View.VISIBLE : View.GONE}"
+                        />
+
+                    <sx.android.view.BadgeTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/small_margin"
+                        android:background="@color/colorRed"
+                        android:text="@{stats.appointmentOverdueCount, default = 60}"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="@android:color/white"
+                        android:visibility="@{stats.appointmentOverdueCountVisible ? View.VISIBLE : View.GONE}"
                         />
 
                 </LinearLayout>
 
-
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                >
+        </FrameLayout>
 
-                <sx.android.view.ClockView
-                    android:id="@+id/uxAppointmentClock"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:color="@color/colorDarkGrey"
-                    android:layout_marginEnd="@dimen/small_margin"
-                    />
-
-                <sx.android.view.BadgeTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{stats.appointmentUpcomingCount, default = 60}"
-                    android:layout_marginStart="@dimen/small_margin"
-                    android:background="@color/colorGrey"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:visibility="@{stats.appointmentUpcomingCountVisible ? View.VISIBLE : View.GONE}"
-                    />
-
-                <sx.android.view.BadgeTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{stats.appointmentSoonCount, default = 60}"
-                    android:layout_marginStart="@dimen/small_margin"
-                    android:background="@color/colorOrange"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:visibility="@{stats.appointmentSoonCountVisible ? View.VISIBLE : View.GONE}"
-                    />
-
-                <sx.android.view.BadgeTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{stats.appointmentOverdueCount, default = 60}"
-                    android:layout_marginStart="@dimen/small_margin"
-                    android:background="@color/colorRed"
-                    android:textColor="@android:color/primary_text_dark"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:visibility="@{stats.appointmentOverdueCountVisible ? View.VISIBLE : View.GONE}"
-                    />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurView>
 
 </layout>

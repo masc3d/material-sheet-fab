@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.android.ui.flexibleadapter.FlexibleVmItem
-import sx.android.ui.flexibleadapter.customizeScrollBehavior
+import sx.android.ui.flexibleadapter.*
 import sx.rx.ObservableRxProperty
 
 /**
@@ -77,7 +76,7 @@ class DeliveryStopListScreen
             FlexibleAdapter<
                     FlexibleVmItem<
                             *>>>({
-        FlexibleAdapter(listOf<FlexibleVmItem<StopViewModel>>())
+        FlexibleAdapter(listOf())
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
@@ -152,6 +151,11 @@ class DeliveryStopListScreen
                         }
                     }
                 }
+
+        // Sticky header may not show when fragment is resumed.
+        // Workaround is to reset the sticky header flag
+        this.flexibleAdapter.setStickyHeaders(false)
+        this.flexibleAdapter.setStickyHeaders(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -162,11 +166,6 @@ class DeliveryStopListScreen
                 R.layout.screen_delivery_stop_list,
                 container,
                 false)
-
-        // Setup bindings
-        binding.stats = StopListStatisticsViewModel(
-                stops = this.delivery.pendingStops.blockingFirst().value,
-                timerEvent = this.timerEvent)
 
         return binding.root
     }
@@ -203,6 +202,9 @@ class DeliveryStopListScreen
         flexibleAdapter.isLongPressDragEnabled = true
         flexibleAdapter.isHandleDragEnabled = true
         flexibleAdapter.isSwipeEnabled = true
+
+        flexibleAdapter.setStickyHeaders(true)
+        flexibleAdapter.showAllHeaders()
 
         flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { item ->
             log.trace("ONITEMCLICK")
@@ -246,7 +248,21 @@ class DeliveryStopListScreen
         })
 
         // Items
-        flexibleAdapter.addItems(0, delivery.pendingStops.blockingFirst().value
+        flexibleAdapter.addItem(
+                FlexibleHeaderVmItem(
+                        view = R.layout.view_delivery_stop_list_stats,
+                        variable = BR.stats,
+                        viewModel = StopListStatisticsViewModel(
+                                stops = this.delivery.pendingStops.blockingFirst().value,
+                                timerEvent = this.timerEvent)
+                ).also {
+                    it.isSelectable = false
+                    it.isDraggable = false
+                    it.isEnabled = false
+                }
+        )
+
+        flexibleAdapter.addItems(flexibleAdapter.itemCount, delivery.pendingStops.blockingFirst().value
                 .map {
                     val item = FlexibleVmItem(
                             view = R.layout.item_stop,

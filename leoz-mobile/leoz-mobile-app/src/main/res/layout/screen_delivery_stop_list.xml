@@ -4,10 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <variable
-            name="stats"
-            type="org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel"/>
     </data>
 
     <LinearLayout
@@ -17,20 +13,22 @@
         android:orientation="vertical"
         >
 
-        <include
-            layout="@layout/view_delivery_stop_list_stats"
-            bind:stats="@{stats}"
-            />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/uxStopList"
+        <!-- FlexibleAdapter/RecyclerView wrapper layout for sticky headers -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:dividerHeight="0dp"
-            android:focusable="true"
-            android:longClickable="false"
-            android:scrollbars="none"/>
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/uxStopList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:dividerHeight="0dp"
+                android:focusable="true"
+                android:longClickable="false"
+                android:scrollbars="none"/>
+
+        </FrameLayout>
 
     </LinearLayout>
 
