@@ -14,7 +14,7 @@ import io.reactivex.subjects.PublishSubject
  * Flexible view model item
  * Created by masc on 26.06.17.
  */
-class FlexibleVmItem<VM>(
+open class FlexibleVmItem<VM>(
         @LayoutRes val view: Int,
         @AnyRes val variable: Int,
         val viewModel: VM,
@@ -51,6 +51,13 @@ class FlexibleVmItem<VM>(
                             itemReleasedEventSubject.onNext(it)
                         }
         )
+    }
+
+    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: FlexibleVmHolder?, position: Int) {
+        super.unbindViewHolder(adapter, holder, position)
+
+        // Unbind view holder
+        holder?.binding?.unbind()
     }
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {

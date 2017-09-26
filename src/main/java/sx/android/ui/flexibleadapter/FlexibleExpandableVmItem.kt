@@ -40,6 +40,12 @@ class FlexibleExpandableVmItem<EVM, IVM>(
         viewHolder.binding.executePendingBindings()
     }
 
+    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: FlexibleExpandableVmHolder?, position: Int) {
+        super.unbindViewHolder(adapter, holder, position)
+        // Unbind view holder
+        holder?.binding?.unbind()
+    }
+
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleExpandableVmHolder {
         // Blur view support
         if (view is BlurView) {
