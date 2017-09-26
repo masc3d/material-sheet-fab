@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <data>
+        <import type="android.view.View"/>
+
+        <variable
+            name="stats"
+            type="org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel"/>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            style="@style/AppTheme.Layout.List"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    >
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/margin"
+                        android:contentDescription="TODO"
+                        android:src="@drawable/ic_stop"
+                        android:tint="@color/colorGrey"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{stats.stopCount, default = 100}"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                >
+
+                <sx.android.view.ClockView
+                    android:id="@+id/uxAppointmentClock"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:color="@color/colorDarkGrey"
+                    android:layout_marginEnd="@dimen/small_margin"
+                    />
+
+                <sx.android.view.BadgeTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{stats.appointmentUpcomingCount, default = 60}"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:background="@color/colorGrey"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:visibility="@{stats.appointmentUpcomingCountVisible ? View.VISIBLE : View.GONE}"
+                    />
+
+                <sx.android.view.BadgeTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{stats.appointmentSoonCount, default = 60}"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:background="@color/colorOrange"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:visibility="@{stats.appointmentSoonCountVisible ? View.VISIBLE : View.GONE}"
+                    />
+
+                <sx.android.view.BadgeTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{stats.appointmentOverdueCount, default = 60}"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:background="@color/colorRed"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:visibility="@{stats.appointmentOverdueCountVisible ? View.VISIBLE : View.GONE}"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

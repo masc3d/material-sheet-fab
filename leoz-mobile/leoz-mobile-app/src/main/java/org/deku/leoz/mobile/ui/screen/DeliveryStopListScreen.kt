@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui.screen
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -18,6 +19,8 @@ import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.databinding.ScreenDeliveryStopListBinding
+import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Delivery
@@ -25,6 +28,7 @@ import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
@@ -67,7 +71,7 @@ class DeliveryStopListScreen
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
                     FlexibleVmItem<
-                            StopViewModel>>>({
+                            *>>>({
         FlexibleAdapter(listOf<FlexibleVmItem<StopViewModel>>())
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
@@ -146,9 +150,20 @@ class DeliveryStopListScreen
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? =
-            // Inflate the layout for this fragment
-            inflater.inflate(R.layout.screen_delivery_stop_list, container, false)
+                              savedInstanceState: Bundle?): View? {
+
+        val binding: ScreenDeliveryStopListBinding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.screen_delivery_stop_list,
+                container,
+                false)
+
+        // Setup bindings
+        binding.stats = StopListStatisticsViewModel(
+                stops = this.delivery.pendingStops.blockingFirst().value)
+
+        return binding.root
+    }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -186,16 +201,20 @@ class DeliveryStopListScreen
         flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { item ->
             log.trace("ONITEMCLICK")
 
-            val stop = flexibleAdapter.getItem(item)?.viewModel?.stop
+            val viewModel = flexibleAdapter.getItem(item)?.viewModel
 
-            if (stop != null) {
-                activity.showScreen(
-                        DeliveryStopDetailScreen().also {
-                            it.parameters = DeliveryStopDetailScreen.Parameters(
-                                    stopId = stop.id
-                            )
-                        }
-                )
+            when (viewModel) {
+                is StopViewModel -> {
+                    val stop = viewModel.stop
+
+                    activity.showScreen(
+                            DeliveryStopDetailScreen().also {
+                                it.parameters = DeliveryStopDetailScreen.Parameters(
+                                        stopId = stop.id
+                                )
+                            }
+                    )
+                }
             }
 
             true
@@ -243,14 +262,18 @@ class DeliveryStopListScreen
                                     else -> null
                                 }
 
-                                // Update entity stop postiion acoordingly
-                                db.store.withTransaction {
-                                    stopRepository
-                                            .move(stop = item.viewModel.stop, after = previousItem?.viewModel?.stop)
-                                            .blockingAwait()
+                                val previousItemViewModel: StopViewModel? = previousItem?.viewModel as? StopViewModel
+
+                                if (previousItem == null || previousItemViewModel != null) {
+                                    // Update entity stop postiion acoordingly
+                                    db.store.withTransaction {
+                                        stopRepository
+                                                .move(stop = item.viewModel.stop, after = previousItemViewModel?.stop)
+                                                .blockingAwait()
+                                    }
+                                            .subscribeOn(schedulers.database)
+                                            .subscribe()
                                 }
-                                        .subscribeOn(schedulers.database)
-                                        .subscribe()
                             }
 
                     item

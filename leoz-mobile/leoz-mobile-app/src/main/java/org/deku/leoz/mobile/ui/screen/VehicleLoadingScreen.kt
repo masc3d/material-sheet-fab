@@ -470,7 +470,7 @@ class VehicleLoadingScreen :
 
             // Synthetic inputs for delivery lists, retrieved via online service
             val ovDeliveryLists = Observable.fromCallable {
-                this.deliveryListService.get(ShortDate("2017-08-10"))
+                this.deliveryListService.get(ShortDate("2017-09-19"))
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)
