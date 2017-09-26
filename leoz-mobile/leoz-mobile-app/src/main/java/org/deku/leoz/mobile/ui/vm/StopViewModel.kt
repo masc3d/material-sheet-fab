@@ -9,6 +9,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.trello.rxlifecycle2.kotlin.bind
 import io.reactivex.Observable
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
@@ -27,16 +28,19 @@ import java.util.*
  * Created by masc on 26.06.17.
  */
 class StopViewModel(
-        val stop: Stop) : BaseObservable() {
+        val stop: Stop,
+        val timerEvent: Observable<Unit>) : BaseObservable() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val context: Context by Kodein.global.lazy.instance()
-    private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
 
+    /**
+     * Merge tick event with a static, so it ticks once initially to avoid deferred rendering
+     */
     private val tickEvent = Observable.merge(
             Observable.just(Unit),
-            timer.tickEvent
+            timerEvent
     )
 
     val timeFormat: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())

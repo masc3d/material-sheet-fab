@@ -17,7 +17,8 @@ import sx.android.databinding.toField
  * Created by masc on 08.09.17.
  */
 class StopListStatisticsViewModel(
-        val stops: List<StopEntity>
+        val stops: List<StopEntity>,
+        val timerEvent: Observable<Unit>
 ) : BaseObservable() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -28,11 +29,12 @@ class StopListStatisticsViewModel(
             val overdueCount: Int
     )
 
-    private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
-
+    /**
+     * Merge tick event with a static, so it ticks once initially to avoid deferred rendering
+     */
     private val tickEvent = Observable.merge(
             Observable.just(Unit),
-            timer.tickEvent
+            timerEvent
     )
 
     val stopCount: String by lazy {

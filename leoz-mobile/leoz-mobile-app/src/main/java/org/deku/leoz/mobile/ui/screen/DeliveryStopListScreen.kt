@@ -12,6 +12,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -64,6 +65,10 @@ class DeliveryStopListScreen
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+
+    private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
+    private val timerEvent = timer.tickEvent
+            .bindToLifecycle(this)
 
     private val editModeProperty = ObservableRxProperty(false)
     private var editMode by editModeProperty
@@ -160,7 +165,8 @@ class DeliveryStopListScreen
 
         // Setup bindings
         binding.stats = StopListStatisticsViewModel(
-                stops = this.delivery.pendingStops.blockingFirst().value)
+                stops = this.delivery.pendingStops.blockingFirst().value,
+                timerEvent = this.timerEvent)
 
         return binding.root
     }
@@ -245,7 +251,9 @@ class DeliveryStopListScreen
                     val item = FlexibleVmItem(
                             view = R.layout.item_stop,
                             variable = BR.stop,
-                            viewModel = StopViewModel(it),
+                            viewModel = StopViewModel(
+                                    stop = it,
+                                    timerEvent = this.timerEvent),
                             handleViewId = R.id.uxHandle
                     )
 
