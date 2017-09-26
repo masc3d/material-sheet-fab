@@ -11,10 +11,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.entity.address
-import org.deku.leoz.mobile.model.entity.dateEnd
-import org.deku.leoz.mobile.model.entity.dateStart
+import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
@@ -50,15 +47,11 @@ class StopViewModel(
     private val appointmentDate by lazy { Date() }
 
     private val appointmentFromDate by lazy {
-        stop.dateStart?.also {
-            this.appointmentDate.replaceTime(it)
-        }
+        stop.appointmentFromDate
     }
 
     private val appointmentToDate by lazy {
-        stop.dateEnd?.let {
-            this.appointmentDate.replaceTime(it)
-        }
+        stop.appointmentToDate
     }
 
     val appointmentFrom: String
@@ -79,7 +72,6 @@ class StopViewModel(
 
     val isFixedAppointment: Boolean
         get() = stop.tasks.any { it.isFixedAppointment }
-
 
     val orderAmount: String
         get() = stop.tasks.map { it.order }.distinct().count().toString()
@@ -117,28 +109,27 @@ class StopViewModel(
 
     //region Countdown
     private val countdownTimespan: Observable<TimeSpan> by lazy {
-        val end: Date? = this.appointmentToDate
         when {
-            end != null -> this.tickEvent.map { TimeSpan.between(end, Date()) }
+            stop.hasAppointment -> this.tickEvent.map { stop.appointmentTimeLeft ?: throw IllegalArgumentException() }
             else -> Observable.empty()
         }
     }
 
     val isCountdownVisible: ObservableField<Boolean> by lazy {
-        countdownTimespan.map { it.totalMinutes < 60 }
+        countdownTimespan.map { stop.appointmentState != AppointmentState.NONE }
                 .toField()
     }
 
     val isCountdownExpired: ObservableField<Boolean> by lazy {
-        countdownTimespan.map { it.totalSeconds < 0 }
+        countdownTimespan.map { stop.appointmentState == AppointmentState.OVERDUE }
                 .toField()
     }
 
     val countdownColor: ObservableField<Int> by lazy {
         countdownTimespan.map {
-            when {
-                it.totalMinutes < 0 -> ContextCompat.getColor(this.context, R.color.colorRed)
-                it.totalMinutes <= 30 -> ContextCompat.getColor(this.context, R.color.colorOrange)
+            when(stop.appointmentState) {
+                AppointmentState.OVERDUE -> ContextCompat.getColor(this.context, R.color.colorRed)
+                AppointmentState.SOON -> ContextCompat.getColor(this.context, R.color.colorOrange)
                 else -> ContextCompat.getColor(this.context, android.R.color.black)
             }
         }
