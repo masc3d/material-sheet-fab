@@ -26,12 +26,16 @@ open class AuthorizationClientConfiguration {
 
     @Inject
     private lateinit var executorService: ScheduledExecutorService
+
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
+
     @Inject
     private lateinit var lifecycleController: LifecycleController
+
     @Inject
     private lateinit var bundleInstaller: BundleInstaller
+
     @Inject
     private lateinit var application: Application
 
@@ -39,7 +43,6 @@ open class AuthorizationClientConfiguration {
     open val authorizationClientService: AuthorizationClientService
         get() = AuthorizationClientService(
                 executorService = this.executorService,
-                endpoint = JmsEndpoints.central.main.kryo,
                 identitySupplier = { this.application.identity },
                 onRejected = { identity ->
                     log.warn("Authorization rejected for identity [${identity}]")

@@ -15,7 +15,7 @@ class StorageConfiguration {
         }
 
         fun createStorage(): Storage {
-            return Storage(appName = BundleType.LeozUI.value)
+            return Storage(appName = BundleType.LEOZ_UI.value)
         }
     }
 }

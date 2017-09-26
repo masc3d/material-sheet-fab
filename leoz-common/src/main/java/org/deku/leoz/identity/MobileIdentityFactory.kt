@@ -3,7 +3,6 @@ package org.deku.leoz.identity
 import org.deku.leoz.bundle.BundleType
 import sx.security.DigestType
 import sx.security.getInstance
-import sx.text.toHexString
 import java.nio.ByteBuffer
 import java.util.*
 
@@ -14,7 +13,7 @@ import java.util.*
 class MobileIdentityFactory(
         val serial: String,
         val imei: String)
-    : IdentityFactory(name = BundleType.LeozMobile.value) {
+    : IdentityFactory(name = BundleType.LEOZ_MOBILE.value) {
 
     override fun create(): Identity {
         val m = DigestType.SHA1.getInstance()

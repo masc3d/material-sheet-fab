@@ -139,11 +139,11 @@ open class UpdateConfiguration {
                                     storeInLocalRepository = false,
                                     requiresBoot = true),
                             BundleUpdateService.Preset(
-                                    bundleName = BundleType.LeozUI.value,
+                                    bundleName = BundleType.LEOZ_UI.value,
                                     install = false,
                                     storeInLocalRepository = true),
                             BundleUpdateService.Preset(
-                                    bundleName = BundleType.LeozBoot.value,
+                                    bundleName = BundleType.LEOZ_BOOT.value,
                                     install = true,
                                     storeInLocalRepository = true)),
                     cleanup = this.settings.cleanup,

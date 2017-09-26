@@ -31,9 +31,7 @@ interface AuthorizationService {
             /** Pre-generated key */
             var key: String = "",
             /** (Bundle) name of the instance, one of the string values of {@link BundleType} */
-            var name: String = "",
-            /** Opaque system info (usually json blob) */
-            var systemInfo: String = ""
+            var name: String = ""
     )
 
     /**

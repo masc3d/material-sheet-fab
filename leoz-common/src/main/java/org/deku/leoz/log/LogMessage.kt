@@ -13,7 +13,7 @@ import sx.io.serialization.Serializable
  */
 @Serializable(0x20881e385e22b8)
 class LogMessage(
-        var nodeType: String = BundleType.LeozNode.value,
+        var nodeType: String = BundleType.LEOZ_NODE.value,
         var nodeUid: String = "",
         var logEntries: Array<LogEntry> = arrayOf()) {
 

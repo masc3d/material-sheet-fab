@@ -15,7 +15,7 @@ class DiscoveryConfiguration {
             bind<DiscoveryService>() with eagerSingleton {
                 val service = DiscoveryService(
                         executorService = instance(),
-                        bundleType = BundleType.LeozBoot,
+                        bundleType = BundleType.LEOZ_BOOT,
                         passive = true
                 )
                 service.start()

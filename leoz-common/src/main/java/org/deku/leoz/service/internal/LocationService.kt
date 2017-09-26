@@ -60,8 +60,10 @@ interface LocationServiceV1 {
 
     /**
      * GPS message sent by nodes/devices
+     * @param nodeId This is supposed to be the node-key (UID). This is not the ID (integer) of the sending node.
      */
     @Serializable(0xd307ea744273ae)
+    @Deprecated(message = "This object is deprecated and replaced in LocationServiceV2.", replaceWith = ReplaceWith(expression = "LocationServiceV2.GpsMessage"), level = DeprecationLevel.WARNING)
     data class GpsMessage(
             var userId: Int? = null,
             var nodeId: String? = null,
@@ -130,6 +132,16 @@ interface LocationServiceV2 {
             var userId: Int? = null,
             @get:ApiModelProperty(required = false, value = "GPS data points")
             var gpsDataPoints: List<LocationServiceV1.GpsDataPoint>? = null
+    )
+
+    /**
+     * GPS message sent by nodes/devices
+     */
+    @Serializable(0x264688A4A20811)
+    data class GpsMessage(
+            var userId: Int? = null,
+            var nodeKey: String? = null,
+            var dataPoints: Array<LocationServiceV1.GpsDataPoint>? = null
     )
 
     /**

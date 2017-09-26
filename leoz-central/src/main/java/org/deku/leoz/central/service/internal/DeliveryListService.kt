@@ -36,45 +36,9 @@ class DeliveryListService : DeliveryListService {
     @Inject
     private lateinit var userRepository: UserJooqRepository
 
-    override fun getById(id: Long): DeliveryListService.DeliveryList {
-        val deliveryList: DeliveryListService.DeliveryList
-        val deliveryListInfo: TadVDeliverylistRecord?
+    override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
+        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
 
-        deliveryListInfo = this.deliveryListRepository.findById(id)
-        deliveryList = deliveryListInfo
-                ?.toDeliveryList()
-                ?:
-                throw DefaultProblem(
-                        title = "DeliveryList not found",
-                        status = Response.Status.NOT_FOUND)
-
-        val deliveryListStops = this.deliveryListRepository.findDetailsById(id)
-        val orders = orderService.getByIds(deliveryListStops.map { it.orderId.toLong() })
-        val deliveryListOrdersById = deliveryListStops
-                .groupBy { it.orderId }
-
-        deliveryList.orders = orders
-        deliveryList.stops = deliveryList.orders
-                .map {
-                    val dlDetailsRecord = deliveryListOrdersById.getValue(it.id.toDouble()).first()
-                    DeliveryListService.Stop(
-                            tasks = listOf(
-                                    DeliveryListService.Task(
-                                            orderId = it.id,
-                                            isRemoved = if (dlDetailsRecord.removedInDeliverylist != 0.0) true else false,
-                                            stopType = when (dlDetailsRecord.stoptype) {
-                                                "DELIVERY" -> DeliveryListService.Task.Type.DELIVERY
-                                                "PICKUP" -> DeliveryListService.Task.Type.PICKUP
-                                                else -> throw UnsupportedOperationException()
-                                            }
-                                    )
-                            ))
-                }
-        return deliveryList
-    }
-
-
-    override fun getById(id: Long, apiKey: String?): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
         val deliveryList: DeliveryListService.DeliveryList
         val deliveryListRecord: TadVDeliverylistRecord?
 
@@ -84,21 +48,17 @@ class DeliveryListService : DeliveryListService {
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
 
-// TODO to be removed if mobile supports apikeys
-        if (apiKey != null) {
-//--<
-            apiKey ?:
-                    throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+        apiKey ?:
+                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
-            val authorizedUserRecord = userRepository.findByKey(apiKey)
-            authorizedUserRecord ?:
-                    throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-            when {
-                deliveryListRecord.debitorId.toInt() != authorizedUserRecord.debitorId
+        val authorizedUserRecord = userRepository.findByKey(apiKey)
+        authorizedUserRecord ?:
+                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+        when {
+            deliveryListRecord.debitorId.toInt() != authorizedUserRecord.debitorId
 //                depotRepository.findDebitorDepots(authorizedUserRecord.debitorId).map { (deliveryListRecord.deliveryStation.toInt()) }.isEmpty()
-                ->
-                    throw DefaultProblem(status = Response.Status.FORBIDDEN)
-            }
+            ->
+                throw DefaultProblem(status = Response.Status.FORBIDDEN)
         }
 
         deliveryList = deliveryListRecord.toDeliveryList()

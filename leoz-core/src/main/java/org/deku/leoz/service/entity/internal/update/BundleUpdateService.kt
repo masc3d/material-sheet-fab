@@ -168,7 +168,7 @@ class BundleUpdateService(
             return
         }
 
-        log.info("Requesting version info for [${bundleName}] alias [${preset.versionAlias}] node [${this.identity?.uid?.short}]")
+        log.info("Requesting version info for [${bundleName}] alias [${preset.versionAlias}] node [${this.identity?.uid?.value}]")
 
         // Request currently assigned version for this bundle and node
         val updateInfo: UpdateInfo = this.bundleService().info(

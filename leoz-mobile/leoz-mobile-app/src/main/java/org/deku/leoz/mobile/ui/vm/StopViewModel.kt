@@ -103,7 +103,7 @@ class StopViewModel(
     @get:ColorInt
     val clockColor: Int
         get() = if (this.isFixedAppointment)
-            ContextCompat.getColor(this.context, R.color.colorRed)
+            ContextCompat.getColor(this.context, R.color.colorService)
         else
             ContextCompat.getColor(this.context, R.color.colorLightGrey)
 

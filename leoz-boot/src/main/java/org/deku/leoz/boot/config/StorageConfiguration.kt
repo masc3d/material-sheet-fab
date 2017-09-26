@@ -10,7 +10,7 @@ import org.deku.leoz.bundle.BundleType
 class StorageConfiguration {
     companion object {
         val module = Kodein.Module {
-            bind<Storage>() with eagerSingleton { Storage(appName = BundleType.LeozBoot.value) }
+            bind<Storage>() with eagerSingleton { Storage(appName = BundleType.LEOZ_BOOT.value) }
         }
     }
 }
