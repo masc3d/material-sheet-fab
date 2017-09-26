@@ -9,6 +9,7 @@ import android.graphics.drawable.Icon
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
+import android.os.Handler
 import android.os.IBinder
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -20,6 +21,8 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.LocationServiceV1
+import org.deku.leoz.service.internal.LocationServiceV2
+import org.jetbrains.anko.notificationManager
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
 import java.util.*
@@ -40,6 +43,11 @@ abstract class BaseLocationService: Service() {
     private val login: Login by Kodein.global.lazy.instance()
     private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
 
+    private val handler: Handler = Handler()
+    private val runnable: Runnable = Runnable(function = {
+
+    })
+
     companion object {
         const val NOTIFICATION_ID = 0
     }
@@ -47,7 +55,7 @@ abstract class BaseLocationService: Service() {
     private val notification by lazy {
         Notification.Builder(this)
                 .setContentTitle(getString(R.string.app_name_long))
-                .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
+                .setContentText("${getString(R.string.app_name)} ${getString(R.string.app_name_long)}")
                 .setAutoCancel(false)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .build().also {
@@ -71,9 +79,8 @@ abstract class BaseLocationService: Service() {
     }
 
     private fun removeNotification() {
-        if (notification != null) {
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(NOTIFICATION_ID)
-        }
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
     }
 
     fun reportLocation(location: Location) {
@@ -104,9 +111,9 @@ abstract class BaseLocationService: Service() {
         // TODO: Store location data in database and send it as an set of multiple positions once.
 
         mqttChannels.central.transient.channel().send(
-                message = LocationServiceV1.GpsMessage(
+                message = LocationServiceV2.GpsMessage(
                         userId = this@BaseLocationService.login.authenticatedUser?.id,
-                        nodeId = this@BaseLocationService.identity.uid.value,
+                        nodeKey = this@BaseLocationService.identity.uid.value,
                         dataPoints = arrayOf(currentPosition)
                 )
         )

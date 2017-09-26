@@ -6,16 +6,8 @@ import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.lazy
-import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.service.internal.LocationServiceV1
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
-import sx.mq.mqtt.channel
-import java.util.*
 
 class LocationService
     : BaseLocationService() {
