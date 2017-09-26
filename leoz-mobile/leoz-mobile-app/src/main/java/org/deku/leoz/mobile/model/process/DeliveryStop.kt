@@ -277,11 +277,11 @@ class DeliveryStop(
         get() = this.canClose && deliveredParcels.blockingFirst().count() > 0
 
     val canCloseWithDeliveryToNeighbor: Boolean
-        get() = this.canCloseWithDelivery && this.services.none { it.parcelServiceRestriction.alternateDeliveryAllowed == false }
+        get() = this.canCloseWithDelivery && this.services.all { it.parcelServiceRestriction.alternateDeliveryAllowed }
 
     val canCloseWithDeliveryToPostbox: Boolean
         get() = this.services.contains(ParcelService.POSTBOX_DELIVERY) &&
-                this.services.none { it.parcelServiceRestriction.alternateDeliveryAllowed == false }
+                this.services.all { it.parcelServiceRestriction.alternateDeliveryAllowed }
 
     /**
      * Cash amount to collect for this stop
