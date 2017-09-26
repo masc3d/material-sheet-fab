@@ -140,9 +140,9 @@ class LocationService(
             // TODO: Store location data in database and send it as an set of multiple positions once.
 
             mqttChannels.central.transient.channel().send(
-                    message = LocationServiceV2.GpsMessage(
+                    message = LocationServiceV1.GpsMessage(
                             userId = this@LocationService.login.authenticatedUser?.id,
-                            nodeKey = this@LocationService.identity.uid.value,
+                            nodeId = this@LocationService.identity.uid.value,
                             dataPoints = arrayOf(currentPosition)
                     )
             )
