@@ -27,7 +27,7 @@ class FlexibleHeaderVmItem<VM>(
 )
     :
         IHeader<FlexibleVmHolder>,
-        FlexibleVmItem<VM>(view, variable, viewModel) {
+        FlexibleSectionableVmItem<VM>(view, variable, viewModel) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
