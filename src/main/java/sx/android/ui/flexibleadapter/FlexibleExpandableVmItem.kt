@@ -22,13 +22,11 @@ class FlexibleExpandableVmItem<EVM, IVM>(
 )
     : AbstractExpandableHeaderItem<FlexibleExpandableVmHolder, FlexibleSectionableVmItem<IVM>>() {
 
-    override fun equals(other: Any?): Boolean {
-        return this === other
-    }
+    override fun equals(other: Any?): Boolean =
+            this === other
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun hashCode(): Int =
+            super.hashCode()
 
     override fun bindViewHolder(
             adapter: FlexibleAdapter<out IFlexible<*>>,
@@ -67,7 +65,6 @@ class FlexibleExpandableVmItem<EVM, IVM>(
                 isExpandableOnClick = isExpandableOnClick)
     }
 
-    override fun getLayoutRes(): Int {
-        return this.view
-    }
+    override fun getLayoutRes(): Int =
+            this.view
 }
