@@ -132,16 +132,19 @@ class VehicleUnloading : CompositeDisposableSupplier {
         return db.store.withTransaction {
             // Set all pending parcels to MISSING
             val loadedParcels = parcelRepository.entities.filter { it.state == Parcel.State.LOADED }
+
+            loadedParcels.forEach {
+                it.state = Parcel.State.MISSING
+                update(it)
+            }
+
+            // Update stop states
             val stopsWithPendingParcels = parcelRepository.entities
                     .filter { it.state == Parcel.State.PENDING }
                     .flatMap { it.order.tasks.mapNotNull { it.stop } }
                     .filter { it.state != Stop.State.CLOSED }
                     .distinct()
 
-            loadedParcels.forEach {
-                it.state = Parcel.State.MISSING
-                update(it)
-            }
             stopsWithPendingParcels.forEach {
                 it.state = Stop.State.NONE
                 update(it)
