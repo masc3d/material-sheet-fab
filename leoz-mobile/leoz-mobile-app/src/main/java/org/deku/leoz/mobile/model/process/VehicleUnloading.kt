@@ -15,6 +15,7 @@ import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.filterValuesByType
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.model.Event
@@ -39,6 +40,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
 
     // Repositories
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
