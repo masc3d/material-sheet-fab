@@ -238,7 +238,9 @@ class DeliveryStopListScreen
 
             override fun shouldMoveItem(fromPosition: Int, toPosition: Int): Boolean {
                 log.trace("ONITEMSHOULDMOVE value [$fromPosition] value [$toPosition]")
-                return true
+
+                // Prevent move before statistics header
+                return toPosition > 0
             }
 
         })
@@ -288,16 +290,14 @@ class DeliveryStopListScreen
 
                                 val previousItemViewModel: StopViewModel? = previousItem?.viewModel as? StopViewModel
 
-                                if (previousItem == null || previousItemViewModel != null) {
-                                    // Update entity stop postiion acoordingly
-                                    db.store.withTransaction {
-                                        stopRepository
-                                                .move(stop = item.viewModel.stop, after = previousItemViewModel?.stop)
-                                                .blockingAwait()
-                                    }
-                                            .subscribeOn(schedulers.database)
-                                            .subscribe()
+                                // Update entity stop postiion acoordingly
+                                db.store.withTransaction {
+                                    stopRepository
+                                            .move(stop = item.viewModel.stop, after = previousItemViewModel?.stop)
+                                            .blockingAwait()
                                 }
+                                        .subscribeOn(schedulers.database)
+                                        .subscribe()
                             }
 
                     item
