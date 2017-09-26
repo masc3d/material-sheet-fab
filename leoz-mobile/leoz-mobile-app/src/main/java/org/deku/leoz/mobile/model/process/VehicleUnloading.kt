@@ -12,6 +12,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.filterValuesByType
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
@@ -131,9 +132,18 @@ class VehicleUnloading : CompositeDisposableSupplier {
         return db.store.withTransaction {
             // Set all pending parcels to MISSING
             val loadedParcels = parcelRepository.entities.filter { it.state == Parcel.State.LOADED }
+            val stopsWithPendingParcels = parcelRepository.entities
+                    .filter { it.state == Parcel.State.PENDING }
+                    .flatMap { it.order.tasks.mapNotNull { it.stop } }
+                    .filter { it.state != Stop.State.CLOSED }
+                    .distinct()
 
             loadedParcels.forEach {
                 it.state = Parcel.State.MISSING
+                update(it)
+            }
+            stopsWithPendingParcels.forEach {
+                it.state = Stop.State.NONE
                 update(it)
             }
         }
