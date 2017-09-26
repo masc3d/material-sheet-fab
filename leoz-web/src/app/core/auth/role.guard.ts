@@ -35,8 +35,9 @@ export class RoleGuard implements CanActivate {
   public rolePermittedForRoute( route: ActivatedRouteSnapshot ): boolean {
     const allowedRoute = this.allowedRoutes[ this.userRole ];
     let isPermitted = false;
-    if(allowedRoute) {
-      isPermitted = allowedRoute.includes( route.url.join('') );
+    if (!allowedRoute) {
+    } else {
+      isPermitted = allowedRoute.indexOf( route.url.join( '' ) ) >= 0;
     }
     return isPermitted;
   }
