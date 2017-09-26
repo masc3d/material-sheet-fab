@@ -53,6 +53,5 @@ class ObservableRxField<T> constructor(
  * Extension method for creating ObservableRxField from rx observable
  * @return DataBinding field created from the specified Observable
  */
-fun <T> Observable<T>.toField(): ObservableRxField<T> {
-    return ObservableRxField(this)
-}
+fun <T> Observable<T>.toField(): ObservableRxField<T>
+        = ObservableRxField(this)
