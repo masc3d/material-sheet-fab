@@ -52,6 +52,8 @@ class DepotDetailsController : Initializable {
         form!!.source = station
     }
 
+    //todo some Fieldnames are not up to date ;)
+
     override fun initialize(location: URL, resources: ResourceBundle) {
         fxTabPane.selectionModel.selectedItemProperty().addListener { _, _, _ -> this.updateTab() }
         fxFormMain = FXForm()

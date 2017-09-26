@@ -2,11 +2,14 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.identity.Identity
+import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.NodeServiceV1
 import org.slf4j.LoggerFactory
 import sx.logging.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.time.toTimestamp
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.*
@@ -40,10 +43,11 @@ class NodeServiceV1
             rNode.key = identityUid.value
         }
 
+        rNode.serial = nodeInfo.hardwareSerialNumber
+        rNode.currentVersion = nodeInfo.bundleVersion
+        rNode.tsLastlogin = Date().toTimestamp()
         rNode.bundle = nodeInfo.bundleName
         rNode.sysInfo = nodeInfo.systemInformation
         rNode.store()
-
-        // TODO: handle specific fields
     }
 }
