@@ -19,12 +19,14 @@ import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
+import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
 import org.deku.leoz.service.internal.AuthorizationService
+import org.deku.leoz.service.internal.NodeServiceV1
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
@@ -142,7 +144,7 @@ class StartupActivity : BaseActivity() {
                                         if (device.manufacturer.type == Device.Manufacturer.Type.Honeywell) {
                                             deviceManagement.saveDeviceFile()
                                         }
-                                    } catch(e: Exception) {
+                                    } catch (e: Exception) {
                                         log.warn("Device management not available", e)
                                     }
 
@@ -186,16 +188,14 @@ class StartupActivity : BaseActivity() {
                                         }
                                     }
 
-                                    // Send authorization message
+                                    // Send node info message
                                     run {
                                         val mqEndpoints = Kodein.global.instance<MqttEndpoints>()
                                         mqEndpoints.central.main.channel().send(
-                                                AuthorizationService.NodeRequest(
-                                                        key = identity.uid.value,
-                                                        name = BundleType.LeozMobile.value,
-                                                        systemInfo = SystemInformation.create(this.app, device).let {
-                                                            ObjectMapper().writeValueAsString(it)
-                                                        }
+                                                NodeServiceV1.Info.create(
+                                                        application = this.app,
+                                                        device = device,
+                                                        identity = identity
                                                 )
                                         )
                                     }

@@ -290,6 +290,8 @@ abstract class Activity : BaseActivity(),
         //endregion
 
         //region Progress bar / activity indicator
+        this.uxProgressBar.visibility = View.GONE
+
         // Change progress bar color, as this is apparently not themable and there's no proper
         // way to do this in xml layout that is compatible down to 4.x
         // TODO: this rather hacky solution should be removed when API level 21 is minimum, which supports `indeterminateTint` attributes

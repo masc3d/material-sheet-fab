@@ -12,6 +12,7 @@ import sx.event.EventDispatcher
 import sx.event.EventListener
 import sx.mq.MqHandler
 import sx.logging.slf4j.info
+import sx.time.toTimestamp
 import java.text.DecimalFormat
 import java.util.*
 import javax.inject.Inject
@@ -96,7 +97,8 @@ class AuthorizationService
 
             keyRecord = this.keyRepository.findByID(keyID)
         }
-
+        userRecord.tsLastlogin = Date().toTimestamp()
+        userRecord.store()
 //        // TODO: in case we really want to verify key/content validity. but I believe we don't need it.
 //        val isValid = try { UUID.fromString(keyRecord.key); true } catch(e: Throwable) { false }
 
@@ -123,24 +125,13 @@ class AuthorizationService
             var record = nodeJooqRepository.findByKey(message.key)
 
             if (record == null) {
-                val conflictingRecord = nodeJooqRepository.findByKeyStartingWith(identityKey.short)
-                if (conflictingRecord != null) {
-                    // Short key conflict, reject
-                    am.rejected = true
-                    log.warn("Node [${message.key}] has short key conflicting with [${conflictingRecord.key}] and will be rejected")
-                } else {
-                    // Store new node record
-                    record = nodeJooqRepository.createNew()
-                    record.key = message.key
-                    record.bundle = message.name
-                    record.sysInfo = message.systemInfo
-                    record.store()
-                }
+                // Store new node record
+                record = nodeJooqRepository.createNew()
+                record.key = message.key
+                record.bundle = message.name
             } else {
                 // Update record
                 record.bundle = message.name
-                record.sysInfo = message.systemInfo
-                record.store()
 
                 val isAuthorized = record.authorized != null && record.authorized != 0
 
@@ -153,6 +144,9 @@ class AuthorizationService
                     log.info("Sent authorization [%s]".format(am))
                 }
             }
+            record.tsLastlogin = Date().toTimestamp()
+            record.store()
+
         } catch (e: Exception) {
             log.error(e.message, e)
         }

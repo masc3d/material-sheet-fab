@@ -15,6 +15,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
@@ -72,6 +73,12 @@ class DeliveryStopDetailScreen
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
+    private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
+
+    private val timerEvent = timer
+            .tickEvent
+            .bindToLifecycle(this)
+
     private val stop: Stop by lazy {
         this.stopRepository.entities.first { it.id == this.parameters.stopId }
     }
@@ -110,7 +117,9 @@ class DeliveryStopDetailScreen
         super.onViewCreated(view, savedInstanceState)
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
-        binding.stop = StopViewModel(this.stop)
+        binding.stop = StopViewModel(
+                stop = this.stop,
+                timerEvent = this.timerEvent)
 
         // Flexible adapter needs to be re-created with views
         flexibleAdapterInstance.reset()
@@ -278,7 +287,7 @@ class DeliveryStopDetailScreen
                         R.id.action_navigate -> {
                             val intent: Intent = Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse("google.navigation:q=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}&mode=d")
+                                    Uri.parse("google.navigation:q=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}+${stop.address.countryCode}&mode=d")
                                     //Uri.parse("https://www.google.com/maps/dir/?api=1&query=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}")
                             )
                             try {

@@ -91,7 +91,7 @@ open class ParcelServiceV1 :
 
         events.forEach {
 
-            val scannedDate=it.time.toTimestamp()
+            val scannedDate = it.time.toTimestamp()
 
             //val parcelNo = parcelRepository.getUnitNo(it.parcelId)
             val parcelNo = mapParcels[it.parcelId.toDouble()]?.toLong()
@@ -119,9 +119,9 @@ open class ParcelServiceV1 :
 
             var damagedInfo = it.damagedInfo
             if (damagedInfo != null) {
-                if (damagedInfo.pictureFileUids != null) {
-                    parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
-                }
+                //if (damagedInfo.pictureFileUids != null) {
+                parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
+                //}
             }
 
             val eventId = it.event
@@ -179,9 +179,9 @@ open class ParcelServiceV1 :
                                         if (addInfo.signature != null) {
                                             signature = addInfo.signature
                                         }
-                                        if (addInfo.mimetype != null) {
-                                            mimetype = addInfo.mimetype
-                                        }
+                                        //if (addInfo.mimetype != null) {
+                                        mimetype = addInfo.mimetype
+                                        //}
                                     }
                                 }
                             }
@@ -217,12 +217,14 @@ open class ParcelServiceV1 :
                                         if (addInfo.signature != null) {
                                             signature = addInfo.signature
                                         }
-                                        if (addInfo.mimetype != null) {
-                                            mimetype = addInfo.mimetype
-                                        }
+                                        //if (addInfo.mimetype != null) {
+                                        mimetype = addInfo.mimetype
+                                        //}
                                     }
                                 }
                             }
+                        }
+                        else -> {
                         }
                     }
 
@@ -230,51 +232,14 @@ open class ParcelServiceV1 :
                         val sigFilename = saveImage(scannedDate, Location.SB, signature, parcelScan, message.userId, mimetype, Location.SB_Original)
                         if (sigFilename != "") {
                             //parcelRepository.setSignaturePath(parcelScan, sigPath)
-                            parcelAddInfo.pictureLocation=Location.SB.toString()
-                            parcelAddInfo.pictureFileName=sigFilename
+                            parcelAddInfo.pictureLocation = Location.SB.toString()
+                            parcelAddInfo.pictureFileName = sigFilename
                         }
                     }
                 }
 
                 Event.DELIVERY_FAIL -> {
-                    val addInfo = it.additionalInfo
-                    if (addInfo != null) {
-                        when (addInfo) {
-                            is AdditionalInfo.NotDeliveredInfo -> {
-                                //r.infotext = addInfo.text ?: ""
-                                //recordMessages.additionalInfo = "{\"text\":\"" + addInfo.text + "\"}"
-                                //messagesRepository.saveMsg(recordMessages)
-                            }
-                        }
-                    }
-                    when (reason) {
-                        Reason.CUSTOMER_REFUSED -> {
 
-                            when (addInfo) {
-                            //is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                            //        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                            //)
-                                is AdditionalInfo.NotDeliveredRefusedInfo -> {
-                                    //r.infotext = addInfo.cause ?: ""
-                                    //recordMessages.additionalInfo = "{\"text\":\"" + addInfo.cause + "\"}"
-                                    //messagesRepository.saveMsg(recordMessages)
-                                }
-
-                            }
-                        }
-                        Reason.PARCEL_DAMAGED -> {
-                            when (addInfo) {
-                                is AdditionalInfo.DamagedInfo -> {
-                                    //recordMessages.additionalInfo = "{\"text\":\"" + addInfo.description + "\"}"
-                                    //messagesRepository.saveMsg(recordMessages)
-                                    if (addInfo.photo != null) {
-
-                                    }
-                                }
-                            }
-                        }
-
-                    }
                 }
                 Event.IMPORT_RECEIVE -> {
 
@@ -296,6 +261,8 @@ open class ParcelServiceV1 :
 
                         }
                     }
+                }
+                else -> {
                 }
             }
             val mapper = ObjectMapper()
@@ -337,7 +304,7 @@ open class ParcelServiceV1 :
             try {
                 var imgPath = pathFile
                 if (fileExtension.equals("svg")) {
-                    Files.write(pathFile, image.toByteArray()!!, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
+                    Files.write(pathFile, image.toByteArray(), java.nio.file.StandardOpenOption.CREATE_NEW).toString()
                     imgPath = transSvg2Jpg(pathFile)
                 } else {
                     val img = Base64.getDecoder().decode(image)
@@ -363,9 +330,9 @@ open class ParcelServiceV1 :
                     if (writeAsBMP(imgPath, bmpFile.toPath())) {
                         Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
                         //ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
-                        ret =bmpFileMobile.absoluteFile.name
+                        ret = bmpFileMobile.absoluteFile.name
                     } else
-                        //ret = pathFile.toString().substringAfter(path.toString()).substring(1)
+                    //ret = pathFile.toString().substringAfter(path.toString()).substring(1)
                         ret = pathFile.toFile().absoluteFile.name
                 } else {
                     if (writePhotoAsBMP(imgPath, bmpFile.toPath())) {
@@ -373,7 +340,7 @@ open class ParcelServiceV1 :
                         //ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
                         ret = bmpFileMobile.absoluteFile.name
                     } else
-                        //ret = pathFile.toString().substringAfter(path.toString()).substring(1)
+                    //ret = pathFile.toString().substringAfter(path.toString()).substring(1)
                         ret = pathFile.toFile().absoluteFile.name
                 }
                 if (!imgPath.equals(pathFile)) {

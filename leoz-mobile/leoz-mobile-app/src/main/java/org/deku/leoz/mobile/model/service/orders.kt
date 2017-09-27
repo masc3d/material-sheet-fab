@@ -53,6 +53,7 @@ fun OrderService.Order.Address.toAddress(): Address {
             street = this.street ?: "",
             streetNo = this.streetNo ?: "",
             zipCode = this.zipCode,
+            countryCode = this.countryCode,
             city = this.city ?: "",
             latitude = this.geoLocation?.latitude ?: 0.0,
             longitude = this.geoLocation?.longitude ?: 0.0,

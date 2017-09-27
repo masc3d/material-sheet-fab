@@ -83,7 +83,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|end"
-                    android:layout_marginEnd="@dimen/small_margin"
                     >
 
                     <ProgressBar
@@ -91,7 +90,7 @@
                         android:layout_width="@dimen/progress_size_medium"
                         android:layout_height="@dimen/progress_size_medium"
                         android:layout_gravity="center"
-                        android:visibility="gone"
+                        android:layout_marginEnd="@dimen/medium_margin"
                         />
 
                     <include

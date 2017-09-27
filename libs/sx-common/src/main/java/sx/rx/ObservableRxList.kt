@@ -32,9 +32,8 @@ class ObservableRxList<T>(val list: MutableList<T>)
     /**
      * Transforms observable list to a plain observable emitting updates
      */
-    fun toObservable(): Observable<Update<T>> {
-        return this.updatedEvent
-    }
+    fun toObservable(): Observable<Update<T>>
+            = this.updatedEvent
 
     override fun add(element: T): Boolean {
         val changed = this.list.add(element)

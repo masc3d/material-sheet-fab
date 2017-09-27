@@ -85,8 +85,8 @@ open class Application :
         private set
 
     /** Application name  */
-    open val name: String
-        get() = "leoz-node"
+    val name: String
+        get() = this.bundleType.value
 
     /**
      * Application class type.
@@ -99,7 +99,7 @@ open class Application :
      * Application bundle type
      */
     open val bundleType: BundleType
-        get() = BundleType.LeozNode
+        get() = BundleType.LEOZ_NODE
 
     /**
      * Application jar manifest

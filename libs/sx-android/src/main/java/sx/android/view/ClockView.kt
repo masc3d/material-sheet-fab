@@ -24,15 +24,28 @@ import android.util.AttributeSet
 import android.view.View
 
 import sx.android.R
+import kotlin.properties.Delegates
 
 /**
  * Clock view
  */
 class ClockView : View {
     private val p = Paint(Paint.ANTI_ALIAS_FLAG)
-    var hour: Int = 0
-    var minute: Int = 0
-    var color: Int = 0
+
+    /** Clock hour */
+    var hour: Int by Delegates.observable(0, { p, o, v ->
+        if (o != v) this.invalidate()
+    })
+
+    /** Clock minutes */
+    var minute: Int by Delegates.observable(0, { p, o, v ->
+        if (o != v) this.invalidate()
+    })
+
+    /** Clock color */
+    var color: Int by Delegates.observable(0, { p, o, v ->
+        if (o != v) this.invalidate()
+    })
 
     constructor(context: Context) : super(context) {
         color = Color.parseColor("#F44336")

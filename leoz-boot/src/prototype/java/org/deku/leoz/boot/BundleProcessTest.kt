@@ -33,8 +33,8 @@ class BundleProcessTest {
 
     @Test
     fun testSynchronousStop() {
-        val bundlePath = this.bundleIntaller.bundlePath(BundleType.LeozCentral.value)
-        val oldBundlePath = File(bundlePath.parentFile, BundleType.LeozCentral.value + ".old")
+        val bundlePath = this.bundleIntaller.bundlePath(BundleType.LEOZ_CENTRAL.value)
+        val oldBundlePath = File(bundlePath.parentFile, BundleType.LEOZ_CENTRAL.value + ".old")
 
         println("${bundlePath} ${oldBundlePath}")
         val bundle = Bundle.load(bundlePath)

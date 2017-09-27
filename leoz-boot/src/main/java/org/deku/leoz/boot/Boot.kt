@@ -20,7 +20,6 @@ import org.threeten.bp.Duration
 import sx.packager.Bundle
 import sx.packager.BundleInstaller
 import sx.packager.BundleRepository
-import sx.packager.prepareProduction
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
@@ -74,7 +73,7 @@ class Boot {
     fun discover(): Single<Any> {
         return discoveryService.discoverFirst(
                 predicate = {
-                    it.bundleType == BundleType.LeozNode
+                    it.bundleType == BundleType.LEOZ_NODE
                 },
                 timeout = Duration.ofSeconds(2))
                 .doOnSuccess {
@@ -118,7 +117,7 @@ class Boot {
             runtimeBundle.verify()
 
             val srcPath = runtimeBundlePath
-            val destPath = File(storage.bundleInstallationDirectory, BundleType.LeozBoot.value)
+            val destPath = File(storage.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
 
             val rc = RsyncClient()
             val source = Rsync.URI(srcPath)

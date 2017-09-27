@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
-                android:divider="@drawable/divider_horizontal"
+                android:divider="@drawable/divider"
                 android:orientation="horizontal">
 
                 <ImageButton
@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
-                android:divider="@drawable/divider_horizontal"
+                android:divider="@drawable/divider"
                 android:orientation="horizontal">
 
                 <ImageButton
@@ -87,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
-                android:divider="@drawable/divider_horizontal"
+                android:divider="@drawable/divider"
                 android:orientation="horizontal">
 
                 <ImageButton
@@ -119,7 +119,7 @@
                 android:id="@+id/uxHUBGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:divider="@drawable/divider_horizontal"
+                android:divider="@drawable/divider"
                 android:orientation="horizontal">
 
                 <ImageButton

@@ -1,9 +1,16 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.identity.Identity
+import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.NodeServiceV1
 import org.slf4j.LoggerFactory
+import sx.logging.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.time.toTimestamp
+import java.util.*
+import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.*
 
@@ -15,13 +22,32 @@ import javax.ws.rs.*
 class NodeServiceV1
     :
         org.deku.leoz.service.internal.NodeServiceV1,
-        MqHandler<NodeServiceV1.MobileStatus> {
+        MqHandler<NodeServiceV1.Info> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    override fun onMessage(message: NodeServiceV1.MobileStatus, replyChannel: MqChannel?) {
-        log.trace("${message}")
+    @Inject
+    private lateinit var nodeJooqRepository: NodeJooqRepository
 
-        // TODO handle status message
+    override fun onMessage(message: NodeServiceV1.Info, replyChannel: MqChannel?) {
+        val nodeInfo = message
+
+        log.info(nodeInfo)
+
+        val identityUid = Identity.Uid(nodeInfo.uid)
+        var rNode = nodeJooqRepository.findByKey(identityUid.value)
+
+        if (rNode == null) {
+            // Store new node record
+            rNode = nodeJooqRepository.createNew()
+            rNode.key = identityUid.value
+        }
+
+        rNode.serial = nodeInfo.hardwareSerialNumber
+        rNode.currentVersion = nodeInfo.bundleVersion
+        rNode.tsLastlogin = Date().toTimestamp()
+        rNode.bundle = nodeInfo.bundleName
+        rNode.sysInfo = nodeInfo.systemInformation
+        rNode.store()
     }
 }

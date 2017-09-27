@@ -60,7 +60,7 @@ class Setup : BundleProcessInterface() {
     override fun start() {
         val storageConfiguration: Storage = StorageConfiguration.createStorage()
 
-        val bundle = Bundle.load(File(storageConfiguration.bundleInstallationDirectory, BundleType.LeozUI.value))
+        val bundle = Bundle.load(File(storageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_UI.value))
         bundle.execute(wait = false)
     }
 

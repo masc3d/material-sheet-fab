@@ -1,20 +1,35 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             style="@style/AppTheme.Layout.Screen"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="org.deku.leoz.mobile.ui.screen.DeliveryStopListScreen">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Update blank fragment layout -->
+    <data>
+    </data>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/uxStopList"
+    <LinearLayout
+        style="@style/AppTheme.Layout.Screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:dividerHeight="0dp"
-        android:longClickable="false"
-        android:scrollbars="none"
-        android:focusable="true"/>
+        android:orientation="vertical"
+        >
 
-</FrameLayout>
+        <!-- FlexibleAdapter/RecyclerView wrapper layout for sticky headers -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/uxStopList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:dividerHeight="0dp"
+                android:focusable="true"
+                android:longClickable="false"
+                android:scrollbars="none"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</layout>

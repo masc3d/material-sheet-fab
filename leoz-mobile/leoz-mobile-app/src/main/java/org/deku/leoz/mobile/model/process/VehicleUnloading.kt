@@ -12,8 +12,10 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.filterValuesByType
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.model.Event
@@ -38,6 +40,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
 
     // Repositories
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
@@ -134,6 +137,18 @@ class VehicleUnloading : CompositeDisposableSupplier {
 
             loadedParcels.forEach {
                 it.state = Parcel.State.MISSING
+                update(it)
+            }
+
+            // Update stop states
+            val stopsWithPendingParcels = parcelRepository.entities
+                    .filter { it.state == Parcel.State.PENDING }
+                    .flatMap { it.order.tasks.mapNotNull { it.stop } }
+                    .filter { it.state != Stop.State.CLOSED }
+                    .distinct()
+
+            stopsWithPendingParcels.forEach {
+                it.state = Stop.State.NONE
                 update(it)
             }
         }

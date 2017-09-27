@@ -39,6 +39,9 @@ abstract class Address
     @get:Column(nullable = false)
     abstract var zipCode: String
     @get:Bindable
+    @get:Column(nullable = false, value = "'DE'")
+    abstract var countryCode: String
+    @get:Bindable
     @get:Column(nullable = false)
     abstract var city: String
     @get:Bindable
@@ -62,6 +65,7 @@ fun Address.Companion.create(
         street: String,
         streetNo: String,
         zipCode: String,
+        countryCode: String = "DE",
         city: String,
         phone: String,
 
@@ -75,6 +79,7 @@ fun Address.Companion.create(
         it.street = street
         it.streetNo = streetNo
         it.zipCode = zipCode
+        it.countryCode = countryCode.toUpperCase()
         it.city = city
         it.phone = phone
         it.latitude = latitude

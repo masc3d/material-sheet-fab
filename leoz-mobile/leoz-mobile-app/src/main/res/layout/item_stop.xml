@@ -34,9 +34,8 @@
             >
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="vertical"
                 >
 
@@ -67,9 +66,9 @@
                                 android:layout_width="@dimen/icon_size_large"
                                 android:layout_height="@dimen/icon_size_large"
                                 android:layout_gravity="center_vertical"
+                                android:contentDescription="TODO"
                                 android:src="@drawable/ic_delivery"
-                                android:tint="@color/colorGrey"
-                                android:contentDescription="TODO"/>
+                                android:tint="@color/colorGrey"/>
 
                             <!-- Order count -->
                             <LinearLayout
@@ -84,9 +83,9 @@
                                     android:layout_height="@dimen/icon_size"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="@dimen/margin"
+                                    android:contentDescription="TODO"
                                     android:src="@drawable/ic_order"
-                                    android:tint="@color/colorGrey"
-                                    android:contentDescription="TODO"/>
+                                    android:tint="@color/colorGrey"/>
 
                                 <TextView
                                     android:id="@+id/uxOrderCount"
@@ -114,9 +113,9 @@
                                     android:layout_height="@dimen/icon_size"
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginEnd="@dimen/margin"
+                                    android:contentDescription="TODO"
                                     android:src="@drawable/ic_package_variant_closed"
-                                    android:tint="@color/colorGrey"
-                                    android:contentDescription="TODO"/>
+                                    android:tint="@color/colorGrey"/>
 
                                 <TextView
                                     android:id="@+id/uxParcelCount"
@@ -142,37 +141,6 @@
                                 >
 
                             </org.deku.leoz.mobile.ui.view.ServicesView>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginStart="@dimen/medium_margin"
-                                >
-
-                                <sx.android.view.ClockView
-                                    android:id="@+id/uxAppointmentClock"
-                                    android:layout_width="22dp"
-                                    android:layout_height="22dp"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_marginEnd="@dimen/margin"
-                                    android:visibility="@{safeUnbox(stop.isClockVisible) || safeUnbox(stop.isCountdownExpired) ? View.VISIBLE : View.GONE}"
-                                    app:color="@{stop.clockColor}"
-                                    app:hour="@{stop.appointmentHour}"
-                                    app:minute="@{stop.appointmentMinute}"
-                                    />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:text="@{stop.countdownText, default = `59:59`}"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                                    android:textColor="@{safeUnbox(stop.countdownColor)}"
-                                    android:visibility="@{safeUnbox(stop.isCountdownVisible) ? View.VISIBLE : View.GONE}"
-                                    />
-
-                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -211,7 +179,6 @@
 
                         </LinearLayout>
 
-
                     </FrameLayout>
 
                 </FrameLayout>
@@ -230,13 +197,55 @@
                         android:orientation="vertical"
                         >
 
-                        <TextView
-                            android:id="@+id/uxRecipient"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@{stop.address.line1, default = `Recipient`}"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                            />
+                            android:gravity="top"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:id="@+id/uxRecipient"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:layout_weight="1"
+                                android:text="@{stop.address.line1, default = `Recipient Recipient Recipient Recipient Recipient`}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                                />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                >
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="@dimen/margin"
+                                    android:gravity="top"
+                                    android:text="@{stop.countdownText, default = `59:59`}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                                    android:textColor="@{safeUnbox(stop.countdownColor)}"
+                                    android:visibility="@{safeUnbox(stop.isCountdownVisible) ? View.VISIBLE : View.GONE}"
+                                    />
+
+                                <sx.android.view.ClockView
+                                    android:id="@+id/uxAppointmentClock"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:visibility="@{safeUnbox(stop.isClockVisible) || safeUnbox(stop.isCountdownExpired) ? View.VISIBLE : View.GONE}"
+                                    app:color="@{stop.clockColor}"
+                                    app:hour="@{stop.appointmentHour}"
+                                    app:minute="@{stop.appointmentMinute}"
+                                    />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/uxAddressLine2"
@@ -285,10 +294,10 @@
                             android:layout_width="@dimen/icon_size_small"
                             android:layout_height="@dimen/icon_size_small"
                             android:layout_gravity="center_vertical"
+                            android:contentDescription="TODO"
                             android:src="@drawable/ic_phone"
                             android:tint="@color/colorGrey"
-                            android:visibility="@{stop.address.hasValidPhoneNumber ? View.VISIBLE : View.GONE}"
-                            android:contentDescription="TODO"/>
+                            android:visibility="@{stop.address.hasValidPhoneNumber ? View.VISIBLE : View.GONE}"/>
 
                     </LinearLayout>
 
@@ -307,16 +316,16 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@android:color/white"
-                    android:layout_marginStart="1dp" />
+                    android:layout_marginStart="1dp"
+                    android:background="@android:color/white"/>
 
                 <ImageView
                     android:layout_width="@dimen/icon_size"
                     android:layout_height="@dimen/icon_size"
                     android:layout_gravity="center"
+                    android:contentDescription="TODO"
                     android:src="@drawable/ic_handle"
-                    android:tint="@color/colorGrey"
-                    android:contentDescription="TODO"/>
+                    android:tint="@color/colorGrey"/>
 
             </FrameLayout>
 
