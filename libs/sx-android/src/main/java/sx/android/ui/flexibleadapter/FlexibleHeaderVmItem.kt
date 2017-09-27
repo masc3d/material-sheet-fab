@@ -35,13 +35,11 @@ class FlexibleHeaderVmItem<VM>(
         this.isSelectable = false
     }
 
-    override fun equals(other: Any?): Boolean {
-        return this === other
-    }
+    override fun equals(other: Any?): Boolean =
+            this === other
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun hashCode(): Int =
+            super.hashCode()
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
         // Blur view support
