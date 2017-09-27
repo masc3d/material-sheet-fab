@@ -1,7 +1,9 @@
 package org.deku.leoz.mobile
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
@@ -14,6 +16,9 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import com.github.salomonbrys.kodein.lazy
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import io.reactivex.Completable
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.deku.leoz.mobile.ui.BaseActivity
@@ -152,7 +157,7 @@ open class Application : MultiDexApplication() {
     }
     //endregion
 
-    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
+    fun isServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.name == service.service.className) {
@@ -160,6 +165,27 @@ open class Application : MultiDexApplication() {
             }
         }
         return false
+    }
+
+    fun checkGoogleApiAvailability(activity: Activity): Completable { // Observable<Boolean> {
+        return Completable.create {
+            val completableEmitter = it
+            val connResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
+            when {
+                connResult != ConnectionResult.SUCCESS -> {
+                    val dialog = GoogleApiAvailability.getInstance().getErrorDialog(activity, connResult, 0, DialogInterface.OnCancelListener {
+                        completableEmitter.onError(IllegalStateException("Google API not available. Dialog canceled"))
+                    })
+                    dialog.setOnDismissListener {
+                        completableEmitter.onError(IllegalStateException("Google API not available. Dialog canceled"))
+                    }
+                    dialog.show()
+                }
+                else -> {
+                    it.onComplete()
+                }
+            }
+        }
     }
 }
 

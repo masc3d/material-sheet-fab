@@ -118,7 +118,7 @@ class StartupActivity : BaseActivity() {
                         throw IllegalStateException("AidcReader initialization timed out", it)
                     }
 
-            val ovGoogleApi = checkGoogleApiAvailability()
+            val ovGoogleApi = (this.application as Application).checkGoogleApiAvailability(this)
 
             // Merge and subscribe
             Observable.mergeArray(
@@ -218,27 +218,6 @@ class StartupActivity : BaseActivity() {
                             })
         } else {
             this.startMainActivity(withAnimation = false)
-        }
-    }
-
-    private fun checkGoogleApiAvailability(): Completable { // Observable<Boolean> {
-        return Completable.create {
-            val completableEmitter = it
-            val connResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
-            when {
-                connResult != ConnectionResult.SUCCESS -> {
-                    val dialog = GoogleApiAvailability.getInstance().getErrorDialog(this, connResult, 0, DialogInterface.OnCancelListener {
-                        completableEmitter.onError(IllegalStateException("Google API not available. Dialog canceled"))
-                    })
-                    dialog.setOnDismissListener {
-                        completableEmitter.onError(IllegalStateException("Google API not available. Dialog canceled"))
-                    }
-                    dialog.show()
-                }
-                else -> {
-                    it.onComplete()
-                }
-            }
         }
     }
 }
