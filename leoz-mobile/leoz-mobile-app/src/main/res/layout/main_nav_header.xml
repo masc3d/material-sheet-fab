@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/margin"
-            android:divider="@drawable/divider_horizontal"
+            android:divider="@drawable/divider"
             android:orientation="vertical"
             android:showDividers="middle">
 

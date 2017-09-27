@@ -118,6 +118,11 @@ class DeliveryStopProcessScreen :
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
 
+    private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
+
+    private val timerEvent = timer.tickEvent
+            .bindToLifecycle(this)
+
     private val stop: StopEntity by lazy {
         this.stopRepository.entities.first { it.id == this.parameters.stopId }
     }
@@ -361,7 +366,9 @@ class DeliveryStopProcessScreen :
         //endregion
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
-        binding.stop = StopViewModel(this.stop)
+        binding.stop = StopViewModel(
+                stop = this.stop,
+                timerEvent = this.timerEvent)
     }
 
     override fun onDestroyView() {

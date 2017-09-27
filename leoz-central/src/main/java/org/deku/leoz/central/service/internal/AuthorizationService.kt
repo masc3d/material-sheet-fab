@@ -12,6 +12,7 @@ import sx.event.EventDispatcher
 import sx.event.EventListener
 import sx.mq.MqHandler
 import sx.logging.slf4j.info
+import sx.time.toTimestamp
 import java.text.DecimalFormat
 import java.util.*
 import javax.inject.Inject
@@ -96,7 +97,8 @@ class AuthorizationService
 
             keyRecord = this.keyRepository.findByID(keyID)
         }
-
+        userRecord.tsLastlogin = Date().toTimestamp()
+        userRecord.store()
 //        // TODO: in case we really want to verify key/content validity. but I believe we don't need it.
 //        val isValid = try { UUID.fromString(keyRecord.key); true } catch(e: Throwable) { false }
 
@@ -127,11 +129,9 @@ class AuthorizationService
                 record = nodeJooqRepository.createNew()
                 record.key = message.key
                 record.bundle = message.name
-                record.store()
             } else {
                 // Update record
                 record.bundle = message.name
-                record.store()
 
                 val isAuthorized = record.authorized != null && record.authorized != 0
 
@@ -144,6 +144,9 @@ class AuthorizationService
                     log.info("Sent authorization [%s]".format(am))
                 }
             }
+            record.tsLastlogin = Date().toTimestamp()
+            record.store()
+
         } catch (e: Exception) {
             log.error(e.message, e)
         }

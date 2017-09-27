@@ -20,29 +20,26 @@ import org.slf4j.LoggerFactory
  * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
  */
 class FlexibleHeaderVmItem<VM>(
-        @LayoutRes val view: Int,
-        @AnyRes val variable: Int,
-        val viewModel: VM,
+        @LayoutRes view: Int,
+        @AnyRes variable: Int,
+        viewModel: VM,
         val blurRadius: Float = 1F
 )
     :
         IHeader<FlexibleVmHolder>,
-        IFlexible<FlexibleVmHolder> by FlexibleVmItem(view, variable, viewModel) {
+        FlexibleSectionableVmItem<VM>(view, variable, viewModel) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
         this.isSelectable = false
-        this.isHidden = true
     }
 
-    override fun equals(other: Any?): Boolean {
-        return this === other
-    }
+    override fun equals(other: Any?): Boolean =
+            this === other
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun hashCode(): Int =
+            super.hashCode()
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
         // Blur view support
