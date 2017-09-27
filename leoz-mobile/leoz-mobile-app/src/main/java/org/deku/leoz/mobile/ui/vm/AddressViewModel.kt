@@ -23,7 +23,7 @@ class AddressViewModel(val address: Address) : BaseObservable() {
         get() = "${this.address.street} ${this.address.streetNo}"
 
     val city: String
-        get() = "${this.address.zipCode} ${this.address.city}"
+        get() = "${this.address.countryCode}-${this.address.zipCode} ${this.address.city}"
 
     val hasAddressLine2
         get() = !this.address.line2.isBlank()
