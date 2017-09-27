@@ -22,13 +22,11 @@ class FlexibleExpandableVmItem<EVM, IVM>(
 )
     : AbstractExpandableHeaderItem<FlexibleExpandableVmHolder, FlexibleSectionableVmItem<IVM>>() {
 
-    override fun equals(other: Any?): Boolean {
-        return this === other
-    }
+    override fun equals(other: Any?): Boolean =
+            this === other
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun hashCode(): Int =
+            super.hashCode()
 
     override fun bindViewHolder(
             adapter: FlexibleAdapter<out IFlexible<*>>,
@@ -38,6 +36,12 @@ class FlexibleExpandableVmItem<EVM, IVM>(
 
         viewHolder.binding.setVariable(this.variable, this.viewModel)
         viewHolder.binding.executePendingBindings()
+    }
+
+    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: FlexibleExpandableVmHolder?, position: Int) {
+        super.unbindViewHolder(adapter, holder, position)
+        // Unbind view holder
+        holder?.binding?.unbind()
     }
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleExpandableVmHolder {
@@ -61,7 +65,6 @@ class FlexibleExpandableVmItem<EVM, IVM>(
                 isExpandableOnClick = isExpandableOnClick)
     }
 
-    override fun getLayoutRes(): Int {
-        return this.view
-    }
+    override fun getLayoutRes(): Int =
+            this.view
 }
