@@ -111,9 +111,9 @@ abstract class BaseLocationService: Service() {
         // TODO: Store location data in database and send it as an set of multiple positions once.
 
         mqttChannels.central.transient.channel().send(
-                message = LocationServiceV2.GpsMessage(
+                message = LocationServiceV1.GpsMessage(
                         userId = this@BaseLocationService.login.authenticatedUser?.id,
-                        nodeKey = this@BaseLocationService.identity.uid.value,
+                        nodeId = this@BaseLocationService.identity.uid.value,
                         dataPoints = arrayOf(currentPosition)
                 )
         )

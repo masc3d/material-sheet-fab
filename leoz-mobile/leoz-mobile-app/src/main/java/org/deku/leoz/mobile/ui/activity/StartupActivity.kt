@@ -123,8 +123,8 @@ class StartupActivity : BaseActivity() {
             // Merge and subscribe
             Observable.mergeArray(
                     ovPermissions.cast(Any::class.java),
-                    ovAidcReader.cast(Any::class.java),
-                    ovGoogleApi.toObservable()
+                    ovAidcReader.cast(Any::class.java) /** ,
+                    ovGoogleApi.toObservable() */
             )
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(

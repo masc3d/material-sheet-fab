@@ -167,19 +167,24 @@ open class Application : MultiDexApplication() {
         return false
     }
 
-    fun checkGoogleApiAvailability(activity: Activity): Completable { // Observable<Boolean> {
+    fun checkGoogleApiAvailability(activity: Activity, showResolutionDialog: Boolean = true): Completable { // Observable<Boolean> {
         return Completable.create {
             val completableEmitter = it
             val connResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
             when {
                 connResult != ConnectionResult.SUCCESS -> {
-                    val dialog = GoogleApiAvailability.getInstance().getErrorDialog(activity, connResult, 0, DialogInterface.OnCancelListener {
-                        completableEmitter.onError(IllegalStateException("Google API not available. Dialog canceled"))
-                    })
-                    dialog.setOnDismissListener {
-                        completableEmitter.onError(IllegalStateException("Google API not available. Dialog canceled"))
+                    val error = IllegalStateException("Google API not available.")
+                    if (showResolutionDialog) {
+                        val dialog = GoogleApiAvailability.getInstance().getErrorDialog(activity, connResult, 0, DialogInterface.OnCancelListener {
+                            completableEmitter.onError(error)
+                        })
+                        dialog.setOnDismissListener {
+                            completableEmitter.onError(error)
+                        }
+                        dialog.show()
+                    } else {
+                        completableEmitter.onError(error)
                     }
-                    dialog.show()
                 }
                 else -> {
                     it.onComplete()

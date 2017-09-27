@@ -9,6 +9,9 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
@@ -88,8 +91,15 @@ class MainActivity
         val locationSettings = Kodein.global.instance<LocationSettings>()
 
         if (locationSettings.enabled) {
-            this.startService(
-                    Intent(applicationContext, LocationServiceGMS::class.java))
+            (this.application as Application).checkGoogleApiAvailability(activity = this, showResolutionDialog = false)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        this.startService(
+                                Intent(applicationContext, LocationServiceGMS::class.java))
+                    }, {
+                        this.startService(
+                                Intent(applicationContext, LocationService::class.java))
+                    })
         }
 
         this.startActivity(
