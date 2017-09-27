@@ -54,7 +54,6 @@ android {
 
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
-        // TODO: move min sdk to product flavors
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 2
@@ -73,19 +72,6 @@ android {
         enabled true
     }
 
-    // TODO: CANARY product flavors, temporary disabled
-//    flavorDimensions "default"
-//
-//    productFlavors {
-//        dev {
-//            dimension "default"
-//        }
-//
-//        prod {
-//            dimension "default"
-//        }
-//    }
-
     signingConfigs {
         release {
             keyAlias 'leoz-mobile'
@@ -97,6 +83,9 @@ android {
 
     lintOptions {
         abortOnError true
+
+        // TODO lintVitalRelease always fails with 3.0.0-beta6
+        checkReleaseBuilds false
     }
 
     buildTypes {
@@ -377,7 +366,6 @@ dependencies {
     kapt(
             "org.parceler:parceler:$v_parceler",
             "com.android.databinding:compiler:3.0.0-beta6"
-            // TODO: auto-value requires specific annotations processor setup with CANARY
     )
 }
 
@@ -432,13 +420,9 @@ def removeSqliteLibs() {
 }
 
 afterEvaluate {
-    // TODO: migrate for CANARY
-//    tasks.packageProdRelease.doFirst {
-//        removeSqliteLibs()
-//    }
-//    tasks.packageDevRelease.doFirst {
-//        removeSqliteLibs()
-//    }
+    tasks.packageRelease.doFirst {
+        removeSqliteLibs()
+    }
 
     // masc20170731. workaround for release builds failing
     // (when switching between product flavors, as we usually work in `dev` but native bundle is `prod`

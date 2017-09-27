@@ -73,19 +73,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
         }
     }
-
-    // TODO: CANARY product flavors, temporary disabled
-//    flavorDimensions "default"
-//
-//    productFlavors {
-//        dev {
-//            dimension "default"
-//        }
-//
-//        prod {
-//            dimension "default"
-//        }
-//    }
 }
 
 dependencies {

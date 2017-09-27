@@ -15,31 +15,6 @@ apply plugin: 'idea'
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
-/** Base directory for generated classes */
-def GENERATED_DIR = file("${project.projectDir}/src/generated")
-/** Folder where kapt generates source files */
-def KAPT_GENERATED_DIR = new File(project.buildDir, 'generated/source/kapt/main')
-/** A destination folder where we sync kapt generated classes to, referring to kaptSync task/workaround see below */
-def KAPT_DST_GENERATED_DIR = new File(GENERATED_DIR, 'kapt')
-
-// TODO: verify if those workarounds require migration for CANARY
-
-//idea {
-//    module {
-//        // Add KAPT generated sources to intellij
-//        sourceDirs += KAPT_DST_GENERATED_DIR
-//    }
-//}
-
-// TODO: stupid workaround for making AndroidStudio see kapt generated classes. Unlike IJ, AndroidStudio seems to ignore .java files in build dir even when they're explicltly added to `sourceDirs` via idea plugin
-//task kaptSync(type: Sync) {
-//    from KAPT_GENERATED_DIR
-//    into KAPT_DST_GENERATED_DIR
-//}
-//tasks.classes {
-//    dependsOn tasks.kaptSync
-//}
-
 android {
     publishNonDefault true
     compileSdkVersion 26
@@ -75,19 +50,6 @@ android {
             minifyEnabled false
         }
     }
-
-    // TODO: CANARY product flavors, temporary disabled
-//    flavorDimensions "default"
-//
-//    productFlavors {
-//        dev {
-//            dimension "default"
-//        }
-//
-//        prod {
-//            dimension "default"
-//        }
-//    }
 }
 
 dependencies {
@@ -126,18 +88,4 @@ dependencies {
             "io.reactivex.rxjava2:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:$v_rxkotlin",
     )
-}
-
-sourceSets {
-    test {
-        java {
-            srcDirs += KAPT_GENERATED_DIR
-        }
-    }
-}
-
-clean {
-    doLast {
-        GENERATED_DIR.deleteDir()
-    }
 }
