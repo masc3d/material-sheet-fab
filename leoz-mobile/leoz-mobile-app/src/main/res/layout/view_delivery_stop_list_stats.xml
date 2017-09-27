@@ -80,6 +80,8 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="@dimen/small_margin"
                         app:color="@color/colorDarkGrey"
+                        app:hour="@{stats.clockHours}"
+                        app:minute="@{stats.clockMinutes}"
                         />
 
                     <sx.android.view.BadgeTextView

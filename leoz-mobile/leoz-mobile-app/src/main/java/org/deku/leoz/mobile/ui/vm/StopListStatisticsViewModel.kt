@@ -11,6 +11,8 @@ import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.appointmentState
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
+import sx.time.toCalendar
+import java.util.*
 
 /**
  * Stop list statistics view model
@@ -63,6 +65,18 @@ class StopListStatisticsViewModel(
                     overdueCount = overdueCount
             )
         }
+    }
+
+    private val systemTime by lazy {
+        this.tickEvent.map { Date().toCalendar() }
+    }
+
+    val clockHours by lazy {
+        this.systemTime.map { it.get(Calendar.HOUR) }.toField()
+    }
+
+    val clockMinutes by lazy {
+        this.systemTime.map { it.get(Calendar.MINUTE) }.toField()
     }
 
     val appointmentUpcomingCount by lazy {
