@@ -34,17 +34,17 @@ class ClockView : View {
 
     /** Clock hour */
     var hour: Int by Delegates.observable(0, { p, o, v ->
-        this.invalidate()
+        if (o != v) this.invalidate()
     })
 
     /** Clock minutes */
     var minute: Int by Delegates.observable(0, { p, o, v ->
-        this.invalidate()
+        if (o != v) this.invalidate()
     })
 
     /** Clock color */
     var color: Int by Delegates.observable(0, { p, o, v ->
-        this.invalidate()
+        if (o != v) this.invalidate()
     })
 
     constructor(context: Context) : super(context) {
