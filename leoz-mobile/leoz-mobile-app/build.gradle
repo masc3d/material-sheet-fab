@@ -4,14 +4,13 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
-        maven {
-            url '../../leoz-build/repo'
-        }
+        maven { url '../../leoz-build/repo' }
+        maven { url 'https://maven.google.com' }
     }
 
     dependencies {
         classpath(
-                'com.android.tools.build:gradle:2.3.3',
+                "com.android.tools.build:gradle:3.0.0-beta6",
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.3",
                 "com.trello:victor:1.0.0",
@@ -21,6 +20,7 @@ buildscript {
 
     ext {
         v_anko = '0.10.1'
+        v_javamail = '1.6.0'
         v_material_dialogs = '0.9.4.7'
         v_parceler = '1.1.9'
         v_roboelectric = '3.4.2'
@@ -48,20 +48,13 @@ def GENERATED_DIR = project.projectDir.toPath()
 def GENERATED_SVG_DIR = new File(GENERATED_DIR,
         'svg')
 
-configurations {
-    // Configurations for libraries using dev/prod product flavors (for improved build performance)
-    devDebugCompile
-    devReleaseCompile
-    prodDebugCompile
-    prodReleaseCompile
-}
-
 android {
     compileSdkVersion 26
     buildToolsVersion v_android_buildtools
 
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 2
         versionName "0.86-SNAPSHOT"
@@ -79,19 +72,6 @@ android {
         enabled true
     }
 
-    productFlavors {
-        dev {
-            // Enable pre-dexing to produce an APK that can be tested on
-            // Android 5.0+ without the time-consuming DEX build processes.
-            minSdkVersion 21
-        }
-
-        prod {
-            // The actual minSdkVersion for the production version.
-            minSdkVersion 18
-        }
-    }
-
     signingConfigs {
         release {
             keyAlias 'leoz-mobile'
@@ -103,6 +83,9 @@ android {
 
     lintOptions {
         abortOnError true
+
+        // TODO lintVitalRelease always fails with 3.0.0-beta6
+        checkReleaseBuilds false
     }
 
     buildTypes {
@@ -175,37 +158,19 @@ repositories {
 }
 
 dependencies {
-    devDebugCompile(
-            project(path: ':sx-android', configuration: 'devDebug'),
-            project(path: ':sx-android-honeywell', configuration: 'devDebug'),
-            project(path: ':leoz-mobile-data', configuration: 'devDebug')
-    )
+    implementation(
+            project(path: ':leoz-mobile-data', configuration: 'default'),
+            project(path: ':sx-android', configuration: 'default'),
+            project(path: ':sx-android-honeywell', configuration: 'default'),
+            project(path: ':material-sheet-fab', configuration: 'default'),
+            project(path: ':camerakit', configuration: 'default'),
+            'android.arch.lifecycle:runtime:1.0.0-alpha9',
 
-    devReleaseCompile(
-            project(path: ':sx-android', configuration: 'devRelease'),
-            project(path: ':sx-android-honeywell', configuration: 'devRelease'),
-            project(path: ':leoz-mobile-data', configuration: 'devRelease')
-    )
-
-    prodDebugCompile(
-            project(path: ':sx-android', configuration: 'prodDebug'),
-            project(path: ':sx-android-honeywell', configuration: 'prodDebug'),
-            project(path: ':leoz-mobile-data', configuration: 'prodDebug')
-    )
-
-    prodReleaseCompile(
-            project(path: ':sx-android', configuration: 'prodRelease'),
-            project(path: ':sx-android-honeywell', configuration: 'prodRelease'),
-            project(path: ':leoz-mobile-data', configuration: 'prodRelease')
-    )
-
-    compile(
+            project(':leoz-common'),
             project(':sx-common'),
             project(':sx-serialization'),
             project(':sx-mq'),
             project(':leoz-common'),
-            project(':material-sheet-fab'),
-            project(':camerakit'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             "com.jakewharton.threetenabp:threetenabp:1.0.5",
@@ -235,6 +200,10 @@ dependencies {
             dependencies.create("com.github.tony19:logback-android-classic:1.1.1-6") {
                 exclude group: 'com.google.android', module: 'android'
             },
+
+            // JavaMail
+            "com.sun.mail:android-mail:$v_javamail",
+            "com.sun.mail:android-activation:$v_javamail",
 
             // Reactive
             "io.reactivex.rxjava2:rxjava:$v_rxjava",
@@ -304,6 +273,10 @@ dependencies {
 
             "com.github.BlacKCaT27:CurrencyEditText:2.0.1",
 
+            // TODO: transitive dependencies not pulled in
+            // Should be pulled in via :material-sheet-fab, but isn't in 3.0.0-beta6
+            "com.github.asyl.animation:arcanimator:1.0.0",
+
             //
             // FOR TESTING
             //
@@ -358,19 +331,23 @@ dependencies {
             // Support-v4 (Anko Layouts)
             "org.jetbrains.anko:anko-support-v4:$v_anko",
 
+            // Anko
+            // TODO: CANARY doesn't pull this transitive dependency (sx-android/mq needs it) resulting in runtime errors with debug builds. proguard will reveal those missing classes when building release
+            "org.jetbrains.anko:anko-sqlite:$v_anko",
+
             "com.fenchtose:tooltip:0.1.5",
             "net.cachapa.expandablelayout:expandablelayout:2.9.2",
 
             "com.google.android.gms:play-services-location:11.4.0"
     )
 
-    debugCompile(
+    debugImplementation(
             // Stetho
             "com.facebook.stetho:stetho:$v_stetho",
             "com.facebook.stetho:stetho-okhttp:$v_stetho",
     )
 
-    testCompile(
+    testImplementation(
             "junit:junit:$v_junit",
 
             "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
@@ -379,7 +356,7 @@ dependencies {
             "org.robolectric:shadows-multidex:3.4-rc2",
     )
 
-    androidTestCompile(
+    androidTestImplementation(
             project(path: ':sx-common', configuration: 'testArtifacts'),
             project(path: ':sx-serialization', configuration: 'testArtifacts'),
             "junit:junit:$v_junit",
@@ -390,7 +367,7 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:2.3.3",
+            "com.android.databinding:compiler:3.0.0-beta6"
     )
 }
 
@@ -445,10 +422,7 @@ def removeSqliteLibs() {
 }
 
 afterEvaluate {
-    tasks.packageProdRelease.doFirst {
-        removeSqliteLibs()
-    }
-    tasks.packageDevRelease.doFirst {
+    tasks.packageRelease.doFirst {
         removeSqliteLibs()
     }
 
@@ -478,6 +452,5 @@ packager {
 
     android {
         buildType 'release'
-        productFlavor 'prod'
     }
 }

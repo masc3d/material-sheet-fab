@@ -1,7 +1,9 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
+
     ext {
         v_kotlin = '1.1.50'
         v_android_buildtools = '26.0.1'
@@ -11,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath "com.android.tools.build:gradle:3.0.0-beta6"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
@@ -26,16 +28,7 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 
-configurations {
-    // Configurations for libraries using dev/prod product flavors (for improved build performance)
-    devDebugCompile
-    devReleaseCompile
-    prodDebugCompile
-    prodReleaseCompile
-}
-
 android {
-    publishNonDefault true
     compileSdkVersion 26
     buildToolsVersion v_android_buildtools
     defaultConfig {
@@ -55,40 +48,19 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
 
-    productFlavors {
-        dev {
-            // Enable pre-dexing to produce an APK that can be tested on
-            // Android 5.0+ without the time-consuming DEX build processes.
-            minSdkVersion 21
-        }
-
-        prod {
-            // The actual minSdkVersion for the production version.
-            minSdkVersion 16
+        debug {
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
         }
     }
 }
 
 dependencies {
-    devDebugCompile(
-            project(path: ':sx-android', configuration: 'devDebug')
-    )
-
-    devReleaseCompile(
-            project(path: ':sx-android', configuration: 'devRelease')
-    )
-
-    prodDebugCompile(
-            project(path: ':sx-android', configuration: 'prodDebug')
-    )
-
-    prodReleaseCompile(
-            project(path: ':sx-android', configuration: 'prodRelease')
-    )
-
-    compile(
+    implementation(
+            project(path: ':sx-android', configuration: 'default'),
+            project(':sx-common'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
@@ -109,7 +81,7 @@ dependencies {
             "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle"
     )
 
-    androidTestCompile(
+    androidTestImplementation(
             "junit:junit:4.12",
             "com.android.support:support-annotations:$v_android_support",
             "com.android.support.test:runner:$v_android_test",

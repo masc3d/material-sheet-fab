@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import 'rxjs/add/operator/takeUntil';
 
 import { MapComponent } from '@yaga/leaflet-ng2';
-import Point = L.Point;
+import * as L from 'leaflet';
 
 import { TourService } from '../tour.service';
 import { Position } from '../position.model';
@@ -47,7 +47,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
   displayMarker: boolean;
   name: string;
   routeGeoJson: any;
-  iconSize: Point;
+  iconSize: L.Point;
   iconUrl: string;
 
   @ViewChild( 'yagaMap' )
@@ -114,27 +114,27 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
         switch (activeMarker.position.vehicleType) {
           case Position.VehicleType.BIKE:
             this.iconUrl = 'assets/css/images/bike-icon.png';
-            this.iconSize = new Point( 32, 32 );
+            this.iconSize = new L.Point( 32, 32 );
             this.markerVehicle = 'bike';
             break;
           case Position.VehicleType.CAR:
             this.iconUrl = 'assets/css/images/car-icon.png';
-            this.iconSize = new Point( 32, 32 );
+            this.iconSize = new L.Point( 32, 32 );
             this.markerVehicle = 'car';
             break;
           case Position.VehicleType.VAN:
             this.iconUrl = 'assets/css/images/van-icon.png';
-            this.iconSize = new Point( 32, 32 );
+            this.iconSize = new L.Point( 32, 32 );
             this.markerVehicle = 'van';
             break;
           case Position.VehicleType.TRUCK:
             this.iconUrl = 'assets/css/images/truck-icon.png';
-            this.iconSize = new Point( 32, 32 );
+            this.iconSize = new L.Point( 32, 32 );
             this.markerVehicle = 'truck';
             break;
           default:
             this.iconUrl = 'assets/css/images/marker-icon.png';
-            this.iconSize = new Point( 25, 41 );
+            this.iconSize = new L.Point( 25, 41 );
             this.markerVehicle = 'unknown';
             break;
         }

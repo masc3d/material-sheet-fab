@@ -19,6 +19,7 @@ import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.setLocale
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.model.EventDeliveredReason
@@ -79,6 +80,8 @@ class SignatureScreen
         this.toolbarHidden = true
         this.flipScreen = true
         this.lockNavigationDrawer = true
+
+        setLanguage()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -179,5 +182,10 @@ class SignatureScreen
             first { it.id == R.id.action_signature_clear }
                     .visible = hasValidSignature
         }
+    }
+
+    private fun setLanguage() {
+        val language = this.stop.address.countryCode
+        this.context.setLocale(language.toLowerCase())
     }
 }

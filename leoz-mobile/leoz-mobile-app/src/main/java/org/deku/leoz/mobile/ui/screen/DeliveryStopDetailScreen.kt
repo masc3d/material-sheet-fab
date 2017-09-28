@@ -287,7 +287,7 @@ class DeliveryStopDetailScreen
                         R.id.action_navigate -> {
                             val intent: Intent = Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse("google.navigation:q=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}&mode=d")
+                                    Uri.parse("google.navigation:q=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}+${stop.address.countryCode}&mode=d")
                                     //Uri.parse("https://www.google.com/maps/dir/?api=1&query=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}")
                             )
                             try {
