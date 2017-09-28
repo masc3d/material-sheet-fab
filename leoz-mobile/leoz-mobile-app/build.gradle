@@ -450,6 +450,5 @@ packager {
 
     android {
         buildType 'release'
-        productFlavor 'prod'
     }
 }
