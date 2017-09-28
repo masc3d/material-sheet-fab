@@ -215,6 +215,7 @@ class StartupActivity : BaseActivity() {
                                 log.error(e.message, e)
 
                                 this@StartupActivity.finishAffinity()
+                                System.exit(0)
                             })
         } else {
             this.startMainActivity(withAnimation = false)

@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.service
 
 import android.app.Notification
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -32,7 +33,7 @@ import java.util.*
  */
 abstract class BaseLocationService: Service() {
 
-    protected val log = LoggerFactory.getLogger(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val identity: Identity by Kodein.global.lazy.instance()
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
@@ -58,29 +59,49 @@ abstract class BaseLocationService: Service() {
                 .setContentText("${getString(R.string.app_name)} ${getString(R.string.app_name_long)}")
                 .setAutoCancel(false)
                 .setSmallIcon(R.drawable.ic_launcher)
+                .setContentIntent(PendingIntent.getActivities(
+                        this,
+                        0,
+                        arrayOf(Intent("org.deku.leoz.mobile")),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                ))
                 .build().also {
-            it.flags += Notification.FLAG_NO_CLEAR + Notification.FLAG_FOREGROUND_SERVICE + Notification.FLAG_ONGOING_EVENT
+            it.flags += Notification.FLAG_FOREGROUND_SERVICE
         }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        //return super.onStartCommand(intent, flags, startId)
+        log.debug("ONSTARTCOMMAND")
+        startForeground(NOTIFICATION_ID, notification)
+        setNotification()
+        return START_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
-        setNotification()
+        log.debug("ONCREATE")
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        removeNotification()
+        log.debug("ONDESTROY")
+        //removeNotification()
+        stopForeground(true)
     }
 
     private fun setNotification() {
+        log.debug("Set notification")
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     private fun removeNotification() {
+        log.debug("Remove notification")
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
+        notificationManager.cancel(NOTIFICATION_ID)
     }
 
     fun reportLocation(location: Location) {

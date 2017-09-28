@@ -20,9 +20,7 @@ import org.deku.leoz.mobile.ui.activity.MainActivity
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ApiException
-
-
-
+import org.slf4j.LoggerFactory
 
 
 /**
@@ -32,6 +30,8 @@ class LocationServiceGMS:
         BaseLocationService(),
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     val locationRequest = LocationRequest().also {
         it.interval = Duration.ofSeconds(this.locationSettings.period).toMillis()

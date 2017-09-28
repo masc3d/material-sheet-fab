@@ -21,6 +21,8 @@ import com.google.android.gms.common.GoogleApiAvailability
 import io.reactivex.Completable
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
+import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.slf4j.LoggerFactory
 
@@ -107,6 +109,17 @@ open class Application : MultiDexApplication() {
     }
 
     override fun onTerminate() {
+        log.debug("ONTERMINATE")
+        when {
+            isServiceRunning(LocationServiceGMS::class.java) -> {
+                log.debug("LocationServiceGMS is running. Stopping now")
+                this.stopService(android.content.Intent(this, LocationServiceGMS::class.java))
+            }
+            isServiceRunning(LocationService::class.java) -> {
+                log.debug("LocationService is running. Stopping now")
+                this.stopService(android.content.Intent(this, LocationService::class.java))
+            }
+        }
         super.onTerminate()
     }
 

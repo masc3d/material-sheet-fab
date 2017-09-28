@@ -60,6 +60,7 @@ import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.activity.StartupActivity
@@ -531,7 +532,16 @@ abstract class Activity : BaseActivity(),
 
             R.id.nav_logout -> {
                 try {
-                    stopService(Intent(this.applicationContext, LocationService::class.java))
+                    when {
+                        (this.application as Application).isServiceRunning(LocationServiceGMS::class.java) -> {
+                            log.debug("LocationServiceGMS is running. Stopping now")
+                            this.stopService(android.content.Intent(this, LocationServiceGMS::class.java))
+                        }
+                        (this.application as Application).isServiceRunning(LocationService::class.java) -> {
+                            log.debug("LocationService is running. Stopping now")
+                            this.stopService(android.content.Intent(this, LocationService::class.java))
+                        }
+                    }
                 } catch (e: Exception) {
                     log.warn("Stopping location service failed", e)
                 }

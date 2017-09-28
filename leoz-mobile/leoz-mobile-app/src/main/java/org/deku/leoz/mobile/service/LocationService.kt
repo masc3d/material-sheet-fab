@@ -12,6 +12,8 @@ import org.threeten.bp.Duration
 class LocationService
     : BaseLocationService() {
 
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     private var locationListener: LocationListener? = null
     val period = Duration.ofSeconds(locationSettings.period).toMillis()
     val minDistance = locationSettings.minDistance.toFloat()
@@ -29,14 +31,6 @@ class LocationService
     }
 
     override fun onBind(intent: Intent?) = null
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-
-        log.trace("ONSTARTCOMMAND")
-
-        return START_STICKY
-    }
 
     override fun onCreate() {
         super.onCreate()
