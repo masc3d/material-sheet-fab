@@ -19,6 +19,7 @@ import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.resetLocale
 import org.deku.leoz.mobile.setLocale
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -82,6 +83,11 @@ class SignatureScreen
         this.lockNavigationDrawer = true
 
         setLanguage()
+    }
+
+    override fun onDestroy() {
+        this.resetLanguage()
+        super.onDestroy()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -187,5 +193,9 @@ class SignatureScreen
     private fun setLanguage() {
         val language = this.stop.address.countryCode
         this.context.setLocale(language.toLowerCase())
+    }
+
+    private fun resetLanguage() {
+        this.context.resetLocale()
     }
 }
