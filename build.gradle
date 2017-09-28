@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.1.50'
+        v_kotlin = '1.1.51'
     }
 
     repositories {
