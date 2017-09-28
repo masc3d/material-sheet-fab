@@ -84,7 +84,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         // Currently only set higher resolutions for honeywell devices
         // TODO: Regular phones may crash with either VIDEO_QUALITY_1080P or VIDEO_QUALITY_HIGHEST, this seems ot be an issue with CameraKit and needs to be fixed there.
         //if (true || this.device.manufacturer.type == Device.Manufacturer.Type.Honeywell)
-        this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_1080P)
+        this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_HIGHEST)
 
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
         this.uxCameraView.setFlash(CameraKit.Constants.FLASH_OFF)
