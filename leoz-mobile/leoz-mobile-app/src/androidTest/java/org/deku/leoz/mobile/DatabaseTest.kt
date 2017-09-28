@@ -9,6 +9,4 @@ import org.junit.runner.RunWith
 * Created by masc on 03.06.17.
 */
 @RunWith(AndroidJUnit4::class)
-class DatabaseTest {
-
-}
+class DatabaseTest

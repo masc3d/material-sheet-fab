@@ -14,7 +14,7 @@ fun Context.setLocale(language: String) {
 
     val resources: Resources = this.resources
 
-    val configuration: Configuration = resources.configuration;
+    val configuration: Configuration = resources.configuration
     configuration.setLocale(locale)
 
     /**

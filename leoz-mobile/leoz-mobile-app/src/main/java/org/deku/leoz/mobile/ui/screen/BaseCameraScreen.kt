@@ -87,7 +87,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         this.uxCameraView.setVideoQuality(CameraKit.Constants.VIDEO_QUALITY_HIGHEST)
 
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
-        this.uxCameraView.setFlash(CameraKit.Constants.FLASH_OFF)
+        this.uxCameraView.flash = CameraKit.Constants.FLASH_OFF
 
         this.uxCameraView.setCameraListener(object : CameraListener() {
             override fun onPictureTaken(picture: ByteArray) {

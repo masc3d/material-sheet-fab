@@ -139,7 +139,7 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
                 ovLastEditorAction
                         .withLatestFrom(
                                 ovFieldsFilled,
-                                BiFunction { a: Unit, b: Boolean -> b })
+                                BiFunction { _: Unit, b: Boolean -> b })
                         .filter { it == true },
                 // Action button event
                 ovActionEvent

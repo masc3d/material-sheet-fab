@@ -26,26 +26,20 @@ class ChangelogItem private constructor(
 
     data class ChangelogEntry(val title: String, val description: String)
 
-    override fun equals(inObject: Any?): Boolean {
-        if (inObject is ChangelogItem) {
-            return this == inObject
-        } else if (inObject is ChangelogEntry) {
-            return this.entry == inObject
+    override fun equals(other: Any?): Boolean {
+        if (other is ChangelogItem) {
+            return this == other
+        } else if (other is ChangelogEntry) {
+            return this.entry == other
         }
         return false
     }
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun getLayoutRes(): Int =
+            R.layout.item_changelog
 
-    override fun getLayoutRes(): Int {
-        return R.layout.item_changelog
-    }
-
-    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): ViewHolder {
-        return ViewHolder(view, adapter)
-    }
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): ViewHolder =
+            ViewHolder(view, adapter)
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?,
                                 holder: ViewHolder,

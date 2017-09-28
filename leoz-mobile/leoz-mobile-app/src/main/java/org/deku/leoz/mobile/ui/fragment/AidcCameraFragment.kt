@@ -55,15 +55,11 @@ class AidcCameraFragment : Fragment<Any>() {
     /**
      * Indicates if aidc fragment is pinned
      */
-    var isPinned by serialState(false, afterChange = { o, v ->
+    var isPinned by serialState(false, afterChange = { _, v ->
         this.isPinnedEventSubject.onNext(v)
     })
         private set
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
@@ -135,11 +131,4 @@ class AidcCameraFragment : Fragment<Any>() {
         super.onPause()
     }
 
-    override fun onDetach() {
-        super.onDetach()
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
 }

@@ -245,7 +245,7 @@ class DeliveryStopListScreen
 
         })
 
-        flexibleAdapter.addListener(FlexibleAdapter.OnUpdateListener { item ->
+        flexibleAdapter.addListener(FlexibleAdapter.OnUpdateListener { _ ->
             log.trace("ONITEMUPDATE")
         })
 

@@ -95,7 +95,7 @@ class LocationService(
             LTRLocationListener(LocationManager.NETWORK_PROVIDER)
     )
 
-    inner class LTRLocationListener(provider: String) : android.location.LocationListener {
+    inner class LTRLocationListener(val provider: String) : android.location.LocationListener {
         private val log = LoggerFactory.getLogger(this.javaClass)
         val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
 

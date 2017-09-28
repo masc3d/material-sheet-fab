@@ -56,7 +56,6 @@ class OrderRepository(
      * Existing orders will have their parcel lists merged accordingly.
      */
     fun merge(orders: List<Order>): Single<Int> {
-        val sw = Stopwatch.createStarted()
         return Single.fromCallable {
             var created = 0
 

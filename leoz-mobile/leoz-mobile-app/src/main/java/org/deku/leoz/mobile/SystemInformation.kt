@@ -20,7 +20,7 @@ data class SystemInformation(
         /** Current application version */
         val applicationVersion: String
 ) {
-    companion object {}
+    companion object
 }
 
 /**

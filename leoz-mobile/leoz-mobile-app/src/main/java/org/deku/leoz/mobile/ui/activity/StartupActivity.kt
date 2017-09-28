@@ -80,8 +80,6 @@ class StartupActivity : BaseActivity() {
         log.trace("Intent action ${this.intent.action}")
 
         if (!this.app.isInitialized) {
-            val ovDatabase = Observable.fromCallable {
-            }
 
             // Acquire permissions
             val ovPermissions = RxPermissions(this)
@@ -156,7 +154,7 @@ class StartupActivity : BaseActivity() {
                                     val database: Database = Kodein.global.instance()
 
                                     try {
-                                        Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { sw, log ->
+                                        Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { _, _ ->
                                             // Simply getting a writable database reference will perform (requery) migration
                                             database.dataSource.writableDatabase
                                         })

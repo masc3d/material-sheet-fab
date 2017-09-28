@@ -37,7 +37,7 @@ class EventDialog private constructor(
 
         private val selectedItemSubject = PublishSubject.create<EventNotDeliveredReason>()
 
-        private val eventAdapter = MaterialSimpleListAdapter({ materialDialog, i, materialSimpleListItem ->
+        private val eventAdapter = MaterialSimpleListAdapter({ _, i, materialSimpleListItem ->
             log.debug("ONMATERIALLISTITEMSELECTED [$i]")
 
             val event = materialSimpleListItem.tag as EventNotDeliveredReason

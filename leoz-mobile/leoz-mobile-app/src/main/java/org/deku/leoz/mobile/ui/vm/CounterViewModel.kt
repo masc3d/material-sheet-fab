@@ -11,5 +11,4 @@ class CounterViewModel(
         @DrawableRes val drawableRes: Int,
         val amount: ObservableField<String>,
         val totalAmount: ObservableField<String>
-) : BaseObservable() {
-}
+) : BaseObservable()

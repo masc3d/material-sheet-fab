@@ -57,16 +57,12 @@ class MainActivity
         super.onDestroy()
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     private fun showExitDialog() {
         MaterialDialog.Builder(this)
                 .title(R.string.exit_application)
                 .content(R.string.exit_application_prompt)
                 .positiveText(android.R.string.yes)
-                .onPositive { dialog, which -> this.app.terminate() }
+                .onPositive { _, _ -> this.app.terminate() }
                 .negativeText(android.R.string.no)
                 .build().show()
     }

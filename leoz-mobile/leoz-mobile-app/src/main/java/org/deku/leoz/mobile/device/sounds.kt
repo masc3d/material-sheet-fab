@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.device;
+package org.deku.leoz.mobile.device
 
 import android.content.Context
 import android.media.AudioManager
@@ -20,14 +20,14 @@ class Sounds(private val context: Context) {
                 AudioManager.STREAM_MUSIC,
                 0)
 
-        cameraSoundId = soundPool.load(context, R.raw.sound_camera_click, 0);
+        cameraSoundId = soundPool.load(context, R.raw.sound_camera_click, 0)
     }
 
     private fun playSoundWithId(id: Int) {
-        soundPool.play(id, 1F, 1F, 0, 0, 1F);
+        soundPool.play(id, 1F, 1F, 0, 0, 1F)
     }
 
     fun playCameraClick() {
-        this.playSoundWithId(cameraSoundId);
+        this.playSoundWithId(cameraSoundId)
     }
 }

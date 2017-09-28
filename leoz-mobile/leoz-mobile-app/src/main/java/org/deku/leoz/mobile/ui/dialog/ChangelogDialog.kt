@@ -38,7 +38,7 @@ class ChangelogDialog: Dialog(R.layout.dialog_whatsnew) {
         val builder = AlertDialog.Builder(context)
 
         builder.setView(this.builderView)
-                .setNeutralButton(R.string.ok, { dialog, which ->
+                .setNeutralButton(R.string.ok, { _, _ ->
                     this.dismiss()
                 })
                 .setCancelable(false)
@@ -56,7 +56,4 @@ class ChangelogDialog: Dialog(R.layout.dialog_whatsnew) {
         return builder.create()
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
 }

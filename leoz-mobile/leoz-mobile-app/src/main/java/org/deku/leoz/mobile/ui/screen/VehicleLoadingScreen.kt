@@ -429,7 +429,7 @@ class VehicleLoadingScreen :
                     it.value != this.damagedSection
                 },
 
-                BiFunction { a: Any, b: Any ->
+                BiFunction { _: Any, _: Any ->
                     this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
                 }
         )

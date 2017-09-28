@@ -16,25 +16,25 @@ class DataBindingAdatpers {
         @BindingAdapter("android:src")
         @JvmStatic fun setImageUri(view: ImageView, imageUri: String?) {
             if (imageUri == null) {
-                view.setImageURI(null);
+                view.setImageURI(null)
             } else {
-                view.setImageURI(Uri.parse(imageUri));
+                view.setImageURI(Uri.parse(imageUri))
             }
         }
 
         @BindingAdapter("android:src")
         @JvmStatic fun setImageUri(view: ImageView, imageUri: Uri) {
-            view.setImageURI(imageUri);
+            view.setImageURI(imageUri)
         }
 
         @BindingAdapter("android:src")
         @JvmStatic fun setImageDrawable(view: ImageView, drawable: Drawable) {
-            view.setImageDrawable(drawable);
+            view.setImageDrawable(drawable)
         }
 
         @BindingAdapter("android:src")
         @JvmStatic fun setImageResource(imageView: ImageView, resource: Int){
-            imageView.setImageResource(resource);
+            imageView.setImageResource(resource)
         }
 
         @BindingAdapter("android:background")
