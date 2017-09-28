@@ -11,7 +11,7 @@ buildscript {
         v_anko = '0.10.1'
         v_javamail = '1.6.0'
         v_junit = '4.12'
-        v_kotlin = '1.1.50'
+        v_kotlin = '1.1.51'
         v_ormlite = '5.0'
         v_paho = '1.1.1'
         v_roboelectric = '3.4.2'
