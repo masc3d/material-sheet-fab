@@ -135,7 +135,7 @@ class UpdateService(
                 try {
                     val apk = ApplicationPackageName.parse(it.name)
                     (apk.bundleName != updateInfo.bundleName || apk.version != updateInfo.latestDesignatedVersion!!)
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     false
                 }
             }).forEach {
@@ -187,7 +187,7 @@ class UpdateService(
                 val zipFile = ZipFile(downloadFile)
                 try {
                     zipFile.verify()
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     // Remove invalid archive
                     downloadFile.delete()
                     throw e
@@ -209,7 +209,7 @@ class UpdateService(
 
             this.availableUpdate = apk
             this.availableUpdateEventSubject.onNext(AvailableUpdateEvent(apk, apkName.version))
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             when (e) {
                 is FeignException -> log.error(e.message)
                 else -> {

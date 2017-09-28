@@ -6,8 +6,8 @@ import sx.text.toHexString
 import java.security.MessageDigest
 
 /**
-* Created by masc on 27.04.17.
-*/
+ * Created by masc on 27.04.17.
+ */
 class HashTest {
     val PASSWORD = "testtest"
 

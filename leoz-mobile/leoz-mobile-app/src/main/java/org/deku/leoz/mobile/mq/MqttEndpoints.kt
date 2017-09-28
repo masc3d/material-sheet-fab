@@ -26,6 +26,7 @@ class MqttEndpoints(
             )
         }
     }
+
     val central = Central()
 
     inner class Mobile {
@@ -36,5 +37,6 @@ class MqttEndpoints(
             )
         }
     }
+
     val mobile = Mobile()
 }

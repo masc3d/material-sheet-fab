@@ -77,6 +77,7 @@ class EventDialog private constructor(
         fun events(events: List<EventNotDeliveredReason>) = apply {
             this.events = events.reversed()
         }
+
         fun listener(listener: Listener) = apply { this.listener = listener }
 
         override fun build(): EventDialog {

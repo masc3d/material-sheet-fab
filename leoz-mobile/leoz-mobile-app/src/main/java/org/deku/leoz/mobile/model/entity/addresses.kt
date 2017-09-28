@@ -13,7 +13,7 @@ fun Address.isCompatibleStopAddressFor(other: Address): Boolean {
             { this.street.equals(other.street, ignoreCase = true) },
             { this.streetNo.equals(other.streetNo, ignoreCase = true) },
             { this.zipCode.equals(other.zipCode, ignoreCase = true) },
-            { this.countryCode.equals(other.countryCode, ignoreCase = true)},
+            { this.countryCode.equals(other.countryCode, ignoreCase = true) },
             { this.city.equals(other.city, ignoreCase = true) }
     ).all { it.invoke() }
 }

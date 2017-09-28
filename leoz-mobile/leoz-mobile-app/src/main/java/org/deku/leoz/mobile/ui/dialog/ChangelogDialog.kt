@@ -3,7 +3,6 @@ package org.deku.leoz.mobile.ui.dialog
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
-import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import kotlinx.android.synthetic.main.dialog_whatsnew.view.*
 import org.deku.leoz.mobile.R
@@ -14,7 +13,7 @@ import sx.LazyInstance
 /**
  * Created by phpr on 24.06.2017.
  */
-class ChangelogDialog: Dialog(R.layout.dialog_whatsnew) {
+class ChangelogDialog : Dialog(R.layout.dialog_whatsnew) {
 
     private lateinit var items: List<ChangelogItem>
 
@@ -34,6 +33,7 @@ class ChangelogDialog: Dialog(R.layout.dialog_whatsnew) {
             return d
         }
     }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
         val builder = AlertDialog.Builder(context)
 

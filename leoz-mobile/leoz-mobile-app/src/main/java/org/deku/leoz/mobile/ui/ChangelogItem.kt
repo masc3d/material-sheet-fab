@@ -16,13 +16,13 @@ import java.util.*
 class ChangelogItem private constructor(
         val date: String,
         val version: String,
-        val entry: ChangelogEntry): AbstractFlexibleItem<ChangelogItem.ViewHolder>() {
+        val entry: ChangelogEntry) : AbstractFlexibleItem<ChangelogItem.ViewHolder>() {
 
     companion object {
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN)
     }
 
-    constructor(date: Date, version: String, entries: ChangelogEntry): this(date = dateFormat.format(date), version = version, entry = entries)
+    constructor(date: Date, version: String, entries: ChangelogEntry) : this(date = dateFormat.format(date), version = version, entry = entries)
 
     data class ChangelogEntry(val title: String, val description: String)
 

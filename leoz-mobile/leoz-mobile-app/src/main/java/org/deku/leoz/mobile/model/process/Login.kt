@@ -15,7 +15,6 @@ import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.entity.UserEntity
 import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.repository.OrderRepository
-import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory

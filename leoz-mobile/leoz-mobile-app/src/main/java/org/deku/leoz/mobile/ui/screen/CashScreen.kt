@@ -78,7 +78,7 @@ class CashScreen : ScreenFragment<Any>() {
                 else -> 0.0
             }
         }
-    
+
     /** Current locale currency format */
     private val currencyFormat by lazy { NumberFormat.getCurrencyInstance(resources.configuration.locale) }
 

@@ -15,7 +15,6 @@ import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.LocationServiceV1
-import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.mq.mqtt.channel
@@ -25,8 +24,7 @@ class LocationService(
         var period: Duration = Duration.ofSeconds(30),
         var minDistance: Float = 250F,
         var enabled: Boolean = true
-)
-    : Service() {
+) : Service() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val locationSettings: LocationSettings by Kodein.global.lazy.instance()
@@ -158,5 +156,5 @@ class LocationService(
         }
     }
 
-    class MockLocationException(message: String): Throwable(message)
+    class MockLocationException(message: String) : Throwable(message)
 }

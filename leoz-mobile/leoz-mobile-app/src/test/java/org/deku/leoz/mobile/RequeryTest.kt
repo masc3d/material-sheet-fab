@@ -8,10 +8,8 @@ import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.config.DatabaseTestConfiguration
 import org.deku.leoz.mobile.model.entity.AddressEntity
-import org.deku.leoz.mobile.model.entity.OrderEntity
-import org.deku.leoz.mobile.model.entity.Parcel
-import org.junit.Test
 import org.junit.Assert
+import org.junit.Test
 
 /**
  * Some generic requery tests using leoz mobile model/entity classes

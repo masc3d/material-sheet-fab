@@ -139,8 +139,8 @@ class ActionOverlayView : RelativeLayout {
         this.backpressuredItems
                 .observeOnMainThread()
                 .subscribe {
-            this.update()
-        }
+                    this.update()
+                }
     }
 
     /**

@@ -1,10 +1,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_aidc_camera"
-    android:layout_width="match_parent"
-    android:layout_height="300dp"
-    tools:context="org.deku.leoz.mobile.ui.fragment.AidcCameraFragment">
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:id="@+id/fragment_aidc_camera"
+             android:layout_width="match_parent"
+             android:layout_height="300dp"
+             tools:context="org.deku.leoz.mobile.ui.fragment.AidcCameraFragment">
 
     <FrameLayout
         android:id="@+id/uxContainer"
@@ -18,7 +18,7 @@
         android:background="@color/colorAccent"
         android:alpha="0.7"
         android:layout_width="match_parent"
-        android:layout_height="4dp" />
+        android:layout_height="4dp"/>
 
     <android.support.design.widget.FloatingActionButton
         style="@style/AppTheme.Fab"
@@ -30,7 +30,7 @@
         app:layout_anchor="@id/fragment_aidc_camera"
         app:layout_anchorGravity="start"
         app:backgroundTint="@color/colorDarkGrey"
-        app:srcCompat="@drawable/ic_flash" />
+        app:srcCompat="@drawable/ic_flash"/>
 
     <android.support.design.widget.FloatingActionButton
         style="@style/AppTheme.Fab"
@@ -42,6 +42,6 @@
         app:layout_anchor="@id/fragment_aidc_camera"
         app:layout_anchorGravity="start"
         app:backgroundTint="@color/colorDarkGrey"
-        app:srcCompat="@drawable/ic_pin" />
+        app:srcCompat="@drawable/ic_pin"/>
 
 </FrameLayout>

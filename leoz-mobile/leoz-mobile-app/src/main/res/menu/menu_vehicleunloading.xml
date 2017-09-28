@@ -6,6 +6,6 @@
         android:id="@+id/action_reset"
         android:icon="@drawable/ic_order"
         android:title="@string/reset"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 
 </menu>

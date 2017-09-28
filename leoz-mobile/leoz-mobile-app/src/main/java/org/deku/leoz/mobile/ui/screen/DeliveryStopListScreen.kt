@@ -21,7 +21,6 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenDeliveryStopListBinding
-import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Delivery
@@ -36,7 +35,9 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.android.ui.flexibleadapter.*
+import sx.android.ui.flexibleadapter.FlexibleHeaderVmItem
+import sx.android.ui.flexibleadapter.FlexibleVmItem
+import sx.android.ui.flexibleadapter.customizeScrollBehavior
 import sx.rx.ObservableRxProperty
 
 /**
