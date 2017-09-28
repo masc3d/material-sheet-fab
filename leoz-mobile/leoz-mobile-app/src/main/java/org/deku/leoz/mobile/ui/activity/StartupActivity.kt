@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -13,10 +12,12 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
-import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.Application
+import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.LocationSettings
+import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
@@ -25,7 +26,6 @@ import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
-import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.service.internal.NodeServiceV1
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.slf4j.LoggerFactory
@@ -80,8 +80,6 @@ class StartupActivity : BaseActivity() {
         log.trace("Intent action ${this.intent.action}")
 
         if (!this.app.isInitialized) {
-            val ovDatabase = Observable.fromCallable {
-            }
 
             // Acquire permissions
             val ovPermissions = RxPermissions(this)
@@ -156,7 +154,7 @@ class StartupActivity : BaseActivity() {
                                     val database: Database = Kodein.global.instance()
 
                                     try {
-                                        Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { sw, log ->
+                                        Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { _, _ ->
                                             // Simply getting a writable database reference will perform (requery) migration
                                             database.dataSource.writableDatabase
                                         })

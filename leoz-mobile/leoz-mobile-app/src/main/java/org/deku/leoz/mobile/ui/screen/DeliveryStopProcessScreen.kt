@@ -494,7 +494,7 @@ class DeliveryStopProcessScreen :
                     it.value != this.damagedSection
                 },
 
-                BiFunction { a: Any, b: Any ->
+                BiFunction { _: Any, _: Any ->
                     this.deliveryStop.damagedParcels.blockingFirst()
                 }
         )
@@ -638,7 +638,7 @@ class DeliveryStopProcessScreen :
                                             ?.isVisible = deliveryStop.canCloseWithDeliveryToPostbox
 
                                     it.visible = deliveryStop.canClose &&
-                                            it.menu?.hasVisibleItems() ?: false
+                                            it.menu?.hasVisibleItems() == true
                                 }
                     }
                 }

@@ -400,7 +400,7 @@ class VehicleUnloadingScreen :
                     it.value != this.damagedSection
                 },
 
-                BiFunction { a: Any, b: Any ->
+                BiFunction { _: Any, _: Any ->
                     this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
                 }
         )
@@ -472,13 +472,7 @@ class VehicleUnloadingScreen :
                         .build().show()
             }
             else -> {
-                val resultValue = result.value
-
-                when (resultValue) {
-                    is UnitNumber -> {
-                        this.onInput(resultValue)
-                    }
-                }
+                this.onInput(result.value)
             }
         }
     }

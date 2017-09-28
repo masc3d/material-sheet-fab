@@ -341,8 +341,6 @@ class DeliveryStop(
      * Deliver a single parcel
      */
     fun deliverParcel(parcel: ParcelEntity): Completable {
-        val stop = this.entity
-
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
             open()
@@ -386,8 +384,6 @@ class DeliveryStop(
      * Assign event reason to entire stop
      */
     fun assignStopLevelEvent(reason: EventNotDeliveredReason): Completable {
-        val stop = this.entity
-
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
             open()
@@ -406,8 +402,6 @@ class DeliveryStop(
      * Assign event reason to entire stop
      */
     fun assignOrderLevelEvent(order: Order, reason: EventNotDeliveredReason): Completable {
-        val stop = this.entity
-
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
             open()

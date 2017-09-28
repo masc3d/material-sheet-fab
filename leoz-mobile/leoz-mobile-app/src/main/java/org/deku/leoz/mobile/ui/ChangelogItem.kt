@@ -16,36 +16,30 @@ import java.util.*
 class ChangelogItem private constructor(
         val date: String,
         val version: String,
-        val entry: ChangelogEntry): AbstractFlexibleItem<ChangelogItem.ViewHolder>() {
+        val entry: ChangelogEntry) : AbstractFlexibleItem<ChangelogItem.ViewHolder>() {
 
     companion object {
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN)
     }
 
-    constructor(date: Date, version: String, entries: ChangelogEntry): this(date = dateFormat.format(date), version = version, entry = entries)
+    constructor(date: Date, version: String, entries: ChangelogEntry) : this(date = dateFormat.format(date), version = version, entry = entries)
 
     data class ChangelogEntry(val title: String, val description: String)
 
-    override fun equals(inObject: Any?): Boolean {
-        if (inObject is ChangelogItem) {
-            return this == inObject
-        } else if (inObject is ChangelogEntry) {
-            return this.entry == inObject
+    override fun equals(other: Any?): Boolean {
+        if (other is ChangelogItem) {
+            return this == other
+        } else if (other is ChangelogEntry) {
+            return this.entry == other
         }
         return false
     }
 
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+    override fun getLayoutRes(): Int =
+            R.layout.item_changelog
 
-    override fun getLayoutRes(): Int {
-        return R.layout.item_changelog
-    }
-
-    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): ViewHolder {
-        return ViewHolder(view, adapter)
-    }
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): ViewHolder =
+            ViewHolder(view, adapter)
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?,
                                 holder: ViewHolder,

@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.ui.activity
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import com.afollestad.materialdialogs.MaterialDialog
@@ -16,7 +15,6 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.screen.MainScreen
-import org.slf4j.LoggerFactory
 
 
 class MainActivity
@@ -57,16 +55,12 @@ class MainActivity
         super.onDestroy()
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     private fun showExitDialog() {
         MaterialDialog.Builder(this)
                 .title(R.string.exit_application)
                 .content(R.string.exit_application_prompt)
                 .positiveText(android.R.string.yes)
-                .onPositive { dialog, which -> this.app.terminate() }
+                .onPositive { _, _ -> this.app.terminate() }
                 .negativeText(android.R.string.no)
                 .build().show()
     }

@@ -58,6 +58,7 @@ class Database(
 
         override fun toString(): String = "${major}.${minor}"
     }
+
     /**
      * Database file
      */

@@ -1,10 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    style="@style/AppTheme.Layout.Screen">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              style="@style/AppTheme.Layout.Screen">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -89,7 +89,7 @@
                     android:inputType="numberDecimal"
                     app:allow_negative_values="false"
                     app:decimal_digits="2"
-                    tools:ignore="HardcodedText" />
+                    tools:ignore="HardcodedText"/>
 
             </LinearLayout>
 
@@ -127,7 +127,7 @@
                     android:paddingStart="@dimen/small_margin"
                     android:ems="10"
                     android:hint="00,00"
-                    tools:ignore="HardcodedText" />
+                    tools:ignore="HardcodedText"/>
 
             </LinearLayout>
         </LinearLayout>
@@ -146,7 +146,7 @@
             android:id="@+id/uxOrderCashList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom" />
+            android:layout_gravity="bottom"/>
 
     </LinearLayout>
 

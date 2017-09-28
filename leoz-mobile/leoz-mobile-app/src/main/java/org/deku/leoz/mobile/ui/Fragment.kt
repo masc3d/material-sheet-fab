@@ -13,8 +13,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 /**
-* Created by masc on 01/03/2017.
-*/
+ * Created by masc on 01/03/2017.
+ */
 open class Fragment<P> : RxAppCompatDialogFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

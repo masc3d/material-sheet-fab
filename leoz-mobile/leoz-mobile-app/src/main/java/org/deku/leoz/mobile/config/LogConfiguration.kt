@@ -9,11 +9,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.eagerSingleton
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.singleton
+import com.github.salomonbrys.kodein.*
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.R

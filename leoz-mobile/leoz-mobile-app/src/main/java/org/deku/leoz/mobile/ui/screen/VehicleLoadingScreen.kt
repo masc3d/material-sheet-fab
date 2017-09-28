@@ -18,7 +18,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
@@ -29,15 +28,10 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.entity.ParcelMeta
-import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.VehicleLoading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
-import org.deku.leoz.mobile.mq.MimeType
-import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -63,7 +57,6 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
-import sx.mq.mqtt.channel
 import java.util.concurrent.ExecutorService
 
 /**
@@ -429,7 +422,7 @@ class VehicleLoadingScreen :
                     it.value != this.damagedSection
                 },
 
-                BiFunction { a: Any, b: Any ->
+                BiFunction { _: Any, _: Any ->
                     this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
                 }
         )

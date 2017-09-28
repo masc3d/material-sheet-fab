@@ -14,7 +14,7 @@ import sx.android.aidc.AidcReader
 /**
  * Created by phpr on 29.05.2017.
  */
-abstract class Dialog(@LayoutRes val dialogLayoutId: Int): RxAppCompatDialogFragment() {
+abstract class Dialog(@LayoutRes val dialogLayoutId: Int) : RxAppCompatDialogFragment() {
     protected val log = LoggerFactory.getLogger(this.javaClass)
     protected val aidcReader: AidcReader by Kodein.global.lazy.instance()
 

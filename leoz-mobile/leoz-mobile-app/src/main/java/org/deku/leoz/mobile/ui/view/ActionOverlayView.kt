@@ -139,8 +139,8 @@ class ActionOverlayView : RelativeLayout {
         this.backpressuredItems
                 .observeOnMainThread()
                 .subscribe {
-            this.update()
-        }
+                    this.update()
+                }
     }
 
     /**
@@ -325,7 +325,7 @@ class ActionOverlayView : RelativeLayout {
                                                             ?: (if (this.defaultIcon != 0) ContextCompat.getDrawable(context, this.defaultIcon) else null)
                                             )
 
-                                            sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
+                                            sheetItem.uxActionOverlaySheetItemTitle.text = menuItem.title
 
                                             // masc20170811. Putting this observable sinde the onClickListener lambda
                                             // will cause release builds to fail (on proguard) with androidstudio-2.3.3

@@ -16,6 +16,7 @@ class ServiceViewModel(
         val context: Context,
         val service: ParcelService) : BaseObservable() {
 
-    @get:DrawableRes val icon: Int = service.mobile.icon
+    @get:DrawableRes
+    val icon: Int = service.mobile.icon
     val text: String = service.mobile.textOrName(context)
 }

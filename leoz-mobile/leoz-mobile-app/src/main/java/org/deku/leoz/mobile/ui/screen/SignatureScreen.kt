@@ -35,8 +35,7 @@ class SignatureScreen
     :
         ScreenFragment<SignatureScreen.Parameters>(),
         SignaturePad.OnSignedListener,
-        BaseCameraScreen.Listener
-{
+        BaseCameraScreen.Listener {
     interface Listener {
         fun onSignatureSubmitted(signatureSvg: String)
         fun onSignatureImageSubmitted(signatureJpeg: ByteArray)

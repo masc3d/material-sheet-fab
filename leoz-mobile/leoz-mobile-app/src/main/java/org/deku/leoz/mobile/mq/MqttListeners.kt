@@ -7,8 +7,7 @@ import sx.mq.mqtt.MqttListener
  * Created by masc on 12.05.17.
  */
 class MqttListeners(
-        private val endpoints: MqttEndpoints)
-{
+        private val endpoints: MqttEndpoints) {
     inner class Mobile {
         /**
          * Listener for mobile topic channel
@@ -18,5 +17,6 @@ class MqttListeners(
                     mqttEndpoint = endpoints.mobile.topic)
         }
     }
+
     val mobile = Mobile()
 }

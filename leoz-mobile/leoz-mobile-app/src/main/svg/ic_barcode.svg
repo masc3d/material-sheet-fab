@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48pt" height="48pt" viewBox="0 0 48 48" version="1.1">
-<g id="surface1">
-<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 4 12 L 8 12 L 8 36 L 4 36 L 4 12 M 10 12 L 12 12 L 12 36 L 10 36 L 10 12 M 14 12 L 20 12 L 20 36 L 14 36 L 14 12 M 22 12 L 24 12 L 24 36 L 22 36 L 22 12 M 28 12 L 32 12 L 32 36 L 28 36 L 28 12 M 34 12 L 40 12 L 40 36 L 34 36 L 34 12 M 42 12 L 44 12 L 44 36 L 42 36 Z M 42 12 "/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="48pt"
+     height="48pt" viewBox="0 0 48 48" version="1.1">
+    <g id="surface1">
+        <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
+              d="M 4 12 L 8 12 L 8 36 L 4 36 L 4 12 M 10 12 L 12 12 L 12 36 L 10 36 L 10 12 M 14 12 L 20 12 L 20 36 L 14 36 L 14 12 M 22 12 L 24 12 L 24 36 L 22 36 L 22 12 M 28 12 L 32 12 L 32 36 L 28 36 L 28 12 M 34 12 L 40 12 L 40 36 L 34 36 L 34 12 M 42 12 L 44 12 L 44 36 L 42 36 Z M 42 12 "/>
+    </g>
 </svg>

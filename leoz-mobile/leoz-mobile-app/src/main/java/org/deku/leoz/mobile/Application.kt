@@ -100,10 +100,6 @@ open class Application : MultiDexApplication() {
         }
     }
 
-    override fun onTerminate() {
-        super.onTerminate()
-    }
-
     /**
      * Application version
      * @return
@@ -121,7 +117,7 @@ open class Application : MultiDexApplication() {
      * Application name
      */
     val name: String by lazy {
-        applicationInfo.loadLabel(this.packageManager).toString();
+        applicationInfo.loadLabel(this.packageManager).toString()
     }
 
     /**

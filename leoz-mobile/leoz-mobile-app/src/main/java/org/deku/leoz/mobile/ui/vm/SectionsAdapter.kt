@@ -90,7 +90,7 @@ class SectionsAdapter
 
         this.setStickyHeaders(true)
         this.showAllHeaders()
-        this.setAutoCollapseOnExpand(true)
+        this.isAutoCollapseOnExpand = true
         this.collapseAll()
 
         this.selectedSectionProperty

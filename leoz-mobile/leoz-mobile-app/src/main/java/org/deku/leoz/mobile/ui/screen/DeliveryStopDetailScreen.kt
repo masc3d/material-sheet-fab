@@ -308,7 +308,7 @@ class DeliveryStopDetailScreen
                             dialogBuilder.positiveText(R.string.call)
                             dialogBuilder.negativeText(android.R.string.cancel)
                             dialogBuilder.cancelable(true)
-                            dialogBuilder.onPositive { materialDialog, dialogAction ->
+                            dialogBuilder.onPositive { _, _ ->
                                 startActivity(intent)
                             }
                             dialogBuilder.build().show()

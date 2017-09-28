@@ -45,8 +45,8 @@ fun Context.showAlert(text: CharSequence,
     if (positiveButton != null) {
         builder = builder
                 .setPositiveButton(positiveButton.text, { dialogInterface, _ ->
-            positiveButton.handler(dialogInterface)
-        })
+                    positiveButton.handler(dialogInterface)
+                })
     }
     if (negativeButton != null) {
         builder = builder.setNegativeButton(negativeButton.text, { dialogInterface, _ ->

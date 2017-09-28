@@ -6,7 +6,8 @@
 
     <data>
 
-        <import type="android.view.View" />
+        <import type="android.view.View"/>
+
         <variable
             name="updateService"
             type="org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel"

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    style="@style/AppTheme.Layout.Content">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              style="@style/AppTheme.Layout.Content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,7 +37,7 @@
                 android:completionThreshold="1"
                 android:imeOptions="actionNext"
                 android:nextFocusRight="@+id/uxNeighboursStreet"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
         </android.support.design.widget.TextInputLayout>
 
@@ -66,21 +66,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content">
 
-            <AutoCompleteTextView
-                android:id="@+id/uxNeighboursStreet"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:inputType="text|textCapWords"
-                android:maxLines="1"
-                android:completionThreshold="1"
-                android:imeOptions="actionNext"
-                android:hint="@string/street"
-                android:nextFocusRight="@+id/uxNeighboursStreetNo"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+                <AutoCompleteTextView
+                    android:id="@+id/uxNeighboursStreet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:inputType="text|textCapWords"
+                    android:maxLines="1"
+                    android:completionThreshold="1"
+                    android:imeOptions="actionNext"
+                    android:hint="@string/street"
+                    android:nextFocusRight="@+id/uxNeighboursStreetNo"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
-        </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="50dp"
@@ -97,7 +97,7 @@
                     android:inputType="number|text"
                     android:maxLines="1"
                     android:hint="@string/number_short_no"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
             </android.support.design.widget.TextInputLayout>
 

@@ -4,6 +4,7 @@
         xmlns:bind="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="stats"
             type="org.deku.leoz.mobile.ui.screen.DeliveryStopProcessScreen.StatsViewModel"/>

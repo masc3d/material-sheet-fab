@@ -29,9 +29,7 @@ import java.util.concurrent.ExecutorService
  * Mobile MQTT configuration
  * Created by masc on 10.05.17.
  */
-class MqttConfiguration(
-        context: MqttContext
-) {
+class MqttConfiguration {
 
     companion object {
         private val log = LoggerFactory.getLogger(MqttConfiguration::class.java)

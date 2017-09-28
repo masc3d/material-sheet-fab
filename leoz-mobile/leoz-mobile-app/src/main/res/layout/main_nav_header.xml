@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="180dp"
-    android:background="@drawable/navbar_background"
-    android:divider="@drawable/divider_vertical_large"
-    android:gravity="bottom"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/large_margin"
-    android:paddingLeft="@dimen/large_margin"
-    android:paddingRight="@dimen/large_margin"
-    android:paddingTop="@dimen/large_margin"
-    android:showDividers="middle"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="180dp"
+              android:background="@drawable/navbar_background"
+              android:divider="@drawable/divider_vertical_large"
+              android:gravity="bottom"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/large_margin"
+              android:paddingLeft="@dimen/large_margin"
+              android:paddingRight="@dimen/large_margin"
+              android:paddingTop="@dimen/large_margin"
+              android:showDividers="middle"
+              android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="DeviceID"
-                android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Inverse"/>
         </LinearLayout>
 
 
@@ -118,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/user"
-                android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Inverse"/>
         </LinearLayout>
 
         <LinearLayout
@@ -142,7 +142,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/station_id"
-                android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Inverse"/>
         </LinearLayout>
 
     </LinearLayout>
