@@ -16,7 +16,6 @@ sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
 android {
-    publishNonDefault true
     compileSdkVersion 26
     buildToolsVersion v_android_buildtools
     defaultConfig {
@@ -76,7 +75,7 @@ dependencies {
             "com.android.databinding:compiler:3.0.0-beta6"
     )
 
-    testCompile(
+    testImplementation(
             "junit:junit:$v_junit",
             "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
 
