@@ -13,7 +13,7 @@ class ReleaseNativeBundleAndroidTask extends ReleaseTask {
 
     @TaskAction
     releaseNativeAndroidBundle() {
-        def variantName = "${this.extension.androidExtension.productFlavor}${this.extension.androidExtension.buildType.capitalize()}"
+        def variantName = "${this.extension.androidExtension.productFlavor}${this.extension.androidExtension.buildType.capitalize()}".uncapitalize()
 
         def applicationVariant = project.android.applicationVariants.find {
             it.name == variantName
