@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath(
-                'com.android.tools.build:gradle:2.3.3',
+                'com.android.tools.build:gradle:3.0.0-beta6',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
         )
     }
@@ -14,37 +14,6 @@ apply plugin: 'idea'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
-
-/** Base directory for generated classes */
-def GENERATED_DIR = file("${project.projectDir}/src/generated")
-/** Folder where kapt generates source files */
-def KAPT_GENERATED_DIR = new File(project.buildDir, 'generated/source/kapt/main')
-/** A destination folder where we sync kapt generated classes to, referring to kaptSync task/workaround see below */
-def KAPT_DST_GENERATED_DIR = new File(GENERATED_DIR, 'kapt')
-
-//idea {
-//    module {
-//        // Add KAPT generated sources to intellij
-//        sourceDirs += KAPT_DST_GENERATED_DIR
-//    }
-//}
-
-// TODO: stupid workaround for making AndroidStudio see kapt generated classes. Unlike IJ, AndroidStudio seems to ignore .java files in build dir even when they're explicltly added to `sourceDirs` via idea plugin
-//task kaptSync(type: Sync) {
-//    from KAPT_GENERATED_DIR
-//    into KAPT_DST_GENERATED_DIR
-//}
-//tasks.classes {
-//    dependsOn tasks.kaptSync
-//}
-
-configurations {
-    // Configurations for libraries using dev/prod product flavors (for improved build performance)
-    devDebugCompile
-    devReleaseCompile
-    prodDebugCompile
-    prodReleaseCompile
-}
 
 android {
     publishNonDefault true
@@ -76,40 +45,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
 
-    productFlavors {
-        dev {
-            // Enable pre-dexing to produce an APK that can be tested on
-            // Android 5.0+ without the time-consuming DEX build processes.
-            minSdkVersion 21
-        }
-
-        prod {
-            // The actual minSdkVersion for the production version.
-            minSdkVersion 16
+        debug {
+            minifyEnabled false
         }
     }
 }
 
 dependencies {
-    devDebugCompile(
-            project(path: ':sx-android', configuration: 'devDebug')
-    )
-
-    devReleaseCompile(
-            project(path: ':sx-android', configuration: 'devRelease')
-    )
-
-    prodDebugCompile(
-            project(path: ':sx-android', configuration: 'prodDebug')
-    )
-
-    prodReleaseCompile(
-            project(path: ':sx-android', configuration: 'prodRelease')
-    )
-
-    compile(
+    implementation(
+            project(path: ':sx-android', configuration: 'default'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             project(':leoz-common'),
@@ -128,7 +73,7 @@ dependencies {
 
     kapt(
             "io.requery:requery-processor:$v_requery",
-            "com.android.databinding:compiler:2.3.3"
+            "com.android.databinding:compiler:3.0.0-beta6"
     )
 
     testCompile(
@@ -143,18 +88,4 @@ dependencies {
             "io.reactivex.rxjava2:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:$v_rxkotlin",
     )
-}
-
-sourceSets {
-    test {
-        java {
-            srcDirs += KAPT_GENERATED_DIR
-        }
-    }
-}
-
-clean {
-    doLast {
-        GENERATED_DIR.deleteDir()
-    }
 }
