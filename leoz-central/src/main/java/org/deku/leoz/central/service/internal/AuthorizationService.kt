@@ -52,8 +52,25 @@ class AuthorizationService
     val event: EventDelegate<Listener> = eventSubject
 
     /**
-     *
+     * Mobile authorization request
      */
+    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.Response {
+        val serial = request.mobile?.serial
+        val imei = request.mobile?.imei
+
+        if (serial.isNullOrEmpty() || imei.isNullOrEmpty())
+            throw DefaultProblem(title = "At least one of serial or imei must be provided")
+
+        // TODO: handle mobile info as required
+        
+        val user = request.user
+
+        user ?:
+                throw DefaultProblem(title = "User is required")
+
+        return authorize(AuthorizationService.Credentials(user.email, user.password))
+    }
+
     override fun authorize(request: AuthorizationService.Credentials): AuthorizationService.Response {
         val user = request
 
