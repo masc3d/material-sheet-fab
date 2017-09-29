@@ -101,14 +101,7 @@ open class ParcelProcessing {
 
                 r.erzeugerstation = "002"
 
-                val userId = it.userId
-                if (userId != null) {
-                    val station = userRepository.findStationNrByUserId(userId)
-                    if (station != null) {
-                        r.erzeugerstation = station.toString().padStart(3, '0')
-                    }
-                }
-                val from = r.erzeugerstation
+
 
                 val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
                 parcelRecord ?:
@@ -116,6 +109,16 @@ open class ParcelProcessing {
                 val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
                 orderRecord ?:
                         return false
+
+                val userId = it.userId
+                //if (userId != null) {
+                    //val station = userRepository.findStationNrByUserId(userId)
+                    val station = orderRecord.depotnrld
+                    if (station != null) {
+                        r.erzeugerstation = station.toString().padStart(3, '0')
+                    }
+                //}
+                val from = r.erzeugerstation
 
                 val pasClearingartmaster = orderRecord.clearingartmaster
                 val pasCleared: Boolean

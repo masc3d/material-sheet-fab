@@ -73,6 +73,14 @@ interface UserService {
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
             var expiresOn: java.sql.Date? = null,
 
+            //@get:ApiModelProperty(example = "220,221",dataType = "String[]", required = false, value = "allowed stations")
+            //@get:ApiModelProperty(example = "220,221",dataType = "List", required = false, value = "allowed stations")
+            //@get:ApiModelProperty(example = "220,221",dataType = "java.util.List<String>", required = false, value = "allowed stations")
+            //@get:ApiModelProperty(example = "[\"220\",\"221\"]", required = false, value = "allowed stations")
+            //@get:ApiModelProperty(example = ["220","221"], required = false, value = "allowed stations")
+            @get:ApiModelProperty(example = "['220','221']", required = false, value = "allowed stations")
+            var allowedStations: List<String>?=null,
+
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this accounts password is supposed to expire")
             var passwordExpiresOn: java.sql.Date? = null
     )

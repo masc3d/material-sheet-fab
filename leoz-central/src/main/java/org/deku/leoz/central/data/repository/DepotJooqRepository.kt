@@ -54,4 +54,11 @@ open class DepotJooqRepository {
                 .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(StationNr.toInt())
                 ).fetchOne(Tables.TBLDEPOTLISTE.DEBITOR_ID)
     }
+    fun findStationsByDebitorId(debitorId:Int):List<String>{
+        return dslContext
+                .select(Tables.TBLDEPOTLISTE.DEPOTNR)
+                .from(Tables.TBLDEPOTLISTE)
+                .where(Tables.TBLDEPOTLISTE.ID.eq(debitorId))
+                .fetchInto(String::class.java)
+    }
 }

@@ -1,5 +1,7 @@
 package org.deku.leoz.central.service.internal
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.MailQueueRepository
@@ -7,6 +9,7 @@ import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.isActive
 import org.deku.leoz.central.data.repository.toUser
+import org.deku.leoz.model.AllowedStations
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.UserService.User
 import org.jooq.DSLContext
@@ -159,6 +162,15 @@ class UserService : UserService {
         val firstName = user.firstName
         val phone = user.phone
         val mobilePhone = user.phoneMobile
+
+        val allowsStations=AllowedStations()
+        val userStations=user.allowedStations
+        if (userStations!=null){
+            allowsStations.allowedStations=userStations.map { j -> j.toString() }.toList()
+        }
+        val mapper = ObjectMapper()
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        val stations=mapper.writeValueAsString(allowsStations)
 
         var isNew = false
         var rec = userRepository.findByMail(email)
@@ -320,6 +332,8 @@ class UserService : UserService {
         if (user.expiresOn != null)
             rec.expiresOn = user.expiresOn
 
+        rec.allowedStations=stations
+
         if (!userRepository.save(rec))
             throw DefaultProblem(
                     status = Response.Status.BAD_REQUEST,
@@ -356,5 +370,10 @@ class UserService : UserService {
 
         return true
     }
+
+    override fun changePassword(oldPassword: String, newPassword: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 
 }

@@ -495,5 +495,6 @@ enum class Reason(val id: Int, val oldValue: Int = 0) {
 }
 
 enum class counter(val value:Int){
-    FIELD_HISTORY(19)
+    FIELD_HISTORY(19),
+    LOADING_LIST(4000)
 }

@@ -1,10 +1,12 @@
 package org.deku.leoz.central.data.repository
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.MstUser
 import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
 import org.deku.leoz.hashUserPassword
+import org.deku.leoz.model.AllowedStations
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.text.parseHex
@@ -127,15 +129,18 @@ open class UserJooqRepository {
         return (userRecord.store() > 0)
     }
 
-    fun findStationNrByUserId(id: Int): Int? {
-        return dslContext.select(Tables.TBLDEPOTLISTE.DEPOTNR)
-                .from(Tables.TBLDEPOTLISTE.innerJoin(Tables.MST_USER).on(Tables.TBLDEPOTLISTE.ID.eq(Tables.MST_USER.DEBITOR_ID)))
-                .where(Tables.MST_USER.ID.eq(id)).fetchOneInto(Int::class.java)
-    }
+    //fun findStationNrByUserId(id: Int): Int? {
+    //    return dslContext.select(Tables.TBLDEPOTLISTE.DEPOTNR)
+    //            .from(Tables.TBLDEPOTLISTE.innerJoin(Tables.MST_USER).on(Tables.TBLDEPOTLISTE.ID.eq(Tables.MST_USER.DEBITOR_ID)))
+    //            .where(Tables.MST_USER.ID.eq(id)).fetchOneInto(Int::class.java)
+    //}
 
 }
 
 fun MstUserRecord.toUser(): UserService.User {
+    val stations=this.allowedStations?.toString() ?: "{}"
+    val mapper = ObjectMapper()
+    val allowedStations:AllowedStations=mapper.readValue(stations,AllowedStations::class.java)
 
     val user = UserService.User(
             // IMPORTANT: password must never be set when converting to service instance
@@ -153,7 +158,8 @@ fun MstUserRecord.toUser(): UserService.User {
             externalUser = this.isExternalUser,
             phone = this.phone,
             phoneMobile = this.phoneMobile,
-            expiresOn = this.expiresOn
+            expiresOn = this.expiresOn,
+            allowedStations = allowedStations.allowedStations
     )
     return user
 }
