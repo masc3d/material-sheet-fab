@@ -83,14 +83,19 @@ fun Context.setLocale(locale: Locale, asDefault: Boolean = false) {
     this.setLocale(language = locale.language, asDefault = asDefault)
 }
 
+/**
+ * Resets the locale to the default! locale. If the default locale was overwritten before with Context.setLocale(..., true),
+ * the locale is set to the new one. TODO: Implement function to return to system locale even if default locale was overwritten
+ */
 fun Context.resetLocale() {
-    this.setLocale(this.getSystemLocale())
+    this.setLocale(this.getDefaultLocale())
 }
 
 fun Context.getDefaultLocale(): Locale {
     return Locale.getDefault()
 }
 
+// TODO this seems not to be the systemLocale
 fun Context.getSystemLocale(): Locale {
     val config = this.resources.configuration
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
