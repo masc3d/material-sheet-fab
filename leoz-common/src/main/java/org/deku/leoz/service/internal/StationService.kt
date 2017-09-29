@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType
 interface StationService {
 
     companion object {
-        const val STATION_NO="station number"
+        const val STATION_NO = "station number"
     }
 
 
@@ -37,17 +37,17 @@ interface StationService {
             @ApiParam(value = "Query string") @QueryParam("q") query: String): Array<Station>
 
     @GET
-    @Path("/find/{$STATION_NO}")
+    @Path("/{$STATION_NO}")
     @ApiOperation(value = "get station")
     fun findByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "station number",example = "220",required = true) stationNo: Int
+            @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
     ): StationV2
 
     @GET
     @Path("/find/station")
-    @ApiOperation(value = "get station",response = StationV2::class)
+    @ApiOperation(value = "get station", response = StationV2::class)
     fun findByStation(
-            @QueryParam("station") @ApiParam(value = "station number",example = "220",required = true) stationNo: Int
+            @QueryParam("station") @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
     ): StationV2
 
     //@GET
