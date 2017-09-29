@@ -18,7 +18,8 @@ import javax.ws.rs.core.MediaType
 interface StationService {
 
     companion object {
-        const val STATION_NO = "station number"
+        const val STATION_NO = "station-no"
+        const val DEBITOR_ID = "debitor-id"
     }
 
 
@@ -39,21 +40,15 @@ interface StationService {
     @GET
     @Path("/{$STATION_NO}")
     @ApiOperation(value = "get station")
-    fun findByStationNo(
+    fun getByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
     ): StationV2
 
-    @GET
-    @Path("/find/station")
-    @ApiOperation(value = "get station", response = StationV2::class)
-    fun findByStation(
-            @QueryParam("station") @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
-    ): StationV2
 
-    //@GET
-    //@Path("/find/stations")
-    //@ApiOperation(value = "get stations",response = StationV2::class)
-    //fun findByDebitorId(
-    //        @QueryParam("debitorid") @ApiParam(value = "debitor id",example = "3",required = true) debitorId: Int
-    //): Array<StationV2>
+    @GET
+    @Path("/debitor/{$DEBITOR_ID}")
+    @ApiOperation(value = "get stations", response = StationV2::class)
+    fun getByDebitorId(
+            @PathParam("debitorid") @ApiParam(value = "debitor id", example = "3", required = true) debitorId: Int
+    ): Array<StationV2>
 }

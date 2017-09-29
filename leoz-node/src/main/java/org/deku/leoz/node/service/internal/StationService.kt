@@ -64,7 +64,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
         }
     }
 
-    override fun findByStationNo(stationNo: Int): StationV2 {
+    override fun getByStationNo(stationNo: Int): StationV2 {
 
         //
         //val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
@@ -74,20 +74,15 @@ class StationService : org.deku.leoz.service.internal.StationService {
         //      val authorizedUserRecord = userRepository.findByKey(apiKey)
         //authorizedUserRecord ?:
         //      throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-        val station=stationRepository.findByStation(stationNo)
-        station ?: throw DefaultProblem(status=Response.Status.BAD_REQUEST,title = "station not found")
+        val station = stationRepository.findByStation(stationNo)
+        station ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "station not found")
         return station.toStationV2()
     }
 
-    override fun findByStation(stationNo: Int): StationV2 {
-        val station=stationRepository.findByStation(stationNo)
-        station ?: throw DefaultProblem(status=Response.Status.BAD_REQUEST,title = "station not found")
-        return station.toStationV2()
-    }
 
-    //override fun findByDebitorId(debitorId: Int): Array<StationV2> {
-    //    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    //}
+    override fun getByDebitorId(debitorId: Int): Array<StationV2> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
 
 fun MstStation.toStationV2(): StationV2 {
