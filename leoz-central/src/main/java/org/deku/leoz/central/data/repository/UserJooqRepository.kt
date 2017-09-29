@@ -116,7 +116,7 @@ open class UserJooqRepository {
     }
 
     fun findByKey(apiKey: String): MstUserRecord? {
-        return dslContext.select(Tables.MST_USER.DEBITOR_ID)
+        return dslContext.select()
                 .from(Tables.MST_USER.innerJoin(Tables.MST_KEY)
                         .on(Tables.MST_USER.KEY_ID.eq(Tables.MST_KEY.KEY_ID)))
                 .where(Tables.MST_KEY.KEY.eq(apiKey))
