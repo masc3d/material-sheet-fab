@@ -246,9 +246,6 @@ dependencies {
 
             'com.github.pwittchen:reactivenetwork-rx2:0.12.1',
 
-            // i18n additions, eg. ISO 3166-1 country codes
-            "com.neovisionaries:nv-i18n:1.22",
-
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:$v_kryo") {
                 exclude group: 'org.ow2.asm', module: 'asm'
