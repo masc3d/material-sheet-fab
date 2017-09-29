@@ -129,6 +129,7 @@ export const LANG_EN_TRANS = {
   'actionChangeLoadlist': 'Action: Change loadlist',
   'notOnLoadlist': 'not yet on loadlist',
   'onLoadlist': 'already loaded',
+  'noDataAvailable': 'no data available',
   // stationloading form - bagscan
   'openOnBaglist': 'not yet on baglist',
   'bagInformation': 'Bag Information',
@@ -163,11 +164,36 @@ export const LANG_EN_TRANS = {
   'infoMsgfield': 'Open the scanning panel with F2.' + '<br>' +
   'Clear fields with F3.' + '<br>' +
   'Finish processing with F5.' + '<br>' +
-  'Replace regular seal with emergency seal with F10.',
+  'Swap to emergency seal with F10.',
   'maxBagWeightReached': 'Maximum bagweight reached',
   'caution': 'Caution',
   'activateBlueSeal': 'Activate the blue seal if you have an important reason',
   'scanBlueSeal': 'Scan Seal (blue)',
   'reason': 'Reason',
-  'saveF7': 'Save (F7)'
+  'saveF7': 'Save (F7)',
+  'noBagIDSet': 'The field <Bag-ID> may not be empty',
+  'noBackLabelSet': 'The field <Backlabel> may not be empty',
+  'noBackSealSet': 'The field <Backseal (yellow)> must be empty',
+  'noSealActivation': 'You may not activate the emergency seal if you already have a valid seal specified',
+  'noBlueSealNoSet': 'The Field <Scan Seal (blue)> may not be empty',
+  'noReasonSet': 'The Field <Reason> may not be empty',
+  'clearFields': 'Clear fields',
+  // reports
+  'report_loadinglist': 'Loadinglist',
+  'date': 'Date',
+  'to_auf': 'to',
+  'from': 'from',
+  'to_nach': 'to',
+  'total_CountShipments': 'Total shipments',
+  'total_CountPackages': 'Total packages',
+  'total_Weight': 'Total weight',
+  'totalPackagesToTransport': 'The following packages were loaded for transport without damage',
+  'nameOfDriver': 'Name of driver',
+  'licensePlate': 'License plate',
+  'loadingDate': 'Date',
+  'loadingTime': 'Time',
+  'signature': 'Signature',
+  'llDriver': '(Contractor/Driver)',
+  'page': 'Page',
+  'printingDate': 'Printingdate',
 };
