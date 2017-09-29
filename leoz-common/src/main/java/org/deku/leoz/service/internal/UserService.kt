@@ -5,6 +5,7 @@ import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.model.UserPreferenceKey
+import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 
 /**
@@ -70,7 +71,10 @@ interface UserService {
             var phoneMobile: String? = null,
 
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
-            var expiresOn: java.sql.Date? = null
+            var expiresOn: java.sql.Date? = null,
+
+            @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this accounts password is supposed to expire")
+            var passwordExpiresOn: java.sql.Date? = null
     )
 
     @ApiModel(description = "User preference object")
@@ -141,4 +145,12 @@ interface UserService {
     @Path("/{$USER_ID}/sendAppLink")
     @ApiOperation(value = "Send App download-link")
     fun sendDownloadLink(@PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): Boolean
+
+    @PATCH
+    @Path("/{$USER_ID}/changePassword")
+    @ApiOperation(value = "Change users password")
+    fun changePassword(
+            @ApiParam(value = "old_password") oldPassword: String,
+            @ApiParam(value = "new_password") newPassword: String
+    )
 }

@@ -100,6 +100,10 @@ open class Application : MultiDexApplication() {
         }
     }
 
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(BaseContextWrapper.wrap(context = base!!, language = null))
+    }
+
     /**
      * Application version
      * @return
