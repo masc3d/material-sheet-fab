@@ -53,10 +53,6 @@ open class UserJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
-//    fun findByKey(key: String): MstUserRecord? {
-//        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.API_KEY.eq(key))
-//    }
-
     fun findByMail(email: String): MstUserRecord? {
         return dslContext.fetchOne(
                 MstUser.MST_USER,
