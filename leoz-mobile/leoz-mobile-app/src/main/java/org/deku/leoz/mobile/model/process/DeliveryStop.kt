@@ -292,6 +292,16 @@ class DeliveryStop(
                 .sum()
     }
 
+    val cashCurrencyCode by lazy {
+        this.orders.blockingFirst()
+                .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.currency }
+                .first()
+    }
+
+    val recipientCountryCode by lazy {
+        com.neovisionaries.i18n.CountryCode.valueOf(this.stop.blockingFirst().address.countryCode)
+    }
+
     /**
      * Reset all closing stop related state variables
      */

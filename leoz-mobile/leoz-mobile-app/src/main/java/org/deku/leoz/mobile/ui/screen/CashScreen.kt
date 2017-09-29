@@ -16,6 +16,7 @@ import io.reactivex.Observable
 import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.ui.Headers
@@ -31,6 +32,7 @@ import sx.android.showSoftInput
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import java.text.NumberFormat
+import java.util.*
 
 /**
  * Cash screen
@@ -63,6 +65,10 @@ class CashScreen : ScreenFragment<Any>() {
         this.deliveryStop.cashAmountToCollect
     }
 
+    private val currencyCode by lazy {
+        this.deliveryStop
+    }
+
     /** Cash amount given */
     private var cashAmountGiven: Double = 0.0
 
@@ -80,7 +86,13 @@ class CashScreen : ScreenFragment<Any>() {
         }
 
     /** Current locale currency format */
-    private val currencyFormat by lazy { NumberFormat.getCurrencyInstance(resources.configuration.locale) }
+    private val currencyFormat by lazy { NumberFormat.getCurrencyInstance(recipientLocale).also {
+        it.currency = Currency.getInstance(deliveryStop.cashCurrencyCode)
+    } }
+
+    val recipientLocale by lazy {
+        this.deliveryStop.recipientCountryCode.toLocale()
+    }
 
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
             FlexibleExpandableVmItem<
@@ -108,6 +120,7 @@ class CashScreen : ScreenFragment<Any>() {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxCashValue.text = this.currencyFormat.format(this.cashAmountToCollect)
+        this.uxCashGiven.locale = recipientLocale
 
         //"${decimalFormat.format(delivery.activeStop?.cashAmountToCollect)} €"
         this.flexibleAdapterInstance.reset()

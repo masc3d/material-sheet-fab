@@ -8,9 +8,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.neovisionaries.i18n.CountryCode
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.RemoteSettings
 import org.deku.leoz.mobile.dev.SyntheticInput
+import org.deku.leoz.mobile.model.entity.address
+import org.deku.leoz.mobile.resetLocale
+import org.deku.leoz.mobile.setLocale
 import org.deku.leoz.mobile.ui.view.ActionItem
 import sx.rx.ObservableRxProperty
 
@@ -110,5 +114,13 @@ open class ScreenFragment<P> : Fragment<P>() {
     override fun onPause() {
         super.onPause()
         this.listener.onScreenFragmentPause(this)
+    }
+
+    fun setLanguage(countryCode: CountryCode) {
+        this.context.setLocale(countryCode.toLocale())
+    }
+
+    fun resetLanguage() {
+        this.context.resetLocale()
     }
 }

@@ -96,6 +96,6 @@ fun Context.getSystemLocale(): Locale {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         config.locales[0]
     } else {
-        config.locale
+        Locale.getDefault()
     }
 }
