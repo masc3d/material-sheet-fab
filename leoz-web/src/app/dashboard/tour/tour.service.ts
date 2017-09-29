@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { environment } from '../../../environments/environment';
 import { Position } from './position.model';
-import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 import { MsgService } from '../../shared/msg/msg.service';
 import { Driver } from './driver.model';
 import { MarkerModel } from './tour-map/marker.model';
 import { TranslateService } from '../../core/translate/translate.service';
 import { DriverService } from './driver.service';
-import RoleEnum = Driver.RoleEnum;
 import * as moment from 'moment';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import RoleEnum = Driver.RoleEnum;
 
 @Injectable()
 export class TourService {
@@ -45,7 +44,7 @@ export class TourService {
   private duration: number;
   private selectedDate: Date;
 
-  constructor( private http: Http,
+  constructor( private http: HttpClient,
                private msgService: MsgService,
                private translate: TranslateService,
                private driverService: DriverService ) {
@@ -54,88 +53,74 @@ export class TourService {
     this.selectedDate = null;
   }
 
-  private getLocation( userId: number ): Observable<Response> {
-    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+  private getLocation( userId: number ): Observable<Position[][]> {
     let usedUrl = this.locationUrl;
 
-    const queryParameters = new URLSearchParams();
-
-    queryParameters.set( 'user-id', String( userId ) );
+    let queryParameters = new HttpParams().set( 'user-id', String( userId ) );
     if (this.duration > 0) {
-      queryParameters.set( 'duration', String( this.duration ) );
+      queryParameters = queryParameters.append( 'duration', String( this.duration ) );
     } else {
       if (this.selectedDate) {
         // Eingrezung wenn datumsauswahl im Kalender
         const from = moment( this.selectedDate ).hours( 0 ).minutes( 0 ).seconds( 0 );
         const to = moment( this.selectedDate ).hours( 23 ).minutes( 59 ).seconds( 59 );
-        queryParameters.set( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
-        queryParameters.set( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
+        queryParameters = queryParameters.append( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
+        queryParameters = queryParameters.append( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
         usedUrl = this.locationFromToUrl;
       }
       // soll nix passieren
       // oder bei keiner Datumsauswahl => bereits vorher abprüfen
     }
 
-    const options = new RequestOptions( {
-      headers: ApiKeyHeaderFactory.headers( currUser.key ),
+    return this.http.get<any[]>( usedUrl, {
       params: queryParameters
     } );
-    return this.http.get( usedUrl, options );
   }
 
-  private getAllLocations(): Observable<Response> {
+  private getAllLocations(): Observable<any[]> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
     let usedUrl = this.locationUrl;
-    const queryParameters = new URLSearchParams();
-
-    queryParameters.set( 'debitor-id', String( currUser.user.debitorId ) );
+    let queryParameters = new HttpParams().set( 'debitor-id', String( currUser.user.debitorId ) );
     if (this.duration > 0) {
-      queryParameters.set( 'duration', String( this.duration ) );
+      queryParameters = queryParameters.append( 'duration', String( this.duration ) );
     } else {
       // Eingrezung wenn datumsauswahl im Kalender
       const from = moment( this.selectedDate ).hours( 0 ).minutes( 0 ).seconds( 0 );
       const to = moment( this.selectedDate ).hours( 23 ).minutes( 59 ).seconds( 59 );
-      queryParameters.set( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
-      queryParameters.set( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
+      queryParameters = queryParameters.append( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
+      queryParameters = queryParameters.append( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
       usedUrl = this.locationFromToUrl;
 
       // oder bei keiner Datumsauswahl => bereits vorher abprüfen
       // soll nix passieren
     }
 
-    const options = new RequestOptions( {
-      headers: ApiKeyHeaderFactory.headers( currUser.key ),
+    return this.http.get( usedUrl, {
       params: queryParameters
     } );
-    return this.http.get( usedUrl, options );
   }
 
-  private getRoute( userId: number ): Observable<Response> {
-    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+  private getRoute( userId: number ): Observable<Position[][]> {
     let usedUrl = this.locationUrl;
 
-    const queryParameters = new URLSearchParams();
-
-    queryParameters.set( 'user-id', String( userId ) );
+    let queryParameters = new HttpParams().set( 'user-id', String( userId ) );
     if (this.duration > 0) {
-      queryParameters.set( 'duration', String( this.duration ) );
+      queryParameters = queryParameters.append( 'duration', String( this.duration ) );
     } else {
       // Eingrezung wenn datumsauswahl im Kalender
       const from = moment( this.selectedDate ).hours( 0 ).minutes( 0 ).seconds( 0 );
       const to = moment( this.selectedDate ).hours( 23 ).minutes( 59 ).seconds( 59 );
-      queryParameters.set( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
-      queryParameters.set( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
+      queryParameters = queryParameters.append( 'from', from.format( 'MM/DD/YYYY HH:mm:ss' ) );
+      queryParameters = queryParameters.append( 'to', to.format( 'MM/DD/YYYY HH:mm:ss' ) );
       usedUrl = this.locationFromToUrl;
 
       // oder bei keiner Datumsauswahl => bereits vorher abprüfen
       // soll nix passieren
     }
 
-    const options = new RequestOptions( {
-      headers: ApiKeyHeaderFactory.headers( currUser.key ),
+    return this.http.get( usedUrl, {
       params: queryParameters
     } );
-    return this.http.get( usedUrl, options );
   }
 
   resetMsgs() {
@@ -159,8 +144,7 @@ export class TourService {
     this.selectedDate = selectedDate;
     this.resetDisplay();
     this.getLocation( selectedDriver.id )
-      .subscribe( ( response: Response ) => {
-          const driverLocations = response.json();
+      .subscribe( ( driverLocations ) => {
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
@@ -177,7 +161,7 @@ export class TourService {
             this.locationError();
           }
         },
-        ( error: Response ) => this.msgService.handleResponse( error ) );
+        ( error: HttpErrorResponse ) => this.msgService.handleResponse( error ) );
   }
 
   changeActiveRoute( selectedDriver: Driver, duration: number, selectedDate: Date ) {
@@ -185,8 +169,7 @@ export class TourService {
     this.selectedDate = selectedDate;
     this.resetDisplay();
     this.getRoute( selectedDriver.id )
-      .subscribe( ( response: Response ) => {
-          const driverLocations = response.json();
+      .subscribe( ( driverLocations ) => {
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
@@ -204,7 +187,7 @@ export class TourService {
             this.routeError();
           }
         },
-        ( error: Response ) => this.msgService.handleResponse( error ) );
+        ( error: HttpErrorResponse ) => this.msgService.handleResponse( error ) );
   }
 
   locationError(): void {
@@ -223,8 +206,7 @@ export class TourService {
     this.resetDisplay();
     this.driverService.getDrivers();
     this.getAllLocations()
-      .subscribe( ( response: Response ) => {
-          const allLocations = response.json();
+      .subscribe( ( allLocations ) => {
           const allMarkers = [];
           if (allLocations && allLocations.length > 0) {
             allLocations.forEach( ( userLocation: any ) => {
@@ -248,6 +230,6 @@ export class TourService {
           }
           this.allMarkersSubject.next( allMarkers );
         },
-        ( error: Response ) => this.msgService.handleResponse( error ) );
+        ( error: HttpErrorResponse ) => this.msgService.handleResponse( error ) );
   }
 }
