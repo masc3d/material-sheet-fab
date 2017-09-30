@@ -123,7 +123,8 @@ class Login {
                                 salt = SALT,
                                 email = email,
                                 password = password),
-                        apiKey = authResponse.key
+                        apiKey = authResponse.key,
+                        host = restConfiguration.host
                 )
 
                 // Store user in database
@@ -138,6 +139,7 @@ class Login {
 
                 val user = store.select(UserEntity::class)
                         .where(UserEntity.EMAIL.eq(email))
+                        .and(UserEntity.HOST.eq(restConfiguration.host))
                         .get()
                         .firstOrNull()
 

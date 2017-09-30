@@ -31,6 +31,10 @@ abstract class User : BaseRxObservable(), Persistable, Observable {
 
     @get:Column
     abstract var lastLoginTime: Date?
+
+    /** The host this user belongs to, as the same user may exist across systems with diverging id */
+    @get:Column
+    abstract var host: String?
 }
 
 fun User.Companion.create(
@@ -38,7 +42,8 @@ fun User.Companion.create(
         email: String,
         password: String,
         apiKey: String,
-        vehicleType: VehicleType = VehicleType.CAR
+        vehicleType: VehicleType = VehicleType.CAR,
+        host: String? = null
 ): UserEntity {
     return UserEntity().also {
         it.id = id
@@ -46,5 +51,6 @@ fun User.Companion.create(
         it.password = password
         it.apiKey = apiKey
         it.vehicleType = vehicleType
+        it.host = host
     }
 }
