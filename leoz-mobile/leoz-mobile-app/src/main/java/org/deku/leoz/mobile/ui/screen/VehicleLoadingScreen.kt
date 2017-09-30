@@ -122,7 +122,6 @@ class VehicleLoadingScreen :
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
-    private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
 
     private val vehicleLoading: VehicleLoading by Kodein.global.lazy.instance()
 
@@ -463,7 +462,8 @@ class VehicleLoadingScreen :
 
             // Synthetic inputs for delivery lists, retrieved via online service
             val ovDeliveryLists = Observable.fromCallable {
-                this.deliveryListService.get(ShortDate("2017-08-10"))
+                val deliveryListService = Kodein.global.instance<DeliveryListService>()
+                deliveryListService.get(ShortDate("2017-08-10"))
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)

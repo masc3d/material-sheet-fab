@@ -43,8 +43,6 @@ class Login {
     private val device: Device by Kodein.global.lazy.instance()
     private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
 
-    private val authService: AuthorizationService by Kodein.global.lazy.instance()
-
     private val db: Database by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
@@ -115,6 +113,7 @@ class Login {
                         password = password
                 )
 
+                val authService = Kodein.global.instance<AuthorizationService>()
                 val authResponse = authService.authorize(request)
 
                 val user = User.create(

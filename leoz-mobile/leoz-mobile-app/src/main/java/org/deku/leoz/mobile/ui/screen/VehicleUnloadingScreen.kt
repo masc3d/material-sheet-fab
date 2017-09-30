@@ -100,7 +100,6 @@ class VehicleUnloadingScreen :
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
-    private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
 
     private val vehicleUnloading: VehicleUnloading by Kodein.global.lazy.instance()
 

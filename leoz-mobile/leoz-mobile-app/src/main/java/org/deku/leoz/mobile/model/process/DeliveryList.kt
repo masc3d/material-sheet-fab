@@ -36,10 +36,6 @@ class DeliveryList : CompositeDisposableSupplier {
     private val db: Database by Kodein.global.lazy.instance()
     private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
-    // Services
-    private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
-    private val orderService: OrderService by Kodein.global.lazy.instance()
-
     // Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
@@ -159,9 +155,11 @@ class DeliveryList : CompositeDisposableSupplier {
 
         return Observable.fromCallable {
 
+            val deliveryListService = Kodein.global.instance<DeliveryListService>()
+
             // Retrieve delivery list
             val deliveryListId = deliveryListNumber.value.toLong()
-            val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
+            val deliveryList = deliveryListService.getById(id = deliveryListId)
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
             // Process orders
@@ -222,7 +220,9 @@ class DeliveryList : CompositeDisposableSupplier {
      */
     fun retrieveOrder(unitNumber: UnitNumber): Observable<Order> {
         return Observable.fromCallable {
-            val orders = this.orderService.get(parcelScan = unitNumber.value)
+            val orderService = Kodein.global.instance<OrderService>()
+
+            val orders = orderService.get(parcelScan = unitNumber.value)
                     .distinctOrders()
                     .map { it.toOrder() }
 
