@@ -10,7 +10,7 @@ buildscript {
         v_kryo = '4.0.1'
         v_kryo_serializers = '0.42'
         v_protostuff = '1.5.3'
-        v_spring = '4.3.11.RELEASE'
+        v_spring = '5.0.0.RELEASE'
     }
 
     dependencies {
@@ -95,6 +95,7 @@ dependencies {
 
             // Spring
             "org.springframework:spring-jms:$v_spring",
+            "org.springframework:spring-context:$v_spring",
 
             // MQTT client
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
