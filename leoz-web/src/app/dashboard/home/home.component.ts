@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-home',
   template: `
     <div class="content-header">
-      <h2>{{'home' | translate}}</h2>
+      <h2><!--{{'home' | translate}}--> &nbsp;</h2>
     </div>
 
     <div id="content" class="content-box">
