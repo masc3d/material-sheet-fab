@@ -140,7 +140,7 @@ class WebContextInitializer : ServletContextInitializer {
                                     return null
                                 }
 
-                                val urlResource = object : URLResource(url, url.openConnection(), filePath) {
+                                val urlResource = object : URLResource(url, filePath) {
                                     override fun isDirectory(): Boolean {
                                         if (this.file != null)
                                             return super.isDirectory()
