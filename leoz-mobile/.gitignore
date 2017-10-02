@@ -2,6 +2,7 @@
 .DS_Store
 .externalNativeBuild
 .gradle
+.idea/encodings.xml
 .idea/libraries
 .idea/workspace.xml
 .idea/compiler.xml
