@@ -45,7 +45,7 @@ buildscript {
         v_slf4j = '1.7.25'
         v_snappy = '1.1.2.4'
         v_snakeyaml = '1.18'
-        v_spring = '4.3.11.RELEASE'
+        v_spring = '5.0.0.RELEASE'
         v_spring_data_jpa = '1.11.7.RELEASE'
         v_spring_data_commons = '1.13.7.RELEASE'
         v_springboot = '1.5.7.RELEASE'
