@@ -165,7 +165,10 @@ class Bundle : Serializable {
         val log = LoggerFactory.getLogger(Bundle::class.java)
 
         fun hashFile(file: File): String {
-            return com.google.common.io.Files.hash(file, Hashing.md5()).toString()
+            // MD5 is deprecated, as there's better and more suitable hash methods. it's still good enough for
+            // bundle manifests and presumably not worth migration.
+            @Suppress("DEPRECATION")
+            return com.google.common.io.Files.asByteSource(file).hash(Hashing.md5()).toString()
         }
 
         /**
