@@ -86,6 +86,7 @@ open class BundleServiceV1 : BundleServiceV1 {
         val rVersion = bundleVersionRepository.findOne(
                 qTable.bundle.eq(bundleName)
                         .and(qTable.alias.eq(versionAlias)))
+                .orElse(null)
 
         if (rVersion == null)
             throw WebApplicationException(

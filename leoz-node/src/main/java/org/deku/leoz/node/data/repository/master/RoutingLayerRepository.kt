@@ -2,7 +2,7 @@ package org.deku.leoz.node.data.repository.master
 
 import org.deku.leoz.node.data.jpa.MstRoutingLayer
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 /**
  * Routing layer repository
@@ -10,6 +10,6 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
  */
 interface RoutingLayerRepository :
         JpaRepository<MstRoutingLayer, Int>,
-        QueryDslPredicateExecutor<MstRoutingLayer>
+        QuerydslPredicateExecutor<MstRoutingLayer>
 
 

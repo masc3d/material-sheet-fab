@@ -8,7 +8,7 @@ import org.eclipse.persistence.config.CacheUsage
 import org.eclipse.persistence.config.HintValues
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.QueryHints
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import sx.jpa.NamedQuery
 import sx.time.toTimestamp
 import java.sql.Timestamp
@@ -23,7 +23,7 @@ import javax.persistence.QueryHint
  */
 interface RouteRepository :
         JpaRepository<MstRoute, Long>,
-        QueryDslPredicateExecutor<MstRoute>,
+        QuerydslPredicateExecutor<MstRoute>,
         RouteRepositoryExtension {
     @QueryHints(
             // masc20170622. CACHING EXAMPLE

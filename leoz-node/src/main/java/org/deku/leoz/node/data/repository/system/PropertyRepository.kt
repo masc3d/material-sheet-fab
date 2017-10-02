@@ -9,9 +9,10 @@ import org.eclipse.persistence.config.CacheUsage
 import org.slf4j.LoggerFactory
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.QueryHints
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import sx.annotationOfType
 import java.io.StringWriter
+import java.util.*
 import javax.persistence.QueryHint
 
 /**
@@ -27,12 +28,12 @@ enum class PropertyKeys(val value: String) {
  */
 interface PropertyRepository :
         JpaRepository<SysProperty, String>,
-        QueryDslPredicateExecutor<SysProperty> {
+        QuerydslPredicateExecutor<SysProperty> {
 
     @QueryHints(
             QueryHint(name = org.eclipse.persistence.config.QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
     )
-    override fun findOne(predicate: Predicate): SysProperty
+    override fun findOne(predicate: Predicate): Optional<SysProperty>
 }
 
 // Extension methods
@@ -76,7 +77,7 @@ fun PropertyRepository.saveObject(value: Any) {
 fun <T> PropertyRepository.loadObject(cls: Class<T>): T {
     try {
         val a = cls.annotationOfType(PropertyKey::class.java)
-        val record = this.findOne(a.key.value)
+        val record = this.findById(a.key.value).orElse(null)
         return if (record != null) jsonObjectMapper
                 .readerFor(cls)
                 .readValue(record.value) else cls.newInstance()

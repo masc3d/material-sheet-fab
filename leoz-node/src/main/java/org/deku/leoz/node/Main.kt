@@ -12,10 +12,11 @@ import org.deku.leoz.node.config.PersistenceConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.Banner
-import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration
-import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 import org.springframework.boot.autoconfigure.web.*
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration
@@ -38,9 +39,10 @@ import java.net.URLClassLoader
 // Auto configuraton is slow. Pulling in configurations manually as needed.
 @Import(
         /** Setups up embedded web server and servlet container  */
-        EmbeddedServletContainerAutoConfiguration::class,
+        ServletWebServerFactoryAutoConfiguration::class,
         /** Server properties support  */
-        ServerPropertiesAutoConfiguration::class,
+        // TODO: Migrate to spring-boot-2.0
+        // ServerPropertiesAutoConfiguration::class,
 
         /** Persistence configuration support */
         PersistenceConfiguration::class,
@@ -57,12 +59,13 @@ import java.net.URLClassLoader
         WebMvcAutoConfiguration::class,
         DispatcherServletAutoConfiguration::class,
 
+        // TODO: Migrate to spring-boot-2.0
         /** Actuator endpoint configuration, required for automatically dispatching jolokia */
-        ManagementServerPropertiesAutoConfiguration::class,
-        EndpointWebMvcAutoConfiguration::class,
+        //ManagementServerPropertiesAutoConfiguration::class,
+        //EndpointWebMvcAutoConfiguration::class,
 
         /** Jolokia */
-        JolokiaAutoConfiguration::class,
+        //JolokiaAutoConfiguration::class,
 
         /** Vaadin */
         VaadinAutoConfiguration::class,

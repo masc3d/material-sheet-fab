@@ -4,7 +4,7 @@ import com.google.common.collect.Lists
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstStation
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import javax.inject.Inject
 
 /**
@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 interface StationRepository :
         JpaRepository<MstStation, Int>,
-        QueryDslPredicateExecutor<MstStation>, StationRepositoryExtension
+        QuerydslPredicateExecutor<MstStation>, StationRepositoryExtension
 
 interface StationRepositoryExtension {
     fun findWithQuery(query: String): List<MstStation>
@@ -77,6 +77,7 @@ class StationRepositoryImpl : StationRepositoryExtension {
         val qStation = QMstStation.mstStation
         return depotRepository.findOne(
                 qStation.stationNr.eq(stationNo))
+                .orElse(null)
     }
 
     //override fun findByDebitorid(debitorId: Int): List<MstStation> {

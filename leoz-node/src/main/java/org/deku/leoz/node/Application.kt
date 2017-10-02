@@ -15,7 +15,6 @@ import org.springframework.beans.BeansException
 import org.springframework.boot.ExitCodeGenerator
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.context.config.ConfigFileApplicationListener
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent
 import org.springframework.boot.context.event.ApplicationPreparedEvent
 import org.springframework.context.ApplicationContext
@@ -313,8 +312,6 @@ open class Application :
             // logging configuration after spring environment has been prepared.
             logConfiguration.initialize()
         } else if (event is ApplicationPreparedEvent) {
-        } else if (event is EmbeddedServletContainerInitializedEvent) {
-            // Post spring initialization
         }
     }
 }

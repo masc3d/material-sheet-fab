@@ -188,7 +188,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
         val zip: String = requestParticipant.zip?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "${errorPrefix} empty zipcode")
 
-        val rcountry = countryRepository.findOne(country)
+        val rcountry = countryRepository.findById(country).orElse(null)
                 ?: throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} unknown country")
 
         if (Strings.isNullOrEmpty(rcountry.zipFormat))
@@ -293,7 +293,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 
         //TODO Sector aus stationsector
 
-        val rStation = stationRepository.findOne(rRoute.station)
+        val rStation = stationRepository.findById(rRoute.station).orElse(null)
 
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found")
@@ -371,6 +371,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
         val rHolidayCtrl = holidayCtrlJpaRepostitory.findOne(
                 qHolidayCtrl.holiday.eq(date?.toTimestamp())
                         .and(qHolidayCtrl.country.eq(country)))
+                .orElse(null)
 
         if (rHolidayCtrl != null) {
             if (rHolidayCtrl.ctrlPos == -1)

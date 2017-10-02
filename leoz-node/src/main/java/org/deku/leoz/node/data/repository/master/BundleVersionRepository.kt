@@ -2,7 +2,7 @@ package org.deku.leoz.node.data.repository.master
 
 import org.deku.leoz.node.data.jpa.MstBundleVersion
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 /**
  * Bundle version repository
@@ -10,4 +10,4 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
  */
 interface BundleVersionRepository :
         JpaRepository<MstBundleVersion, String>,
-        QueryDslPredicateExecutor<MstBundleVersion>
+        QuerydslPredicateExecutor<MstBundleVersion>

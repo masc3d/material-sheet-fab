@@ -46,9 +46,9 @@ buildscript {
         v_snappy = '1.1.2.4'
         v_snakeyaml = '1.18'
         v_spring = '5.0.0.RELEASE'
-        v_spring_data_jpa = '1.11.7.RELEASE'
-        v_spring_data_commons = '1.13.7.RELEASE'
-        v_springboot = '1.5.7.RELEASE'
+        v_spring_data_jpa = '2.0.0.RELEASE'
+        v_spring_data_commons = '2.0.0.RELEASE'
+        v_springboot = '2.0.0.M4'
         // masc20172404. must not be updated to > 1.2.0 until upstream issue is resolved. https://git.derkurier.de/leoz/leoz/issues/100
         v_sshd = '1.6.0'
         v_swagger = '1.5.16'

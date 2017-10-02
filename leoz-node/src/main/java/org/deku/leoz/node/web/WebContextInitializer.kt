@@ -17,9 +17,8 @@ import org.jboss.resteasy.spi.ResteasyDeployment
 import org.jboss.resteasy.spi.ResteasyProviderFactory
 import org.jboss.resteasy.springmvc.ResteasyHandlerMapping
 import org.slf4j.LoggerFactory
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
-import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer
-import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory
+import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory
 import org.springframework.boot.web.servlet.ServletContextInitializer
 import org.springframework.context.annotation.Bean
 import org.springframework.web.context.support.WebApplicationContextUtils
@@ -114,12 +113,12 @@ class WebContextInitializer : ServletContextInitializer {
     }
 
     @get:Bean
-    val servletContainer: EmbeddedServletContainerFactory
+    val servletContainer: UndertowServletWebServerFactory
         get() {
             // Creating embedded servlet container factory manually
             // as it's currently the only way to customize welcome pages
             // Undertow doesn't have index.html by default.
-            val factory = UndertowEmbeddedServletContainerFactory()
+            val factory = UndertowServletWebServerFactory()
             factory.deploymentInfoCustomizers.add(
                     UndertowDeploymentInfoCustomizer { deploymentInfo ->
                         deploymentInfo.resourceManager = object : ResourceManager {
