@@ -497,20 +497,25 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     this.reporting( false );
   }
 
+  saving() {
+    this.reporting( true );
+  }
+
   printing() {
     this.reporting( true );
   }
 
-  reporting( print: boolean ) {
+  reporting( saving: boolean ) {
     const listsToPrint = this.stationloadingForm.get( 'basedon' ).value === 'alllists'
       ? this.allLoadlists : [ this.activeLoadinglist ];
     this.loadinglistService.reportHeaderData( String( this.activeLoadinglist.loadlistNo ) )
       .subscribe( ( response: HttpResponse<any> ) => {
           switch (response.status) {
             case 200:
+              const filename = 'll_' + listsToPrint.map((loadlist: Loadinglist) => loadlist.loadlistNo).join('_');
               this.printingService.printReports( this.reportingService
                   .generateReports( listsToPrint, <LoadinglistReportHeader> response.body ),
-                print );
+                filename, saving );
               break;
             default:
               // unknown reponse status from REST
