@@ -1,5 +1,5 @@
 import { Component, Inject, Renderer2 } from '@angular/core';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 import { TranslateService } from '../core/translate/translate.service';
 
 @Component({
