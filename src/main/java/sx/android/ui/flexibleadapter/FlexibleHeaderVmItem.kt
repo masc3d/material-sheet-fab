@@ -18,21 +18,18 @@ import org.slf4j.LoggerFactory
  * @param variable View model binding ID
  * @param viewModel The view model
  * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
- * @param isTransitionsEnabled Begins a transition everytime the binding is rebound (eg. bound fields change)
  */
 class FlexibleHeaderVmItem<VM>(
         @LayoutRes view: Int,
         @AnyRes variable: Int,
         viewModel: VM,
-        val blurRadius: Float = 1F,
-        isTransitionsEnabled: Boolean = false
+        val blurRadius: Float = 1F
 ) :
         IHeader<FlexibleVmHolder>,
         FlexibleSectionableVmItem<VM>(
                 view = view,
                 variable = variable,
-                viewModel = viewModel,
-                isTransitionsEnabled = isTransitionsEnabled) {
+                viewModel = viewModel) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -63,7 +60,6 @@ class FlexibleHeaderVmItem<VM>(
         return FlexibleVmHolder(
                 view = view,
                 adapter = adapter,
-                isStickyHeader = true,
-                isTransitionsEnabled = this.isTransitionsEnabled)
+                isStickyHeader = true)
     }
 }
