@@ -5,7 +5,7 @@ buildscript {
     }
 
     ext {
-        v_android_buildtools = '26.0.1'
+        v_android_buildtools = '26.0.2'
         v_android_support = '26.1.0'
         v_android_test = '1.0.1'
         v_anko = '0.10.1'
@@ -19,7 +19,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:3.0.0-beta6"
+        classpath "com.android.tools.build:gradle:3.0.0-beta7"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }

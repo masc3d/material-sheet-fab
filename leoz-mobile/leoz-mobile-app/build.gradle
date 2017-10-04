@@ -8,7 +8,7 @@ buildscript {
 
     dependencies {
         classpath(
-                "com.android.tools.build:gradle:3.0.0-beta6",
+                "com.android.tools.build:gradle:3.0.0-beta7",
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.1",
                 "com.trello:victor:1.0.0",
@@ -82,7 +82,7 @@ android {
     lintOptions {
         abortOnError true
 
-        // TODO lintVitalRelease always fails with 3.0.0-beta6
+        // TODO lintVitalRelease always fails with 3.0.0-beta
         checkReleaseBuilds false
     }
 
@@ -269,7 +269,7 @@ dependencies {
             "com.github.BlacKCaT27:CurrencyEditText:2.0.2",
 
             // TODO: transitive dependencies not pulled in
-            // Should be pulled in via :material-sheet-fab, but isn't in 3.0.0-beta6
+            // Should be pulled in via :material-sheet-fab, but isn't in 3.0.0-beta
             "com.github.asyl.animation:arcanimator:1.0.0",
 
             //
@@ -360,7 +360,7 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:3.0.0-beta6"
+            "com.android.databinding:compiler:3.0.0-beta7"
     )
 }
 
