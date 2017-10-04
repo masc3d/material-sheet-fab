@@ -8,7 +8,6 @@ buildscript {
 
     dependencies {
         classpath(
-                "com.android.tools.build:gradle:3.0.0-beta7",
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.1",
                 "com.trello:victor:1.0.0",
@@ -157,11 +156,11 @@ repositories {
 
 dependencies {
     implementation(
-            project(path: ':leoz-mobile-data', configuration: 'default'),
-            project(path: ':sx-android', configuration: 'default'),
-            project(path: ':sx-android-honeywell', configuration: 'default'),
-            project(path: ':material-sheet-fab', configuration: 'default'),
-            project(path: ':camerakit', configuration: 'default'),
+            project(':leoz-mobile-data'),
+            project(':sx-android'),
+            project(':sx-android-honeywell'),
+            project(':material-sheet-fab'),
+            project(':camerakit'),
             'android.arch.lifecycle:runtime:1.0.0',
 
             project(':leoz-common'),
@@ -268,10 +267,6 @@ dependencies {
 
             "com.github.BlacKCaT27:CurrencyEditText:2.0.2",
 
-            // TODO: transitive dependencies not pulled in
-            // Should be pulled in via :material-sheet-fab, but isn't in 3.0.0-beta
-            "com.github.asyl.animation:arcanimator:1.0.0",
-
             //
             // FOR TESTING
             //
@@ -325,10 +320,6 @@ dependencies {
 
             // Support-v4 (Anko Layouts)
             "org.jetbrains.anko:anko-support-v4:$v_anko",
-
-            // Anko
-            // TODO: CANARY doesn't pull this transitive dependency (sx-android/mq needs it) resulting in runtime errors with debug builds. proguard will reveal those missing classes when building release
-            "org.jetbrains.anko:anko-sqlite:$v_anko",
 
             "com.fenchtose:tooltip:0.1.5",
             "net.cachapa.expandablelayout:expandablelayout:2.9.2"

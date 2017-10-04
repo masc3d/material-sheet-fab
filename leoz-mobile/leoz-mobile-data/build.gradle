@@ -1,7 +1,6 @@
 buildscript {
     dependencies {
         classpath(
-                'com.android.tools.build:gradle:3.0.0-beta7',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
         )
     }
@@ -53,7 +52,7 @@ android {
 
 dependencies {
     implementation(
-            project(path: ':sx-android'),
+            project(':sx-android'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             project(':leoz-common'),
