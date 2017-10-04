@@ -20,6 +20,7 @@ import sx.time.TimeSpan
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * Stop view model
@@ -143,6 +144,8 @@ class StopViewModel(
                 .toField()
     }
     //endregion
+
+    var editMode = ObservableField<Boolean>(false)
 
     override fun removeOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {
         log.trace("SVM REMOVECALLBACK")

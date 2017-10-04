@@ -23,6 +23,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenDeliveryStopListBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
+import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleHeaderVmItem
 import sx.android.ui.flexibleadapter.FlexibleVmItem
 import sx.android.ui.flexibleadapter.customizeScrollBehavior
@@ -91,7 +93,7 @@ class DeliveryStopListScreen
         this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
-
+    
     override fun onResume() {
         super.onResume()
 
@@ -123,21 +125,34 @@ class DeliveryStopListScreen
                 )
         )
 
-        // TODO: complete edit mode implementation
-//        this.editModeProperty
-//                .bindUntilEvent(this, FragmentEvent.PAUSE)
-//                .subscribe {
-//                    it.value.also { editMode ->
-//                        // Update action items
-//                        this.actionItems = this.actionItems.apply {
-//                            first { it.id == R.id.action_edit }
-//                                    .visible = !editMode
-//
-//                            first { it.id == R.id.action_done }
-//                                    .visible = editMode
-//                        }
-//                    }
-//                }
+        this.editModeProperty
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    it.value.also { editMode ->
+                        // Update action items
+                        this.actionItems = this.actionItems.apply {
+                            first { it.id == R.id.action_edit }
+                                    .visible = !editMode
+
+                            first { it.id == R.id.action_done }
+                                    .visible = editMode
+
+                            first { it.id == R.id.action_cancel }
+                                    .visible = editMode
+                        }
+
+
+                        this.aidcReader.enabled = !editMode
+
+                        this.flexibleAdapter.currentItems
+                                .asSequence()
+                                .mapNotNull { it.viewModel as? StopViewModel }
+                                .forEach {
+                                    log.trace("EDIT MODE ${editMode}")
+                                    it.editMode.set(editMode)
+                                }
+                    }
+                }
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -148,7 +163,51 @@ class DeliveryStopListScreen
                         }
 
                         R.id.action_done -> {
+                            this.stopRepository.entities.forEach {
+                                // Persist all positional changes
+                                this.stopRepository
+                                        .updateAll()
+                                        .subscribeOn(db.scheduler)
+                                        .subscribe()
+                            }
+
                             this.editMode = false
+                        }
+
+                        R.id.action_cancel -> {
+                            this.editMode = false
+
+                            db.store.withTransaction {
+                                stopRepository.entities.forEach {
+                                    refresh(it, StopEntity.POSITION)
+                                }
+                            }
+                                    .toCompletable()
+                                    .subscribeOn(db.scheduler)
+                                    .observeOnMainThread()
+                                    .subscribe {
+                                        // Restore positions
+                                        this.delivery.pendingStops
+                                                .blockingFirst()
+                                                .value
+                                                .forEachIndexed { index, pendingStop ->
+                                                    val item = flexibleAdapter.currentItems.first {
+                                                        it.viewModel.let {
+                                                            it is StopViewModel && it.stop == pendingStop
+                                                        }
+                                                    }
+
+                                                    val currentPosition = flexibleAdapter.getGlobalPositionOf(item)
+                                                    val desiredPosition = index + 1
+
+                                                    if (currentPosition != desiredPosition) {
+                                                        flexibleAdapter.moveItem(
+                                                                currentPosition,
+                                                                desiredPosition
+                                                        )
+                                                    }
+                                                }
+                                    }
                         }
                     }
                 }
@@ -174,21 +233,28 @@ class DeliveryStopListScreen
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO: complete edit mode implementation
-//        this.actionItems = listOf(
-//                ActionItem(
-//                        id = R.id.action_edit,
-//                        iconRes = R.drawable.ic_pencil,
-//                        colorRes = R.color.colorAccent
-//                ),
-//                ActionItem(
-//                        id = R.id.action_done,
-//                        iconRes = R.drawable.ic_finish,
-//                        iconTintRes = android.R.color.white,
-//                        colorRes = R.color.colorPrimary,
-//                        visible = false
-//                )
-//        )
+        this.actionItems = listOf(
+                ActionItem(
+                        id = R.id.action_cancel,
+                        colorRes = R.color.colorAccent,
+                        iconRes = R.drawable.ic_circle_cancel,
+                        iconTintRes = android.R.color.black,
+                        alignEnd = false,
+                        visible = false
+                ),
+                ActionItem(
+                        id = R.id.action_edit,
+                        colorRes = R.color.colorAccent,
+                        iconRes = R.drawable.ic_pencil
+                ),
+                ActionItem(
+                        id = R.id.action_done,
+                        colorRes = R.color.colorPrimary,
+                        iconRes = R.drawable.ic_finish,
+                        iconTintRes = android.R.color.white,
+                        visible = false
+                )
+        )
 
         // Flexible adapter needs to be re-created with views
         flexibleAdapterInstance.reset()
@@ -295,7 +361,12 @@ class DeliveryStopListScreen
                                 // Update entity stop postiion acoordingly
                                 db.store.withTransaction {
                                     stopRepository
-                                            .move(stop = item.viewModel.stop, after = previousItemViewModel?.stop)
+                                            .move(
+                                                    stop = item.viewModel.stop,
+                                                    after = previousItemViewModel?.stop,
+                                                    // Only persist immedaitely when not in edit mode
+                                                    persist = !this@DeliveryStopListScreen.editMode
+                                            )
                                             .blockingAwait()
                                 }
                                         .subscribeOn(db.scheduler)
@@ -304,6 +375,8 @@ class DeliveryStopListScreen
 
                     item
                 })
+
+        this.editMode = false
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {

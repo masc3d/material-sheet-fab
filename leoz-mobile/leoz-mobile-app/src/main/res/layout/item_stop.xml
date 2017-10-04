@@ -34,9 +34,10 @@
             >
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:layout_weight="1"
                 >
 
                 <!-- Background without margins -->
@@ -310,7 +311,7 @@
                 android:layout_width="32dp"
                 android:layout_height="match_parent"
                 android:background="@color/colorWhiteSmoke"
-                android:visibility="gone"
+                android:visibility="@{stop.editMode ? View.VISIBLE : View.GONE, default = gone}"
                 >
 
                 <FrameLayout
@@ -325,7 +326,7 @@
                     android:layout_gravity="center"
                     android:contentDescription="TODO"
                     android:src="@drawable/ic_handle"
-                    android:tint="@color/colorGrey"/>
+                    android:tint="@color/colorLightGrey"/>
 
             </FrameLayout>
 

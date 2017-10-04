@@ -109,7 +109,6 @@ class VehicleLoadingScreen :
         )
     }
 
-    private val executorService: ExecutorService by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
