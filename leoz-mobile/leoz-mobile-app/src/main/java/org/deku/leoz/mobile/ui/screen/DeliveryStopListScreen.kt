@@ -39,6 +39,7 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleHeaderVmItem
+import sx.android.ui.flexibleadapter.FlexibleVmHolder
 import sx.android.ui.flexibleadapter.FlexibleVmItem
 import sx.android.ui.flexibleadapter.customizeScrollBehavior
 import sx.rx.ObservableRxProperty
@@ -93,7 +94,7 @@ class DeliveryStopListScreen
         this.toolbarCollapsed = true
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
-    
+
     override fun onResume() {
         super.onResume()
 
@@ -144,11 +145,16 @@ class DeliveryStopListScreen
 
                         this.aidcReader.enabled = !editMode
 
+                        this.flexibleAdapter.allBoundViewHolders
+                                .mapNotNull { it as? FlexibleVmHolder }
+                                .forEach {
+                                    it.beginDelayedTransition()
+                                }
+
                         this.flexibleAdapter.currentItems
                                 .asSequence()
                                 .mapNotNull { it.viewModel as? StopViewModel }
                                 .forEach {
-                                    log.trace("EDIT MODE ${editMode}")
                                     it.editMode.set(editMode)
                                 }
                     }
@@ -339,8 +345,7 @@ class DeliveryStopListScreen
                             viewModel = StopViewModel(
                                     stop = it,
                                     timerEvent = this.timerEvent),
-                            dragHandleViewId = R.id.uxHandle,
-                            isTransitionsEnabled = true
+                            dragHandleViewId = R.id.uxHandle
                     )
 
                     item.isEnabled = true
