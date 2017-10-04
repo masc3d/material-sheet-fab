@@ -155,7 +155,7 @@ class DeliveryStopListScreen
                                 .asSequence()
                                 .mapNotNull { it.viewModel as? StopViewModel }
                                 .forEach {
-                                    it.editMode.set(editMode)
+                                    it.editMode = editMode
                                 }
                     }
                 }
@@ -250,8 +250,9 @@ class DeliveryStopListScreen
                 ),
                 ActionItem(
                         id = R.id.action_edit,
-                        colorRes = R.color.colorAccent,
-                        iconRes = R.drawable.ic_pencil
+                        colorRes = R.color.colorPrimary,
+                        iconRes = R.drawable.ic_pencil,
+                        iconTintRes = android.R.color.white
                 ),
                 ActionItem(
                         id = R.id.action_done,
@@ -280,25 +281,30 @@ class DeliveryStopListScreen
         flexibleAdapter.showAllHeaders()
 
         flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { item ->
-            log.trace("ONITEMCLICK")
+            when (this.editMode) {
+                // Ignore click/selection in edit mode
+                true -> false
 
-            val viewModel = flexibleAdapter.getItem(item)?.viewModel
+                false -> {
+                    val viewModel = flexibleAdapter.getItem(item)?.viewModel
 
-            when (viewModel) {
-                is StopViewModel -> {
-                    val stop = viewModel.stop
+                    when (viewModel) {
+                        is StopViewModel -> {
+                            val stop = viewModel.stop
 
-                    activity.showScreen(
-                            DeliveryStopDetailScreen().also {
-                                it.parameters = DeliveryStopDetailScreen.Parameters(
-                                        stopId = stop.id
-                                )
-                            }
-                    )
+                            activity.showScreen(
+                                    DeliveryStopDetailScreen().also {
+                                        it.parameters = DeliveryStopDetailScreen.Parameters(
+                                                stopId = stop.id
+                                        )
+                                    }
+                            )
+                        }
+                    }
+
+                    true
                 }
             }
-
-            true
         })
 
         flexibleAdapter.addListener(object : FlexibleAdapter.OnItemMoveListener {
