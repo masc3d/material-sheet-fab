@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory
  * @property view The view this holder refers to
  * @property adapter The adapter this holder belongs to
  * @property isStickyHeader Enabled sticky header behavior (when this holder refers to a header item)
- * @property isTransitionsEnabled Begins a transition everytime the binding is rebound (eg. bound fields change)
+ * @property beginDelayedTransition Begins a delayed transition initially
  * @param dragHandleViewId The view id of the drag handle (wheb moving items is supported)
  */
 class FlexibleVmHolder(
@@ -30,7 +30,6 @@ class FlexibleVmHolder(
         val adapter: FlexibleAdapter<out IFlexible<*>>,
         val isStickyHeader: Boolean = false,
         val isExpandableOnClick: Boolean = true,
-        val isTransitionsEnabled: Boolean = false,
         @IdRes dragHandleViewId: Int = 0
 ) :
         ExpandableViewHolder(view, adapter, isStickyHeader) {
@@ -42,43 +41,52 @@ class FlexibleVmHolder(
 
     val binding: ViewDataBinding
 
+    private var beginDelayedTransition = false
+
     init {
         val id = this.hashCode()
 
         this.binding = DataBindingUtil.bind(view)
 
-        if (this.isTransitionsEnabled) {
-            this.binding.addOnRebindCallback(object : OnRebindCallback<ViewDataBinding>() {
-                /** Track transition animations to avoid overlapping transitions */
-                private var started = false
+        this.binding.addOnRebindCallback(object : OnRebindCallback<ViewDataBinding>() {
+            /** Track transition animations to avoid overlapping transitions */
+            private var started = false
 
-                override fun onPreBind(binding: ViewDataBinding): Boolean {
-                    if (!started) {
-                        TransitionManager.beginDelayedTransition(binding.root as ViewGroup, AutoTransition().also {
-                            it.addListener(object : TransitionListenerAdapter() {
-                                override fun onTransitionStart(transition: Transition) {
-                                    started = true
-                                }
+            override fun onPreBind(binding: ViewDataBinding): Boolean {
+                if (!started && this@FlexibleVmHolder.beginDelayedTransition) {
+                    TransitionManager.beginDelayedTransition(binding.root as ViewGroup, AutoTransition().also {
+                        it.addListener(object : TransitionListenerAdapter() {
+                            override fun onTransitionStart(transition: Transition) {
+                                started = true
+                            }
 
-                                override fun onTransitionCancel(transition: Transition) {
-                                    started = false
-                                }
+                            override fun onTransitionCancel(transition: Transition) {
+                                started = false
+                                this@FlexibleVmHolder.beginDelayedTransition = false
+                            }
 
-                                override fun onTransitionEnd(transition: Transition) {
-                                    started = false
-                                }
-                            })
+                            override fun onTransitionEnd(transition: Transition) {
+                                started = false
+                                this@FlexibleVmHolder.beginDelayedTransition = false
+                            }
                         })
-                    }
-
-                    return super.onPreBind(binding)
+                    })
                 }
-            })
-        }
+
+                return super.onPreBind(binding)
+            }
+        })
 
         if (dragHandleViewId != 0) {
             this.setDragHandleView(view.findViewById(dragHandleViewId))
         }
+    }
+
+    /**
+     * Starts a delayed transition for the next binding cycle
+     */
+    fun beginDelayedTransition() {
+        this.beginDelayedTransition = true
     }
 
     override fun isViewExpandableOnClick(): Boolean =

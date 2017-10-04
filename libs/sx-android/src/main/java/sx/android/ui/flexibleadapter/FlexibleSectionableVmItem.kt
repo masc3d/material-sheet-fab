@@ -14,23 +14,19 @@ import eu.davidea.flexibleadapter.items.ISectionable
  * @param viewModel The view model
  * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
  * @param dragHandleViewId The view id of the drag handle (wheb moving items is supported)
- * @param isTransitionsEnabled Begins a transition everytime the binding is rebound (eg. bound fields change)
  */
 open class FlexibleSectionableVmItem<VM>(
         @LayoutRes view: Int,
         @AnyRes variable: Int,
         viewModel: VM,
-        @IdRes dragHandleViewId: Int = 0,
-        isTransitionsEnabled: Boolean = false
-)
-    :
+        @IdRes dragHandleViewId: Int = 0
+) :
         ISectionable<FlexibleVmHolder, IHeader<FlexibleVmHolder>>,
         FlexibleVmItem<VM>(
                 view = view,
                 variable = variable,
                 viewModel = viewModel,
-                dragHandleViewId = dragHandleViewId,
-                isTransitionsEnabled = isTransitionsEnabled) {
+                dragHandleViewId = dragHandleViewId) {
 
     var _header: IHeader<FlexibleVmHolder>? = null
 
