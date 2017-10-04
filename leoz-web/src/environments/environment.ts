@@ -13,4 +13,7 @@ export const environment = {
   // "leo-old" will show the old menustructure for testingpurposes
   // "leo-old" may be used only on environments which are not reachable by unauthorized users
   defMenu: 'leo-old',
+  devUser: 'dev@leoz',
+  devPass: 'password',
+  autologin: 'yes',
 };

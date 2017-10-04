@@ -9,6 +9,7 @@ import { Message } from 'primeng/primeng';
 
 import { MsgService } from '../shared/msg/msg.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component( {
   selector: 'app-login',
@@ -17,6 +18,9 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 export class LoginComponent implements OnInit {
 
   loading = false;
+  private autoLogin = `${environment.autologin}`;
+  private devUser = `${environment.devUser}`;
+  private devPass = `${environment.devPass}`;
 
   errMsgs: Observable<Message[]>;
   loginForm: FormGroup;
@@ -38,9 +42,23 @@ export class LoginComponent implements OnInit {
       username: [ null, [ Validators.required ] ],
       password: [ null, [ Validators.required ] ],
     } );
+
+    if ( this.autoLogin === 'yes') {
+      this.loginForm.patchValue( {
+        username: this.devUser,
+        password: this.devPass
+      } );
+    } else {
+      this.loginForm.patchValue( {
+        username: null,
+        password: null
+      } );
+    }
   }
 
   login() {
+
+
     this.loading = true;
     this.authenticationService.login( this.loginForm.value.username, this.loginForm.value.password )
       .subscribe(
