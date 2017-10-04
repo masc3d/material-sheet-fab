@@ -7,10 +7,12 @@ import { AuthenticationGuard } from './auth/authentication.guard';
 import { Translation } from './translate/translation';
 import { TranslateService } from './translate/translate.service';
 import { RoleGuard } from './auth/role.guard';
+import { BrowserCheck } from './auth/browser-check';
 import { KeyUpEventService } from './key-up-event.service';
 import { SoundService } from './sound.service';
 import { PrintingService } from './printing/printing.service';
 import { LoadinglistReportingService } from './reporting/loadinglist-reporting.service';
+import { BagscanReportingService } from './reporting/bagscan-reporting.service';
 import { ApiKeyHeaderInterceptor } from './api-key-header.interceptor';
 import { MockHttpInterceptor } from './mock-http.interceptor';
 
@@ -33,10 +35,12 @@ export class CoreModule {
         KeyUpEventService,
         PrintingService,
         LoadinglistReportingService,
+        BagscanReportingService,
         SoundService,
         RoleGuard,
         Translation,
-        TranslateService ]
+        TranslateService,
+        BrowserCheck]
     };
   }
 
