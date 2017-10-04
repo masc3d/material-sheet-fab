@@ -45,8 +45,24 @@ CREATE TABLE mst_station_user (
   PRIMARY KEY (id)
 );
 
-INSERT INTO `sys_sync` (`table_name`) VALUES ('mst_debitor_station');
+CREATE OR REPLACE
+  ALGORITHM = UNDEFINED
+VIEW tad_v_deliverylist AS
+  SELECT
+    rkkopf.rollkartennummer AS id,
+    rkkopf.rollkartendatum  AS delivery_list_date,
+    rkkopf.lieferdepot      AS delivery_station,
+    (SELECT debitor_id
+     FROM mst_debitor_station
+     WHERE station_id =
+           (SELECT id
+            FROM tbldepotliste
+            WHERE depotnr = rkkopf.lieferdepot))
+                            AS debitor_id,
+    rkkopf.druckzeit        AS create_date
+  FROM rkkopf;
 
+INSERT INTO `sys_sync` (`table_name`) VALUES ('mst_debitor_station');
 DELIMITER $$
 ALTER TABLE `mst_debitor_station`
   ADD COLUMN `sync_id` BIGINT NOT NULL DEFAULT 0,
