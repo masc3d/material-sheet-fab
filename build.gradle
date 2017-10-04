@@ -19,7 +19,6 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:3.0.0-beta7"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
