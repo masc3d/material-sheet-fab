@@ -6,9 +6,10 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
-import io.requery.reactivex.ReactiveSupport
-import io.requery.reactivex.ReactiveEntityStore
-import io.requery.sql.*
+import io.requery.sql.KotlinConfiguration
+import io.requery.sql.KotlinEntityDataStore
+import io.requery.sql.SchemaModifier
+import io.requery.sql.TableCreationMode
 import org.deku.leoz.mobile.model.entity.Models
 import org.sqlite.SQLiteDataSource
 import java.io.File

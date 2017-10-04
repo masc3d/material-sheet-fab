@@ -117,10 +117,6 @@ class UpdateService(
     val downloadProgressEvent by lazy { this.downloadProgressEventSubject.hide() }
     private val downloadProgressEventSubject by lazy { BehaviorSubject.create<DownloadProgressEvent>().toSerialized() }
 
-    override fun onStart() {
-        super.onStart()
-    }
-
     override fun run() {
         log.info("Update cycle [${bundleName}] version alias [${this.versionAlias}] node uid [${this.identity.shortUid}]")
 
@@ -139,7 +135,7 @@ class UpdateService(
                 try {
                     val apk = ApplicationPackageName.parse(it.name)
                     (apk.bundleName != updateInfo.bundleName || apk.version != updateInfo.latestDesignatedVersion!!)
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     false
                 }
             }).forEach {
@@ -170,17 +166,20 @@ class UpdateService(
                 // For binary response stream, need to build target manually, so we can inject a decoder implementation
 
                 FileOutputStream(downloadFile).use { stream ->
-                    val bundleService: BundleServiceV2 = restClientProxy.target(
+                    restClientProxy.target(
                             apiType = BundleServiceV2::class.java,
                             output = stream,
                             progressCallback = { p: Float, bytesCopied: Long ->
                                 log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")
                                 this@UpdateService.downloadProgressEventSubject.onNext(DownloadProgressEvent(p))
-                            })
+                            }).also {
 
-                    bundleService.download(
-                            bundleName = updateInfo.bundleName,
-                            version = updateInfo.latestDesignatedVersion!!)
+                        // Download bundle
+                        it.download(
+                                bundleName = updateInfo.bundleName,
+                                version = updateInfo.latestDesignatedVersion!!)
+                    }
+
                 }
 
                 // Verify downloaded apk
@@ -188,7 +187,7 @@ class UpdateService(
                 val zipFile = ZipFile(downloadFile)
                 try {
                     zipFile.verify()
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     // Remove invalid archive
                     downloadFile.delete()
                     throw e
@@ -210,7 +209,7 @@ class UpdateService(
 
             this.availableUpdate = apk
             this.availableUpdateEventSubject.onNext(AvailableUpdateEvent(apk, apkName.version))
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             when (e) {
                 is FeignException -> log.error(e.message)
                 else -> {

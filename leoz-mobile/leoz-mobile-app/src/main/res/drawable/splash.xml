@@ -5,22 +5,22 @@
     Much better to have transparent background -->
 
     <!--<item>-->
-        <!--<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >-->
-            <!--<size android:height="800px" android:width="400px"/>-->
-            <!--<gradient-->
-                <!--android:startColor="#cccccc"-->
-                <!--android:centerColor="#ffffff"-->
-                <!--android:endColor="#999999"-->
-                <!--android:angle="90"/>-->
-            <!--<corners-->
-                <!--android:radius="0dp"/>-->
-        <!--</shape>-->
+    <!--<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >-->
+    <!--<size android:height="800px" android:width="400px"/>-->
+    <!--<gradient-->
+    <!--android:startColor="#cccccc"-->
+    <!--android:centerColor="#ffffff"-->
+    <!--android:endColor="#999999"-->
+    <!--android:angle="90"/>-->
+    <!--<corners-->
+    <!--android:radius="0dp"/>-->
+    <!--</shape>-->
     <!--</item>-->
 
     <!-- masc20170211. as bitmaps cannot be scaled or properly sized in layer lists, static image is the way to go -->
     <item android:top="0dp">
         <bitmap
             android:gravity="center"
-            android:src="@drawable/img_splash" />
+            android:src="@drawable/img_splash"/>
     </item>
 </layer-list>

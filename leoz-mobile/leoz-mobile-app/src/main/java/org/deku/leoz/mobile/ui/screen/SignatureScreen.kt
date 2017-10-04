@@ -10,6 +10,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.neovisionaries.i18n.CountryCode
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_signature.*
@@ -19,6 +20,7 @@ import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.resetLocale
 import org.deku.leoz.mobile.setLocale
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -34,8 +36,7 @@ class SignatureScreen
     :
         ScreenFragment<SignatureScreen.Parameters>(),
         SignaturePad.OnSignedListener,
-        BaseCameraScreen.Listener
-{
+        BaseCameraScreen.Listener {
     interface Listener {
         fun onSignatureSubmitted(signatureSvg: String)
         fun onSignatureImageSubmitted(signatureJpeg: ByteArray)
@@ -81,7 +82,11 @@ class SignatureScreen
         this.flipScreen = true
         this.lockNavigationDrawer = true
 
-        setLanguage()
+        this.setLanguage(CountryCode.valueOf(this.stop.address.countryCode))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -129,6 +134,7 @@ class SignatureScreen
                 .subscribe {
                     when (it) {
                         R.id.action_signature_submit -> {
+                            this.resetLanguage()
                             this.listener?.onSignatureSubmitted(this.uxSignaturePad.signatureSvg)
                         }
                         R.id.action_signature_clear -> {
@@ -163,6 +169,7 @@ class SignatureScreen
     }
 
     override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
+        this.resetLanguage()
         this.listener?.onSignatureImageSubmitted(jpeg)
     }
 
@@ -182,10 +189,5 @@ class SignatureScreen
             first { it.id == R.id.action_signature_clear }
                     .visible = hasValidSignature
         }
-    }
-
-    private fun setLanguage() {
-        val language = this.stop.address.countryCode
-        this.context.setLocale(language.toLowerCase())
     }
 }

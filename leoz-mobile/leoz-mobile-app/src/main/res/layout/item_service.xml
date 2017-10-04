@@ -5,6 +5,7 @@
     >
 
     <data>
+
         <variable
             name="service"
             type="org.deku.leoz.mobile.ui.vm.ServiceViewModel"/>

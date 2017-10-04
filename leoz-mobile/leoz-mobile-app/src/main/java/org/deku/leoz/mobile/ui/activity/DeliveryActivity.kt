@@ -75,11 +75,6 @@ class DeliveryActivity : Activity(),
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-    }
-
     /**
      * Determine if changelog should be displayed automatically e.g. after an APP update.
      * Display the dialog only after the user has been logged in
@@ -136,7 +131,7 @@ class DeliveryActivity : Activity(),
                         .subscribeOn(schedulers.database)
                         .observeOnMainThread()
                         .subscribeBy(
-                                onError =  {
+                                onError = {
                                     log.error(it.message, it)
                                 },
                                 onSuccess = {

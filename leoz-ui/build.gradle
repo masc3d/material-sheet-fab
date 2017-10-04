@@ -53,7 +53,7 @@ dependencies {
             // For automatic fx forms generation
             "com.dooapp.fxform2:core:$v_fxform2",
             // FX controls
-            "org.controlsfx:controlsfx:8.40.13",
+            "org.controlsfx:controlsfx:9.0.0",
             // RichTextFX
 //            "org.fxmisc.richtext:richtextfx:0.7-M2",
 

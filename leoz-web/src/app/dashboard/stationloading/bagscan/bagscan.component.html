@@ -1,0 +1,212 @@
+<form [formGroup]="bagscanForm" style="padding-top: 10px;">
+  <div class="ui-fluid">
+    <div class="ui-g">
+
+      <div class="ui-g-12 ui-lg-8 no-pad" style="padding: 0;">
+        <div class="ui-g-12 ui-g-nopad">
+          <div class="ui-g-12 ui-lg-7 ui-g-nopad">
+            <div>
+              &nbsp;
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <input pInputText disabled value="{{'bagInformation' | translate}}:"
+                   style="padding-left: 5px; background-color: #184b7d; color: #ffffff; font-size: 16px; border: solid #184b7d 1px;width:calc(98% - 2px);">
+          </div>
+        </div>
+
+        <div class="ui-g-12 ui-g-nopad">
+          <div class="ui-g-12 ui-lg-7 ui-g-nopad" style="font-size: 40px; margin-top: 10px">
+            {{'bagID' | translate}}
+          </div>
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <input #bagId pInputText formControlName="bagId" (change)="bagIdChanged()"
+                   style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+          </div>
+
+        </div>
+        <div class="ui-g-12 ui-g-nopad">
+          <div class="ui-g-12 ui-lg-7 ui-g-nopad" style="font-size: 40px; margin-top: 10px">
+            {{'backLabel' | translate}}
+          </div>
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <input #backLabel pInputText formControlName="backLabel" (change)="backLabelChanged()"
+                   style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+          </div>
+        </div>
+        <div class="ui-g-12 ui-g-nopad">
+          <div class="ui-g-12 ui-lg-7 ui-g-nopad" style="font-size: 40px; margin-top: 10px">
+            {{'backSeal' | translate}} ({{'yellow' | translate}})
+          </div>
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <input #backSeal pInputText formControlName="backSeal" (change)="backSealChanged()"
+                   style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+          </div>
+        </div>
+        <div class="ui-g-12 ui-g-nopad">
+          <div class="ui-g-12 ui-lg-7 ui-g-nopad" style="font-size: 40px; margin-top: 10px">
+            {{'packNumber' | translate}}
+          </div>
+          <div class="ui-g-12 ui-lg-5 ui-g-nopad">
+            <input #packageNo pInputText formControlName="packageNo"
+                   style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+          </div>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-lg-4 no-pad" style="padding: 0px 8px 0px 0px">
+        <div class="ui-g-12 ui-g-nopad"
+             style="width: calc(100% - 2px); padding: 2px 0 1px 5px; margin-left: 5px; background-color: #184b7d; color: #ffffff">
+          {{'messages' | translate}}:
+        </div>
+        <div class="ui-g-12 ui-g-nopad" [ngStyle]="styleShortScanMsg"
+             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0px 0px 5px; margin-left: 5px; height: 130px; margin-bottom:5px; border:1px solid darkgrey; overflow-y: scroll">
+          {{shortScanMsg | translate}}
+        </div>
+        <div class="ui-g-12 ui-g-nopad"
+             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0px 0px 5px; margin-left: 5px; height: 87px; margin-bottom:5px; border:1px solid darkgrey; overflow-y: scroll"
+             [innerHTML]="translate.instant( 'infoMsgfield' )">
+        </div>
+        <div class="ui-g-12 ui-g-nopad"
+             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0px 0px 5px; margin-left: 5px; height: 80px; margin-bottom:5px; border:1px solid darkgrey;  color: red; overflow-y: scroll"
+             [innerHTML]="translate.instant( 'bagCountMsgfield' )">
+        </div>
+      </div>
+
+      <div class="ui-g-12 ui-lg-6 no-pad" style="padding: 0; border:1px solid darkgrey">
+        <div class="ui-g-12 ui-g-nopad">
+          <p style="text-align: center">{{'openOnBaglist' | translate}} {{openPackcount}}</p>
+          <p-dataTable [value]="openPackages | async" resizableColumns="true" responsive="true"
+                       [emptyMessage]="'noDataAvailable' | translate">
+            <p-column field="packageId" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
+            <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
+            <p-column field="weight" header="{{'weight' | translate}}" [sortable]="true"></p-column>
+            <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}" [sortable]="true"></p-column>
+            <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="true">
+              <ng-template let-package="rowData" pTemplate="body">
+                    <span *ngIf="package.wrapperType === 91; else noValoreLoaded">
+                      {{ 'yes' | translate }}
+                    </span>
+                <ng-template #noValoreLoaded>
+                  {{ 'no' | translate }}
+                </ng-template>
+              </ng-template>
+            </p-column>
+          </p-dataTable>
+        </div>
+      </div>
+
+      <div class="ui-g-12 ui-lg-6 no-pad" style="padding: 0;">
+        <div class="ui-g-12 ui-lg-8 no-pad" style="padding: 0;">
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ 'llNo' | translate }}: {{ activeBaglist.loadlistNo }} </span>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <p-checkbox name="printlabel" value="printlabel" label="{{'printlabel' | translate}}"></p-checkbox>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px; font-weight: bold;">
+              <span>{{ 'statistics' | translate }}</span>
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ 'valCount' | translate }}:</span>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ loadedDiamondcount }}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ 'packcount' | translate }}:</span>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ loadedPackcount }}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ 'bagWeightKg' | translate }}:</span>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ bagWeight }}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad" style="margin-top: 2px; padding: 5px; color: red; font-weight: bold">
+              <span>{{ 'caution' | translate }}! {{ 'maxBagWeightReached' | translate }}</span>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad"></div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 10px; padding: 5px;">
+              <button pButton type="button" (click)="clearFields()" label="{{'clearFields' | translate}}"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-g-12 ui-lg-4 no-pad" style="padding: 0;">
+          <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+            <button pButton type="button" label="{{'completeProcessingF5' | translate}}"></button>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+            <button pButton type="button" (click)="toggleVisibilitySeal()" label="{{'swapSealF10' | translate}}"></button>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" [ngClass]="chargingLevelStyle"
+               style="width: 125px;  margin-top: 2px; margin-left: 6px; padding: 5px; border:1px solid darkgrey; text-align: center">
+            {{chargingLevel}}%
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+            <p-dropdown formControlName="selectbaglist" [options]="baglists" [style]="{'width': '125px'}"
+                        (onChange)="selectBaglist($event.value)"></p-dropdown>
+            <i class="fa fa-print fa-fw" aria-hidden="true"></i>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+            <button pButton type="button" (click)="refreshData()" label="{{'update' | translate}}"></button>
+          </div>
+        </div>
+
+        <div *ngIf="displayEmergencySealBlock" class="ui-g-12 ui-lg-12 no-pad" style="padding: 0;">
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ 'activateBlueSeal' | translate }}. </span>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <span>{{ 'scanBlueSeal' | translate }}:</span>
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
+              <input #blueSealNo pInputText formControlName="blueSealNo"
+                     style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 no-pad" style="padding: 0;">
+              <div class="ui-g-12 ui-lg-12 ui-g-nopad">
+                <div style="margin-top: 2px; padding: 5px">
+                    <span>{{ 'reason' | translate }}:</span>
+                </div>
+              </div>
+              <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px; font-weight: bold">
+                <button pButton type="button" label="{{'saveF7' | translate}}" (click) = "saveEmergencySeal()"></button>
+              </div>
+            </div>
+            <div class="ui-g-12 ui-lg-6 no-pad" style="margin-top: 2px; padding: 5px">
+              <textarea #reasonDetails pInputTextarea formControlName="reasonDetails"
+                    style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px)">
+              </textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

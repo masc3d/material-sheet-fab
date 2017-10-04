@@ -1,10 +1,6 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
-import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import org.deku.leoz.mobile.model.entity.AppointmentState
 import org.deku.leoz.mobile.model.entity.StopEntity

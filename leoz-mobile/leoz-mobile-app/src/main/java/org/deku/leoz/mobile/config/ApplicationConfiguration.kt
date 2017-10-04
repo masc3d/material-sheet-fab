@@ -16,7 +16,7 @@ import sx.android.ui.Timer
  */
 class ApplicationConfiguration {
     companion object {
-        private val log = LoggerFactory.getLogger(this.javaClass)
+        private val log = LoggerFactory.getLogger(ApplicationConfiguration::class.java)
 
         val module = Kodein.Module {
             bind<ApplicationStateMonitor>() with eagerSingleton {

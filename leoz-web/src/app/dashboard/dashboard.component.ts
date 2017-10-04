@@ -11,12 +11,14 @@ import { KeyUpEventService } from '../core/key-up-event.service';
 } )
 export class DashboardComponent {
 
+  private preventDefaultKeys = ['F2', 'F3', 'F5', 'F7', 'F10', 'F12'];
+
   constructor(private keyUpService: KeyUpEventService) {
   }
 
   @HostListener( 'window:keydown', [ '$event' ] )
   onKeyDown( ev: KeyboardEvent ): void {
-    if (ev.key === 'F5' || ev.key === 'F12') {
+    if (this.preventDefaultKeys.includes(ev.key)) {
       ev.preventDefault();
     }
   }

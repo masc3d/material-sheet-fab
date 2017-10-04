@@ -1,10 +1,12 @@
 package org.deku.leoz.central.data.repository
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.MstUser
 import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
 import org.deku.leoz.hashUserPassword
+import org.deku.leoz.model.AllowedStations
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.text.parseHex
@@ -51,29 +53,33 @@ open class UserJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
-//    fun findByKey(key: String): MstUserRecord? {
-//        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.API_KEY.eq(key))
-//    }
-
     fun findByMail(email: String): MstUserRecord? {
-        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.EMAIL.eq(email))
+        return dslContext.fetchOne(
+                MstUser.MST_USER,
+                Tables.MST_USER.EMAIL.eq(email))
     }
 
     fun findByAlias(alias: String, debitor: Double): MstUserRecord? {
         return dslContext.select()
-                .from(Tables.MST_USER.innerJoin(Tables.MST_DEBITOR)
+                .from(Tables.MST_USER
+                        .innerJoin(Tables.MST_DEBITOR)
                         .on(Tables.MST_USER.DEBITOR_ID.eq(Tables.MST_DEBITOR.DEBITOR_ID)))
-                .where(Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_DEBITOR.DEBITOR_NR.eq(debitor)))?.fetchOneInto(MstUser.MST_USER)
+                .where(Tables.MST_USER.ALIAS.eq(alias)
+                        .and(Tables.MST_DEBITOR.DEBITOR_NR.eq(debitor)))
+                .fetchOneInto(MstUser.MST_USER)
     }
 
     fun findByAlias(alias: String, debitorid: Int): MstUserRecord? {
-        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_USER.DEBITOR_ID.eq(debitorid)))
+        return dslContext.fetchOne(
+                MstUser.MST_USER,
+                Tables.MST_USER.ALIAS.eq(alias)
+                        .and(Tables.MST_USER.DEBITOR_ID.eq(debitorid)))
     }
 
     fun findByDebitorId(id: Int): List<MstUserRecord>? {
-        return dslContext
-                .select()
-                .from(Tables.MST_USER).where(Tables.MST_USER.DEBITOR_ID.eq(id))
+        return dslContext.select()
+                .from(Tables.MST_USER)
+                .where(Tables.MST_USER.DEBITOR_ID.eq(id))
                 .fetchInto(MstUserRecord::class.java)
     }
 
@@ -97,11 +103,15 @@ open class UserJooqRepository {
     }
 
     fun findById(id: Int): MstUserRecord? {
-        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ID.eq(id))
+        return dslContext.fetchOne(
+                MstUser.MST_USER,
+                Tables.MST_USER.ID.eq(id))
     }
 
     fun findDebitorIdByNr(no: Double): Int? {
-        return dslContext.select(Tables.MST_DEBITOR.DEBITOR_ID).from(Tables.MST_DEBITOR).where(Tables.MST_DEBITOR.DEBITOR_NR.eq(no))
+        return dslContext.select(Tables.MST_DEBITOR.DEBITOR_ID)
+                .from(Tables.MST_DEBITOR)
+                .where(Tables.MST_DEBITOR.DEBITOR_NR.eq(no))
                 .fetchOneInto(Int::class.java)
     }
 
@@ -109,11 +119,14 @@ open class UserJooqRepository {
         return dslContext.select()
                 .from(Tables.MST_USER.innerJoin(Tables.MST_KEY)
                         .on(Tables.MST_USER.KEY_ID.eq(Tables.MST_KEY.KEY_ID)))
-                .where(Tables.MST_KEY.KEY.eq(apiKey))?.fetchOneInto(MstUser.MST_USER)
+                .where(Tables.MST_KEY.KEY.eq(apiKey))
+                .fetchOneInto(MstUser.MST_USER)
     }
 
     fun deleteById(id: Int): Boolean {
-        return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.ID.eq(id)).execute() > 0) true else false
+        return if (dslContext.delete(Tables.MST_USER)
+                .where(Tables.MST_USER.ID.eq(id))
+                .execute() > 0) true else false
     }
 
     fun updateKeyIdById(id: Int, keyID: Int): Boolean {
@@ -126,16 +139,12 @@ open class UserJooqRepository {
     fun save(userRecord: MstUserRecord): Boolean {
         return (userRecord.store() > 0)
     }
-
-    fun findStationNrByUserId(id: Int): Int? {
-        return dslContext.select(Tables.TBLDEPOTLISTE.DEPOTNR)
-                .from(Tables.TBLDEPOTLISTE.innerJoin(Tables.MST_USER).on(Tables.TBLDEPOTLISTE.ID.eq(Tables.MST_USER.DEBITOR_ID)))
-                .where(Tables.MST_USER.ID.eq(id)).fetchOneInto(Int::class.java)
-    }
-
 }
 
 fun MstUserRecord.toUser(): UserService.User {
+    val stations = this.allowedStations?.toString() ?: "{}"
+    val mapper = ObjectMapper()
+    val allowedStations: AllowedStations = mapper.readValue(stations, AllowedStations::class.java)
 
     val user = UserService.User(
             // IMPORTANT: password must never be set when converting to service instance
@@ -153,7 +162,8 @@ fun MstUserRecord.toUser(): UserService.User {
             externalUser = this.isExternalUser,
             phone = this.phone,
             phoneMobile = this.phoneMobile,
-            expiresOn = this.expiresOn
+            expiresOn = this.expiresOn,
+            allowedStations = allowedStations.allowedStations
     )
     return user
 }

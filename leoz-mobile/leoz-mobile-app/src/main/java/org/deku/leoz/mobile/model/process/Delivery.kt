@@ -62,7 +62,7 @@ class Delivery : CompositeDisposableSupplier {
      * The currently active stop.
      * Setting a stop active will also set its state to PENDING if it has no state
      */
-    var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { p, o, v ->
+    var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { _, o, v ->
         o?.dispose()
 
         if (v != null) {

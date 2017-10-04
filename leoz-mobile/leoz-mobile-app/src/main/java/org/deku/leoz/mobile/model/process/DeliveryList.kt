@@ -7,28 +7,22 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
-import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.OrderRepository
-import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
-import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
-import org.deku.leoz.mobile.service.LocationCache
-import org.deku.leoz.model.*
+import org.deku.leoz.model.DekuDeliveryListNumber
+import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
-import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
-import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
-import sx.rx.*
+import sx.rx.CompositeDisposableSupplier
+import sx.rx.bind
 
 /**
  * Delivery list model
@@ -41,10 +35,6 @@ class DeliveryList : CompositeDisposableSupplier {
 
     private val db: Database by Kodein.global.lazy.instance()
     private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
-
-    // Services
-    private val deliveryListServive: DeliveryListService by Kodein.global.lazy.instance()
-    private val orderService: OrderService by Kodein.global.lazy.instance()
 
     // Repositories
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -165,9 +155,11 @@ class DeliveryList : CompositeDisposableSupplier {
 
         return Observable.fromCallable {
 
+            val deliveryListService = Kodein.global.instance<DeliveryListService>()
+
             // Retrieve delivery list
             val deliveryListId = deliveryListNumber.value.toLong()
-            val deliveryList = this.deliveryListServive.getById(id = deliveryListId)
+            val deliveryList = deliveryListService.getById(id = deliveryListId)
             log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
 
             // Process orders
@@ -228,7 +220,9 @@ class DeliveryList : CompositeDisposableSupplier {
      */
     fun retrieveOrder(unitNumber: UnitNumber): Observable<Order> {
         return Observable.fromCallable {
-            val orders = this.orderService.get(parcelScan = unitNumber.value)
+            val orderService = Kodein.global.instance<OrderService>()
+
+            val orders = orderService.get(parcelScan = unitNumber.value)
                     .distinctOrders()
                     .map { it.toOrder() }
 

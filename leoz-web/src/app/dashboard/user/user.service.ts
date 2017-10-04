@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { User } from './user.model';
 import { environment } from '../../../environments/environment';
-import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 import { MsgService } from '../../shared/msg/msg.service';
+import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 
 @Injectable()
 export class UserService {
@@ -19,42 +18,27 @@ export class UserService {
   private activeUserSubject = new BehaviorSubject<User>( <User> {} );
   public activeUser = this.activeUserSubject.asObservable().distinctUntilChanged();
 
-  constructor( private http: Http,
+  constructor( private http: HttpClient,
                private msgService: MsgService ) {
   }
 
-  insert( userData: any ): Observable<Response> {
-    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-
-    return this.http.post( this.userListUrl,
-      JSON.stringify( userData ),
-      new RequestOptions( { headers: ApiKeyHeaderFactory.headers( currUser.key ) } ) );
+  insert( userData: any ): Observable<HttpResponse<any>> {
+    return this.http.post( this.userListUrl, userData, {
+      observe: 'response'
+    } );
   }
 
-  update( userData: any, originEmail: string ): Observable<Response> {
-    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-    const queryParameters = new URLSearchParams();
-    queryParameters.set( 'email', originEmail );
-
-    const options = new RequestOptions( {
-      headers: ApiKeyHeaderFactory.headers( currUser.key ),
-      params: queryParameters
+  update( userData: any, originEmail: string ): Observable<HttpResponse<any>> {
+    return this.http.put( this.userListUrl, userData, {
+      params: new HttpParams().set( 'email', originEmail ),
+      observe: 'response'
     } );
-    return this.http.put( this.userListUrl,
-      JSON.stringify( userData ), options );
   }
 
   getUsers(): void {
-    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-
-    const options = new RequestOptions( {
-      headers: ApiKeyHeaderFactory.headers( currUser.key ),
-      search: new URLSearchParams()
-    } );
-
-    this.http.get( this.userListUrl, options )
-      .subscribe( ( response: Response ) => this.usersSubject.next( <User[]> response.json() ),
-        ( error: Response ) => {
+    this.http.get<User[]>( this.userListUrl )
+      .subscribe( ( users ) => this.usersSubject.next( users ),
+        ( error: HttpErrorResponse ) => {
           this.msgService.handleResponse( error );
           this.usersSubject.next( <User[]> [] );
         } );

@@ -208,16 +208,16 @@ abstract class Activity : BaseActivity(),
 
         /** Default header height (-> action bar height */
         private val headerDefaultHeight by lazy {
-            val tv = TypedValue();
-            if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-                TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics())
+            val tv = TypedValue()
+            if (theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
                 tv.data
             } else throw NoSuchElementException("Couldnt find attribute actionBarSize")
         }
 
         /** The default header drawable */
         val defaultDrawable
-                get() = Headers.street
+            get() = Headers.street
 
         /** Header drawable */
         var headerDrawable: Drawable? = null
@@ -299,11 +299,11 @@ abstract class Activity : BaseActivity(),
         // TODO: this rather hacky solution should be removed when API level 21 is minimum, which supports `indeterminateTint` attributes
         this.uxProgressBar.indeterminateDrawable.setColorFilter(
                 ContextCompat.getColor(this, R.color.colorDarkGrey),
-                PorterDuff.Mode.SRC_IN);
+                PorterDuff.Mode.SRC_IN)
 
         this.uxUpdateIndicator.uxUpdateProgressBar.indeterminateDrawable.setColorFilter(
                 ContextCompat.getColor(this, R.color.colorGrey),
-                PorterDuff.Mode.SRC_IN);
+                PorterDuff.Mode.SRC_IN)
         //endregion
 
         this.uxNavView.setNavigationItemSelectedListener(this)
@@ -448,7 +448,7 @@ abstract class Activity : BaseActivity(),
                     .title(syntheticInputs.name)
                     .inputType(InputType.TYPE_CLASS_TEXT)
                     .items(*syntheticInputs.entries.map { it.data }.toTypedArray())
-                    .itemsCallback { materialDialog, view, i, charSequence ->
+                    .itemsCallback { _, _, _, charSequence ->
                         simulatingAidcReader.emit(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25)
                     }
                     .cancelable(true)
@@ -658,7 +658,7 @@ abstract class Activity : BaseActivity(),
         navHeaderView.uxDeviceId.text = this.identity.shortUid.toString()
 
         if (this.debugSettings.enabled) {
-            this.uxNavView.menu.findItem(R.id.nav_dev_remote_settings).setVisible(true)
+            this.uxNavView.menu.findItem(R.id.nav_dev_remote_settings).isVisible = true
         }
 
         this.actionItemsProperty
@@ -724,8 +724,7 @@ abstract class Activity : BaseActivity(),
                     when {
                         user != null -> {
                             this.uxNavView.menu
-                                    .findItem(R.id.nav_logout)
-                                    .setVisible(true)
+                                    .findItem(R.id.nav_logout).isVisible = true
 
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
@@ -734,8 +733,7 @@ abstract class Activity : BaseActivity(),
                         }
                         else -> {
                             this.uxNavView.menu
-                                    .findItem(R.id.nav_logout)
-                                    .setVisible(false)
+                                    .findItem(R.id.nav_logout).isVisible = false
 
                             // Hide navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.GONE
@@ -865,14 +863,14 @@ abstract class Activity : BaseActivity(),
                         this.uxContainer.rotation = -180F
 
                         // Hide status bar
-                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                     } else {
 //                        this.uxContainer.animation = AnimationUtils.loadAnimation(this, R.anim.rotate0) as RotateAnimation
 //                        this.uxContainer.animate()
                         this.uxContainer.rotation = 0F
 
                         // Show status bar
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                     }
                 }
 
@@ -911,9 +909,9 @@ abstract class Activity : BaseActivity(),
         }
 
         if (fragment.statusBarHidden) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         }
 
         // Apply header changes
@@ -936,7 +934,6 @@ abstract class Activity : BaseActivity(),
                 ScreenFragment.ScrollCollapseModeType.EnterAlwaysCollapsed -> AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
 
                 ScreenFragment.ScrollCollapseModeType.None -> AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-                else -> 0
             }
 
             val scrollFlag = when (scroll) {
@@ -989,11 +986,11 @@ abstract class Activity : BaseActivity(),
                     .content(getString(R.string.dialog_text_developer_enabled))
                     .positiveText("Settings")
                     .negativeText("Abort")
-                    .onPositive { materialDialog, dialogAction ->
+                    .onPositive { _, _ ->
                         val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                         this.startActivityForResult(intent, 0)
                     }
-                    .onNegative { materialDialog, dialogAction -> this.finishAffinity() }
+                    .onNegative { _, _ -> this.finishAffinity() }
                     .cancelable(false)
                     .show()
         }
@@ -1012,11 +1009,11 @@ abstract class Activity : BaseActivity(),
                     .content(getString(R.string.dialog_text_gps_disabled))
                     .positiveText("Settings")
                     .negativeText("Abort")
-                    .onPositive { materialDialog, dialogAction ->
+                    .onPositive { _, _ ->
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                         this.startActivityForResult(intent, 0)
                     }
-                    .onNegative { materialDialog, dialogAction -> this.finishAffinity() }
+                    .onNegative { _, _ -> this.finishAffinity() }
                     .cancelable(false)
                     .show()
         }

@@ -9,7 +9,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle2.kotlin.bind
 import io.reactivex.Observable
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
@@ -18,7 +17,6 @@ import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
 import sx.time.TimeSpan
-import sx.time.replaceTime
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
 import java.util.*
@@ -131,7 +129,7 @@ class StopViewModel(
 
     val countdownColor: ObservableField<Int> by lazy {
         countdownTimespan.map {
-            when(stop.appointmentState) {
+            when (stop.appointmentState) {
                 AppointmentState.OVERDUE -> ContextCompat.getColor(this.context, R.color.colorRed)
                 AppointmentState.SOON -> ContextCompat.getColor(this.context, R.color.colorOrange)
                 else -> ContextCompat.getColor(this.context, android.R.color.black)

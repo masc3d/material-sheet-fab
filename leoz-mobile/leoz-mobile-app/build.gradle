@@ -1,5 +1,3 @@
-import java.nio.file.Paths
-
 buildscript {
     repositories {
         mavenCentral()
@@ -12,7 +10,7 @@ buildscript {
         classpath(
                 "com.android.tools.build:gradle:3.0.0-beta6",
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
-                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.3",
+                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.1",
                 "com.trello:victor:1.0.0",
                 "sx:sx-packager-gradle:0.1",
         )
@@ -54,10 +52,10 @@ android {
 
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
-        minSdkVersion 21
+        minSdkVersion 18
         targetSdkVersion 26
         versionCode 2
-        versionName "0.86-SNAPSHOT"
+        versionName "0.89-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -164,7 +162,7 @@ dependencies {
             project(path: ':sx-android-honeywell', configuration: 'default'),
             project(path: ':material-sheet-fab', configuration: 'default'),
             project(path: ':camerakit', configuration: 'default'),
-            'android.arch.lifecycle:runtime:1.0.0-alpha9',
+            'android.arch.lifecycle:runtime:1.0.0',
 
             project(':leoz-common'),
             project(':sx-common'),
@@ -225,7 +223,7 @@ dependencies {
             "io.requery:requery:$v_requery",
             "io.requery:requery-kotlin:$v_requery",
             "io.requery:requery-android:$v_requery",
-            "io.requery:sqlite-android:3.20.0",
+            "io.requery:sqlite-android:3.20.1",
 
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
@@ -248,9 +246,6 @@ dependencies {
 
             'com.github.pwittchen:reactivenetwork-rx2:0.12.1',
 
-            // Android (multipart) upload service
-            'net.gotev:uploadservice:3.4',
-
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:$v_kryo") {
                 exclude group: 'org.ow2.asm', module: 'asm'
@@ -271,7 +266,7 @@ dependencies {
             "com.eightbitlab:blurview:1.3.3",
             "com.github.andrewlord1990:snackbarbuilder:0.9.0",
 
-            "com.github.BlacKCaT27:CurrencyEditText:2.0.1",
+            "com.github.BlacKCaT27:CurrencyEditText:2.0.2",
 
             // TODO: transitive dependencies not pulled in
             // Should be pulled in via :material-sheet-fab, but isn't in 3.0.0-beta6

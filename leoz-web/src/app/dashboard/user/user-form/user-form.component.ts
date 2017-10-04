@@ -1,13 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ValidatorFn } from '@angular/forms';
-import { Response } from '@angular/http';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition
-} from '@angular/animations';
+import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/takeUntil';
 
@@ -20,6 +13,7 @@ import { MsgService } from '../../../shared/msg/msg.service';
 import { TranslateService } from 'app/core/translate/translate.service';
 import { AbstractTranslateComponent } from 'app/core/translate/abstract-translate.component';
 import { PermissionCheck } from '../../../core/auth/permission-check';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 @Component( {
   selector: 'app-user-form',
@@ -83,7 +77,6 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
       phoneMobile: [ null, [ Validators.required ] ],
-      /*phoneMobile: [ null, [ Validators.required, Validators.pattern('^[0-9\\-\\+]{9,15}$') ] ],*/
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
       expiresOn: [ null ]
@@ -174,7 +167,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
   protected createUser( userData: any ) {
     this.userService.insert( userData )
       .subscribe(
-        ( resp: Response ) => {
+        ( resp: HttpResponse<any> ) => {
           if (resp.status === 204) {
             this.loading = false;
             this.msgService.success( this.translate.instant( 'UserInsertSuccessful' ) )
@@ -185,7 +178,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
             this.msgService.handleResponse( resp );
           }
         },
-        ( error: Response ) => {
+        ( error: HttpErrorResponse ) => {
           this.loading = false;
           this.msgService.handleResponse( error );
         } );
@@ -194,7 +187,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
   protected updateUser( userData: any, originEmail: string ) {
     this.userService.update( userData, originEmail )
       .subscribe(
-        ( resp: Response ) => {
+        ( resp: HttpResponse<any> ) => {
           if (resp.status === 204) {
             this.loading = false;
             this.msgService.success( this.translate.instant( 'UserUpdateSuccessful' ) )
@@ -205,7 +198,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
             this.msgService.handleResponse( resp );
           }
         },
-        ( error: Response ) => {
+        ( error: HttpErrorResponse ) => {
           this.loading = false;
           this.msgService.handleResponse( error );
         } );

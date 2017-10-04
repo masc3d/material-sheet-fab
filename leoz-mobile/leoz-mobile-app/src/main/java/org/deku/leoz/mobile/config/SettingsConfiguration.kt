@@ -15,8 +15,8 @@ import java.io.IOException
 import java.io.InputStream
 
 /**
-* Created by masc on 15/02/2017.
-*/
+ * Created by masc on 15/02/2017.
+ */
 class SettingsConfiguration {
     companion object {
         val ASSET_SETTINGS = "application.yml"
@@ -31,7 +31,7 @@ class SettingsConfiguration {
                 if (BuildConfig.DEBUG) {
                     try {
                         sources.add(context.assets.open(ASSET_SETTINGS_DEBUG))
-                    } catch(e: IOException) {
+                    } catch (e: IOException) {
                         // Optional asset, that's ok
                     }
                 }

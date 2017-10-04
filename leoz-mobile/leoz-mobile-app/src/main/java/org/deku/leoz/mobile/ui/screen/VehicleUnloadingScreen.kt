@@ -100,7 +100,6 @@ class VehicleUnloadingScreen :
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
-    private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
 
     private val vehicleUnloading: VehicleUnloading by Kodein.global.lazy.instance()
 
@@ -400,7 +399,7 @@ class VehicleUnloadingScreen :
                     it.value != this.damagedSection
                 },
 
-                BiFunction { a: Any, b: Any ->
+                BiFunction { _: Any, _: Any ->
                     this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
                 }
         )
@@ -472,13 +471,7 @@ class VehicleUnloadingScreen :
                         .build().show()
             }
             else -> {
-                val resultValue = result.value
-
-                when (resultValue) {
-                    is UnitNumber -> {
-                        this.onInput(resultValue)
-                    }
-                }
+                this.onInput(result.value)
             }
         }
     }

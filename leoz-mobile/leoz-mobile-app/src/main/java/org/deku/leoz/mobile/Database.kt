@@ -32,7 +32,7 @@ class Database(
          * Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
          * Major increases indicate breaking changes and will reset the database on migration
          */
-        val SCHEMA_VERSION = SchemaVersion(major = 6, minor = 1)
+        val SCHEMA_VERSION = SchemaVersion(major = 6, minor = 2)
     }
 
     /**
@@ -58,6 +58,7 @@ class Database(
 
         override fun toString(): String = "${major}.${minor}"
     }
+
     /**
      * Database file
      */

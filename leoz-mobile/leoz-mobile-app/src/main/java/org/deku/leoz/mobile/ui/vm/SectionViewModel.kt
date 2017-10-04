@@ -28,8 +28,7 @@ open class SectionViewModel<T>(
         val showIfEmpty: Boolean = true,
         val expandOnSelection: Boolean = false,
         val items: Observable<List<T>> = Observable.empty()
-)
-    : BaseObservable() {
+) : BaseObservable() {
 
     private val context: Context by Kodein.global.lazy.instance()
 

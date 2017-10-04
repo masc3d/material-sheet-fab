@@ -15,7 +15,6 @@ import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.entity.UserEntity
 import org.deku.leoz.mobile.model.entity.create
 import org.deku.leoz.mobile.model.repository.OrderRepository
-import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
@@ -43,8 +42,6 @@ class Login {
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
     private val device: Device by Kodein.global.lazy.instance()
     private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
-
-    private val authService: AuthorizationService by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -116,6 +113,7 @@ class Login {
                         password = password
                 )
 
+                val authService = Kodein.global.instance<AuthorizationService>()
                 val authResponse = authService.authorize(request)
 
                 val user = User.create(
@@ -125,7 +123,8 @@ class Login {
                                 salt = SALT,
                                 email = email,
                                 password = password),
-                        apiKey = authResponse.key
+                        apiKey = authResponse.key,
+                        host = restConfiguration.host
                 )
 
                 // Store user in database
@@ -140,6 +139,7 @@ class Login {
 
                 val user = store.select(UserEntity::class)
                         .where(UserEntity.EMAIL.eq(email))
+                        .and(UserEntity.HOST.eq(restConfiguration.host))
                         .get()
                         .firstOrNull()
 

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
 import { UserService } from '../user.service';
@@ -10,6 +9,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
 import { PermissionCheck } from '../../../core/auth/permission-check';
 import { RoleGuard } from '../../../core/auth/role.guard';
 import { SortMeta } from 'primeng/primeng';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 @Component( {
   selector: 'app-user-list',
@@ -90,7 +90,7 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
     if (originEmail && originEmail.length > 0) {
       this.userService.update( { active: false }, originEmail )
         .subscribe(
-          ( resp: Response ) => {
+          ( resp: HttpResponse<any> ) => {
             if (resp.status === 204) {
               this.msgService.success( 'UserSuccessfulDeactive' );
               this.userService.getUsers();
@@ -99,7 +99,7 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
               this.msgService.handleResponse( resp );
             }
           },
-          ( error: Response ) => {
+          ( error: HttpErrorResponse ) => {
             this.msgService.handleResponse( error );
           } );
     }

@@ -27,6 +27,6 @@
         android:textAppearance="@style/AppTheme.ActionOverlay.TextAppearance"
         android:text="Action"
         android:layout_gravity="center_vertical"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText"/>
 
 </LinearLayout>

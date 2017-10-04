@@ -80,8 +80,8 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="@dimen/small_margin"
                         app:color="@color/colorDarkGrey"
-                        app:hour="@{stats.clockHours}"
-                        app:minute="@{stats.clockMinutes}"
+                        app:hour="@{safeUnbox(stats.clockHours)}"
+                        app:minute="@{safeUnbox(stats.clockMinutes)}"
                         />
 
                     <sx.android.view.BadgeTextView
@@ -92,7 +92,7 @@
                         android:text="@{stats.appointmentUpcomingCount, default = 60}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@android:color/white"
-                        android:visibility="@{stats.appointmentUpcomingCountVisible ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{safeUnbox(stats.appointmentUpcomingCountVisible) ? View.VISIBLE : View.GONE}"
                         />
 
                     <sx.android.view.BadgeTextView
@@ -103,7 +103,7 @@
                         android:text="@{stats.appointmentSoonCount, default = 60}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@android:color/white"
-                        android:visibility="@{stats.appointmentSoonCountVisible ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{safeUnbox(stats.appointmentSoonCountVisible) ? View.VISIBLE : View.GONE}"
                         />
 
                     <sx.android.view.BadgeTextView
@@ -114,7 +114,7 @@
                         android:text="@{stats.appointmentOverdueCount, default = 60}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@android:color/white"
-                        android:visibility="@{stats.appointmentOverdueCountVisible ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{safeUnbox(stats.appointmentOverdueCountVisible) ? View.VISIBLE : View.GONE}"
                         />
 
                 </LinearLayout>

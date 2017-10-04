@@ -1,0 +1,202 @@
+<form [formGroup]="stationloadingForm" style="padding-top: 10px">
+  <div class="ui-fluid">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-lg-7 no-pad" style="padding: 0;">
+        <p-fieldset legend="{{'loadingcontrol' | translate}}">
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+              <button pButton type="button" label="{{'newloadlist' | translate}}" (click)="newLoadlist()"
+                      style="width:140px"></button>
+            </div>
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+              {{'exportdate' | translate}}:
+              {{exportdate}}
+            </div>
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+              {{'payload' | translate}}:
+              <input pInputText formControlName="payload" (change)="changePayload()"
+                     style="border:1px solid darkgrey; width:98%; background-color: #FFFFC6">
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+              <p-dropdown formControlName="selectloadlist" [options]="loadlists" [style]="{'width': '140px'}"
+                          (onChange)="selectLoadlist($event.value)"></p-dropdown>
+            </div>
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+              {{'loadlist' | translate}}:
+              {{activeLoadinglist.loadlistNo}}
+            </div>
+            <div class="ui-g-12 ui-lg-4 ui-g-nopad"></div>
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-5" style="padding: 0;">
+        <p-fieldset legend="{{'loadlist' | translate}}">
+          <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12">
+              <p-checkbox name="printlabel" value="printlabel" label="{{'printlabel' | translate}}"></p-checkbox>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12">
+              <p-radioButton name="basedon" value="alllists" formControlName="basedon"
+                             label="{{'alllists' | translate}}"></p-radioButton>
+            </div>
+            <div class="ui-g-12">
+              <p-radioButton name="basedon" value="selectedlist" formControlName="basedon"
+                             label="{{'selectedlist' | translate}}"></p-radioButton>
+            </div>
+            <div class="ui-g-12">
+              <p-radioButton name="basedon" value="actuallist" formControlName="basedon"
+                             label="{{'actuallist' | translate}}"></p-radioButton>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12">
+              <button pButton type="button" (click)="preview()" label="{{'preview' | translate}}"></button>
+            </div>
+            <div class="ui-g-12">
+              <button pButton type="button" (click)="saving()" label="{{'save' | translate}}"></button>
+            </div>
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-4" style="padding:0;">
+        <p-fieldset legend="{{'scanmsgfield' | translate}}">
+          <div class="ui-g-12 ui-g-nopad"
+               style="height: 69px; padding-top: 15px; margin-bottom:5px; border:1px solid darkgrey; text-align: center; font-size: 30px">
+            {{shortScanMsg | translate}}
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-8" style="padding: 0;">
+        <p-fieldset legend="{{'scanfield' | translate}}">
+          <input #scanfield pInputText formControlName="scanfield" (change)="scanPackSingle()"
+                 style="font-size: 40px; margin-bottom:5px; background-color: #FFFFC6; border:1px solid darkgrey">
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-4" style="padding:0; border: 1px solid transparent !important;">
+        <p-fieldset legend="{{'information' | translate}}">
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey">
+              {{'loadlistnumber' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{activeLoadinglist.loadlistNo}}
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 2px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">{{'loadedweight' | translate}}:</div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{totalWeight}}
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 2px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">{{'freeweight' | translate}}:</div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" [ngStyle]="styleWeightExceeded">
+              {{freeWeight}}
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey">
+              {{'stillopen' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad"></div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 2px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">{{'packcount' | translate}}:</div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{openPackcount}}
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 2px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">{{'weight' | translate}}:</div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{openWeight}}
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad"
+               style="padding: 5px; border:1px solid darkgrey; height:120px; background-color:#FFFFC6; overflow-y: scroll">
+            <span *ngFor="let actionMsg of actionMsgList | async">
+              {{actionMsg | translate}}<br>
+            </span>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" [ngStyle]="styleScanMsgListBG"
+               style="margin-top: 2px; padding: 5px; border:1px solid darkgrey; height:120px; overflow-y: scroll">
+            <div *ngFor="let scanMsg of scanMsgs | async" style="padding-bottom:10px;">
+              <span *ngIf="scanMsg.packageId.length > 0 && scanMsg.msgText.length > 0">
+                {{scanMsg.packageId}}:
+              </span>
+              {{scanMsg.msgText | translate}}
+            </div>
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-8" style="padding:0;">
+        <p-fieldset id="fieldsetPackages" legend="{{'packages' | translate}}">
+          <p-tabView>
+            <p-tabPanel header="{{'notloaded' | translate}}">
+              <p style="text-align: center">
+                <p-progressBar *ngIf="scanInProgress; else infoTxt" [value]="scanProgress"></p-progressBar>
+                <ng-template #infoTxt>
+                  {{'notOnLoadlist' | translate}} {{openPackcount}} (F12)
+                </ng-template>
+              </p>
+              <p-dataTable [value]="openPackages | async" resizableColumns="true" responsive="true"
+                           selectionMode="multiple"
+                           [(selection)]="selectedPackages" (onRowClick)="onRowClick($event)">
+                <p-column field="packageId" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
+                <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
+                <p-column field="city" header="{{'city' | translate}}" [sortable]="true"></p-column>
+                <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}"
+                          [sortable]="true"></p-column>
+                <p-column field="loadlistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
+                <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="true">
+                  <ng-template let-package="rowData" pTemplate="body">
+                    <span *ngIf="package.wrapperType === 91; else noValoreOpen">
+                      {{ 'yes' | translate }}
+                    </span>
+                    <ng-template #noValoreOpen>
+                      {{ 'no' | translate }}
+                    </ng-template>
+                  </ng-template>
+                </p-column>
+              </p-dataTable>
+            </p-tabPanel>
+            <p-tabPanel header="{{'loaded' | translate}}">
+              <p style="text-align: center">{{'onLoadlist' | translate}} {{loadedPackcount}}</p>
+              <p-dataTable [value]="loadedPackages | async" resizableColumns="true" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate">
+                <p-column field="packageId" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
+                <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
+                <p-column field="city" header="{{'city' | translate}}" [sortable]="true"></p-column>
+                <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}"
+                          [sortable]="true"></p-column>
+                <p-column field="loadlistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
+                <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="true">
+                  <ng-template let-package="rowData" pTemplate="body">
+                    <span *ngIf="package.wrapperType === 91; else noValoreLoaded">
+                      {{ 'yes' | translate }}
+                    </span>
+                    <ng-template #noValoreLoaded>
+                      {{ 'no' | translate }}
+                    </ng-template>
+                  </ng-template>
+                </p-column>
+              </p-dataTable>
+            </p-tabPanel>
+          </p-tabView>
+        </p-fieldset>
+      </div>
+    </div>
+  </div>
+</form>

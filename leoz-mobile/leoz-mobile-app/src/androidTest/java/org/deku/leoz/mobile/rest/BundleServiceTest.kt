@@ -4,9 +4,6 @@ import android.support.test.runner.AndroidJUnit4
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import feign.Feign
-import feign.Response
-import feign.codec.Decoder
 import org.deku.leoz.mobile.WebserviceTest
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.junit.Test
@@ -14,7 +11,6 @@ import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import sx.rs.proxy.FeignClientProxy
 import java.io.ByteArrayOutputStream
-import java.lang.reflect.Type
 
 /**
  * BundleService test

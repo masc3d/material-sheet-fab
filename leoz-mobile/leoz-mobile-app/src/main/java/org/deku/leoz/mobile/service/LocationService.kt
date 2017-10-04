@@ -77,5 +77,5 @@ class LocationService
         }
     }
 
-    class MockLocationException(message: String): Throwable(message)
+    class MockLocationException(message: String) : Throwable(message)
 }
