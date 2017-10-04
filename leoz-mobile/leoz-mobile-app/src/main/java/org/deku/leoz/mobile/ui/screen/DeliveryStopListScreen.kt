@@ -28,6 +28,7 @@ import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
 import org.deku.leoz.model.UnitNumber
@@ -60,7 +61,6 @@ class DeliveryStopListScreen
 
     // Model classes
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
@@ -273,7 +273,8 @@ class DeliveryStopListScreen
                             viewModel = StopViewModel(
                                     stop = it,
                                     timerEvent = this.timerEvent),
-                            handleViewId = R.id.uxHandle
+                            dragHandleViewId = R.id.uxHandle,
+                            isTransitionsEnabled = true
                     )
 
                     item.isEnabled = true
@@ -297,7 +298,7 @@ class DeliveryStopListScreen
                                             .move(stop = item.viewModel.stop, after = previousItemViewModel?.stop)
                                             .blockingAwait()
                                 }
-                                        .subscribeOn(schedulers.database)
+                                        .subscribeOn(db.scheduler)
                                         .subscribe()
                             }
 

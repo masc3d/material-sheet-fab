@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model.entity
 
+import io.reactivex.Completable
 import sx.time.TimeSpan
 import sx.time.replaceTime
 import java.util.*

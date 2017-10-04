@@ -34,7 +34,6 @@ class VehicleLoading : CompositeDisposableSupplier {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
@@ -168,6 +167,6 @@ class VehicleLoading : CompositeDisposableSupplier {
                             )
                     )
                 })
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 }
