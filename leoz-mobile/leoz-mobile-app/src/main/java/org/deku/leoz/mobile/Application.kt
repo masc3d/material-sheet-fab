@@ -110,6 +110,8 @@ open class Application : MultiDexApplication() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(BaseContextWrapper.wrap(context = base!!, language = null))
+    }
+
     override fun onTerminate() {
         log.debug("ONTERMINATE")
         when {

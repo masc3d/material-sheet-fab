@@ -9,7 +9,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.R
@@ -18,7 +17,6 @@ import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.LocationServiceGMS
-import org.deku.leoz.mobile.service.Service
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.screen.MainScreen
@@ -67,7 +65,6 @@ class MainActivity
                 .title(R.string.exit_application)
                 .content(R.string.exit_application_prompt)
                 .positiveText(android.R.string.yes)
-                .onPositive { dialog, which -> this.app.terminate(); System.exit(0) }
                 .onPositive { _, _ -> this.app.terminate() }
                 .negativeText(android.R.string.no)
                 .build().show()
