@@ -25,8 +25,8 @@ INSERT INTO mst_user (debitor_id, email, password, alias, expires_on, role, acti
             FROM tbldepotliste
             WHERE depotnr = 89))
     , 'user@deku.org', '8a7880ab910b3fc2aebb8603f9a8bdafb2ae1d57', 'testuser', '2099-12-31',
-   'POWERUSER', -1,
-   'Hans', 'Mustermann');
+    'POWERUSER', -1,
+    'Hans', 'Mustermann');
 
 
 INSERT INTO mst_user (debitor_id, email, password, alias, expires_on, role, active, firstname, lastname) VALUES

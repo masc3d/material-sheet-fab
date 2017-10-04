@@ -332,7 +332,8 @@ class UserService : UserService {
         if (user.expiresOn != null)
             rec.expiresOn = user.expiresOn
 
-        rec.allowedStations=stations
+//        rec.allowedStations=stations
+//todo save in join Tabele
 
         if (!userRepository.save(rec))
             throw DefaultProblem(
