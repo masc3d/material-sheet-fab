@@ -1,4 +1,4 @@
-package org.deku.leoz.node.rest
+package sx.rs
 
 import org.zalando.problem.Exceptional
 import org.zalando.problem.Status
