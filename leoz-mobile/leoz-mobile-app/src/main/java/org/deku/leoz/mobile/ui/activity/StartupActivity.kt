@@ -116,7 +116,7 @@ class StartupActivity : BaseActivity() {
                         throw IllegalStateException("AidcReader initialization timed out", it)
                     }
 
-            val ovGoogleApi = (this.application as Application).checkGoogleApiAvailability(this)
+//            val ovGoogleApi = (this.application as Application).checkGoogleApiAvailability(this)
 
             // Merge and subscribe
             Observable.mergeArray(

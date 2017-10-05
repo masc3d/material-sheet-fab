@@ -81,19 +81,8 @@ class MainActivity
 
     //region LoginFragment listener
     override fun onLoginSuccessful() {
-        val locationSettings = Kodein.global.instance<LocationSettings>()
-
-        if (locationSettings.enabled) {
-            (this.application as Application).checkGoogleApiAvailability(activity = this, showResolutionDialog = false)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        this.startService(
-                                Intent(applicationContext, LocationServiceGMS::class.java))
-                    }, {
-                        this.startService(
-                                Intent(applicationContext, LocationService::class.java))
-                    })
-        }
+        this.startService(
+                Intent(applicationContext, LocationServiceGMS::class.java))
 
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java)

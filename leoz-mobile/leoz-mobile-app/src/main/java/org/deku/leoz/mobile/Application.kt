@@ -192,38 +192,40 @@ open class Application : MultiDexApplication() {
         return false
     }
 
-    fun checkGoogleApiAvailability(activity: Activity, showResolutionDialog: Boolean = true): Completable { // Observable<Boolean> {
-        return Completable.create {
-            val completableEmitter = it
-            val connResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
-            when {
-                connResult != ConnectionResult.SUCCESS -> {
-                    val error = IllegalStateException("Google API not available.")
-                    if (showResolutionDialog) {
-                        val dialog = GoogleApiAvailability.getInstance().getErrorDialog(activity, connResult, 0, DialogInterface.OnCancelListener {
-                            completableEmitter.onError(error)
-                        })
-                        dialog.setOnDismissListener {
-                            completableEmitter.onError(error)
-                        }
-                        dialog.show()
-                    } else {
-                        completableEmitter.onError(error)
-                    }
-                }
-                else -> {
-                    it.onComplete()
-                }
-            }
-        }
-    }
+//    fun checkGoogleApiAvailability(activity: Activity, showResolutionDialog: Boolean = true): Completable { // Observable<Boolean> {
+//        return Completable.create {
+//            val completableEmitter = it
+//            val connResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
+//            when {
+//                connResult != ConnectionResult.SUCCESS -> {
+//                    val error = IllegalStateException("Google API not available.")
+//                    if (showResolutionDialog) {
+//                        val dialog = GoogleApiAvailability.getInstance().getErrorDialog(activity, connResult, 0, DialogInterface.OnCancelListener {
+//                            completableEmitter.onError(error)
+//                        })
+//                        dialog.setOnDismissListener {
+//                            completableEmitter.onError(error)
+//                        }
+//                        dialog.show()
+//                    } else {
+//                        completableEmitter.onError(error)
+//                    }
+//                }
+//                else -> {
+//                    it.onComplete()
+//                }
+//            }
+//        }
+//    }
 
     private fun registerBroadcastReceiver() {
+        log.debug("Register BroadcastReceiver")
         val broadcastManager = LocalBroadcastManager.getInstance(this)
         broadcastManager.registerReceiver(locationProviderChangedReceiver, IntentFilter("android.location.PROVIDERS_CHANGED"))
     }
 
     private fun unregisterBroadcastReceiver() {
+        log.debug("Unregister BroadcastReceiver")
         val broadcastManager = LocalBroadcastManager.getInstance(this)
         broadcastManager.unregisterReceiver(locationProviderChangedReceiver)
     }

@@ -168,6 +168,8 @@ abstract class Activity : BaseActivity(),
         SnackbarBuilder(this.uxCoordinatorLayout)
     }
 
+    protected var skipLocationSettingCheck = false
+
     override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
         mqttEndpoints.central.main.channel().sendFile(jpeg, MimeType.JPEG.value)
     }
@@ -372,7 +374,6 @@ abstract class Activity : BaseActivity(),
                     this.onForeground()
                 }
     }
-
 
     override fun onPause() {
         this.isPaused = true
@@ -798,27 +799,12 @@ abstract class Activity : BaseActivity(),
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     log.debug("LocationSettingsChangedEvent fired")
-                    //TODO
+                    checkLocationSettings()
                 }
 
-        RxLocation(applicationContext).settings().checkAndHandleResolutionCompletable(this.locationServices.locationRequest)
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .subscribeBy(
-                        onComplete = {
-                            log.debug("LocationSettings satisfied")
-                        },
-                        onError = {
-                            when (it) {
-                                is LocationSettingsNotSatisfiedException -> {
-                                    this.app.terminate()
-                                }
-                                else -> {
-                                    log.error(it.message, it)
-                                }
-                            }
-                        }
-                )
         //endregion
+
+        checkLocationSettings()
     }
 
     /**
@@ -1029,28 +1015,45 @@ abstract class Activity : BaseActivity(),
                     .show()
         }
 
-        val locationManager = this.locationManager
-        if (sequenceOf(
-                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER).also {
-                    log.trace("LOCATION PROVIDER GPS $it")
-                },
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER).also {
-                    log.trace("LOCATION PROVIDER NETWORK $it")
-                }
-        ).all { false }) {
-            MaterialDialog.Builder(this)
-                    .title(getString(R.string.dialog_title_gps_disabled))
-                    .content(getString(R.string.dialog_text_gps_disabled))
-                    .positiveText("Settings")
-                    .negativeText("Abort")
-                    .onPositive { _, _ ->
-                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                        this.startActivityForResult(intent, 0)
-                    }
-                    .onNegative { _, _ -> this.finishAffinity() }
-                    .cancelable(false)
-                    .show()
-        }
+        checkLocationSettings()
+
+//        val locationManager = this.locationManager
+//        if (sequenceOf(
+//                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER).also {
+//                    log.trace("LOCATION PROVIDER GPS $it")
+//                },
+//                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER).also {
+//                    log.trace("LOCATION PROVIDER NETWORK $it")
+//                }
+//        ).all { false }) {
+//            MaterialDialog.Builder(this)
+//                    .title(getString(R.string.dialog_title_gps_disabled))
+//                    .content(getString(R.string.dialog_text_gps_disabled))
+//                    .positiveText("Settings")
+//                    .negativeText("Abort")
+//                    .onPositive { _, _ ->
+//                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+//                        this.startActivityForResult(intent, 0)
+//                    }
+//                    .onNegative { _, _ -> this.finishAffinity() }
+//                    .cancelable(false)
+//                    .show()
+//        }
+    }
+
+    private fun checkLocationSettings() {
+        RxLocation(applicationContext).settings().checkAndHandleResolutionCompletable(this.locationServices.locationRequest)
+                .bindToLifecycle(this)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onComplete = {
+                            log.debug("LocationSettings satisfied")
+                        },
+                        onError = {
+                            log.warn("LocationSettings not satisfied!", it)
+                            //this.app.terminate()
+                        }
+                )
     }
 }
 

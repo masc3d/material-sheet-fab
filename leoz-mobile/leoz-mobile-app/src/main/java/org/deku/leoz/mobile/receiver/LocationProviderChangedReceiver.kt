@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.LocationServices
+import org.slf4j.LoggerFactory
 
 /**
  * Created by 27694066 on 05.10.2017.
@@ -15,9 +16,12 @@ import org.deku.leoz.mobile.LocationServices
 
 class LocationProviderChangedReceiver : BroadcastReceiver() {
 
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+
     private val locationSettings: LocationServices by Kodein.global.lazy.instance()
 
     override fun onReceive(context: Context, intent: Intent) {
+        log.debug("ONRECEIVE Intent [$intent] Context [$context]")
         locationSettings.locationSettingsChangedEventProperty.onNext(Unit)
     }
 
