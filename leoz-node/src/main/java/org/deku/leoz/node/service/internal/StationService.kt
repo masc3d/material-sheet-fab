@@ -103,8 +103,11 @@ fun MstStation.toStationV2(): StationV2 {
                     streetNo = this.houseNr,
                     geoLocation = GeoLocation(latitude = this.posLat, longitude = this.posLong)),
             sector = this.sector,
-            valuablesAllowed = false,
-            valuablesWithoutBagAllowed = false
+            exportValuablesAllowed = (this.exportValuablesAllowed == 1),
+            exportValuablesWithoutBagAllowed = (this.exportValuablesWithoutBagAllowed == 1)
     )
     return stationV2
 }
+
+
+

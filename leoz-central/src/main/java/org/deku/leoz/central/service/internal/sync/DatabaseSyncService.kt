@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal.sync
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.*
+import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.data.repository.master.*
 import org.deku.leoz.node.data.repository.system.PropertyRepository
@@ -89,6 +90,8 @@ constructor(
             s.webAddress = ds.webadresse
             s.zip = ds.plz
             s.syncId = ds.syncId
+            s.exportValuablesAllowed = if (ds.valok == 1.toUInteger()) 1 else 0
+            s.exportValuablesWithoutBagAllowed = if (ds.valokWithoutBag == 1) 1 else 0
             return s
         }
 

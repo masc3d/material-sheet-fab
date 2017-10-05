@@ -520,7 +520,8 @@ class LocationServiceV2 :
             r.altitude = it.altitude
             r.accuracy = it.accuracy?.toDouble()
             r.vehicleType = it.vehicleType?.value?.toUpperCase()
-
+//r.debitorId=
+//todo
             posRepository.save(r)
         }
     }

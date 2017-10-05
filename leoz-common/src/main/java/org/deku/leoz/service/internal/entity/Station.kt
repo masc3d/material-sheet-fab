@@ -19,6 +19,6 @@ data class StationV2 (
     var stationMatchcode: String? = null,
     var address: Address?=null,
     var sector: String? = null,
-    var valuablesAllowed: Boolean = false,
-    var valuablesWithoutBagAllowed: Boolean = false
+    var exportValuablesAllowed: Boolean = false,
+    var exportValuablesWithoutBagAllowed: Boolean = false
 )
