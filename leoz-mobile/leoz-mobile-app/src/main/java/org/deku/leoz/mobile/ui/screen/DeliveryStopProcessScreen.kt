@@ -151,6 +151,7 @@ class DeliveryStopProcessScreen :
     val pendingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 title = getString(R.string.pending),
@@ -161,6 +162,7 @@ class DeliveryStopProcessScreen :
     val orderSection by lazy {
         SectionViewModel<OrderEntity>(
                 icon = R.drawable.ic_order,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = true,
                 expandOnSelection = true,
@@ -172,6 +174,7 @@ class DeliveryStopProcessScreen :
     val missingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_missing,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 title = getString(R.string.missing),

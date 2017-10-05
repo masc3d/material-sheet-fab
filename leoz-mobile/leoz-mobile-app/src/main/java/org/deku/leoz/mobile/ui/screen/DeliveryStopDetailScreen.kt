@@ -141,7 +141,8 @@ class DeliveryStopDetailScreen
 
         val serviceSection = SectionViewModel<Any>(
                 icon = R.drawable.ic_service,
-                background = R.drawable.section_background_grey,
+                color = R.color.colorGrey,
+                background =  R.drawable.section_background_grey,
                 title = this.getText(R.string.services).toString(),
                 items = Observable.fromIterable(listOf(services)))
 
@@ -176,6 +177,7 @@ class DeliveryStopDetailScreen
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
                                 icon = R.drawable.ic_order,
+                                color = R.color.colorGrey,
                                 background = R.drawable.section_background_grey,
                                 title = this.getText(R.string.orders).toString(),
                                 items = Observable.fromIterable(listOf(orders))
@@ -201,6 +203,7 @@ class DeliveryStopDetailScreen
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
                                 icon = R.drawable.ic_package_variant_closed,
+                                color = R.color.colorGrey,
                                 background = R.drawable.section_background_grey,
                                 title = this.getText(R.string.parcels).toString(),
                                 items = Observable.fromIterable(listOf(parcels))
@@ -232,8 +235,8 @@ class DeliveryStopDetailScreen
                 ActionItem(
                         id = R.id.action_deliver_continue,
                         colorRes = R.color.colorPrimary,
-                        iconTintRes = android.R.color.white,
-                        iconRes = R.drawable.ic_delivery
+                        iconRes = R.drawable.ic_delivery,
+                        iconTintRes = android.R.color.white
                 ),
                 ActionItem(
                         id = R.id.action_call,

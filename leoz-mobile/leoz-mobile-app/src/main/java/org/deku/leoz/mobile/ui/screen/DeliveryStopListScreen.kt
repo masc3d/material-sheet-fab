@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.transition.TransitionManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -145,11 +146,13 @@ class DeliveryStopListScreen
 
                         this.aidcReader.enabled = !editMode
 
-                        this.flexibleAdapter.allBoundViewHolders
-                                .mapNotNull { it as? FlexibleVmHolder }
-                                .forEach {
-                                    it.beginDelayedTransition()
-                                }
+                        TransitionManager.beginDelayedTransition(this.flexibleAdapter.recyclerView)
+
+//                        this.flexibleAdapter.allBoundViewHolders
+//                                .mapNotNull { it as? FlexibleVmHolder }
+//                                .forEach {
+//                                    it.beginDelayedTransition()
+//                                }
 
                         this.flexibleAdapter.currentItems
                                 .asSequence()

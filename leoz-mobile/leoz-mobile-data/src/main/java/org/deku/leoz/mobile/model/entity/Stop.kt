@@ -59,7 +59,7 @@ fun Stop.Companion.create(
     return StopEntity().also {
         it.state = state
         it.tasks.addAll(tasks)
-        it.position = 0.0
+        it.position = position
     }
 }
 

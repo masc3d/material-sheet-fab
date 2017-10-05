@@ -44,8 +44,6 @@ class FlexibleVmHolder(
     private var beginDelayedTransition = false
 
     init {
-        val id = this.hashCode()
-
         this.binding = DataBindingUtil.bind(view)
 
         this.binding.addOnRebindCallback(object : OnRebindCallback<ViewDataBinding>() {
