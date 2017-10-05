@@ -5,15 +5,14 @@ import io.reactivex.Observable
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.jetbrains.anko.db.*
 import org.slf4j.LoggerFactory
-import sx.LazyInstance
 import sx.android.anko.sqlite.getBoolean
 import sx.android.anko.sqlite.getByteArray
 import sx.android.anko.sqlite.getInt
 import sx.android.anko.sqlite.getString
-import java.io.File
 import sx.mq.mqtt.IMqttPersistence
 import sx.mq.mqtt.MqttPersistentMessage
 import sx.mq.mqtt.toPersistentMessage
+import java.io.File
 
 /**
  * MQTT dispatcher persistence implementation for SQLite on android
@@ -66,7 +65,7 @@ class MqttSqlitePersistence constructor(
         // The actual persistence id in this instance will be set when retrieving the record
         val pm = message.toPersistentMessage(topicName, 0)
 
-        val rowId = db.insertOrThrow(
+        db.insertOrThrow(
                 tableName = TABLE_NAME,
                 values = *arrayOf(
                         Pair(COL_TOPIC, pm.topicName),

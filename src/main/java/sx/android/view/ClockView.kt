@@ -33,17 +33,17 @@ class ClockView : View {
     private val p = Paint(Paint.ANTI_ALIAS_FLAG)
 
     /** Clock hour */
-    var hour: Int by Delegates.observable(0, { p, o, v ->
+    var hour: Int by Delegates.observable(0, { _, o, v ->
         if (o != v) this.invalidate()
     })
 
     /** Clock minutes */
-    var minute: Int by Delegates.observable(0, { p, o, v ->
+    var minute: Int by Delegates.observable(0, { _, o, v ->
         if (o != v) this.invalidate()
     })
 
     /** Clock color */
-    var color: Int by Delegates.observable(0, { p, o, v ->
+    var color: Int by Delegates.observable(0, { _, o, v ->
         if (o != v) this.invalidate()
     })
 
@@ -87,23 +87,23 @@ class ClockView : View {
     }
 
     private fun getMinuteX(l: Int): Float {
-        var c = 0
-        if (minute < 15) {
-            c = minute + 45
+        val c: Int = if (minute < 15) {
+            minute + 45
         } else {
-            c = minute - 15
+            minute - 15
         }
+
         val angle = Math.toRadians((c * 6).toDouble())
         return (0.6 * l.toDouble() * Math.cos(angle)).toFloat()
     }
 
     private fun getMinuteY(l: Int): Float {
-        var c = 0
-        if (minute < 15) {
-            c = minute + 45
+        val c = if (minute < 15) {
+            minute + 45
         } else {
-            c = minute - 15
+            minute - 15
         }
+        
         val angle = Math.toRadians((c * 6).toDouble())
         return (0.6 * l.toDouble() * Math.sin(angle)).toFloat()
     }
