@@ -79,12 +79,13 @@ class StationRepositoryImpl : StationRepositoryExtension {
                 qStation.stationNr.eq(stationNo))
     }
 
-    //override fun findByDebitorid(debitorId: Int): List<MstStation> {
-    //    // QueryDSL
-    //    val qStation = QMstStation.mstStation
-    //    val depots = depotRepository.findAll(
-    //            qStation.s
-    //
+   // override fun findByDebitorid(debitorId: Int): List<MstStation> {
+   //     // QueryDSL
+   //     val qStation = QMstStation.mstStation
+   //     val qDebitor=
+   //     val depots = depotRepository.findAll(
+   //             qStation.deb
+
     //}
 }
 
