@@ -40,7 +40,7 @@ open class Application : MultiDexApplication() {
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
-    private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
+    //private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
     internal val bundle = Bundle()
 
@@ -132,7 +132,7 @@ open class Application : MultiDexApplication() {
                 this.stopService(android.content.Intent(this, LocationService::class.java))
             }
         }
-        this.unregisterBroadcastReceiver()
+//        this.unregisterBroadcastReceiver()
         super.onTerminate()
     }
 
@@ -160,7 +160,7 @@ open class Application : MultiDexApplication() {
      * Terminate/kill application immediately
      */
     fun terminate() {
-        this.unregisterBroadcastReceiver()
+//        this.unregisterBroadcastReceiver()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
@@ -194,11 +194,11 @@ open class Application : MultiDexApplication() {
         return false
     }
 
-    private fun unregisterBroadcastReceiver() {
-        log.debug("Unregister BroadcastReceiver")
-        val broadcastManager = LocalBroadcastManager.getInstance(this)
-        broadcastManager.unregisterReceiver(locationProviderChangedReceiver)
-    }
+//    private fun unregisterBroadcastReceiver() {
+//        log.debug("Unregister BroadcastReceiver")
+//        val broadcastManager = LocalBroadcastManager.getInstance(this)
+//        broadcastManager.unregisterReceiver(locationProviderChangedReceiver)
+//    }
 }
 
 val BaseActivity.app: Application get() = this.application as Application

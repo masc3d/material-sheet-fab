@@ -29,6 +29,14 @@ class BroadcastReceiverConfiguration {
                 broadcastManager.registerReceiver(receiver, intentFilter)
                 receiver
             }
+
+            bind<BroadcastReceiverConfiguration>() with eagerSingleton {
+                log.debug("Inizialized BroadcastReceiverConfiguration module")
+                val config = BroadcastReceiverConfiguration()
+                // Init. all receiver here
+                instance<LocationProviderChangedReceiver>()
+                config
+            }
         }
     }
 }

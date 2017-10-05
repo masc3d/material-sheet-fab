@@ -81,7 +81,7 @@ class StartupActivity : BaseActivity() {
         // Load log configuration first
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
-        Kodein.global.instance<LocationProviderChangedReceiver>()
+        Kodein.global.instance<BroadcastReceiverConfiguration>()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
