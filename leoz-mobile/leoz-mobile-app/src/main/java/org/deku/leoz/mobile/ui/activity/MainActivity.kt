@@ -81,9 +81,6 @@ class MainActivity
 
     //region LoginFragment listener
     override fun onLoginSuccessful() {
-        this.startService(
-                Intent(applicationContext, LocationServiceGMS::class.java))
-
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))

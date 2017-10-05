@@ -29,6 +29,7 @@ import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
+import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
@@ -87,6 +88,13 @@ class StartupActivity : BaseActivity() {
         log.trace("Intent action ${this.intent.action}")
 
         if (!this.app.isInitialized) {
+
+            if (!this.app.isServiceRunning(LocationServiceGMS::class.java)) {
+                this.startService(
+                        Intent(applicationContext, LocationServiceGMS::class.java))
+            } else {
+                log.debug("LocationServiceGMS already running. Skipped startService")
+            }
 
             // Acquire permissions
             val ovPermissions = RxPermissions(this)
