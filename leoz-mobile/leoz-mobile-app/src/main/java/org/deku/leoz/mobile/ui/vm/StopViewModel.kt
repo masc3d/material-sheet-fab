@@ -122,6 +122,11 @@ class StopViewModel(
         this.services.count() > 0
     }
 
+    val isStatusBarVisible by lazy {
+        this.editModeProperty.map { !it.value }
+                .toField()
+    }
+
     //region Clock
     @get:ColorInt
     val clockColor: Int
@@ -147,12 +152,14 @@ class StopViewModel(
     }
 
     val isCountdownVisible: ObservableField<Boolean> by lazy {
-        countdownTimespan.map { stop.appointmentState != AppointmentState.NONE }
-                .toField()
-    }
+        Observable.combineLatest(
+                this.editModeProperty.map { it.value },
+                countdownTimespan.map { stop.appointmentState != AppointmentState.NONE },
+                BiFunction { editMode: Boolean, state: Boolean ->
+                    !editMode && state
+                }
+        )
 
-    val isCountdownExpired: ObservableField<Boolean> by lazy {
-        countdownTimespan.map { stop.appointmentState == AppointmentState.OVERDUE }
                 .toField()
     }
 

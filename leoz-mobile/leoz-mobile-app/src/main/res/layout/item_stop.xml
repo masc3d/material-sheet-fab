@@ -36,8 +36,8 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_weight="1"
+                android:orientation="vertical"
                 >
 
                 <!-- Background without margins -->
@@ -219,8 +219,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:orientation="horizontal"
                                 android:gravity="center_vertical"
+                                android:orientation="horizontal"
                                 >
 
                                 <TextView
@@ -238,7 +238,7 @@
                                     android:id="@+id/uxAppointmentClock"
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:visibility="@{safeUnbox(stop.isClockVisible) || safeUnbox(stop.isCountdownExpired) ? View.VISIBLE : View.GONE}"
+                                    android:visibility="@{safeUnbox(stop.isClockVisible) ? View.VISIBLE : View.GONE}"
                                     app:color="@{stop.clockColor}"
                                     app:hour="@{stop.appointmentHour}"
                                     app:minute="@{stop.appointmentMinute}"
@@ -289,6 +289,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|bottom"
+                        android:orientation="horizontal"
+                        android:visibility="@{safeUnbox(stop.isStatusBarVisible) ? View.VISIBLE : View.GONE}"
                         >
 
                         <ImageView
