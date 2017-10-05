@@ -81,6 +81,7 @@ dependencies {
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+            "org.zalando:problem:$v_rest_problem",
 
             group: 'com.github.maricn', name: 'logback-slack-appender', version: '1.3.0'
     )

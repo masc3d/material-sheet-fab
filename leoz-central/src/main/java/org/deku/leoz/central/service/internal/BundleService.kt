@@ -2,10 +2,11 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.data.repository.NodeJooqRepository
+import sx.rs.DefaultProblem
 import org.deku.leoz.node.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
-import sx.rs.auth.ApiKey
+import org.zalando.problem.Status
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -30,7 +31,9 @@ open class BundleServiceV1 : org.deku.leoz.node.service.internal.BundleServiceV1
     override fun aliasByNodeKey(nodeKey: String): String {
         val rNode = nodeJooqRepository.findByKey(nodeKey)
         if (rNode == null)
-            throw IllegalArgumentException("Unknown node key [${nodeKey}]")
+            throw DefaultProblem(
+                    title = "Unknown node key [${nodeKey}]",
+                    status = Status.NOT_FOUND)
 
         return rNode.versionAlias
     }
@@ -43,4 +46,4 @@ open class BundleServiceV1 : org.deku.leoz.node.service.internal.BundleServiceV1
 @Named
 @Profile(Application.PROFILE_CENTRAL)
 @Path("internal/v2/bundle")
-class BundleServiceV2 : BundleServiceV2() { }
+class BundleServiceV2 : BundleServiceV2() {}

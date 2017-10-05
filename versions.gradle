@@ -42,6 +42,7 @@ buildscript {
         v_rxkotlinfx = '2.2.0'
         v_requery = '1.4.0'
         v_resteasy = '3.1.4.Final'
+        v_rest_problem = '0.20.0'
         v_roaster = '2.20.1.Final'
         v_slf4j = '1.7.25'
         v_snappy = '1.1.2.4'

@@ -10,11 +10,10 @@ import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHas
 import org.deku.leoz.central.data.repository.isActive
 import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.model.AllowedStations
-import org.deku.leoz.node.rest.DefaultProblem
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.UserService.User
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path

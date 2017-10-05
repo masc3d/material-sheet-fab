@@ -15,6 +15,7 @@ import sx.concurrent.Service
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.platform.PlatformId
+import sx.rs.DefaultProblem
 import java.util.concurrent.ScheduledExecutorService
 import javax.ws.rs.WebApplicationException
 import kotlin.NoSuchElementException
@@ -94,9 +95,13 @@ class BundleUpdateService(
             presets.sortedBy { it.requiresBoot }.forEach { p ->
                 try {
                     this@BundleUpdateService.update(p)
-                } catch(e: WebApplicationException) {
+                } catch(e: DefaultProblem) {
                     log.error(e.message)
-                } catch(e: Exception) {
+                }
+                catch(e: WebApplicationException) {
+                    log.error(e.response.readEntity(String::class.java))
+                }
+                catch(e: Exception) {
                     log.error(e.message, e)
                 }
             }
