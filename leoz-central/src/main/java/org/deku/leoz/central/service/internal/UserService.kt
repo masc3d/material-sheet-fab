@@ -163,14 +163,14 @@ class UserService : UserService {
         val phone = user.phone
         val mobilePhone = user.phoneMobile
 
-        val allowsStations=AllowedStations()
-        val userStations=user.allowedStations
-        if (userStations!=null){
-            allowsStations.allowedStations=userStations.map { j -> j.toString() }.toList()
+        val allowsStations = AllowedStations()
+        val userStations = user.allowedStations
+        if (userStations != null) {
+            allowsStations.allowedStations = userStations.map { j -> j.toString() }.toList()
         }
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        val stations=mapper.writeValueAsString(allowsStations)
+        val stations = mapper.writeValueAsString(allowsStations)
 
         var isNew = false
         var rec = userRepository.findByMail(email)
@@ -332,8 +332,8 @@ class UserService : UserService {
         if (user.expiresOn != null)
             rec.expiresOn = user.expiresOn
 
-//        rec.allowedStations=stations
-//todo save in join Tabele
+//todo read from mst_station_user
+//        rec.allowedStations = stations
 
         if (!userRepository.save(rec))
             throw DefaultProblem(

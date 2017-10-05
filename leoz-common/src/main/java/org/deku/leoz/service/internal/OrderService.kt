@@ -95,7 +95,7 @@ interface OrderService {
             @get:ApiModelProperty(required = true, position = 90, value = "Pickup text information")
             var pickupNotice: String? = null,
             @get:ApiModelProperty(required = true, position = 95, value = "Pickup Station")
-            var pickupStation: Long = 0,
+            var pickupStation: Int = 0,
 
             @get:ApiModelProperty(position = 100, required = true, value = "Delivery appointment")
             var deliveryAppointment: Appointment = Appointment(),
@@ -108,7 +108,7 @@ interface OrderService {
             @get:ApiModelProperty(required = true, position = 140, value = "Delivery text information")
             var deliveryNotice: String? = null,
             @get:ApiModelProperty(required = true, position = 145, value = "Delivery Station")
-            var deliveryStation: Long = 0,
+            var deliveryStation: Int = 0,
 
             @get:ApiModelProperty(position = 150, required = false, value = "Parcels")
             var parcels: List<Parcel> = listOf()

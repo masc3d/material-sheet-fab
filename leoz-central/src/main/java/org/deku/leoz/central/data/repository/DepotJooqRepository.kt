@@ -38,12 +38,13 @@ open class DepotJooqRepository {
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun findDebitor(StationNr: Long): Int {
+    open fun findDebitor(StationNr: Int): Int {
         return dslContext
                 .select(Tables.MST_DEBITOR.DEBITOR_ID)
                 .from(Tables.MST_DEBITOR).innerJoin(Tables.MST_DEBITOR_STATION)
                 .on(Tables.MST_DEBITOR.DEBITOR_ID.eq(Tables.MST_DEBITOR_STATION.DEBITOR_ID))
                 .where(Tables.MST_DEBITOR_STATION.STATION_ID.eq(StationNr.toInt())
+//todo include send_date  between active_from and active_to
                 ).fetchOne(Tables.MST_DEBITOR_STATION.DEBITOR_ID)
     }
 
@@ -52,6 +53,7 @@ open class DepotJooqRepository {
                 .select(Tables.TBLDEPOTLISTE.DEPOTNR)
                 .from(Tables.TBLDEPOTLISTE)
                 .where(Tables.TBLDEPOTLISTE.ID.eq(debitorId))
+//todo include send_date  between active_from and active_to
                 .fetchInto(String::class.java)
     }
 }
