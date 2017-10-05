@@ -53,7 +53,7 @@ fun Bitmap.scaleSquare(src: Bitmap, size: Int): Bitmap {
  */
 fun Drawable.toBitmap(): Bitmap {
     val drawable = this
-    var bitmap: Bitmap? = null
+    var bitmap: Bitmap?
 
     if (drawable is BitmapDrawable) {
         val bitmapDrawable = drawable
