@@ -6,7 +6,7 @@ import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
 import org.deku.leoz.node.rest.DefaultProblem
-import org.deku.leoz.service.entity.internal.update.BundleUpdateService
+import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.BundleServiceV1
 import org.deku.leoz.service.internal.BundleServiceV2
@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import sx.packager.BundleRepository
 import sx.platform.OperatingSystem
-import sx.rs.auth.ApiKey
 import java.io.File
-import java.net.URLDecoder
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
