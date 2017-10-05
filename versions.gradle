@@ -3,6 +3,7 @@ buildscript {
         // Required JVM/JDK version. Do not include the '-bxx' suffix of the version, as it may differ across platforms
         v_jvm = '25.131'
         // Versions
+        // masc20171003. 5.15.1 reports corrupt journal files
         v_activemq = '5.15.0'
         v_artemis = '1.5.4'
         v_apache_cxf = '3.2.0'

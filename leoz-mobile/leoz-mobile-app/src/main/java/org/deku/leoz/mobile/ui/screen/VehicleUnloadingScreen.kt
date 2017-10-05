@@ -87,11 +87,9 @@ class VehicleUnloadingScreen :
         )
     }
 
-    private val executorService: ExecutorService by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val tones: Tones by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
@@ -293,7 +291,7 @@ class VehicleUnloadingScreen :
                                 orderRepository.removeAll()
                                         .blockingAwait()
                             }
-                                    .subscribeOn(schedulers.database)
+                                    .subscribeOn(db.scheduler)
                                     .subscribe()
                         }
 
@@ -307,7 +305,7 @@ class VehicleUnloadingScreen :
                                             parcelRepository.update(it).blockingGet()
                                         }
                             }
-                                    .subscribeOn(schedulers.database)
+                                    .subscribeOn(db.scheduler)
                                     .subscribe()
                         }
                     }
@@ -522,7 +520,7 @@ class VehicleUnloadingScreen :
                                 parcel.isDamaged = false
 
                                 this.parcelRepository.update(parcel)
-                                        .subscribeOn(schedulers.database)
+                                        .subscribeOn(db.scheduler)
                                         .subscribe()
                             }
                             .show()
@@ -553,7 +551,7 @@ class VehicleUnloadingScreen :
                     parcel = parcel,
                     jpegPictureData = jpeg
             )
-                    .subscribeOn(schedulers.database)
+                    .subscribeOn(db.scheduler)
                     .subscribe()
         }
     }

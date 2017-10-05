@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model.repository
 
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
@@ -25,5 +26,20 @@ abstract class ObservingRepository<E : Persistable>(
     val entitiesProperty = query.result
     val entities by entitiesProperty
 
+    /**
+     * Update specific entity
+     * @param entity Entity
+     */
     open fun update(entity: E): Single<E> = store.update(entity)
+
+    /**
+     * Update all entities
+     */
+    fun updateAll(): Completable {
+        return store.withTransaction {
+            this@ObservingRepository.entities.forEach {
+                update(it)
+            }
+        }.toCompletable()
+    }
 }

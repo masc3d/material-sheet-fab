@@ -102,22 +102,42 @@ class StopRepository(
 
     /**
      * Updates stop order, placing a stop after another one
-     * @param after Stop
+     * @param stop The stop to move positionally
+     * @param after The stop after which stop should be moved or null for first position
+     * @param persist Persist the change against the entity store, otherwise merely applies
+     * the change to this repository's reference cache
      */
-    fun move(stop: Stop, after: Stop?): Completable {
+    fun move(
+            stop: Stop,
+            after: Stop?,
+            persist: Boolean = false
+    ): Completable {
         return Completable.fromCallable {
             val store = this.store.toBlocking()
 
             val afterPosition = after?.position ?: 0.0
 
             // Get first stop where position is greater or null if there's none (last position)
-            val nextAfter = store
-                    .select(StopEntity::class)
-                    .where(StopEntity.POSITION.gt(afterPosition))
-                    .orderBy(StopEntity.POSITION.asc())
-                    .limit(1)
-                    .get()
-                    .firstOrNull()
+            val nextAfter = when(persist) {
+                true -> {
+                    store
+                            .select(StopEntity::class)
+                            .where(StopEntity.POSITION.gt(afterPosition))
+                            .orderBy(StopEntity.POSITION.asc())
+                            .limit(1)
+                            .get()
+                            .firstOrNull()
+                }
+                false -> {
+                    // If changes are not persisted, query reference cache instead for consistency
+                    this.entities
+                            .asSequence()
+                            .filter { it.position > afterPosition}
+                            .sortedBy { it.position }
+                            .firstOrNull()
+                }
+            }
+
 
             when {
                 nextAfter != null -> {
@@ -129,7 +149,8 @@ class StopRepository(
                 }
             }
 
-            store.update(stop)
+            if (persist)
+                store.update(stop)
         }
     }
 

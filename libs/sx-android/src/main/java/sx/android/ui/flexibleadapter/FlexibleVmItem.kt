@@ -13,12 +13,17 @@ import io.reactivex.subjects.PublishSubject
 /**
  * Flexible view model item
  * Created by masc on 26.06.17.
+ * @property view The view layout resource ID
+ * @property variable View model binding ID
+ * @property viewModel The view model
+ * @property dragHandleViewId The view id of the drag handle (wheb moving items is supported)
+ * @property beginDelayedTransition Begins a transition everytime the binding is rebound (eg. bound fields change)
  */
 open class FlexibleVmItem<VM>(
         @LayoutRes val view: Int,
         @AnyRes val variable: Int,
         val viewModel: VM,
-        @IdRes private val handleViewId: Int = 0
+        @IdRes private val dragHandleViewId: Int = 0
 ) : AbstractFlexibleItem<FlexibleVmHolder>() {
 
     override fun equals(other: Any?): Boolean = (this === other)
@@ -64,7 +69,7 @@ open class FlexibleVmItem<VM>(
         val holder = FlexibleVmHolder(
                 view = view,
                 adapter = adapter,
-                handleViewId = handleViewId)
+                dragHandleViewId = dragHandleViewId)
 
         return holder
     }

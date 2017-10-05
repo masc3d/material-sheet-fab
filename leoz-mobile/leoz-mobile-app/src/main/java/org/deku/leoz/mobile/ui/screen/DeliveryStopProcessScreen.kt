@@ -111,7 +111,6 @@ class DeliveryStopProcessScreen :
 
     //region Model classes
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
@@ -688,7 +687,7 @@ class DeliveryStopProcessScreen :
                                         .blockingAwait()
                             }
                                     .toCompletable()
-                                    .subscribeOn(schedulers.database)
+                                    .subscribeOn(db.scheduler)
                                     .subscribeBy(
                                             onError = {
                                                 log.error(it.message, it)
@@ -742,7 +741,7 @@ class DeliveryStopProcessScreen :
                                 parcel.isDamaged = false
 
                                 this.parcelRepository.update(parcel)
-                                        .subscribeOn(schedulers.database)
+                                        .subscribeOn(db.scheduler)
                                         .subscribe()
                             }
                             .show()
@@ -767,7 +766,7 @@ class DeliveryStopProcessScreen :
 
     private fun finalizeStop() {
         this.deliveryStop.finalize()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
                 .observeOnMainThread()
                 .subscribeBy(
                         onComplete = {
@@ -888,7 +887,7 @@ class DeliveryStopProcessScreen :
                             parcel = parcel,
                             jpegPictureData = jpeg
                     )
-                            .subscribeOn(schedulers.database)
+                            .subscribeOn(db.scheduler)
                             .subscribe()
                 }
             }

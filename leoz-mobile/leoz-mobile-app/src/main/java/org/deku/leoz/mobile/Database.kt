@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile
 
 import android.content.Context
+import io.reactivex.Scheduler
 import io.requery.Persistable
 import io.requery.android.database.sqlite.SQLiteDatabase
 import io.requery.android.sqlitex.SqlitexDatabaseSource
@@ -18,11 +19,14 @@ import org.slf4j.LoggerFactory
  * @param context
  * @param name Database name
  * @param clean Remove database prior to initialization
+ * @param scheduler The scheduler to use for database operations
  */
 class Database(
         val context: Context,
         val name: String,
-        val clean: Boolean = false) {
+        val clean: Boolean = false,
+        val scheduler: Scheduler
+) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

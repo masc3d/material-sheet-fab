@@ -37,7 +37,6 @@ class DeliveryStop(
     override val compositeDisposable = CompositeDisposable()
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
@@ -333,7 +332,7 @@ class DeliveryStop(
                     }
         }
                 .toCompletable()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 
     /**
@@ -387,7 +386,7 @@ class DeliveryStop(
             update(parcel)
         }
                 .toCompletable()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 
     /**
@@ -405,7 +404,7 @@ class DeliveryStop(
             }
         }
                 .toCompletable()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 
     /**
@@ -423,7 +422,7 @@ class DeliveryStop(
             }
         }
                 .toCompletable()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 
 
@@ -529,6 +528,6 @@ class DeliveryStop(
                     )
                     //endregion
                 })
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 }

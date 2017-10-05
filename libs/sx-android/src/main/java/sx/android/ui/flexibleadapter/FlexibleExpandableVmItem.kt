@@ -6,7 +6,8 @@ import android.view.View
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
 import eu.davidea.flexibleadapter.FlexibleAdapter
-import eu.davidea.flexibleadapter.items.*
+import eu.davidea.flexibleadapter.items.AbstractExpandableHeaderItem
+import eu.davidea.flexibleadapter.items.IFlexible
 
 /**
  * Flexible expandable view model header/item.
@@ -18,9 +19,10 @@ class FlexibleExpandableVmItem<EVM, IVM>(
         @AnyRes val variable: Int,
         val viewModel: EVM,
         val blurRadius: Float = 1F,
+        val isTransitionsEnabled: Boolean = false,
         var isExpandableOnClick: Boolean = true
 )
-    : AbstractExpandableHeaderItem<FlexibleExpandableVmHolder, FlexibleSectionableVmItem<IVM>>() {
+    : AbstractExpandableHeaderItem<FlexibleVmHolder, FlexibleSectionableVmItem<IVM>>() {
 
     override fun equals(other: Any?): Boolean =
             this === other
@@ -30,7 +32,7 @@ class FlexibleExpandableVmItem<EVM, IVM>(
 
     override fun bindViewHolder(
             adapter: FlexibleAdapter<out IFlexible<*>>,
-            viewHolder: FlexibleExpandableVmHolder,
+            viewHolder: FlexibleVmHolder,
             position: Int,
             payloads: MutableList<Any?>) {
 
@@ -38,13 +40,13 @@ class FlexibleExpandableVmItem<EVM, IVM>(
         viewHolder.binding.executePendingBindings()
     }
 
-    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: FlexibleExpandableVmHolder?, position: Int) {
+    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: FlexibleVmHolder?, position: Int) {
         super.unbindViewHolder(adapter, holder, position)
         // Unbind view holder
         holder?.binding?.unbind()
     }
 
-    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleExpandableVmHolder {
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
         // Blur view support
         if (view is BlurView) {
             val rootView = adapter.recyclerView
@@ -58,7 +60,7 @@ class FlexibleExpandableVmItem<EVM, IVM>(
                     .blurRadius(this.blurRadius)
         }
 
-        return FlexibleExpandableVmHolder(
+        return FlexibleVmHolder(
                 view = view,
                 adapter = adapter,
                 isStickyHeader = true,

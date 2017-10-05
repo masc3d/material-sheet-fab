@@ -18,6 +18,7 @@ import { PrintingService } from '../../../core/printing/printing.service';
 import { LoadinglistReportingService } from '../../../core/reporting/loadinglist-reporting.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { LoadinglistReportHeader } from './loadinglist-report-header.model';
+import { BrowserCheck } from '../../../core/auth/browser-check';
 
 interface ScanMsg {
   packageId: string;
@@ -76,6 +77,8 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   private receivedResponses: number;
   private actualScanMsgs: ScanMsg[];
 
+  notMicrodoof: boolean;
+
   constructor( private fb: FormBuilder,
                private loadinglistService: LoadinglistService,
                protected translate: TranslateService,
@@ -83,7 +86,8 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
                private keyUpService: KeyUpEventService,
                private soundService: SoundService,
                private reportingService: LoadinglistReportingService,
-               private printingService: PrintingService ) {
+               private printingService: PrintingService,
+               private browserCheck: BrowserCheck ) {
     super( translate, () => {
       this.loadlists = this.createLoadinglistItems( this.loadlistItems );
       this.exportdate = this.initExportdate();
@@ -93,6 +97,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   ngOnInit() {
     super.ngOnInit();
 
+    this.notMicrodoof = this.browserCheck.browser === 'handsome Browser';
     this.scanProgress = 0;
     this.scanInProgress = false;
     this.waitingForResults = 0;

@@ -26,7 +26,6 @@ class Delivery : CompositeDisposableSupplier {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
@@ -70,7 +69,7 @@ class Delivery : CompositeDisposableSupplier {
             if (v.entity.state == Stop.State.NONE) {
                 v.entity.state = Stop.State.PENDING
                 stopRepository.update(v.entity)
-                        .subscribeOn(schedulers.database)
+                        .subscribeOn(db.scheduler)
                         .subscribe()
             }
         }
