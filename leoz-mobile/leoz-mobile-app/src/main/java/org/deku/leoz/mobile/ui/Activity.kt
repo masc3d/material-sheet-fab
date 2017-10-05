@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
@@ -34,6 +35,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.patloew.rxlocation.LocationSettingsNotSatisfiedException
+import com.patloew.rxlocation.RxLocation
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
@@ -118,6 +121,7 @@ abstract class Activity : BaseActivity(),
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
     private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
     private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
+    private val locationServices: LocationServices by Kodein.global.lazy.instance()
 
     private val device: Device by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
@@ -554,6 +558,10 @@ abstract class Activity : BaseActivity(),
         return false
     }
 
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(BaseContextWrapper.wrap(context = newBase!!, language = null))
+    }
+
     private val cameraAidcFragment: AidcCameraFragment?
         get() = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName) as? AidcCameraFragment
 
@@ -784,6 +792,32 @@ abstract class Activity : BaseActivity(),
                             this.cameraAidcFragmentVisible = false
                     }
                 }
+
+        this.locationServices.locationSettingsChangedEvent
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    log.debug("LocationSettingsChangedEvent fired")
+                    //TODO
+                }
+
+        RxLocation(applicationContext).settings().checkAndHandleResolutionCompletable(this.locationServices.locationRequest)
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .subscribeBy(
+                        onComplete = {
+                            log.debug("LocationSettings satisfied")
+                        },
+                        onError = {
+                            when (it) {
+                                is LocationSettingsNotSatisfiedException -> {
+                                    this.app.terminate()
+                                }
+                                else -> {
+                                    log.error(it.message, it)
+                                }
+                            }
+                        }
+                )
         //endregion
     }
 

@@ -4,10 +4,12 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.DialogInterface
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.multidex.MultiDexApplication
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatDelegate
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.android.androidModule
@@ -21,6 +23,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import io.reactivex.Completable
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
+import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.ui.BaseActivity
@@ -35,6 +38,7 @@ open class Application : MultiDexApplication() {
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    private val locationProviderChangedReceiver = LocationProviderChangedReceiver()
 
     internal val bundle = Bundle()
 
@@ -69,6 +73,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(AidcConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
         Kodein.global.addImport(MqttConfiguration.module)
+        Kodein.global.addImport(LocationServicesConfiguration.module)
         //endregion
 
         //region Global exception handler
@@ -106,6 +111,8 @@ open class Application : MultiDexApplication() {
             eu.davidea.flexibleadapter.utils.Log.setLevel(
                     eu.davidea.flexibleadapter.utils.Log.Level.SUPPRESS)
         }
+
+        registerBroadcastReceiver()
     }
 
     override fun attachBaseContext(base: Context?) {
@@ -124,6 +131,7 @@ open class Application : MultiDexApplication() {
                 this.stopService(android.content.Intent(this, LocationService::class.java))
             }
         }
+        unregisterBroadcastReceiver()
         super.onTerminate()
     }
 
@@ -208,6 +216,16 @@ open class Application : MultiDexApplication() {
                 }
             }
         }
+    }
+
+    private fun registerBroadcastReceiver() {
+        val broadcastManager = LocalBroadcastManager.getInstance(this)
+        broadcastManager.registerReceiver(locationProviderChangedReceiver, IntentFilter("android.location.PROVIDERS_CHANGED"))
+    }
+
+    private fun unregisterBroadcastReceiver() {
+        val broadcastManager = LocalBroadcastManager.getInstance(this)
+        broadcastManager.unregisterReceiver(locationProviderChangedReceiver)
     }
 }
 

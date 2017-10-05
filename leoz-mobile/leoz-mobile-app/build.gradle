@@ -272,9 +272,9 @@ dependencies {
             //
 
             //RX Location
-            //"com.patloew.rxlocation:rxlocation:1.0.3",
+            "com.patloew.rxlocation:rxlocation:1.0.3",
             // GMS
-            //"com.google.android.gms:play-services-location:9.4.0",
+            "com.google.android.gms:play-services-location:11.4.0",
             //"com.google.android.gms:play-services-places:9.4.0",
 
             // Volley
@@ -322,9 +322,7 @@ dependencies {
             "org.jetbrains.anko:anko-support-v4:$v_anko",
 
             "com.fenchtose:tooltip:0.1.5",
-            "net.cachapa.expandablelayout:expandablelayout:2.9.2",
-
-            "com.google.android.gms:play-services-location:11.4.0"
+            "net.cachapa.expandablelayout:expandablelayout:2.9.2"
     )
 
     debugImplementation(

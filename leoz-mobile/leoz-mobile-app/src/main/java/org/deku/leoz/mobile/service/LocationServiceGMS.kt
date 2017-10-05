@@ -16,10 +16,16 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStatusCodes
 import android.content.IntentSender
 import android.location.Location
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ApiException
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.slf4j.LoggerFactory
 
 
@@ -33,20 +39,17 @@ class LocationServiceGMS:
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    val locationRequest = LocationRequest().also {
-        it.interval = Duration.ofSeconds(this.locationSettings.period).toMillis()
-        it.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        it.smallestDisplacement = locationSettings.smallestDisplacement
-    }
+    private val locationServices: org.deku.leoz.mobile.LocationServices by Kodein.global.lazy.instance()
+
+    private val locationRequest = locationServices.locationRequest
 
     var builder: LocationSettingsRequest.Builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
 
     val googleApiClient: GoogleApiClient by lazy {
-        GoogleApiClient.Builder(applicationContext)
+        this.locationServices.googleApiClientBuilder
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
                 .build()
     }
 
