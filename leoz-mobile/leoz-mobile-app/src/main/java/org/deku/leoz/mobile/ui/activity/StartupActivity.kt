@@ -23,10 +23,12 @@ import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.app
+import org.deku.leoz.mobile.config.BroadcastReceiverConfiguration
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
@@ -79,6 +81,7 @@ class StartupActivity : BaseActivity() {
         // Load log configuration first
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
+        Kodein.global.instance<LocationProviderChangedReceiver>()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")

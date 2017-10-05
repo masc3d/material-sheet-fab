@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -11,6 +12,7 @@ import android.os.Bundle
 import android.support.multidex.MultiDexApplication
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatDelegate
+import android.util.Log
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
@@ -38,7 +40,7 @@ open class Application : MultiDexApplication() {
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
-    private val locationProviderChangedReceiver = LocationProviderChangedReceiver()
+    private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
     internal val bundle = Bundle()
 
@@ -62,18 +64,19 @@ open class Application : MultiDexApplication() {
         })
 
         // Higher level modules
+        Kodein.global.addImport(AidcConfiguration.module)
         Kodein.global.addImport(ApplicationConfiguration.module)
-        Kodein.global.addImport(ExecutorConfiguration.module)
+        Kodein.global.addImport(BroadcastReceiverConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
+        Kodein.global.addImport(DeviceConfiguration.module)
+        Kodein.global.addImport(ExecutorConfiguration.module)
         Kodein.global.addImport(RepositoryConfiguration.module)
+        Kodein.global.addImport(LocationServicesConfiguration.module)
         Kodein.global.addImport(ModelConfiguration.module)
+        Kodein.global.addImport(MqttConfiguration.module)
         Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(ServiceConfiguration.module)
-        Kodein.global.addImport(DeviceConfiguration.module)
-        Kodein.global.addImport(AidcConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
-        Kodein.global.addImport(MqttConfiguration.module)
-        Kodein.global.addImport(LocationServicesConfiguration.module)
         //endregion
 
         //region Global exception handler
@@ -111,8 +114,6 @@ open class Application : MultiDexApplication() {
             eu.davidea.flexibleadapter.utils.Log.setLevel(
                     eu.davidea.flexibleadapter.utils.Log.Level.SUPPRESS)
         }
-
-        registerBroadcastReceiver()
     }
 
     override fun attachBaseContext(base: Context?) {
@@ -131,7 +132,7 @@ open class Application : MultiDexApplication() {
                 this.stopService(android.content.Intent(this, LocationService::class.java))
             }
         }
-        unregisterBroadcastReceiver()
+        this.unregisterBroadcastReceiver()
         super.onTerminate()
     }
 
@@ -159,6 +160,7 @@ open class Application : MultiDexApplication() {
      * Terminate/kill application immediately
      */
     fun terminate() {
+        this.unregisterBroadcastReceiver()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
@@ -190,38 +192,6 @@ open class Application : MultiDexApplication() {
             }
         }
         return false
-    }
-
-//    fun checkGoogleApiAvailability(activity: Activity, showResolutionDialog: Boolean = true): Completable { // Observable<Boolean> {
-//        return Completable.create {
-//            val completableEmitter = it
-//            val connResult = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
-//            when {
-//                connResult != ConnectionResult.SUCCESS -> {
-//                    val error = IllegalStateException("Google API not available.")
-//                    if (showResolutionDialog) {
-//                        val dialog = GoogleApiAvailability.getInstance().getErrorDialog(activity, connResult, 0, DialogInterface.OnCancelListener {
-//                            completableEmitter.onError(error)
-//                        })
-//                        dialog.setOnDismissListener {
-//                            completableEmitter.onError(error)
-//                        }
-//                        dialog.show()
-//                    } else {
-//                        completableEmitter.onError(error)
-//                    }
-//                }
-//                else -> {
-//                    it.onComplete()
-//                }
-//            }
-//        }
-//    }
-
-    private fun registerBroadcastReceiver() {
-        log.debug("Register BroadcastReceiver")
-        val broadcastManager = LocalBroadcastManager.getInstance(this)
-        broadcastManager.registerReceiver(locationProviderChangedReceiver, IntentFilter("android.location.PROVIDERS_CHANGED"))
     }
 
     private fun unregisterBroadcastReceiver() {

@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -22,6 +23,7 @@ class LocationProviderChangedReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         log.debug("ONRECEIVE Intent [$intent] Context [$context]")
+        Log.d(LocationProviderChangedReceiver::class.java.simpleName, "ONRECEIVE")
         locationSettings.locationSettingsChangedEventProperty.onNext(Unit)
     }
 
