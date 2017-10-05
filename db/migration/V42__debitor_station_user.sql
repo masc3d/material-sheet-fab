@@ -1,12 +1,30 @@
+USE dekutmp;
+
+ALTER TABLE tblauftrag
+  ADD COLUMN pickup_longitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN pickup_latitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN delivery_longitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN delivery_latitude DOUBLE NOT NULL DEFAULT 0;
+
+ALTER TABLE tblauftragtmp
+  ADD COLUMN pickup_longitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN pickup_latitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN delivery_longitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN delivery_latitude DOUBLE NOT NULL DEFAULT 0;
+
 USE dekuclient;
 
 ALTER TABLE tblauftrag
-  ADD COLUMN longitude DOUBLE NOT NULL DEFAULT 0,
-  ADD COLUMN latitude DOUBLE NOT NULL DEFAULT 0;
+  ADD COLUMN pickup_longitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN pickup_latitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN delivery_longitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN delivery_latitude DOUBLE NOT NULL DEFAULT 0;
 
 ALTER TABLE tblauftragtmp
-  ADD COLUMN longitude DOUBLE NOT NULL DEFAULT 0,
-  ADD COLUMN latitude DOUBLE NOT NULL DEFAULT 0;
+  ADD COLUMN pickup_longitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN pickup_latitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN delivery_longitude DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN delivery_latitude DOUBLE NOT NULL DEFAULT 0;
 
 ALTER TABLE tbldepotliste
   DROP COLUMN debitor_id,
@@ -14,6 +32,9 @@ ALTER TABLE tbldepotliste
 
 ALTER TABLE tbldepotliste
   ADD COLUMN ValOk_without_bag INT NOT NULL DEFAULT 0;
+
+ALTER TABLE tad_node_geoposition
+    ADD COLUMN debitor_id INT(11) NOT NULL DEFAULT 0;
 
 ALTER TABLE mst_user
   ADD config JSON DEFAULT NULL  NULL;
