@@ -128,6 +128,7 @@ class VehicleUnloadingScreen :
     val pendingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 expandOnSelection = true,
                 title = getString(R.string.pending),
@@ -138,6 +139,7 @@ class VehicleUnloadingScreen :
     val missingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_missing,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
