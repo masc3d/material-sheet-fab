@@ -4,7 +4,6 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.*
 import org.deku.leoz.central.data.toUInteger
-import org.deku.leoz.node.data.jooq.tables.records.MstDebitorRecord
 import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.data.repository.master.*
 import org.deku.leoz.node.data.repository.system.PropertyRepository
@@ -417,18 +416,14 @@ constructor(
                 { s -> convert(s) },
                 clean)
 
-//        this.updateEntities(
-//                org.deku.leoz.central.data.jooq.Tables.MST_DEBITOR,
-//                org.deku.leoz.central.data.jooq.tables.MstDebitor.MST_DEBITOR.SYNC_ID,
-//                debitorRepository,
-//                QMstDebitor.mstDebitor,
-//                QMstDebitor.mstDebitor.syncId,
-//                { s -> convert(s) },
-//                clean)
-
-        val s: MstDebitorRecord = MstDebitorRecord()
-        convert(s)
-
+        this.updateEntities(
+                org.deku.leoz.central.data.jooq.Tables.MST_DEBITOR,
+                org.deku.leoz.central.data.jooq.tables.MstDebitor.MST_DEBITOR.SYNC_ID,
+                debitorRepository,
+                QMstDebitor.mstDebitor,
+                QMstDebitor.mstDebitor.syncId,
+                { s -> convert(s) },
+                clean)
 
         this.updateEntities(
                 org.deku.leoz.central.data.jooq.Tables.MST_DEBITOR_STATION,

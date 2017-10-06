@@ -3,7 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.node.rest.DefaultProblem
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.model.UserRole
 import org.slf4j.LoggerFactory

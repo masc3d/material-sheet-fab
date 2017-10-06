@@ -4,7 +4,7 @@ import org.deku.leoz.node.*
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.node.config.EntitySyncNodeConfiguration
-import org.deku.leoz.service.entity.internal.update.BundleUpdateService
+import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.ApplicationService.Version
 import org.springframework.context.annotation.Profile

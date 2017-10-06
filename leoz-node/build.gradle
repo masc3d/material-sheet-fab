@@ -19,7 +19,6 @@ buildscript {
         v_aspectj = '1.8.11'
         v_querydsl = '4.1.4'
         v_jaxb = '2.3.0'
-        v_rest_problem = '0.20.0'
     }
 
     dependencies {

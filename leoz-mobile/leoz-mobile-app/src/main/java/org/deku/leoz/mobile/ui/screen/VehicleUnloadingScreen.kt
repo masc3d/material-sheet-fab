@@ -87,11 +87,9 @@ class VehicleUnloadingScreen :
         )
     }
 
-    private val executorService: ExecutorService by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val tones: Tones by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
@@ -130,6 +128,7 @@ class VehicleUnloadingScreen :
     val pendingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 expandOnSelection = true,
                 title = getString(R.string.pending),
@@ -140,6 +139,7 @@ class VehicleUnloadingScreen :
     val missingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_missing,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
@@ -293,7 +293,7 @@ class VehicleUnloadingScreen :
                                 orderRepository.removeAll()
                                         .blockingAwait()
                             }
-                                    .subscribeOn(schedulers.database)
+                                    .subscribeOn(db.scheduler)
                                     .subscribe()
                         }
 
@@ -307,7 +307,7 @@ class VehicleUnloadingScreen :
                                             parcelRepository.update(it).blockingGet()
                                         }
                             }
-                                    .subscribeOn(schedulers.database)
+                                    .subscribeOn(db.scheduler)
                                     .subscribe()
                         }
                     }
@@ -522,7 +522,7 @@ class VehicleUnloadingScreen :
                                 parcel.isDamaged = false
 
                                 this.parcelRepository.update(parcel)
-                                        .subscribeOn(schedulers.database)
+                                        .subscribeOn(db.scheduler)
                                         .subscribe()
                             }
                             .show()
@@ -553,7 +553,7 @@ class VehicleUnloadingScreen :
                     parcel = parcel,
                     jpegPictureData = jpeg
             )
-                    .subscribeOn(schedulers.database)
+                    .subscribeOn(db.scheduler)
                     .subscribe()
         }
     }

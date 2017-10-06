@@ -37,7 +37,9 @@ class DatabaseConfiguration {
                 Database(
                         context = instance(),
                         name = name,
-                        clean = settings.cleanStartup)
+                        clean = settings.cleanStartup,
+                        scheduler = io.reactivex.schedulers.Schedulers.single()
+                )
             }
         }
     }

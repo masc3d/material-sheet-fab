@@ -1,10 +1,12 @@
-package org.deku.leoz.node.rest
+package sx.rs
 
 import org.zalando.problem.Exceptional
 import org.zalando.problem.Status
 import org.zalando.problem.StatusType
 import org.zalando.problem.ThrowableProblem
 import java.net.URI
+import javax.ws.rs.ClientErrorException
+import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 
 /**
@@ -54,5 +56,15 @@ class DefaultProblem(
 
     override fun getCause(): Exceptional? {
         return super.cause
+    }
+}
+
+/**
+ * Helper for formatting a JAX/RS response to a simple string
+ */
+fun ClientErrorException.toString(includeResponse: Boolean = false): String {
+    return when (includeResponse) {
+        false -> this.toString()
+        true -> "${this.message} ${this.response.readEntity(String::class.java)}"
     }
 }

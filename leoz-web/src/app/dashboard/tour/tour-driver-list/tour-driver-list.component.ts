@@ -91,6 +91,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   tableIsVisible: boolean;
   calendarIsVisible: boolean;
   dateFormatPrimeng: string;
+  dateFormatEvenLonger: string;
   locale: any;
 
   private refreshTimer: Observable<number>;

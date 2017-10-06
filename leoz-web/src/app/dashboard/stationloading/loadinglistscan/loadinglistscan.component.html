@@ -54,7 +54,7 @@
             </div>
           </div>
           <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px">
-            <div class="ui-g-12">
+            <div *ngIf="notMicrodoof" class="ui-g-12">
               <button pButton type="button" (click)="preview()" label="{{'preview' | translate}}"></button>
             </div>
             <div class="ui-g-12">

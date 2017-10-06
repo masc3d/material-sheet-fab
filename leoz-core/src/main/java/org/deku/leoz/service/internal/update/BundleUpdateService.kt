@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity.internal.update
+package org.deku.leoz.service.internal.update
 
 import sx.packager.Bundle
 import sx.packager.BundleInstaller
@@ -15,8 +15,11 @@ import sx.concurrent.Service
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.platform.PlatformId
-import java.util.*
+import sx.rs.DefaultProblem
+import sx.rs.toString
 import java.util.concurrent.ScheduledExecutorService
+import javax.ws.rs.ClientErrorException
+import javax.ws.rs.WebApplicationException
 import kotlin.NoSuchElementException
 
 /**
@@ -79,6 +82,10 @@ class BundleUpdateService(
             initialDelay = Duration.ZERO) {
 
         override fun run() {
+            // Don't do anything when disabled
+            if (!this@BundleUpdateService.enabled)
+                return
+
             // Clean bundles before update
             try {
                 if (this@BundleUpdateService.cleanup)
@@ -90,7 +97,13 @@ class BundleUpdateService(
             presets.sortedBy { it.requiresBoot }.forEach { p ->
                 try {
                     this@BundleUpdateService.update(p)
-                } catch(e: Exception) {
+                } catch(e: DefaultProblem) {
+                    log.error(e.message)
+                }
+                catch(e: ClientErrorException) {
+                    log.error(e.toString(includeResponse = true))
+                }
+                catch(e: Exception) {
                     log.error(e.message, e)
                 }
             }
@@ -163,11 +176,6 @@ class BundleUpdateService(
 
         log.info("Starting update sequence for bundle [${bundleName}]")
 
-        if (!this.enabled) {
-            log.warn("Updates have been disabled")
-            return
-        }
-
         log.info("Requesting version info for [${bundleName}] alias [${preset.versionAlias}] node [${this.identity?.uid?.value}]")
 
         // Request currently assigned version for this bundle and node
@@ -180,7 +188,7 @@ class BundleUpdateService(
         log.info("${updateInfo}")
         this.infoReceivedEventSubject.onNext(updateInfo)
 
-        // Actual download & Installation
+        // Actual download & installation
         val remoteRepository = this.remoteRepository()
         val latestDesignatedVersion: Bundle.Version
         val latestDesignatedPlatforms: List<PlatformId>

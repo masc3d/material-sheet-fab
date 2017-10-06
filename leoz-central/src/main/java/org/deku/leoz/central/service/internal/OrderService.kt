@@ -1,18 +1,13 @@
 package org.deku.leoz.central.service.internal
 
-import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
-import org.deku.leoz.node.rest.DefaultProblem
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.OrderService.Order
-import org.deku.leoz.ws.gls.shipment.CashService
-import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
-import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path

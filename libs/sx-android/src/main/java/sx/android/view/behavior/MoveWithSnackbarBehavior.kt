@@ -18,16 +18,15 @@ class MoveWithSnackbarBehavior : CoordinatorLayout.Behavior<View> {
     constructor() : super() {}
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}
 
-    override fun layoutDependsOn(parent: CoordinatorLayout, child: View, dependency: View): Boolean {
-        return dependency is Snackbar.SnackbarLayout
-    }
+    override fun layoutDependsOn(parent: CoordinatorLayout, child: View, dependency: View): Boolean =
+            dependency is Snackbar.SnackbarLayout
 
     override fun onDependentViewChanged(parent: CoordinatorLayout, child: View, dependency: View): Boolean {
         val y = Math.min(
                 0F,
-                ViewCompat.getTranslationY(dependency) - dependency.height)
+                dependency.getTranslationY() - dependency.height)
 
-        ViewCompat.setTranslationY(child, y)
+        child.setTranslationY(y)
 
         return true
     }

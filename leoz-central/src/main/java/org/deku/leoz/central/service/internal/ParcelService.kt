@@ -9,7 +9,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.ParcelProcessing
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.node.Storage
-import org.deku.leoz.node.rest.DefaultProblem
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
 import sx.mq.MqChannel
 import sx.mq.MqHandler
-import sx.rs.auth.ApiKey
 import sx.time.toTimestamp
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -34,7 +33,6 @@ import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
 import sx.io.serialization.Serializable
-import javax.json.Json
 
 /**
  * Parcel service v1 implementation

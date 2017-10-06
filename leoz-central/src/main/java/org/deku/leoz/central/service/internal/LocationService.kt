@@ -4,7 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.TadNodeGeopositionRecord
 import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.node.rest.DefaultProblem
+import sx.rs.DefaultProblem
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import java.util.*

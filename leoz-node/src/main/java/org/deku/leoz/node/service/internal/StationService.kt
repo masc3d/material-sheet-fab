@@ -1,14 +1,13 @@
 package org.deku.leoz.node.service.internal
 
-import org.deku.leoz.config.Rest
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.repository.master.StationRepository
-import org.deku.leoz.node.rest.DefaultProblem
+//import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.entity.Station
 import org.deku.leoz.service.internal.entity.StationV2
-import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path

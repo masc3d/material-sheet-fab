@@ -1,13 +1,17 @@
 package org.deku.leoz.node.config
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
+import org.deku.leoz.node.service.internal.AuthorizationClientService
 import sx.rs.proxy.RestClientProxy
 import org.deku.leoz.service.internal.BundleServiceV2
-import org.deku.leoz.service.entity.internal.update.BundleUpdateService
+import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -54,6 +58,8 @@ open class UpdateConfiguration {
     private lateinit var restClientProxy: Optional<RestClientProxy>
     @Inject
     private lateinit var bundleService: org.deku.leoz.node.service.internal.BundleServiceV2
+    @Inject
+    private lateinit var authorizationClientService: AuthorizationClientService
 
     /**
      * Bundle service proxy, either returns proxy via RestClient if available (leoz-node) or a
@@ -149,8 +155,6 @@ open class UpdateConfiguration {
                     cleanup = this.settings.cleanup,
                     alwaysQueryRepository = rsyncHostDiffers)
 
-            updateService.enabled = this.settings.enabled
-
             // Event handlers
             updateService.infoReceived.subscribe {
                 if (it.bundleName == this.application.name) {
@@ -167,6 +171,19 @@ open class UpdateConfiguration {
     fun onInitialize() {
         this.state = this.propertyRepository.loadObject(State::class.java)
 
+        // Bundle update service depends on authorzation client
+        // The remote node may not be familiar with this node/key and respond `invalid node key`
+        // when the update requests are sent before authorization is complete.
+        this.authorizationClientService
+                .isAuthorizedProperty
+                .subscribe {
+                    val enabled = this.settings.enabled && it.value
+                    this.bundleUpdateService.enabled = enabled
+
+                    if (enabled)
+                        this.bundleUpdateService.trigger()
+                }
+
         this.lifecycleController.registerNetworkDependant(this.bundleUpdateService)
 
         // Register for update notifications (as long as automatic updates are enabled)
@@ -174,5 +191,6 @@ open class UpdateConfiguration {
             this.messageListenerConfiguration.nodeTopicListener.addDelegate(
                     this.bundleUpdateService)
         }
+
     }
 }
