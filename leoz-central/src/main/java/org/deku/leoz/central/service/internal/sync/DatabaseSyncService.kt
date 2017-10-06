@@ -64,11 +64,11 @@ constructor(
          */
         private fun convert(ds: MstDebitorRecord): MstDebitor {
             val s = MstDebitor()
-            s.debitorId=ds.debitorId
+            s.debitorId = ds.debitorId
             //some fields would not be synched  s.debitorNr
-            s.tsCreated=ds.tsCreated
-            s.tsUpdated=ds.tsUpdated
-            s.parentId=ds.parentId
+            s.tsCreated = ds.tsCreated
+            s.tsUpdated = ds.tsUpdated
+            s.parentId = ds.parentId
             s.syncId = ds.syncId
 
             return s
@@ -127,6 +127,7 @@ constructor(
         private fun convert(ds: TbldepotlisteRecord): MstStation {
             val s = MstStation()
 
+            s.stationId = ds.id
             s.stationNr = ds.depotnr
             s.timestamp = ds.timestamp
             s.address1 = ds.firma1
@@ -327,7 +328,9 @@ constructor(
     @javax.inject.Inject
     private lateinit var stationSectorRepository: StationSectorRepository
     @javax.inject.Inject
-    private lateinit var tadGeopositionRepository:NodeGeopositionRepository
+    private lateinit var geopositionRepository: NodeGeopositionRepository
+    @javax.inject.Inject
+    private lateinit var debitorRepository: DebitorRepository
     @javax.inject.Inject
     private lateinit var debitorStationRepository: DebitorStationRepository
 
@@ -414,12 +417,34 @@ constructor(
                 { s -> convert(s) },
                 clean)
 
+//        this.updateEntities(
+//                org.deku.leoz.central.data.jooq.Tables.MST_DEBITOR,
+//                org.deku.leoz.central.data.jooq.tables.MstDebitor.MST_DEBITOR.SYNC_ID,
+//                debitorRepository,
+//                QMstDebitor.mstDebitor,
+//                QMstDebitor.mstDebitor.syncId,
+//                { s -> convert(s) },
+//                clean)
+
+        val s: MstDebitorRecord = MstDebitorRecord()
+        convert(s)
+
+
+        this.updateEntities(
+                org.deku.leoz.central.data.jooq.Tables.MST_DEBITOR_STATION,
+                org.deku.leoz.central.data.jooq.tables.MstDebitorStation.MST_DEBITOR_STATION.SYNC_ID,
+                debitorStationRepository,
+                QMstDebitorStation.mstDebitorStation,
+                QMstDebitorStation.mstDebitorStation.syncId,
+                { s -> convert(s) },
+                clean)
+
         this.updateEntities(
                 org.deku.leoz.central.data.jooq.Tables.TAD_NODE_GEOPOSITION,
                 org.deku.leoz.central.data.jooq.tables.TadNodeGeoposition.TAD_NODE_GEOPOSITION.SYNC_ID,
-                tadGeopositionRepository,
+                geopositionRepository,
                 QTadNodeGeoposition.tadNodeGeoposition,
-                QTadNodeGeoposition.tadNodeGeoposition.syncId
+                QTadNodeGeoposition.tadNodeGeoposition.syncId,
                 { s -> convert(s) },
                 clean)
 
