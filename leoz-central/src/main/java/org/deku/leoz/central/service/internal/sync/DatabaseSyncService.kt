@@ -4,6 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.*
 import org.deku.leoz.central.data.toUInteger
+import org.deku.leoz.node.data.jooq.tables.records.MstDebitorRecord
 import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.data.repository.master.*
 import org.deku.leoz.node.data.repository.system.PropertyRepository
@@ -51,6 +52,68 @@ constructor(
             s.bundle = ds.bundle
             s.alias = ds.alias
             s.version = ds.version
+            s.syncId = ds.syncId
+
+            return s
+        }
+
+        /**
+         * Convert mysql mst_debitor record to jpa entity
+         * @param ds
+         * @return
+         */
+        private fun convert(ds: MstDebitorRecord): MstDebitor {
+            val s = MstDebitor()
+            s.debitorId=ds.debitorId
+            //some fields would not be synched  s.debitorNr
+            s.tsCreated=ds.tsCreated
+            s.tsUpdated=ds.tsUpdated
+            s.parentId=ds.parentId
+            s.syncId = ds.syncId
+
+            return s
+        }
+
+        /**
+         * Convert mysql mst_debitor_station record to jpa entity
+         * @param ds
+         * @return
+         */
+        private fun convert(ds: MstDebitorStationRecord): MstDebitorStation {
+            val s = MstDebitorStation()
+            s.id = ds.id
+            s.debitorId = ds.debitorId
+            s.stationId = ds.stationId
+            s.tsCreated = ds.tsCreated
+            s.tsUpdated = ds.tsUpdated
+            s.activFrom = ds.activFrom
+            s.activTo = ds.activTo
+            s.syncId = ds.syncId
+
+            return s
+        }
+
+        /**
+         * Convert mysql tad_node_geoposition record to jpa entity
+         * @param ds
+         * @return
+         */
+        private fun convert(ds: TadNodeGeopositionRecord): TadNodeGeoposition {
+            val s = TadNodeGeoposition()
+            s.positionId = ds.positionId
+            s.userId = ds.userId
+            s.nodeId = ds.nodeId
+            s.tsCreated = ds.tsCreated
+            s.tsUpdated = ds.tsUpdated
+            s.latitude = ds.latitude
+            s.longitude = ds.longitude
+            s.positionDatetime = ds.positionDatetime
+            s.speed = ds.speed
+            s.bearing = ds.bearing
+            s.altitude = ds.altitude
+            s.accuracy = ds.accuracy
+            s.vehicleType = ds.vehicleType
+            s.debitorId = ds.debitorId
             s.syncId = ds.syncId
 
             return s

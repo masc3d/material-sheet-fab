@@ -126,7 +126,47 @@ FOR EACH ROW
     SET NEW.sync_id = f_sync_increment('mst_station_user');
   END $$
 
+DELIMITER ;
+INSERT INTO `sys_sync` (`table_name`) VALUES ('tad_node_geoposition');
 
+DELIMITER $$
+ALTER TABLE `tad_node_geoposition`
+  ADD COLUMN `sync_id` BIGINT NOT NULL DEFAULT 0,
+  ADD INDEX `ix_sync_id` (`sync_id`) $$
 
+CREATE DEFINER = CURRENT_USER TRIGGER `tad_node_geoposition_sync_insert`
+BEFORE INSERT ON `tad_node_geoposition`
+FOR EACH ROW
+  BEGIN
+    SET NEW.sync_id = f_sync_increment('tad_node_geoposition');
+  END $$
 
+CREATE DEFINER = CURRENT_USER TRIGGER `tad_node_geoposition_sync_update`
+BEFORE UPDATE ON `tad_node_geoposition`
+FOR EACH ROW
+  BEGIN
+    SET NEW.sync_id = f_sync_increment('tad_node_geoposition');
+  END $$
+
+DELIMITER ;
+INSERT INTO `sys_sync` (`table_name`) VALUES ('mst_debitor');
+
+DELIMITER $$
+ALTER TABLE `mst_debitor`
+  ADD COLUMN `sync_id` BIGINT NOT NULL DEFAULT 0,
+  ADD INDEX `ix_sync_id` (`sync_id`) $$
+
+CREATE DEFINER = CURRENT_USER TRIGGER `mst_debitor_sync_insert`
+BEFORE INSERT ON `mst_debitor`
+FOR EACH ROW
+  BEGIN
+    SET NEW.sync_id = f_sync_increment('mst_debitor');
+  END $$
+
+CREATE DEFINER = CURRENT_USER TRIGGER `mst_debitor_sync_update`
+BEFORE UPDATE ON `mst_debitor`
+FOR EACH ROW
+  BEGIN
+    SET NEW.sync_id = f_sync_increment('mst_debitor');
+  END $$
 
