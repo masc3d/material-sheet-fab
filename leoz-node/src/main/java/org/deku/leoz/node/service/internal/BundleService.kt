@@ -118,7 +118,10 @@ open class BundleServiceV1 : BundleServiceV1 {
      */
     override fun download(bundleName: String, version: String): Response {
         if (!this.bundleRepository.rsyncModuleUri.isFile())
-            throw WebApplicationException("Bundle repository is not local [${this.bundleRepository.rsyncModuleUri}]")
+            throw DefaultProblem(
+                    title = "Bundle repository is not local [${this.bundleRepository.rsyncModuleUri}]",
+                    status = Status.INTERNAL_SERVER_ERROR
+            )
 
         val downloadFile = File(this.bundleRepository.rsyncModuleUri.uri)
                 .resolve(bundleName)

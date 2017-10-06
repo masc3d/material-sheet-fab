@@ -16,7 +16,9 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.platform.PlatformId
 import sx.rs.DefaultProblem
+import sx.rs.toString
 import java.util.concurrent.ScheduledExecutorService
+import javax.ws.rs.ClientErrorException
 import javax.ws.rs.WebApplicationException
 import kotlin.NoSuchElementException
 
@@ -98,8 +100,8 @@ class BundleUpdateService(
                 } catch(e: DefaultProblem) {
                     log.error(e.message)
                 }
-                catch(e: WebApplicationException) {
-                    log.error(e.response.readEntity(String::class.java))
+                catch(e: ClientErrorException) {
+                    log.error(e.toString(includeResponse = true))
                 }
                 catch(e: Exception) {
                     log.error(e.message, e)
