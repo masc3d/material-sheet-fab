@@ -326,6 +326,10 @@ constructor(
     private lateinit var routingLayerRepository: RoutingLayerRepository
     @javax.inject.Inject
     private lateinit var stationSectorRepository: StationSectorRepository
+    @javax.inject.Inject
+    private lateinit var tadGeopositionRepository:NodeGeopositionRepository
+    @javax.inject.Inject
+    private lateinit var debitorStationRepository: DebitorStationRepository
 
     init {
         transaction = org.springframework.transaction.support.TransactionTemplate(tx)
@@ -409,6 +413,16 @@ constructor(
                 QMstStationSector.mstStationSector.syncId,
                 { s -> convert(s) },
                 clean)
+
+        this.updateEntities(
+                org.deku.leoz.central.data.jooq.Tables.TAD_NODE_GEOPOSITION,
+                org.deku.leoz.central.data.jooq.tables.TadNodeGeoposition.TAD_NODE_GEOPOSITION.SYNC_ID,
+                tadGeopositionRepository,
+                QTadNodeGeoposition.tadNodeGeoposition,
+                QTadNodeGeoposition.tadNodeGeoposition.syncId
+                { s -> convert(s) },
+                clean)
+
 
         log.info("Database sync took " + sw.toString())
     }

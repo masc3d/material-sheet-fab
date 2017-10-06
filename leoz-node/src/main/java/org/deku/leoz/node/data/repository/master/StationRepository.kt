@@ -1,8 +1,7 @@
 package org.deku.leoz.node.data.repository.master
 
 import com.google.common.collect.Lists
-import org.deku.leoz.node.data.jpa.MstStation
-import org.deku.leoz.node.data.jpa.QMstStation
+import org.deku.leoz.node.data.jpa.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QueryDslPredicateExecutor
 import javax.inject.Inject
@@ -12,8 +11,10 @@ import javax.inject.Inject
  * Created by masc on 30.04.15.
  */
 interface StationRepository :
-        JpaRepository<MstStation, Int>,
-        QueryDslPredicateExecutor<MstStation>, StationRepositoryExtension
+JpaRepository<MstStation, Int>,
+QueryDslPredicateExecutor<MstStation>, StationRepositoryExtension
+
+
 
 interface StationRepositoryExtension {
     fun findWithQuery(query: String): List<MstStation>
@@ -24,6 +25,9 @@ interface StationRepositoryExtension {
 class StationRepositoryImpl : StationRepositoryExtension {
     @Inject
     private lateinit var depotRepository: StationRepository
+
+//    @Inject
+//    private lateinit var debitorStationRepository:DebitorStationRepository
 
     override fun findWithQuery(query: String): List<MstStation> {
         val token = query.trim { it <= ' ' }
@@ -79,13 +83,17 @@ class StationRepositoryImpl : StationRepositoryExtension {
                 qStation.stationNr.eq(stationNo))
     }
 
-   // override fun findByDebitorid(debitorId: Int): List<MstStation> {
-   //     // QueryDSL
-   //     val qStation = QMstStation.mstStation
-   //     val qDebitor=
-   //     val depots = depotRepository.findAll(
-   //             qStation.deb
-
-    //}
+//    override fun findByDebitorid(debitorId: Int): List<MstStation> {
+//        // QueryDSL
+//        val qStation = QMstStation.mstStation
+//        val qDebitorStation = QMstDebitorStation.mstDebitorStation
+//
+//        val debitorStations=debitorStationRepository.findAll(
+//                qDebitorStation.debitorId.eq(debitorId)
+//        )
+//        val stations = depotRepository.findAll(
+//                qStation.stationNr.in(debitorStations.all { it.stationId })
+//
+//    }
 }
 
