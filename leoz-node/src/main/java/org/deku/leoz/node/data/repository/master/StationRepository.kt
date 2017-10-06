@@ -11,23 +11,21 @@ import javax.inject.Inject
  * Created by masc on 30.04.15.
  */
 interface StationRepository :
-JpaRepository<MstStation, Int>,
-QueryDslPredicateExecutor<MstStation>, StationRepositoryExtension
-
+        JpaRepository<MstStation, Int>,
+        QueryDslPredicateExecutor<MstStation>, StationRepositoryExtension
 
 
 interface StationRepositoryExtension {
     fun findWithQuery(query: String): List<MstStation>
     fun findByStation(stationNo: Int): MstStation?
-    //fun findByDebitorid(debitorId: Int): List<MstStation>
+    fun findByStationIds(stationIds: List<Int>): List<MstStation>
 }
 
 class StationRepositoryImpl : StationRepositoryExtension {
     @Inject
     private lateinit var depotRepository: StationRepository
 
-//    @Inject
-//    private lateinit var debitorStationRepository:DebitorStationRepository
+
 
     override fun findWithQuery(query: String): List<MstStation> {
         val token = query.trim { it <= ' ' }
@@ -83,17 +81,13 @@ class StationRepositoryImpl : StationRepositoryExtension {
                 qStation.stationNr.eq(stationNo))
     }
 
-//    override fun findByDebitorid(debitorId: Int): List<MstStation> {
-//        // QueryDSL
-//        val qStation = QMstStation.mstStation
-//        val qDebitorStation = QMstDebitorStation.mstDebitorStation
-//
-//        val debitorStations=debitorStationRepository.findAll(
-//                qDebitorStation.debitorId.eq(debitorId)
-//        )
-//        val stations = depotRepository.findAll(
-//                qStation.stationNr.in(debitorStations.all { it.stationId })
-//
-//    }
+    override fun findByStationIds(stationIds: List<Int>): List<MstStation> {
+        // QueryDSL
+        //val qStation = QMstStation.mstStation
+
+
+        return depotRepository.findAll(stationIds)
+
+    }
 }
 
