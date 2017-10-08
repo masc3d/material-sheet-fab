@@ -442,7 +442,7 @@ class VehicleLoadingScreen :
         //endregion
 
         //region Synthetic inputs
-        run {
+        if (this.debugSettings.syntheticAidcEnabled) {
             // Synthetic inputs for parcels translated live from entity store
             val ovParcels = this.parcelRepository.entitiesProperty
                     .map {
