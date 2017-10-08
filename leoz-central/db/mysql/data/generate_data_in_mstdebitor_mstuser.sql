@@ -18,8 +18,7 @@ UPDATE tbldepotliste
 SET tbldepotliste.debitor_id = mst_debitor.debitor_id
 WHERE NOT mst_debitor.debitor_id IS NULL;
 
-DELETE FROM mst_user
-WHERE email = 'user@deku.org';
+DELETE FROM mst_user;
 
 INSERT INTO mst_user (debitor_id, email, password, alias, expires_on, role, active, firstname, lastname) VALUES
   (
