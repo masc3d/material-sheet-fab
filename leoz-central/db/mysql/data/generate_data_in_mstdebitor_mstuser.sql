@@ -13,6 +13,11 @@ INSERT INTO mst_debitor_station (station_id, debitor_id, activ_from, activ_to)
   FROM tbldepotliste
     INNER JOIN mst_debitor ON tbldepotliste.DebitorNr = mst_debitor.debitor_nr;
 
+UPDATE tbldepotliste
+  LEFT JOIN mst_debitor ON tbldepotliste.DebitorNr = mst_debitor.debitor_nr
+SET tbldepotliste.debitor_id = mst_debitor.debitor_id
+WHERE NOT mst_debitor.debitor_id IS NULL;
+
 DELETE FROM mst_user
 WHERE email = 'user@deku.org';
 
