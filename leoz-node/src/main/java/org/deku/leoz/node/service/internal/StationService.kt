@@ -1,6 +1,8 @@
 package org.deku.leoz.node.service.internal
 
 import org.deku.leoz.node.data.jpa.MstStation
+import org.deku.leoz.node.data.jpa.QMstDebitorStation
+import org.deku.leoz.node.data.jpa.QMstStation
 import org.deku.leoz.node.data.repository.master.DebitorStationRepository
 import org.deku.leoz.node.data.repository.master.StationRepository
 //import org.deku.leoz.node.rest.DefaultProblem
@@ -80,18 +82,28 @@ class StationService : org.deku.leoz.service.internal.StationService {
         //authorizedUserRecord ?:
         //      throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
         val station = stationRepository.findByStation(stationNo)
-        station ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "station not found")
+        station ?: throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Station not found")
         return station.toStationV2()
     }
 
 
     override fun getByDebitorId(debitorId: Int): Array<StationV2> {
-        val stationIds = debitorStationRepository.findStationIdsByDebitorid(debitorId)
-        if (stationIds.count() == 0)
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "stationIds not found")
-        val stations = stationRepository.findAll(stationIds)
-        if (stations.count() == 0)
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "stations not found")
+        val stationIds = debitorStationRepository
+                .findStationIdsByDebitorid(debitorId)
+                .also {
+                    if (it.count() == 0)
+                        throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Station IDs not found")
+                }
+
+        val stations = stationRepository
+                .findAll(QMstStation.mstStation
+                        .stationId.`in`(*stationIds.toTypedArray()))
+                .also {
+                    if (it.count() == 0)
+                        throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Stations not found")
+                }
+
+
         return stations.map { s -> s.toStationV2() }.toTypedArray()
     }
 }
