@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -135,9 +136,9 @@ class StartupActivity : BaseActivity() {
                                     // Any exceptions thrown in this block will result in a error message
                                     // dialog to be shown including the exception message
 
+                                    // Start location based services
                                     if (!this.app.isServiceRunning(LocationServiceGMS::class.java)) {
-                                        this.startService(
-                                                Intent(applicationContext, LocationServiceGMS::class.java))
+                                        ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
                                     } else {
                                         log.debug("LocationServiceGMS already running. Skipped startService")
                                     }
