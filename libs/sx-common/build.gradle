@@ -11,7 +11,7 @@ buildscript {
         v_jsch = '0.0.9'
         v_querydsl = '4.1.4'
         v_kotlin = '1.1.51'
-        v_requery = '1.4.0'
+        v_requery = '1.4.1'
         v_resteasy = '3.1.4.Final'
         v_slf4j = '1.7.25'
     }

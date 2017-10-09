@@ -364,6 +364,8 @@ abstract class Activity : BaseActivity(),
                 .subscribe {
                     this.onForeground()
                 }
+
+        this.onForeground()
     }
 
     override fun onPause() {
@@ -978,7 +980,7 @@ abstract class Activity : BaseActivity(),
      */
     private fun onForeground() {
         // Check developer settings
-        if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
+        if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
             MaterialDialog.Builder(this)
                     .title(getString(R.string.dialog_title_developer_enabled))
                     .content(getString(R.string.dialog_text_developer_enabled))
@@ -990,6 +992,18 @@ abstract class Activity : BaseActivity(),
                     }
                     .onNegative { _, _ -> this.finishAffinity() }
                     .cancelable(false)
+                    .show()
+        }
+
+        if (!device.mobileDateEnabled) {
+            MaterialDialog.Builder(this)
+                    .title("Mobile-Data disabled")
+                    .content("Mobile-Data are disabled! To continue you must enable Mobile-Data")
+                    .neutralText(R.string.ok)
+                    .cancelable(false)
+                    .onNeutral { _, _ ->
+                        this.finishAffinity()
+                    }
                     .show()
         }
 
