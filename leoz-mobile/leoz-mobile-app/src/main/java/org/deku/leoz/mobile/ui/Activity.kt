@@ -1008,29 +1008,6 @@ abstract class Activity : BaseActivity(),
         }
 
         checkLocationSettings()
-
-//        val locationManager = this.locationManager
-//        if (sequenceOf(
-//                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER).also {
-//                    log.trace("LOCATION PROVIDER GPS $it")
-//                },
-//                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER).also {
-//                    log.trace("LOCATION PROVIDER NETWORK $it")
-//                }
-//        ).all { false }) {
-//            MaterialDialog.Builder(this)
-//                    .title(getString(R.string.dialog_title_gps_disabled))
-//                    .content(getString(R.string.dialog_text_gps_disabled))
-//                    .positiveText("Settings")
-//                    .negativeText("Abort")
-//                    .onPositive { _, _ ->
-//                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-//                        this.startActivityForResult(intent, 0)
-//                    }
-//                    .onNegative { _, _ -> this.finishAffinity() }
-//                    .cancelable(false)
-//                    .show()
-//        }
     }
 
     private fun checkLocationSettings() {

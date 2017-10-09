@@ -190,6 +190,7 @@ open class Application : MultiDexApplication() {
                     //log.debug("LocationService is running. Stopping now")
                     this.stopService(android.content.Intent(this, LocationService::class.java))
                 }
+                else -> log.warn("Seems that no LocationService is running")
             }
         } catch (e: Exception) {
             log.warn("Stopping location service failed", e)

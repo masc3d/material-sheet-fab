@@ -22,6 +22,7 @@ class LocationProviderChangedReceiver : BroadcastReceiver() {
     private val locationSettings: LocationServices by Kodein.global.lazy.instance()
 
     override fun onReceive(context: Context, intent: Intent) {
+        log.debug("BroadcastReceiver [${this::class.java.simpleName}] fired")
         log.debug("ONRECEIVE Intent [$intent] Context [$context]")
         Log.d(LocationProviderChangedReceiver::class.java.simpleName, "ONRECEIVE")
         locationSettings.locationSettingsChangedEventProperty.onNext(Unit)

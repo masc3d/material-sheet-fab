@@ -6,8 +6,11 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.location.GnssStatus
 import android.location.Location
 import android.location.LocationManager
+import android.support.v4.content.LocalBroadcastManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -17,6 +20,7 @@ import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.ui.activity.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.slf4j.LoggerFactory
@@ -33,11 +37,12 @@ abstract class BaseLocationService: Service() {
     private val identity: Identity by Kodein.global.lazy.instance()
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
     protected val locationManager: LocationManager by lazy {
-        applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        (applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
     }
     protected val locationSettings: LocationSettings by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
     private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
+    private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
 
@@ -85,16 +90,19 @@ abstract class BaseLocationService: Service() {
     override fun onCreate() {
         super.onCreate()
         log.debug("ONCREATE")
+
+        this.registerBroadcastReceiver()
         setNotification()
         startForeground(NOTIFICATION_ID, notification)
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         log.debug("ONDESTROY")
-        //removeNotification()
+        this.unregisterBroadcastReceiver()
         removeNotification()
         stopForeground(true)
+
+        super.onDestroy()
     }
 
     private fun setNotification() {
@@ -141,5 +149,34 @@ abstract class BaseLocationService: Service() {
                         dataPoints = arrayOf(currentPosition)
                 )
         )
+    }
+
+    private fun registerBroadcastReceiver() {
+        val broadcastManager = LocalBroadcastManager.getInstance(this)
+        val intentFilter = IntentFilter(Intent.ACTION_PROVIDER_CHANGED)
+
+        log.debug("Registering BroadcastReceiver [${locationProviderChangedReceiver::class.java.simpleName}] IntentFilter [$intentFilter]")
+        broadcastManager.registerReceiver(locationProviderChangedReceiver, intentFilter)
+    }
+
+    private fun unregisterBroadcastReceiver() {
+        val broadcastManager = LocalBroadcastManager.getInstance(this)
+
+        log.debug("Unregister BroadcastReceiver [${locationProviderChangedReceiver::class.java.simpleName}]")
+        broadcastManager.unregisterReceiver(locationProviderChangedReceiver)
+    }
+
+    class GnssCallback: GnssStatus.Callback() {
+        companion object {
+            private var gnssCallback: GnssCallback? = null
+
+            fun getInstance(): GnssCallback {
+                if (gnssCallback == null) {
+                    gnssCallback = GnssCallback()
+                }
+
+                return gnssCallback!!
+            }
+        }
     }
 }
