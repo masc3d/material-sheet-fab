@@ -1,6 +1,7 @@
 package org.deku.leoz.node.service.internal
 
 import org.deku.leoz.node.data.jpa.MstStation
+import org.deku.leoz.node.data.repository.master.DebitorStationRepository
 import org.deku.leoz.node.data.repository.master.StationRepository
 //import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.entity.Address
@@ -30,6 +31,9 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
     @Inject
     private lateinit var stationRepository: StationRepository
+
+    @Inject
+    private lateinit var debitorStationRepository: DebitorStationRepository
 
     //@Inject
     //private lateinit var userRepository: UserJooqRepository
@@ -82,7 +86,13 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
 
     override fun getByDebitorId(debitorId: Int): Array<StationV2> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val stationIds = debitorStationRepository.findStationIdsByDebitorid(debitorId)
+        if (stationIds.count() == 0)
+            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "stationIds not found")
+        val stations = stationRepository.findAll(stationIds)
+        if (stations.count() == 0)
+            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "stations not found")
+        return stations.map { s -> s.toStationV2() }.toTypedArray()
     }
 }
 
@@ -102,8 +112,8 @@ fun MstStation.toStationV2(): StationV2 {
                     streetNo = this.houseNr,
                     geoLocation = GeoLocation(latitude = this.posLat, longitude = this.posLong)),
             sector = this.sector,
-            exportValuablesAllowed = (this.exportValuablesAllowed == 1),
-            exportValuablesWithoutBagAllowed = (this.exportValuablesWithoutBagAllowed == 1)
+            exportValuablesAllowed = ((this.exportValuablesAllowed ?: 0) != 0),
+            exportValuablesWithoutBagAllowed = ((this.exportValuablesWithoutBagAllowed ?: 0) != 0)
     )
     return stationV2
 }
