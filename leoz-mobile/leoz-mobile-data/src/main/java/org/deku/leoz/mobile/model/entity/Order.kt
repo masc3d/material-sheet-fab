@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.model.entity
 
 import android.databinding.Bindable
 import android.databinding.Observable
+import com.neovisionaries.i18n.CurrencyCode
 import io.requery.*
 import org.deku.leoz.model.Carrier
 import sx.android.databinding.BaseRxObservable
@@ -27,7 +28,7 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     @Serializable(name = "CashService")
     data class CashService(
             var cashAmount: Double = 0.0,
-            var currency: String = "EUR"
+            var currency: String = CurrencyCode.EUR.name
     )
 
     @get:Key
