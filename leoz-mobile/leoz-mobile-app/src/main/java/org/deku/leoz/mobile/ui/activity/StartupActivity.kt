@@ -89,13 +89,6 @@ class StartupActivity : BaseActivity() {
 
         if (!this.app.isInitialized) {
 
-            if (!this.app.isServiceRunning(LocationServiceGMS::class.java)) {
-                this.startService(
-                        Intent(applicationContext, LocationServiceGMS::class.java))
-            } else {
-                log.debug("LocationServiceGMS already running. Skipped startService")
-            }
-
             // Acquire permissions
             val ovPermissions = RxPermissions(this)
                     .request(
@@ -141,6 +134,13 @@ class StartupActivity : BaseActivity() {
                                 try {
                                     // Any exceptions thrown in this block will result in a error message
                                     // dialog to be shown including the exception message
+
+                                    if (!this.app.isServiceRunning(LocationServiceGMS::class.java)) {
+                                        this.startService(
+                                                Intent(applicationContext, LocationServiceGMS::class.java))
+                                    } else {
+                                        log.debug("LocationServiceGMS already running. Skipped startService")
+                                    }
 
                                     // Log device info/serial
                                     val device: Device = Kodein.global.instance()
