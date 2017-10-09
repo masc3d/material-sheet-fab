@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.neovisionaries.i18n.CurrencyCode
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -294,7 +295,7 @@ class DeliveryStop(
     val cashCurrencyCode by lazy {
         this.orders.blockingFirst()
                 .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.currency }
-                .first()
+                .firstOrNull() ?: CurrencyCode.EUR.name
     }
 
     val recipientCountryCode by lazy {

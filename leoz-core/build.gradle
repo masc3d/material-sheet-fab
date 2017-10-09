@@ -54,24 +54,34 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
+
             // Kodein
             "com.github.salomonbrys.kodein:kodein:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
             // logging
             "org.apache.commons:commons-lang3:$v_commons_lang",
             "ch.qos.logback:logback-classic:$v_logback",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
+
             // Guava
             "com.google.guava:guava:$v_guava",
+
             // Commons
             "commons-io:commons-io:$v_commons_io",
+
             // kryo
             "com.esotericsoftware:kryo:$v_kryo",
             "de.javakaffee:kryo-serializers:$v_kryo_serializers",
             "net.java.dev.jna:jna:$v_jna",
             "net.java.dev.jna:jna-platform:$v_jna",
+
             // YAML
             "org.yaml:snakeyaml:$v_snakeyaml",
+
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+            "org.zalando:problem:$v_rest_problem",
 
             group: 'com.github.maricn', name: 'logback-slack-appender', version: '1.3.0'
     )

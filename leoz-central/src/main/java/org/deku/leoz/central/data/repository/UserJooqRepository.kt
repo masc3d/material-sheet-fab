@@ -142,9 +142,9 @@ open class UserJooqRepository {
 }
 
 fun MstUserRecord.toUser(): UserService.User {
-    val stations = this.allowedStations?.toString() ?: "{}"
-    val mapper = ObjectMapper()
-    val allowedStations: AllowedStations = mapper.readValue(stations, AllowedStations::class.java)
+    //val stations = this.allowedStations?.toString() ?: "{}"
+    //val mapper = ObjectMapper()
+    //val allowedStations: AllowedStations = mapper.readValue(stations, AllowedStations::class.java)
 
     val user = UserService.User(
             // IMPORTANT: password must never be set when converting to service instance
@@ -162,8 +162,8 @@ fun MstUserRecord.toUser(): UserService.User {
             externalUser = this.isExternalUser,
             phone = this.phone,
             phoneMobile = this.phoneMobile,
-            expiresOn = this.expiresOn,
-            allowedStations = allowedStations.allowedStations
+            expiresOn = this.expiresOn
+//           , allowedStations = allowedStations.allowedStations
     )
     return user
 }

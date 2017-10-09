@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.config.JmsEndpoints
@@ -16,6 +17,7 @@ import org.threeten.bp.Duration
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
+import sx.rx.ObservableRxProperty
 import javax.inject.Named
 
 /**
@@ -44,6 +46,10 @@ class AuthorizationClientService(
     private val systemInformation: SystemInformation by Kodein.global.lazy.instance()
 
     private val storage: Storage by Kodein.global.lazy.instance()
+
+    val isAuthorizedProperty = ObservableRxProperty(false)
+    /** Indicates node authorization state */
+    var isAuthorized by isAuthorizedProperty
 
     override fun run() {
         // Send info message
@@ -78,9 +84,11 @@ class AuthorizationClientService(
         // Set id based on response and store identity
         log.info("Received authorization [%s]".format(authorizationMessage))
         if (authorizationMessage.rejected) {
-            onRejected(identity)
+            this.onRejected(this.identity)
+            this.isAuthorized = false
         } else {
-            identity.save(storage.identityConfigurationFile)
+            this.identity.save(storage.identityConfigurationFile)
+            this.isAuthorized = true
         }
 
         // Stop service when authorization process completed

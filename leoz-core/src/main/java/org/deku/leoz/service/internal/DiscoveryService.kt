@@ -1,7 +1,6 @@
 package org.deku.leoz.service.internal
 
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.service.entity.internal.discovery.DiscoveryInfo
 import sx.net.UdpDiscoveryService
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService

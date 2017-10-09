@@ -1,12 +1,13 @@
 package org.deku.leoz.node.service.internal
 
-import org.deku.leoz.config.Rest
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.repository.master.StationRepository
-import org.deku.leoz.node.rest.DefaultProblem
+//import org.deku.leoz.node.rest.DefaultProblem
+import org.deku.leoz.service.internal.entity.Address
+import org.deku.leoz.service.internal.entity.GeoLocation
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.entity.Station
 import org.deku.leoz.service.internal.entity.StationV2
-import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -89,16 +90,23 @@ fun MstStation.toStationV2(): StationV2 {
     val stationV2 = StationV2(
             stationNo = this.stationNr,
             stationMatchcode = null,
-            address1 = this.address1,
-            address2 = this.address2,
-            country = this.country,
-            zip = this.zip,
-            city = this.city,
-            street = this.street,
-            houseNo = this.houseNr,
+            address = Address(
+                    line1 = this.address1,
+                    line2 = this.address2,
+                    line3 = null,
+                    phoneNumber = this.phone1,
+                    countryCode = this.country,
+                    zipCode = this.zip,
+                    city = this.city,
+                    street = this.street,
+                    streetNo = this.houseNr,
+                    geoLocation = GeoLocation(latitude = this.posLat, longitude = this.posLong)),
             sector = this.sector,
-            valuablesAllowed = false,
-            valuablesWithoutBagAllowed = false
+            exportValuablesAllowed = (this.exportValuablesAllowed == 1),
+            exportValuablesWithoutBagAllowed = (this.exportValuablesWithoutBagAllowed == 1)
     )
     return stationV2
 }
+
+
+

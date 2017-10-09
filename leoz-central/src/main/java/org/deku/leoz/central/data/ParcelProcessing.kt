@@ -7,7 +7,6 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
-import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.time.toDateOnlyTime
 import org.deku.leoz.time.toDateWithoutTime
 import org.deku.leoz.time.toShortTime
@@ -16,12 +15,9 @@ import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
 import sx.time.toTimestamp
-import java.io.StringReader
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
-import javax.json.Json
-import javax.json.JsonObject
 import org.slf4j.LoggerFactory
 
 

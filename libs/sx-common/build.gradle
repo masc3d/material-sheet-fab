@@ -45,7 +45,7 @@ dependencies {
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
             // RX
-            "io.reactivex.rxjava2:rxjava:2.1.4",
+            "io.reactivex.rxjava2:rxjava:2.1.5",
             "io.reactivex:rxkotlin:2.0.0-RC1",
 
             "org.apache.commons:commons-lang3:3.6"
@@ -58,6 +58,8 @@ dependencies {
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:2.0.1",
+            "org.zalando:problem:0.20.0",
+
             // JNA
             "net.java.dev.jna:jna:4.5.0",
             "net.java.dev.jna:jna-platform:4.5.0",

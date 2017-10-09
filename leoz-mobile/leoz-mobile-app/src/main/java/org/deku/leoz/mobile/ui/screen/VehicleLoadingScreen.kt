@@ -35,7 +35,7 @@ import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.composeAsRest
+import org.deku.leoz.mobile.rx.composeAsRest
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
@@ -442,7 +442,7 @@ class VehicleLoadingScreen :
         //endregion
 
         //region Synthetic inputs
-        run {
+        if (this.debugSettings.syntheticAidcEnabled) {
             // Synthetic inputs for parcels translated live from entity store
             val ovParcels = this.parcelRepository.entitiesProperty
                     .map {

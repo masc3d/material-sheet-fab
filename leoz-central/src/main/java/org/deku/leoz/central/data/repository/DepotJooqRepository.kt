@@ -30,35 +30,30 @@ open class DepotJooqRepository {
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun findSectionDepots(iSection: Int, iPosition: Int): List<String> {
         return dslContext
-                // TODO: don't embed SQL. no implicit formatting. repository classes are expected to deliver data as is.
-                //.select("lpad(convert(DEPOTNR using utf8),3,'0')").asField<String>("Depot")
-                //.from(Tables.TBLDEPOTLISTE)
                 .select(Tables.SECTIONDEPOTLIST.DEPOT)
                 .from(Tables.SECTIONDEPOTLIST)
                 .where(Tables.SECTIONDEPOTLIST.SECTION.eq(iSection.toLong())
                         .and(Tables.SECTIONDEPOTLIST.POSITION.eq(iPosition)))
                 .fetchInto(String::class.java)
-        /**.select(DEPOT)
-        .from(Views.sectiondepotlist)
-        .where(section.eq(iSection)
-        .and(position.eq(iPosition)
-        .fetchInto(String::class.java)
-         */
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun findDebitor(StationNr: Long): Int {
+    open fun findDebitor(StationNr: Int): Int {
         return dslContext
-                .select(Tables.TBLDEPOTLISTE.DEBITOR_ID)
-                .from(Tables.TBLDEPOTLISTE)
-                .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(StationNr.toInt())
-                ).fetchOne(Tables.TBLDEPOTLISTE.DEBITOR_ID)
+                .select(Tables.MST_DEBITOR.DEBITOR_ID)
+                .from(Tables.MST_DEBITOR).innerJoin(Tables.MST_DEBITOR_STATION)
+                .on(Tables.MST_DEBITOR.DEBITOR_ID.eq(Tables.MST_DEBITOR_STATION.DEBITOR_ID))
+                .where(Tables.MST_DEBITOR_STATION.STATION_ID.eq(StationNr.toInt())
+//todo include send_date  between active_from and active_to
+                ).fetchOne(Tables.MST_DEBITOR_STATION.DEBITOR_ID)
     }
-    fun findStationsByDebitorId(debitorId:Int):List<String>{
+
+    fun findStationsByDebitorId(debitorId: Int): List<String> {
         return dslContext
                 .select(Tables.TBLDEPOTLISTE.DEPOTNR)
                 .from(Tables.TBLDEPOTLISTE)
                 .where(Tables.TBLDEPOTLISTE.ID.eq(debitorId))
+//todo include send_date  between active_from and active_to
                 .fetchInto(String::class.java)
     }
 }

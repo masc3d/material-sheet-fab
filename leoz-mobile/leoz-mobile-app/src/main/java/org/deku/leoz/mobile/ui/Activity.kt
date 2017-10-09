@@ -588,8 +588,8 @@ abstract class Activity : BaseActivity(),
                             ActionItem(
                                     id = R.id.action_aidc_keyboard,
                                     colorRes = AIDC_ACTION_ITEM_COLOR,
-                                    iconTintRes = AIDC_ACTION_ITEM_TINT,
-                                    iconRes = R.drawable.ic_keyboard
+                                    iconRes = R.drawable.ic_keyboard,
+                                    iconTintRes = AIDC_ACTION_ITEM_TINT
                             )
                     )
                 }
@@ -682,8 +682,8 @@ abstract class Activity : BaseActivity(),
                                 ActionItem(
                                         id = R.id.action_aidc_camera,
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
-                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         iconRes = R.drawable.ic_barcode,
+                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         visible = this.aidcReader.enabled,
                                         alignEnd = false
                                 )
@@ -694,8 +694,8 @@ abstract class Activity : BaseActivity(),
                                 ActionItem(
                                         id = R.id.action_aidc_keyboard,
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
-                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         iconRes = R.drawable.ic_keyboard,
+                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         visible = this.aidcReader.enabled,
                                         alignEnd = false
                                 )
@@ -1055,36 +1055,4 @@ abstract class Activity : BaseActivity(),
                         }
                 )
     }
-}
-
-/**
- * Extension method for easily binding observable lifecycle to activity progress indicator
- */
-fun <T> Observable<T>.composeWithActivityProgress(activity: Activity): Observable<T> {
-    return this
-            .doOnSubscribe {
-                activity.progressIndicator.show()
-            }
-            .doFinally {
-                activity.progressIndicator.hide()
-            }
-}
-
-fun <T> Observable<T>.composeAsRest(activity: Activity, @StringRes errorMessage: Int = 0): Observable<T> {
-    return this
-            .observeOnMainThread()
-            .composeWithActivityProgress(activity)
-            .doOnError {
-                if (errorMessage != 0) {
-                    activity.snackbarBuilder
-                            .message(
-                                    if (it.isConnectivityProblem)
-                                        R.string.error_connectivity
-                                    else
-                                        errorMessage
-                            )
-                            .duration(Snackbar.LENGTH_LONG)
-                            .build().show()
-                }
-            }
 }
