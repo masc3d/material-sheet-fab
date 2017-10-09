@@ -2,8 +2,8 @@ buildscript {
     ext {
         // Required JVM/JDK version. Do not include the '-bxx' suffix of the version, as it may differ across platforms
         v_jvm = '25.131'
-        // Versions
-        // masc20171003. 5.15.1 reports corrupt journal files
+
+        // masc20171003. 5.15.1 is currently blocked by https://issues.apache.org/jira/browse/AMQ-6831
         v_activemq = '5.15.0'
         v_artemis = '1.5.4'
         v_apache_cxf = '3.2.0'
@@ -40,7 +40,7 @@ buildscript {
         v_rxjavafx = '2.0.2'
         v_rxkotlin = '2.0.0-RC1'
         v_rxkotlinfx = '2.2.0'
-        v_requery = '1.4.0'
+        v_requery = '1.4.1'
         v_resteasy = '3.1.4.Final'
         v_rest_problem = '0.20.0'
         v_roaster = '2.20.1.Final'
