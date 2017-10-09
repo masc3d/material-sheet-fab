@@ -119,6 +119,7 @@ open class Device(private val context: Context) {
 
     val mobileDateEnabled: Boolean
         get() {
+            // TODO: inofficial api/configuration setting., likely to break in future versions. should be improved or removed.
             if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1)
             {
                 return Settings.Global.getInt(context.contentResolver, "mobile_data", 1) == 1
