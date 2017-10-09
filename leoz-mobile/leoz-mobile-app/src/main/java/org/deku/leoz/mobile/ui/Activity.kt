@@ -158,9 +158,7 @@ abstract class Activity : BaseActivity(),
     val snackbarBuilder by lazy {
         SnackbarBuilder(this.uxCoordinatorLayout)
     }
-
-    protected var skipLocationSettingCheck = false
-
+    
     override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
         mqttEndpoints.central.main.channel().sendFile(jpeg, MimeType.JPEG.value)
     }
