@@ -117,6 +117,17 @@ open class Device(private val context: Context) {
     val manufacturer: Manufacturer = Manufacturer()
     val model: Model = Model()
 
+    val mobileDateEnabled: Boolean
+        get() {
+            if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1)
+            {
+                return Settings.Global.getInt(context.contentResolver, "mobile_data", 1) == 1
+            }
+            else{
+                return Settings.Secure.getInt(context.contentResolver, "mobile_data", 1) == 1
+            }
+        }
+
     override fun toString(): String =
             "Device(imei=${imei}, androidId=${androidId}) androidVersion=${androidVersion} serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"
 }
