@@ -132,9 +132,9 @@ class ActiveMQBroker private constructor()
         val persistenceStoreDirectory = File(this.dataDirectory, "kahadb")
         brokerService.dataDirectoryFile = persistenceStoreDirectory
 
-        val pa: PersistenceAdapter
-        pa = brokerService.persistenceAdapter as KahaDBPersistenceAdapter
+        val pa = brokerService.persistenceAdapter as KahaDBPersistenceAdapter
         pa.isCheckForCorruptJournalFiles = true
+        pa.isIgnoreMissingJournalfiles = false
         pa.preallocationScope = Journal.PreallocationScope.ENTIRE_JOURNAL_ASYNC.name
         pa.preallocationStrategy = Journal.PreallocationStrategy.ZEROS.name
 
