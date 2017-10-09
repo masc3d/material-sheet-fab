@@ -7,10 +7,8 @@ import android.databinding.DataBindingUtil
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
-import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.support.annotation.StringRes
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
@@ -35,13 +33,11 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.patloew.rxlocation.LocationSettingsNotSatisfiedException
 import com.patloew.rxlocation.RxLocation
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
@@ -62,8 +58,6 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
-import org.deku.leoz.mobile.service.LocationService
-import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.activity.StartupActivity
@@ -76,7 +70,6 @@ import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
 import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
 import sx.android.ApplicationStateMonitor
@@ -86,8 +79,6 @@ import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
-import sx.android.isConnectivityProblem
-import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTintRes
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
@@ -536,20 +527,7 @@ abstract class Activity : BaseActivity(),
             }
 
             R.id.nav_logout -> {
-                try {
-                    when {
-                        (this.application as Application).isServiceRunning(LocationServiceGMS::class.java) -> {
-                            log.debug("LocationServiceGMS is running. Stopping now")
-                            this.stopService(android.content.Intent(this, LocationServiceGMS::class.java))
-                        }
-                        (this.application as Application).isServiceRunning(LocationService::class.java) -> {
-                            log.debug("LocationService is running. Stopping now")
-                            this.stopService(android.content.Intent(this, LocationService::class.java))
-                        }
-                    }
-                } catch (e: Exception) {
-                    log.warn("Stopping location service failed", e)
-                }
+                (this.application as Application).stopLocationServices()
                 this.login.logout()
             }
         }

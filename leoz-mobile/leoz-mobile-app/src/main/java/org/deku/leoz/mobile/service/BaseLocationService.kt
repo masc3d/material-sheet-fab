@@ -6,12 +6,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Icon
-import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
-import android.os.Handler
-import android.os.IBinder
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -21,9 +17,8 @@ import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.ui.activity.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV1
-import org.deku.leoz.service.internal.LocationServiceV2
-import org.jetbrains.anko.notificationManager
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
 import java.util.*
@@ -44,63 +39,71 @@ abstract class BaseLocationService: Service() {
     private val login: Login by Kodein.global.lazy.instance()
     private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
 
-    private val handler: Handler = Handler()
-    private val runnable: Runnable = Runnable(function = {
+    private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
 
-    })
+    private val showTaskIntent by lazy {
+        Intent(applicationContext, StartupActivity::class.java).also {
+            it.action = Intent.ACTION_VIEW
+            it.addCategory(Intent.CATEGORY_LAUNCHER)
+            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
 
-    companion object {
-        const val NOTIFICATION_ID = 0
+    private val pendingIntent by lazy {
+        PendingIntent.getActivity(
+            this,
+            0,
+            showTaskIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     private val notification by lazy {
         Notification.Builder(this)
                 .setContentTitle(getString(R.string.app_name_long))
-                .setContentText("${getString(R.string.app_name)} ${getString(R.string.app_name_long)}")
-                .setAutoCancel(false)
+                .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
+                .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_launcher)
-                .setContentIntent(PendingIntent.getActivities(
-                        this,
-                        0,
-                        arrayOf(Intent("org.deku.leoz.mobile")),
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                ))
+                .setWhen(System.currentTimeMillis())
+                .setContentIntent(pendingIntent)
                 .build().also {
             it.flags += Notification.FLAG_FOREGROUND_SERVICE
         }
     }
 
+    companion object {
+        const val NOTIFICATION_ID = 100
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         //return super.onStartCommand(intent, flags, startId)
         log.debug("ONSTARTCOMMAND")
-        startForeground(NOTIFICATION_ID, notification)
-        setNotification()
+        //setNotification()
         return START_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
         log.debug("ONCREATE")
-
+        setNotification()
+        startForeground(NOTIFICATION_ID, notification)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         log.debug("ONDESTROY")
         //removeNotification()
+        removeNotification()
         stopForeground(true)
     }
 
     private fun setNotification() {
         log.debug("Set notification")
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     private fun removeNotification() {
         log.debug("Remove notification")
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancelAll()
         notificationManager.cancel(NOTIFICATION_ID)
     }
 

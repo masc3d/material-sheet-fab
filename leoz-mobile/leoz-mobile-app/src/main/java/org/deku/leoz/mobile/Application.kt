@@ -1,18 +1,12 @@
 package org.deku.leoz.mobile
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.multidex.MultiDexApplication
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatDelegate
-import android.util.Log
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
@@ -20,12 +14,8 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import com.github.salomonbrys.kodein.lazy
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import io.reactivex.Completable
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
-import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.ui.BaseActivity
@@ -122,17 +112,8 @@ open class Application : MultiDexApplication() {
 
     override fun onTerminate() {
         log.debug("ONTERMINATE")
-        when {
-            isServiceRunning(LocationServiceGMS::class.java) -> {
-                log.debug("LocationServiceGMS is running. Stopping now")
-                this.stopService(android.content.Intent(this, LocationServiceGMS::class.java))
-            }
-            isServiceRunning(LocationService::class.java) -> {
-                log.debug("LocationService is running. Stopping now")
-                this.stopService(android.content.Intent(this, LocationService::class.java))
-            }
-        }
 //        this.unregisterBroadcastReceiver()
+        stopLocationServices()
         super.onTerminate()
     }
 
@@ -161,6 +142,7 @@ open class Application : MultiDexApplication() {
      */
     fun terminate() {
 //        this.unregisterBroadcastReceiver()
+        stopLocationServices()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
@@ -192,6 +174,26 @@ open class Application : MultiDexApplication() {
             }
         }
         return false
+    }
+
+    /**
+     *  This function will stop running location services (a.t.m. LocationService and LocationServiceGMS)
+     */
+    fun stopLocationServices() {
+        try {
+            when {
+                isServiceRunning(LocationServiceGMS::class.java) -> {
+                    //log.debug("LocationServiceGMS is running. Stopping now")
+                    this.stopService(android.content.Intent(this, LocationServiceGMS::class.java))
+                }
+                isServiceRunning(LocationService::class.java) -> {
+                    //log.debug("LocationService is running. Stopping now")
+                    this.stopService(android.content.Intent(this, LocationService::class.java))
+                }
+            }
+        } catch (e: Exception) {
+            log.warn("Stopping location service failed", e)
+        }
     }
 
 //    private fun unregisterBroadcastReceiver() {

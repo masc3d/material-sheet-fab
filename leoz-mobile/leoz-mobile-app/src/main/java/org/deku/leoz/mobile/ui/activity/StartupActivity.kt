@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.ui.activity
 
 import android.Manifest
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -9,12 +8,8 @@ import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.location.LocationServices
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -22,14 +17,12 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.config.BroadcastReceiverConfiguration
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
@@ -136,13 +129,6 @@ class StartupActivity : BaseActivity() {
                                     // Any exceptions thrown in this block will result in a error message
                                     // dialog to be shown including the exception message
 
-                                    // Start location based services
-                                    if (!this.app.isServiceRunning(LocationServiceGMS::class.java)) {
-                                        ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
-                                    } else {
-                                        log.debug("LocationServiceGMS already running. Skipped startService")
-                                    }
-
                                     // Log device info/serial
                                     val device: Device = Kodein.global.instance()
                                     log.info(device.toString())
@@ -152,6 +138,13 @@ class StartupActivity : BaseActivity() {
 
                                     // Initialize ThreeTen (java.time / JSR-310 compatibility drop-in)
                                     AndroidThreeTen.init(this.application)
+
+                                    // Start location based services
+                                    if (!this.app.isServiceRunning(LocationServiceGMS::class.java)) {
+                                        ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
+                                    } else {
+                                        log.debug("LocationServiceGMS already running. Skipped startService")
+                                    }
 
                                     // Write device management identity
                                     try {
