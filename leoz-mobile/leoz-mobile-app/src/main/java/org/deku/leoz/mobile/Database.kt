@@ -132,6 +132,12 @@ class Database(
                 )
                 super.onConfigure(builder)
             }
+
+            override fun onConfigure(db: SQLiteDatabase) {
+                super.onConfigure(db)
+                // TODO: workaround for requery bug #698 and #644 (disabling foreign key constraints)
+                db.setForeignKeyConstraintsEnabled(false)
+            }
         }
 
         ds.setLoggingEnabled(false)
