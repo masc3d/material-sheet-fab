@@ -8,7 +8,9 @@ import java.util.*
  */
 class TimeSpan(
         val totalMillis: Long
-) {
+)
+    : Comparable<TimeSpan>
+{
     val hours by lazy { (totalMillis / (1000 * 60 * 60)).toInt() }
     val minutes by lazy { ((totalMillis / (1000 * 60)) % 60).toInt() }
     val seconds by lazy { ((totalMillis / 1000) % 60).toInt() }
@@ -23,6 +25,8 @@ class TimeSpan(
 
     companion object {
         fun between(a: Date, b: Date): TimeSpan = TimeSpan(a.time - b.time)
+
+        val ZERO = TimeSpan(0)
     }
 
     fun format(withHours: Boolean = true, withSeconds: Boolean = true): String {
@@ -42,6 +46,9 @@ class TimeSpan(
         return "${sign}${components.filter { it.isNotBlank() }.joinToString(":")}"
 
     }
+
+    override fun compareTo(other: TimeSpan): Int =
+            this.totalMillis.compareTo(other.totalMillis)
 
     override fun toString(): String = this.format()
 }
