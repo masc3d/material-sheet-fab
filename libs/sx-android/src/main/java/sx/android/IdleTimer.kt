@@ -55,6 +55,7 @@ class IdleTimer(
             period = checkPeriod) {
 
         override fun run() {
+            this@IdleTimer.logState()
             this@IdleTimer.update()
         }
     }
@@ -63,7 +64,8 @@ class IdleTimer(
     val idleDuration: Duration
         get() = Duration.between(
                 this.lastActive.toInstantBp(),
-                Date().toInstantBp())
+                Date().toInstantBp()
+        )
 
     /** Observable property indicating current idle state */
     val isIdleProperty = ObservableRxProperty(false)
@@ -73,7 +75,8 @@ class IdleTimer(
     /**
      * The idle timespan to notify about (via reactive isIdleProperty)
      */
-    var notifyIdleDuration by Delegates.observable<Duration?>(null, { _, _, _ ->
+    var notifyIdleDuration by Delegates.observable<Duration?>(null, { _, _, v ->
+        log.trace("IDLE notification duration [${v}]")
         this.update()
     })
 
@@ -83,12 +86,17 @@ class IdleTimer(
         val lastActive = this.sharedPrefs.getLong(SHAREDPREFS_LASTACTIVE, 0)
         this.lastActive = if (lastActive > 0) Date(lastActive) else Date()
 
+        // Logging
         this.isIdleProperty
-                .subscribe {
-                    log.trace("IDLE [${it.value}] idle duration [${this.idleDuration}] last active [${this.lastActive}]")
-                }
+                .distinctUntilChanged()
+                .subscribe { logState() }
 
         this.service.start()
+    }
+
+    /** Log idle timer state */
+    private fun logState() {
+        log.trace("IDLE [${this.isIdle}] idle duration [${this.idleDuration}] last active [${this.lastActive}]")
     }
 
     /**
@@ -99,6 +107,7 @@ class IdleTimer(
         this.isIdle = this.notifyIdleDuration?.let {
             this.idleDuration >= it
         } ?: false
+
     }
 
     /**
