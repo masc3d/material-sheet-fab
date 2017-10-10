@@ -20,7 +20,8 @@ import kotlin.properties.Delegates
  */
 class IdleTimer(
         private val context: Context,
-        private val executor: ScheduledExecutorService
+        private val executor: ScheduledExecutorService,
+        val checkPeriod: Duration = Duration.ofMinutes(1)
 ) : Disposable {
     companion object {
         val SHAREDPREFS_TAG = "IDLE_TIMER"
@@ -51,7 +52,7 @@ class IdleTimer(
     private val service = object : Service(
             executorService = this.executor,
             initialDelay = Duration.ZERO,
-            period = Duration.ofSeconds(1)) {
+            period = checkPeriod) {
 
         override fun run() {
             this@IdleTimer.update()
