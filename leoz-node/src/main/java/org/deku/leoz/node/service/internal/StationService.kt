@@ -1,5 +1,6 @@
 package org.deku.leoz.node.service.internal
 
+import org.deku.leoz.config.Rest
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstDebitorStation
 import org.deku.leoz.node.data.jpa.QMstStation
@@ -99,10 +100,10 @@ class StationService : org.deku.leoz.service.internal.StationService {
     /** */
     override fun getByStationNo(stationNo: Int): StationV2 {
 
-//        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-//        apiKey ?:
-//                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-//
+        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
+        apiKey ?:
+                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+
 //        val authorizedUserRecord = userRepository.findByKey(apiKey)
 //        authorizedUserRecord ?:
 //                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)

@@ -19,6 +19,7 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
+import java.io.File
 
 
 @Named
@@ -163,6 +164,9 @@ open class ParcelProcessing {
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
+                    val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
+                    if(!file.exists())
+                        return@forEach
                 }
 
                 val checkPicturePath = parcelAddInfo.pictureLocation != null

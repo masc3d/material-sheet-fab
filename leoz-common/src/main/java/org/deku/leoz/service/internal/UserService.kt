@@ -80,10 +80,15 @@ interface UserService {
             //@get:ApiModelProperty(example = ["220","221"], required = false, value = "allowed stations")
             //@get:ApiModelProperty(example = "220,221", dataType = "Array<String>", required = false, value = "allowed stations")
             @get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
-            var allowedStations: List<Int>?=null,
+            var allowedStations: List<Int>? = null,
 
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this accounts password is supposed to expire")
             var passwordExpiresOn: java.sql.Date? = null
+
+//            @get:ApiModelProperty(example = "", required = false, value = "config")
+//            var config: String? = null,
+//            @get:ApiModelProperty(example = "", required = false, value = "preferences")
+//            var preferences: Preferences? = null
     )
 
     @ApiModel(description = "User preference object")
