@@ -145,15 +145,21 @@ class DeliveryActivity : Activity(),
                                                     .negativeText(android.R.string.no)
                                                     .onPositive { _, _ ->
                                                         db.store.withTransaction {
+                                                            log.trace("RESETTING DATA")
                                                             orderRepository.removeAll()
                                                                     .blockingAwait()
                                                         }
                                                                 .toCompletable()
                                                                 .subscribeOn(db.scheduler)
                                                                 .observeOnMainThread()
-                                                                .subscribeBy(onComplete = {
-                                                                    this.showScreen(VehicleLoadingScreen())
-                                                                })
+                                                                .subscribeBy(
+                                                                        onComplete = {
+                                                                            this.showScreen(VehicleLoadingScreen())
+                                                                        },
+                                                                        onError = {
+                                                                            log.error(it.message, it)
+                                                                        }
+                                                                )
                                                     }
                                                     .build().show()
                                         }

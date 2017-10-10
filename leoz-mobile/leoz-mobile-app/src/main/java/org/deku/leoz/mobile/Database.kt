@@ -12,6 +12,7 @@ import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.TableCreationMode
 import org.deku.leoz.mobile.model.entity.Models
 import org.slf4j.LoggerFactory
+import sx.android.requery.sqliteVersion
 
 /**
  * Database
@@ -87,9 +88,10 @@ class Database(
         if (this.file.exists()) {
             val db = SQLiteDatabase.openOrCreateDatabase(this.file.toString(), null)
             val schemaVersion = SchemaVersion.parse(db.version)
+            val sqliteVersion = db.sqliteVersion
             db.close()
 
-            log.info("Current database schema version [${schemaVersion}]")
+            log.info("SQLite [${sqliteVersion}] database schema version [${schemaVersion}]")
 
             if (schemaVersion.major != SCHEMA_VERSION.major) {
                 log.warn("Major schema update ${schemaVersion} -> ${SCHEMA_VERSION}, removing database file")
