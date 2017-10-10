@@ -6,6 +6,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
+import org.deku.leoz.mobile.UserSettings
 import org.deku.leoz.mobile.model.process.Login
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
@@ -35,11 +36,13 @@ class ApplicationConfiguration {
             }
 
             bind<IdleTimer>() with eagerSingleton {
+                val userSettings = instance<UserSettings>()
+
                 IdleTimer(
                         context = instance<Context>(),
                         executor = instance<ScheduledExecutorService>()
                 ).also {
-                    it.notifyIdleDuration = Duration.ofSeconds(15)
+                    it.notifyIdleDuration = userSettings.idleTimeout
 
                     // Auto log-off
                     it.isIdleProperty

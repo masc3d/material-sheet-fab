@@ -1,14 +1,12 @@
 package org.deku.leoz.mobile.config
 
 import android.content.Context
+import android.content.res.Configuration
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.DebugSettings
-import org.deku.leoz.mobile.LocationSettings
-import org.deku.leoz.mobile.RemoteSettings
+import org.deku.leoz.mobile.*
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap
 import java.io.IOException
@@ -57,6 +55,10 @@ class SettingsConfiguration {
 
             bind<LocationSettings>() with singleton {
                 LocationSettings(instance<ConfigurationMap>())
+            }
+
+            bind<UserSettings>() with singleton {
+                UserSettings(instance<ConfigurationMap>())
             }
         }
     }
