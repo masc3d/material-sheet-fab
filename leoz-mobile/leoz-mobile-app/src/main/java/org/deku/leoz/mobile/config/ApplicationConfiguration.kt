@@ -37,8 +37,7 @@ class ApplicationConfiguration {
             bind<IdleTimer>() with eagerSingleton {
                 IdleTimer(
                         context = instance<Context>(),
-                        executor = instance<ScheduledExecutorService>(),
-                        checkPeriod = Duration.ofSeconds(1)
+                        executor = instance<ScheduledExecutorService>()
                 ).also {
                     it.notifyIdleDuration = Duration.ofSeconds(15)
 
