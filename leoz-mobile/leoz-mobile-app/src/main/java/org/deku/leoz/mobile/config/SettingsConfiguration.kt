@@ -15,6 +15,7 @@ import java.io.IOException
 import java.io.InputStream
 
 /**
+ * Settings configurations
  * Created by masc on 15/02/2017.
  */
 class SettingsConfiguration {
