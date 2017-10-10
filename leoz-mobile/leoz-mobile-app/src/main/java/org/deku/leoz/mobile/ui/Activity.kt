@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
+import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.AppBarLayout
@@ -158,7 +159,7 @@ abstract class Activity : BaseActivity(),
     val snackbarBuilder by lazy {
         SnackbarBuilder(this.uxCoordinatorLayout)
     }
-    
+
     override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
         mqttEndpoints.central.main.channel().sendFile(jpeg, MimeType.JPEG.value)
     }
@@ -362,8 +363,6 @@ abstract class Activity : BaseActivity(),
                 .subscribe {
                     this.onForeground()
                 }
-
-        this.onForeground()
     }
 
     override fun onPause() {
@@ -1009,17 +1008,40 @@ abstract class Activity : BaseActivity(),
     }
 
     private fun checkLocationSettings() {
-        RxLocation(applicationContext).settings().checkAndHandleResolutionCompletable(this.locationServices.locationRequest)
-                .bindToLifecycle(this)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onComplete = {
-                            log.debug("LocationSettings satisfied")
-                        },
-                        onError = {
-                            log.warn("LocationSettings not satisfied!", it)
-                            //this.app.terminate()
+        log.debug("Check location settings")
+        if (locationServices.locationSettings.useGoogleLocationService) {
+            RxLocation(applicationContext).settings().checkAndHandleResolutionCompletable(this.locationServices.locationRequest)
+                    .bindToLifecycle(this)
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy(
+                            onComplete = {
+                                log.debug("LocationSettings satisfied")
+                            },
+                            onError = {
+                                log.warn("LocationSettings not satisfied!", it)
+                                //this.app.terminate()
+                            }
+                    )
+        } else {
+            val provider = locationServices.locationManager
+            if (!provider.isProviderEnabled(LocationManager.GPS_PROVIDER) || !provider.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                MaterialDialog.Builder(this)
+                        .title("Location settings not satisfied")
+                        .content("You disabled either GPS or Network locations. Both must be enabled to continue.")
+                        .positiveText(R.string.action_settings)
+                        .negativeText(R.string.cancel)
+                        .onPositive { _, _ ->
+                            startActivity(
+                                    Intent(
+                                            android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                                    )
+                            )
                         }
-                )
+                        .onNegative { _, _ ->
+                            this.app.terminate()
+                        }
+                        .show()
+            }
+        }
     }
 }

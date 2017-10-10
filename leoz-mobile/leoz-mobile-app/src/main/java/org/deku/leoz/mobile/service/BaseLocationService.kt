@@ -1,5 +1,7 @@
 package org.deku.leoz.mobile.service
 
+import android.Manifest
+import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -7,9 +9,13 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.location.GnssStatus
+import android.location.GpsStatus
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.LocalBroadcastManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -36,15 +42,17 @@ abstract class BaseLocationService: Service() {
 
     private val identity: Identity by Kodein.global.lazy.instance()
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
-    protected val locationManager: LocationManager by lazy {
-        (applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
-    }
     protected val locationSettings: LocationSettings by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
     private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
     private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
+    protected val locationServices: org.deku.leoz.mobile.LocationServices by Kodein.global.lazy.instance()
+
+    private var gnssStatusCallback: GnssStatus.Callback? = null
+    @Suppress("DEPRECATION")
+    private var gpsStatusListener: GpsStatus.Listener? = null
 
     private val showTaskIntent by lazy {
         Intent(applicationContext, StartupActivity::class.java).also {
@@ -64,8 +72,14 @@ abstract class BaseLocationService: Service() {
     }
 
     private val notification by lazy {
-        Notification.Builder(this)
-                .setContentTitle(getString(R.string.app_name_long))
+        @Suppress("DEPRECATION")
+        val builder: Notification.Builder =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+                else
+                    Notification.Builder(this)
+
+        builder.setContentTitle(getString(R.string.app_name_long))
                 .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_launcher)
@@ -78,12 +92,23 @@ abstract class BaseLocationService: Service() {
 
     companion object {
         const val NOTIFICATION_ID = 100
+        const val NOTIFICATION_CHANNEL_ID = "LEOZ"
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        //return super.onStartCommand(intent, flags, startId)
         log.debug("ONSTARTCOMMAND")
-        //setNotification()
+
+        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                this.locationServices.locationManager.registerGnssStatusCallback(gnssStatusCallback)
+            } else {
+                this.locationServices.locationManager.addGpsStatusListener(gpsStatusListener)
+            }
+        }
+
+        this.registerBroadcastReceiver()
+        setNotification()
+        startForeground(NOTIFICATION_ID, notification)
         return START_STICKY
     }
 
@@ -91,9 +116,21 @@ abstract class BaseLocationService: Service() {
         super.onCreate()
         log.debug("ONCREATE")
 
-        this.registerBroadcastReceiver()
-        setNotification()
-        startForeground(NOTIFICATION_ID, notification)
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            gnssStatusCallback = object : GnssStatus.Callback() {
+                override fun onSatelliteStatusChanged(status: GnssStatus?) {
+                    log.debug("ONSATELLITESTATUSCHANGED")
+                    locationServices.locationSettingsChangedEventProperty.onNext(Unit)
+                }
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            gpsStatusListener = GpsStatus.Listener {
+                when (it) {
+                    GpsStatus.GPS_EVENT_STOPPED -> locationServices.locationSettingsChangedEventProperty.onNext(Unit)
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -164,19 +201,5 @@ abstract class BaseLocationService: Service() {
 
         log.debug("Unregister BroadcastReceiver [${locationProviderChangedReceiver::class.java.simpleName}]")
         broadcastManager.unregisterReceiver(locationProviderChangedReceiver)
-    }
-
-    class GnssCallback: GnssStatus.Callback() {
-        companion object {
-            private var gnssCallback: GnssCallback? = null
-
-            fun getInstance(): GnssCallback {
-                if (gnssCallback == null) {
-                    gnssCallback = GnssCallback()
-                }
-
-                return gnssCallback!!
-            }
-        }
     }
 }

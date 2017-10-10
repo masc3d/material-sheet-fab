@@ -39,8 +39,6 @@ class LocationServiceGMS:
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val locationServices: org.deku.leoz.mobile.LocationServices by Kodein.global.lazy.instance()
-
     private val locationRequest = locationServices.locationRequest
 
     var builder: LocationSettingsRequest.Builder = LocationSettingsRequest.Builder()

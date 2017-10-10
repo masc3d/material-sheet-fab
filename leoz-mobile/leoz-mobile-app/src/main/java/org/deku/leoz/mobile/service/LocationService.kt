@@ -38,7 +38,7 @@ class LocationService
         locationListener = LocationListener()
 
         try {
-            locationManager.requestLocationUpdates(provider, period, minDistance, locationListener)
+            locationServices.locationManager.requestLocationUpdates(provider, period, minDistance, locationListener)
         } catch (e: SecurityException) {
             log.error("Fail to request location update on provider [$provider]", e)
         } catch (e: IllegalArgumentException) {
@@ -47,7 +47,7 @@ class LocationService
     }
 
     override fun onDestroy() {
-        locationManager.removeUpdates(locationListener)
+        locationServices.locationManager.removeUpdates(locationListener)
         super.onDestroy()
     }
 
@@ -66,10 +66,12 @@ class LocationService
 
         override fun onProviderDisabled(provider: String?) {
             log.trace("ONPROVIDERDISABLED [$provider]")
+            locationServices.locationSettingsChangedEventProperty.onNext(Unit)
         }
 
         override fun onProviderEnabled(provider: String?) {
             log.trace("ONPROVIDERENABLED [$provider]")
+            locationServices.locationSettingsChangedEventProperty.onNext(Unit)
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {

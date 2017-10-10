@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
@@ -17,12 +18,13 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.app
-import org.deku.leoz.mobile.config.BroadcastReceiverConfiguration
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
@@ -136,14 +138,22 @@ class StartupActivity : BaseActivity() {
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
 
+                                    val locationSettings: LocationSettings by Kodein.global.lazy.instance()
+
                                     // Initialize ThreeTen (java.time / JSR-310 compatibility drop-in)
                                     AndroidThreeTen.init(this.application)
 
                                     // Start location based services
-                                    if (!this.app.isServiceRunning(LocationServiceGMS::class.java)) {
-                                        ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
-                                    } else {
-                                        log.debug("LocationServiceGMS already running. Skipped startService")
+                                    when {
+                                        (locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationServiceGMS::class.java)) -> {
+                                            ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
+                                        }
+                                        (!locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationService::class.java)) -> {
+                                            ContextCompat.startForegroundService(this, Intent(applicationContext, LocationService::class.java))
+                                        }
+                                        else -> {
+                                            log.debug("LocationService already running.")
+                                        }
                                     }
 
                                     // Write device management identity

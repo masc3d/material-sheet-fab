@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile
 
 import android.content.Context
+import android.location.LocationManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -16,7 +17,10 @@ import org.threeten.bp.Duration
  */
 class LocationServices(val context: Context) {
 
-    protected val locationSettings: LocationSettings by Kodein.global.lazy.instance()
+    val locationSettings: LocationSettings by Kodein.global.lazy.instance()
+    val locationManager: LocationManager by lazy {
+        (context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+    }
 
     val locationSettingsChangedEventProperty = PublishSubject.create<Unit>()
     val locationSettingsChangedEvent = locationSettingsChangedEventProperty.hide()
