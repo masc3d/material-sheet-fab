@@ -38,7 +38,7 @@ class ApplicationPackage(
         val apkUri: Uri
         var intentFlags: Int = Intent.FLAG_ACTIVITY_NEW_TASK
 
-        if (Build.VERSION.SDK_INT >= 25) {
+        if (Build.VERSION.SDK_INT >= 24) {
             // Use file provider based method
             apkUri = FileProvider.getUriForFile(
                     context,
