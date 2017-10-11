@@ -6,6 +6,7 @@ import org.deku.leoz.node.data.jpa.QMstDebitorStation
 import org.deku.leoz.node.data.jpa.QMstStation
 import org.deku.leoz.node.data.repository.master.DebitorStationRepository
 import org.deku.leoz.node.data.repository.master.StationRepository
+import org.deku.leoz.service.internal.UserService
 //import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
@@ -20,6 +21,7 @@ import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 //import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.service.internal.ParcelServiceV1
 
 /**
  * Created by masc on 17.09.14.
@@ -37,6 +39,9 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
     @Inject
     private lateinit var debitorStationRepository: DebitorStationRepository
+
+    @Inject
+    private lateinit var userService:UserService
 
     //@Inject
     //private lateinit var userRepository: UserJooqRepository
@@ -100,13 +105,9 @@ class StationService : org.deku.leoz.service.internal.StationService {
     /** */
     override fun getByStationNo(stationNo: Int): StationV2 {
 
-        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-        apiKey ?:
-                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
-//        val authorizedUserRecord = userRepository.findByKey(apiKey)
-//        authorizedUserRecord ?:
-//                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+        val user=userService.get()
+
 
         val station = stationRepository
                 .findByStation(stationNo)
@@ -117,6 +118,8 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
     /** */
     override fun getByDebitorId(debitorId: Int): Array<StationV2> {
+        val user=userService.get()
+
         val stationIds = debitorStationRepository
                 .findStationIdsByDebitorid(debitorId)
                 .also {
@@ -133,6 +136,14 @@ class StationService : org.deku.leoz.service.internal.StationService {
                 }
 
         return stations.map { s -> s.toStationV2() }.toTypedArray()
+    }
+
+    override fun getByDebitorId(): Array<StationV2> {
+        val user=userService.get()
+
+        val debitorId=user.debitorId
+        debitorId ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "user without debitor")
+        return getByDebitorId(debitorId )
     }
 }
 
