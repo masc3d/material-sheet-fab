@@ -234,7 +234,7 @@ dependencies {
             'com.journeyapps:zxing-android-embedded:3.5.0',
 
             // YAML
-            "pl.droidsonroids.yaml:snakeyaml:1.18-android",
+            "pl.droidsonroids.yaml:snakeyaml:1.18.2",
 
             // Signature pad
             "com.github.gcacace:signature-pad:1.2.1",
