@@ -1,13 +1,13 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import org.deku.leoz.model.AdditionalInfo
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
 import java.util.*
-import javax.ws.rs.Consumes
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
+import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 /**
@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType
 interface ParcelServiceV1 {
     companion object {
         const val EVENT = 1
+        const val STATION_NO="station-no"
     }
 
     /**
@@ -84,5 +85,19 @@ interface ParcelServiceV1 {
                 val pictureFileUids: Array<UUID> = arrayOf()
         )
     }
+
+    @GET
+    @Path("/export/{$STATION_NO}")
+    @ApiOperation(value = "Get parcels to export")
+    fun getParcels2ExportByStationNo(
+            @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
+    ):List<Long>
+
+    @GET
+    @Path("/loadinglist/new/{$STATION_NO}")
+    @ApiOperation(value = "Get new loadinglist-no")
+    fun getLoadinglistNoForStationNo(
+            @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
+    ):Long
 }
 

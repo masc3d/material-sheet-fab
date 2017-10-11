@@ -167,4 +167,8 @@ interface UserService {
             @ApiParam(value = "old_password") oldPassword: String,
             @ApiParam(value = "new_password") newPassword: String
     )
+    @GET
+    @Path("/auth")
+    @ApiOperation(value = "Get auth user")
+    fun get(): User
 }

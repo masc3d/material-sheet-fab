@@ -9,6 +9,7 @@ import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.isActive
 import org.deku.leoz.central.data.repository.toUser
+import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AllowedStations
 import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.UserService.User
@@ -20,6 +21,8 @@ import javax.ws.rs.Path
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.model.UserRole
 import java.util.*
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 /**
@@ -40,6 +43,9 @@ class UserService : UserService {
 
     @Inject
     private lateinit var mailRepository: MailQueueRepository
+
+    @Context
+    private lateinit var httpHeaders: HttpHeaders
 
     override fun get(email: String?, debitorId: Int?, apiKey: String?): List<User> {
         var debitor_id = debitorId
@@ -375,5 +381,31 @@ class UserService : UserService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun get(): User {
+        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
+        apiKey ?:
+                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+        val authorizedUserRecord = userRepository.findByKey(apiKey)
+        authorizedUserRecord ?:
+                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+
+
+        if (!authorizedUserRecord.isActive) {
+            throw DefaultProblem(
+                    title = "user deactivated",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if (Date() > authorizedUserRecord.expiresOn) {
+            throw DefaultProblem(
+                    title = "user account expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if (Date() > authorizedUserRecord.passwordExpiresOn) {
+            throw DefaultProblem(
+                    title = "user password expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        return authorizedUserRecord.toUser()
+    }
 
 }

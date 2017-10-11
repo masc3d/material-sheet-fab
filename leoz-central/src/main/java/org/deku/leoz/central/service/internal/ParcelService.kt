@@ -39,7 +39,7 @@ import sx.io.serialization.Serializable
  * Created by JT on 17.07.17.
  */
 @Named
-@Path("internal/v1/event")
+@Path("internal/v1/parcel")
 open class ParcelServiceV1 :
         org.deku.leoz.service.internal.ParcelServiceV1,
         MqHandler<ParcelServiceV1.ParcelMessage> {
@@ -413,6 +413,14 @@ open class ParcelServiceV1 :
         }
         return jpgFile.toPath()
 
+    }
+
+    override fun getParcels2ExportByStationNo(stationNo: Int): List<Long> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getLoadinglistNoForStationNo(stationNo: Int): Long {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 
