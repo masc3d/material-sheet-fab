@@ -447,7 +447,7 @@ abstract class Activity : BaseActivity(),
             MaterialDialog.Builder(this)
                     .title(syntheticInputs.name)
                     .inputType(InputType.TYPE_CLASS_TEXT)
-                    .items(*syntheticInputs.entries.map { it.data }.toTypedArray())
+                    .items(*syntheticInputs.entries.map { it.name }.toTypedArray())
                     .itemsCallback { _, _, _, charSequence ->
                         simulatingAidcReader.emit(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25)
                     }

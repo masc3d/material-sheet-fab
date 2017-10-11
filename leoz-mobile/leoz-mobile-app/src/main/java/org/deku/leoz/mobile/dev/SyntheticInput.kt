@@ -14,7 +14,7 @@ class SyntheticInput(
      */
     data class Entry(
             val data: String,
+            val name: String = data,
             val symbologyType: SymbologyType
     )
-
 }
