@@ -12,6 +12,7 @@ import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.TableCreationMode
 import org.deku.leoz.mobile.model.entity.Models
 import org.slf4j.LoggerFactory
+import org.yaml.snakeyaml.Yaml
 import sx.android.requery.sqliteVersion
 
 /**
@@ -32,20 +33,16 @@ class Database(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
-        /**
-         * Schema version. Must be increased on entity model changes.
-         * Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
-         * Major increases indicate breaking changes and will reset the database on migration
-         */
-        val SCHEMA_VERSION = SchemaVersion(major = 6, minor = 2)
+        /** Asset file containing database metainfo, eg. schema version */
+        val ASSET_DATABASE = "database-schema.yml"
     }
 
     /**
      * Database schema version
      */
     data class SchemaVersion(
-            val major: Int,
-            val minor: Int
+            var major: Int = 0,
+            var minor: Int = 0
     ) {
         val sqliteVersion by lazy { major * MAJOR_BASE + minor }
 
@@ -62,6 +59,15 @@ class Database(
         }
 
         override fun toString(): String = "${major}.${minor}"
+    }
+
+    /**
+     * Schema version, loaded lazily from assets
+     */
+    val schemaVersion: SchemaVersion by lazy {
+        this.context.assets.open(ASSET_DATABASE).use {
+            Yaml().loadAs(it, SchemaVersion::class.java)
+        }
     }
 
     /**
@@ -87,14 +93,14 @@ class Database(
 
         if (this.file.exists()) {
             val db = SQLiteDatabase.openOrCreateDatabase(this.file.toString(), null)
-            val schemaVersion = SchemaVersion.parse(db.version)
-            val sqliteVersion = db.sqliteVersion
+            val dbSchemaVersion = SchemaVersion.parse(db.version)
+            val dbLibraryVersion = db.sqliteVersion
             db.close()
 
-            log.info("SQLite [${sqliteVersion}] database schema version [${schemaVersion}]")
+            log.info("SQLite [${dbLibraryVersion}] schema version [${dbSchemaVersion}] -> [${this.schemaVersion}] ")
 
-            if (schemaVersion.major != SCHEMA_VERSION.major) {
-                log.warn("Major schema update ${schemaVersion} -> ${SCHEMA_VERSION}, removing database file")
+            if (dbSchemaVersion.major != this.schemaVersion.major) {
+                log.warn("Major schema update ${dbSchemaVersion} -> ${this.schemaVersion}, removing database file")
                 this.file.delete()
             }
         }
@@ -103,7 +109,7 @@ class Database(
                 this.context,
                 Models.DEFAULT,
                 this.name,
-                SCHEMA_VERSION.sqliteVersion
+                this.schemaVersion.sqliteVersion
         ) {
 
             override fun onDowngrade(db: io.requery.android.database.sqlite.SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
