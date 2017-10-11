@@ -20,6 +20,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.nio.file.Files
 
 
 @Named
@@ -167,6 +168,23 @@ open class ParcelProcessing {
                     val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
                     if(!file.exists())
                         return@forEach
+                    else{
+                        val pathMobile = storage.mobileDataDirectory.toPath()
+                        val fileNameInfo = userId.toString()
+                        val loc = Location.SB
+                        val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
+                        val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
+                        val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
+                        Files.copy(file.toPath(), pathFileMobile)
+                        if(mobileFilename.getPath().resolve(newFile).toFile().exists()) {
+                            Files.delete(file.toPath())
+                            val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+
+                            parcelRecord.bmpfilename = bmp
+                            parcelRecord.store()
+                        } else
+                            return@forEach
+                    }
                 }
 
                 val checkPicturePath = parcelAddInfo.pictureLocation != null
