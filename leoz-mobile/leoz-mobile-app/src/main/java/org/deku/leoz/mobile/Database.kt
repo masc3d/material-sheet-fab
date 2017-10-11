@@ -13,7 +13,9 @@ import io.requery.sql.TableCreationMode
 import org.deku.leoz.mobile.model.entity.Models
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.Yaml
+import sx.android.ApplicationPackage
 import sx.android.requery.sqliteVersion
+import java.util.zip.ZipFile
 
 /**
  * Database
@@ -35,6 +37,19 @@ class Database(
     companion object {
         /** Asset file containing database metainfo, eg. schema version */
         val ASSET_DATABASE = "database-schema.yml"
+
+        /**
+         * Read database schema from application package
+         */
+        fun readSchemaVersionFrom(apk: ApplicationPackage): SchemaVersion? {
+            return ZipFile(apk.file).use { zip ->
+                zip.getEntry(ASSET_DATABASE)?.let { entry ->
+                    zip.getInputStream(entry).use {
+                        Yaml().loadAs(it, SchemaVersion::class.java)
+                    }
+                }
+            }
+        }
     }
 
     /**
