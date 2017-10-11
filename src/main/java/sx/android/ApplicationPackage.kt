@@ -21,7 +21,7 @@ class ApplicationPackage(
     /**
      * Install APK file
      *
-     * This method is compliant with the new FileProviders introduced in API level 25.
+     * This method is compliant with the new FileProviders introduced in API level 24.
      * https://developer.android.com/reference/android/support/v4/content/FileProvider.html
      * Thus requires `provider` definition in manifest and referring provider paths resource.
      */
