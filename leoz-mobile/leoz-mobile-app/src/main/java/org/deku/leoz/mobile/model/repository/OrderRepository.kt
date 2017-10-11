@@ -42,10 +42,8 @@ class OrderRepository(
                 .get()
                 .scalar<Date>()
                 .map {
-                    log.trace("HERE1.1")
                     it.plusHours(MAX_AGE_HOURS) < Date()
                 }
-                .doOnSuccess { log.trace("HERE2") }
                 .defaultIfEmpty(false)
                 .toSingle()
     }
