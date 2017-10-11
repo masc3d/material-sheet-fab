@@ -9,7 +9,6 @@ import android.graphics.drawable.TransitionDrawable
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.support.annotation.StringRes
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
@@ -38,7 +37,6 @@ import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
@@ -81,8 +79,6 @@ import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
-import sx.android.isConnectivityProblem
-import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTintRes
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
@@ -684,20 +680,23 @@ abstract class Activity : BaseActivity(),
                     this.uxActionOverlay.items = items
                 }
 
-        this.updateService.availableUpdateEvent
+        this.updateService.availableUpdateProperty
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onNext = { event ->
-                            this.snackbarBuilder
-                                    .message(this@Activity.getString(R.string.version_available, event.version))
-                                    .duration(Snackbar.LENGTH_INDEFINITE)
-                                    .actionText(R.string.update)
-                                    .actionClickListener {
-                                        event.apk.install(this@Activity)
-                                    }
-                                    .build().show()
-                        })
+                        onNext = {
+                            it.value?.also { event ->
+                                this.snackbarBuilder
+                                        .message(this@Activity.getString(R.string.version_available, event.version))
+                                        .duration(Snackbar.LENGTH_INDEFINITE)
+                                        .actionText(R.string.update)
+                                        .actionClickListener {
+                                            event.apk.install(this@Activity)
+                                        }
+                                        .build().show()
+                            }
+                        }
+                )
 
 
         // Authentication changes

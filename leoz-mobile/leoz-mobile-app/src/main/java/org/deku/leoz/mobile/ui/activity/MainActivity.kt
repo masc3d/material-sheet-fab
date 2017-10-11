@@ -90,7 +90,9 @@ class MainActivity
         super.onResume()
 
         // Disable login when updates become available
-        this.updateService.availableUpdateEvent
+        this.updateService.availableUpdateProperty
+                .filter { it.value != null }
+                .map { it.value }
                 .switchMap { update ->
                     // ..under specific conditions
                     Observable.combineLatest(
@@ -108,6 +110,7 @@ class MainActivity
                     )
                             .filter { it == true }
                             .map { update }
+
                 }
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOnMainThread()
