@@ -449,7 +449,9 @@ abstract class Activity : BaseActivity(),
                     .inputType(InputType.TYPE_CLASS_TEXT)
                     .items(*syntheticInputs.entries.map { it.name }.toTypedArray())
                     .itemsCallback { _, _, _, charSequence ->
-                        simulatingAidcReader.emit(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25)
+                        syntheticInputs.entries.first { it.name == charSequence }.also {
+                            simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                        }
                     }
                     .cancelable(true)
                     .show()
