@@ -700,6 +700,7 @@ abstract class Activity : BaseActivity(),
 
                     // Otherwise check for relevant orders and suppress update if necessary
                         else -> this.orderRepository.hasRelevanrtOrders()
+                                .subscribeOn(db.scheduler)
                                 .map {
                                     when (it) {
                                         true -> null
