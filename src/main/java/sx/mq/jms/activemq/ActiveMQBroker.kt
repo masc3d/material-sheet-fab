@@ -93,6 +93,16 @@ class ActiveMQBroker private constructor()
         get() = URI("vm://${brokerName}?create=false")
 
     /**
+     * Redelivery duration before messages are sent to DLQ (dead letter queue)
+     */
+    var redeliveryDuration = Duration.ofDays(1)
+
+    /**
+     * Expiry duration for dead letter queue
+     */
+    var deadLetterExpiration = Duration.ofDays(14)
+
+    /**
      * Add transport server, eg. from servlet
      */
     fun addConnector(transportServer: TransportServer) {
@@ -232,7 +242,7 @@ class ActiveMQBroker private constructor()
                             rp.backOffMultiplier = 2.0
                             rp.maximumRedeliveryDelay = Duration.ofMinutes(15).toMillis()
 
-                            val maxRedeliveryTime = Duration.ofDays(1).toMillis()
+                            val maxRedeliveryTime = this.redeliveryDuration.toMillis()
 
                             rp.maximumRedeliveries = Math.ceil(
                                     // Calculate maximum redeliveries from above parameters
@@ -334,6 +344,18 @@ class ActiveMQBroker private constructor()
         brokerService.destinationInterceptors = createDestinationInterceptors().toTypedArray()
         //endregion
 
+        //region Default destination policy and DLQ strategy
+        brokerService.destinationPolicy = PolicyMap().also { pm ->
+            pm.defaultEntry = PolicyEntry().also { pe ->
+                pe.deadLetterStrategy = SharedDeadLetterStrategy().also { ds ->
+                    // Setup DLQ expiration to avoid infinte DLQ growth
+                    ds.expiration = this.deadLetterExpiration.toMillis()
+                    ds.isProcessExpired = false
+                    ds.isProcessNonPersistent = false
+                }
+            }
+        }
+        //endregion
 
         try {
             brokerService.start()
