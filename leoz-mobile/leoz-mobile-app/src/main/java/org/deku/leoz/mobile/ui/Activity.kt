@@ -699,7 +699,7 @@ abstract class Activity : BaseActivity(),
                             Observable.just(item)
 
                     // Otherwise check for relevant orders and suppress update if necessary
-                        else -> this.orderRepository.hasRelevanrtOrders()
+                        else -> this.orderRepository.hasRelevantOrders()
                                 .subscribeOn(db.scheduler)
                                 .map {
                                     when (it) {

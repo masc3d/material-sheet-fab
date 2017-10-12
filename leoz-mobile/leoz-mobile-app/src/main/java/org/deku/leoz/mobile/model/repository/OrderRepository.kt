@@ -53,7 +53,7 @@ class OrderRepository(
      * Determine if repository has relevant orders.
      * The result will be true if there's orders, but no outdated ones.
      */
-    fun hasRelevanrtOrders(): Single<Boolean> {
+    fun hasRelevantOrders(): Single<Boolean> {
         return Single.zip(
                 this.hasOutdatedOrders(),
                 store.count(OrderEntity::class).get().single().map { it > 0 },
