@@ -14,6 +14,7 @@ import org.deku.leoz.mobile.model.entity.Models
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.Yaml
 import sx.android.requery.sqliteVersion
+import sx.io.serialization.Serializable
 import java.io.InputStream
 
 /**
@@ -41,6 +42,7 @@ class Database(
     /**
      * Database schema version
      */
+    @Serializable
     data class SchemaVersion(
             var major: Int = 0,
             var minor: Int = 0
