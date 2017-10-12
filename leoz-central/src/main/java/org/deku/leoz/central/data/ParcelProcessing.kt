@@ -20,7 +20,10 @@ import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.nio.file.CopyOption
 import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 
 @Named
@@ -71,6 +74,7 @@ open class ParcelProcessing {
             events ?: return true
 
             events.forEach {
+                var pathToDelete: Path? = null
 
                 var insertStatus = true
                 val r = dslContext.newRecord(Tables.TBLSTATUS)
@@ -81,12 +85,16 @@ open class ParcelProcessing {
 
                 val parcelScan = parcelNo.toLong().toString()
 
+                val user = userRepository.findById(it.userId)
+                val userEmail = user?.email ?: ""
+
+
                 r.packstuecknummer = parcelNo.toDouble()
                 r.setDate(it.scanned)
                 r.setTime(it.scanned)
                 r.poslat = it.latitude
                 r.poslong = it.longitude
-                r.infotext = "MOB " + (it.userId?.toString() ?: "")
+                r.infotext = "MOB $userEmail".substring(0, 11)
 
                 val eventId = it.eventValue
                 val event = Event.values().find { it.value == eventId }!!
@@ -100,7 +108,6 @@ open class ParcelProcessing {
                 r.erzeugerstation = "002"
 
 
-
                 val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
                 parcelRecord ?:
                         return false
@@ -110,11 +117,11 @@ open class ParcelProcessing {
 
                 val userId = it.userId
                 //if (userId != null) {
-                    //val station = userRepository.findStationNrByUserId(userId)
-                    val station = orderRecord.depotnrld
-                    if (station != null) {
-                        r.erzeugerstation = station.toString().padStart(3, '0')
-                    }
+                //val station = userRepository.findStationNrByUserId(userId)
+                val station = orderRecord.depotnrld
+                if (station != null) {
+                    r.erzeugerstation = station.toString().padStart(3, '0')
+                }
                 //}
                 val from = r.erzeugerstation
 
@@ -166,18 +173,21 @@ open class ParcelProcessing {
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
                     val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
-                    if(!file.exists())
+                    if (!file.exists())
                         return@forEach
-                    else{
+                    else {
                         val pathMobile = storage.mobileDataDirectory.toPath()
                         val fileNameInfo = userId.toString()
                         val loc = Location.SB
                         val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
                         val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
                         val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
-                        Files.copy(file.toPath(), pathFileMobile)
-                        if(mobileFilename.getPath().resolve(newFile).toFile().exists()) {
-                            Files.delete(file.toPath())
+                        val copyOption = StandardCopyOption.REPLACE_EXISTING
+                        Files.copy(file.toPath(), pathFileMobile, copyOption)
+                        if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
+                            //Files.delete(file.toPath())
+                            pathToDelete = file.toPath()
+
                             val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
 
                             parcelRecord.bmpfilename = bmp
@@ -626,7 +636,13 @@ open class ParcelProcessing {
                 }
 
                 if (insertStatus) {
-                    statusRepository.saveEvent(r)
+                    if (!statusRepository.saveEvent(r))
+                        result = false
+                    else {
+                        if (pathToDelete != null) {
+                            Files.delete(pathToDelete)
+                        }
+                    }
                 }
 
                 if (result) {
@@ -636,6 +652,7 @@ open class ParcelProcessing {
             }
 
         } catch (e: Exception) {
+            log.error(e.toString())
             result = false
         }
 

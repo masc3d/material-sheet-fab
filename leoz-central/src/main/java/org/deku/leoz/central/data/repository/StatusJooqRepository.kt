@@ -9,6 +9,7 @@ import javax.inject.Named
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.Tblstatus
 import org.deku.leoz.central.data.toUInteger
+import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,11 +19,13 @@ class StatusJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
 
     lateinit var dslContext: DSLContext
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     fun saveEvent(eventRecord: TblstatusRecord): Boolean {
         try {
             return (eventRecord.store() > 0)
         } catch (e: Exception) {
+            log.error(e.toString())
             return false
         }
     }
