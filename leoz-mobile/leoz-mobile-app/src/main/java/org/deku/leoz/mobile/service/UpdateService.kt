@@ -212,7 +212,7 @@ class UpdateService(
 
             // Extract database schema version
             val schemaVersion = ZipFile(apkFile).use { zip ->
-                zip.getEntry(Database.ASSET_DATABASE)?.let { entry ->
+                zip.getEntry("assets/${Database.ASSET_DATABASE}")?.let { entry ->
                     zip.getInputStream(entry).use {
                         Database.SchemaVersion.fromYaml(it)
                     }
