@@ -7,6 +7,7 @@ import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.ParcelProcessing
+import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.node.Storage
 import sx.rs.DefaultProblem
@@ -32,6 +33,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
+import org.deku.leoz.service.internal.UserService
 import sx.io.serialization.Serializable
 
 /**
@@ -69,6 +71,12 @@ open class ParcelServiceV1 :
 
     @Inject
     private lateinit var parcelProcessing: ParcelProcessing
+
+    @Inject
+    private lateinit var userService: UserService
+
+    @Inject
+    private lateinit var parcelRepository: ParcelJooqRepository
 
     /**
      * Parcel service message handler
@@ -419,8 +427,47 @@ open class ParcelServiceV1 :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getLoadinglistNoForStationNo(stationNo: Int): Long {
+    override fun getNewLoadinglistNo(): Long {
+        val user = userService.get()
+
+        return Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 300000
+
+    }
+
+    override fun getParcelsByLoadingList(loadinglistNo: Long): List<ParcelServiceV1.Order> {
+        val parcels = parcelRepository.getParcelsByLoadingList(loadinglistNo)
+        parcels ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "no parcels found for this list"
+        )
+        val orderIdList = parcels.map { it.orderid }.distinct()
+        val orderList: MutableList<ParcelServiceV1.Order> = mutableListOf<ParcelServiceV1.Order>()
+        orderIdList.forEach {
+            val orderRecord = parcelRepository.getOrderById(it.toLong())
+            if (orderRecord != null) {
+                val order = orderRecord.toOrder()
+                val pp = parcels.filter { f -> f.orderid == it }
+                if (pp != null) {
+                    order.parcels = pp.map { it.toParcel() }
+                    orderList.add(order)
+                }
+            }
+        }
+        return orderList
+    }
+
+    override fun getLoadedParcels2ExportByStationNo(stationNo: Int): List<Long> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun export(parcelNo: String?, cReferenz: String?, loadingListNo: Long): Boolean {
+        val user = userService.get()
+        if ((parcelNo == null) && (cReferenz == null))
+            throw DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "parcelNo and cReferenz null"
+            )
+        return true
     }
 }
 

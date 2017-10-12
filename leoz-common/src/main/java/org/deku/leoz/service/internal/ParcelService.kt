@@ -1,9 +1,8 @@
 package org.deku.leoz.service.internal
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
+import io.swagger.annotations.*
 import org.deku.leoz.model.AdditionalInfo
+import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
 import java.util.*
@@ -22,7 +21,10 @@ import javax.ws.rs.core.MediaType
 interface ParcelServiceV1 {
     companion object {
         const val EVENT = 1
-        const val STATION_NO="station-no"
+        const val STATION_NO = "station-no"
+        const val LOADINGLIST_NO = "loadinglist-no"
+        const val PARCEL_NO = "parcel-no"
+        const val CREFERENZ = "cReferenz"
     }
 
     /**
@@ -91,13 +93,53 @@ interface ParcelServiceV1 {
     @ApiOperation(value = "Get parcels to export")
     fun getParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
-    ):List<Long>
+    ): List<Long>
 
     @GET
-    @Path("/loadinglist/new/{$STATION_NO}")
-    @ApiOperation(value = "Get new loadinglist-no")
-    fun getLoadinglistNoForStationNo(
+    @Path("/export/loaded/{$STATION_NO}")
+    @ApiOperation(value = "Get loaded parcels to export")
+    fun getLoadedParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
-    ):Long
+    ): List<Long>
+
+    @GET
+    @Path("/loadinglist/new")
+    @ApiOperation(value = "Get new loadinglist-no")
+    fun getNewLoadinglistNo(): Long
+
+    @GET
+    @Path("/loadinglist/{$LOADINGLIST_NO}")
+    @ApiOperation(value = "Get parcels by loadinglist")
+    fun getParcelsByLoadingList(
+            @PathParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist number", example = "300005", required = true) loadinglistNo: Long
+    ): List<ParcelServiceV1.Order>
+
+    @PUT
+    @Path("/export")
+    @ApiOperation(value = "export parcel")
+    fun export(
+            @QueryParam(PARCEL_NO) @ApiParam(value = "parcel no") parcelNo: String? = null,
+            @QueryParam(CREFERENZ) @ApiParam(value = "cReferenz") cReferenz: String? = null,
+            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist no",required = true) loadingListNo: Long
+    ): Boolean
+
+    data class Order(
+            var orderId: Long = 0,
+            var deliveryAddress: Address = Address(),
+            var deliveryStation: Int = 0,
+            var shipmentDate: Date,
+            var parcels: List<Parcel> = listOf()
+
+            )
+    data class Parcel(
+            var orderId: Long=0,
+            var parcelNo: Long=0,
+            var parcelPosition:Int=0,
+            var loadinglistNo:Long?=null,
+            var typeOfPackaging:Int=0,
+            var realWeight:Double=0.0,
+            var dateOfStationOut:Date,
+            var cReference:String?=null
+    )
 }
 
