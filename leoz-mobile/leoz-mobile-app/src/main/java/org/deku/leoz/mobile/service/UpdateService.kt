@@ -210,10 +210,8 @@ class UpdateService(
                 it.delete()
             }
 
-            val apk = ApplicationPackage(file = apkFile)
-
             // Extract database schema version
-            val schemaVersion = ZipFile(apk.file).use { zip ->
+            val schemaVersion = ZipFile(apkFile).use { zip ->
                 zip.getEntry(Database.ASSET_DATABASE)?.let { entry ->
                     zip.getInputStream(entry).use {
                         Database.SchemaVersion.fromYaml(it)
@@ -221,12 +219,13 @@ class UpdateService(
                 }
             }
 
-            log.info("Update available [${apk.file}]")
-
             this.availableUpdate = ApplicationUpdate(
-                    apk = apk,
+                    apk = ApplicationPackage(file = apkFile),
                     version = apkName.version,
                     schemaVersion = schemaVersion)
+
+            log.info("Update available [${this.availableUpdate}]")
+
 
         } catch (e: Exception) {
             when (e) {

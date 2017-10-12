@@ -59,8 +59,12 @@ class Database(
             }
 
             fun fromYaml(inputStream: InputStream): SchemaVersion
-                = Yaml().loadAs(inputStream, SchemaVersion::class.java)
+                    = Yaml().loadAs(inputStream, SchemaVersion::class.java)
         }
+
+        /** Determine if database schema versions are compatible */
+        fun isCompatibleWith(other: SchemaVersion): Boolean =
+                other.major == this.major
 
         override fun toString(): String = "${major}.${minor}"
     }
@@ -103,8 +107,8 @@ class Database(
 
             log.info("SQLite [${dbLibraryVersion}] schema version [${dbSchemaVersion}] -> [${this.schemaVersion}] ")
 
-            if (dbSchemaVersion.major != this.schemaVersion.major) {
-                log.warn("Major schema update ${dbSchemaVersion} -> ${this.schemaVersion}, removing database file")
+            if (this.schemaVersion.isCompatibleWith(dbSchemaVersion) == false) {
+                log.warn("Incompatible schema update ${dbSchemaVersion} -> ${this.schemaVersion}, removing database file")
                 this.file.delete()
             }
         }

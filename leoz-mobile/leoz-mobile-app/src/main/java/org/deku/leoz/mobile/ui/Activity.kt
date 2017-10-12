@@ -37,6 +37,7 @@ import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
@@ -54,6 +55,7 @@ import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
@@ -79,6 +81,7 @@ import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
+import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTintRes
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
@@ -128,6 +131,8 @@ abstract class Activity : BaseActivity(),
 
     // Process models
     private val login: Login by Kodein.global.lazy.instance()
+    private val db: Database by Kodein.global.lazy.instance()
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
 
@@ -681,8 +686,31 @@ abstract class Activity : BaseActivity(),
                 }
 
         this.updateService.availableUpdateProperty
+                .switchMap { item ->
+                    val update = item.value
+
+                    when {
+                    // No update or update revoked -> pass through
+                        update == null ->
+                            Observable.just(item)
+
+                    // Schema version is compatible or not available -> pass through
+                        update.schemaVersion?.isCompatibleWith(this.db.schemaVersion) ?: true ->
+                            Observable.just(item)
+
+                    // Otherwise check for relevant orders and suppress update if necessary
+                        else -> this.orderRepository.hasRelevanrtOrders()
+                                .map {
+                                    when (it) {
+                                        true -> null
+                                        false -> item
+                                    }
+                                }
+                                .toObservable()
+                    }
+                }
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .subscribeBy(
                         onNext = {
                             it.value?.also { event ->
