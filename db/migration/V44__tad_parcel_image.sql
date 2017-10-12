@@ -10,3 +10,5 @@ CREATE TABLE tad_parcel_image
     ts_taken TIMESTAMP NOT NULL, /* When has the image been created/taken? */
     ts_processed TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL /* When has the image been processed from WorkDirectory to target directory and matched to an parcel. (Creation of the datarow) */
 );
+
+CREATE INDEX tad_parcel_image_parcel_id_index ON tad_parcel_image (parcel_id);
