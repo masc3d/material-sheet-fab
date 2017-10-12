@@ -75,6 +75,7 @@
 -dontwarn org.eclipse.persistence.**
 -dontwarn org.flywaydb.**
 -dontwarn org.ini4j.spi.**
+-dontwarn org.yaml.snakeyaml.**
 -dontwarn org.slf4j.**
 -dontwarn rx.internal.**
 -dontwarn sx.concurrent.**
