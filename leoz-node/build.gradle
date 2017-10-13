@@ -267,6 +267,9 @@ dependencies {
             "com.esotericsoftware:kryo:$v_kryo",
             "de.javakaffee:kryo-serializers:$v_kryo_serializers",
 
+            // joda time (spring-5.0 requirement)
+            "joda-time:joda-time:2.9.9",
+
             // TODO: for testing jinq
             "org.jinq:jinq-jpa:+",
 
