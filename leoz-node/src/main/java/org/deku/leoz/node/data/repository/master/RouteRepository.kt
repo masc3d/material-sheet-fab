@@ -43,17 +43,18 @@ interface RouteRepositoryExtension {
         val validDate = Param(Timestamp::class.java)
     }
 
-    val findRouteQuery: NamedQuery<MstRoute, FindRouteQueryParams>
+    fun getFindRouteQuery(): NamedQuery<MstRoute, FindRouteQueryParams>
 }
 
 class RouteRepositoryImpl : RouteRepositoryExtension {
+
     @Inject
     private lateinit var routeRepository: RouteRepository
 
     @Inject
     private lateinit var entityManager: EntityManager
 
-    override val findRouteQuery by lazy {
+    val _findRouteQuery by lazy {
         NamedQuery(
                 entityManager = entityManager,
                 resultType = MstRoute::class.java,
@@ -75,5 +76,9 @@ class RouteRepositoryImpl : RouteRepositoryExtension {
                             )
                 }
         )
+    }
+
+    override fun getFindRouteQuery(): NamedQuery<MstRoute, RouteRepositoryExtension.FindRouteQueryParams> {
+        return _findRouteQuery
     }
 }
