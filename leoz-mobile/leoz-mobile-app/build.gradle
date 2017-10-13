@@ -8,7 +8,6 @@ buildscript {
 
     dependencies {
         classpath(
-                "com.android.tools.build:gradle:3.0.0-beta6",
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.1",
                 "com.trello:victor:1.0.0",
@@ -55,7 +54,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 26
         versionCode 2
-        versionName "0.89-SNAPSHOT"
+        versionName "0.94-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -82,7 +81,7 @@ android {
     lintOptions {
         abortOnError true
 
-        // TODO lintVitalRelease always fails with 3.0.0-beta6
+        // TODO lintVitalRelease always fails with 3.0.0-beta
         checkReleaseBuilds false
     }
 
@@ -157,11 +156,11 @@ repositories {
 
 dependencies {
     implementation(
-            project(path: ':leoz-mobile-data', configuration: 'default'),
-            project(path: ':sx-android', configuration: 'default'),
-            project(path: ':sx-android-honeywell', configuration: 'default'),
-            project(path: ':material-sheet-fab', configuration: 'default'),
-            project(path: ':camerakit', configuration: 'default'),
+            project(':leoz-mobile-data'),
+            project(':sx-android'),
+            project(':sx-android-honeywell'),
+            project(':material-sheet-fab'),
+            project(':camerakit'),
             'android.arch.lifecycle:runtime:1.0.0',
 
             project(':leoz-common'),
@@ -235,7 +234,7 @@ dependencies {
             'com.journeyapps:zxing-android-embedded:3.5.0',
 
             // YAML
-            "pl.droidsonroids.yaml:snakeyaml:1.18-android",
+            "pl.droidsonroids.yaml:snakeyaml:1.18.2",
 
             // Signature pad
             "com.github.gcacace:signature-pad:1.2.1",
@@ -267,10 +266,6 @@ dependencies {
             "com.github.andrewlord1990:snackbarbuilder:0.9.0",
 
             "com.github.BlacKCaT27:CurrencyEditText:2.0.2",
-
-            // TODO: transitive dependencies not pulled in
-            // Should be pulled in via :material-sheet-fab, but isn't in 3.0.0-beta6
-            "com.github.asyl.animation:arcanimator:1.0.0",
 
             //
             // FOR TESTING
@@ -326,10 +321,6 @@ dependencies {
             // Support-v4 (Anko Layouts)
             "org.jetbrains.anko:anko-support-v4:$v_anko",
 
-            // Anko
-            // TODO: CANARY doesn't pull this transitive dependency (sx-android/mq needs it) resulting in runtime errors with debug builds. proguard will reveal those missing classes when building release
-            "org.jetbrains.anko:anko-sqlite:$v_anko",
-
             "com.fenchtose:tooltip:0.1.5",
             "net.cachapa.expandablelayout:expandablelayout:2.9.2"
     )
@@ -360,7 +351,7 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:3.0.0-beta6"
+            "com.android.databinding:compiler:3.0.0-beta7"
     )
 }
 

@@ -1,12 +1,10 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistRecord
-import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistinfoRecord
 import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
-import org.deku.leoz.central.data.repository.DepotJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.config.Rest
-import org.deku.leoz.node.rest.DefaultProblem
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import javax.inject.Inject
@@ -38,6 +36,7 @@ class DeliveryListService : DeliveryListService {
 
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
+                ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
         val deliveryList: DeliveryListService.DeliveryList
         val deliveryListRecord: TadVDeliverylistRecord?
@@ -47,9 +46,6 @@ class DeliveryListService : DeliveryListService {
                 throw DefaultProblem(
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
-
-        apiKey ?:
-                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
@@ -85,46 +81,34 @@ class DeliveryListService : DeliveryListService {
                                     )
                             ))
                 }
+
         return deliveryList
     }
 
     override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
+                ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
-        val dlInfos: List<TadVDeliverylistRecord>
-        var listInfos = listOf<DeliveryListService.DeliveryListInfo>()
-        when {
+        val authorizedUserRecord = userRepository.findByKey(apiKey)
+                ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+
+        val dlInfos = when {
             deliveryDate != null -> {
-//to be removed if mobile supports apikeys
-                if (apiKey != null) {
-//--<
-                    apiKey ?:
-                            throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-
-                    val authorizedUserRecord = userRepository.findByKey(apiKey)
-                            ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-
-                    listInfos = deliveryListRepository.findInfoByDateDebitorList(deliveryDate.date, authorizedUserRecord.debitorId).map()
-                    {
-                        it.toDeliveryListInfo()
-                    }
-                } else {
-                    val listInfosO = mutableListOf<DeliveryListService.DeliveryListInfo>()
-                    dlInfos = deliveryListRepository.findInfoByDate(deliveryDate.date)
-                    dlInfos.forEach { dl ->
-                        val di: DeliveryListService.DeliveryListInfo = DeliveryListService.DeliveryListInfo(
-                                dl.id.toLong(),
-                                ShortDate(dl.deliveryListDate))
-                        listInfosO.add(di)
-                    }
-                    listInfos = listInfosO.toList()
-                }
+                deliveryListRepository.findInfoByDateDebitorList(
+                        deliveryDate = deliveryDate.date,
+                        debitorId = authorizedUserRecord.debitorId
+                )
             }
             else -> {
-                TODO("Handle other query types here")
+                deliveryListRepository.findInfoByDebitor(
+                        debitorId = authorizedUserRecord.debitorId
+                )
             }
         }
-        return listInfos
+
+        return dlInfos.map {
+            it.toDeliveryListInfo()
+        }
     }
 
     fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList {

@@ -47,7 +47,6 @@ class DeliveryActivity : Activity(),
     private val tones: Tones by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -128,7 +127,7 @@ class DeliveryActivity : Activity(),
             MenuScreen.MenuEntry.Entry.LOADING -> {
                 this.orderRepository.hasOutdatedOrders()
                         .bindToLifecycle(this)
-                        .subscribeOn(schedulers.database)
+                        .subscribeOn(db.scheduler)
                         .observeOnMainThread()
                         .subscribeBy(
                                 onError = {
@@ -146,15 +145,21 @@ class DeliveryActivity : Activity(),
                                                     .negativeText(android.R.string.no)
                                                     .onPositive { _, _ ->
                                                         db.store.withTransaction {
+                                                            log.trace("RESETTING DATA")
                                                             orderRepository.removeAll()
                                                                     .blockingAwait()
                                                         }
                                                                 .toCompletable()
-                                                                .subscribeOn(schedulers.database)
+                                                                .subscribeOn(db.scheduler)
                                                                 .observeOnMainThread()
-                                                                .subscribeBy(onComplete = {
-                                                                    this.showScreen(VehicleLoadingScreen())
-                                                                })
+                                                                .subscribeBy(
+                                                                        onComplete = {
+                                                                            this.showScreen(VehicleLoadingScreen())
+                                                                        },
+                                                                        onError = {
+                                                                            log.error(it.message, it)
+                                                                        }
+                                                                )
                                                     }
                                                     .build().show()
                                         }
@@ -208,7 +213,7 @@ class DeliveryActivity : Activity(),
         if (parcel.state == Parcel.State.MISSING) {
             parcel.state = Parcel.State.LOADED
             parcelRepository.update(parcel as ParcelEntity)
-                    .subscribeOn(schedulers.database)
+                    .subscribeOn(db.scheduler)
                     .subscribe()
         }
 

@@ -1,18 +1,13 @@
 package org.deku.leoz.central.service.internal
 
-import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
-import org.deku.leoz.node.rest.DefaultProblem
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.OrderService.Order
-import org.deku.leoz.ws.gls.shipment.CashService
-import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
-import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -67,6 +62,7 @@ class OrderService : OrderService {
                     authorizedUserRecord ?:
                             throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
                     when {
+//todo include send_date
                         order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId
                         ->
                             throw DefaultProblem(status = Response.Status.FORBIDDEN)
@@ -97,7 +93,7 @@ class OrderService : OrderService {
                 ?: throw DefaultProblem(
                 title = "Order not found",
                 status = Response.Status.NOT_FOUND)
-//to be removed if mobile supports apikeys
+//todo to be removed if mobile supports apikeys
         if (apiKey != null) {
 //--<
             apiKey ?:
@@ -107,6 +103,7 @@ class OrderService : OrderService {
             authorizedUserRecord ?:
                     throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
             when {
+//todo include send_date
                 order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId
                 ->
                     throw DefaultProblem(status = Response.Status.FORBIDDEN)
@@ -135,9 +132,9 @@ class OrderService : OrderService {
             }
         }
     }
-
+//todo include send_date
     fun Order.findOrderDebitorId(pickupDeliver: Type): Int {
-        var station: Long
+        var station: Int
 
         when (pickupDeliver) {
             Type.PICKUP -> station = this.pickupStation
@@ -167,7 +164,7 @@ class OrderService : OrderService {
             o.orderClassification = OrderClassification.PICKUP_DELIVERY
         else
             o.orderClassification = OrderClassification.DELIVERY
-        o.pickupStation = r.pickupStation.toLong()
+        o.pickupStation = r.pickupStation.toInt()
         o.pickupAddress.line1 = r.pickupAddressLine1
         o.pickupAddress.line2 = r.pickupAddressLine2
         o.pickupAddress.line3 = r.pickupAddressLine3
@@ -203,7 +200,7 @@ class OrderService : OrderService {
         o.pickupAppointment.dateEnd = r.appointmentPickupEnd
         o.pickupAppointment.notBeforeStart = r.appointmentPickupNotBeforeStart == 1
 
-        o.deliveryStation = r.deliveryStation.toLong()
+        o.deliveryStation = r.deliveryStation.toInt()
         o.deliveryAddress.line1 = r.deliveryAddressLine1
         o.deliveryAddress.line2 = r.deliveryAddressLine2
         o.deliveryAddress.line3 = r.deliveryAddressLine3

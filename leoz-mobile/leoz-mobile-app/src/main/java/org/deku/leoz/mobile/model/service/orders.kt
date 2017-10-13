@@ -45,7 +45,7 @@ fun OrderService.Order.toOrder(
     }
 }
 
-fun OrderService.Order.Address.toAddress(): Address {
+fun org.deku.leoz.service.internal.entity.Address.toAddress(): Address {
     return Address.create(
             line1 = this.line1 ?: "",
             line2 = this.line2 ?: "",

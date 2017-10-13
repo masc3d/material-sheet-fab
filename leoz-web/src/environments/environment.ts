@@ -5,8 +5,15 @@
 
 export const environment = {
   production: false,
-   apiUrl: 'https://leox.derkurier.de:13000/rs/api', // testing system
+  // apiUrl: 'https://leox.derkurier.de:13000/rs/api', // testing system
   // apiUrl: 'https://leoz.derkurier.de:13000/rs/api', // live system
-  // apiUrl: 'http://localhost:13000/rs/api',          // local system
+  apiUrl: 'http://localhost:13000/rs/api',          // local system
   defLang: 'de',
+  // use "leoz" for produktive environment.
+  // "leo-old" will show the old menustructure for testingpurposes
+  // "leo-old" may be used only on environments which are not reachable by unauthorized users
+  defMenu: 'leo-old',
+  devUser: 'dev@leoz',
+  devPass: 'password',
+  autologin: 'yes',
 };

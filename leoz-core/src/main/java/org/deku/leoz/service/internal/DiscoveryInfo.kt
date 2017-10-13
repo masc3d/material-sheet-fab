@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity.internal.discovery
+package org.deku.leoz.service.internal
 
 import org.deku.leoz.bundle.BundleType
 import sx.io.serialization.Serializable

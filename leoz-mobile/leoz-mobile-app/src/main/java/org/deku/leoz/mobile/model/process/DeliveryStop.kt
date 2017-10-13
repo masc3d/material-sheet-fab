@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.neovisionaries.i18n.CurrencyCode
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -37,7 +38,6 @@ class DeliveryStop(
     override val compositeDisposable = CompositeDisposable()
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
@@ -295,7 +295,7 @@ class DeliveryStop(
     val cashCurrencyCode by lazy {
         this.orders.blockingFirst()
                 .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.currency }
-                .first()
+                .firstOrNull() ?: CurrencyCode.EUR.name
     }
 
     val recipientCountryCode by lazy {
@@ -333,7 +333,7 @@ class DeliveryStop(
                     }
         }
                 .toCompletable()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 
     /**
@@ -387,7 +387,7 @@ class DeliveryStop(
             update(parcel)
         }
                 .toCompletable()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 
     /**
@@ -405,7 +405,7 @@ class DeliveryStop(
             }
         }
                 .toCompletable()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 
     /**
@@ -423,7 +423,7 @@ class DeliveryStop(
             }
         }
                 .toCompletable()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 
 
@@ -529,6 +529,6 @@ class DeliveryStop(
                     )
                     //endregion
                 })
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
     }
 }

@@ -1,8 +1,7 @@
 package org.deku.leoz.node.data.repository.master
 
 import com.google.common.collect.Lists
-import org.deku.leoz.node.data.jpa.MstStation
-import org.deku.leoz.node.data.jpa.QMstStation
+import org.deku.leoz.node.data.jpa.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import javax.inject.Inject
@@ -15,15 +14,18 @@ interface StationRepository :
         JpaRepository<MstStation, Int>,
         QuerydslPredicateExecutor<MstStation>, StationRepositoryExtension
 
+
 interface StationRepositoryExtension {
     fun findWithQuery(query: String): List<MstStation>
     fun findByStation(stationNo: Int): MstStation?
-    //fun findByDebitorid(debitorId: Int): List<MstStation>
+    fun findByStationIds(stationIds: List<Int>): List<MstStation>
 }
 
 class StationRepositoryImpl : StationRepositoryExtension {
     @Inject
     private lateinit var depotRepository: StationRepository
+
+
 
     override fun findWithQuery(query: String): List<MstStation> {
         val token = query.trim { it <= ' ' }
@@ -80,12 +82,13 @@ class StationRepositoryImpl : StationRepositoryExtension {
                 .orElse(null)
     }
 
-    //override fun findByDebitorid(debitorId: Int): List<MstStation> {
-    //    // QueryDSL
-    //    val qStation = QMstStation.mstStation
-    //    val depots = depotRepository.findAll(
-    //            qStation.s
-    //
-    //}
+    override fun findByStationIds(stationIds: List<Int>): List<MstStation> {
+        // QueryDSL
+        //val qStation = QMstStation.mstStation
+
+
+        return depotRepository.findAll(stationIds)
+
+    }
 }
 

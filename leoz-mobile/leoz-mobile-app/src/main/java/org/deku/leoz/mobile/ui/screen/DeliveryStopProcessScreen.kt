@@ -111,7 +111,6 @@ class DeliveryStopProcessScreen :
 
     //region Model classes
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
@@ -152,6 +151,7 @@ class DeliveryStopProcessScreen :
     val pendingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 title = getString(R.string.pending),
@@ -162,6 +162,7 @@ class DeliveryStopProcessScreen :
     val orderSection by lazy {
         SectionViewModel<OrderEntity>(
                 icon = R.drawable.ic_order,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = true,
                 expandOnSelection = true,
@@ -173,6 +174,7 @@ class DeliveryStopProcessScreen :
     val missingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_missing,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 title = getString(R.string.missing),
@@ -688,7 +690,7 @@ class DeliveryStopProcessScreen :
                                         .blockingAwait()
                             }
                                     .toCompletable()
-                                    .subscribeOn(schedulers.database)
+                                    .subscribeOn(db.scheduler)
                                     .subscribeBy(
                                             onError = {
                                                 log.error(it.message, it)
@@ -742,7 +744,7 @@ class DeliveryStopProcessScreen :
                                 parcel.isDamaged = false
 
                                 this.parcelRepository.update(parcel)
-                                        .subscribeOn(schedulers.database)
+                                        .subscribeOn(db.scheduler)
                                         .subscribe()
                             }
                             .show()
@@ -767,7 +769,7 @@ class DeliveryStopProcessScreen :
 
     private fun finalizeStop() {
         this.deliveryStop.finalize()
-                .subscribeOn(schedulers.database)
+                .subscribeOn(db.scheduler)
                 .observeOnMainThread()
                 .subscribeBy(
                         onComplete = {
@@ -888,7 +890,7 @@ class DeliveryStopProcessScreen :
                             parcel = parcel,
                             jpegPictureData = jpeg
                     )
-                            .subscribeOn(schedulers.database)
+                            .subscribeOn(db.scheduler)
                             .subscribe()
                 }
             }

@@ -4,11 +4,10 @@ import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.Stopwatch
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
-import java.io.StringReader
 import java.util.*
-import sx.Stopwatch
 
 /**
  * Created by masc on 06/09/16.
@@ -68,7 +67,7 @@ abstract class SerializerTest(
                     Arrays.equals(this.dobj, o.dobj))
         }
 
-        override fun hashCode(): Int{
+        override fun hashCode(): Int {
             var result = l.hashCode()
             result = 31 * result + s.hashCode()
             result = 31 * result + i
@@ -112,7 +111,7 @@ abstract class SerializerTest(
                     Arrays.equals(this.dobj, o.dobj))
         }
 
-        override fun hashCode(): Int{
+        override fun hashCode(): Int {
             var result = l.hashCode()
             result = 31 * result + s.hashCode()
             result = 31 * result + i
@@ -215,9 +214,9 @@ abstract class SerializerTest(
         serializer.register(TestObjectRefactored1::class.java)
 
         @Suppress("UNCHECKED_CAST")
-        val dobj = serializer.deserializeFrom(sdata) as Array<TestObjectRefactored1>
-
-        Assert.assertTrue(dobj is Array<TestObjectRefactored1>)
+        (serializer.deserializeFrom(sdata) as Array<TestObjectRefactored1>).also {
+            println(it)
+        }
     }
 
     /**
@@ -242,7 +241,10 @@ abstract class SerializerTest(
 
         val obj = TestObject1()
         val sdata = serializer.serializeToByteArray(obj)
-        val json = InputStreamReader(ByteArrayInputStream(sdata)).readText()
+
+        InputStreamReader(ByteArrayInputStream(sdata)).readText().also {
+            println(it)
+        }
     }
 
     @Ignore
@@ -255,8 +257,10 @@ abstract class SerializerTest(
 
             val obj = TestObject1()
             val sdata = serializer.serializeToByteArray(obj)
-            val json = InputStreamReader(ByteArrayInputStream(sdata)).readText()
-            println("${sw}")
+
+            InputStreamReader(ByteArrayInputStream(sdata)).readText().also {
+                println("${sw} ${it}")
+            }
         }
     }
 }

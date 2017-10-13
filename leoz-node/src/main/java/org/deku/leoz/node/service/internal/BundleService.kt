@@ -5,18 +5,17 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
-import org.deku.leoz.node.rest.DefaultProblem
-import org.deku.leoz.service.entity.internal.update.BundleUpdateService
+import sx.rs.DefaultProblem
+import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.BundleServiceV1
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
+import org.zalando.problem.Status
 import sx.packager.BundleRepository
 import sx.platform.OperatingSystem
-import sx.rs.auth.ApiKey
 import java.io.File
-import java.net.URLDecoder
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -73,8 +72,8 @@ open class BundleServiceV1 : BundleServiceV1 {
         if (versionAlias == null) {
             if (nodeKey == null) {
                 val instanceVersionAlias = this.updateConfiguration.versionAlias
-                if (instanceVersionAlias.isNullOrEmpty())
-                    throw IllegalArgumentException("Missing criteria")
+                if (instanceVersionAlias.isEmpty())
+                    throw DefaultProblem(title = "Missing criteria")
 
                 versionAlias = instanceVersionAlias
             } else {
@@ -89,9 +88,9 @@ open class BundleServiceV1 : BundleServiceV1 {
                 .orElse(null)
 
         if (rVersion == null)
-            throw WebApplicationException(
-                    "No version record for bundle [${bundleName}] version alias [${versionAlias}]",
-                    Response.Status.NOT_FOUND)
+            throw DefaultProblem(
+                    title = "No version record for bundle [${bundleName}] version alias [${versionAlias}]",
+                    status = Status.NOT_FOUND)
 
         // Try to determine latest matching bundle version and platforms
         val latestDesignatedVersion = try {
@@ -120,7 +119,10 @@ open class BundleServiceV1 : BundleServiceV1 {
      */
     override fun download(bundleName: String, version: String): Response {
         if (!this.bundleRepository.rsyncModuleUri.isFile())
-            throw WebApplicationException("Bundle repository is not local [${this.bundleRepository.rsyncModuleUri}]")
+            throw DefaultProblem(
+                    title = "Bundle repository is not local [${this.bundleRepository.rsyncModuleUri}]",
+                    status = Status.INTERNAL_SERVER_ERROR
+            )
 
         val downloadFile = File(this.bundleRepository.rsyncModuleUri.uri)
                 .resolve(bundleName)
@@ -131,7 +133,7 @@ open class BundleServiceV1 : BundleServiceV1 {
         if (!downloadFile.exists())
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
-                    detail = "No such file")
+                    title = "No such file")
 
         return Response
                 .ok(downloadFile, MediaType.APPLICATION_OCTET_STREAM)

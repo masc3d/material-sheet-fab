@@ -7,6 +7,8 @@ export class Report extends ReportPart {
   static logoImgType = 'PNG';
 
   name: string;
+  offsetX: number;
+  offsetY: number;
   reportHeader?: ReportPart;
   pageHeader?: ReportPart;
   pageContent?: ReportPart[];
@@ -14,10 +16,12 @@ export class Report extends ReportPart {
   reportFooter?: ReportPart;
   totalPages: number;
 
-  constructor( name: string, reportHeader?: ReportPart, pageHeader?: ReportPart,
+  constructor( name: string, offsetX: number, offsetY: number, reportHeader?: ReportPart, pageHeader?: ReportPart,
                pageContent?: ReportPart[], pageFooter?: ReportPart, reportFooter?: ReportPart ) {
     super();
     this.name = name;
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
     this.reportHeader = reportHeader;
     this.pageHeader = pageHeader;
     this.pageContent = pageContent;
@@ -63,14 +67,15 @@ export class Report extends ReportPart {
 
   generate( doc: jsPDF, startPageNo: number = 1 ): jsPDF {
     let currPageNo = startPageNo;
-    let offsetY = 10;
+    let offsetX = this.offsetX;
+    let offsetY = this.offsetY;
     const pages: ReportPage[] = this.splitIntoPages( doc.internal.pageSize.height );
     this.totalPages = pages.length;
     if (startPageNo > 1) {
       doc.addPage();
     }
     if (this.reportHeader && currPageNo === startPageNo) {
-      doc = this.reportHeader.render( doc, offsetY, currPageNo );
+      doc = this.reportHeader.render( doc, offsetX, offsetY, currPageNo );
       offsetY += this.reportHeader.height;
     }
     pages.forEach( ( reportPage: ReportPage ) => {
@@ -79,22 +84,22 @@ export class Report extends ReportPart {
         offsetY = 10;
       }
       if (this.pageHeader) {
-        doc = this.pageHeader.render( doc, offsetY, currPageNo );
+        doc = this.pageHeader.render( doc, offsetX, offsetY, currPageNo );
         offsetY += this.pageHeader.height;
       }
       if (reportPage.contentParts.length > 0) {
         reportPage.contentParts.forEach( ( content: ReportPart ) => {
-          doc = content.render( doc, offsetY, currPageNo );
+          doc = content.render( doc, offsetX, offsetY, currPageNo );
           offsetY += content.height;
         } );
       }
       if (this.pageFooter) {
-        doc = this.pageFooter.render( doc, offsetY, currPageNo );
+        doc = this.pageFooter.render( doc, offsetX, offsetY, currPageNo );
       }
       currPageNo += 1;
     } );
     if (this.reportFooter) {
-      doc = this.reportFooter.render( doc, offsetY, currPageNo );
+      doc = this.reportFooter.render( doc, offsetX, offsetY, currPageNo );
     }
     return doc;
   }

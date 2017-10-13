@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationListener
+import org.yaml.snakeyaml.Yaml
 import sx.Disposable
 import sx.Dispose
 import sx.JarManifest
@@ -239,8 +240,16 @@ open class Application :
             configLocations.add(this.storage.applicationConfigurationFile.toURI().toURL())
 
             // Log configuration locations
-            configLocations.forEach {
-                log.info("Using configuration location [${it}]")
+            configLocations.forEach { config ->
+                log.info("Using configuration location [${config}]")
+
+                // Verify yml configuration consistency
+                // Prevents an issue in spring, where exceptions during initial configuration parsing results
+                // in a deadlock in {@link org.springframework.boot.autoconfigure;.BackgroundPreinitializer.onApplicationEvent}
+                // when waiting for pre-init to complete. This deadlock will also suppress logging of the causing exception.
+                config.openStream().use {
+                    Yaml().load(it)
+                }
             }
 
             System.setProperty(

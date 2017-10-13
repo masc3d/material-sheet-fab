@@ -293,15 +293,15 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 
         //TODO Sector aus stationsector
 
-        val rStation = stationRepository.findById(rRoute.station).orElse(null)
+        val rStation = stationRepository.findByStation(rRoute.station)
 
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found")
 
-        participant.sector = rStation.sector!!
-        participant.country = rRoute.country!!
+        participant.sector = rStation.sector ?:""
+        participant.country = rRoute.country
         participant.zipCode = queryZipCode
-        participant.term = rRoute.term!!
+        participant.term = rRoute.term ?:1
 
         when (sendDelivery) {
             "S" -> {

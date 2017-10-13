@@ -47,9 +47,9 @@ import java.util.concurrent.TimeUnit
  */
 data class ActionItem(
         @IdRes val id: Int,
-        @ColorRes @JvmField var colorRes: Int? = null,
+        @ColorRes var colorRes: Int? = null,
         @DrawableRes val iconRes: Int? = null,
-        @ColorRes @JvmField var iconTintRes: Int? = null,
+        @ColorRes var iconTintRes: Int? = null,
         val alpha: Float? = null,
         val alignEnd: Boolean = true,
         var visible: Boolean = true,

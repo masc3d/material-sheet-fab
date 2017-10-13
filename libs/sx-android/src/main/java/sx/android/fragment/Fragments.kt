@@ -24,7 +24,7 @@ fun Fragment.removeScrollingExcessHeightWithinViewPager() {
                 this.activity.theme.resolveAttribute(R.attr.actionBarSize, tv, true)
                 val actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
 
-                view?.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, actionBarHeight)
+                view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, actionBarHeight)
             }
         }
     }

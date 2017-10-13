@@ -32,10 +32,10 @@ import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.VehicleLoading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.rx.composeAsRest
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.composeAsRest
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
@@ -44,7 +44,6 @@ import org.deku.leoz.mobile.ui.vm.SectionsAdapter
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.assertAny
-import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
@@ -57,7 +56,6 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
-import java.util.concurrent.ExecutorService
 
 /**
  * Vehicle loading screen
@@ -109,11 +107,9 @@ class VehicleLoadingScreen :
         )
     }
 
-    private val executorService: ExecutorService by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
-    private val schedulers: org.deku.leoz.mobile.rx.Schedulers by Kodein.global.lazy.instance()
 
     private val tones: Tones by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
@@ -152,6 +148,7 @@ class VehicleLoadingScreen :
     val pendingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_format_list_bulleted,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 expandOnSelection = true,
                 title = getString(R.string.pending),
@@ -162,6 +159,7 @@ class VehicleLoadingScreen :
     val missingSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_missing,
+                color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 expandOnSelection = true,
@@ -315,7 +313,7 @@ class VehicleLoadingScreen :
                                 orderRepository.removeAll()
                                         .blockingAwait()
                             }
-                                    .subscribeOn(schedulers.database)
+                                    .subscribeOn(db.scheduler)
                                     .subscribe()
                         }
 
@@ -329,7 +327,7 @@ class VehicleLoadingScreen :
                                             parcelRepository.update(it).blockingGet()
                                         }
                             }
-                                    .subscribeOn(schedulers.database)
+                                    .subscribeOn(db.scheduler)
                                     .subscribe()
                         }
                     }
@@ -444,7 +442,7 @@ class VehicleLoadingScreen :
         //endregion
 
         //region Synthetic inputs
-        run {
+        if (this.debugSettings.syntheticAidcEnabled) {
             // Synthetic inputs for parcels translated live from entity store
             val ovParcels = this.parcelRepository.entitiesProperty
                     .map {
@@ -463,22 +461,27 @@ class VehicleLoadingScreen :
             // Synthetic inputs for delivery lists, retrieved via online service
             val ovDeliveryLists = Observable.fromCallable {
                 val deliveryListService = Kodein.global.instance<DeliveryListService>()
-                deliveryListService.get(ShortDate("2017-08-10"))
+                deliveryListService.get(deliveryDate = null)
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)
                     .doOnError {
                         log.error(it.message, it)
                     }
-                    .map {
+                    .map { dlInfos ->
                         SyntheticInput(
                                 name = "Delivery lists",
-                                entries = it.map {
-                                    SyntheticInput.Entry(
-                                            symbologyType = SymbologyType.Interleaved25,
-                                            data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
-                                    )
-                                }
+                                multipleChoice = true,
+                                entries = dlInfos
+                                        .sortedWith(compareBy({ it.date.date }, { it.id }))
+                                        .map {
+                                            val data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
+                                            SyntheticInput.Entry(
+                                                    symbologyType = SymbologyType.Interleaved25,
+                                                    data = data,
+                                                    name = "${it.date}: ${data}"
+                                            )
+                                        }
                         )
                     }
                     .onErrorResumeNext(Observable.empty())
@@ -656,7 +659,7 @@ class VehicleLoadingScreen :
                                 parcel.isDamaged = false
 
                                 this.parcelRepository.update(parcel)
-                                        .subscribeOn(schedulers.database)
+                                        .subscribeOn(db.scheduler)
                                         .subscribe()
                             }
                             .show()
@@ -689,7 +692,7 @@ class VehicleLoadingScreen :
                                 .onPositive { _, _ ->
                                     parcel.state = Parcel.State.PENDING
                                     this.parcelRepository.update(parcel)
-                                            .subscribeOn(schedulers.database)
+                                            .subscribeOn(db.scheduler)
                                             .subscribe()
                                 }
                                 .show()
@@ -697,7 +700,7 @@ class VehicleLoadingScreen :
                 } else {
                     parcel.state = Parcel.State.LOADED
                     this.parcelRepository.update(parcel)
-                            .subscribeOn(schedulers.database)
+                            .subscribeOn(db.scheduler)
                             .subscribe()
                 }
 
@@ -712,7 +715,7 @@ class VehicleLoadingScreen :
                     parcel = parcel,
                     jpegPictureData = jpeg
             )
-                    .subscribeOn(schedulers.database)
+                    .subscribeOn(db.scheduler)
                     .subscribe()
         }
     }

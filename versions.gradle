@@ -2,7 +2,8 @@ buildscript {
     ext {
         // Required JVM/JDK version. Do not include the '-bxx' suffix of the version, as it may differ across platforms
         v_jvm = '25.131'
-        // Versions
+
+        // masc20171003. 5.15.1 is currently blocked by https://issues.apache.org/jira/browse/AMQ-6831
         v_activemq = '5.15.0'
         v_artemis = '1.5.4'
         v_apache_cxf = '3.2.0'
@@ -26,7 +27,7 @@ buildscript {
         // masc20170922. jersey 2.26 causes `InjectionManagerFactory` not found exception in leoz-ui
         v_jersey = '2.25'
         v_jna = '4.5.0'
-        v_jooq = '3.10.0'
+        v_jooq = '3.10.1'
         v_junit = '4.12'
         v_kotlin = '1.1.51'
         v_kodein = '4.1.0'
@@ -35,12 +36,13 @@ buildscript {
         v_logback = '1.2.3'
         v_paho = '1.1.1'
         v_protostuff = '1.5.3'
-        v_rxjava = '2.1.4'
+        v_rxjava = '2.1.5'
         v_rxjavafx = '2.0.2'
         v_rxkotlin = '2.0.0-RC1'
         v_rxkotlinfx = '2.2.0'
-        v_requery = '1.4.0'
+        v_requery = '1.4.1'
         v_resteasy = '3.1.4.Final'
+        v_rest_problem = '0.20.0'
         v_roaster = '2.20.1.Final'
         v_slf4j = '1.7.25'
         v_snappy = '1.1.2.4'

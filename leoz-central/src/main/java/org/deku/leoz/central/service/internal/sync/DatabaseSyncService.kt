@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal.sync
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.*
+import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.data.repository.master.*
 import org.deku.leoz.node.data.repository.system.PropertyRepository
@@ -56,6 +57,68 @@ constructor(
         }
 
         /**
+         * Convert mysql mst_debitor record to jpa entity
+         * @param ds
+         * @return
+         */
+        private fun convert(ds: MstDebitorRecord): MstDebitor {
+            val s = MstDebitor()
+            s.debitorId = ds.debitorId
+            //some fields would not be synched  s.debitorNr
+            s.tsCreated = ds.tsCreated
+            s.tsUpdated = ds.tsUpdated
+            s.parentId = ds.parentId
+            s.syncId = ds.syncId
+
+            return s
+        }
+
+        /**
+         * Convert mysql mst_debitor_station record to jpa entity
+         * @param ds
+         * @return
+         */
+        private fun convert(ds: MstDebitorStationRecord): MstDebitorStation {
+            val s = MstDebitorStation()
+            s.id = ds.id
+            s.debitorId = ds.debitorId
+            s.stationId = ds.stationId
+            s.tsCreated = ds.tsCreated
+            s.tsUpdated = ds.tsUpdated
+            s.activFrom = ds.activFrom
+            s.activTo = ds.activTo
+            s.syncId = ds.syncId
+
+            return s
+        }
+
+        /**
+         * Convert mysql tad_node_geoposition record to jpa entity
+         * @param ds
+         * @return
+         */
+        private fun convert(ds: TadNodeGeopositionRecord): TadNodeGeoposition {
+            val s = TadNodeGeoposition()
+            s.positionId = ds.positionId
+            s.userId = ds.userId
+            s.nodeId = ds.nodeId
+            s.tsCreated = ds.tsCreated
+            s.tsUpdated = ds.tsUpdated
+            s.latitude = ds.latitude
+            s.longitude = ds.longitude
+            s.positionDatetime = ds.positionDatetime
+            s.speed = ds.speed
+            s.bearing = ds.bearing
+            s.altitude = ds.altitude
+            s.accuracy = ds.accuracy
+            s.vehicleType = ds.vehicleType
+            s.debitorId = ds.debitorId
+            s.syncId = ds.syncId
+
+            return s
+        }
+
+        /**
          * Convert mysql mst_station record to jpa entity
          * @param ds
          * @return
@@ -63,6 +126,7 @@ constructor(
         private fun convert(ds: TbldepotlisteRecord): MstStation {
             val s = MstStation()
 
+            s.stationId = ds.id
             s.stationNr = ds.depotnr
             s.timestamp = ds.timestamp
             s.address1 = ds.firma1
@@ -89,6 +153,8 @@ constructor(
             s.webAddress = ds.webadresse
             s.zip = ds.plz
             s.syncId = ds.syncId
+            s.exportValuablesAllowed = if (ds.valok == 1.toUInteger()) 1 else 0
+            s.exportValuablesWithoutBagAllowed = if (ds.valokWithoutBag == 1) 1 else 0
             return s
         }
 
@@ -260,6 +326,12 @@ constructor(
     private lateinit var routingLayerRepository: RoutingLayerRepository
     @javax.inject.Inject
     private lateinit var stationSectorRepository: StationSectorRepository
+    @javax.inject.Inject
+    private lateinit var geopositionRepository: NodeGeopositionRepository
+    @javax.inject.Inject
+    private lateinit var debitorRepository: DebitorRepository
+    @javax.inject.Inject
+    private lateinit var debitorStationRepository: DebitorStationRepository
 
     init {
         transaction = org.springframework.transaction.support.TransactionTemplate(tx)
@@ -343,6 +415,34 @@ constructor(
                 QMstStationSector.mstStationSector.syncId,
                 { s -> convert(s) },
                 clean)
+
+        this.updateEntities(
+                org.deku.leoz.central.data.jooq.Tables.MST_DEBITOR,
+                org.deku.leoz.central.data.jooq.tables.MstDebitor.MST_DEBITOR.SYNC_ID,
+                debitorRepository,
+                QMstDebitor.mstDebitor,
+                QMstDebitor.mstDebitor.syncId,
+                { s -> convert(s) },
+                clean)
+
+        this.updateEntities(
+                org.deku.leoz.central.data.jooq.Tables.MST_DEBITOR_STATION,
+                org.deku.leoz.central.data.jooq.tables.MstDebitorStation.MST_DEBITOR_STATION.SYNC_ID,
+                debitorStationRepository,
+                QMstDebitorStation.mstDebitorStation,
+                QMstDebitorStation.mstDebitorStation.syncId,
+                { s -> convert(s) },
+                clean)
+
+        this.updateEntities(
+                org.deku.leoz.central.data.jooq.Tables.TAD_NODE_GEOPOSITION,
+                org.deku.leoz.central.data.jooq.tables.TadNodeGeoposition.TAD_NODE_GEOPOSITION.SYNC_ID,
+                geopositionRepository,
+                QTadNodeGeoposition.tadNodeGeoposition,
+                QTadNodeGeoposition.tadNodeGeoposition.syncId,
+                { s -> convert(s) },
+                clean)
+
 
         log.info("Database sync took " + sw.toString())
     }

@@ -12,15 +12,16 @@ apply from: '../common.gradle'
 
 buildscript {
     ext {
-        v_android_buildtools = '26.0.1'
+        v_android_buildtools = '26.0.2'
         v_android_support = '26.1.0'
         v_android_test = '1.0.1'
-        v_xerial_sqlite = '3.20.0'
+        v_xerial_sqlite = '3.20.1'
     }
 
     repositories {
         mavenCentral()
         jcenter()
+        google()
         maven {
             url '../leoz-build/repo'
         }
@@ -30,6 +31,9 @@ buildscript {
     }
 
     dependencies {
+        // masc20171004. as of 3.0.0-beta7, agp must solely be included on root project level to avoid
+        // local project configuration/variant resolution to work properly.
+        classpath "com.android.tools.build:gradle:3.0.0-beta7"
         classpath "sx:sx-ssh:0.1"
         classpath "sx:sx-packager-gradle:0.1"
         classpath "com.github.ben-manes:gradle-versions-plugin:0.15.0"

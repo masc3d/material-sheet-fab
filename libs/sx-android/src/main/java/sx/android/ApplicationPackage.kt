@@ -21,7 +21,7 @@ class ApplicationPackage(
     /**
      * Install APK file
      *
-     * This method is compliant with the new FileProviders introduced in API level 25.
+     * This method is compliant with the new FileProviders introduced in API level 24.
      * https://developer.android.com/reference/android/support/v4/content/FileProvider.html
      * Thus requires `provider` definition in manifest and referring provider paths resource.
      */
@@ -38,7 +38,7 @@ class ApplicationPackage(
         val apkUri: Uri
         var intentFlags: Int = Intent.FLAG_ACTIVITY_NEW_TASK
 
-        if (Build.VERSION.SDK_INT >= 25) {
+        if (Build.VERSION.SDK_INT >= 24) {
             // Use file provider based method
             apkUri = FileProvider.getUriForFile(
                     context,

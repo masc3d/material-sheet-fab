@@ -21,70 +21,70 @@ export class LoadinglistReportingService extends ReportingService {
     this.doc = new jsPDF();
     this.startPageNo = 1;
     listsToPrint.forEach( ( listToPrint: Loadinglist ) => {
-      const reportHeaderRenderFunction = function ( doc: jsPDF, offsetY: number, currPageNo: number, data: any ) {
-          doc.addImage( Report.logoImgData, Report.logoImgType, 140, 4, 53, 19 );
+      const reportHeaderRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
+          doc.addImage( Report.logoImgData, Report.logoImgType, offsetX + 140, offsetY, 53, 19 );
           doc.setFontSize( 16 );
           doc.setFontType( 'bold' );
-          doc.text( `${data[ 'report_loadinglist' ]} ${data[ 'loadlistNo' ]}`, 5, 10 );
+          doc.text( `${data[ 'report_loadinglist' ]} ${data[ 'loadlistNo' ]}`, offsetX, offsetY + 10 );
           doc.setFontSize( 10 );
-          doc.text( `${data[ 'date' ]}: ${data[ 'dateFrom' ]} ${data[ 'to_auf' ]} ${data[ 'dateTo' ]}`, 5, 15 );
+          doc.text( `${data[ 'date' ]}: ${data[ 'dateFrom' ]} ${data[ 'to_auf' ]} ${data[ 'dateTo' ]}`, offsetX, offsetY + 15 );
           doc.setFontSize( 8 );
-          doc.text( `${data[ 'from' ]}: ${data[ 'loadingAddress' ]}`, 5, 19 );
-          doc.text( `${data[ 'to_nach' ]}: ${data[ 'hubAddress' ]}`, 5, 22 );
+          doc.text( `${data[ 'from' ]}: ${data[ 'loadingAddress' ]}`, offsetX, offsetY + 19 );
+          doc.text( `${data[ 'to_nach' ]}: ${data[ 'hubAddress' ]}`, offsetX, offsetY + 22 );
 
           doc.setDrawColor( 0 );
           doc.setFillColor( 245, 245, 245 );
-          doc.rect( 5, 25, 190, 14, 'FD' );
+          doc.rect( offsetX, offsetY + 25, 190, 14, 'FD' );
 
-          doc.text( `${data[ 'total_CountShipments' ]}`, 6, 29 );
-          doc.text( `${data[ 'shipmentCount' ]}`, 75, 29 );
-          doc.text( `${data[ 'total_CountPackages' ]}`, 6, 33 );
-          doc.text( `${data[ 'packageCount' ]}`, 75, 33 );
-          doc.text( `${data[ 'total_Weight' ]}`, 6, 37 );
-          doc.text( `${data[ 'totalWeight' ]} Kg`, 75, 37 );
+          doc.text( `${data[ 'total_CountShipments' ]}`, offsetX + 1, offsetY + 29 );
+          doc.text( `${data[ 'shipmentCount' ]}`, offsetX + 70, offsetY + 29 );
+          doc.text( `${data[ 'total_CountPackages' ]}`, offsetX + 1, offsetY + 33 );
+          doc.text( `${data[ 'packageCount' ]}`, offsetX + 70, offsetY + 33 );
+          doc.text( `${data[ 'total_Weight' ]}`, offsetX + 1, offsetY + 37 );
+          doc.text( `${data[ 'totalWeight' ]} Kg`, offsetX + 70, offsetY + 37 );
 
           doc.setDrawColor( 0 );
           doc.setFillColor( 245, 245, 245 );
-          doc.rect( 5, 45, 190, 6, 'FD' );
+          doc.rect( offsetX, offsetY + 45, 190, 6, 'FD' );
 
           doc.setFontSize( 10 );
-          doc.text( `${data[ 'totalPackagesToTransport' ]}:`, 6, 49 );
+          doc.text( `${data[ 'totalPackagesToTransport' ]}:`, offsetX + 1, offsetY + 49 );
           return doc;
         },
-        reportFooterRenderFunction = function ( doc: jsPDF, offsetY: number, currPageNo: number, data: any ) {
+        reportFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
           offsetY += 5;
           doc.setFontSize( 10 );
           doc.setFontType( 'bold' );
-          doc.text( `${data[ 'nameOfDriver' ]}:`, 5, offsetY ); // 150
+          doc.text( `${data[ 'nameOfDriver' ]}:`, offsetX, offsetY ); // 150
           doc.setLineWidth( 0.25 );
-          doc.line( 40, offsetY, 100, offsetY );
-          doc.text( `${data[ 'licensePlate' ]}:`, 110, offsetY );
-          doc.line( 145, offsetY, 195, offsetY );
+          doc.line( offsetX + 35, offsetY, offsetX + 95, offsetY );
+          doc.text( `${data[ 'licensePlate' ]}:`, offsetX + 105, offsetY );
+          doc.line( offsetX + 140, offsetY, offsetX + 190, offsetY );
 
           offsetY += 8;
-          doc.text( `${data[ 'printing_Date_Short' ]}`, 23, offsetY );
+          doc.text( `${data[ 'printing_Date_Short' ]}`, offsetX + 18, offsetY );
 
           offsetY += 2;
-          doc.text( `${data[ 'loadingDate' ]}:`, 5, offsetY );
-          doc.line( 20, offsetY, 50, offsetY );
-          doc.text( `${data[ 'loadingTime' ]}:`, 60, offsetY );
-          doc.line( 75, offsetY, 100, offsetY );
-          doc.text( `${data[ 'signature' ]}:`, 110, offsetY );
-          doc.line( 135, offsetY, 195, offsetY );
+          doc.text( `${data[ 'loadingDate' ]}:`, offsetX, offsetY );
+          doc.line( offsetX + 15, offsetY, offsetX + 45, offsetY );
+          doc.text( `${data[ 'loadingTime' ]}:`, offsetX + 55, offsetY );
+          doc.line( offsetX + 70, offsetY, offsetX + 95, offsetY );
+          doc.text( `${data[ 'signature' ]}:`, offsetX + 105, offsetY );
+          doc.line( offsetX + 130, offsetY, offsetX + 190, offsetY );
 
           offsetY += 5;
-          doc.text( `${data[ 'llDriver' ]}`, 110, offsetY );
+          doc.text( `${data[ 'llDriver' ]}`, offsetX + 105, offsetY );
           return doc;
         },
-        pageFooterRenderFunction = function ( doc: jsPDF, offsetY: number, currPageNo: number, data: any ) {
+        pageFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
           doc.setFontSize( 10 );
           doc.setFontType( 'bold' );
-          doc.text( `${data[ 'printingDate' ]}: ${data[ 'printing_Date_Long' ]}`, 5, 285 );
-          doc.text( `${data[ 'page' ]}: ${currPageNo}`, 190, 285 );
+          doc.text( `${data[ 'printingDate' ]}: ${data[ 'printing_Date_Long' ]}`, offsetX, 285 );
+          doc.text( `${data[ 'page' ]}: ${currPageNo}`, offsetX + 175, 285 );
           return doc;
         },
-        report = new Report( 'loadinglist-report',
-          new ReportPart( 47, reportHeaderRenderFunction,
+        report = new Report( 'loadinglist-report', 10, 10,
+          new ReportPart( 57, reportHeaderRenderFunction,
             {
               report_loadinglist: this.translate.instant( 'report_loadinglist' ),
               date: this.translate.instant( 'date' ),
@@ -162,23 +162,23 @@ export class LoadinglistReportingService extends ReportingService {
     const calcHeight = function ( packCount: number ) {
         return 8 + (4 * Math.ceil( packCount / 5 ));
       },
-      stationPartRenderFunction = function ( doc: jsPDF, offsetY: number, currPageNo: number, data: any ) {
+      stationPartRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
         const station: string = data.station,
           packs: Package[] = data.packs;
         let packageCounter = 0;
 
         doc.setFontSize( 8 );
         doc.setFontType( 'bold' );
-        doc.text( `St: ${station}`, 5, offsetY );
+        doc.text( `St: ${station}`, offsetX, offsetY );
 
         doc.setFontType( 'normal' );
         offsetY += 4;
         packs.forEach( ( p: Package ) => {
           const offsetXFactor = packageCounter % 5,
-            offsetX = 37;
-          doc.text( `${p.packageId}`, 5 + (offsetX * offsetXFactor), offsetY );
-          doc.text( `Kg:`, 25 + (offsetX * offsetXFactor), offsetY );
-          doc.text( `${p.weight}`, 30 + (offsetX * offsetXFactor), offsetY );
+            innerOffsetX = 37;
+          doc.text( `${p.packageId}`, offsetX + (innerOffsetX * offsetXFactor), offsetY );
+          doc.text( `Kg:`, offsetX + 20 + (innerOffsetX * offsetXFactor), offsetY );
+          doc.text( `${p.weight}`, offsetX + 25 + (innerOffsetX * offsetXFactor), offsetY );
           packageCounter += 1;
           if (packageCounter % 5 === 0) {
             offsetY += 4;

@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile
 
 /**
+ * Location settings
  * Created by phpr on 11.07.2017.
  */
 @sx.ConfigurationMapPath("location")

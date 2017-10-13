@@ -10,12 +10,14 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
+import sx.rx.ObservableRxProperty
 import sx.time.TimeSpan
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
@@ -33,6 +35,11 @@ class StopViewModel(
 
     private val context: Context by Kodein.global.lazy.instance()
 
+    private val editModeProperty = ObservableRxProperty(false)
+    var editMode by editModeProperty
+
+    var editModeField = this.editModeProperty.map { it.value }.toField()
+
     /**
      * Merge tick event with a static, so it ticks once initially to avoid deferred rendering
      */
@@ -44,6 +51,28 @@ class StopViewModel(
     val timeFormat: SimpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     val address = AddressViewModel(stop.address)
+
+    val addressLine2Visible by lazy {
+        Observable.combineLatest(
+                this.editModeProperty.map { it.value },
+                Observable.just(address.hasAddressLine2),
+                BiFunction { editMode: Boolean, hasAddressLine2: Boolean ->
+                    !editMode && hasAddressLine2
+                }
+        )
+                .toField()
+    }
+
+    val addressLine3Visible by lazy {
+        Observable.combineLatest(
+                this.editModeProperty.map { it.value },
+                Observable.just(address.hasAddressLine3),
+                BiFunction { editMode: Boolean, hasAddressLine2: Boolean ->
+                    !editMode && hasAddressLine2
+                }
+        )
+                .toField()
+    }
 
     /** The actual appointment date is always displayed as today */
     private val appointmentDate by lazy { Date() }
@@ -93,6 +122,11 @@ class StopViewModel(
         this.services.count() > 0
     }
 
+    val isStatusBarVisible by lazy {
+        this.editModeProperty.map { !it.value }
+                .toField()
+    }
+
     //region Clock
     @get:ColorInt
     val clockColor: Int
@@ -118,12 +152,14 @@ class StopViewModel(
     }
 
     val isCountdownVisible: ObservableField<Boolean> by lazy {
-        countdownTimespan.map { stop.appointmentState != AppointmentState.NONE }
-                .toField()
-    }
+        Observable.combineLatest(
+                this.editModeProperty.map { it.value },
+                countdownTimespan.map { stop.appointmentState != AppointmentState.NONE },
+                BiFunction { editMode: Boolean, state: Boolean ->
+                    !editMode && state
+                }
+        )
 
-    val isCountdownExpired: ObservableField<Boolean> by lazy {
-        countdownTimespan.map { stop.appointmentState == AppointmentState.OVERDUE }
                 .toField()
     }
 

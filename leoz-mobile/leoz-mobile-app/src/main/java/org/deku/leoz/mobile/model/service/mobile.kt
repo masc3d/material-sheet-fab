@@ -5,8 +5,8 @@ import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.SystemInformation
-import org.deku.leoz.mobile.create
+import org.deku.leoz.mobile.device.SystemInformation
+import org.deku.leoz.mobile.device.create
 import org.deku.leoz.service.internal.NodeServiceV1
 import sx.android.Device
 

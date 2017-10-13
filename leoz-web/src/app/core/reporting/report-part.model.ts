@@ -12,9 +12,9 @@ export class ReportPart {
     this.renderData = renderData || null;
   }
 
-  render(doc: jsPDF, offsetY: number, currPageNo: number): jsPDF {
-    return this.renderer && this.renderData ? this.renderer(doc, offsetY, currPageNo, this.renderData) : doc;
+  render(doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number): jsPDF {
+    return this.renderer && this.renderData ? this.renderer(doc, offsetX, offsetY, currPageNo, this.renderData) : doc;
   }
 }
 
-type ReportPartRendererFn = (doc: jsPDF, offsetY: number, currPageNo: number, data: any) => jsPDF;
+type ReportPartRendererFn = (doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any) => jsPDF;

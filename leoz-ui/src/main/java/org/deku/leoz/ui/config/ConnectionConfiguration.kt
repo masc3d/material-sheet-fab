@@ -3,7 +3,7 @@ package org.deku.leoz.ui.config
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.service.entity.internal.discovery.DiscoveryInfo
+import org.deku.leoz.service.internal.DiscoveryInfo
 import org.deku.leoz.service.internal.DiscoveryService
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.PublishSubject
@@ -44,7 +44,7 @@ class ConnectionConfiguration {
     // Events
     private val _nodeUpdatedEvent = PublishSubject.create<NodeUpdatedEvent>()
     /** Node update event */
-    val nodeUpdatdEvent by lazy { _nodeUpdatedEvent.hide() }
+    val nodeUpdatedEvent by lazy { _nodeUpdatedEvent.hide() }
 
     /**
      * Active node that services should connect to

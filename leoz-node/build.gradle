@@ -19,7 +19,6 @@ buildscript {
         v_aspectj = '1.8.11'
         v_querydsl = '4.1.4'
         v_jaxb = '2.3.0'
-        v_rest_problem = '0.20.0'
     }
 
     dependencies {
@@ -256,6 +255,9 @@ dependencies {
 
             // pdfbox
             "org.apache.pdfbox:pdfbox:2.0.7",
+
+            // Tika, content analysis framework
+            "org.apache.tika:tika-core:1.16",
 
             // hawt.io
             "io.hawt:hawtio-springboot:2.0.0",

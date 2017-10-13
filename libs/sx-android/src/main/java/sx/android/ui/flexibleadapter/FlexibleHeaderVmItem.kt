@@ -24,10 +24,12 @@ class FlexibleHeaderVmItem<VM>(
         @AnyRes variable: Int,
         viewModel: VM,
         val blurRadius: Float = 1F
-)
-    :
+) :
         IHeader<FlexibleVmHolder>,
-        FlexibleSectionableVmItem<VM>(view, variable, viewModel) {
+        FlexibleSectionableVmItem<VM>(
+                view = view,
+                variable = variable,
+                viewModel = viewModel) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -55,6 +57,9 @@ class FlexibleHeaderVmItem<VM>(
                     .blurRadius(this.blurRadius)
         }
 
-        return FlexibleVmHolder(view, adapter, true)
+        return FlexibleVmHolder(
+                view = view,
+                adapter = adapter,
+                isStickyHeader = true)
     }
 }

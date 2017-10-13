@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile
 
 import android.content.Context
+import io.reactivex.Scheduler
 import io.requery.Persistable
 import io.requery.android.database.sqlite.SQLiteDatabase
 import io.requery.android.sqlitex.SqlitexDatabaseSource
@@ -11,6 +12,10 @@ import io.requery.sql.KotlinEntityDataStore
 import io.requery.sql.TableCreationMode
 import org.deku.leoz.mobile.model.entity.Models
 import org.slf4j.LoggerFactory
+import org.yaml.snakeyaml.Yaml
+import sx.android.requery.sqliteVersion
+import sx.io.serialization.Serializable
+import java.io.InputStream
 
 /**
  * Database
@@ -18,29 +23,29 @@ import org.slf4j.LoggerFactory
  * @param context
  * @param name Database name
  * @param clean Remove database prior to initialization
+ * @param scheduler The scheduler to use for database operations
  */
 class Database(
         val context: Context,
         val name: String,
-        val clean: Boolean = false) {
+        val clean: Boolean = false,
+        val scheduler: Scheduler
+) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
-        /**
-         * Schema version. Must be increased on entity model changes.
-         * Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
-         * Major increases indicate breaking changes and will reset the database on migration
-         */
-        val SCHEMA_VERSION = SchemaVersion(major = 6, minor = 2)
+        /** Asset file containing database metainfo, eg. schema version */
+        val ASSET_DATABASE = "database-schema.yml"
     }
 
     /**
      * Database schema version
      */
+    @Serializable
     data class SchemaVersion(
-            val major: Int,
-            val minor: Int
+            var major: Int = 0,
+            var minor: Int = 0
     ) {
         val sqliteVersion by lazy { major * MAJOR_BASE + minor }
 
@@ -54,9 +59,25 @@ class Database(
                         minor = sqliteVersion.rem(MAJOR_BASE)
                 )
             }
+
+            fun fromYaml(inputStream: InputStream): SchemaVersion
+                    = Yaml().loadAs(inputStream, SchemaVersion::class.java)
         }
 
+        /** Determine if database schema versions are compatible */
+        fun isCompatibleWith(other: SchemaVersion): Boolean =
+                other.major == this.major
+
         override fun toString(): String = "${major}.${minor}"
+    }
+
+    /**
+     * Schema version, loaded lazily from assets
+     */
+    val schemaVersion: SchemaVersion by lazy {
+        this.context.assets.open(ASSET_DATABASE).use {
+            SchemaVersion.fromYaml(it)
+        }
     }
 
     /**
@@ -82,13 +103,14 @@ class Database(
 
         if (this.file.exists()) {
             val db = SQLiteDatabase.openOrCreateDatabase(this.file.toString(), null)
-            val schemaVersion = SchemaVersion.parse(db.version)
+            val dbSchemaVersion = SchemaVersion.parse(db.version)
+            val dbLibraryVersion = db.sqliteVersion
             db.close()
 
-            log.info("Current database schema version [${schemaVersion}]")
+            log.info("SQLite [${dbLibraryVersion}] schema version [${dbSchemaVersion}] -> [${this.schemaVersion}] ")
 
-            if (schemaVersion.major != SCHEMA_VERSION.major) {
-                log.warn("Major schema update ${schemaVersion} -> ${SCHEMA_VERSION}, removing database file")
+            if (this.schemaVersion.isCompatibleWith(dbSchemaVersion) == false) {
+                log.warn("Incompatible schema update ${dbSchemaVersion} -> ${this.schemaVersion}, removing database file")
                 this.file.delete()
             }
         }
@@ -97,7 +119,7 @@ class Database(
                 this.context,
                 Models.DEFAULT,
                 this.name,
-                SCHEMA_VERSION.sqliteVersion
+                this.schemaVersion.sqliteVersion
         ) {
 
             override fun onDowngrade(db: io.requery.android.database.sqlite.SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -125,6 +147,12 @@ class Database(
                                 .build()
                 )
                 super.onConfigure(builder)
+            }
+
+            override fun onConfigure(db: SQLiteDatabase) {
+                super.onConfigure(db)
+                // TODO: workaround for requery bug #698 and #644 (disabling foreign key constraints)
+                db.setForeignKeyConstraintsEnabled(false)
             }
         }
 

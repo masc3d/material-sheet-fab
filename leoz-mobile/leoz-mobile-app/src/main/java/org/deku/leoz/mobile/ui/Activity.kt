@@ -9,7 +9,6 @@ import android.graphics.drawable.TransitionDrawable
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.support.annotation.StringRes
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
@@ -56,6 +55,7 @@ import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
@@ -81,7 +81,6 @@ import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
-import sx.android.isConnectivityProblem
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTintRes
 import sx.mq.mqtt.MqttDispatcher
@@ -132,6 +131,8 @@ abstract class Activity : BaseActivity(),
 
     // Process models
     private val login: Login by Kodein.global.lazy.instance()
+    private val db: Database by Kodein.global.lazy.instance()
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
 
@@ -365,6 +366,8 @@ abstract class Activity : BaseActivity(),
                 .subscribe {
                     this.onForeground()
                 }
+
+        this.onForeground()
     }
 
 
@@ -440,17 +443,49 @@ abstract class Activity : BaseActivity(),
 
         // Handle dynamically generated ids
         if (id >= MENU_ID_DEV_BASE && id < MENU_ID_DEV_MAX) {
+
+            //region Synthetic input support
             val syntheticInputs = this.syntheticInputs.get(id - MENU_ID_DEV_BASE)
 
             MaterialDialog.Builder(this)
                     .title(syntheticInputs.name)
                     .inputType(InputType.TYPE_CLASS_TEXT)
-                    .items(*syntheticInputs.entries.map { it.data }.toTypedArray())
-                    .itemsCallback { _, _, _, charSequence ->
-                        simulatingAidcReader.emit(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25)
-                    }
+                    .items(*syntheticInputs.entries.map { it.name }.toTypedArray())
                     .cancelable(true)
+                    .also {
+                        when (syntheticInputs.multipleChoice) {
+                            false -> it
+                                    .itemsCallback { _, _, position, charSequence ->
+                                        syntheticInputs.entries.get(position).also {
+                                            simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                        }
+                                    }
+                            true -> it
+                                    .autoDismiss(false)
+                                    .positiveText(android.R.string.ok)
+                                    .itemsCallbackMultiChoice(null, { _, _, _ ->
+                                        true
+                                    })
+                                    .onPositive { dialog, which ->
+                                        dialog.selectedIndices?.forEach { position ->
+                                            syntheticInputs.entries.get(position).also {
+                                                simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                            }
+                                        }
+                                        dialog.dismiss()
+                                    }
+                                    .negativeText(android.R.string.selectAll)
+                                    .onNegative { dialog, which ->
+                                        if (dialog.selectedIndices?.isEmpty() ?: true) {
+                                            dialog.selectAllIndices()
+                                        } else {
+                                            dialog.clearSelectedIndices()
+                                        }
+                                    }
+                        }
+                    }
                     .show()
+            //endregion
 
             return true
         }
@@ -563,8 +598,8 @@ abstract class Activity : BaseActivity(),
                             ActionItem(
                                     id = R.id.action_aidc_keyboard,
                                     colorRes = AIDC_ACTION_ITEM_COLOR,
-                                    iconTintRes = AIDC_ACTION_ITEM_TINT,
-                                    iconRes = R.drawable.ic_keyboard
+                                    iconRes = R.drawable.ic_keyboard,
+                                    iconTintRes = AIDC_ACTION_ITEM_TINT
                             )
                     )
                 }
@@ -657,8 +692,8 @@ abstract class Activity : BaseActivity(),
                                 ActionItem(
                                         id = R.id.action_aidc_camera,
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
-                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         iconRes = R.drawable.ic_barcode,
+                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         visible = this.aidcReader.enabled,
                                         alignEnd = false
                                 )
@@ -669,8 +704,8 @@ abstract class Activity : BaseActivity(),
                                 ActionItem(
                                         id = R.id.action_aidc_keyboard,
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
-                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         iconRes = R.drawable.ic_keyboard,
+                                        iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         visible = this.aidcReader.enabled,
                                         alignEnd = false
                                 )
@@ -680,20 +715,47 @@ abstract class Activity : BaseActivity(),
                     this.uxActionOverlay.items = items
                 }
 
-        this.updateService.availableUpdateEvent
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onNext = { event ->
-                            this.snackbarBuilder
-                                    .message(this@Activity.getString(R.string.version_available, event.version))
-                                    .duration(Snackbar.LENGTH_INDEFINITE)
-                                    .actionText(R.string.update)
-                                    .actionClickListener {
-                                        event.apk.install(this@Activity)
+        this.updateService.availableUpdateProperty
+                .switchMap { item ->
+                    val update = item.value
+
+                    when {
+                    // No update or update revoked -> pass through
+                        update == null ->
+                            Observable.just(item)
+
+                    // Schema version is compatible or not available -> pass through
+                        update.schemaVersion?.isCompatibleWith(this.db.schemaVersion) ?: true ->
+                            Observable.just(item)
+
+                    // Otherwise check for relevant orders and suppress update if necessary
+                        else -> this.orderRepository.hasRelevantOrders()
+                                .subscribeOn(db.scheduler)
+                                .map {
+                                    when (it) {
+                                        true -> null
+                                        false -> item
                                     }
-                                    .build().show()
-                        })
+                                }
+                                .toObservable()
+                    }
+                }
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribeBy(
+                        onNext = {
+                            it.value?.also { event ->
+                                this.snackbarBuilder
+                                        .message(this@Activity.getString(R.string.version_available, event.version))
+                                        .duration(Snackbar.LENGTH_INDEFINITE)
+                                        .actionText(R.string.update)
+                                        .actionClickListener {
+                                            event.apk.install(this@Activity)
+                                        }
+                                        .build().show()
+                            }
+                        }
+                )
 
 
         // Authentication changes
@@ -964,7 +1026,7 @@ abstract class Activity : BaseActivity(),
      */
     private fun onForeground() {
         // Check developer settings
-        if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
+        if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
             MaterialDialog.Builder(this)
                     .title(getString(R.string.dialog_title_developer_enabled))
                     .content(getString(R.string.dialog_text_developer_enabled))
@@ -976,6 +1038,18 @@ abstract class Activity : BaseActivity(),
                     }
                     .onNegative { _, _ -> this.finishAffinity() }
                     .cancelable(false)
+                    .show()
+        }
+
+        if (!device.mobileDateEnabled) {
+            MaterialDialog.Builder(this)
+                    .title("Mobile-Data disabled")
+                    .content("Mobile-Data are disabled! To continue you must enable Mobile-Data")
+                    .neutralText(R.string.ok)
+                    .cancelable(false)
+                    .onNeutral { _, _ ->
+                        this.finishAffinity()
+                    }
                     .show()
         }
 
@@ -1002,36 +1076,4 @@ abstract class Activity : BaseActivity(),
                     .show()
         }
     }
-}
-
-/**
- * Extension method for easily binding observable lifecycle to activity progress indicator
- */
-fun <T> Observable<T>.composeWithActivityProgress(activity: Activity): Observable<T> {
-    return this
-            .doOnSubscribe {
-                activity.progressIndicator.show()
-            }
-            .doFinally {
-                activity.progressIndicator.hide()
-            }
-}
-
-fun <T> Observable<T>.composeAsRest(activity: Activity, @StringRes errorMessage: Int = 0): Observable<T> {
-    return this
-            .observeOnMainThread()
-            .composeWithActivityProgress(activity)
-            .doOnError {
-                if (errorMessage != 0) {
-                    activity.snackbarBuilder
-                            .message(
-                                    if (it.isConnectivityProblem)
-                                        R.string.error_connectivity
-                                    else
-                                        errorMessage
-                            )
-                            .duration(Snackbar.LENGTH_LONG)
-                            .build().show()
-                }
-            }
 }

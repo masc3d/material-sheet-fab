@@ -27,8 +27,8 @@ class RetryTest {
                         println("Error ${it}")
                     }
                     .retryWith(2,
-                            { retry, error ->
-                                println("Retry attempt ${retry} ${error}")
+                            { retry, e ->
+                                println("Retry attempt ${retry} ${e}")
                                 Observable.timer(1, TimeUnit.SECONDS)
                             })
                     .blockingSubscribe({}, {

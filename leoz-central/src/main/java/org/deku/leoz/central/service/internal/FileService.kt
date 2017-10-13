@@ -3,6 +3,8 @@ package org.deku.leoz.central.service.internal
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.net.MediaType
 import kotlinx.support.jdk7.use
+import org.apache.tika.mime.MimeType
+import org.apache.tika.mime.MimeTypes
 import org.deku.leoz.node.Storage
 import org.deku.leoz.service.internal.FileServiceV1
 import org.slf4j.LoggerFactory
@@ -61,7 +63,7 @@ class FileServiceV1 :
         val fileUid = message.fileUid ?:
                 throw IllegalArgumentException("File UID must not be null")
 
-        val mimeType = MediaType.parse(message.mimeType ?:
+        val mimeType = MimeTypes.getDefaultMimeTypes().forName(message.mimeType ?:
                 throw IllegalArgumentException("Mime type must not be null")
         )
 
@@ -80,7 +82,7 @@ class FileServiceV1 :
 
         // File names/extensions
 
-        val extension = mimeType.subtype()
+        val extension = mimeType.extension
         val filename = "${fileUid}.${extension}"
         val metaFilename = "${fileUid}.${extension}.meta"
         val tempFilename = "${fileUid}.${extension}.temp"

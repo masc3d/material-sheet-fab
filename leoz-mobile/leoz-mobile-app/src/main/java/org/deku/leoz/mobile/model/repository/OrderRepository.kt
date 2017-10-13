@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.model.repository
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.model.entity.Order
@@ -33,7 +34,7 @@ class OrderRepository(
                     .get().observable().firstElement()
 
     /**
-     * Find oldest order creation time
+     * Determine if repository has outdated orders
      */
     fun hasOutdatedOrders(): Single<Boolean> {
         val MAX_AGE_HOURS = 20
@@ -42,12 +43,24 @@ class OrderRepository(
                 .get()
                 .scalar<Date>()
                 .map {
-                    log.trace("HERE1.1")
                     it.plusHours(MAX_AGE_HOURS) < Date()
                 }
-                .doOnSuccess { log.trace("HERE2") }
                 .defaultIfEmpty(false)
                 .toSingle()
+    }
+
+    /**
+     * Determine if repository has relevant orders.
+     * The result will be true if there's orders, but no outdated ones.
+     */
+    fun hasRelevantOrders(): Single<Boolean> {
+        return Single.zip(
+                this.hasOutdatedOrders(),
+                store.count(OrderEntity::class).get().single().map { it > 0 },
+                BiFunction { hasOutdatedOrders: Boolean, hasOrders: Boolean ->
+                    hasOrders && !hasOutdatedOrders
+                }
+        )
     }
 
     /**

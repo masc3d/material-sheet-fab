@@ -4,7 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.SddContzipRecord
 import org.deku.leoz.central.data.jooq.tables.records.SddFpcsOrderRecord
-import org.deku.leoz.node.rest.DefaultProblem
+import sx.rs.DefaultProblem
 import org.deku.leoz.service.zalando.entity.DeliveryOption
 import org.deku.leoz.service.zalando.entity.DeliveryOrder
 import org.deku.leoz.service.zalando.entity.NotifiedDeliveryOrder
@@ -13,7 +13,6 @@ import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.rs.auth.ApiKey
 import sx.time.*
 import java.text.SimpleDateFormat
 import java.util.*

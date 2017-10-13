@@ -13,4 +13,7 @@
     <table name="mst_station" uid="0x1f6229f711c472" />
     <table name="mst_station_sector" uid="0x0d1eaebfd81899" />
     <table name="sys_property" uid="0xaa946790064006" />
+    <table name="tad_node_geoposition" uid="0xaa946790064007" />
+    <table name="mst_debitor_station" uid="0xaa946790064008" />
+    <table name="mst_debitor" uid="0xaa946790064009" />
 </tables>
