@@ -93,14 +93,14 @@ interface ParcelServiceV1 {
     @ApiOperation(value = "Get parcels to export")
     fun getParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
-    ): List<Long>
+    ): List<ParcelServiceV1.Order2Export>
 
     @GET
     @Path("/export/loaded/{$STATION_NO}")
     @ApiOperation(value = "Get loaded parcels to export")
     fun getLoadedParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
-    ): List<Long>
+    ): List<ParcelServiceV1.Order2Export>
 
     @GET
     @Path("/loadinglist/new")
@@ -110,9 +110,9 @@ interface ParcelServiceV1 {
     @GET
     @Path("/loadinglist/{$LOADINGLIST_NO}")
     @ApiOperation(value = "Get parcels by loadinglist")
-    fun getParcelsByLoadingList(
+    fun getParcels2ExportByLoadingList(
             @PathParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist number", example = "300005", required = true) loadinglistNo: Long
-    ): List<ParcelServiceV1.Order>
+    ): List<ParcelServiceV1.Order2Export>
 
     @PUT
     @Path("/export")
@@ -123,22 +123,22 @@ interface ParcelServiceV1 {
             @QueryParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist no",required = true) loadingListNo: Long
     ): Boolean
 
-    data class Order(
+    data class Order2Export(
             var orderId: Long = 0,
             var deliveryAddress: Address = Address(),
             var deliveryStation: Int = 0,
-            var shipmentDate: Date,
-            var parcels: List<Parcel> = listOf()
+            var shipmentDate: java.sql.Date,
+            var parcels: List<Parcel2Export> = listOf()
 
             )
-    data class Parcel(
+    data class Parcel2Export(
             var orderId: Long=0,
             var parcelNo: Long=0,
             var parcelPosition:Int=0,
             var loadinglistNo:Long?=null,
             var typeOfPackaging:Int=0,
             var realWeight:Double=0.0,
-            var dateOfStationOut:Date,
+            var dateOfStationOut:java.sql.Date,
             var cReference:String?=null
     )
 }

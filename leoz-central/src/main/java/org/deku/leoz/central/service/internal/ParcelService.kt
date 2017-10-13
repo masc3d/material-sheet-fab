@@ -423,7 +423,7 @@ open class ParcelServiceV1 :
 
     }
 
-    override fun getParcels2ExportByStationNo(stationNo: Int): List<Long> {
+    override fun getParcels2ExportByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -434,21 +434,21 @@ open class ParcelServiceV1 :
 
     }
 
-    override fun getParcelsByLoadingList(loadinglistNo: Long): List<ParcelServiceV1.Order> {
+    override fun getParcels2ExportByLoadingList(loadinglistNo: Long): List<ParcelServiceV1.Order2Export> {
         val parcels = parcelRepository.getParcelsByLoadingList(loadinglistNo)
         parcels ?: throw DefaultProblem(
                 status = Response.Status.NOT_FOUND,
                 title = "no parcels found for this list"
         )
         val orderIdList = parcels.map { it.orderid }.distinct()
-        val orderList: MutableList<ParcelServiceV1.Order> = mutableListOf<ParcelServiceV1.Order>()
+        val orderList: MutableList<ParcelServiceV1.Order2Export> = mutableListOf<ParcelServiceV1.Order2Export>()
         orderIdList.forEach {
             val orderRecord = parcelRepository.getOrderById(it.toLong())
             if (orderRecord != null) {
-                val order = orderRecord.toOrder()
+                val order = orderRecord.toOrder2Export()
                 val pp = parcels.filter { f -> f.orderid == it }
                 if (pp != null) {
-                    order.parcels = pp.map { it.toParcel() }
+                    order.parcels = pp.map { it.toParcel2Export() }
                     orderList.add(order)
                 }
             }
@@ -456,7 +456,7 @@ open class ParcelServiceV1 :
         return orderList
     }
 
-    override fun getLoadedParcels2ExportByStationNo(stationNo: Int): List<Long> {
+    override fun getLoadedParcels2ExportByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

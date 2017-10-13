@@ -12,6 +12,9 @@ import org.deku.leoz.central.data.jooq.tables.Tblauftrag
 import org.deku.leoz.central.data.jooq.tables.records.TblauftragRecord
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.Address
+import org.jooq.types.UInteger
+import sx.time.toSqlDate
+import sx.time.toTimestamp
 
 
 /**
@@ -63,35 +66,63 @@ class ParcelJooqRepository {
                 .where(Tables.TBLAUFTRAG.ORDERID.eq(orderId.toDouble()))
                 .fetchOneInto(Tblauftrag.TBLAUFTRAG)
     }
+
+    fun getParcels2ExportByLoadingList(loadinglistNo: Long): List<TblauftragcolliesRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(
+                        Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.eq(loadinglistNo.toDouble())
+                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
+                .fetchInto(TblauftragcolliesRecord::class.java)
+    }
+
+    fun getOrder2ExportById(orderId: Long): TblauftragRecord? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAG)
+                .where(Tables.TBLAUFTRAG.ORDERID.eq(orderId.toDouble())
+                        .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
+                        .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0))))//fehlende anfahrt raus
+                .fetchOneInto(Tblauftrag.TBLAUFTRAG)
+    }
+
+    fun getOrders2ExportByStation(station: Int): List<TblauftragRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAG)
+                .where(Tables.TBLAUFTRAG.DEPOTNRABD.eq(station)
+                        .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
+                        .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0))))//fehlende anfahrt raus
+                .fetchInto(TblauftragRecord::class.java)
+    }
 }
 
-fun TblauftragRecord.toOrder(): ParcelServiceV1.Order {
-val order=ParcelServiceV1.Order(
-        orderId = this.orderid.toLong(),
-        deliveryAddress = Address(
-                line1=this.firmad,
-                line2=this.firmad2,
-                line3=this.firmad3,
-                countryCode = this.landd,
-                zipCode = this.plzd,
-                city=this.ortd,
-                street = this.strassed,
-                streetNo=this.strnrd),
-        deliveryStation = this.depotnrld,
-        shipmentDate = this.verladedatum
-)
+fun TblauftragRecord.toOrder2Export(): ParcelServiceV1.Order2Export {
+    val order = ParcelServiceV1.Order2Export(
+            orderId = this.orderid.toLong(),
+            deliveryAddress = Address(
+                    line1 = this.firmad,
+                    line2 = this.firmad2,
+                    line3 = this.firmad3,
+                    countryCode = this.landd,
+                    zipCode = this.plzd,
+                    city = this.ortd,
+                    street = this.strassed,
+                    streetNo = this.strnrd),
+            deliveryStation = this.depotnrld,
+            shipmentDate = this.verladedatum.toTimestamp().toSqlDate()
+    )
     return order
 }
 
-fun TblauftragcolliesRecord.toParcel():ParcelServiceV1.Parcel{
-    val parcel=ParcelServiceV1.Parcel(
+fun TblauftragcolliesRecord.toParcel2Export(): ParcelServiceV1.Parcel2Export {
+    val parcel = ParcelServiceV1.Parcel2Export(
             orderId = this.orderid.toLong(),
             parcelNo = this.colliebelegnr.toLong(),
             parcelPosition = this.orderpos.toInt(),
             loadinglistNo = this.ladelistennummerd.toLong(),
             typeOfPackaging = this.verpackungsart,
             realWeight = this.gewichtreal,
-            dateOfStationOut = this.dtausgangdepot2,
+            dateOfStationOut = this.dtausgangdepot2.toTimestamp().toSqlDate(),
             cReference = this.creferenz
 
     )
