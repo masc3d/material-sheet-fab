@@ -91,8 +91,32 @@ class ParcelJooqRepository {
                 .from(Tables.TBLAUFTRAG)
                 .where(Tables.TBLAUFTRAG.DEPOTNRABD.eq(station)
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
-                        .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0))))//fehlende anfahrt raus
+                        .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
+                        .and(Tables.TBLAUFTRAG.EMPFAENGER.isNull)
+                )
                 .fetchInto(TblauftragRecord::class.java)
+    }
+
+
+    fun getParcels2ExportByOrderid(orderId: Long): List<TblauftragcolliesRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(
+                        Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
+                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
+                .fetchInto(TblauftragcolliesRecord::class.java)
+    }
+
+    fun getLoadedParcels2ExportByOrderid(orderId: Long): List<TblauftragcolliesRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(
+                        Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
+                                .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.greaterThan(100000.0))
+                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
+                .fetchInto(TblauftragcolliesRecord::class.java)
     }
 }
 
@@ -103,13 +127,13 @@ fun TblauftragRecord.toOrder2Export(): ParcelServiceV1.Order2Export {
                     line1 = this.firmad,
                     line2 = this.firmad2,
                     line3 = this.firmad3,
-                    countryCode = this.landd,
-                    zipCode = this.plzd,
+                    countryCode = this.landd ?: "",
+                    zipCode = this.plzd ?: "",
                     city = this.ortd,
                     street = this.strassed,
                     streetNo = this.strnrd),
-            deliveryStation = this.depotnrld,
-            shipmentDate = this.verladedatum.toTimestamp().toSqlDate()
+            deliveryStation = this.depotnrld ?: 0,
+            shipmentDate = this.verladedatum?.toTimestamp()?.toSqlDate()
     )
     return order
 }
@@ -119,10 +143,10 @@ fun TblauftragcolliesRecord.toParcel2Export(): ParcelServiceV1.Parcel2Export {
             orderId = this.orderid.toLong(),
             parcelNo = this.colliebelegnr.toLong(),
             parcelPosition = this.orderpos.toInt(),
-            loadinglistNo = this.ladelistennummerd.toLong(),
+            loadinglistNo = this.ladelistennummerd?.toLong(),
             typeOfPackaging = this.verpackungsart,
             realWeight = this.gewichtreal,
-            dateOfStationOut = this.dtausgangdepot2.toTimestamp().toSqlDate(),
+            dateOfStationOut = this.dtausgangdepot2?.toTimestamp()?.toSqlDate(),
             cReference = this.creferenz
 
     )

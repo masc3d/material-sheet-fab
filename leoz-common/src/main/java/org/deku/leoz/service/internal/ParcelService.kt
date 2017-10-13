@@ -120,26 +120,27 @@ interface ParcelServiceV1 {
     fun export(
             @QueryParam(PARCEL_NO) @ApiParam(value = "parcel no") parcelNo: String? = null,
             @QueryParam(CREFERENZ) @ApiParam(value = "cReferenz") cReferenz: String? = null,
-            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist no",required = true) loadingListNo: Long
+            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist no", required = true) loadingListNo: Long
     ): Boolean
 
     data class Order2Export(
             var orderId: Long = 0,
             var deliveryAddress: Address = Address(),
             var deliveryStation: Int = 0,
-            var shipmentDate: java.sql.Date,
-            var parcels: List<Parcel2Export> = listOf()
+            var shipmentDate: java.sql.Date? = null,
+            var parcels: List<Parcel2Export>? = null//= listOf()
 
-            )
+    )
+
     data class Parcel2Export(
-            var orderId: Long=0,
-            var parcelNo: Long=0,
-            var parcelPosition:Int=0,
-            var loadinglistNo:Long?=null,
-            var typeOfPackaging:Int=0,
-            var realWeight:Double=0.0,
-            var dateOfStationOut:java.sql.Date,
-            var cReference:String?=null
+            var orderId: Long = 0,
+            var parcelNo: Long = 0,
+            var parcelPosition: Int = 0,
+            var loadinglistNo: Long? = null,
+            var typeOfPackaging: Int = 0,
+            var realWeight: Double = 0.0,
+            var dateOfStationOut: java.sql.Date? = null,
+            var cReference: String? = null
     )
 }
 
