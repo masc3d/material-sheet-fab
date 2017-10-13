@@ -26,7 +26,6 @@ class StationRepositoryImpl : StationRepositoryExtension {
     private lateinit var depotRepository: StationRepository
 
 
-
     override fun findWithQuery(query: String): List<MstStation> {
         val token = query.trim { it <= ' ' }
 
@@ -84,11 +83,11 @@ class StationRepositoryImpl : StationRepositoryExtension {
 
     override fun findByStationIds(stationIds: List<Int>): List<MstStation> {
         // QueryDSL
-        //val qStation = QMstStation.mstStation
+        val qStation = QMstStation.mstStation
 
-
-        return depotRepository.findAll(stationIds)
-
+        return depotRepository.findAll(
+                qStation.stationId.`in`(stationIds)
+        ).toList()
     }
 }
 
