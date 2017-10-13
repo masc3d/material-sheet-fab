@@ -443,19 +443,49 @@ abstract class Activity : BaseActivity(),
 
         // Handle dynamically generated ids
         if (id >= MENU_ID_DEV_BASE && id < MENU_ID_DEV_MAX) {
+
+            //region Synthetic input support
             val syntheticInputs = this.syntheticInputs.get(id - MENU_ID_DEV_BASE)
 
             MaterialDialog.Builder(this)
                     .title(syntheticInputs.name)
                     .inputType(InputType.TYPE_CLASS_TEXT)
                     .items(*syntheticInputs.entries.map { it.name }.toTypedArray())
-                    .itemsCallback { _, _, _, charSequence ->
-                        syntheticInputs.entries.first { it.name == charSequence }.also {
-                            simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                    .cancelable(true)
+                    .also {
+                        when (syntheticInputs.multipleChoice) {
+                            false -> it
+                                    .itemsCallback { _, _, position, charSequence ->
+                                        syntheticInputs.entries.get(position).also {
+                                            simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                        }
+                                    }
+                            true -> it
+                                    .autoDismiss(false)
+                                    .positiveText(android.R.string.ok)
+                                    .itemsCallbackMultiChoice(null, { _, _, _ ->
+                                        true
+                                    })
+                                    .onPositive { dialog, which ->
+                                        dialog.selectedIndices?.forEach { position ->
+                                            syntheticInputs.entries.get(position).also {
+                                                simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                            }
+                                        }
+                                        dialog.dismiss()
+                                    }
+                                    .negativeText(android.R.string.selectAll)
+                                    .onNegative { dialog, which ->
+                                        if (dialog.selectedIndices?.isEmpty() ?: true) {
+                                            dialog.selectAllIndices()
+                                        } else {
+                                            dialog.clearSelectedIndices()
+                                        }
+                                    }
                         }
                     }
-                    .cancelable(true)
                     .show()
+            //endregion
 
             return true
         }

@@ -27,7 +27,7 @@ buildscript {
         // masc20170922. jersey 2.26 causes `InjectionManagerFactory` not found exception in leoz-ui
         v_jersey = '2.25'
         v_jna = '4.5.0'
-        v_jooq = '3.10.0'
+        v_jooq = '3.10.1'
         v_junit = '4.12'
         v_kotlin = '1.1.51'
         v_kodein = '4.1.0'

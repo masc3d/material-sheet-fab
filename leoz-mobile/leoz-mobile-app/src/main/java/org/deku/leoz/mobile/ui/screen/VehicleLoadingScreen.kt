@@ -471,14 +471,15 @@ class VehicleLoadingScreen :
                     .map { dlInfos ->
                         SyntheticInput(
                                 name = "Delivery lists",
+                                multipleChoice = true,
                                 entries = dlInfos
                                         .sortedWith(compareBy({ it.date.date }, { it.id }))
                                         .map {
-                                            val label = DekuDeliveryListNumber.parse(it.id.toString()).value.label
+                                            val data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
                                             SyntheticInput.Entry(
                                                     symbologyType = SymbologyType.Interleaved25,
-                                                    data = label,
-                                                    name = "${label} (${it.date})"
+                                                    data = data,
+                                                    name = "${it.date}: ${data}"
                                             )
                                         }
                         )
