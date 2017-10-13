@@ -7,6 +7,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -14,8 +15,6 @@ import android.view.animation.Interpolator;
 
 import com.gordonwong.materialsheetfab.MaterialSheetFab.RevealXDirection;
 import com.gordonwong.materialsheetfab.MaterialSheetFab.RevealYDirection;
-
-import io.codetail.animation.SupportAnimator;
 
 /**
  * Created by Gordon Wong on 7/5/2015.
@@ -204,30 +203,43 @@ public class MaterialSheetAnimation {
 						listener.onEnd();
 					}
 				}
+
+				@Override
+				public void onAnimationCancel(Animator animation) {
+				}
 			});
 			// Start animation
 			anim.start();
 		} else {
 			// Circular reveal library uses absolute coordinates
 			// Setup animation
-			SupportAnimator anim = io.codetail.animation.ViewAnimationUtils
+			Animator anim = io.codetail.animation.ViewAnimationUtils
 					.createCircularReveal(view, centerX, centerY, startRadius, endRadius);
 			anim.setDuration((int) duration);
 			anim.setInterpolator(interpolator);
 			// Add listener
-			anim.addListener(new SupportAnimator.SimpleAnimatorListener() {
+			anim.addListener(new Animator.AnimatorListener() {
 				@Override
-				public void onAnimationStart() {
+				public void onAnimationStart(Animator animator) {
 					if (listener != null) {
 						listener.onStart();
 					}
 				}
 
 				@Override
-				public void onAnimationEnd() {
+				public void onAnimationEnd(Animator animator) {
 					if (listener != null) {
 						listener.onEnd();
 					}
+				}
+
+				@Override
+				public void onAnimationCancel(Animator animator) {
+				}
+
+				@Override
+				public void onAnimationRepeat(Animator animator) {
+
 				}
 			});
 			// Start animation
