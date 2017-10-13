@@ -43,6 +43,7 @@ interface RouteRepositoryExtension {
         val validDate = Param(Timestamp::class.java)
     }
 
+    // TODO: should be reverted to property and lazy implementation when upstream https://jira.spring.io/browse/DATACMNS-1197 is resolved
     fun getFindRouteQuery(): NamedQuery<MstRoute, FindRouteQueryParams>
 }
 
