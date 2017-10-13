@@ -40,9 +40,6 @@ import java.net.URLClassLoader
 @Import(
         /** Setups up embedded web server and servlet container  */
         ServletWebServerFactoryAutoConfiguration::class,
-        /** Server properties support  */
-        // TODO: Migrate to spring-boot-2.0
-        // ServerPropertiesAutoConfiguration::class,
 
         /** Persistence configuration support */
         PersistenceConfiguration::class,
