@@ -19,7 +19,7 @@ buildscript {
         v_guava = '23.0'
         v_h2 = '1.4.196'
         v_ini4j = '0.5.4'
-        v_jackson = '2.9.1'
+        v_jackson = '2.9.2'
         v_javassist = '3.20.0-GA'
         v_javax_servlet = '3.1.0'
         v_javax_persistence = '2.1.1'
@@ -50,7 +50,7 @@ buildscript {
         v_spring = '5.0.0.RELEASE'
         v_spring_data_jpa = '2.0.0.RELEASE'
         v_spring_data_commons = '2.0.0.RELEASE'
-        v_springboot = '2.0.0.M4'
+        v_springboot = '2.0.0.M5'
         // masc20172404. must not be updated to > 1.2.0 until upstream issue is resolved. https://git.derkurier.de/leoz/leoz/issues/100
         v_sshd = '1.6.0'
         v_swagger = '1.5.16'
