@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.config.ParcelMessageServiceConfiguration
+import org.deku.leoz.central.config.ParcelServiceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
@@ -19,11 +19,7 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.nio.file.CopyOption
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 
 
 @Named
@@ -51,7 +47,7 @@ open class ParcelProcessing {
     private lateinit var orderRepository: OrderTableJooqRepository
 
     @Inject
-    private lateinit var parcelMessageServiceConfiguration: ParcelMessageServiceConfiguration
+    private lateinit var parcelServiceSettings: ParcelServiceConfiguration.Settings
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
@@ -63,7 +59,7 @@ open class ParcelProcessing {
     open fun processMessages(): Boolean {
         var result = true
 
-        if (parcelMessageServiceConfiguration.doSkipParcelProcessing) {
+        if (parcelServiceSettings.skipParcelProcessing) {
             log.trace("Reset after Receive")
             return result
         }
