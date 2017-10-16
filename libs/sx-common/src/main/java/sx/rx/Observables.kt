@@ -1,6 +1,9 @@
 package sx.rx
 
-import io.reactivex.*
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
@@ -8,7 +11,6 @@ import io.reactivex.observables.ConnectableObservable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.Duration
-import java.lang.IllegalArgumentException
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
@@ -186,8 +188,13 @@ fun Completable.retryWithExponentialBackoff(
             action = { retry: Long, error: Throwable ->
 
                 var delay = try {
-                    initialDelay.multipliedBy(Math.pow(exponentialBackoff, retry.toDouble()).toLong())
-                } catch(e: IllegalArgumentException) {
+                    initialDelay.multipliedBy(
+                            Math.pow(
+                                    exponentialBackoff,
+                                    retry.toDouble()
+                            ).toLong()
+                    )
+                } catch (e: Exception) {
                     // Overflow: revert to maximum delay
                     maximumDelay
                 }
