@@ -731,13 +731,14 @@ abstract class Activity : BaseActivity(),
                     // Otherwise check for relevant orders and suppress update if necessary
                         else -> this.orderRepository.hasRelevantOrders()
                                 .subscribeOn(db.scheduler)
-                                .map {
+                                .toObservable()
+                                .switchMap {
                                     when (it) {
-                                        true -> null
-                                        false -> item
+                                        false -> Observable.just(item)
+                                        // Suppress update notification if there's still relevant orders
+                                        true -> Observable.empty()
                                     }
                                 }
-                                .toObservable()
                     }
                 }
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
