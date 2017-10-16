@@ -87,6 +87,9 @@ open class ParcelProcessing {
 
                 val user = userRepository.findById(it.userId)
                 val userEmail = user?.email ?: ""
+                var infotext = "MOB $userEmail"
+                if (infotext.length > 60)
+                    infotext = infotext.substring(0, 60)
 
 
                 r.packstuecknummer = parcelNo.toDouble()
@@ -94,7 +97,7 @@ open class ParcelProcessing {
                 r.setTime(it.scanned)
                 r.poslat = it.latitude
                 r.poslong = it.longitude
-                r.infotext = "MOB $userEmail".substring(0, 11)
+                r.infotext = infotext
 
                 val eventId = it.eventValue
                 val event = Event.values().find { it.value == eventId }!!
@@ -280,7 +283,7 @@ open class ParcelProcessing {
                         } else {
                             oldDeliveryDate = orderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
                         }
-                        val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+                        val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
                         val deliveryTime = it.scanned.toDateOnlyTime()
                         val deliveryDate = it.scanned.toDateWithoutTime()
 
@@ -391,7 +394,7 @@ open class ParcelProcessing {
                                                 } else {
                                                     unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
                                                 }
-                                                val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+                                                val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
 
 
                                                 unitInBagOrderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
@@ -639,7 +642,7 @@ open class ParcelProcessing {
                         result = false
                     else {
                         if (pathToDelete != null) {
-                           // Files.delete(pathToDelete)
+                            // Files.delete(pathToDelete)
                         }
                     }
                 }

@@ -472,7 +472,7 @@ open class ParcelServiceV1 :
             if (orderRecord != null) {
                 val order = orderRecord.toOrder2Export()
                 val pp = parcels.filter { f -> f.orderid == it }
-                if (pp != null) {
+                if (pp.count()>0) {
                     order.parcels = pp.map { it.toParcel2Export() }
                     orderList.add(order)
                 }

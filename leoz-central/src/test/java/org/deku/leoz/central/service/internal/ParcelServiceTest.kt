@@ -26,7 +26,8 @@ import java.util.Base64
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
         ParcelMessageServiceConfiguration::class,
-        org.deku.leoz.central.service.internal.ParcelServiceV1::class
+        org.deku.leoz.central.service.internal.ParcelServiceV1::class,
+        org.deku.leoz.central.service.internal.UserService::class
 ))
 class ParcelServiceTest {
     @Inject
