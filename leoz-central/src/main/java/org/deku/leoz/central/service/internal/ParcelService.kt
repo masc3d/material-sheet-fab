@@ -32,8 +32,11 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
+import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.service.internal.UserService
+import org.deku.leoz.time.toString_ddMMyyyy_PointSeparated
 import sx.io.serialization.Serializable
 
 /**
@@ -77,6 +80,18 @@ open class ParcelServiceV1 :
 
     @Inject
     private lateinit var parcelRepository: ParcelJooqRepository
+
+    @Inject
+    private lateinit var bagService: BagService
+
+    @Inject
+    private lateinit var stationService: StationService
+
+    @Inject
+    private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
+
+    @Inject
+    private lateinit var statusRepository: StatusJooqRepository
 
     /**
      * Parcel service message handler
@@ -472,7 +487,7 @@ open class ParcelServiceV1 :
             if (orderRecord != null) {
                 val order = orderRecord.toOrder2Export()
                 val pp = parcels.filter { f -> f.orderid == it }
-                if (pp.count()>0) {
+                if (pp.count() > 0) {
                     order.parcels = pp.map { it.toParcel2Export() }
                     orderList.add(order)
                 }
@@ -504,13 +519,296 @@ open class ParcelServiceV1 :
         return ordersFiltered
     }
 
-    override fun export(parcelNo: String?, cReferenz: String?, loadingListNo: Long): Boolean {
+    override fun export(scanCode: String, loadingListNo: Long, stationNo: Int): Boolean {
         val user = userService.get()
-        if ((parcelNo == null) && (cReferenz == null))
+
+        val un = UnitNumber.parseLabel(scanCode)
+        var dekuNo: Long? = null
+        when {
+            un.hasError -> {
+                val gun = GlsUnitNumber.parseLabel(scanCode)
+                when {
+                    gun.hasError -> {
+                        val unitRecords = parcelRepository.getParcels2ExportByCreferenceAndStation(stationNo, scanCode)
+                        unitRecords ?: throw DefaultProblem(
+                                status = Response.Status.NOT_FOUND,
+                                title = "no parcels found"
+                        )
+                        if (unitRecords.count() > 1) {
+                            throw DefaultProblem(
+                                    status = Response.Status.BAD_REQUEST,
+                                    title = "more parcels found to this cReference"
+                            )
+                        }
+                        if (unitRecords.count() == 0) {
+                            throw DefaultProblem(
+                                    status = Response.Status.NOT_FOUND,
+                                    title = "no parcels found"
+                            )
+                        }
+                        dekuNo = unitRecords[0].colliebelegnr.toLong()
+
+                    }
+                    else -> {
+                        dekuNo = gun.value.toUnitNumber().value.toLong()
+                    }
+                }
+            }
+            else -> {
+                dekuNo = un.value.value.toLong()
+            }
+        }
+
+        val unitRecord = parcelRepository.findParcelByUnitNumber(dekuNo)
+        unitRecord ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "parcel not found"
+        )
+        if (unitRecord.erstlieferstatus.toInt() == 4) {
             throw DefaultProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "parcelNo and cReferenz null"
+                    title = "parcel delivered"
             )
+        }
+
+        val orderRecord = parcelRepository.getOrderById(unitRecord.orderid.toLong())
+        orderRecord ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "order not found"
+        )
+
+        if (orderRecord.kzTransportart.toInt() != 1) {
+            throw DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "no ONS"
+            )
+        }
+        if (orderRecord.depotnrabd != stationNo) {
+            //if (!(stationNo==800 && unitRecord.colliebelegnr.toLong().toString().startsWith("8"))){
+            if (!(stationNo == 800 && orderRecord.depotnrabd in (800..900))) {
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "station dismatch"
+                )
+            }
+        }
+        var checkOk = true
+        val allUnitsOfOrder = parcelRepository.getParcelsByOrderId(orderRecord.orderid.toLong())
+        allUnitsOfOrder ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "parcels not found"
+        )
+        allUnitsOfOrder.forEach {
+            if (it.erstlieferstatus.toInt() == 8 && it.erstlieferfehler.toInt() != 30)
+                checkOk = false
+            if (it.erstlieferstatus.toInt() == 4)
+                checkOk = false
+        }
+        val workDate = bagService.getWorkingDate()
+        if (checkOk) {
+
+            when (orderRecord.kzTransportart.toInt()) {
+                0, 1, 2, 4, 8 -> {
+                    if (orderRecord.verladedatum != workDate.toTimestamp()) {
+                        //Test Verladedatum
+                        //setRoute
+                        //Korrektur Datensatz abhängig von tbloptionen nr=1212 Wert=-1 ???
+                        ////Verladedatum=workdate
+                        ////Feiertag_1
+                        ////FeiertagShlS
+                        ////if sendStatus!=0 sendstatus=0
+
+                        //collies korregieren falls erstlieferstatus=0 oder 8-30
+
+
+                    }
+                    if (orderRecord.dtauslieferung == null
+                            || orderRecord.dtauslieferung < java.time.LocalDateTime.now().toLocalDate().toTimestamp()
+                            || orderRecord.dtauslieferung > java.time.LocalDateTime.now().plusDays(90).toLocalDate().toTimestamp()) {
+                        //Test Lieferdatum=null,<now or >+90 Tage (referenzScan Teileinlieferung)
+                        //setRoute
+                        //Korrektur Datensatz abhängig von tbloptionen nr=1212 Wert=-1 ???
+                        ////dtAuslieferung
+                        ////Feiertag_2
+                        ////FeiertagShlD
+                        ////if sendStatus!=0 sendstatus=0
+                        //collies korregieren falls erstlieferstatus=0 oder 8-30
+                    }
+                    if (orderRecord.lockflag.toInt() == 3) {
+                        //Lockflag=0 if =3
+                        //sdgstatus="S" if !="S"
+                        //sendstatus=0 if !=0
+                        //collies korregieren falls erstlieferstatus=0 oder 8-30
+
+                    }
+//                    allUnitsOfOrder.forEach {
+//                        if (it.erstlieferstatus.toInt() == 8 && it.erstlieferfehler.toInt() == 30){
+//                            it.lieferstatus=0
+//                            it.lieferfehler=0
+//                            it.erstlieferstatus=0
+//                            it.store()
+//                        }
+//                    }
+                    if (unitRecord.erstlieferstatus.toInt() == 8 && unitRecord.erstlieferfehler.toInt() == 30) {
+                        unitRecord.lieferstatus = 0
+                        unitRecord.lieferfehler = 0
+                        unitRecord.erstlieferstatus = 0
+                        unitRecord.store()
+                    }
+
+                }
+            }
+        }
+
+        if (orderRecord.lockflag.toInt() == 3) {
+            throw DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "parcel deleted"
+            )
+        }
+        if (unitRecord.erstlieferstatus.toInt() == 8 && unitRecord.erstlieferfehler.toInt() == 30) {
+            throw DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "parcel marked as missing - parts of order are delivered"
+            )
+        }
+        if (orderRecord.verladedatum != workDate.toTimestamp()) {
+            throw DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "invalid senddate"
+            )
+        }
+
+        if (unitRecord.verpackungsart == 91) {//verpackungsart=Valore
+            val station = stationService.getByStationNo(stationNo)
+            if (!station.exportValuablesAllowed) {
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "valuables not allowed"
+                )
+            }
+            if (!station.exportValuablesWithoutBagAllowed) {
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "valuables not allowed without bag"
+                )
+            }
+        }
+        var title = "ok"
+        if (unitRecord.ladelistennummerd == null) {
+        } else if (unitRecord.ladelistennummerd.toLong() == loadingListNo) {
+            //doppelt gescannt
+            throw DefaultProblem(
+                    status = Response.Status.OK,
+                    title = "already scanned"
+            )
+        } else {
+            //umbuchen auf andere ladeliste
+            title = "loadinglist changed"
+
+        }
+        val oldLoadinglist = unitRecord.ladelistennummerd?.toString() ?: ""
+        unitRecord.ladelistennummerd = loadingListNo.toDouble()
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "ladelistennummerd",
+                    oldValue = oldLoadinglist,
+                    newValue = loadingListNo.toString(),
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
+        val oldDtAusgangDepot2 = unitRecord.dtausgangdepot2?.toString_ddMMyyyy_PointSeparated() ?: ""
+        unitRecord.dtausgangdepot2 = workDate.toTimestamp()
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "dtausgangdepot2",
+                    oldValue = oldDtAusgangDepot2,
+                    newValue = workDate.toTimestamp().toString_ddMMyyyy_PointSeparated(),
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
+        val oldIscan = unitRecord.iScan?.toString() ?: ""
+        unitRecord.iScan = -1
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "iScan",
+                    oldValue = oldIscan,
+                    newValue = "-1",
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
+        val oldNueD2H2 = unitRecord.nued2h2?.toString() ?: ""
+        unitRecord.nued2h2 = -1
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "nued2h2",
+                    oldValue = oldNueD2H2,
+                    newValue = "-1",
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
+        val oldNueH2D2 = unitRecord.nueh2d2?.toString() ?: ""
+        unitRecord.nueh2d2 = -1
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "nueh2d2",
+                    oldValue = oldNueH2D2,
+                    newValue = "-1",
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
+        val scanTs = Date()
+        val infotext = "WebExport"
+        var existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), "A", 2, 0)
+        if (!existStatus) {
+            val r = dslContext.newRecord(Tables.TBLSTATUS)
+            r.packstuecknummer = unitRecord.colliebelegnr
+            r.setDate(scanTs)
+            r.setTime(scanTs)
+            r.infotext = infotext
+
+            r.kzStatuserzeuger = "A"
+            r.kzStatus = 2.toUInteger()
+            r.timestamp2 = Date().toTimestamp()
+            r.fehlercode = 0.toUInteger()
+
+            r.erzeugerstation = stationNo.toString()
+        }
+        existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), "A", 4, 0)
+        if (!existStatus) {
+            val r = dslContext.newRecord(Tables.TBLSTATUS)
+            r.packstuecknummer = unitRecord.colliebelegnr
+            r.setDate(scanTs)
+            r.setTime(scanTs)
+            r.infotext = infotext
+
+            r.kzStatuserzeuger = "A"
+            r.kzStatus = 4.toUInteger()
+            r.timestamp2 = Date().toTimestamp()
+            r.fehlercode = 0.toUInteger()
+
+            r.erzeugerstation = stationNo.toString()
+        }
+
+        throw DefaultProblem(
+                status = Response.Status.OK,
+                title = title
+        )
         return true
     }
 }

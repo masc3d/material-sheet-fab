@@ -23,8 +23,8 @@ interface ParcelServiceV1 {
         const val EVENT = 1
         const val STATION_NO = "station-no"
         const val LOADINGLIST_NO = "loadinglist-no"
-        const val PARCEL_NO = "parcel-no"
-        const val CREFERENZ = "cReferenz"
+        const val SCANCODE = "parcel-no"
+
     }
 
     /**
@@ -118,9 +118,9 @@ interface ParcelServiceV1 {
     @Path("/export")
     @ApiOperation(value = "export parcel")
     fun export(
-            @QueryParam(PARCEL_NO) @ApiParam(value = "parcel no") parcelNo: String? = null,
-            @QueryParam(CREFERENZ) @ApiParam(value = "cReferenz") cReferenz: String? = null,
-            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist no", required = true) loadingListNo: Long
+            @QueryParam(SCANCODE) @ApiParam(value = "parcel no or creference") scanCode: String = "",
+            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist no", required = true) loadingListNo: Long,
+            @QueryParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
     ): Boolean
 
     data class Order2Export(
