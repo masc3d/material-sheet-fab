@@ -16,7 +16,7 @@ import javax.inject.Named
 import javax.persistence.PersistenceContext
 
 /**
- * TODO: split configuration (which tables to sync and how) from actual implementation, move config to DatabaseSyncConfiguration
+ * Database sync service
  * Created by masc on 15.05.15.
  */
 @Named
@@ -30,10 +30,13 @@ constructor(
         txJooq: PlatformTransactionManager,
         private val presets: List<Preset>
 ) {
-    /**
-     * Embedded service class
-     */
-    private val service = object : Service(executorService = this.exceutorService, period = Duration.ofSeconds(4)) {
+
+    /** Background service */
+    inner class Service : sx.concurrent.Service(
+            executorService = this.exceutorService,
+            period = Duration.ofMinutes(1)
+
+    ) {
         override fun run() {
             this@DatabaseSyncService.sync(false)
         }
@@ -42,6 +45,11 @@ constructor(
             super.submitSupplementalTask(command)
         }
     }
+
+    /**
+     * Embedded service class
+     */
+    protected open val service = Service()
 
     companion object {
         private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
@@ -216,6 +224,13 @@ constructor(
             Unit
         }
     }
+
+    /**
+     * Sync interval
+     */
+    var interval: Duration
+        get() = this.service.period ?: Duration.ZERO
+        set(value) { this.service.period = value }
 
     open fun start() {
         this.service.start()

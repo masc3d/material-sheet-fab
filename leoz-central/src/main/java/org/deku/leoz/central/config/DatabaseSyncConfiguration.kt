@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
+import org.threeten.bp.Duration
 import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import javax.annotation.PostConstruct
@@ -45,17 +46,6 @@ open class DatabaseSyncConfiguration {
 
     @Inject
     private lateinit var databaseSyncService: DatabaseSyncService
-
-    /** Broker event listener  */
-    private val brokerEventListener = object : MqBroker.DefaultEventListener() {
-        override fun onStart() {
-            databaseSyncService.start()
-        }
-
-        override fun onStop() {
-            databaseSyncService.stop()
-        }
-    }
 
     @get:Bean
     open val syncPresets = listOf<DatabaseSyncService.Preset>(
@@ -308,5 +298,18 @@ open class DatabaseSyncConfiguration {
 
         if (ActiveMQBroker.instance.isStarted)
             brokerEventListener.onStart()
+
+        databaseSyncService.interval = Duration.ofMinutes(1)
+    }
+
+    /** Broker event listener  */
+    private val brokerEventListener = object : MqBroker.DefaultEventListener() {
+        override fun onStart() {
+            databaseSyncService.start()
+        }
+
+        override fun onStop() {
+            databaseSyncService.stop()
+        }
     }
 }
