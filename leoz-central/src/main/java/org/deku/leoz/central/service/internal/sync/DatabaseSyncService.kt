@@ -3,32 +3,34 @@ package org.deku.leoz.central.service.internal.sync
 import com.querydsl.jpa.impl.JPADeleteClause
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.node.data.jpa.*
-import org.deku.leoz.node.data.repository.master.*
-import org.deku.leoz.node.data.repository.system.PropertyRepository
-import org.jooq.Transaction
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
 import sx.concurrent.Service
 import java.util.concurrent.ScheduledExecutorService
-import javax.persistence.EntityManager
+import javax.inject.Inject
+import javax.inject.Named
+import javax.persistence.PersistenceContext
 
 /**
  * TODO: split configuration (which tables to sync and how) from actual implementation, move config to DatabaseSyncConfiguration
  * Created by masc on 15.05.15.
  */
-@javax.inject.Named
+@Named
 open class DatabaseSyncService
-@javax.inject.Inject
+@Inject
 constructor(
         private val exceutorService: ScheduledExecutorService,
-        @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
-        @Qualifier(PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager,
-        val presets: List<Preset> = listOf()
+        @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
+        txJpa: PlatformTransactionManager,
+        @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER)
+        txJooq: PlatformTransactionManager
 ) {
     /**
      * Embedded service class
@@ -58,27 +60,25 @@ constructor(
         get() = eventDispatcher
     //endregion
 
-    @javax.persistence.PersistenceContext
+    @PersistenceContext
     private lateinit var entityManager: javax.persistence.EntityManager
 
-    // Transaction helpers
-    private val transaction: org.springframework.transaction.support.TransactionTemplate
-    private val transactionJooq: org.springframework.transaction.support.TransactionTemplate
-
-    // JOOQ Repositories
-    @javax.inject.Inject
-    private lateinit var genericJooqRepository: org.deku.leoz.central.data.repository.GenericJooqRepository
-    @javax.inject.Inject
-    private lateinit var syncJooqRepository: org.deku.leoz.central.data.repository.SyncJooqRepository
-
-    init {
-        transaction = org.springframework.transaction.support.TransactionTemplate(tx)
-        transaction.propagationBehavior = org.springframework.transaction.TransactionDefinition.PROPAGATION_REQUIRES_NEW
-
-        transactionJooq = org.springframework.transaction.support.TransactionTemplate(txJooq)
+    /** JPA transaction template */
+    private val transactionJpa = TransactionTemplate(txJpa).also {
+        it.propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
     }
 
-    @org.springframework.transaction.annotation.Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
+    /** JOOQ transaction template */
+    private val transactionJooq = TransactionTemplate(txJooq)
+
+    // JOOQ Repositories
+    @Inject
+    private lateinit var genericJooqRepository: org.deku.leoz.central.data.repository.GenericJooqRepository
+
+    @Inject
+    private lateinit var syncJooqRepository: org.deku.leoz.central.data.repository.SyncJooqRepository
+
+    @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     @Synchronized open fun sync(clean: Boolean) {
         val sw = com.google.common.base.Stopwatch.createStarted()
 
@@ -368,7 +368,7 @@ constructor(
             entityManager.flushMode = javax.persistence.FlushModeType.COMMIT
 
             if (deleteBeforeUpdate || destQdslSyncIdPath == null) {
-                transaction.execute<Any> { _ ->
+                transactionJpa.execute<Any> { _ ->
                     log.info(lfmt("Deleting all entities"))
 
                     JPADeleteClause(entityManager, destQdslEntityPath)
@@ -414,10 +414,10 @@ constructor(
                     // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
                     log.info(lfmt("Outdated [${destMaxSyncId}]"))
                     var count = 0
-                    transaction.execute<Any> { _ ->
+                    transactionJpa.execute<Any> { _ ->
                         while (source.hasNext()) {
                             // Fetch next record
-                            val record = source.fetchOne()
+                            val record = source.fetchNext()
                             // Convert to entity
                             val entity = conversionFunction(record)
                             // Store entity
