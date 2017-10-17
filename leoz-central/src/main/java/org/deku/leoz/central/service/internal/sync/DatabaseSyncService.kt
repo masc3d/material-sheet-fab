@@ -111,11 +111,21 @@ constructor(
     @Synchronized open fun sync(clean: Boolean) {
         val sw = com.google.common.base.Stopwatch.createStarted()
 
+        val syncIdMap = this.syncJooqRepository
+                .findAll()
+                .groupBy { it.tableName }
+                .mapValues {
+                    it.value.first().syncId
+                }
+
         this.presets.forEach {
             when (it) {
                 is SimplePreset<*, *> ->
                     @Suppress("UNCHECKED_CAST")
-                    this.update(it as SimplePreset<Record, Any>, clean)
+                    this.update(
+                            preset = it as SimplePreset<Record, Any>,
+                            syncIdMap = syncIdMap,
+                            deleteBeforeUpdate = clean)
             }
         }
 
@@ -127,6 +137,7 @@ constructor(
      * @param deleteBeforeUpdate    Delete all records before updating
      */
     fun update(preset: SimplePreset<Record, Any>,
+               syncIdMap: Map<String, Long>,
                deleteBeforeUpdate: Boolean
     ) {
         preset.also { p ->
@@ -162,7 +173,7 @@ constructor(
 
             // TODO. optimize by using jooq prepared statements
             if (destMaxSyncId != null) {
-                val maxSyncId = syncJooqRepository.findSyncIdByTableName(p.sourceTable.name)
+                val maxSyncId = syncIdMap.get(p.sourceTable.name) ?: throw IllegalStateException("No sync id map entry for [${p.sourceTable.name}]")
                 if (maxSyncId == destMaxSyncId) {
                     log.info(lfmt("sync-id uptodate [${destMaxSyncId}]"))
                     return
