@@ -53,6 +53,15 @@ class ParcelJooqRepository {
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 
+    fun getParcelsByOrderId(orderId: Long): List<TblauftragcolliesRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble()))
+                .and(Tables.TBLAUFTRAGCOLLIES.ORDERPOS.greaterThan(0))
+                .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.greaterThan(0.0))
+                .fetchInto(TblauftragcolliesRecord::class.java)
+    }
+
     fun getParcelsByLoadingList(loadinglistNo: Long): List<TblauftragcolliesRecord>? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
@@ -114,6 +123,16 @@ class ParcelJooqRepository {
                 .where(
                         Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
                                 .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.greaterThan(100000.0))
+                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
+                .fetchInto(TblauftragcolliesRecord::class.java)
+    }
+    fun getParcels2ExportByCreferenceAndStation(station: Int,cReference:String): List<TblauftragcolliesRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(
+                        Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.eq(station)
+                                .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))
                                 .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                                 .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
                 .fetchInto(TblauftragcolliesRecord::class.java)
