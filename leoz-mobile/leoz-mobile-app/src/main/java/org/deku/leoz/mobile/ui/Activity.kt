@@ -1042,7 +1042,10 @@ abstract class Activity : BaseActivity(),
                     .show()
         }
 
-        if (!device.mobileDateEnabled) {
+        /**
+         * Apply this check only to CT50 devices temporally, cause this setting is not available in every android firmware.
+         */
+        if (device.model.name == "CT50" && !device.mobileDateEnabled) {
             MaterialDialog.Builder(this)
                     .title("Mobile-Data disabled")
                     .content("Mobile-Data are disabled! To continue you must enable Mobile-Data")
