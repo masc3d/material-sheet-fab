@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.config.ParcelMessageServiceConfiguration
+import org.deku.leoz.central.config.ParcelServiceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
@@ -19,11 +19,7 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
-import java.io.File
-import java.nio.file.CopyOption
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 
 
 @Named
@@ -51,7 +47,7 @@ open class ParcelProcessing {
     private lateinit var orderRepository: OrderTableJooqRepository
 
     @Inject
-    private lateinit var parcelMessageServiceConfiguration: ParcelMessageServiceConfiguration
+    private lateinit var parcelServiceSettings: ParcelServiceConfiguration.Settings
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
@@ -63,7 +59,7 @@ open class ParcelProcessing {
     open fun processMessages(): Boolean {
         var result = true
 
-        if (parcelMessageServiceConfiguration.doSkipParcelProcessing) {
+        if (parcelServiceSettings.skipParcelProcessing) {
             log.trace("Reset after Receive")
             return result
         }
@@ -87,6 +83,9 @@ open class ParcelProcessing {
 
                 val user = userRepository.findById(it.userId)
                 val userEmail = user?.email ?: ""
+                var infotext = "MOB $userEmail"
+                if (infotext.length > 60)
+                    infotext = infotext.substring(0, 60)
 
 
                 r.packstuecknummer = parcelNo.toDouble()
@@ -94,7 +93,7 @@ open class ParcelProcessing {
                 r.setTime(it.scanned)
                 r.poslat = it.latitude
                 r.poslong = it.longitude
-                r.infotext = "MOB $userEmail".substring(0, 11)
+                r.infotext = infotext
 
                 val eventId = it.eventValue
                 val event = Event.values().find { it.value == eventId }!!
@@ -280,7 +279,7 @@ open class ParcelProcessing {
                         } else {
                             oldDeliveryDate = orderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
                         }
-                        val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+                        val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
                         val deliveryTime = it.scanned.toDateOnlyTime()
                         val deliveryDate = it.scanned.toDateWithoutTime()
 
@@ -391,7 +390,7 @@ open class ParcelProcessing {
                                                 } else {
                                                     unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
                                                 }
-                                                val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+                                                val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
 
 
                                                 unitInBagOrderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
@@ -639,7 +638,7 @@ open class ParcelProcessing {
                         result = false
                     else {
                         if (pathToDelete != null) {
-                           // Files.delete(pathToDelete)
+                            // Files.delete(pathToDelete)
                         }
                     }
                 }

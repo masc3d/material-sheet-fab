@@ -64,7 +64,6 @@ class SectionsAdapter
                             adapter.expand(item)
                             adapter.recyclerView.scrollToPosition(0)
                         } else {
-                            log.trace("SELECTABLE ${item.isSelectable}")
                             if (adapter.isSelected(position) || !item.isSelectable) {
                                 if (adapter.isExpanded(position)) {
                                     adapter.collapse(position)
@@ -248,20 +247,38 @@ class SectionsAdapter
 
         var position = this.getGlobalPositionOf(item)
 
-        log.trace("SELECTABLE ${item.isSelectable}}")
-
         if (!adapter.selectedPositions.contains(position)) {
             adapter.clearSelection()
             adapter.addSelection(position)
         }
 
         adapter.collapseAll()
+
+        // Move selected section to top
         position = adapter.getGlobalPositionOf(item)
         adapter.moveItem(position, 0)
 
+        // Restore other section positions to original order
+        run {
+            var index = 1
+            this.sections
+                    .filter { it != section }
+                    .forEach {
+                        positionOf(it as SectionViewModel<*>)
+                                .takeIf { it >= 0 }
+                                ?.also {
+                                    adapter.moveItem(
+                                            it,
+                                            index++
+                                    )
+                                }
+                    }
+        }
+
         if (section.expandOnSelection) {
             adapter.expand(0)
-            adapter.recyclerView.scrollToPosition(0)
         }
+
+        adapter.recyclerView.scrollToPosition(0)
     }
 }

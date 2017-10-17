@@ -351,7 +351,7 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:3.0.0-beta7"
+            "com.android.databinding:compiler:3.0.0-rc1"
     )
 }
 

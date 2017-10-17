@@ -1,8 +1,7 @@
 package org.deku.leoz.central.service.internal
 
-import elemental.util.ArrayOf
 import org.deku.leoz.central.config.DataTestConfiguration
-import org.deku.leoz.central.config.ParcelMessageServiceConfiguration
+import org.deku.leoz.central.config.ParcelServiceConfiguration
 import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.Reason
@@ -16,7 +15,6 @@ import sx.junit.StandardTest
 import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
-import org.springframework.context.annotation.ComponentScan
 //import org.xnio._private.Messages.msg
 import java.io.File
 import java.util.Base64
@@ -25,8 +23,9 @@ import java.util.Base64
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
-        ParcelMessageServiceConfiguration::class,
-        org.deku.leoz.central.service.internal.ParcelServiceV1::class
+        ParcelServiceConfiguration::class,
+        org.deku.leoz.central.service.internal.ParcelServiceV1::class,
+        org.deku.leoz.central.service.internal.UserService::class
 ))
 class ParcelServiceTest {
     @Inject
