@@ -175,7 +175,7 @@ constructor(
             if (destMaxSyncId != null) {
                 val maxSyncId = syncIdMap.get(p.sourceTable.name) ?: throw IllegalStateException("No sync id map entry for [${p.sourceTable.name}]")
                 if (maxSyncId == destMaxSyncId) {
-                    log.info(lfmt("sync-id uptodate [${destMaxSyncId}]"))
+                    log.trace(lfmt("sync-id uptodate [${destMaxSyncId}]"))
                     return
                 }
             }
@@ -227,7 +227,7 @@ constructor(
                         e.onUpdate(p.destQdslEntityPath.type, destMaxSyncId)
                     }
                 } else {
-                    log.info(lfmt("Uptodate [${destMaxSyncId}]"))
+                    log.trace(lfmt("Uptodate [${destMaxSyncId}]"))
                 }
                 null
             }
