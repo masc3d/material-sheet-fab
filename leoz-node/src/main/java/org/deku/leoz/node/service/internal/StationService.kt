@@ -1,8 +1,12 @@
 package org.deku.leoz.node.service.internal
 
+import org.deku.leoz.config.Rest
 import org.deku.leoz.node.data.jpa.MstStation
+import org.deku.leoz.node.data.jpa.QMstDebitorStation
+import org.deku.leoz.node.data.jpa.QMstStation
 import org.deku.leoz.node.data.repository.master.DebitorStationRepository
 import org.deku.leoz.node.data.repository.master.StationRepository
+import org.deku.leoz.service.internal.UserService
 //import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
@@ -17,6 +21,7 @@ import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 //import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.service.internal.ParcelServiceV1
 
 /**
  * Created by masc on 17.09.14.
@@ -35,87 +40,111 @@ class StationService : org.deku.leoz.service.internal.StationService {
     @Inject
     private lateinit var debitorStationRepository: DebitorStationRepository
 
+    @Inject
+    private lateinit var userService:UserService
+
     //@Inject
     //private lateinit var userRepository: UserJooqRepository
 
     override fun get(): Array<Station> {
         val stations = stationRepository.findAll()
-        return stations.map { s -> org.deku.leoz.node.service.internal.StationService.Companion.convert(s) }.toTypedArray()
+        return stations
+                .map { it.toStation() }
+                .toTypedArray()
     }
 
     override fun find(query: String): Array<Station> {
         val stations = stationRepository.findWithQuery(query)
-        return stations.map { s -> org.deku.leoz.node.service.internal.StationService.Companion.convert(s) }.toTypedArray()
+        return stations
+                .map { it.toStation() }
+                .toTypedArray()
     }
 
-    companion object {
-        /**
-         * Convert to service result
-         * @param d
-         * *
-         * @return
-         */
-        internal fun convert(d: MstStation): Station {
-            val rStation = Station()
-            rStation.depotNr = d.stationNr
-            rStation.depotMatchcode = d.ustid
-            rStation.address1 = d.address1
-            rStation.address2 = d.address2
-            rStation.lkz = d.country
-            rStation.ort = d.city
-            rStation.plz = d.zip
-            rStation.strasse = d.street
-            return rStation
-        }
+    /**
+     * Convert to service result
+     */
+    fun MstStation.toStation(): Station {
+        val d = this
+        val rStation = Station()
+        rStation.depotNr = d.stationNr
+        rStation.depotMatchcode = d.ustid
+        rStation.address1 = d.address1
+        rStation.address2 = d.address2
+        rStation.lkz = d.country
+        rStation.ort = d.city
+        rStation.plz = d.zip
+        rStation.strasse = d.street
+        return rStation
     }
 
+    /**
+     * Convert to v2 service result
+     */
+    fun MstStation.toStationV2(): StationV2 {
+        val stationV2 = StationV2(
+                stationNo = this.stationNr,
+                stationMatchcode = null,
+                address = Address(
+                        line1 = this.address1,
+                        line2 = this.address2,
+                        line3 = null,
+                        phoneNumber = this.phone1,
+                        countryCode = this.country,
+                        zipCode = this.zip,
+                        city = this.city,
+                        street = this.street,
+                        streetNo = this.houseNr,
+                        geoLocation = GeoLocation(latitude = this.posLat, longitude = this.posLong)),
+                sector = this.sector,
+                exportValuablesAllowed = ((this.exportValuablesAllowed ?: 0) != 0),
+                exportValuablesWithoutBagAllowed = ((this.exportValuablesWithoutBagAllowed ?: 0) != 0)
+        )
+        return stationV2
+    }
+
+    /** */
     override fun getByStationNo(stationNo: Int): StationV2 {
 
-        //
-        //val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-        //apiKey ?:
-//                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
-        //      val authorizedUserRecord = userRepository.findByKey(apiKey)
-        //authorizedUserRecord ?:
-        //      throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-        val station = stationRepository.findByStation(stationNo)
-        station ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "station not found")
+        val user=userService.get()
+
+
+        val station = stationRepository
+                .findByStation(stationNo)
+                ?: throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Station not found")
+
         return station.toStationV2()
     }
 
-
+    /** */
     override fun getByDebitorId(debitorId: Int): Array<StationV2> {
-        val stationIds = debitorStationRepository.findStationIdsByDebitorid(debitorId)
-        if (stationIds.count() == 0)
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "stationIds not found")
-        val stations = stationRepository.findAll(stationIds)
-        if (stations.count() == 0)
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "stations not found")
+        val user=userService.get()
+
+        val stationIds = debitorStationRepository
+                .findStationIdsByDebitorid(debitorId)
+                .also {
+                    if (it.count() == 0)
+                        throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Station IDs not found")
+                }
+
+        val stations = stationRepository
+                .findAll(QMstStation.mstStation
+                        .stationId.`in`(*stationIds.toTypedArray()))
+                .also {
+                    if (it.count() == 0)
+                        throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Stations not found")
+                }
+
         return stations.map { s -> s.toStationV2() }.toTypedArray()
     }
-}
 
-fun MstStation.toStationV2(): StationV2 {
-    val stationV2 = StationV2(
-            stationNo = this.stationNr,
-            stationMatchcode = null,
-            address = Address(
-                    line1 = this.address1,
-                    line2 = this.address2,
-                    line3 = null,
-                    phoneNumber = this.phone1,
-                    countryCode = this.country,
-                    zipCode = this.zip,
-                    city = this.city,
-                    street = this.street,
-                    streetNo = this.houseNr,
-                    geoLocation = GeoLocation(latitude = this.posLat, longitude = this.posLong)),
-            sector = this.sector,
-            exportValuablesAllowed = ((this.exportValuablesAllowed ?: 0) != 0),
-            exportValuablesWithoutBagAllowed = ((this.exportValuablesWithoutBagAllowed ?: 0) != 0)
-    )
-    return stationV2
+    override fun getByDebitorId(): Array<StationV2> {
+        val user=userService.get()
+
+        val debitorId=user.debitorId
+        debitorId ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "user without debitor")
+        return getByDebitorId(debitorId )
+    }
 }
 
 

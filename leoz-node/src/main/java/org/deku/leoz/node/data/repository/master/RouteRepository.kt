@@ -8,7 +8,7 @@ import org.eclipse.persistence.config.CacheUsage
 import org.eclipse.persistence.config.HintValues
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.QueryHints
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import sx.jpa.NamedQuery
 import sx.time.toTimestamp
 import java.sql.Timestamp
@@ -23,7 +23,7 @@ import javax.persistence.QueryHint
  */
 interface RouteRepository :
         JpaRepository<MstRoute, Long>,
-        QueryDslPredicateExecutor<MstRoute>,
+        QuerydslPredicateExecutor<MstRoute>,
         RouteRepositoryExtension {
     @QueryHints(
             // masc20170622. CACHING EXAMPLE
@@ -43,17 +43,19 @@ interface RouteRepositoryExtension {
         val validDate = Param(Timestamp::class.java)
     }
 
-    val findRouteQuery: NamedQuery<MstRoute, FindRouteQueryParams>
+    // TODO: should be reverted to property and lazy implementation when upstream https://jira.spring.io/browse/DATACMNS-1197 is resolved
+    fun getFindRouteQuery(): NamedQuery<MstRoute, FindRouteQueryParams>
 }
 
 class RouteRepositoryImpl : RouteRepositoryExtension {
+
     @Inject
     private lateinit var routeRepository: RouteRepository
 
     @Inject
     private lateinit var entityManager: EntityManager
 
-    override val findRouteQuery by lazy {
+    val _findRouteQuery by lazy {
         NamedQuery(
                 entityManager = entityManager,
                 resultType = MstRoute::class.java,
@@ -75,5 +77,9 @@ class RouteRepositoryImpl : RouteRepositoryExtension {
                             )
                 }
         )
+    }
+
+    override fun getFindRouteQuery(): NamedQuery<MstRoute, RouteRepositoryExtension.FindRouteQueryParams> {
+        return _findRouteQuery
     }
 }

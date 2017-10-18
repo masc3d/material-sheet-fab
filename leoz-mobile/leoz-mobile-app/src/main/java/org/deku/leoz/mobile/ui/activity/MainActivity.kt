@@ -11,16 +11,23 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.LocationSettings
+import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.LocationServiceGMS
+import org.deku.leoz.mobile.model.repository.OrderRepository
+import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.screen.MainScreen
-
+import sx.android.rx.observeOnMainThread
 
 class MainActivity
     :
@@ -29,6 +36,11 @@ class MainActivity
 
     private val login: Login by Kodein.global.lazy.instance()
     private val tones: Tones by Kodein.global.lazy.instance()
+
+    private val db: Database by Kodein.global.lazy.instance()
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
+
+    private val updateService: UpdateService by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +89,39 @@ class MainActivity
                 .cancelable(false)
                 .progress(true, 0)
                 .build()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Disable login when updates become available
+        this.updateService.availableUpdateProperty
+                .filter { it.value != null }
+                .map { it.value }
+                .switchMap { update ->
+                    // ..under specific conditions
+                    Observable.combineLatest(
+                            // has outdated orders
+                            this.orderRepository.hasOutdatedOrders()
+                                    .subscribeOn(db.scheduler)
+                                    .toObservable(),
+                            // No orders
+                            this.orderRepository.entitiesProperty.map {
+                                it.value.count() == 0
+                            },
+                            BiFunction { hasOutdatedOrders: Boolean, hasNoOrders: Boolean ->
+                                hasOutdatedOrders || hasNoOrders
+                            }
+                    )
+                            .filter { it == true }
+                            .map { update }
+
+                }
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribe {
+                    it.apk.install(this)
+                }
     }
 
     //region LoginFragment listener

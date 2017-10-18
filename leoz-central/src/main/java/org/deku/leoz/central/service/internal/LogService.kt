@@ -139,7 +139,7 @@ class LogService
     override fun onMessage(message: LogMessage, replyChannel: MqChannel?) {
         try {
             val identityUid = Identity.Uid(message.nodeUid)
-            log.debug("Received ${message.logEntries.count()} log messages from node [${identityUid}]")
+            log.trace("Received ${message.logEntries.count()} log messages from node [${identityUid}]")
 
             if (message.logEntries.count() == 0)
                 return

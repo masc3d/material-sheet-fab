@@ -2,7 +2,7 @@ package org.deku.leoz.node.data.repository.master
 
 import org.deku.leoz.node.data.jpa.MstCountry
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import javax.inject.Inject
 
 /**
@@ -11,7 +11,7 @@ import javax.inject.Inject
  */
 interface CountryRepository :
         JpaRepository<MstCountry, String>,
-        QueryDslPredicateExecutor<MstCountry>,
+        QuerydslPredicateExecutor<MstCountry>,
         CountryRepositoryExtension
 
 

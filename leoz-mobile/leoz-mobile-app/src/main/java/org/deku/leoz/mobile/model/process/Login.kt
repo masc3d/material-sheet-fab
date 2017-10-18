@@ -20,6 +20,7 @@ import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.Device
+import sx.android.IdleTimer
 import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
 import sx.text.parseHex
@@ -40,7 +41,6 @@ class Login {
     }
 
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
-    private val device: Device by Kodein.global.lazy.instance()
     private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()

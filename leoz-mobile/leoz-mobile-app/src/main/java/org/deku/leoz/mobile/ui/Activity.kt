@@ -56,6 +56,7 @@ import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Tones
 import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
@@ -80,6 +81,7 @@ import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
+import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTintRes
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
@@ -130,6 +132,8 @@ abstract class Activity : BaseActivity(),
 
     // Process models
     private val login: Login by Kodein.global.lazy.instance()
+    private val db: Database by Kodein.global.lazy.instance()
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
 
@@ -437,17 +441,49 @@ abstract class Activity : BaseActivity(),
 
         // Handle dynamically generated ids
         if (id >= MENU_ID_DEV_BASE && id < MENU_ID_DEV_MAX) {
+
+            //region Synthetic input support
             val syntheticInputs = this.syntheticInputs.get(id - MENU_ID_DEV_BASE)
 
             MaterialDialog.Builder(this)
                     .title(syntheticInputs.name)
                     .inputType(InputType.TYPE_CLASS_TEXT)
-                    .items(*syntheticInputs.entries.map { it.data }.toTypedArray())
-                    .itemsCallback { _, _, _, charSequence ->
-                        simulatingAidcReader.emit(data = charSequence.toString(), symbologyType = SymbologyType.Interleaved25)
-                    }
+                    .items(*syntheticInputs.entries.map { it.name }.toTypedArray())
                     .cancelable(true)
+                    .also {
+                        when (syntheticInputs.multipleChoice) {
+                            false -> it
+                                    .itemsCallback { _, _, position, charSequence ->
+                                        syntheticInputs.entries.get(position).also {
+                                            simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                        }
+                                    }
+                            true -> it
+                                    .autoDismiss(false)
+                                    .positiveText(android.R.string.ok)
+                                    .itemsCallbackMultiChoice(null, { _, _, _ ->
+                                        true
+                                    })
+                                    .onPositive { dialog, which ->
+                                        dialog.selectedIndices?.forEach { position ->
+                                            syntheticInputs.entries.get(position).also {
+                                                simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
+                                            }
+                                        }
+                                        dialog.dismiss()
+                                    }
+                                    .negativeText(android.R.string.selectAll)
+                                    .onNegative { dialog, which ->
+                                        if (dialog.selectedIndices?.isEmpty() ?: true) {
+                                            dialog.selectAllIndices()
+                                        } else {
+                                            dialog.clearSelectedIndices()
+                                        }
+                                    }
+                        }
+                    }
                     .show()
+            //endregion
 
             return true
         }
@@ -682,20 +718,48 @@ abstract class Activity : BaseActivity(),
                     this.uxActionOverlay.items = items
                 }
 
-        this.updateService.availableUpdateEvent
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onNext = { event ->
-                            this.snackbarBuilder
-                                    .message(this@Activity.getString(R.string.version_available, event.version))
-                                    .duration(Snackbar.LENGTH_INDEFINITE)
-                                    .actionText(R.string.update)
-                                    .actionClickListener {
-                                        event.apk.install(this@Activity)
+        this.updateService.availableUpdateProperty
+                .switchMap { item ->
+                    val update = item.value
+
+                    when {
+                    // No update or update revoked -> pass through
+                        update == null ->
+                            Observable.just(item)
+
+                    // Schema version is compatible or not available -> pass through
+                        update.schemaVersion?.isCompatibleWith(this.db.schemaVersion) ?: true ->
+                            Observable.just(item)
+
+                    // Otherwise check for relevant orders and suppress update if necessary
+                        else -> this.orderRepository.hasRelevantOrders()
+                                .subscribeOn(db.scheduler)
+                                .toObservable()
+                                .switchMap {
+                                    when (it) {
+                                        false -> Observable.just(item)
+                                        // Suppress update notification if there's still relevant orders
+                                        true -> Observable.empty()
                                     }
-                                    .build().show()
-                        })
+                                }
+                    }
+                }
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribeBy(
+                        onNext = {
+                            it.value?.also { event ->
+                                this.snackbarBuilder
+                                        .message(this@Activity.getString(R.string.version_available, event.version))
+                                        .duration(Snackbar.LENGTH_INDEFINITE)
+                                        .actionText(R.string.update)
+                                        .actionClickListener {
+                                            event.apk.install(this@Activity)
+                                        }
+                                        .build().show()
+                            }
+                        }
+                )
 
 
         // Authentication changes
@@ -992,6 +1056,9 @@ abstract class Activity : BaseActivity(),
                     .show()
         }
 
+        /**
+         * Apply this check only to CT50 devices temporally, cause this setting is not available in every android firmware.
+         */
         if (!device.mobileDateEnabled) {
             MaterialDialog.Builder(this)
                     .title("Mobile-Data disabled")

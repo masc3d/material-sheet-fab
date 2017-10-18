@@ -8,6 +8,7 @@ import feign.FeignException
 import io.reactivex.subjects.BehaviorSubject
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.Storage
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
@@ -15,6 +16,7 @@ import org.threeten.bp.Duration
 import sx.android.ApplicationPackage
 import sx.concurrent.Service
 import sx.rs.proxy.FeignClientProxy
+import sx.rx.ObservableRxProperty
 import sx.util.zip.verify
 import java.io.File
 import java.io.FileFilter
@@ -97,19 +99,23 @@ class UpdateService(
     /**
      * Available update or null
      */
-    var availableUpdate: ApplicationPackage? = null
+    val availableUpdateProperty = ObservableRxProperty<ApplicationUpdate?>(null)
+    var availableUpdate by availableUpdateProperty
         private set
 
-
-    data class AvailableUpdateEvent(val apk: ApplicationPackage, val version: String)
-
-    data class DownloadProgressEvent(val progress: Float)
-
     /**
-     * Available update event (behaviour subject, most recent event will be fire on registration)
+     * Application update event
+     * @property apk Application package
+     * @property version Application version
+     * @property schemaVersion Database schema version
      */
-    val availableUpdateEvent by lazy { this.availableUpdateEventSubject.hide() }
-    private val availableUpdateEventSubject by lazy { BehaviorSubject.create<AvailableUpdateEvent>().toSerialized() }
+    data class ApplicationUpdate(
+            val apk: ApplicationPackage,
+            val version: String,
+            val schemaVersion: Database.SchemaVersion?)
+
+    /** Download progress event */
+    data class DownloadProgressEvent(val progress: Float)
 
     /**
      * Download progress event
@@ -204,11 +210,23 @@ class UpdateService(
                 it.delete()
             }
 
-            val apk = ApplicationPackage(file = apkFile)
-            log.info("Update available [${apk.file}]")
+            // Extract database schema version
+            val schemaVersion = ZipFile(apkFile).use { zip ->
+                zip.getEntry("assets/${Database.ASSET_DATABASE}")?.let { entry ->
+                    zip.getInputStream(entry).use {
+                        Database.SchemaVersion.fromYaml(it)
+                    }
+                }
+            }
 
-            this.availableUpdate = apk
-            this.availableUpdateEventSubject.onNext(AvailableUpdateEvent(apk, apkName.version))
+            this.availableUpdate = ApplicationUpdate(
+                    apk = ApplicationPackage(file = apkFile),
+                    version = apkName.version,
+                    schemaVersion = schemaVersion)
+
+            log.info("Update available [${this.availableUpdate}]")
+
+
         } catch (e: Exception) {
             when (e) {
                 is FeignException -> log.error(e.message)

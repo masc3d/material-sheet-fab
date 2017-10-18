@@ -60,7 +60,7 @@ public class ResteasyAutoConfiguration {
     @Bean
     public ResteasyHandlerMapping resteasyHandlerMapper(ResteasyDeployment deployment) {
         ResteasyHandlerMapping handlerMapping = new ResteasyHandlerMapping(deployment);
-        handlerMapping.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
+        handlerMapping.setOrder(Ordered.LOWEST_PRECEDENCE);
         return handlerMapping;
     }
 

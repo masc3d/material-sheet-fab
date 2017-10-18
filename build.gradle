@@ -11,6 +11,7 @@ import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
 import org.eclipse.jgit.util.FS
 import java.time.Duration
+import org.gradle.api.invocation.Gradle
 import sx.ProcessExecutor
 import sx.ProcessExecutor.ProcessRunException
 import sx.packager.BundleRepository
@@ -37,10 +38,25 @@ def assertJvmVersion(String vmVersion) {
 
 assertJvmVersion(v_jvm)
 
+//region TODO: workaround for https://github.com/gradle/gradle/issues/3176, remove when resolved
+def buildOutputCacheProperties = project.rootDir.toPath()
+        .resolve('.gradle')
+        .resolve('buildOutputCleanup')
+        .resolve('cache.properties')
+        .toFile()
+
+if (!buildOutputCacheProperties.exists()) {
+    buildOutputCacheProperties.parentFile.mkdirs()
+    buildOutputCacheProperties.createNewFile()
+    buildOutputCacheProperties.write("gradle.version=${project.gradle.gradleVersion}")
+}
+//endregion
+
 buildscript {
     apply from: 'versions.gradle'
 
     ext {
+        // TODO 4.9.0.201710071750-r breaks user auth
         v_jgit = '4.8.0.201706111038-r'
         v_jsch = '0.0.9'
     }

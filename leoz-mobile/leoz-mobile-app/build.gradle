@@ -54,7 +54,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 26
         versionCode 2
-        versionName "0.91-SNAPSHOT"
+        versionName "0.95-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -234,7 +234,7 @@ dependencies {
             'com.journeyapps:zxing-android-embedded:3.5.0',
 
             // YAML
-            "pl.droidsonroids.yaml:snakeyaml:1.18-android",
+            "pl.droidsonroids.yaml:snakeyaml:1.18.2",
 
             // Signature pad
             "com.github.gcacace:signature-pad:1.2.1",
@@ -351,7 +351,7 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:3.0.0-beta7"
+            "com.android.databinding:compiler:3.0.0-rc1"
     )
 }
 

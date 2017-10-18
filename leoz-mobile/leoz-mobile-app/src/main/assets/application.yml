@@ -1,3 +1,7 @@
+# User settings
+user:
+   idle-timeout-minutes: 240
+
 # Peer connectivity settings
 remote:
    host: 'leox.derkurier.de'

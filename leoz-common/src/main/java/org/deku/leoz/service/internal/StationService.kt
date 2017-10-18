@@ -47,8 +47,13 @@ interface StationService {
 
     @GET
     @Path("/debitor/{$DEBITOR_ID}")
-    @ApiOperation(value = "get stations")
+    @ApiOperation(value = "get stations by debitor-id")
     fun getByDebitorId(
             @PathParam(DEBITOR_ID) @ApiParam(value = "debitor id", example = "3", required = true) debitorId: Int
     ): Array<StationV2>
+
+    @GET
+    @Path("/debitor")
+    @ApiOperation(value = "get stations by debitor-id of auth-user")
+    fun getByDebitorId(): Array<StationV2>
 }

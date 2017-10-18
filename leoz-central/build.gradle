@@ -69,6 +69,13 @@ sourceSets {
 }
 //endregion
 
+// TODO: to be removed when spring-boot goes final
+repositories {
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+}
+
 dependencies {
     // leoz webservice dependencies
     compile(

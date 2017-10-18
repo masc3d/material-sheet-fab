@@ -2,7 +2,7 @@ package org.deku.leoz.node.data.repository.master
 
 import org.deku.leoz.node.data.jpa.MstStationSector
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.querydsl.QueryDslPredicateExecutor
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 /**
  * Station sector repository
@@ -10,4 +10,4 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
  */
 interface StationSectorRepository :
         JpaRepository<MstStationSector, Long>,
-        QueryDslPredicateExecutor<MstStationSector>
+        QuerydslPredicateExecutor<MstStationSector>

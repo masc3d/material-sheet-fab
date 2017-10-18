@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.config.ParcelMessageServiceConfiguration
+import org.deku.leoz.central.config.ParcelServiceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
@@ -19,6 +19,7 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
+import java.nio.file.Path
 
 
 @Named
@@ -46,7 +47,7 @@ open class ParcelProcessing {
     private lateinit var orderRepository: OrderTableJooqRepository
 
     @Inject
-    private lateinit var parcelMessageServiceConfiguration: ParcelMessageServiceConfiguration
+    private lateinit var parcelServiceSettings: ParcelServiceConfiguration.Settings
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
@@ -58,7 +59,7 @@ open class ParcelProcessing {
     open fun processMessages(): Boolean {
         var result = true
 
-        if (parcelMessageServiceConfiguration.doSkipParcelProcessing) {
+        if (parcelServiceSettings.skipParcelProcessing) {
             log.trace("Reset after Receive")
             return result
         }
@@ -69,6 +70,7 @@ open class ParcelProcessing {
             events ?: return true
 
             events.forEach {
+                var pathToDelete: Path? = null
 
                 var insertStatus = true
                 val r = dslContext.newRecord(Tables.TBLSTATUS)
@@ -79,12 +81,19 @@ open class ParcelProcessing {
 
                 val parcelScan = parcelNo.toLong().toString()
 
+                val user = userRepository.findById(it.userId)
+                val userEmail = user?.email ?: ""
+                var infotext = "MOB $userEmail"
+                if (infotext.length > 60)
+                    infotext = infotext.substring(0, 60)
+
+
                 r.packstuecknummer = parcelNo.toDouble()
                 r.setDate(it.scanned)
                 r.setTime(it.scanned)
                 r.poslat = it.latitude
                 r.poslong = it.longitude
-                r.infotext = "MOB " + (it.userId?.toString() ?: "")
+                r.infotext = infotext
 
                 val eventId = it.eventValue
                 val event = Event.values().find { it.value == eventId }!!
@@ -98,7 +107,6 @@ open class ParcelProcessing {
                 r.erzeugerstation = "002"
 
 
-
                 val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
                 parcelRecord ?:
                         return false
@@ -108,11 +116,11 @@ open class ParcelProcessing {
 
                 val userId = it.userId
                 //if (userId != null) {
-                    //val station = userRepository.findStationNrByUserId(userId)
-                    val station = orderRecord.depotnrld
-                    if (station != null) {
-                        r.erzeugerstation = station.toString().padStart(3, '0')
-                    }
+                //val station = userRepository.findStationNrByUserId(userId)
+                val station = orderRecord.depotnrld
+                if (station != null) {
+                    r.erzeugerstation = station.toString().padStart(3, '0')
+                }
                 //}
                 val from = r.erzeugerstation
 
@@ -163,6 +171,28 @@ open class ParcelProcessing {
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
+//                    val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
+//                    if (!file.exists())
+//                        return@forEach
+//                    else {
+//                        val pathMobile = storage.mobileDataDirectory.toPath()
+//                        val fileNameInfo = userId.toString()
+//                        val loc = Location.SB
+//                        val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
+//                        val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
+//                        val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
+//                        val copyOption = StandardCopyOption.REPLACE_EXISTING
+//                        Files.copy(file.toPath(), pathFileMobile, copyOption)
+//                        if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
+//                            pathToDelete = file.toPath()
+//
+//                            val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+////wenn LEO soweit ist .jpg anzuzeigen...
+//                            //parcelRecord.bmpfilename = bmp
+//                            //parcelRecord.store()
+//                        } else
+//                            return@forEach
+//                    }
                 }
 
                 val checkPicturePath = parcelAddInfo.pictureLocation != null
@@ -249,7 +279,7 @@ open class ParcelProcessing {
                         } else {
                             oldDeliveryDate = orderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
                         }
-                        val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+                        val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
                         val deliveryTime = it.scanned.toDateOnlyTime()
                         val deliveryDate = it.scanned.toDateWithoutTime()
 
@@ -360,7 +390,7 @@ open class ParcelProcessing {
                                                 } else {
                                                     unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
                                                 }
-                                                val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime().toString() ?: ""
+                                                val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
 
 
                                                 unitInBagOrderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
@@ -604,7 +634,13 @@ open class ParcelProcessing {
                 }
 
                 if (insertStatus) {
-                    statusRepository.saveEvent(r)
+                    if (!statusRepository.saveEvent(r))
+                        result = false
+                    else {
+                        if (pathToDelete != null) {
+                            // Files.delete(pathToDelete)
+                        }
+                    }
                 }
 
                 if (result) {
@@ -614,6 +650,7 @@ open class ParcelProcessing {
             }
 
         } catch (e: Exception) {
+            log.error(e.toString())
             result = false
         }
 

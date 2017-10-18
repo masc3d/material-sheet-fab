@@ -32,10 +32,10 @@ import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.VehicleLoading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.rx.composeAsRest
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.rx.composeAsRest
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
@@ -44,7 +44,6 @@ import org.deku.leoz.mobile.ui.vm.SectionsAdapter
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.assertAny
-import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
@@ -57,7 +56,6 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
-import java.util.concurrent.ExecutorService
 
 /**
  * Vehicle loading screen
@@ -463,22 +461,27 @@ class VehicleLoadingScreen :
             // Synthetic inputs for delivery lists, retrieved via online service
             val ovDeliveryLists = Observable.fromCallable {
                 val deliveryListService = Kodein.global.instance<DeliveryListService>()
-                deliveryListService.get(ShortDate("2017-08-10"))
+                deliveryListService.get(deliveryDate = null)
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)
                     .doOnError {
                         log.error(it.message, it)
                     }
-                    .map {
+                    .map { dlInfos ->
                         SyntheticInput(
                                 name = "Delivery lists",
-                                entries = it.map {
-                                    SyntheticInput.Entry(
-                                            symbologyType = SymbologyType.Interleaved25,
-                                            data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
-                                    )
-                                }
+                                multipleChoice = true,
+                                entries = dlInfos
+                                        .sortedWith(compareBy({ it.date.date }, { it.id }))
+                                        .map {
+                                            val data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
+                                            SyntheticInput.Entry(
+                                                    symbologyType = SymbologyType.Interleaved25,
+                                                    data = data,
+                                                    name = "${it.date}: ${data}"
+                                            )
+                                        }
                         )
                     }
                     .onErrorResumeNext(Observable.empty())

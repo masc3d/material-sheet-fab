@@ -27,18 +27,19 @@ open class Device(private val context: Context) {
             Generic,
             Honeywell,
             Motorola,
+            Blackview
         }
 
         /**
          * Manufacturer type
          */
         val type: Type by lazy {
-            if (this.name.contains("honeywell", ignoreCase = true))
-                Type.Honeywell
-            else if (this.name.contains("motorola", ignoreCase = true))
-                Type.Motorola
-            else
-                Type.Generic
+            when {
+                this.name.contains("honeywell", ignoreCase = true)  -> Type.Honeywell
+                this.name.contains("motorola", ignoreCase = true)   -> Type.Motorola
+                this.name.contains("blackview", ignoreCase = true)  -> Type.Blackview
+                else -> Type.Generic
+            }
         }
 
         override fun toString(): String = "Manufacturer(name=${name}, type=${type})"
@@ -119,14 +120,12 @@ open class Device(private val context: Context) {
 
     val mobileDateEnabled: Boolean
         get() {
+            // Skip check for "Blackview" devices, as their firmware is returning false always
+            if (this.manufacturer.type == Manufacturer.Type.Blackview) {
+                return true
+            }
             // TODO: inofficial api/configuration setting., likely to break in future versions. should be improved or removed.
-            if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1)
-            {
-                return Settings.Global.getInt(context.contentResolver, "mobile_data", 1) == 1
-            }
-            else{
-                return Settings.Secure.getInt(context.contentResolver, "mobile_data", 1) == 1
-            }
+            return Settings.Global.getInt(context.contentResolver, "mobile_data", 1) == 1
         }
 
     override fun toString(): String =
