@@ -92,14 +92,21 @@ interface ParcelServiceV1 {
     @Path("/export/{$STATION_NO}")
     @ApiOperation(value = "Get parcels to export")
     fun getParcels2ExportByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+    ): List<ParcelServiceV1.Order2Export>
+
+    @GET
+    @Path("/export/bag/{$STATION_NO}")
+    @ApiOperation(value = "Get parcels to export in Bag")
+    fun getParcels2ExportInBagByStationNo(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
     @Path("/export/loaded/{$STATION_NO}")
     @ApiOperation(value = "Get loaded parcels to export")
     fun getLoadedParcels2ExportByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
@@ -111,16 +118,16 @@ interface ParcelServiceV1 {
     @Path("/loadinglist/{$LOADINGLIST_NO}")
     @ApiOperation(value = "Get parcels by loadinglist")
     fun getParcels2ExportByLoadingList(
-            @PathParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist number", example = "300005", required = true) loadinglistNo: Long
+            @PathParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
     ): List<ParcelServiceV1.Order2Export>
 
     @PUT
     @Path("/export")
-    @ApiOperation(value = "export parcel")
+    @ApiOperation(value = "Export parcel")
     fun export(
-            @QueryParam(SCANCODE) @ApiParam(value = "parcel no or creference") scanCode: String = "",
-            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "loadinglist no", required = true) loadingListNo: Long,
-            @QueryParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
+            @QueryParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = "",
+            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", required = true) loadingListNo: Long,
+            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): Boolean
 
     data class Order2Export(

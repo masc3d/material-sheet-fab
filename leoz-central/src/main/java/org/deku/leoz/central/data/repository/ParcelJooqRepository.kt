@@ -86,6 +86,18 @@ class ParcelJooqRepository {
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 
+    fun getParcels2ExportInBagByStation(station: Int): List<TblauftragcolliesRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(
+                        Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.eq(station)
+                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
+                .and(Tables.TBLAUFTRAGCOLLIES.VERPACKUNGSART.eq(91)
+                        .or(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL.lessOrEqual(2.0)))
+                .fetchInto(TblauftragcolliesRecord::class.java)
+    }
+
     fun getOrder2ExportById(orderId: Long): TblauftragRecord? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAG)
@@ -127,7 +139,8 @@ class ParcelJooqRepository {
                                 .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
-    fun getParcels2ExportByCreferenceAndStation(station: Int,cReference:String): List<TblauftragcolliesRecord>? {
+
+    fun getParcels2ExportByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord>? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .where(
@@ -136,6 +149,39 @@ class ParcelJooqRepository {
                                 .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                                 .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
                 .fetchInto(TblauftragcolliesRecord::class.java)
+    }
+
+    fun getParcels2ExportByCreference(cReference: String): List<TblauftragcolliesRecord>? {
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(
+                        Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference)
+                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
+                .fetchInto(TblauftragcolliesRecord::class.java)
+    }
+
+    fun getParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord>? {
+        val unitRecords: List<TblauftragcolliesRecord>?
+        if (station == 800) {
+            unitRecords = dslContext.select()
+                    .from(Tables.TBLAUFTRAGCOLLIES)
+                    .where(
+                            Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.greaterOrEqual(800)
+                                    .and(Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.lessOrEqual(900))
+                                    .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))
+                    )
+                    .fetchInto(TblauftragcolliesRecord::class.java)
+        } else {
+            unitRecords = dslContext.select()
+                    .from(Tables.TBLAUFTRAGCOLLIES)
+                    .where(
+                            Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.eq(station)
+                                    .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))
+                    )
+                    .fetchInto(TblauftragcolliesRecord::class.java)
+        }
+        return unitRecords
     }
 }
 
