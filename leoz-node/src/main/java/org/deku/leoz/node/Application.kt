@@ -25,6 +25,7 @@ import org.yaml.snakeyaml.Yaml
 import sx.Disposable
 import sx.Dispose
 import sx.JarManifest
+import sx.Process
 import sx.io.ProcessLockFile
 import sx.logging.slf4j.info
 import sx.platform.JvmUtil
@@ -207,7 +208,7 @@ open class Application :
         }
         logConfiguration.initialize()
 
-        log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
+        log.info("${this.name} [${version}] ${JvmUtil.shortInfoText} pid [${Process.currentProcess.pid}]")
 
         // Log system information
         log.info(this.systemInformation)
