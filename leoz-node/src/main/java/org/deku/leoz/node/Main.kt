@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.Banner
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration
 import org.springframework.boot.autoconfigure.web.*
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration
@@ -60,6 +61,9 @@ import java.net.URLClassLoader
         /** Actuator endpoint configuration, required for automatically dispatching jolokia */
         //ManagementServerPropertiesAutoConfiguration::class,
         //EndpointWebMvcAutoConfiguration::class,
+
+        // JMX auto configuration (enabling @Managed.. spring annotations)
+        JmxAutoConfiguration::class,
 
         /** Jolokia */
         //JolokiaAutoConfiguration::class,
