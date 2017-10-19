@@ -12,10 +12,14 @@ export class RoleGuard implements CanActivate {
     'DRIVER': [ 'tour' ],
     'USER': [
       'user',
-      'tour' ],
+      'tour',
+      'stationloading',
+      'importscan'],
     'POWERUSER': [
       'user',
-      'tour' ],
+      'tour',
+      'stationloading',
+      'importscan' ],
   };
 
   constructor( private router: Router ) {

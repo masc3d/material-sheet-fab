@@ -1,12 +1,16 @@
 import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
-import { MenuItem } from 'primeng/primeng';
+import { MenuItem, SelectItem } from 'primeng/primeng';
 
 import { RoleGuard } from '../../core/auth/role.guard';
 import { TranslateService } from 'app/core/translate/translate.service';
 import { AbstractTranslateComponent } from 'app/core/translate/abstract-translate.component';
 import { environment } from '../../../environments/environment';
+import { AuthenticationService } from '../../core/auth/authentication.service';
+import { Station } from '../../core/auth/station.model';
+import { Router } from '@angular/router';
+import { BagscanGuard } from '../../core/auth/bagscan.guard';
 
 @Component( {
   selector: 'app-left-menu',
@@ -15,6 +19,14 @@ import { environment } from '../../../environments/environment';
       <p-panelMenu [model]="items"></p-panelMenu>
       <div style="margin-top: 15px; margin-left: 10px">
         {{ 'loggedinas' | translate }}:<br>{{myEmail}}
+      </div>
+      <div *ngIf="debitorStations.length === 1" style="margin-top: 15px; margin-left: 10px">
+        {{ 'activeStation' | translate }}:<br>{{activeStation.stationNo}}
+      </div>
+      <div *ngIf="debitorStations.length > 1" style="margin-top: 15px; margin-left: 10px">
+        {{ 'activeStation' | translate }}:<br>
+        <p-dropdown [options]="debitorStations" [ngModel]="activeStation"
+                    (onChange)="changeActiveStation($event.value)"></p-dropdown>
       </div>
     </div>
   `
@@ -28,9 +40,15 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
   items: MenuItem[];
   myEmail: string;
 
+  debitorStations: SelectItem[];
+  activeStation: Station;
+
   constructor( private renderer: Renderer2,
                @Inject( DOCUMENT ) private document: any,
                private roleGuard: RoleGuard,
+               private auth: AuthenticationService,
+               private router: Router,
+               private bagscanGuard: BagscanGuard,
                protected translate: TranslateService ) {
     super( translate, () => {
       // this.items = this.createItems();
@@ -44,6 +62,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
 
   ngOnInit() {
     super.ngOnInit();
+    this.debitorStations = [];
     if (this.usedMenu === 'leoz') {
       this.items = this.createItems();
     } else if (this.usedMenu === 'leo-old') {
@@ -51,6 +70,28 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
     }
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
     this.myEmail = currUser.user.email;
+
+    this.auth.debitorStations
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( debitorStations: Station[] ) => {
+        this.debitorStations = [];
+        debitorStations.forEach( ( station: Station ) => {
+          this.debitorStations.push( { label: station.stationNo.toString(), value: station } );
+        } );
+      } );
+
+    this.auth.activeStation
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( activeStation: Station ) => {
+        this.activeStation = activeStation;
+      } );
+  }
+
+  changeActiveStation( selected: Station ) {
+    this.auth.changeActiveStation( selected );
+    this.activeStation = selected;
+    this.bagscanGuard.activeStation = selected;
+    this.router.navigate( [ 'dashboard/home' ] );
   }
 
   private createItems(): MenuItem[] {
@@ -168,7 +209,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'importscan' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/importscan/importscanquick',
           command: closeMenu
         },
         {

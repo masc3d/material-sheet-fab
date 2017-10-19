@@ -6,14 +6,17 @@ import { StationloadingComponent } from './stationloading.component';
 import { TabMenuModule } from 'primeng/primeng';
 
 
-@NgModule({
+@NgModule( {
   imports: [
     SharedModule,
     TabMenuModule,
     StationloadingRoutingModule
   ],
-  declarations: [StationloadingComponent],
-  exports: [StationloadingComponent],
-})
+  declarations: [
+    StationloadingComponent
+  ],
+  exports: [ StationloadingComponent ],
+} )
 
-export class StationloadingModule { }
+export class StationloadingModule {
+}
