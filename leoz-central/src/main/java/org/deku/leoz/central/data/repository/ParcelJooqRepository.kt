@@ -10,6 +10,8 @@ import org.deku.leoz.central.data.jooq.tables.Tblauftragcollies
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.Tblauftrag
 import org.deku.leoz.central.data.jooq.tables.records.TblauftragRecord
+import org.deku.leoz.central.data.toUByte
+import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.Address
 import org.jooq.types.UInteger
@@ -82,7 +84,8 @@ class ParcelJooqRepository {
                 .where(
                         Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.eq(loadinglistNo.toDouble())
                                 .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
-                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                )
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 
@@ -92,9 +95,11 @@ class ParcelJooqRepository {
                 .where(
                         Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.eq(station)
                                 .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
-                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
-                .and(Tables.TBLAUFTRAGCOLLIES.VERPACKUNGSART.eq(91)
-                        .or(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL.lessOrEqual(2.0)))
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                                .and(Tables.TBLAUFTRAGCOLLIES.VERPACKUNGSART.eq(91)//Valore
+                                        .or(Tables.TBLAUFTRAGCOLLIES.GEWICHTEFFEKTIV.lessOrEqual(2.0)))
+                                .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)
+                )
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 
@@ -103,7 +108,9 @@ class ParcelJooqRepository {
                 .from(Tables.TBLAUFTRAG)
                 .where(Tables.TBLAUFTRAG.ORDERID.eq(orderId.toDouble())
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
-                        .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0))))//fehlende anfahrt raus
+                        .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
+                        .and(Tables.TBLAUFTRAG.KZ_TRANSPORTART.eq(1.toUByte()))//ONS
+                )
                 .fetchOneInto(Tblauftrag.TBLAUFTRAG)
     }
 
@@ -114,6 +121,7 @@ class ParcelJooqRepository {
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
                         .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
                         .and(Tables.TBLAUFTRAG.EMPFAENGER.isNull)
+                        .and(Tables.TBLAUFTRAG.KZ_TRANSPORTART.eq(1.toUByte()))//ONS
                 )
                 .fetchInto(TblauftragRecord::class.java)
     }

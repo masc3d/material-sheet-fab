@@ -520,6 +520,8 @@ open class ParcelServiceV1 :
         orderIdList.forEach {
             val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
             if (orderRecord != null) {
+                if(orderRecord.bagidnra!=null)
+                    return@forEach
                 val order = orderRecord.toOrder2Export()
                 val pp = parcels.filter { f -> f.orderid == it }
                 if (pp.count() > 0) {
