@@ -27,9 +27,15 @@ export const routes = [
       },
       {
         path: 'stationloading', data: [ 'Stationloading' ],
-        // canActivate: [ AuthenticationGuard,
-        //   RoleGuard ],
+        canActivate: [ AuthenticationGuard,
+                       RoleGuard ],
         loadChildren: 'app/dashboard/stationloading/stationloading.module#StationloadingModule'
+      },
+      {
+        path: 'importscan', data: [ 'importscan' ],
+        canActivate: [ AuthenticationGuard,
+                       RoleGuard ],
+        loadChildren: 'app/dashboard/importscan/importscan.module#ImportscanModule'
       }
     ]
   }

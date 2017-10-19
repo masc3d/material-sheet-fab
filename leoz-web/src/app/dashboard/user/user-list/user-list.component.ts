@@ -14,7 +14,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 @Component( {
   selector: 'app-user-list',
   template: `
-    <p-dataTable [value]="users | async | userfilter" resizableColumns="true" [responsive]="true"
+    <p-dataTable [value]="users$ | async | userfilter" resizableColumns="true" [responsive]="true"
                  sortMode="multiple" [multiSortMeta]="multiSortMeta">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
@@ -54,7 +54,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 } )
 export class UserListComponent extends AbstractTranslateComponent implements OnInit {
 
-  users: Observable<User[]>;
+  users$: Observable<User[]>;
   dateFormat: string;
 
   multiSortMeta: SortMeta[] = [];
@@ -74,7 +74,7 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
 
     this.deactivate( <User> {} );
     this.selected( <User> {} );
-    this.users = this.userService.users;
+    this.users$ = this.userService.users$;
     this.userService.getUsers();
   }
 

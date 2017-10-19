@@ -11,7 +11,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 export class MsgService {
 
   private msgsSubject = new BehaviorSubject<Message[]>( <Message[]> [] );
-  public msgs = this.msgsSubject.asObservable().distinctUntilChanged();
+  public msgs$ = this.msgsSubject.asObservable().distinctUntilChanged();
 
   constructor( private translate: TranslateService ) {
   }

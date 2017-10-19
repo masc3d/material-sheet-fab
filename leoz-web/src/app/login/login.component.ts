@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   private devUser = `${environment.devUser}`;
   private devPass = `${environment.devPass}`;
 
-  errMsgs: Observable<Message[]>;
+  errMsgs$: Observable<Message[]>;
   loginForm: FormGroup;
 
   constructor( private fb: FormBuilder,
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.msgService.clear();
-    this.errMsgs = this.msgService.msgs;
+    this.errMsgs$ = this.msgService.msgs$;
 
     // reset login status
     this.authenticationService.logout();

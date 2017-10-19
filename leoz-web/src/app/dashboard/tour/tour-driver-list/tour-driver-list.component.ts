@@ -61,7 +61,7 @@ interface CallbackArguments {
         </div>
       </div>
     </div>
-    <p-dataTable *ngIf="tableIsVisible" [value]="drivers | async | driverfilter: [filterName]" resizableColumns="true"
+    <p-dataTable *ngIf="tableIsVisible" [value]="drivers$ | async | driverfilter: [filterName]" resizableColumns="true"
                  [responsive]="true" sortField="lastName" [sortOrder]="1">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
@@ -85,7 +85,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   maxDateValue: Date;
   latestRefresh: Date;
-  drivers: Observable<Driver[]>;
+  drivers$: Observable<Driver[]>;
   isPermitted: boolean;
   filterName: string;
   tableIsVisible: boolean;
@@ -94,7 +94,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   dateFormatEvenLonger: string;
   locale: any;
 
-  private refreshTimer: Observable<number>;
+  private refreshTimer$: Observable<number>;
   private subscription: Subscription;
   private periodicallyUsedDriver: Driver;
   private periodicallyUsedCallback: Function;
@@ -138,7 +138,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       { label: '30', value: 30 },
       { label: '60', value: 60 } ];
 
-    this.drivers = this.driverService.drivers;
+    this.drivers$ = this.driverService.drivers$;
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.tourService.resetMarkerAndRoute();
     this.tableIsVisible = false;
@@ -146,7 +146,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     if (this.isPermitted) {
       this.allDrivers();
     } else if (this.roleGuard.isDriver()) {
-      this.driverService.currentDriver
+      this.driverService.currentDriver$
         .takeUntil( this.ngUnsubscribe )
         .subscribe( ( currentDriver: Driver ) => {
           // empty Driver object could be returned
@@ -259,8 +259,8 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-    this.refreshTimer = Observable.timer( 0, this.selectedRefresh * 60 * 1000 );
-    this.subscription = this.refreshTimer.subscribe( ( tick: number ) => {
+    this.refreshTimer$ = Observable.timer( 0, this.selectedRefresh * 60 * 1000 );
+    this.subscription = this.refreshTimer$.subscribe( ( tick: number ) => {
       this.periodicallyUsedCallback( {
         driver: this.periodicallyUsedDriver,
         tourService: this.tourService,

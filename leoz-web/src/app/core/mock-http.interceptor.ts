@@ -103,14 +103,6 @@ export class MockHttpInterceptor implements HttpInterceptor {
                 resp.complete();
               } );
           }
-        case 'GET':
-          return new Observable( resp => {
-            resp.next( new HttpResponse( {
-              status: 200,
-              body: allPackages
-            } ) );
-            resp.complete();
-          } );
         default:
           return new Observable( resp => {
             resp.next( new HttpErrorResponse( {
@@ -120,14 +112,6 @@ export class MockHttpInterceptor implements HttpInterceptor {
             resp.complete();
           } );
       }
-    } else if (url.endsWith( '/internal/v1/loadinglist/new' )) {
-      return new Observable( resp => {
-        resp.next( new HttpResponse( {
-          status: 200,
-          body: newLoadlistNo
-        } ) );
-        resp.complete();
-      } );
     } else if (url.endsWith( '/internal/v1/loadinglist/report/header' )) {
       return new Observable( resp => {
         resp.next( new HttpResponse( {
@@ -233,9 +217,6 @@ const loadlistHeaderData = {
   'shipmentCount': 1234,
   'packageCount': 4567,
   'totalWeight': 1278.91
-};
-const newLoadlistNo = {
-  'loadlistNo': 123456
 };
 const allPackages = [
   {

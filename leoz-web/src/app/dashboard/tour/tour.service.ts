@@ -23,19 +23,19 @@ export class TourService {
   };
 
   private displayMarkerSubject = new BehaviorSubject<boolean>( false );
-  public displayMarker = this.displayMarkerSubject.asObservable().distinctUntilChanged();
+  public displayMarker$ = this.displayMarkerSubject.asObservable().distinctUntilChanged();
 
   private activeMarkerSubject = new BehaviorSubject<MarkerModel>( this.homebase );
-  public activeMarker = this.activeMarkerSubject.asObservable().distinctUntilChanged();
+  public activeMarker$ = this.activeMarkerSubject.asObservable().distinctUntilChanged();
 
   private allMarkersSubject = new BehaviorSubject<MarkerModel[]>( [] );
-  public allMarkers = this.allMarkersSubject.asObservable().distinctUntilChanged();
+  public allMarkers$ = this.allMarkersSubject.asObservable().distinctUntilChanged();
 
   private displayRouteSubject = new BehaviorSubject<boolean>( false );
-  public displayRoute = this.displayRouteSubject.asObservable().distinctUntilChanged();
+  public displayRoute$ = this.displayRouteSubject.asObservable().distinctUntilChanged();
 
   private activeRouteSubject = new BehaviorSubject<Position[]>( <Position[]> [] );
-  public activeRoute = this.activeRouteSubject.asObservable().distinctUntilChanged();
+  public activeRoute$ = this.activeRouteSubject.asObservable().distinctUntilChanged();
 
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
   private locationFromToUrl = `${environment.apiUrl}/internal/v2/location`;
@@ -48,7 +48,7 @@ export class TourService {
                private msgService: MsgService,
                private translate: TranslateService,
                private driverService: DriverService ) {
-    driverService.drivers.subscribe( ( drivers: Driver[] ) => this.drivers = drivers );
+    driverService.drivers$.subscribe( ( drivers: Driver[] ) => this.drivers = drivers );
     this.duration = 0;
     this.selectedDate = null;
   }

@@ -1,0 +1,51 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+
+import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
+import { TranslateService } from '../../../core/translate/translate.service';
+
+@Component( {
+  selector: 'app-importscanquick',
+  templateUrl: './importscanquick.component.html',
+  styles: [ `
+    .chargeLvlGreen {
+      color: white;
+      background-color: green;
+    }
+
+    .chargeLvlRed {
+      color: white;
+      background-color: red;
+    }
+
+    .chargeLvlYellow {
+      color: black;
+      background-color: yellow;
+    }
+  ` ]
+  // styles: [ '.ui-g-12 { border: 1px solid green; }' ]
+} )
+export class ImportscanquickComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
+
+  importscanquickForm: FormGroup;
+
+  constructor( private fb: FormBuilder,
+               public translate: TranslateService ) {
+    super( translate, () => {
+    } );
+  }
+
+  ngOnInit() {
+    super.ngOnInit();
+
+    this.importscanquickForm = this.fb.group( {
+      /* payload: [ null ],
+       selectloadlist: [ null ],
+       scanfield: [ null ],
+       loadlistnumber: [ { value: '', disabled: true } ],
+       printlabel: [ null ],
+       basedon: [ 'actuallist' ]*/
+    } );
+
+  }
+}

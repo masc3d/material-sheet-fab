@@ -15,10 +15,10 @@ export class DriverService {
   private driverListUrl = `${environment.apiUrl}/internal/v1/user`;
 
   private driversSubject = new BehaviorSubject<Driver[]>( [] );
-  public drivers = this.driversSubject.asObservable().distinctUntilChanged();
+  public drivers$ = this.driversSubject.asObservable().distinctUntilChanged();
 
   private currentDriversSubject = new BehaviorSubject<Driver>( <Driver> {} );
-  public currentDriver = this.currentDriversSubject.asObservable().distinctUntilChanged();
+  public currentDriver$ = this.currentDriversSubject.asObservable().distinctUntilChanged();
 
   constructor( private http: HttpClient,
                private msgService: MsgService ) {
