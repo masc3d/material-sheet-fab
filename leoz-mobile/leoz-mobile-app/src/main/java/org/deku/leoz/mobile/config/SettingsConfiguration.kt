@@ -21,6 +21,8 @@ class SettingsConfiguration {
         val ASSET_SETTINGS = "application.yml"
         val ASSET_SETTINGS_DEBUG = "application-debug.yml"
 
+        private val log = LoggerFactory.getLogger(SettingsConfiguration::class.java)
+
         val module = Kodein.Module {
             bind<ConfigurationMap>() with singleton {
                 val context: Context = instance()
@@ -50,7 +52,9 @@ class SettingsConfiguration {
             }
 
             bind<DebugSettings>() with singleton {
-                DebugSettings(instance<ConfigurationMap>())
+                DebugSettings(instance<ConfigurationMap>()).also {
+                    log.info(it.toString())
+                }
             }
 
             bind<LocationSettings>() with singleton {
