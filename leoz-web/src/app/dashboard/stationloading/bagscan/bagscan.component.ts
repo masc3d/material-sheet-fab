@@ -14,6 +14,8 @@ import { KeyUpEventService } from '../../../core/key-up-event.service';
 import { SoundService } from '../../../core/sound.service';
 import { BagData } from './bagdata.model';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { PrintingService } from '../../../core/printing/printing.service';
+import { BagscanReportingService } from '../../../core/reporting/bagscan-reporting.service';
 
 interface ScanMsg {
   type: string;
@@ -80,7 +82,9 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
                private bagscanService: BagscanService,
                public translate: TranslateService,
                private keyUpService: KeyUpEventService,
-               private soundService: SoundService ) {
+               private soundService: SoundService,
+               private reportingService: BagscanReportingService,
+               private printingService: PrintingService ) {
     super( translate, () => {
       this.baglists = this.createBaglistItems( this.baglistItems );
     } );
@@ -467,6 +471,13 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       this.setSuccessStyle();
       this.bagscanForm.get( 'backSeal' ).patchValue( this.bagscanForm.get( 'blueSealNo' ).value );
     }
+  }
+
+  generateLabel() {
+    console.log('generateLabel...');
+    this.printingService.printReports(
+      this.reportingService.generateReports(  ),
+                'lbl.pdf', false );
   }
 
 }
