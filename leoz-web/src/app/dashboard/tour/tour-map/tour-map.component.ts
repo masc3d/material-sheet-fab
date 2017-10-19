@@ -67,7 +67,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
     super.ngOnInit();
 
     this.allCustomMarkers = [];
-    this.tourService.displayMarker
+    this.tourService.displayMarker$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( displayMarker: boolean ) => {
         this.displayMarker = displayMarker;
@@ -76,7 +76,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
         }
       } );
 
-    this.tourService.allMarkers
+    this.tourService.allMarkers$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( allMarkers: MarkerModel[] ) => {
         this.removeAllCustomMarkers();
@@ -100,7 +100,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
         }
       } );
 
-    this.tourService.displayRoute
+    this.tourService.displayRoute$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( displayRoute: boolean ) => {
         if (!displayRoute) {
@@ -108,7 +108,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
         }
       } );
 
-    this.tourService.activeMarker
+    this.tourService.activeMarker$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeMarker: MarkerModel ) => {
         switch (activeMarker.position.vehicleType) {
@@ -147,7 +147,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
         this.yagaMap.flyTo( L.latLng( activeMarker.position.latitude, activeMarker.position.longitude ) );
       } );
 
-    this.tourService.activeRoute
+    this.tourService.activeRoute$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeRoute: Position[] ) => {
         this.routeGeoJson = this.createGeoJson( activeRoute );

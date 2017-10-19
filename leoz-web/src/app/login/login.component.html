@@ -1,15 +1,15 @@
 <div id="main">
-  <div *ngIf="errMsgs | async as msgs" class="container">
+  <div *ngIf="errMsgs$ | async as msgs$" class="container">
     <div class="content-header">
       <h2>{{'login' | translate}}</h2>
     </div>
-    <app-msg-box [msgs]="msgs"></app-msg-box>
+    <app-msg-box [msgs]="msgs$"></app-msg-box>
     <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
       <div class="ui-fluid">
         <div class="ui-g">
           <div class="ui-g-12">
             <div>{{'username' | translate}}</div>
-            <div><input pInputText [ngClass]="{'invalid': msgs.length > 0 && msgs[0].detail.length > 0}"
+            <div><input pInputText [ngClass]="{'invalid': msgs$.length > 0 && msgs$[0].detail.length > 0}"
                         formControlName="username"
                         (focus)="resetErrMsg()" required/></div>
             <div *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].hasError('required')"
@@ -19,7 +19,7 @@
           </div>
           <div class="ui-g-12">
             <div>{{'password' | translate}}</div>
-            <input pInputText type="password" [ngClass]="{'invalid': msgs.length > 0 && msgs[0].detail.length > 0}"
+            <input pInputText type="password" [ngClass]="{'invalid': msgs$.length > 0 && msgs$[0].detail.length > 0}"
                    formControlName="password" (focus)="resetErrMsg()" required/>
             <div *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].hasError('required')"
                  class="ui-message ui-widget ui-corner-all ui-messages-error">

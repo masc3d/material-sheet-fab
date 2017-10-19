@@ -47,11 +47,11 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
 
   loadlists: SelectItem[];
   private actionMsgListSubject = new BehaviorSubject<string[]>( [] );
-  public actionMsgList = this.actionMsgListSubject.asObservable().distinctUntilChanged();
+  public actionMsgList$ = this.actionMsgListSubject.asObservable().distinctUntilChanged();
   private actionMsgListTmp: string[];
 
   public scanMsgsSubject = new BehaviorSubject<ScanMsg[]>( [] );
-  public scanMsgs = this.scanMsgsSubject.asObservable().distinctUntilChanged();
+  public scanMsgs$ = this.scanMsgsSubject.asObservable().distinctUntilChanged();
   public shortScanMsg = '';
 
   activeLoadinglist: Loadinglist;
@@ -64,8 +64,8 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   selectedPackages: Package[];
 
   stationloadingForm: FormGroup;
-  public openPackages: Observable<Package[]>;
-  public loadedPackages: Observable<Package[]>;
+  public openPackages$: Observable<Package[]>;
+  public loadedPackages$: Observable<Package[]>;
   private openPackagesArr: Package[];
   exportdate: any;
   latestMarkedIndex: number;
@@ -108,53 +108,53 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
 
     this.exportdate = this.initExportdate();
 
-    this.openPackages = this.loadinglistService.openPackages;
-    this.loadedPackages = this.loadinglistService.loadedPackages;
+    this.openPackages$ = this.loadinglistService.openPackages$;
+    this.loadedPackages$ = this.loadinglistService.loadedPackages$;
     this.selectedPackages = [];
     this.openPackagesArr = [];
 
     this.latestMarkedIndex = -1;
     this.latestDirection = 'INIT';
 
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'F12' )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.markSinglePackage( 0 ) );
 
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === '+' )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.scanPackNos() );
 
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowDown' && !ev.shiftKey )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.markSinglePackage( this.latestMarkedIndex + 1 ) );
 
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowUp' && !ev.shiftKey )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.markSinglePackage( this.latestMarkedIndex - 1 ) );
 
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowDown' && ev.shiftKey )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.markPackage( 'DOWN' ) );
 
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowUp' && ev.shiftKey )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.markPackage( 'UP' ) );
 
 
-    this.loadinglistService.openPackages
+    this.loadinglistService.openPackages$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( packages: Package[] ) => {
         this.openPackagesArr = packages;
         this.openStats( packages );
       } );
 
-    this.loadinglistService.loadlists
+    this.loadinglistService.loadlists$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( selectItems: SelectItem[] ) => {
         this.loadlistItems = selectItems;
@@ -171,7 +171,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
       basedon: [ 'actuallist' ]
     } );
 
-    this.loadinglistService.activeLoadinglist
+    this.loadinglistService.activeLoadinglist$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeLoadinglist: Loadinglist ) => {
         this.activeLoadinglist = activeLoadinglist;
@@ -180,13 +180,13 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
         this.resetScanMsgs();
       } );
 
-    this.loadinglistService.allLoadlists
+    this.loadinglistService.allLoadlists$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( allLoadlists: Loadinglist[] ) => {
         this.allLoadlists = allLoadlists;
       } );
 
-    this.actionMsgList
+    this.actionMsgList$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( actionMsgList: string[] ) => {
         this.actionMsgListTmp = actionMsgList;

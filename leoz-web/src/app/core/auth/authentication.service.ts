@@ -18,10 +18,10 @@ export class AuthenticationService {
   private debitorUrl = `${environment.apiUrl}/internal/v1/station/debitor/`;
 
   private debitorStationsSubject = new BehaviorSubject<Station[]>( null );
-  public debitorStations = this.debitorStationsSubject.asObservable().distinctUntilChanged();
+  public debitorStations$ = this.debitorStationsSubject.asObservable().distinctUntilChanged();
 
   private activeStationSubject = new BehaviorSubject<Station>( null );
-  public activeStation = this.activeStationSubject.asObservable().distinctUntilChanged();
+  public activeStation$ = this.activeStationSubject.asObservable().distinctUntilChanged();
 
   constructor( private router: Router,
                private http: HttpClient,

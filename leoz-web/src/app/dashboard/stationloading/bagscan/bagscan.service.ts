@@ -11,7 +11,7 @@ import { HttpResponse } from '@angular/common/http';
 export class BagscanService extends LoadinglistService {
 
   public activeBagDataSubject = new BehaviorSubject<BagData>( <BagData> {} );
-  public activeBagData = this.activeBagDataSubject.asObservable().distinctUntilChanged();
+  public activeBagData$ = this.activeBagDataSubject.asObservable().distinctUntilChanged();
 
   protected bagDataUrl = `${environment.apiUrl}/internal/v1/bagscan/bagdata`;
   protected validateBagIdUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/bagid`;

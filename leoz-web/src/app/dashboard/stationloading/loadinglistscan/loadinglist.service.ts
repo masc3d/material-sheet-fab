@@ -22,25 +22,25 @@ export class LoadinglistService {
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/loadinglist/report/header`;
 
   private allPackagesSubject = new BehaviorSubject<Package[]>( [] );
-  public allPackages = this.allPackagesSubject.asObservable();
+  public allPackages$ = this.allPackagesSubject.asObservable();
 
   private openPackagesSubject = new BehaviorSubject<Package[]>( [] );
-  public openPackages = this.openPackagesSubject.asObservable();
+  public openPackages$ = this.openPackagesSubject.asObservable();
 
   private loadedPackagesSubject = new BehaviorSubject<Package[]>( [] );
-  public loadedPackages = this.loadedPackagesSubject.asObservable();
+  public loadedPackages$ = this.loadedPackagesSubject.asObservable();
 
   private loadlistsSubject = new BehaviorSubject<SelectItem[]>( [] );
-  public loadlists = this.loadlistsSubject.asObservable();
+  public loadlists$ = this.loadlistsSubject.asObservable();
 
   public activeLoadinglistSubject = new BehaviorSubject<Loadinglist>( <Loadinglist> {
     loadlistNo: null,
     packages: []
   } );
-  public activeLoadinglist = this.activeLoadinglistSubject.asObservable().distinctUntilChanged();
+  public activeLoadinglist$ = this.activeLoadinglistSubject.asObservable().distinctUntilChanged();
 
   public allLoadlistsSubject = new BehaviorSubject<Loadinglist[]>( [] );
-  public allLoadlists = this.allLoadlistsSubject.asObservable().distinctUntilChanged();
+  public allLoadlists$ = this.allLoadlistsSubject.asObservable().distinctUntilChanged();
 
   public activeLoadinglistTmp: Loadinglist;
 
@@ -55,10 +55,10 @@ export class LoadinglistService {
 
   constructor( protected http: HttpClient,
                private auth: AuthenticationService ) {
-    auth.activeStation.subscribe( ( activeStation: Station ) => this.activeStation = activeStation );
-    this.activeLoadinglist.subscribe( ( activeLl: Loadinglist ) => this.activeLoadinglistTmp = activeLl );
+    auth.activeStation$.subscribe( ( activeStation: Station ) => this.activeStation = activeStation );
+    this.activeLoadinglist$.subscribe( ( activeLl: Loadinglist ) => this.activeLoadinglistTmp = activeLl );
 
-    this.allPackages.subscribe( ( packages: Package[] ) => {
+    this.allPackages$.subscribe( ( packages: Package[] ) => {
 
       this.openPackagesSubject.next( packages.filter( ( pack: Package ) => !pack.loadinglistNo || pack.loadinglistNo === null ) );
 

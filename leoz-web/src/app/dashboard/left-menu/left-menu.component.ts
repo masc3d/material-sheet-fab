@@ -71,7 +71,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
     this.myEmail = currUser.user.email;
 
-    this.auth.debitorStations
+    this.auth.debitorStations$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( debitorStations: Station[] ) => {
         this.debitorStations = [];
@@ -80,7 +80,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         } );
       } );
 
-    this.auth.activeStation
+    this.auth.activeStation$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeStation: Station ) => {
         this.activeStation = activeStation;

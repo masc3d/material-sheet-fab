@@ -125,13 +125,13 @@
           </div>
           <div class="ui-g-12 ui-g-nopad"
                style="padding: 5px; border:1px solid darkgrey; height:120px; background-color:#FFFFC6; overflow-y: scroll">
-            <span *ngFor="let actionMsg of actionMsgList | async">
+            <span *ngFor="let actionMsg of actionMsgList$ | async">
               {{actionMsg | translate}}<br>
             </span>
           </div>
           <div class="ui-g-12 ui-g-nopad" [ngStyle]="styleScanMsgListBG"
                style="margin-top: 2px; padding: 5px; border:1px solid darkgrey; height:120px; overflow-y: scroll">
-            <div *ngFor="let scanMsg of scanMsgs | async" style="padding-bottom:10px;">
+            <div *ngFor="let scanMsg of scanMsgs$ | async" style="padding-bottom:10px;">
               <span *ngIf="scanMsg.packageId.length > 0 && scanMsg.msgText.length > 0">
                 {{scanMsg.packageId}}:
               </span>
@@ -151,7 +151,7 @@
                   {{'notOnLoadlist' | translate}} {{openPackcount}} (F12)
                 </ng-template>
               </p>
-              <p-dataTable [value]="openPackages | async" resizableColumns="true" responsive="true"
+              <p-dataTable [value]="openPackages$ | async" resizableColumns="true" responsive="true"
                            [emptyMessage]="'noDataAvailable' | translate" selectionMode="multiple"
                            [(selection)]="selectedPackages" (onRowClick)="onRowClick($event)">
                 <p-column field="parcelNo" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
@@ -174,7 +174,7 @@
             </p-tabPanel>
             <p-tabPanel header="{{'loaded' | translate}}">
               <p style="text-align: center">{{'onLoadlist' | translate}} {{loadedPackcount}}</p>
-              <p-dataTable [value]="loadedPackages | async" resizableColumns="true" responsive="true"
+              <p-dataTable [value]="loadedPackages$ | async" resizableColumns="true" responsive="true"
                            [emptyMessage]="'noDataAvailable' | translate">
                 <p-column field="parcelNo" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
                 <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
