@@ -176,9 +176,9 @@ export class LoadinglistReportingService extends ReportingService {
         packs.forEach( ( p: Package ) => {
           const offsetXFactor = packageCounter % 5,
             innerOffsetX = 37;
-          doc.text( `${p.packageId}`, offsetX + (innerOffsetX * offsetXFactor), offsetY );
+          doc.text( `${p.parcelNo}`, offsetX + (innerOffsetX * offsetXFactor), offsetY );
           doc.text( `Kg:`, offsetX + 20 + (innerOffsetX * offsetXFactor), offsetY );
-          doc.text( `${p.weight}`, offsetX + 25 + (innerOffsetX * offsetXFactor), offsetY );
+          doc.text( `${p.realWeight}`, offsetX + 25 + (innerOffsetX * offsetXFactor), offsetY );
           packageCounter += 1;
           if (packageCounter % 5 === 0) {
             offsetY += 4;

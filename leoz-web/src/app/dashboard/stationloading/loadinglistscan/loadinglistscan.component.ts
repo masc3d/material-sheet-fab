@@ -334,7 +334,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   public scanPackNos() {
     this.scan( this.selectedPackages.length,
       () => this.selectedPackages.forEach(
-        ( pack: Package ) => this.scanPackNo( String( pack.packageId )
+        ( pack: Package ) => this.scanPackNo( String( pack.parcelNo )
         )
       )
     );

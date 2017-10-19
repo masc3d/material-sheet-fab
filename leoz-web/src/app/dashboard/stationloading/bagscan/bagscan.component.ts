@@ -115,7 +115,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( packages: Package[] ) => {
         const packagesLoaded = packages
-          .filter( ( p: Package ) => p.loadlistNo > 0 )
+          .filter( ( p: Package ) => p.loadinglistNo > 0 )
           .length;
         this.chargingLevel = packages.length > 0
           ? Math.round( (packagesLoaded / packages.length) * 100 )
@@ -218,7 +218,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     // rot 0-50 gelb 51-75 grün 76-100
     this.openPackcount = this.openPackagesArr.length;
     this.loadedDiamondcount = this.activeBaglist.packages
-      .filter( ( p: Package ) => p.wrapperType === 91 ).length;
+      .filter( ( p: Package ) => p.typeOfPackaging === 91 ).length;
     this.loadedPackcount = this.activeBaglist.packages.length;
     this.bagWeight = this.bagscanService.sumWeights( this.activeBaglist.packages );
   }

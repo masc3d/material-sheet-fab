@@ -152,17 +152,17 @@
                 </ng-template>
               </p>
               <p-dataTable [value]="openPackages | async" resizableColumns="true" responsive="true"
-                           selectionMode="multiple"
+                           [emptyMessage]="'noDataAvailable' | translate" selectionMode="multiple"
                            [(selection)]="selectedPackages" (onRowClick)="onRowClick($event)">
-                <p-column field="packageId" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
+                <p-column field="parcelNo" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
                 <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
                 <p-column field="city" header="{{'city' | translate}}" [sortable]="true"></p-column>
                 <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}"
                           [sortable]="true"></p-column>
-                <p-column field="loadlistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
-                <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="true">
+                <p-column field="loadinglistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
+                <p-column field="typeOfPackaging" header="{{'valore' | translate}}" [sortable]="true">
                   <ng-template let-package="rowData" pTemplate="body">
-                    <span *ngIf="package.wrapperType === 91; else noValoreOpen">
+                    <span *ngIf="package.typeOfPackaging === 91; else noValoreOpen">
                       {{ 'yes' | translate }}
                     </span>
                     <ng-template #noValoreOpen>
@@ -176,15 +176,15 @@
               <p style="text-align: center">{{'onLoadlist' | translate}} {{loadedPackcount}}</p>
               <p-dataTable [value]="loadedPackages | async" resizableColumns="true" responsive="true"
                            [emptyMessage]="'noDataAvailable' | translate">
-                <p-column field="packageId" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
+                <p-column field="parcelNo" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
                 <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
                 <p-column field="city" header="{{'city' | translate}}" [sortable]="true"></p-column>
                 <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}"
                           [sortable]="true"></p-column>
-                <p-column field="loadlistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
-                <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="true">
+                <p-column field="loadinglistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
+                <p-column field="typeOfPackaging" header="{{'valore' | translate}}" [sortable]="true">
                   <ng-template let-package="rowData" pTemplate="body">
-                    <span *ngIf="package.wrapperType === 91; else noValoreLoaded">
+                    <span *ngIf="package.typeOfPackaging === 91; else noValoreLoaded">
                       {{ 'yes' | translate }}
                     </span>
                     <ng-template #noValoreLoaded>

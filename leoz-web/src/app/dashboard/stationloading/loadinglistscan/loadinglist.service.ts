@@ -9,12 +9,16 @@ import { Package } from './package.model';
 import { Loadinglist } from 'app/dashboard/stationloading/loadinglistscan/loadinglist.model';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { AuthenticationService } from '../../../core/auth/authentication.service';
+import { Station } from '../../../core/auth/station.model';
+import { Shipment } from './shipment.model';
 
 @Injectable()
 export class LoadinglistService {
 
-  protected packageUrl = `${environment.apiUrl}/internal/v1/loadinglist/packages`;
-  protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/loadinglist/new`;
+  // protected packageUrl = `${environment.apiUrl}/internal/v1/loadinglist/packages`;
+  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/`;
+  protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/parcel/loadinglist/new`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/loadinglist/report/header`;
 
   private allPackagesSubject = new BehaviorSubject<Package[]>( [] );
@@ -40,27 +44,30 @@ export class LoadinglistService {
 
   public activeLoadinglistTmp: Loadinglist;
 
+  private activeStation: Station;
+
   private unique: Function = ( arrArg ) => {
     return arrArg.filter( ( elem, pos, arr ) => {
       return arr.indexOf( elem ) === pos;
     } );
   };
-
   protected loadinglistNoPredicate: Function = ( loadinglistNo ) => loadinglistNo > 99999;
 
-  constructor( protected http: HttpClient ) {
+  constructor( protected http: HttpClient,
+               private auth: AuthenticationService ) {
+    auth.activeStation.subscribe( ( activeStation: Station ) => this.activeStation = activeStation );
     this.activeLoadinglist.subscribe( ( activeLl: Loadinglist ) => this.activeLoadinglistTmp = activeLl );
 
     this.allPackages.subscribe( ( packages: Package[] ) => {
 
-      this.openPackagesSubject.next( packages.filter( ( pack: Package ) => pack.loadlistNo === null ) );
+      this.openPackagesSubject.next( packages.filter( ( pack: Package ) => !pack.loadinglistNo || pack.loadinglistNo === null ) );
 
       this.loadedPackagesSubject.next( packages.filter( ( pack: Package ) =>
-        this.activeLoadinglistTmp.loadlistNo !== null && pack.loadlistNo === this.activeLoadinglistTmp.loadlistNo
+        this.activeLoadinglistTmp.loadlistNo !== null && pack.loadinglistNo === this.activeLoadinglistTmp.loadlistNo
       ) );
 
-      const loadinglistNosSorted = packages.filter( ( pack: Package ) => pack.loadlistNo !== null )
-        .map( ( pack: Package ) => pack.loadlistNo )
+      const loadinglistNosSorted = packages.filter( ( pack: Package ) => pack.loadinglistNo !== null )
+        .map( ( pack: Package ) => pack.loadinglistNo )
         .sort();
       const loadinglistNosUnique = this.unique( loadinglistNosSorted );
 
@@ -82,11 +89,24 @@ export class LoadinglistService {
   }
 
   getAllPackages(): void {
-    this.http.get<Package[]>( this.packageUrl )
-      .subscribe( ( packages ) => this.allPackagesSubject.next( packages ),
+    this.http.get<Shipment[]>( this.packageUrl + this.activeStation.stationNo.toString() )
+      .subscribe( ( shipments ) => {
+          let packages = [];
+          shipments.forEach( ( shipment: Shipment ) => {
+            const address = shipment.deliveryAddress;
+            const parcelsWithAddress = shipment.parcels.map( ( parcel: Package ) => <Package> {
+              zip: address.zipCode,
+              city: address.city,
+              devliveryStation: shipment.deliveryStation,
+              ...parcel
+            } );
+            packages = packages.concat( parcelsWithAddress );
+          } );
+          this.allPackagesSubject.next( packages );
+        },
         ( error: Response ) => {
           console.log( error );
-          this.allPackagesSubject.next( <Package[]> {} );
+          this.allPackagesSubject.next( [] );
         } );
   }
 
@@ -96,8 +116,8 @@ export class LoadinglistService {
    * and actualize dataset
    */
   newLoadlist(): void {
-    this.http.get( this.newLoadlistNoUrl )
-      .subscribe( ( data ) => this.setActiveLoadinglist( data[ 'loadlistNo' ] ),
+    this.http.get<number>( this.newLoadlistNoUrl )
+      .subscribe( ( data ) => this.setActiveLoadinglist( data ),
         ( error: Response ) => {
           console.log( error );
         } );
@@ -123,12 +143,12 @@ export class LoadinglistService {
 
   sumWeights( packages: Package[] ) {
     return Math.round( packages
-      .map( ( p ) => p.weight )
+      .map( ( p ) => p.realWeight )
       .reduce( ( a, b ) => a + b, 0 ) * 10 ) / 10;
   }
 
   private createLoadinglist( loadlistNo: number, allPackages: Package[] ) {
-    const currentPackages = allPackages.filter( ( pack: Package ) => loadlistNo !== null && pack.loadlistNo === loadlistNo );
+    const currentPackages = allPackages.filter( ( pack: Package ) => loadlistNo !== null && pack.loadinglistNo === loadlistNo );
     return <Loadinglist> { loadlistNo: loadlistNo, packages: currentPackages };
   }
 }
