@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.device
 
 import android.content.Context
+import android.media.AudioAttributes
 import android.os.Build
 import android.os.VibrationEffect
 import com.github.salomonbrys.kodein.Kodein
@@ -25,7 +26,7 @@ class Response(context: Context) {
         vibrator.warningVibrate()
     }
 
-    fun acknowlegde() {
+    fun acknowledge() {
         tones.beep()
     }
 }
@@ -40,21 +41,22 @@ class Vibrator(context: Context) {
     private val errorVibrateWave = longArrayOf( 0, 100, 400, 100, 400, 100 )
 
     fun ackknowledgeVibrate() {
-        vibrate(acknowledgeVibrateWave, -1)
+        vibrate(acknowledgeVibrateWave)
     }
 
     fun warningVibrate() {
-        vibrate(warningVibrateWave, -1)
+        vibrate(warningVibrateWave)
     }
 
     fun errorVibrate() {
-        vibrate(errorVibrateWave, -1)
+        vibrate(errorVibrateWave)
     }
 
-    private fun vibrate(longArray: LongArray, repeat: Int) {
+    private fun vibrate(longArray: LongArray, repeat: Int = -1) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createWaveform(longArray, repeat))
         } else {
+            @Suppress("DEPRECATION")
             vibrator.vibrate(longArray, repeat)
         }
     }

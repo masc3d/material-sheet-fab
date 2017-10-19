@@ -23,7 +23,8 @@ import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleunloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.device.Response
+import org.deku.leoz.mobile.device.Response
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
@@ -91,7 +92,7 @@ class VehicleUnloadingScreen :
 
     private val db: Database by Kodein.global.lazy.instance()
 
-    private val tones: Tones by Kodein.global.lazy.instance()
+    private val response: Response by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
 
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -490,7 +491,7 @@ class VehicleUnloadingScreen :
                 this.onParcel(parcel)
             }
             else -> {
-                tones.errorBeep()
+                response.error()
 
                 this.activity.snackbarBuilder
                         .message(R.string.error_invalid_parcel)
@@ -506,7 +507,7 @@ class VehicleUnloadingScreen :
         when (parcelListAdapter.selectedSection) {
             damagedSection -> {
                 if (parcel.isDamaged) {
-                    this.tones.warningBeep()
+                    this.response.warning()
                     this.aidcReader.enabled = false
 
                     MaterialDialog.Builder(this.context)

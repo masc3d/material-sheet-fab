@@ -26,7 +26,7 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.device.Response
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
@@ -67,7 +67,7 @@ class DeliveryStopDetailScreen
     private val listener by lazy { this.activity as? Listener }
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val tones: Tones by Kodein.global.lazy.instance()
+    private val response: Response by Kodein.global.lazy.instance()
 
     // Model classes
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
@@ -340,7 +340,7 @@ class DeliveryStopDetailScreen
 
         when {
             result.hasError -> {
-                tones.warningBeep()
+                response.warning()
 
                 this.activity.snackbarBuilder
                         .message(R.string.error_invalid_barcode)
