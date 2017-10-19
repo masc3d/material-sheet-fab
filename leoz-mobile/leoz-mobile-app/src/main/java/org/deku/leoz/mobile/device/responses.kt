@@ -12,9 +12,9 @@ import com.github.salomonbrys.kodein.lazy
 /**
  * Created by 27694066 on 19.10.2017.
  */
-class Response(context: Context) {
+class Response {
     private val tones: Tones by Kodein.global.lazy.instance()
-    private val vibrator = Vibrator(context)
+    private val vibrator: Vibrator by Kodein.global.lazy.instance()
 
     fun error() {
         tones.errorBeep()

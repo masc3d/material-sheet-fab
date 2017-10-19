@@ -58,11 +58,15 @@ class DeviceConfiguration {
             }
 
             bind<Response>() with singleton {
-                Response(instance())
+                Response()
             }
 
             bind<Sounds>() with eagerSingleton {
                 Sounds(context = instance<Context>())
+            }
+
+            bind<Vibrator>() with singleton {
+                Vibrator(context = instance())
             }
         }
     }
