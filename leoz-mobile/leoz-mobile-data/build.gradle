@@ -71,7 +71,7 @@ dependencies {
 
     kapt(
             "io.requery:requery-processor:$v_requery",
-            "com.android.databinding:compiler:3.0.0-rc1"
+            "com.android.databinding:compiler:3.0.0-rc2"
     )
 
     testImplementation(
