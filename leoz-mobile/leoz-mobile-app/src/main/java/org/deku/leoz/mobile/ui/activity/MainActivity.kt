@@ -15,7 +15,7 @@ import io.reactivex.functions.BiFunction
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
-import org.deku.leoz.mobile.device.Response
+import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.service.UpdateService
@@ -30,7 +30,7 @@ class MainActivity
         LoginFragment.Listener {
 
     private val login: Login by Kodein.global.lazy.instance()
-    private val response: Response by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -135,7 +135,7 @@ class MainActivity
     override fun onLoginFailed() {
         this.loginPendingDialog.dismiss()
 
-        response.error()
+        feedback.error()
 
         this.snackbarBuilder
                 .message(R.string.authentication_failed)

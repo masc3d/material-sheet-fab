@@ -57,8 +57,8 @@ class DeviceConfiguration {
                 }
             }
 
-            bind<Response>() with singleton {
-                Response()
+            bind<Feedback>() with singleton {
+                Feedback()
             }
 
             bind<Sounds>() with eagerSingleton {

@@ -12,7 +12,7 @@ import com.github.salomonbrys.kodein.lazy
 /**
  * Created by 27694066 on 19.10.2017.
  */
-class Response {
+class Feedback {
     private val tones: Tones by Kodein.global.lazy.instance()
     private val vibrator: Vibrator by Kodein.global.lazy.instance()
 

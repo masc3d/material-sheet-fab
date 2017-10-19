@@ -22,7 +22,7 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenDeliveryStopListBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Response
+import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -58,7 +58,7 @@ class DeliveryStopListScreen
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val response: Response by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
 
     private val listener by lazy { this.activity as? Listener }
 
@@ -397,7 +397,7 @@ class DeliveryStopListScreen
 
         when {
             result.hasError -> {
-                response.warning()
+                feedback.warning()
 
                 this.activity.snackbarBuilder
                         .message(R.string.error_invalid_barcode)

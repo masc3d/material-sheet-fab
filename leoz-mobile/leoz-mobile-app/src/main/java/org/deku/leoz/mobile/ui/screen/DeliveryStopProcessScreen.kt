@@ -29,7 +29,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Response
+import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.StopEntity
@@ -54,12 +54,10 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
-import sx.format.format
 
 /**
  * A simple [Fragment] subclass.
@@ -104,7 +102,7 @@ class DeliveryStopProcessScreen :
     }
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val response: Response by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val mqttEndPoints: MqttEndpoints by Kodein.global.lazy.instance()
@@ -653,7 +651,7 @@ class DeliveryStopProcessScreen :
 
         when {
             result.hasError -> {
-                response.warning()
+                feedback.warning()
 
                 this.activity.snackbarBuilder
                         .message(R.string.error_invalid_barcode)
@@ -670,7 +668,7 @@ class DeliveryStopProcessScreen :
 
         if (parcel == null) {
             // Parcel does not belong to this delivery stop, ask for stop merge
-            response.warning()
+            feedback.warning()
 
             parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
             val sourceStop = parcel?.order?.deliveryTask?.stop
@@ -694,7 +692,7 @@ class DeliveryStopProcessScreen :
                                     .subscribeBy(
                                             onError = {
                                                 log.error(it.message, it)
-                                                response.error()
+                                                feedback.error()
                                             })
                         }
                         .negativeText(android.R.string.no)
@@ -728,7 +726,7 @@ class DeliveryStopProcessScreen :
 
             damagedSection -> {
                 if (parcel.isDamaged) {
-                    this.response.warning()
+                    this.feedback.warning()
                     this.aidcReader.enabled = false
 
                     MaterialDialog.Builder(this.context)
@@ -762,7 +760,7 @@ class DeliveryStopProcessScreen :
             }
             else -> {
                 // TODO: add support for scanning/adding parcel to damaged section
-                response.warning()
+                feedback.warning()
             }
         }
     }

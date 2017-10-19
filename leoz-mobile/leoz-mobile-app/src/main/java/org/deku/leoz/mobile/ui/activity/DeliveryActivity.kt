@@ -14,7 +14,7 @@ import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.SharedPreference
-import org.deku.leoz.mobile.device.Response
+import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.Delivery
@@ -44,7 +44,7 @@ class DeliveryActivity : Activity(),
     private val delivery: Delivery by Kodein.global.lazy.instance()
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
 
-    private val response: Response by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
 
     private val db: Database by Kodein.global.lazy.instance()
 
@@ -200,7 +200,7 @@ class DeliveryActivity : Activity(),
                 .blockingGet()
 
         if (parcel == null) {
-            response.warning()
+            feedback.warning()
 
             this.snackbarBuilder
                     .message(R.string.error_unknown_parcel)
@@ -222,7 +222,7 @@ class DeliveryActivity : Activity(),
                 .firstOrNull()
 
         if (stop == null) {
-            response.warning()
+            feedback.warning()
 
             this.snackbarBuilder
                     .message(R.string.error_no_corresponding_stop)
