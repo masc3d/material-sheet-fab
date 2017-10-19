@@ -12,6 +12,7 @@ buildscript {
         v_javamail = '1.6.0'
         v_junit = '4.12'
         v_kotlin = '1.1.51'
+        v_material_dialogs = '0.9.4.7'
         v_ormlite = '5.0'
         v_paho = '1.1.1'
         v_roboelectric = '3.4.2'
@@ -121,6 +122,10 @@ dependencies {
             // MQTT persistence
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
+
+            // Dialog
+            "com.afollestad.material-dialogs:core:$v_material_dialogs",
+            "com.afollestad.material-dialogs:commons:$v_material_dialogs",
 
             // ReactiveNetwork
             "com.github.pwittchen:reactivenetwork-rx2:0.12.1",
