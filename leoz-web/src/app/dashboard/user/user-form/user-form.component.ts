@@ -44,7 +44,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   userForm: FormGroup;
   private loading = false;
-  public errMsgs: Observable<Message[]>;
+  public errMsgs$: Observable<Message[]>;
 
   constructor( private fb: FormBuilder,
                private userService: UserService,
@@ -65,7 +65,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
     this.roleOptions = this.createRoleOptions();
     this.stateOptions = this.createStateOptions();
 
-    this.errMsgs = this.msgService.msgs;
+    this.errMsgs$ = this.msgService.msgs$;
 
     this.msgService.clear();
     this.userForm = this.fb.group( {
@@ -82,7 +82,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       expiresOn: [ null ]
     } );
 
-    this.userService.activeUser
+    this.userService.activeUser$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeUser: User ) => {
         this.activeUser = activeUser;

@@ -3,6 +3,7 @@ import { MenuItem } from 'primeng/primeng';
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
+import { Station } from '../../core/auth/station.model';
 
 @Component( {
   selector: 'app-stationloading',
@@ -27,6 +28,7 @@ export class StationloadingComponent extends AbstractTranslateComponent implemen
   }
 
   private createItems(): MenuItem[] {
+    const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const items = [];
 
     items.push( {
@@ -35,11 +37,13 @@ export class StationloadingComponent extends AbstractTranslateComponent implemen
       routerLink: 'loadinglistscan'
     } );
 
-    items.push( {
-      label: this.translate.instant( 'bagscan' ),
-      icon: '',
-      routerLink: 'bagscan'
-    } );
+    if(activeStation && activeStation.exportValuablesAllowed) {
+      items.push( {
+        label: this.translate.instant( 'bagscan' ),
+        icon: '',
+        routerLink: 'bagscan'
+      } );
+    }
 
     return items;
   }

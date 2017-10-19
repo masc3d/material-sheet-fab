@@ -4,6 +4,7 @@ import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
 import org.jooq.Record
 import org.jooq.ResultQuery
 import org.jooq.exception.DataAccessException
+import org.jooq.types.UByte
 import org.jooq.types.UInteger
 
 /**
@@ -40,4 +41,7 @@ fun <R, T> ResultQuery<R>.prepared(block: (q: ResultQuery<R>) -> T): T where R :
 
 fun Int.toUInteger(): UInteger {
     return UInteger.valueOf(this)
+}
+fun Int.toUByte(): UByte {
+    return UByte.valueOf(this)
 }

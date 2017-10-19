@@ -14,6 +14,8 @@ import { KeyUpEventService } from '../../../core/key-up-event.service';
 import { SoundService } from '../../../core/sound.service';
 import { BagData } from './bagdata.model';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { PrintingService } from '../../../core/printing/printing.service';
+import { BagscanReportingService } from '../../../core/reporting/bagscan-reporting.service';
 
 interface ScanMsg {
   type: string;
@@ -54,7 +56,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   @ViewChild( 'blueSealNo' ) blueSealNoField: ElementRef;
   @ViewChild( 'reasonDetails' ) reasonDetailsField: ElementRef;
 
-  public openPackages: Observable<Package[]>;
+  public openPackages$: Observable<Package[]>;
   openPackagesArr: Package[];
   activeBaglist: Loadinglist;
   activeBagData: BagData;
@@ -80,7 +82,9 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
                private bagscanService: BagscanService,
                public translate: TranslateService,
                private keyUpService: KeyUpEventService,
-               private soundService: SoundService ) {
+               private soundService: SoundService,
+               private reportingService: BagscanReportingService,
+               private printingService: PrintingService ) {
     super( translate, () => {
       this.baglists = this.createBaglistItems( this.baglistItems );
     } );
@@ -91,7 +95,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
 
     this.displayEmergencySealBlock = false;
 
-    this.openPackages = this.bagscanService.openPackages;
+    this.openPackages$ = this.bagscanService.openPackages$;
     this.openPackcount = 0;
     this.loadedDiamondcount = 0;
     this.loadedPackcount = 0;
@@ -100,18 +104,18 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.allPackagesCount = 0;
     this.chargingLevelStyle = 'chargeLvlRed';
 
-    this.bagscanService.openPackages
+    this.bagscanService.openPackages$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( packages: Package[] ) => {
         this.openPackagesArr = packages;
         this.openPackcount = this.openPackagesArr.length;
       } );
 
-    this.bagscanService.allPackages
+    this.bagscanService.allPackages$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( packages: Package[] ) => {
         const packagesLoaded = packages
-          .filter( ( p: Package ) => p.loadlistNo > 0 )
+          .filter( ( p: Package ) => p.loadinglistNo > 0 )
           .length;
         this.chargingLevel = packages.length > 0
           ? Math.round( (packagesLoaded / packages.length) * 100 )
@@ -125,7 +129,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
         }
       } );
 
-    this.bagscanService.loadlists
+    this.bagscanService.loadlists$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( selectItems: SelectItem[] ) => {
         this.baglistItems = selectItems;
@@ -143,14 +147,14 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       selectbaglist: [ null ],
     } );
 
-    this.bagscanService.activeLoadinglist
+    this.bagscanService.activeLoadinglist$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeLoadinglist: Loadinglist ) => {
         this.activeBaglist = activeLoadinglist;
         this.calcStats();
       } );
 
-    this.bagscanService.activeBagData
+    this.bagscanService.activeBagData$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeBagData: BagData ) => {
         this.activeBagData = activeBagData;
@@ -181,23 +185,23 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   }
 
   private registerKeyboardEvents() {
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'F2' )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.startPacking() );
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'F3' )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.clearFields() );
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'F5' )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.finishBag() );
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'F7' )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.saveEmergencySeal() );
-    this.keyUpService.keyUpEvents
+    this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'F10' )
       .takeUntil( this.ngUnsubscribe )
       .subscribe( () => this.switchSeal() );
@@ -214,7 +218,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     // rot 0-50 gelb 51-75 grün 76-100
     this.openPackcount = this.openPackagesArr.length;
     this.loadedDiamondcount = this.activeBaglist.packages
-      .filter( ( p: Package ) => p.wrapperType === 91 ).length;
+      .filter( ( p: Package ) => p.typeOfPackaging === 91 ).length;
     this.loadedPackcount = this.activeBaglist.packages.length;
     this.bagWeight = this.bagscanService.sumWeights( this.activeBaglist.packages );
   }
@@ -467,6 +471,13 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       this.setSuccessStyle();
       this.bagscanForm.get( 'backSeal' ).patchValue( this.bagscanForm.get( 'blueSealNo' ).value );
     }
+  }
+
+  generateLabel() {
+    console.log('generateLabel...');
+    this.printingService.printReports(
+      this.reportingService.generateReports(  ),
+                'lbl.pdf', false );
   }
 
 }

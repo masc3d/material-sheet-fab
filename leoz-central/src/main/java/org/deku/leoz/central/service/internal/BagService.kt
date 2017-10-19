@@ -21,12 +21,16 @@ import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import org.deku.leoz.central.data.repository.DepotJooqRepository
+import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.BagService
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagNumberRange
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
+import org.deku.leoz.service.pub.RoutingService
+import org.deku.leoz.time.toShortTime
+import sx.time.toLocalDate
 
 /**
  * Bundle service (leoz-central)
@@ -47,8 +51,26 @@ class BagService : BagService {
     @Inject
     private lateinit var depotRepository: DepotJooqRepository
 
-    fun getNextDeliveryDate(): java.time.LocalDate {
-        return java.time.LocalDate.now().plusDays(1)
+    @Inject
+    private lateinit var routingService: org.deku.leoz.node.service.pub.RoutingService
+
+    fun getNextDeliveryDate(sendDate:Date,stationDest:String,countryDest:String,zipDest:String): java.time.LocalDate {
+        //return java.time.LocalDate.now().plusDays(1)
+        val routingRequest = RoutingService.Request(sendDate = ShortDate(sendDate.toTimestamp()),
+                desiredDeliveryDate = null,
+                services = null,
+                weight = null,
+                sender = null,
+                consignee = RoutingService.Request.Participant(
+                        country = countryDest,
+                        zip = zipDest,
+                        timeFrom = null,
+                        timeTo = null,
+                        desiredStation = stationDest
+                )
+        )
+        val routing = routingService.request(routingRequest)
+        return routing.deliveryDate!!.date.toLocalDate()
     }
 
     fun getWorkingDate(): java.time.LocalDate {
@@ -123,10 +145,11 @@ class BagService : BagService {
             //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(),"100","DE","36285")
             } else {
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //workDate=nextwerktag(workDate,"100","DE","36285"
-                workDate = getNextDeliveryDate()
+                workDate = getNextDeliveryDate(workDate.toDate(),"100","DE","36285")
             }
             val status: Double = 5.0
             //val dt:java.util.Date=workDate.toDate()
@@ -292,12 +315,16 @@ class BagService : BagService {
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
                     .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(workDate.toTimestamp()))
                     .fetch()
+
+
+
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(),"100","DE","36285")
             } else {
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //workDate=nextwerktag(workDate,"100","DE","36285"
-                workDate = getNextDeliveryDate()
+                workDate = getNextDeliveryDate(workDate.toDate(),"100","DE","36285")
             }
             val status: Double = 1.0
             //val dt:java.util.Date=workDate.toDate()
@@ -588,10 +615,11 @@ class BagService : BagService {
                     .fetch()
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(),"100","DE","36285")
             } else {
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //workDate=nextwerktag(workDate,"100","DE","36285"
-                workDate = getNextDeliveryDate()
+                workDate = getNextDeliveryDate(workDate.toDate(),"100","DE","36285")
             }
             //val dt:java.util.Date=workDate.toDate()
             val dt: Date = workDate.toDate()
@@ -680,10 +708,11 @@ class BagService : BagService {
                     .fetch()
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(),"100","DE","36285")
             } else {
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //workDate=nextwerktag(workDate,"100","DE","36285"
-                workDate = getNextDeliveryDate()
+                workDate = getNextDeliveryDate(workDate.toDate(),"100","DE","36285")
             }
             //val dt:java.util.Date=workDate.toDate()
             val dt: Date = workDate.toDate()
@@ -1106,6 +1135,10 @@ class BagService : BagService {
                     orderId = "")
             throw BadRequestException(e.message)
         }
+    }
+
+    override fun getCount2SendBackByStation(stationNo: Int): Int {
+        return depotRepository.getCountBags2SendBagByStation(stationNo)
     }
 
 

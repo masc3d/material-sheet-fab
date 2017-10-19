@@ -7,18 +7,18 @@ import { Message } from 'primeng/primeng';
   selector: 'app-tour',
   template: `
     <h2>{{'tour' | translate}}</h2>
-    <app-msg-box [msgs]="msgs | async"></app-msg-box>
+    <app-msg-box [msgs]="msgs$ | async"></app-msg-box>
     <app-tour-driver-list></app-tour-driver-list>
     <app-tour-map></app-tour-map>
   `
 } )
 export class TourComponent implements OnInit {
-  msgs: Observable<Message[]>;
+  msgs$: Observable<Message[]>;
 
   constructor( private msgService: MsgService ) {
   }
 
   ngOnInit(): void {
-    this.msgs = this.msgService.msgs;
+    this.msgs$ = this.msgService.msgs$;
   }
 }

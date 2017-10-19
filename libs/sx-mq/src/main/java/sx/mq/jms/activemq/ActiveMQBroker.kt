@@ -141,6 +141,11 @@ class ActiveMQBroker private constructor()
         // For reference: https://issues.apache.org/jira/browse/AMQ-3253
         brokerService.isAllowTempAutoCreationOnSend = true
 
+        // JMX configuration
+        brokerService.isUseJmx = true
+        brokerService.managementContext.isCreateConnector = false
+        brokerService.managementContext.isCreateMBeanServer = false
+
         //region Persistence
         val persistenceStoreDirectory = File(this.dataDirectory, "kahadb")
         brokerService.dataDirectoryFile = persistenceStoreDirectory

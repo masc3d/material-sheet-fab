@@ -5,7 +5,7 @@ import { Subject } from 'rxjs/Subject';
 export class KeyUpEventService {
 
   private keyUpEventSubject = new Subject<KeyboardEvent>();
-  public keyUpEvents = this.keyUpEventSubject.asObservable();
+  public keyUpEvents$ = this.keyUpEventSubject.asObservable();
 
   nextEvent( ev: KeyboardEvent ) {
     // console.log(ev);

@@ -13,10 +13,10 @@ export class UserService {
   private userListUrl = `${environment.apiUrl}/internal/v1/user`;
 
   private usersSubject = new BehaviorSubject<User[]>( [] );
-  public users = this.usersSubject.asObservable().distinctUntilChanged();
+  public users$ = this.usersSubject.asObservable().distinctUntilChanged();
 
   private activeUserSubject = new BehaviorSubject<User>( <User> {} );
-  public activeUser = this.activeUserSubject.asObservable().distinctUntilChanged();
+  public activeUser$ = this.activeUserSubject.asObservable().distinctUntilChanged();
 
   constructor( private http: HttpClient,
                private msgService: MsgService ) {

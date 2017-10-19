@@ -56,4 +56,23 @@ open class DepotJooqRepository {
 //todo include send_date  between active_from and active_to
                 .fetchInto(String::class.java)
     }
+
+    open fun getCountBags2SendBagByStation(stationNo: Int): Int {
+        val countBagsUsedByStation:Int = dslContext.selectCount()
+                .from(Tables.SSO_S_MOVEPOOL)
+                .where(Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(stationNo.toDouble())
+                .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
+                .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(6.0)))
+                .fetchOne(0,Int::class.java)
+
+        val quota:Int = dslContext.select(Tables.TBLDEPOTLISTE.BAGKONTINGENT)
+                .from(Tables.TBLDEPOTLISTE)
+                .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(stationNo))
+                .fetchOne(0,Int::class.java)?: 0
+        //active from to
+        var diff = countBagsUsedByStation - quota
+        if (diff < 0)
+            diff = 0
+        return diff
+    }
 }

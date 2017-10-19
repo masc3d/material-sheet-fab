@@ -15,6 +15,7 @@ import { LoadinglistReportingService } from './reporting/loadinglist-reporting.s
 import { BagscanReportingService } from './reporting/bagscan-reporting.service';
 import { ApiKeyHeaderInterceptor } from './api-key-header.interceptor';
 import { MockHttpInterceptor } from './mock-http.interceptor';
+import { BagscanGuard } from './auth/bagscan.guard';
 
 @NgModule( {
   imports: [
@@ -38,6 +39,7 @@ export class CoreModule {
         BagscanReportingService,
         SoundService,
         RoleGuard,
+        BagscanGuard,
         Translation,
         TranslateService,
         BrowserCheck]

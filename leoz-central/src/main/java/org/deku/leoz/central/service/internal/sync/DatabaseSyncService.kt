@@ -27,8 +27,7 @@ constructor(
         @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
         txJpa: PlatformTransactionManager,
         @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER)
-        txJooq: PlatformTransactionManager,
-        private val presets: List<Preset>
+        txJooq: PlatformTransactionManager
 ) {
 
     /** Background service */
@@ -45,6 +44,12 @@ constructor(
             super.submitSupplementalTask(command)
         }
     }
+
+    /**
+     * Sync presets
+     */
+    @Inject
+    private lateinit var presets: List<Preset>
 
     /**
      * Embedded service class

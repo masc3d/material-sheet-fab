@@ -26,9 +26,10 @@ interface BagService {
         const val UNIT = "unit"
         const val DEPOT = "depot"
         const val POSITION = "position"
-        const val WHITESEAL="whiteseal"
-        const val YELLOWSEAL="yellowseal"
-        const val SECTION="section"
+        const val WHITESEAL = "whiteseal"
+        const val YELLOWSEAL = "yellowseal"
+        const val SECTION = "section"
+        const val STATION_NO = "station-no"
     }
 
     @GET
@@ -154,5 +155,16 @@ interface BagService {
     fun bagIn(
             @ApiParam(value = "Bag unit number", example = "100720000004") @PathParam(ID) unitNo: String?,
             @ApiParam(value = "Seal number", example = "900200000001") @QueryParam(YELLOWSEAL) sealNo: String?): BagResponse
+
+    @GET
+    @Path("/station/{$STATION_NO}/send-back")
+    @ApiOperation("Count bags to send back")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun getCount2SendBackByStation(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+
+    ): Int
 
 }
