@@ -23,7 +23,7 @@ import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleunloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
@@ -39,7 +39,6 @@ import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.mobile.ui.vm.SectionsAdapter
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.assertAny
-import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
@@ -51,7 +50,6 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
-import java.util.concurrent.ExecutorService
 
 /**
  * Vehicle unloading screen
@@ -91,7 +89,7 @@ class VehicleUnloadingScreen :
 
     private val db: Database by Kodein.global.lazy.instance()
 
-    private val tones: Tones by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
 
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -490,7 +488,7 @@ class VehicleUnloadingScreen :
                 this.onParcel(parcel)
             }
             else -> {
-                tones.errorBeep()
+                feedback.error()
 
                 this.activity.snackbarBuilder
                         .message(R.string.error_invalid_parcel)
@@ -506,7 +504,7 @@ class VehicleUnloadingScreen :
         when (parcelListAdapter.selectedSection) {
             damagedSection -> {
                 if (parcel.isDamaged) {
-                    this.tones.warningBeep()
+                    this.feedback.warning()
                     this.aidcReader.enabled = false
 
                     MaterialDialog.Builder(this.context)
