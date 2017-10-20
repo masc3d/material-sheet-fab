@@ -78,11 +78,11 @@ open class OrderJooqRepository {
         if (parcelId == 0L) return null
         return dslContext.select(Tables.TAD_V_ORDER_PARCEL.SCAN_ID)
                 .from(Tables.TAD_V_ORDER_PARCEL)
-                .where(Tables.TAD_V_ORDER_PARCEL.ID.eq(parcelId.toDouble()))
+                .where(Tables.TAD_V_ORDER_PARCEL.ID.eq(parcelId.toInt()))
                 .fetchOneInto(Long::class.java)
     }
 
-    fun getUnitNumbers(ids: List<Long>): Map<Double, Double> {
+    fun getUnitNumbers(ids: List<Long>): Map<Int, Double> {
 
         var mapDouble = dslContext.select()
                 .from(Tables.TAD_V_ORDER_PARCEL)

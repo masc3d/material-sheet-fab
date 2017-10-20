@@ -123,7 +123,7 @@ open class ParcelServiceV1 :
             val scannedDate = it.time.toTimestamp()
 
             //val parcelNo = parcelRepository.getUnitNo(it.parcelId)
-            val parcelNo = mapParcels[it.parcelId.toDouble()]?.toLong()
+            val parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
 
             parcelNo ?:
                     throw DefaultProblem(
