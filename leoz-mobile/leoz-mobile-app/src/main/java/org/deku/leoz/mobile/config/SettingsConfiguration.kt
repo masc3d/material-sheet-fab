@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.mobile.*
+import org.slf4j.LoggerFactory
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap
 import java.io.IOException
