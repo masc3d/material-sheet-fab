@@ -16,7 +16,7 @@ buildscript {
     }
 
     ext {
-        v_anko = '0.10.1'
+        v_anko = '0.10.2'
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.4.7'
         v_parceler = '1.1.9'
@@ -161,7 +161,7 @@ dependencies {
             project(':sx-android-honeywell'),
             project(':material-sheet-fab'),
             project(':camerakit'),
-            'android.arch.lifecycle:runtime:1.0.0',
+            'android.arch.lifecycle:runtime:1.0.3',
 
             project(':leoz-common'),
             project(':sx-common'),
@@ -351,7 +351,7 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:3.0.0-rc1"
+            "com.android.databinding:compiler:3.0.0-rc2"
     )
 }
 

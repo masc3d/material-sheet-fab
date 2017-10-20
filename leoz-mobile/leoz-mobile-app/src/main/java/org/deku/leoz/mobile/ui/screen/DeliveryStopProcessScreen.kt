@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -38,10 +39,10 @@ import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.model.toMaterialSimpleListItem
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
@@ -54,17 +55,19 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
+import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
+import sx.android.ui.materialdialogs.addAll
+import sx.format.format
 
 /**
  * A simple [Fragment] subclass.
  */
 class DeliveryStopProcessScreen :
         ScreenFragment<DeliveryStopProcessScreen.Parameters>(),
-        EventDialog.Listener,
         BaseCameraScreen.Listener,
         SignatureScreen.Listener,
         NeighbourDeliveryScreen.Listener,
@@ -335,7 +338,6 @@ class DeliveryStopProcessScreen :
                 this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
                         !this.deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
 
-
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_delivery_close_stop,
@@ -424,50 +426,27 @@ class DeliveryStopProcessScreen :
                         }
 
                         R.id.action_delivery_select_event -> {
-                            val eventDialog = EventDialog.Builder(this.context)
-                                    .events(
-                                            this.deliveryStop.allowedParcelEvents
-                                                    .plus(this.deliveryStop.allowedStopEvents)
-                                    )
-                                    .listener(this)
-                                    .build()
 
-                            eventDialog.selectedItemEvent
-                                    .bindToLifecycle(this)
-                                    .subscribe {
-                                        eventDialog.hide()
-
-                                        when {
-                                            this.deliveryStop.allowedParcelEvents.contains(it) -> {
-                                                // Parcel level event
-                                                when (it) {
-                                                    EventNotDeliveredReason.DAMAGED -> {
-                                                        log.trace("DAMAGED SECTION SELECTED")
-                                                        this.parcelListAdapter.addSection(
-                                                                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
-                                                                vmItemProvider = { it.toFlexibleItem() }
-                                                        )
-
-                                                        this.parcelListAdapter.selectedSection = this.damagedSection
-                                                    }
-
-                                                    else -> {
-                                                    }
-                                                }
-                                            }
-                                            else -> {
-                                                // Stop level event
-                                                this.deliveryStop.assignStopLevelEvent(it)
-                                                        .observeOnMainThread()
-                                                        .subscribeBy(
-                                                                onComplete = {
-                                                                    this.parcelListAdapter.selectedSection = sectionByEvent.getValue(it)
-                                                                })
-                                            }
+                            MaterialDialog.Builder(this.context)
+                                    .title(context.getString(org.deku.leoz.mobile.R.string.dialog_title_event_selection))
+                                    .adapter(MaterialSimpleListAdapter({ d, _, item ->
+                                        when (item.tag) {
+                                            is EventNotDeliveredReason -> {
+                                                this.onEventSelected(item.tag as EventNotDeliveredReason)
                                         }
                                     }
+                                        d.dismiss()
+                                    }).also {
+                                        it.addAll(
+                                                this.deliveryStop.allowedParcelEvents
+                                                        .plus(this.deliveryStop.allowedStopEvents)
+                                                        .reversed()
+                                                        .map { it.toMaterialSimpleListItem(context) }
 
-                            eventDialog.show()
+                                        )
+                                    }, null)
+                                    .build()
+                                    .show()
                         }
 
                         R.id.action_deliver_neighbour -> {
@@ -570,33 +549,41 @@ class DeliveryStopProcessScreen :
                     ((item as? FlexibleSectionableVmItem<*>)
                             ?.viewModel as? OrderTaskViewModel)
                             ?.also { orderTaskViewModel ->
-                                val eventDialog = EventDialog.Builder(this.context)
-                                        .events(this.deliveryStop.allowedOrderEvents)
-                                        .listener(this)
-                                        .build()
-
-                                eventDialog.selectedItemEvent
-                                        .bindToLifecycle(this)
-                                        .subscribe {
-                                            eventDialog.hide()
-
+                                MaterialDialog.Builder(context)
+                                        .title(R.string.dialog_title_event_selection)
+                                        .adapter(MaterialSimpleListAdapter({ d, _, item ->
+                                            item.tag.also {
+                                                when (it) {
+                                                    is EventNotDeliveredReason -> {
                                             // Stop level event
-                                            this.deliveryStop.assignOrderLevelEvent(orderTaskViewModel.orderTask.order, it)
+                                                        this.deliveryStop.assignOrderLevelEvent(
+                                                                order = orderTaskViewModel.orderTask.order,
+                                                                reason = it
+                                                        )
                                                     .observeOnMainThread()
                                                     .subscribeBy(
                                                             onComplete = {
                                                                 this.parcelListAdapter.selectedSection = sectionByEvent.getValue(it)
                                                             })
                                         }
-
-                                eventDialog.show()
+                                                }
+                                                d.dismiss()
+                                            }
+                                        }).also {
+                                            it.addAll(
+                                                    this.deliveryStop.allowedOrderEvents
+                                                            .map { it.toMaterialSimpleListItem(context) }
+                                            )
+                                        }, null)
+                                        .build().show()
                             }
                 }
 
         this.syntheticInputs = listOf(
                 SyntheticInput(
                         name = "Parcels",
-                        entries = this.deliveryStop.parcels.blockingFirst().map {
+                        entries = this.deliveryStop.parcels.blockingFirst().map
+                        {
                             val unitNumber = UnitNumber.parse(it.number).value
                             SyntheticInput.Entry(
                                     symbologyType = SymbologyType.Interleaved25,
@@ -801,7 +788,6 @@ class DeliveryStopProcessScreen :
 
         when (variant) {
             EventDeliveredReason.NEIGHBOR -> {
-                // TODO: this will certainly not work. must be reactive
                 dialogs.forEach {
                     it.show()
                 }
@@ -876,6 +862,37 @@ class DeliveryStopProcessScreen :
                                         })
                     }
                 }
+            }
+        }
+    }
+
+    fun onEventSelected(event: EventNotDeliveredReason) {
+        when {
+            this.deliveryStop.allowedParcelEvents.contains(event) -> {
+                // Parcel level event
+                when (event) {
+                    EventNotDeliveredReason.DAMAGED -> {
+                        log.trace("DAMAGED SECTION SELECTED")
+                        this.parcelListAdapter.addSection(
+                                sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
+                                vmItemProvider = { it.toFlexibleItem() }
+                        )
+
+                        this.parcelListAdapter.selectedSection = this.damagedSection
+                    }
+
+                    else -> {
+                    }
+                }
+            }
+            else -> {
+                // Stop level event
+                this.deliveryStop.assignStopLevelEvent(event)
+                        .observeOnMainThread()
+                        .subscribeBy(
+                                onComplete = {
+                                    this.parcelListAdapter.selectedSection = sectionByEvent.getValue(event)
+                                })
             }
         }
     }
@@ -962,10 +979,5 @@ class DeliveryStopProcessScreen :
             else -> {
             }
         }
-    }
-
-
-    override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
-        log.trace("SELECTEDITEAM VIA LISTENER")
     }
 }
