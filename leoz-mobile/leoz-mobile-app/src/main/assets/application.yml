@@ -4,7 +4,7 @@ user:
 
 # Peer connectivity settings
 remote:
-   host: 'leox.derkurier.de'
+   host: 'leoz-demo.derkurier.de'
 
    # Http related settings
    http:

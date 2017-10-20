@@ -1,8 +1,10 @@
 package org.deku.leoz.mobile.model
 
 import android.content.Context
+import android.graphics.Color
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import org.deku.leoz.mobile.R
 import org.deku.leoz.model.EventNotDeliveredReason
 
@@ -50,27 +52,27 @@ private val meta = listOf(
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.DAMAGED,
                 R.string.event_reason_damaged,
-                R.drawable.ic_event
+                R.drawable.ic_damaged
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.XC_CODE_WRONG,
                 R.string.event_reason_xc_code_wrong,
-                R.drawable.ic_event
+                R.drawable.ic_service_exchange
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.XC_OBJECT_DAMAGED,
                 R.string.event_reason_xc_damaged,
-                R.drawable.ic_event
+                R.drawable.ic_service_exchange
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.XC_OBJECT_NOT_READY,
                 R.string.event_reason_xc_not_ready,
-                R.drawable.ic_event
+                R.drawable.ic_service_exchange
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.XC_OBJECT_WRONG,
                 R.string.event_reason_xc_wrong,
-                R.drawable.ic_event
+                R.drawable.ic_service_exchange
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.SIGNATURE_REFUSED,
@@ -105,3 +107,16 @@ private val metaByReason = mapOf(*meta.map { Pair(it.value, it) }.toTypedArray()
 val EventNotDeliveredReason.mobile: NotDeliveredReasonMeta
     get() = metaByReason.withDefault { NotDeliveredReasonMeta(this, null, R.drawable.ic_event) }.getValue(this)
 
+/**
+ * Extension for creating a material dialog list item from an event.
+ * The referring event will be start as the list item's tag.
+ */
+fun EventNotDeliveredReason.toMaterialSimpleListItem(context: Context): MaterialSimpleListItem =
+        MaterialSimpleListItem.Builder(context)
+                .content(this.mobile.textOrName(context))
+                .iconPaddingRes(R.dimen.icon_padding)
+                .icon(this.mobile.icon)
+                .id(this.reason.id.toLong())
+                .backgroundColor(Color.WHITE)
+                .tag(this)
+                .build()

@@ -26,7 +26,7 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
@@ -34,7 +34,6 @@ import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.dialog.EventDialog
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
 import org.deku.leoz.model.EventNotDeliveredReason
@@ -50,8 +49,7 @@ import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 
 class DeliveryStopDetailScreen
     :
-        ScreenFragment<DeliveryStopDetailScreen.Parameters>(),
-        EventDialog.Listener {
+        ScreenFragment<DeliveryStopDetailScreen.Parameters>() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -67,7 +65,7 @@ class DeliveryStopDetailScreen
     private val listener by lazy { this.activity as? Listener }
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
-    private val tones: Tones by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
 
     // Model classes
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
@@ -142,7 +140,7 @@ class DeliveryStopDetailScreen
         val serviceSection = SectionViewModel<Any>(
                 icon = R.drawable.ic_service,
                 color = R.color.colorGrey,
-                background =  R.drawable.section_background_grey,
+                background = R.drawable.section_background_grey,
                 title = this.getText(R.string.services).toString(),
                 items = Observable.fromIterable(listOf(services)))
 
@@ -340,7 +338,7 @@ class DeliveryStopDetailScreen
 
         when {
             result.hasError -> {
-                tones.warningBeep()
+                feedback.warning()
 
                 this.activity.snackbarBuilder
                         .message(R.string.error_invalid_barcode)
@@ -354,9 +352,5 @@ class DeliveryStopDetailScreen
 
     private fun onInput(unitNumber: UnitNumber) {
         this.listener?.onDeliveryStopDetailUnitNumberInput(unitNumber)
-    }
-
-    override fun onEventDialogItemSelected(event: EventNotDeliveredReason) {
-        log.trace("SELECTEDITEAM VIA LISTENER")
     }
 }

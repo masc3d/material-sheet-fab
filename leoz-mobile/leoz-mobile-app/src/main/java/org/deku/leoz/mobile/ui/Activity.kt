@@ -54,7 +54,7 @@ import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MimeType
@@ -125,7 +125,7 @@ abstract class Activity : BaseActivity(),
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
     private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
 
-    private val tones: Tones by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
 
     // Services
     private val updateService: UpdateService by Kodein.global.lazy.instance()
@@ -827,7 +827,7 @@ abstract class Activity : BaseActivity(),
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    this.tones.beep()
+                    this.feedback.acknowledge()
 
                     this.cameraAidcFragment?.also {
                         if (!it.isPinned)

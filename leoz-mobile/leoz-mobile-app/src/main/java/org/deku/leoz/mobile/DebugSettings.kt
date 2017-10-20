@@ -11,10 +11,6 @@ class DebugSettings(map: sx.ConfigurationMap) {
     val userScreenRotation: Boolean by map.value(false)
     val syntheticAidcEnabled: Boolean by map.value(false)
 
-    override fun toString(): String {
-        return "Enabled: $enabled\n" +
-                "Allow developer options: $allowDeveloperOptions\n" +
-                "User screen rotation: $userScreenRotation\n" +
-                "Synthetic AIDC enabled: $syntheticAidcEnabled"
-    }
+    override fun toString(): String =
+            "DebugSettings(enabled=$enabled, allowDeveloperOptions=$allowDeveloperOptions, userScreeRotation=$userScreenRotation, syntheticAidcEnabled=$syntheticAidcEnabled)"
 }

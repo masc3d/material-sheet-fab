@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.mobile.*
+import org.slf4j.LoggerFactory
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap
 import java.io.IOException
@@ -20,6 +21,8 @@ class SettingsConfiguration {
     companion object {
         val ASSET_SETTINGS = "application.yml"
         val ASSET_SETTINGS_DEBUG = "application-debug.yml"
+
+        private val log = LoggerFactory.getLogger(SettingsConfiguration::class.java)
 
         val module = Kodein.Module {
             bind<ConfigurationMap>() with singleton {
@@ -50,7 +53,9 @@ class SettingsConfiguration {
             }
 
             bind<DebugSettings>() with singleton {
-                DebugSettings(instance<ConfigurationMap>())
+                DebugSettings(instance<ConfigurationMap>()).also {
+                    log.info(it.toString())
+                }
             }
 
             bind<LocationSettings>() with singleton {

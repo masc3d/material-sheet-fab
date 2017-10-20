@@ -94,7 +94,8 @@ class StartupActivity : BaseActivity() {
                             Manifest.permission.CALL_PHONE,
                             Manifest.permission.CAMERA,
                             Manifest.permission.READ_PHONE_STATE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.VIBRATE
                     )
                     .switchMap<Boolean> {
                         when (it) {

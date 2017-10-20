@@ -28,6 +28,7 @@ import java.nio.file.Paths
 
 apply from: 'versions.gradle'
 apply from: 'common.gradle'
+apply plugin: 'idea'
 
 def assertJvmVersion(String vmVersion) {
     def jvm = ManagementFactory.getRuntimeMXBean()
@@ -51,6 +52,15 @@ if (!buildOutputCacheProperties.exists()) {
     buildOutputCacheProperties.write("gradle.version=${project.gradle.gradleVersion}")
 }
 //endregion
+
+idea {
+    module {
+        // Exclude dirs to prevent indexing
+        excludeDirs += file('leoz-build')
+        excludeDirs += file('leoz-mobile')
+        excludeDirs += file('release')
+    }
+}
 
 buildscript {
     apply from: 'versions.gradle'
