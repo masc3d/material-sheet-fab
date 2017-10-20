@@ -37,8 +37,8 @@ class Vibrator(context: Context) {
     }
 
     private val acknowledgeVibrateWave = longArrayOf( 0, 100 )
-    private val warningVibrateWave = longArrayOf( 0, 100, 400, 100 )
-    private val errorVibrateWave = longArrayOf( 0, 100, 400, 100, 400, 100 )
+    private val warningVibrateWave = longArrayOf( 0, 500, 50, 200, 50, 500 )
+    private val errorVibrateWave = longArrayOf( 0, 1000 )
 
     fun ackknowledgeVibrate() {
         vibrate(acknowledgeVibrateWave)
@@ -53,11 +53,13 @@ class Vibrator(context: Context) {
     }
 
     private fun vibrate(longArray: LongArray, repeat: Int = -1) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createWaveform(longArray, repeat))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(longArray, repeat)
+        if (vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createWaveform(longArray, repeat))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(longArray, repeat)
+            }
         }
     }
 }

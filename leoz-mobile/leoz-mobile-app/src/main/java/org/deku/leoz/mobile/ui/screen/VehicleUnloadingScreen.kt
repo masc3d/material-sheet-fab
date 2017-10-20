@@ -44,10 +44,12 @@ import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
+import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
+import sx.format.format
 
 /**
  * Vehicle unloading screen
