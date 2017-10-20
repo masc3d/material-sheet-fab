@@ -120,8 +120,11 @@ open class Device(private val context: Context) {
 
     val mobileDateEnabled: Boolean
         get() {
-            // Skip check for "Blackview" devices, as their firmware is returning false always
-            if (this.manufacturer.type == Manufacturer.Type.Blackview) {
+            /**
+             * Apply this check only to honeywell devices, as they are known to work with this "unofficial API" access/check
+             * TODO: To be replaced by a reliable function
+             */
+            if (this.manufacturer.type != Manufacturer.Type.Honeywell) {
                 return true
             }
             // TODO: inofficial api/configuration setting., likely to break in future versions. should be improved or removed.

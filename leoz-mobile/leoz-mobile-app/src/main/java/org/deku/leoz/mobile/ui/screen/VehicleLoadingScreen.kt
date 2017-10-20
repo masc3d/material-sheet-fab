@@ -25,7 +25,7 @@ import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
-import org.deku.leoz.mobile.device.Tones
+import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.process.DeliveryList
@@ -111,7 +111,7 @@ class VehicleLoadingScreen :
 
     private val db: Database by Kodein.global.lazy.instance()
 
-    private val tones: Tones by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
     private val aidcReader: sx.android.aidc.AidcReader by Kodein.global.lazy.instance()
 
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
@@ -560,12 +560,12 @@ class VehicleLoadingScreen :
                         onComplete = {
                             // Can't rely on complete alone due to rxlifecycle
                             if (loaded) {
-                                tones.beep()
+                                feedback.acknowledge()
                             }
                         },
                         onError = {
                             log.error(it.message, it)
-                            tones.errorBeep()
+                            feedback.error()
                         }
                 )
     }
@@ -591,7 +591,7 @@ class VehicleLoadingScreen :
                         .subscribeBy(
                                 onNext = { order ->
                                     log.trace("RETRIEVED ORDER")
-                                    tones.beep()
+                                    feedback.acknowledge()
 
                                     fun mergeOrder() {
                                         this.deliveryList
@@ -607,7 +607,7 @@ class VehicleLoadingScreen :
                                                         },
                                                         onError = {
                                                             log.error("Merging order failed. ${it.message}", it)
-                                                            tones.errorBeep()
+                                                            feedback.error()
                                                         }
                                                 )
                                     }
@@ -628,7 +628,7 @@ class VehicleLoadingScreen :
 
                                 },
                                 onError = {
-                                    tones.errorBeep()
+                                    feedback.error()
                                 }
                         )
 
@@ -643,7 +643,7 @@ class VehicleLoadingScreen :
         when (parcelListAdapter.selectedSection) {
             damagedSection -> {
                 if (parcel.isDamaged) {
-                    this.tones.warningBeep()
+                    this.feedback.warning()
                     this.aidcReader.enabled = false
 
                     MaterialDialog.Builder(this.context)
@@ -678,7 +678,7 @@ class VehicleLoadingScreen :
             else -> {
                 if (parcel.state == Parcel.State.LOADED) {
                     if (SUPPORT_UNLOAD_ON_SCAN) {
-                        this.tones.warningBeep()
+                        this.feedback.warning()
                         this.aidcReader.enabled = false
 
                         MaterialDialog.Builder(this.context)
