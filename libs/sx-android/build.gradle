@@ -15,7 +15,7 @@ buildscript {
         v_material_dialogs = '0.9.4.7'
         v_ormlite = '5.0'
         v_paho = '1.1.1'
-        v_roboelectric = '3.4.2'
+        v_roboelectric = '3.5'
         v_rxlifecycle = '2.2.0'
     }
 
@@ -141,7 +141,7 @@ dependencies {
     testImplementation(
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
-            "org.robolectric:shadows-multidex:3.4-rc2",
+            "org.robolectric:shadows-multidex:3.5",
 
             // MQTT client
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
