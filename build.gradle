@@ -131,7 +131,7 @@ dependencies {
             "com.github.pwittchen:reactivenetwork-rx2:0.12.1",
 
             // Flexible adapter
-            "eu.davidea:flexible-adapter:5.0.0-rc2",
+            "eu.davidea:flexible-adapter:5.0.0-rc3",
             "com.eightbitlab:blurview:1.3.3",
 
             // Requery sqlite

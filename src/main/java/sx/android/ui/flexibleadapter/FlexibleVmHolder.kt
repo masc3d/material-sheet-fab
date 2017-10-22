@@ -87,8 +87,10 @@ class FlexibleVmHolder(
         this.beginDelayedTransition = true
     }
 
-    override fun isViewExpandableOnClick(): Boolean =
-            this.isExpandableOnClick
+    override fun toggleExpansion() {
+        if (this.isExpandableOnClick)
+            super.toggleExpansion()
+    }
 
     override fun onItemReleased(position: Int) {
         super.onItemReleased(position)
