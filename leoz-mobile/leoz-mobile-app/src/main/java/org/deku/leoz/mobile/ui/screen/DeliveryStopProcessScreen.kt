@@ -199,7 +199,7 @@ class DeliveryStopProcessScreen :
      */
     fun EventNotDeliveredReason.toSection(): SectionViewModel<ParcelEntity> {
         return SectionViewModel<ParcelEntity>(
-                icon = R.drawable.ic_event,
+                icon = this.mobile.icon,
                 color = android.R.color.black,
                 background = R.drawable.section_background_accent,
                 showIfEmpty = false,
