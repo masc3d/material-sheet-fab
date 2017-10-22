@@ -31,6 +31,7 @@ export const LANG_DE_TRANS = {
   'shipmentstatus': 'Sendungsstatus',
   'datafilter': 'Datenfilter',
   'record-delivery-data': 'Lieferdatenerfassung',
+  'forStation': 'für Station',
   // 'statistics': 'Statistiken', (see below)
   'pod-reprints': 'Rollkarten Nachdruck',
   'client-management': 'Kundenverwaltung',
@@ -233,5 +234,15 @@ export const LANG_DE_TRANS = {
   'llDriver': '(Unternehmer/Fahrer)',
   'page': 'Seite',
   'printingDate': 'Druckdatum',
+  // importscan form - importscan quick
+  'newShipment': 'Nacherfassen',
+  'allShipments': 'Alle Sendungen',
+  'controlscan': 'Kontrollscan',
+  'listprinting': 'Listendruck',
+  'sortorder': 'Sortierung',
+  'standard': 'Standard',
+  'importlist': 'Importliste',
+  'quickscan': 'Quickscan',
+  'refresh': 'Aktualisieren',
 };
 

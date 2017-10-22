@@ -39,13 +39,9 @@ export class ImportscanquickComponent extends AbstractTranslateComponent impleme
     super.ngOnInit();
 
     this.importscanquickForm = this.fb.group( {
-      /* payload: [ null ],
-       selectloadlist: [ null ],
        scanfield: [ null ],
-       loadlistnumber: [ { value: '', disabled: true } ],
-       printlabel: [ null ],
-       basedon: [ 'actuallist' ]*/
+       msgfield: [ null ],
+       printlabel: [ null ]
     } );
-
   }
 }

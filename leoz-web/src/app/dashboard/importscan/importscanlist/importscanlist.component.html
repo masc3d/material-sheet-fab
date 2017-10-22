@@ -1,3 +1,93 @@
 <form [formGroup]="importscanlistForm" style="padding-top: 10px;">
-  <div class="ui-fluid">listscan</div>
+  <div class="ui-fluid">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-lg-12 no-pad" style="padding: 0;">
+        <div class="ui-g-12 ui-g-nopad">
+          <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+            <input #scanfield formControlName="scanfield"
+                   style="height: 26px; font-size: 20px;
+                          background-color: #FFFFC6; border:1px solid darkgrey">
+          </div>
+          <div class="ui-g-12 ui-lg-1 ui-g-nopad">
+            <div>
+              &nbsp;
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+            <div>
+              <p-dropdown [options]="scanOptions" placeholder="{{ 'sortorder' | translate }}"></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+<div style="margin-top: 10px;">&nbsp;</div>
+
+  <p-dataScroller>
+    <p-header>
+      {{ 'importlist' | translate }}
+    </p-header>
+    <!--<ng-template let-shipment pTemplate="item" rows="10">-->
+    <ng-template let-package="rowData" pTemplate="body">
+      <div class="ui-grid ui-grid-responsive ui-fluid" style="font-size:16px;padding:20px;border-bottom:1px solid #D5D5D5;">
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-3" style="text-align:center">
+            <i class="fa fa-search" style="cursor:pointer;float:left;margin-top:40px"></i>
+            <!--<img src="assets/images/{{shipment.logo}}.png">-->
+            </div>
+          <div class="ui-grid-col-9">
+            <div class="ui-grid ui-grid-responsive ui-fluid">
+              <div class="ui-grid-row">
+                <div class="ui-grid-col-2">address: </div>
+                <!--<div class="ui-grid-col-10">{{shipment.address}}</div>-->
+                <div class="ui-grid-col-10">123</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-dataScroller>
+
+  <div class="ui-g-12 ui-lg-12 no-pad" style="padding: 0; margin-top: 50px;">
+    <hr />
+    <div class="ui-g-12 ui-g-nopad">
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+        <div style="padding-left: 10px; width: 98%;">
+          <button pButton type="button" label="{{'newShipment' | translate}}"></button>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+        <div style="padding-left: 10px; width: 98%;">
+          <button pButton type="button" label="{{'quickscan' | translate}}"></button>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+        <div style="padding-left: 10px; width: 98%;">
+          <button pButton type="button" label="{{'controlscan' | translate}}"></button>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+        <div style="padding-left: 10px; width: 98%;">
+          <button pButton type="button" label="{{'listprinting' | translate}}"></button>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+        <div style="padding-left: 10px; width: 98%;">
+          <button pButton type="button" label="{{'refresh' | translate}}"></button>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+        <div style="padding-left: 10px; width: 98%;">
+          <p-checkbox name="printlabel" value="printlabel" label="{{'printlabel' | translate}}"></p-checkbox>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  </div>
 </form>
