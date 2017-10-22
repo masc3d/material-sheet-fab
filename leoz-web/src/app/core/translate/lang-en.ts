@@ -31,6 +31,7 @@ export const LANG_EN_TRANS = {
   'shipmentstatus': 'Shipmentstatus',
   'datafilter': 'Datafilter',
   'record-delivery-data': 'Deliverydata recording',
+  'forStation': 'for Station',
   // 'statistics': 'Statistics', (see below)
   'pod-reprints': 'Deliverylist reprint',
   'client-management': 'Client management',
@@ -132,7 +133,7 @@ export const LANG_EN_TRANS = {
   'payload': 'Payload in Kg',
   'exportdate': 'Date of export',
   'loadlist': 'loadlist',
-  'printlabel': 'label',
+  'printlabel': 'Label',
   'alllists': 'all lists',
   'selectedlist': 'selected list',
   'actuallist': 'actual list',
@@ -188,8 +189,7 @@ export const LANG_EN_TRANS = {
   'noScan': 'no scan',
   'alreadyScanned': 'bereits gescannt',
   'noAlreadyScanned': 'This shipment no has already been scanned.',
-  'transferedToOtherLoadlist': 'This shipmentnumber has already been scanned to another loadlist and will be ' +
-  'transfered to the actual one.',
+  'transferedToOtherLoadlist': 'This shipmentnumber has already been scanned to another loadlist and will be transfered.',
   'noDataInDatabase': 'No data in database for this shipmentnumber.',
   'depotMismatch': 'Scan not possible, since you are not the pickup station for this shipment.',
   'invalidSenddate': ' The date of shipment does not correspond to the specified criteria. ' +
@@ -234,4 +234,14 @@ export const LANG_EN_TRANS = {
   'llDriver': '(Contractor/Driver)',
   'page': 'Page',
   'printingDate': 'Printingdate',
+  // importscan form - importscan quick
+  'newShipment': 'New Shipment',
+  'allShipments': 'All Shipments',
+  'controlscan': 'Controlscan',
+  'listprinting': 'Print Lists',
+  'sortorder': 'Sorting',
+  'standard': 'Standard',
+  'importlist': 'Importlist',
+  'quickscan': 'Quickscan',
+  'refresh': 'Refresh',
 };
