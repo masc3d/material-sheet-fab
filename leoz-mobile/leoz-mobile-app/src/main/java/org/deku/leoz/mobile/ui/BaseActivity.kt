@@ -39,7 +39,6 @@ abstract class BaseActivity : RxAppCompatActivity() {
     }
 
     override fun onUserInteraction() {
-        log.trace("LAST USER ACTIVITY")
         this.idleTimer.reset()
     }
 }
