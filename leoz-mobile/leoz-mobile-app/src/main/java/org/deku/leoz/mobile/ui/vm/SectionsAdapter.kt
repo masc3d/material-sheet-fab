@@ -85,7 +85,7 @@ class SectionsAdapter
             }
         })
 
-        this.mode = FlexibleAdapter.MODE_SINGLE
+        this.mode = Mode.SINGLE
 
         this.setStickyHeaders(true)
         this.showAllHeaders()
