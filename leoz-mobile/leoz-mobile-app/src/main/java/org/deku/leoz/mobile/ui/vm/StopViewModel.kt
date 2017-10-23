@@ -78,11 +78,11 @@ class StopViewModel(
     private val appointmentDate by lazy { Date() }
 
     private val appointmentFromDate by lazy {
-        stop.appointmentFromDate
+        stop.appointmentStartDate
     }
 
     private val appointmentToDate by lazy {
-        stop.appointmentToDate
+        stop.appointmentEndDate
     }
 
     val appointmentFrom: String

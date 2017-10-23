@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.model.entity
 
-import io.reactivex.Completable
 import sx.time.TimeSpan
 import sx.time.replaceTime
 import java.util.*
@@ -22,38 +21,55 @@ enum class AppointmentState {
 val Stop.address: Address
     get() = this.tasks.first().address
 
-val Stop.dateStart: Date?
+/**
+ * Appointment start for this stop, aggregated from all referring tasks
+ */
+val Stop.appointmentStart: Date?
     get() = this.tasks.map { it.appointmentStart }.filterNotNull().max()
 
-val Stop.dateEnd: Date?
+/**
+ * Appointment end for this stop, aggregated from all referring tasks
+ */
+val Stop.appointmentEnd: Date?
     get() = this.tasks.map { it.appointmentEnd }.filterNotNull().min()
 
-val Stop.appointmentFromDate: Date?
+/**
+ * Appointment start date
+ */
+val Stop.appointmentStartDate: Date?
     get() {
-        return this.dateStart?.let {
+        return this.appointmentStart?.let {
             Date().replaceTime(it)
         }
     }
 
-val Stop.appointmentToDate: Date?
+/**
+ * Appointment end date
+ */
+val Stop.appointmentEndDate: Date?
     get() {
-        return this.dateEnd?.let {
+        return this.appointmentEnd?.let {
             Date().replaceTime(it)
         }
     }
 
+/**
+ * Time left until the end of appointment time frame is reached
+ */
 val Stop.appointmentTimeLeft: TimeSpan?
     get() {
-        val end = this.appointmentToDate
+        val end = this.appointmentEndDate
         return when {
             end != null -> TimeSpan.between(end, Date())
             else -> null
         }
     }
 
+/** Indicates if stop has appointment(s) */
 val Stop.hasAppointment
-    get() = this.dateEnd != null
+    get() = this.appointmentEnd != null
 
+/** Appointment state */
 val Stop.appointmentState: AppointmentState
     get() {
         val timeLeft = this.appointmentTimeLeft
