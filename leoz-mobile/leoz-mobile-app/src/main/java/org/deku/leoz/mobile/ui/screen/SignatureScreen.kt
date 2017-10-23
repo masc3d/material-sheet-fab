@@ -62,7 +62,7 @@ class SignatureScreen
 
     private val descriptionText: String by lazy {
         this@SignatureScreen.getString(R.string.signature_conclusion,
-                stop.tasks.map { it.order }.distinct().count().toString(),
+                delivery.activeStop?.orders?.blockingFirst()?.count().toString(),
                 delivery.activeStop?.deliveredParcelAmount?.blockingFirst().toString(),
                 stop.address.line1)
     }

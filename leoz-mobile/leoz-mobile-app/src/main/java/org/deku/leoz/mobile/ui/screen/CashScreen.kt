@@ -132,7 +132,7 @@ class CashScreen : ScreenFragment<Any>() {
         flexibleAdapter.isSwipeEnabled = false
 
         //region Orders
-        val orders = this.deliveryStop.entity.tasks.map { it.order }.distinct()
+        val orders = this.deliveryStop.orders.blockingFirst()
 
         flexibleAdapter.addItem(
                 FlexibleExpandableVmItem<SectionViewModel<Any>, Any>(
@@ -171,8 +171,8 @@ class CashScreen : ScreenFragment<Any>() {
                 ActionItem(
                         id = R.id.action_continue,
                         colorRes = R.color.colorPrimary,
-                        iconTintRes = android.R.color.white,
                         iconRes = R.drawable.ic_delivery,
+                        iconTintRes = android.R.color.white,
                         visible = false
                 )
         )
