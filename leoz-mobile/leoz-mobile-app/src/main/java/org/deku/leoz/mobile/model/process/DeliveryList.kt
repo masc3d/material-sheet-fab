@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
@@ -107,6 +108,18 @@ class DeliveryList : CompositeDisposableSupplier {
      * Missing parcels
      */
     val missingParcels = missingParcelsQuery.result
+
+    /**
+     * Delivery list parcels (all non-delivered parcels)
+     */
+    val parcels = Observable.combineLatest(
+            loadedParcels.map { it.value },
+            pendingParcels.map { it.value },
+            missingParcels.map { it.value },
+            Function3 { t1: List<ParcelEntity>, t2: List<ParcelEntity>, t3: List<ParcelEntity> ->
+                t1.plus(t2).plus(t3)
+            }
+    )
 
     /**
      * Extension method for filtering distinct service orders
