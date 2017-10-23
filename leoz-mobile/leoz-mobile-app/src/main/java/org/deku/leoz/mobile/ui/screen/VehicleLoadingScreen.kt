@@ -56,6 +56,7 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
 import sx.format.format
+import java.util.*
 
 /**
  * Vehicle loading screen
@@ -473,7 +474,9 @@ class VehicleLoadingScreen :
                                 name = "Delivery lists",
                                 multipleChoice = true,
                                 entries = dlInfos
-                                        .sortedWith(compareBy({ it.date.date }, { it.id }))
+                                        .sortedWith(
+                                                compareByDescending({ it.date.date })
+                                        )
                                         .map {
                                             val data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
                                             SyntheticInput.Entry(
