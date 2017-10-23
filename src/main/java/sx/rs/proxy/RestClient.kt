@@ -46,7 +46,7 @@ abstract class RestClientProxy(
         val ignoreSslCertificate: Boolean = false) {
 
     protected val connectTimeout = Duration.ofSeconds(5)
-    protected val socketTimeout = Duration.ofSeconds(5)
+    protected val socketTimeout = Duration.ofSeconds(15)
 
     protected val ignoringCertificateSslContext by lazy {
         val ignoringCertificateSslContext = SSLContext.getInstance("TLS")
