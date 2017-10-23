@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -36,6 +38,7 @@ import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -117,6 +120,7 @@ class DeliveryStopProcessScreen :
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
     private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
 
@@ -581,8 +585,19 @@ class DeliveryStopProcessScreen :
 
         this.syntheticInputs = listOf(
                 SyntheticInput(
-                        name = "Parcels",
+                        name = "Stop Parcels",
                         entries = this.deliveryStop.parcels.blockingFirst().map
+                        {
+                            val unitNumber = UnitNumber.parse(it.number).value
+                            SyntheticInput.Entry(
+                                    symbologyType = SymbologyType.Interleaved25,
+                                    data = unitNumber.label
+                            )
+                        }
+                ),
+                SyntheticInput(
+                        name = "Parcels",
+                        entries = this.deliveryList.loadedParcels.map { it.value }.blockingFirst().map
                         {
                             val unitNumber = UnitNumber.parse(it.number).value
                             SyntheticInput.Entry(
@@ -651,16 +666,27 @@ class DeliveryStopProcessScreen :
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        var parcel = this.deliveryStop.parcels.blockingFirst().firstOrNull { it.number == unitNumber.value }
+        // Regular stop parcels
+        this.deliveryStop
+                .parcels
+                .blockingFirst()
+                .firstOrNull { it.number == unitNumber.value }
+                ?.also {
+                    this.onParcel(it)
+                    return
+                }
 
-        if (parcel == null) {
+        // Other stop parcels (merge support)
+        this.parcelRepository
+                .entities
+                .firstOrNull { it.number == unitNumber.value }
+                ?.also { parcel ->
+                    val sourceStop = parcel.order.deliveryTask.stop
+                            ?: throw IllegalStateException("No stop for task")
+
             // Parcel does not belong to this delivery stop, ask for stop merge
             feedback.warning()
 
-            parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
-            val sourceStop = parcel?.order?.deliveryTask?.stop
-
-            if (parcel != null && sourceStop != null) {
                 MaterialDialog.Builder(context)
                         .title(R.string.title_stop_merge)
                         .cancelable(true)
@@ -684,17 +710,14 @@ class DeliveryStopProcessScreen :
                         }
                         .negativeText(android.R.string.no)
                         .build().show()
-            } else {
-                this.activity.snackbarBuilder
-                        .message(R.string.error_invalid_parcel)
-                        .build().show()
-
                 return
             }
 
-        }
+        feedback.error()
 
-        this.onParcel(parcel)
+        this.activity.snackbarBuilder
+                .message(R.string.error_invalid_parcel)
+                .build().show()
     }
 
     /**
