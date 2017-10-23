@@ -56,19 +56,19 @@ class VehicleLoading : CompositeDisposableSupplier {
             .behave(this)
 
     //region Counters
-    val orderTotalAmount = deliveryList.parcels.map { it.map { it.order }.distinct().count() }
+    val orderTotalAmount = deliveryList.parcels.map { it.value.map { it.order }.distinct().count() }
             .distinctUntilChanged()
             .behave(this)
 
-    val stopTotalAmount = deliveryList.parcels.map { it.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct().count() }
+    val stopTotalAmount = deliveryList.parcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct().count() }
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelTotalAmount = deliveryList.parcels.map { it.count() }
+    val parcelTotalAmount = deliveryList.parcels.map { it.value.count() }
             .distinctUntilChanged()
             .behave(this)
 
-    val totalWeight = deliveryList.parcels.map { it.sumByDouble { it.weight } }
+    val totalWeight = deliveryList.parcels.map { it.value.sumByDouble { it.weight } }
             .distinctUntilChanged()
             .behave(this)
 

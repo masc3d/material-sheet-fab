@@ -41,6 +41,14 @@ class DeliveryList : CompositeDisposableSupplier {
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     //region Self-observing queries
+    private val parcelsQuery = ObservableQuery<ParcelEntity>(
+            name = "Parcles",
+            query = db.store.select(ParcelEntity::class)
+                    .where(ParcelEntity.STATE.ne(Parcel.State.DELIVERED))
+                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
+                    .get()
+    ).bind(this)
+
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Loaded parcels",
             query = db.store.select(ParcelEntity::class)
@@ -112,14 +120,7 @@ class DeliveryList : CompositeDisposableSupplier {
     /**
      * Delivery list parcels (all non-delivered parcels)
      */
-    val parcels = Observable.combineLatest(
-            loadedParcels.map { it.value },
-            pendingParcels.map { it.value },
-            missingParcels.map { it.value },
-            Function3 { t1: List<ParcelEntity>, t2: List<ParcelEntity>, t3: List<ParcelEntity> ->
-                t1.plus(t2).plus(t3)
-            }
-    )
+    val parcels = parcelsQuery.result
 
     /**
      * Extension method for filtering distinct service orders
