@@ -38,7 +38,10 @@ class LocationService
         locationListener = LocationListener()
 
         try {
-            locationServices.locationManager.requestLocationUpdates(provider, period, minDistance, locationListener)
+            //locationServices.locationManager.requestLocationUpdates(provider, period, minDistance, locationListener)
+            locationServices.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, period, minDistance, locationListener)
+            locationServices.locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, period, minDistance, locationListener)
+            locationServices.locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, period, minDistance, locationListener)
         } catch (e: SecurityException) {
             log.error("Fail to request location update on provider [$provider]", e)
         } catch (e: IllegalArgumentException) {
@@ -53,7 +56,9 @@ class LocationService
 
     private fun getProviderName(criteria: Criteria = defaultCriteria): String {
         val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.getBestProvider(criteria, false)
+        val provider = locationManager.getBestProvider(criteria, false)
+        log.debug("Provider [$provider] taken for location updates")
+        return provider
     }
 
     inner class LocationListener : android.location.LocationListener {

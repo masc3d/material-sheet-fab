@@ -32,6 +32,7 @@ import org.deku.leoz.service.internal.LocationServiceV1
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by 27694066 on 22.09.2017.
@@ -162,6 +163,11 @@ abstract class BaseLocationService: Service() {
             }
         }
 
+        if (!locationRequirementsCheck(locationNew = location, locationOld = this@BaseLocationService.locationCache.lastLocation)) {
+            log.debug("Location does not match requirements.")
+            return
+        }
+
         val currentPosition = LocationServiceV1.GpsDataPoint(
                 latitude = location.latitude,
                 longitude = location.longitude,
@@ -201,5 +207,29 @@ abstract class BaseLocationService: Service() {
 
         log.debug("Unregister BroadcastReceiver [${locationProviderChangedReceiver::class.java.simpleName}]")
         broadcastManager.unregisterReceiver(locationProviderChangedReceiver)
+    }
+
+    private fun locationRequirementsCheck(locationNew: Location, locationOld: Location?): Boolean {
+        if (locationOld == null)
+            return true
+
+        if (locationNew.provider == LocationManager.GPS_PROVIDER || locationOld.accuracy >= locationNew.accuracy)
+            return true
+
+        val baseValue = 50
+        val positionAge = TimeUnit.MILLISECONDS.toMinutes(locationNew.time - locationOld.time)
+        val allowedDistance = (baseValue * (positionAge * 0.15))
+
+        if ((locationOld.accuracy + allowedDistance) >= locationNew.accuracy)
+            return true
+
+        //Earth radius in meters
+        if (locationNew.distanceTo(locationOld) <= allowedDistance)
+            return true
+
+        if (positionAge > 5 && locationOld.bearingTo(locationNew) in (locationOld.bearing - 10F)..(locationOld.bearing + 10F))
+            return true
+
+        return false
     }
 }
