@@ -296,16 +296,26 @@ class VehicleUnloadingScreen :
                         }
 
                         R.id.action_vehicle_unloading_dev_mark_all_unloaded -> {
-                            db.store.withTransaction {
-                                select(ParcelEntity::class)
-                                        .where(ParcelEntity.STATE.eq(Parcel.State.PENDING))
-                                        .get()
-                                        .forEach {
-                                            it.state = Parcel.State.LOADED
-                                            parcelRepository.update(it).blockingGet()
-                                        }
-                            }
+                            db.store
+                                    .select(ParcelEntity::class)
+                                    .where(ParcelEntity.STATE.eq(Parcel.State.LOADED))
+                                    .get()
+                                    .observable()
                                     .subscribeOn(db.scheduler)
+                                    .doOnNext {
+                                        log.trace("LAME ${it}")
+                                    }
+                                    .flatMap {
+                                        vehicleUnloading
+                                                .unload(it)
+                                                .doOnComplete {
+                                                    log.trace("MEH1")
+                                                }
+                                                .toObservable<Unit>()
+                                    }
+                                    .doOnNext {
+                                        log.trace("MEH?")
+                                    }
                                     .subscribe()
                         }
                     }
@@ -537,7 +547,8 @@ class VehicleUnloadingScreen :
                 }
             }
             else -> {
-                this.vehicleUnloading.unload(parcel)
+                this.vehicleUnloading
+                        .unload(parcel)
                         .subscribe()
 
                 this.parcelListAdapter.selectedSection = unloadedSection
