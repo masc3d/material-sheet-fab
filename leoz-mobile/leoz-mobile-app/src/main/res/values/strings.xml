@@ -103,6 +103,9 @@
     <string name="event_reason_xc_not_ready">XC object not ready</string>
     <string name="event_reason_xc_wrong">XC wrong object</string>
 
+    <string name="exclude">Exclude</string>
+    <string name="excluded">Excluded</string>
+
     <string name="exit_application">Exit application</string>
     <string name="exit_application_prompt">Do you really want to exit the application?</string>
 

@@ -113,10 +113,10 @@ class StopViewModel(
 
     val services: List<ParcelService> by lazy {
         stop.tasks
-                .flatMap { it.services }
-                .distinct()
-                .filter { it.mobile.text != null }
-    }
+                        .flatMap { it.services }
+                        .distinct()
+                        .filter { it.mobile.text != null }
+                }
 
     val hasServices: Boolean by lazy {
         this.services.count() > 0
@@ -181,12 +181,10 @@ class StopViewModel(
     //endregion
 
     override fun removeOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {
-        log.trace("SVM REMOVECALLBACK")
         super.removeOnPropertyChangedCallback(callback)
     }
 
     override fun addOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {
-        log.trace("SVM ADDCALLBACK")
         super.addOnPropertyChangedCallback(callback)
     }
 }

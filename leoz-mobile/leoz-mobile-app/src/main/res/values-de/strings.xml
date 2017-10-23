@@ -95,6 +95,9 @@
     <string name="event_reason_xc_not_ready">XC Paket nicht fertig</string>
     <string name="event_reason_xc_wrong">XC Paket falsch</string>
 
+    <string name="exclude">Ausschließen</string>
+    <string name="excluded">Ausgeschlossen</string>
+
     <string name="exit_application">Anwendung verlassen</string>
     <string name="exit_application_prompt">Möchten Sie die Anwendung wirklich verlassen?</string>
 
