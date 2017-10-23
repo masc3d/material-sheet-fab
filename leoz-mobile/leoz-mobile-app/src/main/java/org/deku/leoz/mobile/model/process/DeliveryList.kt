@@ -42,7 +42,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
     //region Self-observing queries
     private val parcelsQuery = ObservableQuery<ParcelEntity>(
-            name = "Parcles",
+            name = "Delivery list parcels",
             query = db.store.select(ParcelEntity::class)
                     .where(ParcelEntity.STATE.ne(Parcel.State.DELIVERED))
                     .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
