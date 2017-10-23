@@ -37,20 +37,33 @@ class MenuScreen : ScreenFragment<Any>() {
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
-    data class MenuEntry(
-            val entryType: Entry,
+    enum class EntryType {
+        DELIVERY,
+        LOADING,
+        UNLOADING
+    }
+
+    inner class Entry(
+            val type: EntryType,
             val description: String,
-            var counter: Int,
+            var counter1: Int,
             var counter2: Int,
             val icon: Drawable) {
 
-        enum class Entry {
-            DELIVERY,
-            LOADING,
-            UNLOADING
-        }
+        constructor(entryTypeType: EntryType, description: String, counter: Int, icon: Drawable) : this(entryTypeType, description, counter, 0, icon)
 
-        constructor(entryType: Entry, description: String, counter: Int, icon: Drawable) : this(entryType, description, counter, 0, icon)
+        val isSelectable: Boolean
+            get() = when (this.type) {
+                EntryType.LOADING -> {
+                    true
+                }
+                EntryType.DELIVERY -> {
+                    delivery.pendingStops.blockingFirst().value.count() > 0
+                }
+                EntryType.UNLOADING -> {
+                    deliveryList.loadedParcels.get().count() > 0
+                }
+            }
     }
 
     /**
@@ -58,35 +71,31 @@ class MenuScreen : ScreenFragment<Any>() {
      */
     class MenuListAdapter(
             val context: Context,
-            val entries: List<MenuEntry>) : BaseAdapter() {
+            val entries: List<Entry>) : BaseAdapter() {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val inflater = context.getLayoutInflater()
 
             val v: View = convertView ?: inflater.inflate(R.layout.item_delivery_menu_entry, parent, false)
 
-            v.uxMenuDescription.text = entries[position].description
-            v.uxMenuIcon.setImageDrawable(entries[position].icon)
+            val entry = entries[position]
 
-            if (entries[position].counter == 0) {
-                v.uxCount.visibility = View.GONE
-            } else {
-                v.uxCount.visibility = View.VISIBLE
-            }
-            if (entries[position].counter2 == 0) {
-                v.uxCount2.visibility = View.GONE
-            } else {
-                v.uxCount2.visibility = View.VISIBLE
-            }
-            v.uxCount.text = entries[position].counter.toString()
-            v.uxCount2.text = entries[position].counter2.toString()
+            v.uxMenuDescription.text = entry.description
+            v.uxMenuIcon.setImageDrawable(entry.icon)
+
+            v.uxCount.visibility = if (entry.counter1 > 0) View.VISIBLE else View.GONE
+            v.uxCount2.visibility = if (entry.counter2 > 0) View.VISIBLE else View.GONE
+            v.alpha = if (entry.isSelectable) 1.0F else 0.5F
+
+            v.uxCount.text = entry.counter1.toString()
+            v.uxCount2.text = entry.counter2.toString()
 
             return v
         }
 
         override fun getItem(position: Int): Any = entries[position]
 
-        override fun getItemId(position: Int): Long = entries[position].entryType.hashCode().toLong()
+        override fun getItemId(position: Int): Long = entries[position].type.hashCode().toLong()
 
         override fun getCount(): Int = entries.size
     }
@@ -112,23 +121,23 @@ class MenuScreen : ScreenFragment<Any>() {
         this.uxMenuList.adapter = MenuListAdapter(
                 context = context,
                 entries = mutableListOf(
-                        MenuEntry(
-                                entryType = MenuEntry.Entry.LOADING,
+                        Entry(
+                                type = EntryType.LOADING,
                                 description = this.getText(R.string.vehicle_loading).toString(),
-                                counter = deliveryList.pendingParcels.get().count(),
+                                counter1 = deliveryList.pendingParcels.get().count(),
                                 counter2 = deliveryList.loadedParcels.blockingFirst().value.count(),
                                 icon = ContextCompat.getDrawable(this.context, R.drawable.ic_truck_loading)
                         ),
-                        MenuEntry(
-                                entryType = MenuEntry.Entry.DELIVERY,
+                        Entry(
+                                entryTypeType = EntryType.DELIVERY,
                                 description = this.getText(R.string.tour).toString(),
                                 counter = delivery.pendingStops.blockingFirst().value.count(),
                                 icon = ContextCompat.getDrawable(this.context, R.drawable.ic_format_list_bulleted)
                         ),
-                        MenuEntry(
-                                entryType = MenuEntry.Entry.UNLOADING,
+                        Entry(
+                                type = EntryType.UNLOADING,
                                 description = this.getText(R.string.vehicle_unloading).toString(),
-                                counter = deliveryList.loadedParcels.get().count(),
+                                counter1 = deliveryList.loadedParcels.get().count(),
                                 counter2 = deliveryList.pendingParcels.blockingFirst().value.count(),
                                 icon = ContextCompat.getDrawable(this.context, R.drawable.ic_truck_unloading)
                         )
@@ -136,17 +145,18 @@ class MenuScreen : ScreenFragment<Any>() {
 
         this.uxMenuList.setOnItemClickListener { _, _, position, _ ->
             onEntryPressed(
-                    entry = (this.uxMenuList.getItemAtPosition(position) as MenuEntry)
+                    entry = (this.uxMenuList.getItemAtPosition(position) as Entry)
             )
         }
     }
 
-    fun onEntryPressed(entry: MenuEntry) {
-        listener?.onDeliveryMenuSelection(entry.entryType)
+    fun onEntryPressed(entry: Entry) {
+        if (entry.isSelectable)
+            listener?.onDeliveryMenuSelection(entry.type)
     }
 
     interface Listener {
         // TODO: Update argument type and name
-        fun onDeliveryMenuSelection(entryType: MenuEntry.Entry)
+        fun onDeliveryMenuSelection(entryType: EntryType)
     }
 }

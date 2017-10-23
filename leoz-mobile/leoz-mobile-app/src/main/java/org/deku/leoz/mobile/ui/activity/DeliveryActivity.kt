@@ -122,9 +122,9 @@ class DeliveryActivity : Activity(),
     /**
      * Fragment listener
      */
-    override fun onDeliveryMenuSelection(entryType: MenuScreen.MenuEntry.Entry) {
+    override fun onDeliveryMenuSelection(entryType: MenuScreen.EntryType) {
         when (entryType) {
-            MenuScreen.MenuEntry.Entry.LOADING -> {
+            MenuScreen.EntryType.LOADING -> {
                 this.orderRepository.hasOutdatedOrders()
                         .bindToLifecycle(this)
                         .subscribeOn(db.scheduler)
@@ -170,11 +170,11 @@ class DeliveryActivity : Activity(),
                                 })
             }
 
-            MenuScreen.MenuEntry.Entry.DELIVERY -> {
+            MenuScreen.EntryType.DELIVERY -> {
                 this.showScreen(DeliveryStopListScreen())
             }
 
-            MenuScreen.MenuEntry.Entry.UNLOADING -> {
+            MenuScreen.EntryType.UNLOADING -> {
                 this.showScreen(VehicleUnloadingScreen())
             }
         }
