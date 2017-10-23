@@ -26,8 +26,7 @@ open class Device(private val context: Context) {
         enum class Type {
             Generic,
             Honeywell,
-            Motorola,
-            Blackview
+            Motorola
         }
 
         /**
@@ -37,7 +36,6 @@ open class Device(private val context: Context) {
             when {
                 this.name.contains("honeywell", ignoreCase = true)  -> Type.Honeywell
                 this.name.contains("motorola", ignoreCase = true)   -> Type.Motorola
-                this.name.contains("blackview", ignoreCase = true)  -> Type.Blackview
                 else -> Type.Generic
             }
         }
