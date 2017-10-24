@@ -5,7 +5,7 @@ import * as jsPDF from 'jspdf';
 
 import { Loadinglist } from '../../dashboard/stationloading/loadinglistscan/loadinglist.model';
 import { LoadinglistReportHeader } from '../../dashboard/stationloading/loadinglistscan/loadinglist-report-header.model';
-import { Package } from '../../dashboard/stationloading/loadinglistscan/package.model';
+import { Package } from '../models/package.model';
 import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
 import { ReportingService } from './reporting.service';

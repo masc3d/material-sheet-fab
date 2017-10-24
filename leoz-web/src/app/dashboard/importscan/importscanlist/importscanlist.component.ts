@@ -6,7 +6,7 @@ import { SelectItem } from 'primeng/primeng';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
-import { Package } from '../../stationloading/loadinglistscan/package.model';
+import { Package } from '../../../core/models/package.model';
 
 @Component( {
   selector: 'app-importscanlist',

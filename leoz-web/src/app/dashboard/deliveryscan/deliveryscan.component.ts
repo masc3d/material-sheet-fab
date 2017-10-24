@@ -4,11 +4,11 @@ import 'rxjs/add/operator/filter';
 
 import { SelectItem } from 'primeng/primeng';
 
-import { Package } from './package.model';
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
 import { KeyUpEventService } from '../../core/key-up-event.service';
 import { BrowserCheck } from '../../core/auth/browser-check';
+import { Package } from '../../core/models/package.model';
 
 
 @Component( {

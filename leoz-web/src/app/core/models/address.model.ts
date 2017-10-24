@@ -1,3 +1,5 @@
+import { Geolocation } from './geolocation.model';
+
 export interface Address {
   line1: string;
   line2: string;

@@ -6,7 +6,7 @@ import 'rxjs/add/operator/filter';
 import { SelectItem } from 'primeng/primeng';
 
 import { Loadinglist } from '../loadinglistscan/loadinglist.model';
-import { Package } from '../loadinglistscan/package.model';
+import { Package } from '../../../core/models/package.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { BagscanService } from './bagscan.service';
