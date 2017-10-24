@@ -85,7 +85,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
                 parcels.forEach { parcel ->
                     if (parcel.state == Parcel.State.LOADED) {
 
-                        // When parcle is unloaded, it's state is set back to PENDING
+                        // When parcel is unloaded, set state back to PENDING
                         parcel.state = Parcel.State.PENDING
 
                         parcelRepository

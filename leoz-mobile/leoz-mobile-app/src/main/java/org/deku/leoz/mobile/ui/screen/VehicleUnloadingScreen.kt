@@ -288,7 +288,8 @@ class VehicleUnloadingScreen :
                     when (it.itemId) {
                         R.id.action_reset -> {
                             db.store.withTransaction {
-                                orderRepository.removeAll()
+                                orderRepository
+                                        .removeAll()
                                         .blockingAwait()
                             }
                                     .subscribeOn(db.scheduler)
