@@ -68,7 +68,13 @@ open class Device(private val context: Context) {
 
     val imei: String by lazy {
         val telephonyManager = this.context.getTelephonyManager()
-        try { telephonyManager.deviceId ?: "" } catch(e: SecurityException) { throw e }
+        try {
+            @Suppress("DEPRECATION")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                telephonyManager.imei ?: ""
+            else
+                telephonyManager.deviceId ?: ""
+        } catch(e: SecurityException) { throw e }
     }
 
     val phone: String by lazy {
@@ -95,7 +101,13 @@ open class Device(private val context: Context) {
      */
     val serial: String by lazy {
         when (this.isEmulator) {
-            false -> Build.SERIAL
+            false -> {
+                @Suppress("DEPRECATION")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    try { Build.getSerial() } catch (s: SecurityException) { throw s }
+                else
+                    Build.SERIAL
+            }
             // Generate a random serial number for emulators
             true -> {
                 // For emulators, generate an artifical random serial and preserve it until the application is reinstalled
