@@ -317,4 +317,5 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="dialog_text_gps_disabled">The GPS location on your device is disabled. To continue, you must enable GPS location!</string>
     <string name="dialog_title_developer_enabled">Developer options enabled</string>
     <string name="dialog_text_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
+    <string name="title_phone_number">Phone number:</string>
 </resources>
