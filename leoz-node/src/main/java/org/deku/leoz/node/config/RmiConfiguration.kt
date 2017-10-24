@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Lazy
 open class RmiConfiguration {
 
     private val rmiHost: String = "localhost"
-    private val rmiPort: Int = 1099
+    private val rmiPort: Int = 13101
 
     @Bean
     open fun rmiRegistry(): RmiRegistryFactoryBean =
@@ -26,7 +26,6 @@ open class RmiConfiguration {
             }
 
     @Bean
-    @Throws(Exception::class)
     open fun connectorServerFactoryBean(): ConnectorServerFactoryBean =
             ConnectorServerFactoryBean().also {
                 it.setObjectName("connector:name=rmi")

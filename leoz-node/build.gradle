@@ -242,9 +242,13 @@ dependencies {
             "org.apache.sshd:sshd-core:$v_sshd",
 
             // spring
-            "org.springframework:spring-jms:$v_spring",
-            "org.springframework:spring-instrument:$v_spring",
+            "org.springframework:spring-aop:$v_spring",
             "org.springframework:spring-aspects:$v_spring",
+            "org.springframework:spring-context:$v_spring",
+            "org.springframework:spring-instrument:$v_spring",
+            "org.springframework:spring-jms:$v_spring",
+            "org.springframework:spring-orm:$v_spring",
+            "org.springframework:spring-webmvc:$v_spring",
 
             // json
             dependencies.create("io.swagger:swagger-jaxrs:$v_swagger") {
