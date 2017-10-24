@@ -101,6 +101,7 @@ fun Parcel.Companion.create(
         it.weight = weight
         it.state = Parcel.State.PENDING
         it.isDamaged = false
+        it.modificationTime = Date()
     }
 }
 
