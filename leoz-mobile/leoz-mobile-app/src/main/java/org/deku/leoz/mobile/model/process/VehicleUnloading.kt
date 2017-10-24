@@ -10,10 +10,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.entity.Stop
-import org.deku.leoz.mobile.model.entity.filterValuesByType
+import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
@@ -76,25 +73,47 @@ class VehicleUnloading : CompositeDisposableSupplier {
     //endregion
 
     /**
-     * Unload parcel
-     * @param parcel Parcel to unload
+     * Unload parcels
+     * @param parcels Parcels to unload
      */
-    fun unload(parcel: ParcelEntity): Completable {
+    fun unload(parcels: List<ParcelEntity>): Completable {
 
-        return if (parcel.state == Parcel.State.LOADED) {
-
-            // When parcle is unloaded, it's state is set back to PENDING
-            parcel.state = Parcel.State.PENDING
-
+        return Completable.fromAction {
             val lastLocation = this.locationCache.lastLocation
 
-            this.parcelRepository.update(parcel)
-                    .toCompletable()
-                    .concatWith(Completable.fromCallable {
+            this.db.store.withTransaction {
+                parcels.forEach { parcel ->
+                    if (parcel.state == Parcel.State.LOADED) {
+
+                        // When parcle is unloaded, it's state is set back to PENDING
+                        parcel.state = Parcel.State.PENDING
+
+                        parcelRepository
+                                .update(parcel)
+                                .blockingGet()
+
+                        // Update stop states
+                        parcel.order.tasks
+                                .mapNotNull { it.stop }
+                                .filter {
+                                    it.state != Stop.State.CLOSED
+                                            && it.tasks
+                                            .flatMap { it.order.parcels }
+                                            .all { it.state == Parcel.State.PENDING }
+                                }
+                                .distinct()
+                                .forEach {
+                                    it.state = Stop.State.NONE
+
+                                    stopRepository
+                                            .update(it as StopEntity)
+                                            .blockingGet()
+                                }
+
                         mqttChannels.central.main.channel().send(
                                 ParcelServiceV1.ParcelMessage(
-                                        userId = this.login.authenticatedUser?.id,
-                                        nodeId = this.identity.uid.value,
+                                        userId = this@VehicleUnloading.login.authenticatedUser?.id,
+                                        nodeId = this@VehicleUnloading.identity.uid.value,
                                         events = listOf(parcel).map {
                                             ParcelServiceV1.Event(
                                                     event = Event.TOUR_UNLOADED.value,
@@ -119,12 +138,19 @@ class VehicleUnloading : CompositeDisposableSupplier {
                                         }.toTypedArray()
                                 )
                         )
-                    })
-        } else {
-            Completable.complete()
+                    }
+                }
+            }
+                    .blockingGet()
+
         }
                 .subscribeOn(db.scheduler)
     }
+
+    /**
+     * Unload single parcel
+     */
+    fun unload(parcel: ParcelEntity): Completable = this.unload(listOf(parcel))
 
     /**
      * Finalizes the unloading process, marking all parcels which have not been unloaded as missing
@@ -136,18 +162,6 @@ class VehicleUnloading : CompositeDisposableSupplier {
 
             loadedParcels.forEach {
                 it.state = Parcel.State.MISSING
-                update(it)
-            }
-
-            // Update stop states
-            val stopsWithPendingParcels = parcelRepository.entities
-                    .filter { it.state == Parcel.State.PENDING }
-                    .flatMap { it.order.tasks.mapNotNull { it.stop } }
-                    .filter { it.state != Stop.State.CLOSED }
-                    .distinct()
-
-            stopsWithPendingParcels.forEach {
-                it.state = Stop.State.NONE
                 update(it)
             }
         }

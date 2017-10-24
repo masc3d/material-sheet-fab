@@ -301,21 +301,14 @@ class VehicleUnloadingScreen :
                                     .where(ParcelEntity.STATE.eq(Parcel.State.LOADED))
                                     .get()
                                     .observable()
-                                    .subscribeOn(db.scheduler)
-                                    .doOnNext {
-                                        log.trace("LAME ${it}")
-                                    }
-                                    .flatMap {
+                                    .collectInto(ArrayList<ParcelEntity>(), { t1, t2 ->
+                                        t1.add(t2)
+                                    })
+                                    .flatMapCompletable {
                                         vehicleUnloading
                                                 .unload(it)
-                                                .doOnComplete {
-                                                    log.trace("MEH1")
-                                                }
-                                                .toObservable<Unit>()
                                     }
-                                    .doOnNext {
-                                        log.trace("MEH?")
-                                    }
+                                    .subscribeOn(db.scheduler)
                                     .subscribe()
                         }
                     }
