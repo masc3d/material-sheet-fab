@@ -6,6 +6,7 @@ import { SelectItem } from 'primeng/primeng';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
+import { Package } from '../../stationloading/loadinglistscan/package.model';
 
 @Component( {
   selector: 'app-importscanlist',
@@ -16,9 +17,11 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
   importscanlistForm: FormGroup;
   scanOptions: SelectItem[];
 
+  packages: Package[];
+
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
-               protected router: Router) {
+               protected router: Router ) {
     super( translate, () => {
       this.scanOptions = this.createScanOptions();
     } );
@@ -32,6 +35,20 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
       msgfield: [ null ],
       printlabel: [ null ]
     } );
+    this.packages = [ {
+      parcelNo: 123,
+      orderId: 456,
+      parcelPosition: 1,
+      loadinglistNo: 789,
+      typeOfPackaging: 1,
+      realWeight: 2.2,
+      dateOfStationOut: new Date(),
+      creference: 'dsdf',
+
+      zip: '03189',
+      city: 'Orihuela Costa',
+      devliveryStation: 321
+    } ];
   }
 
   private createScanOptions(): SelectItem[] {
