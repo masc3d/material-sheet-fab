@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
@@ -30,7 +31,8 @@ export class ImportscanquickComponent extends AbstractTranslateComponent impleme
   importscanquickForm: FormGroup;
 
   constructor( private fb: FormBuilder,
-               public translate: TranslateService ) {
+               public translate: TranslateService,
+               protected router: Router ) {
     super( translate, () => {
     } );
   }

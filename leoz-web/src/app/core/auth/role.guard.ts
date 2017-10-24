@@ -14,12 +14,14 @@ export class RoleGuard implements CanActivate {
       'user',
       'tour',
       'stationloading',
-      'importscan'],
+      'importscan',
+      'deliveryscan'],
     'POWERUSER': [
       'user',
       'tour',
       'stationloading',
-      'importscan' ],
+      'importscan',
+      'deliveryscan' ],
   };
 
   constructor( private router: Router ) {

@@ -36,6 +36,12 @@ export const routes = [
         canActivate: [ AuthenticationGuard,
                        RoleGuard ],
         loadChildren: 'app/dashboard/importscan/importscan.module#ImportscanModule'
+      },
+      {
+        path: 'deliveryscan', data: [ 'deliveryscan' ],
+        canActivate: [ AuthenticationGuard,
+                       RoleGuard ],
+        loadChildren: 'app/dashboard/deliveryscan/deliveryscan.module#DeliveryscanModule'
       }
     ]
   }

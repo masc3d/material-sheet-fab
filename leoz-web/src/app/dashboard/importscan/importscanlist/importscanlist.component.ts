@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { SelectItem } from 'primeng/primeng';
 
@@ -16,7 +17,8 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
   scanOptions: SelectItem[];
 
   constructor( private fb: FormBuilder,
-               protected translate: TranslateService ) {
+               protected translate: TranslateService,
+               protected router: Router) {
     super( translate, () => {
       this.scanOptions = this.createScanOptions();
     } );

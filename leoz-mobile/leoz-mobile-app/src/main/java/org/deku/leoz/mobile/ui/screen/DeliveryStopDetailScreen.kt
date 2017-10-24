@@ -43,6 +43,7 @@ import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
+import sx.android.Device
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
@@ -306,16 +307,24 @@ class DeliveryStopDetailScreen
                         }
 
                         R.id.action_call -> {
-                            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + stop.address.phone))
+                            val device: Device by Kodein.global.lazy.instance()
                             val dialogBuilder = MaterialDialog.Builder(context)
-                            dialogBuilder.title(R.string.title_confirm_call)
-                            dialogBuilder.content(stop.address.phone)
-                            dialogBuilder.positiveText(R.string.call)
-                            dialogBuilder.negativeText(android.R.string.cancel)
-                            dialogBuilder.cancelable(true)
-                            dialogBuilder.onPositive { _, _ ->
-                                startActivity(intent)
+
+                            if (device.telephonyEnabled) {
+                                val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + stop.address.phone))
+                                dialogBuilder.title(R.string.title_confirm_call)
+                                dialogBuilder.positiveText(R.string.call)
+                                dialogBuilder.negativeText(android.R.string.cancel)
+                                dialogBuilder.onPositive { _, _ ->
+                                    startActivity(intent)
+                                }
+                            } else {
+                                dialogBuilder.title(R.string.title_phone_number)
+                                dialogBuilder.neutralText(R.string.dismiss)
                             }
+
+                            dialogBuilder.cancelable(true)
+                            dialogBuilder.content(stop.address.phone)
                             dialogBuilder.build().show()
                         }
                     }

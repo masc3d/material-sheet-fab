@@ -209,7 +209,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'importscan' ),
           icon: '',
-          routerLink: '/dashboard/importscan/importscanlist',
+          routerLink: '/dashboard/importscan/importscanquick',
           command: closeMenu
         },
         {
@@ -251,7 +251,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'deliveryscan' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/deliveryscan',
           command: closeMenu
         },
         {
