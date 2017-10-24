@@ -75,9 +75,11 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( debitorStations: Station[] ) => {
         this.debitorStations = [];
-        debitorStations.forEach( ( station: Station ) => {
-          this.debitorStations.push( { label: station.stationNo.toString(), value: station } );
-        } );
+        if(debitorStations) {
+          debitorStations.forEach( ( station: Station ) => {
+            this.debitorStations.push( { label: station.stationNo.toString(), value: station } );
+          } );
+        }
       } );
 
     this.auth.activeStation$
