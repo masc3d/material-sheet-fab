@@ -238,7 +238,8 @@ open class Application :
                             .reversed())
 
             // Add local home configuration
-            configLocations.add(this.storage.applicationConfigurationFile.toURI().toURL())
+            if (this.storage.applicationConfigurationFile.exists())
+                configLocations.add(this.storage.applicationConfigurationFile.toURI().toURL())
 
             // Log configuration locations
             configLocations.forEach { config ->
