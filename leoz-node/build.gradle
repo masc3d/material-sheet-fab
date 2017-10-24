@@ -281,10 +281,9 @@ dependencies {
             "org.aspectj:aspectjweaver:$v_aspectj",
 
             // TODO: for testing vaadin
-            "com.vaadin:vaadin-spring-boot:1.2.0",
+            "com.vaadin:vaadin-spring-boot:2.0.1",
             "com.vaadin:vaadin-client:$v_vaadin",
             "com.vaadin:vaadin-client-compiled:$v_vaadin",
-            "com.vaadin:vaadin-widgets:$v_vaadin",
             "com.vaadin:vaadin-themes:$v_vaadin",
     )
 
