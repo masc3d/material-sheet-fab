@@ -127,37 +127,37 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_camera_trigger,
+                        colorRes = R.color.colorPrimary,
                         iconRes = android.R.drawable.ic_menu_camera,
-                        iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary
+                        iconTintRes = android.R.color.white
                 ),
                 ActionItem(
                         id = R.id.action_camera_flash,
+                        colorRes = R.color.colorDarkGrey,
                         iconRes = R.drawable.ic_flash,
                         iconTintRes = android.R.color.black,
-                        colorRes = R.color.colorDarkGrey,
                         alignEnd = false
                 ),
                 ActionItem(
                         id = R.id.action_camera_save_finish,
+                        colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_finish,
                         iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary,
                         visible = false
                 ),
                 ActionItem(
                         id = R.id.action_camera_save,
+                        colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_done_plus,
                         iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary,
                         visible = false
                 ),
                 ActionItem
                 (
                         id = R.id.action_camera_discard,
+                        colorRes = R.color.colorGrey,
                         iconRes = R.drawable.ic_circle_cancel,
-                        iconTintRes = android.R.color.black,
-                        colorRes = R.color.colorAccent,
+                        iconTintRes = android.R.color.white,
                         alignEnd = false,
                         visible = false
                 )

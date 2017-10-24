@@ -24,11 +24,13 @@ import org.deku.leoz.mobile.databinding.ScreenDeliveryStopListBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
@@ -140,6 +142,9 @@ class DeliveryStopListScreen
 
                             first { it.id == R.id.action_cancel }
                                     .visible = editMode
+
+                            first { it.id == R.id.action_sort }
+                                    .visible = editMode
                         }
 
 
@@ -168,6 +173,24 @@ class DeliveryStopListScreen
                             this.editMode = true
                         }
 
+                        R.id.action_sort_zip -> {
+                            this.updateAdapterPositions(
+                                    this.delivery.pendingStops
+                                            .blockingFirst()
+                                            .value
+                                            .sortedBy { it.address.zipCode }
+                                            .also {
+                                                it.forEachIndexed { index, stopEntity ->
+                                                    stopEntity.position = index.toDouble()
+                                                }
+                                            }
+                            )
+                        }
+
+                        R.id.action_sort_distance -> {
+                            // TODO add support for sorting by geo distance (need testdata)
+                        }
+
                         R.id.action_done -> {
                             this.stopRepository.entities.forEach {
                                 // Persist all positional changes
@@ -192,27 +215,10 @@ class DeliveryStopListScreen
                                     .subscribeOn(db.scheduler)
                                     .observeOnMainThread()
                                     .subscribe {
-                                        // Restore positions
-                                        this.delivery.pendingStops
-                                                .blockingFirst()
-                                                .value
-                                                .forEachIndexed { index, pendingStop ->
-                                                    val item = flexibleAdapter.currentItems.first {
-                                                        it.viewModel.let {
-                                                            it is StopViewModel && it.stop == pendingStop
-                                                        }
-                                                    }
-
-                                                    val currentPosition = flexibleAdapter.getGlobalPositionOf(item)
-                                                    val desiredPosition = index + 1
-
-                                                    if (currentPosition != desiredPosition) {
-                                                        flexibleAdapter.moveItem(
-                                                                currentPosition,
-                                                                desiredPosition
-                                                        )
-                                                    }
-                                                }
+                                        this.updateAdapterPositions(
+                                                this.delivery.pendingStops
+                                                        .blockingFirst()
+                                                        .value)
                                     }
                         }
                     }
@@ -240,25 +246,36 @@ class DeliveryStopListScreen
         super.onViewCreated(view, savedInstanceState)
 
         this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_cancel,
-                        colorRes = R.color.colorAccent,
-                        iconRes = R.drawable.ic_circle_cancel,
-                        iconTintRes = android.R.color.black,
-                        alignEnd = false,
-                        visible = false
-                ),
+                // Regular mode actions
                 ActionItem(
                         id = R.id.action_edit,
                         colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_pencil,
                         iconTintRes = android.R.color.white
                 ),
+
+                // Edit mode actions
+                ActionItem(
+                        id = R.id.action_cancel,
+                        colorRes = R.color.colorGrey,
+                        iconRes = R.drawable.ic_circle_cancel,
+                        iconTintRes = android.R.color.white,
+                        alignEnd = false,
+                        visible = false
+                ),
                 ActionItem(
                         id = R.id.action_done,
                         colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_finish,
                         iconTintRes = android.R.color.white,
+                        visible = false
+                ),
+                ActionItem(
+                        id = R.id.action_sort,
+                        colorRes = R.color.colorAccent,
+                        iconRes = android.R.drawable.ic_menu_sort_by_size,
+                        iconTintRes = android.R.color.black,
+                        menu = this.activity.inflateMenu(R.menu.menu_delivery_list_sort),
                         visible = false
                 )
         )
@@ -282,7 +299,7 @@ class DeliveryStopListScreen
 
         flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { item ->
             when (this.editMode) {
-                // Ignore click/selection in edit mode
+            // Ignore click/selection in edit mode
                 true -> false
 
                 false -> {
@@ -369,7 +386,7 @@ class DeliveryStopListScreen
 
                                 val previousItemViewModel: StopViewModel? = previousItem?.viewModel as? StopViewModel
 
-                                // Update entity stop postiion acoordingly
+                                // Update entity stop position acoordingly
                                 db.store.withTransaction {
                                     stopRepository
                                             .move(
@@ -411,5 +428,30 @@ class DeliveryStopListScreen
 
     private fun onInput(unitNumber: UnitNumber) {
         this.listener?.onDeliveryStopListUnitNumberInput(unitNumber)
+    }
+
+    /**
+     * Updates adapter item positions from stop entities
+     */
+    private fun updateAdapterPositions(stops: List<StopEntity>) {
+        // Restore positions
+        stops
+                .forEachIndexed { index, pendingStop ->
+                    val item = flexibleAdapter.currentItems.first {
+                        it.viewModel.let {
+                            it is StopViewModel && it.stop == pendingStop
+                        }
+                    }
+
+                    val currentPosition = flexibleAdapter.getGlobalPositionOf(item)
+                    val desiredPosition = index + 1
+
+                    if (currentPosition != desiredPosition) {
+                        flexibleAdapter.moveItem(
+                                currentPosition,
+                                desiredPosition
+                        )
+                    }
+                }
     }
 }

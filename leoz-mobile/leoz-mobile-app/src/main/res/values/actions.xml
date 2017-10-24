@@ -29,6 +29,7 @@
     <item name="action_signature_submit" type="id"/>
     <item name="action_signature_clear" type="id"/>
     <item name="action_signature_paper" type="id"/>
+    <item name="action_sort" type="id"/>
     <item name="action_vehicle_loading_load" type="id"/>
     <item name="action_vehicle_loading_dev_mark_all_loaded" type="id"/>
     <item name="action_vehicle_loading_damaged" type="id"/>
