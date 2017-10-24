@@ -17,15 +17,6 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { BagscanReportingService } from '../../../core/reporting/bagscan-reporting.service';
 
-interface ScanMsg {
-  type: string;
-  bgColor: string;
-  txtColor: string;
-  shortMsgText: string;
-  msgText: string;
-  sound: string;
-}
-
 @Component( {
   selector: 'app-bagscan',
   templateUrl: './bagscan.component.html',
