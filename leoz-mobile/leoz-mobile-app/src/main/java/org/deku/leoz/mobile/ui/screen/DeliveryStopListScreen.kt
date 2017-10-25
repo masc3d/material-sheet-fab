@@ -40,10 +40,7 @@ import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.FlexibleHeaderVmItem
-import sx.android.ui.flexibleadapter.FlexibleVmHolder
-import sx.android.ui.flexibleadapter.FlexibleVmItem
-import sx.android.ui.flexibleadapter.customizeScrollBehavior
+import sx.android.ui.flexibleadapter.*
 import sx.rx.ObservableRxProperty
 
 /**
@@ -343,20 +340,12 @@ class DeliveryStopListScreen
             }
 
             override fun onItemMove(fromPosition: Int, toPosition: Int) {
-                log.trace("ONITEMMOVE value [$fromPosition] value [$toPosition]")
             }
 
-            override fun shouldMoveItem(fromPosition: Int, toPosition: Int): Boolean {
-                log.trace("ONITEMSHOULDMOVE value [$fromPosition] value [$toPosition]")
+            override fun shouldMoveItem(fromPosition: Int, toPosition: Int): Boolean =
+                    // Prevent move before statistics header
+                    toPosition >= this@DeliveryStopListScreen.adapterFirstStopItemIndex
 
-                // Prevent move before statistics header
-                return toPosition >= this@DeliveryStopListScreen.adapterFirstStopItemIndex
-            }
-
-        })
-
-        flexibleAdapter.addListener(FlexibleAdapter.OnUpdateListener { _ ->
-            log.trace("ONITEMUPDATE")
         })
 
         // Items
