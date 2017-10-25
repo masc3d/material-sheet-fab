@@ -270,8 +270,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="skip">Skip</string>
 
-    <string name="sort_distance">Sort by distance</string>
-    <string name="sort_zip">Sort by zip</string>
+    <string name="sort_distance">By distance</string>
+    <string name="sort_zip">By zip</string>
 
     <string name="station_id">Station ID</string>
 

@@ -3,9 +3,17 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_sort_zip"
+        android:id="@+id/action_sort_zip_desc"
         android:orderInCategory="100"
         android:title="@string/sort_zip"
+        android:icon="@drawable/ic_sort_descending"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_sort_zip_asc"
+        android:orderInCategory="100"
+        android:title="@string/sort_zip"
+        android:icon="@drawable/ic_sort_ascending"
         app:showAsAction="never"/>
 
     <item

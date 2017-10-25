@@ -225,7 +225,7 @@
     <string name="skip">Überspringen</string>
 
     <string name="sort_distance">Nach Distanz</string>
-    <string name="sort_zip">Nach Zip</string>
+    <string name="sort_zip">Nach PLZ</string>
 
     <string name="station_id">Station:</string>
 

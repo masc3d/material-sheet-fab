@@ -173,12 +173,24 @@ class DeliveryStopListScreen
                             this.editMode = true
                         }
 
-                        R.id.action_sort_zip -> {
+                        R.id.action_sort_zip_asc -> {
                             this.updateAdapterPositions(
                                     this.delivery.pendingStops
-                                            .blockingFirst()
-                                            .value
+                                            .blockingFirst().value
                                             .sortedBy { it.address.zipCode }
+                                            .also {
+                                                it.forEachIndexed { index, stopEntity ->
+                                                    stopEntity.position = index.toDouble()
+                                                }
+                                            }
+                            )
+                        }
+
+                        R.id.action_sort_zip_desc -> {
+                            this.updateAdapterPositions(
+                                    this.delivery.pendingStops
+                                            .blockingFirst().value
+                                            .sortedByDescending { it.address.zipCode }
                                             .also {
                                                 it.forEachIndexed { index, stopEntity ->
                                                     stopEntity.position = index.toDouble()
