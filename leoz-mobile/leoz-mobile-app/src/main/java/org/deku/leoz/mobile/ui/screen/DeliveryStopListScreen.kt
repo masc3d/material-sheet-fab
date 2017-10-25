@@ -313,30 +313,29 @@ class DeliveryStopListScreen
         flexibleAdapter.showAllHeaders()
 
         flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { item ->
-            when (this.editMode) {
             // Ignore click/selection in edit mode
-                true -> false
+            if (this.editMode)
+                return@OnItemClickListener true
 
-                false -> {
-                    val viewModel = flexibleAdapter.getItem(item)?.viewModel
+            flexibleAdapter.getItem(item)
+                    ?.viewModel
+                    ?.also { viewModel ->
+                        when (viewModel) {
+                            is StopViewModel -> {
+                                val stop = viewModel.stop
 
-                    when (viewModel) {
-                        is StopViewModel -> {
-                            val stop = viewModel.stop
-
-                            activity.showScreen(
-                                    DeliveryStopDetailScreen().also {
-                                        it.parameters = DeliveryStopDetailScreen.Parameters(
-                                                stopId = stop.id
-                                        )
-                                    }
-                            )
+                                activity.showScreen(
+                                        DeliveryStopDetailScreen().also {
+                                            it.parameters = DeliveryStopDetailScreen.Parameters(
+                                                    stopId = stop.id
+                                            )
+                                        }
+                                )
+                            }
                         }
                     }
 
-                    true
-                }
-            }
+            true
         })
 
         flexibleAdapter.addListener(object : FlexibleAdapter.OnItemMoveListener {
@@ -351,7 +350,7 @@ class DeliveryStopListScreen
                 log.trace("ONITEMSHOULDMOVE value [$fromPosition] value [$toPosition]")
 
                 // Prevent move before statistics header
-                return toPosition > 0
+                return toPosition >= this@DeliveryStopListScreen.adapterFirstStopItemIndex
             }
 
         })
@@ -375,56 +374,75 @@ class DeliveryStopListScreen
                 }
         )
 
-        flexibleAdapter.addItems(flexibleAdapter.itemCount, delivery.pendingStops.blockingFirst().value
-                .map {
-                    val item = FlexibleVmItem(
-                            view = R.layout.item_stop,
-                            variable = BR.stop,
-                            viewModel = StopViewModel(
-                                    stop = it,
-                                    timerEvent = this.timerEvent),
-                            dragHandleViewId = R.id.uxHandle
-                    )
+        flexibleAdapter.addItems(
+                // Position
+                flexibleAdapter.itemCount,
+                // Items
+                delivery.pendingStops
+                        .blockingFirst().value
+                        .map {
+                            val item = FlexibleVmItem(
+                                    view = R.layout.item_stop,
+                                    variable = BR.stop,
+                                    viewModel = StopViewModel(
+                                            stop = it,
+                                            timerEvent = this.timerEvent),
+                                    dragHandleViewId = R.id.uxHandle
+                            )
 
-                    item.isEnabled = true
-                    item.isDraggable = true
-                    item.isSwipeable = false
+                            item.isEnabled = true
+                            item.isDraggable = true
+                            item.isSwipeable = false
 
-                    item.itemReleasedEvent
-                            .bindUntilEvent(this@DeliveryStopListScreen, FragmentEvent.PAUSE)
-                            .subscribe { position ->
-                                // Get the item it was moved after
-                                val previousItem = when {
-                                    position > 0 -> flexibleAdapter.getItem(position - 1)
-                                    else -> null
-                                }
+                            // Item move / position change event handler
+                            item.itemReleasedEvent
+                                    .bindUntilEvent(this@DeliveryStopListScreen, FragmentEvent.PAUSE)
+                                    .subscribe { position ->
+                                        // Get the item it was moved after
+                                        val previousItem = when {
+                                            position >= this.adapterFirstStopItemIndex -> flexibleAdapter.getItem(position - 1)
+                                            else -> null
+                                        }
 
-                                val previousItemViewModel: StopViewModel? = previousItem?.viewModel as? StopViewModel
+                                        val previousItemViewModel: StopViewModel? = previousItem?.viewModel as? StopViewModel
 
-                                // Update entity stop position acoordingly
-                                db.store.withTransaction {
-                                    stopRepository
-                                            .move(
-                                                    stop = item.viewModel.stop,
-                                                    after = previousItemViewModel?.stop,
-                                                    // Only persist immedaitely when not in edit mode
-                                                    persist = !this@DeliveryStopListScreen.editMode
-                                            )
-                                            .blockingAwait()
-                                }
-                                        .subscribeOn(db.scheduler)
-                                        .subscribe()
+                                        // Update entity stop position acoordingly
+                                        db.store.withTransaction {
+                                            stopRepository
+                                                    .move(
+                                                            stop = item.viewModel.stop,
+                                                            after = previousItemViewModel?.stop,
+                                                            // Only persist immedaitely when not in edit mode
+                                                            persist = !this@DeliveryStopListScreen.editMode
+                                                    )
+                                                    .blockingAwait()
+                                        }
+                                                .subscribeOn(db.scheduler)
+                                                .subscribe()
 
-                                // When not in edit mode, Send stop list order update on every move
-                                if (!this@DeliveryStopListScreen.editMode)
-                                    this.delivery.sendStopOrderUpdate()
-                                            .subscribe()
-                            }
+                                        // When not in edit mode, Send stop list order update on every move
+                                        if (!this@DeliveryStopListScreen.editMode)
+                                            this.delivery.sendStopOrderUpdate()
+                                                    .subscribe()
+                                    }
 
-                    item
-                })
+                            item
+                        })
 
         this.editMode = false
+    }
+
+    /**
+     * First adpater item index which is a stop
+     */
+    val adapterFirstStopItemIndex by lazy {
+        this.flexibleAdapter.currentItems.firstOrNull {
+            it.viewModel is StopViewModel
+        }
+                ?.let {
+                    this.flexibleAdapter.getGlobalPositionOf(it)
+                }
+                ?: this.flexibleAdapter.currentItems.count()
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
@@ -464,7 +482,7 @@ class DeliveryStopListScreen
                     }
 
                     val currentPosition = flexibleAdapter.getGlobalPositionOf(item)
-                    val desiredPosition = index + 1
+                    val desiredPosition = index + this.adapterFirstStopItemIndex
 
                     if (currentPosition != desiredPosition) {
                         flexibleAdapter.moveItem(
