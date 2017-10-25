@@ -9,6 +9,7 @@ import org.deku.leoz.service.internal.entity.BagNumberRange
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 import sx.rs.auth.ApiKey
+import java.util.*
 
 /**
  * Created by 27694066 on 20.02.2017.
@@ -31,6 +32,24 @@ interface BagService {
         const val SECTION = "section"
         const val STATION_NO = "station-no"
     }
+
+    @ApiModel(description = "Bag Status Model")
+    data class BagStatus(
+            var bagNumber: Long? = null,
+            var sealNumberGreen: Long? = null,
+            var status: Int? = null,
+            var statusTimestamp: Date? = null,
+            var lastDepot: Long? = null,
+            var sealNumberYellow: Long? = null,
+            var sealNumberRed: Long? = null,
+            var orderhub2depot: Long? = null,
+            var orderdepot2hub: Long? = null,
+            var initStatus: Int = 0,
+            var workdate: Date? = null,
+            var printed: Int? = null,
+            var multibag: Int = 0,
+            var movepool: String? = null
+    )
 
     @GET
     @Path("/{${ID}}")
@@ -166,5 +185,26 @@ interface BagService {
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
 
     ): Int
+
+    @GET
+    @Path("/{${ID}}/status")
+    @ApiOperation("Get status of Bag-ID")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun getStatus(
+            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long): BagStatus
+
+    @GET
+    @Path("/station/{$STATION_NO}/isPickupStation/{$ID}")
+    @ApiOperation("Is station=Pickup Station")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun isPickupStation(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @PathParam(ID) @ApiParam(value = "OrderID", example = "21734710251", required = true) orderID: Long
+
+    ):Boolean
 
 }
