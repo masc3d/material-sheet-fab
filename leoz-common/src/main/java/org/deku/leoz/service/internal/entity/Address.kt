@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 
 
-@ApiModel(value = "Address", description = "pickup or delivery address")
+@ApiModel(value = "Address", description = "universal address")
 data class Address(
         @ApiModelProperty(dataType = "string", example = "Hans Mustermann", position = 10, required = false, value = "addressLine1")
         var line1: String? = null,
