@@ -33,7 +33,7 @@ buildscript {
     dependencies {
         // masc20171004. as of 3.0.0-beta7, agp must solely be included on root project level to avoid
         // local project configuration/variant resolution to work properly.
-        classpath 'com.android.tools.build:gradle:3.0.0-rc2'
+        classpath 'com.android.tools.build:gradle:3.0.0'
         classpath "sx:sx-ssh:0.1"
         classpath "sx:sx-packager-gradle:0.1"
         classpath "com.github.ben-manes:gradle-versions-plugin:0.15.0"
