@@ -90,7 +90,8 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
       scanfield: [ null ],
       loadlistnumber: [ { value: '', disabled: true } ],
       printlabel: [ null ],
-      basedon: [ 'actuallist' ]
+      basedon: [ 'standard' ],
+      basedonscan: [ '' ]
     } );
 
   }
