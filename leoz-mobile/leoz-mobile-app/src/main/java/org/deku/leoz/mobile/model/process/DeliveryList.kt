@@ -8,11 +8,13 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.*
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
@@ -20,6 +22,7 @@ import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
 import sx.rx.CompositeDisposableSupplier

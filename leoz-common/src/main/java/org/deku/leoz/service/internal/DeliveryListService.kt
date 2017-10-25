@@ -97,8 +97,12 @@ interface DeliveryListService {
      * Message sent when delivery list order is updated
      */
     @Serializable(0x84361dd5ef5f84)
-    data class OrderUpdateMessage(
-            var id: Long = 0,
+    data class StopOrderUpdateMessage(
+            /** The node uid this message originates from */
+            var nodeUid: String = "",
+            /** User id */
+            var userId: Int = 0,
+            /** Stops in updated order */
             var stops: List<Stop> = listOf()
     )
 }

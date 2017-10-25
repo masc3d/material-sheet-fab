@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response
 class DeliveryListService
     :
         DeliveryListService,
-        MqHandler<DeliveryListService.OrderUpdateMessage>
+        MqHandler<DeliveryListService.StopOrderUpdateMessage>
 {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -149,7 +149,7 @@ class DeliveryListService
     /**
      * Message handler receiving updated delivery lists
      */
-    override fun onMessage(message: DeliveryListService.OrderUpdateMessage, replyChannel: MqChannel?) {
-        log.trace("Delivery list update received [${message.id}]")
+    override fun onMessage(message: DeliveryListService.StopOrderUpdateMessage, replyChannel: MqChannel?) {
+        log.trace("Delivery list update received [${message}]")
     }
 }
