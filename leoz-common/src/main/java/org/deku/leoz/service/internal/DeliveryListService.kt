@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.service.entity.ShortDate
+import sx.io.serialization.Serializable
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -60,6 +61,7 @@ interface DeliveryListService {
             var stops: List<Stop> = listOf()
     )
 
+    @Serializable(0x3c2666979388d7)
     @ApiModel(description = "Task")
     data class Task(
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "Order id")
@@ -75,6 +77,7 @@ interface DeliveryListService {
         }
     }
 
+    @Serializable(0x24dd5d7b4cf66b)
     @ApiModel(description = "Stop")
     data class Stop(
             var tasks: List<Task> = listOf()
@@ -88,5 +91,14 @@ interface DeliveryListService {
             var date: ShortDate = ShortDate(),
             @ApiModelProperty(example = "1020", position = 10, required = true, value = "Debitor id")
             var debitorId: Long = 0
+    )
+
+    /**
+     * Message sent when delivery list order is updated
+     */
+    @Serializable(0x84361dd5ef5f84)
+    data class OrderUpdateMessage(
+            var id: Long = 0,
+            var stops: List<Stop> = listOf()
     )
 }

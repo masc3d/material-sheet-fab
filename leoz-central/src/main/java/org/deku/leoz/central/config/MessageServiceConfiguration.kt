@@ -1,6 +1,7 @@
 package org.deku.leoz.central.config
 
 import org.deku.leoz.central.service.internal.AuthorizationService
+import org.deku.leoz.central.service.internal.DeliveryListService
 import org.deku.leoz.central.service.internal.FileServiceV1
 import org.deku.leoz.central.service.internal.LocationServiceV1
 import org.deku.leoz.central.service.internal.LocationServiceV2
@@ -42,31 +43,44 @@ open class MessageServiceConfiguration {
     @Inject
     private lateinit var nodeService: NodeServiceV1
 
+    @Inject
+    private lateinit var deliveryListService: DeliveryListService
+
+    /**
+     * Central queue message handlers
+     */
+    private val centralQueueDelegates by lazy {
+        listOf(
+                authorizationService,
+                deliveryListService,
+                fileService,
+                nodeService,
+                parcelService
+        )
+    }
+
+    /**
+     * Central transient queue message handlers
+     */
+    private val centralTransientQueueDelegates by lazy {
+        listOf(
+                logService,
+                locationServiceV1,
+                locationServiceV2
+        )
+    }
+
     @PostConstruct
     fun onInitialize() {
         // Register message handlers
         this.messageListenerConfiguration.apply {
-            centralQueueListener.addDelegate(
-                    authorizationService)
+            centralQueueDelegates.forEach {
+                centralQueueListener.addDelegate(it)
+            }
 
-            centralTransientQueueListener.addDelegate(
-                    logService)
-
-            centralTransientQueueListener.addDelegate(
-                    locationServiceV1)
-
-            centralTransientQueueListener.addDelegate(
-                    locationServiceV2)
-
-            centralQueueListener.addDelegate(
-                    parcelService)
-
-            centralQueueListener.addDelegate(
-                    fileService)
-
-            centralQueueListener.addDelegate(
-                    nodeService
-            )
+            centralTransientQueueDelegates.forEach {
+                centralTransientQueueListener.addDelegate(it)
+            }
         }
     }
 }
