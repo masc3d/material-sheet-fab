@@ -11,7 +11,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.mobile.LocationSettings
+import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.LocationServiceV1

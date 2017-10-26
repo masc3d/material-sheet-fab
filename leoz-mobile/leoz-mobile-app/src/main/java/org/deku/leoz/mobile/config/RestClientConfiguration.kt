@@ -8,7 +8,7 @@ import com.github.salomonbrys.kodein.erased.provider
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
 import org.deku.leoz.config.Rest
-import org.deku.leoz.mobile.RemoteSettings
+import org.deku.leoz.mobile.settings.RemoteSettings
 import org.slf4j.LoggerFactory
 import sx.rs.proxy.FeignClientProxy
 import sx.rs.proxy.RestClientProxy

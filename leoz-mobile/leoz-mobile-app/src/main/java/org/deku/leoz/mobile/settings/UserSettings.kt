@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile
+package org.deku.leoz.mobile.settings
 
 import org.threeten.bp.Duration
 

@@ -16,7 +16,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.LocationSettings
+import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement

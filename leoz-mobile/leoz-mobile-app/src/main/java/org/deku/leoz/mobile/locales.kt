@@ -9,9 +9,10 @@ import android.annotation.TargetApi
 import android.os.Build
 
 /**
+ * Context wrapper providing support for locale changes during runtime
  * Created by phpr on 27.09.2017.
  */
-class BaseContextWrapper private constructor(base: Context): ContextWrapper(base) {
+class LocaleContextWrapper private constructor(base: Context): ContextWrapper(base) {
 
     companion object {
         fun wrap(context: Context, language: String? = null): ContextWrapper {
@@ -37,7 +38,7 @@ class BaseContextWrapper private constructor(base: Context): ContextWrapper(base
                     context.resources.updateConfiguration(config, context.resources.displayMetrics)
                 }
             }
-            return BaseContextWrapper(context)
+            return LocaleContextWrapper(context)
         }
 
         fun getSystemLocaleLegacy(config: Configuration): Locale

@@ -1,4 +1,6 @@
-package org.deku.leoz.mobile
+package org.deku.leoz.mobile.settings
+
+import org.deku.leoz.mobile.BuildConfig
 
 /**
  * Debug sewttings
@@ -6,7 +8,7 @@ package org.deku.leoz.mobile
  */
 @sx.ConfigurationMapPath("debug")
 class DebugSettings(map: sx.ConfigurationMap) {
-    val enabled: Boolean by map.value(org.deku.leoz.mobile.BuildConfig.DEBUG)
+    val enabled: Boolean by map.value(BuildConfig.DEBUG)
     val allowDeveloperOptions: Boolean by map.value(enabled)
     val userScreenRotation: Boolean by map.value(false)
     val syntheticAidcEnabled: Boolean by map.value(false)

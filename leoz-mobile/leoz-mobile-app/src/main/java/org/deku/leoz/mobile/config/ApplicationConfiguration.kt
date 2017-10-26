@@ -6,7 +6,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
-import org.deku.leoz.mobile.UserSettings
+import org.deku.leoz.mobile.settings.UserSettings
 import org.deku.leoz.mobile.model.process.Login
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
@@ -14,7 +14,6 @@ import sx.android.ApplicationStateMonitor
 import sx.android.IdleTimer
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.Timer
-import sx.time.TimeSpan
 import java.util.concurrent.ScheduledExecutorService
 
 /**
