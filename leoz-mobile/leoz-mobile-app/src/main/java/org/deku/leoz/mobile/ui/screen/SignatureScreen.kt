@@ -117,9 +117,9 @@ class SignatureScreen
                 ),
                 ActionItem(
                         id = R.id.action_signature_clear,
-                        colorRes = R.color.colorAccent,
+                        colorRes = R.color.colorGrey,
                         iconRes = R.drawable.ic_circle_cancel,
-                        iconTintRes = android.R.color.black,
+                        iconTintRes = android.R.color.white,
                         alignEnd = false,
                         visible = false
                 )
