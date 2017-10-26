@@ -149,5 +149,13 @@ interface ParcelServiceV1 {
             var dateOfStationOut: java.sql.Date? = null,
             var cReference: String? = null
     )
+
+    data class ParcelStatus(
+            var parcelNo:Long=0,
+            var creator:String="",
+            var status:Int=0,
+            var errorcode:Int=0,
+            var note:String=""
+    )
 }
 
