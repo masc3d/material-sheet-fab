@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
+import org.deku.leoz.service.entity.ServiceError
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagNumberRange
@@ -94,7 +95,7 @@ interface BagService {
     @Path("/{${ID}}/initialize")
     @ApiOperation("Initialize bag")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun initialize(
             @ApiParam(value = "Bag id", example = "700100000008") @PathParam(ID) bagId: String?,
@@ -104,7 +105,7 @@ interface BagService {
     @Path("/{${ID}}/is-free")
     @ApiOperation("Check if bag is free")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun isFree(
             @ApiParam(value = "Bag id", example = "700100000008") @PathParam(ID) bagId: String?,
@@ -114,7 +115,7 @@ interface BagService {
     @Path("/{${ID}}/is-ok")
     @ApiOperation("Check if bag is ok")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun isOk(
             @ApiParam(value = "Bag id", example = "700100000008") @PathParam(ID) bagId: String?,
@@ -124,7 +125,7 @@ interface BagService {
     @Path("/util/number-range")
     @ApiOperation("Get number range")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getNumberRange(): BagNumberRange
 
@@ -132,7 +133,7 @@ interface BagService {
     @Path("/section/{${ID}}")
     @ApiOperation("Get all section depots")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getSectionDepots(
             @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
@@ -142,7 +143,7 @@ interface BagService {
     @Path("/section/{${ID}}/left")
     @ApiOperation("Get section depots left")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getSectionDepotsLeft(
             @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
@@ -152,7 +153,7 @@ interface BagService {
     @Path("/diff")
     @ApiOperation("Get diff list")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getDiff(): List<BagDiff>
 
@@ -160,7 +161,7 @@ interface BagService {
     @Path("/{${ID}}/arrival")
     @ApiOperation("Line Arrival")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun lineArrival(
             @ApiParam(value = "Scan id", example = "10055618") @PathParam(ID) scanId: String?): BagResponse
@@ -169,7 +170,7 @@ interface BagService {
     @Path("/{${ID}}/in")
     @ApiOperation("incoming bag")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun bagIn(
             @ApiParam(value = "Bag unit number", example = "100720000004") @PathParam(ID) unitNo: String?,
@@ -179,7 +180,7 @@ interface BagService {
     @Path("/station/{$STATION_NO}/send-back")
     @ApiOperation("Count bags to send back")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getCount2SendBackByStation(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
@@ -190,7 +191,7 @@ interface BagService {
     @Path("/{${ID}}/status")
     @ApiOperation("Get status of Bag-ID")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getStatus(
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long): BagStatus
@@ -199,7 +200,7 @@ interface BagService {
     @Path("/station/{$STATION_NO}/isPickupStation/{$ID}")
     @ApiOperation("Is station=Pickup Station")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun isPickupStation(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
