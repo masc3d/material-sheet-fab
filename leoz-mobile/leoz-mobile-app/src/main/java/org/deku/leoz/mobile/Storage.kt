@@ -16,6 +16,7 @@ class Storage(val context: Context) {
      */
     val dataDir: File by lazy {
         ContextCompat.getDataDir(this.context)
+            ?: throw IllegalStateException("Data directory not available")
     }
 
     val externalDir: File by lazy {

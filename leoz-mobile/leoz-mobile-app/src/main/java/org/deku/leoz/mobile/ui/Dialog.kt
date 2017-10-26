@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 
 /**
+ * Dialog base class
  * Created by phpr on 29.05.2017.
  */
 abstract class Dialog(@LayoutRes val dialogLayoutId: Int) : RxAppCompatDialogFragment() {
@@ -19,7 +20,7 @@ abstract class Dialog(@LayoutRes val dialogLayoutId: Int) : RxAppCompatDialogFra
     protected val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     val builderView by lazy {
-        activity.layoutInflater.inflate(dialogLayoutId, null)
+        this.activity!!.layoutInflater.inflate(dialogLayoutId, null)
     }
 
     override fun onAttach(context: Context?) {
@@ -52,4 +53,6 @@ abstract class Dialog(@LayoutRes val dialogLayoutId: Int) : RxAppCompatDialogFra
         log.debug("ONRESUME")
     }
 
+    override fun getContext(): Context =
+            super.getContext() ?: throw IllegalStateException("Context not available")
 }

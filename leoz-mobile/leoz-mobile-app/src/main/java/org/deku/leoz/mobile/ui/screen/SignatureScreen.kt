@@ -94,7 +94,7 @@ class SignatureScreen
             // Inflate the layout for this fragment
             inflater.inflate(R.layout.screen_signature, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxConclusion.text = descriptionText

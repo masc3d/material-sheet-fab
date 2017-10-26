@@ -52,7 +52,7 @@ class LoginFragment : Fragment<Any>() {
         return rootView
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxMailaddress.requestFocus()

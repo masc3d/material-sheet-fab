@@ -74,7 +74,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_camera, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxProgressContainer.visibility = View.VISIBLE
@@ -238,7 +238,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                             } ?: log.warn("Image save invoked without picture data being available")
 
                             when (actionId) {
-                                R.id.action_camera_save_finish -> this.fragmentManager.popBackStack()
+                                R.id.action_camera_save_finish -> this.fragmentManager?.popBackStack()
                                 else -> this.showCaptureActions()
                             }
                         }

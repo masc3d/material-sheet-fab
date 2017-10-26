@@ -112,7 +112,7 @@ class DeliveryStopDetailScreen
             // Inflate the layout for this fragment
             inflater.inflate(R.layout.screen_delivery_detail, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)

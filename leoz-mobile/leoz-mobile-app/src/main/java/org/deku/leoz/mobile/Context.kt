@@ -40,14 +40,12 @@ class BaseContextWrapper private constructor(base: Context): ContextWrapper(base
             return BaseContextWrapper(context)
         }
 
-        fun getSystemLocaleLegacy(config: Configuration): Locale {
-            return config.locale
-        }
+        fun getSystemLocaleLegacy(config: Configuration): Locale
+                = config.locale
 
         @TargetApi(Build.VERSION_CODES.N)
-        fun getSystemLocale(config: Configuration): Locale {
-            return config.locales.get(0)
-        }
+        fun getSystemLocale(config: Configuration)
+                = config.locales.get(0)
 
         fun setSystemLocaleLegacy(config: Configuration, locale: Locale) {
             config.locale = locale
@@ -91,9 +89,8 @@ fun Context.resetLocale() {
     this.setLocale(this.getDefaultLocale())
 }
 
-fun Context.getDefaultLocale(): Locale {
-    return Locale.getDefault()
-}
+fun Context.getDefaultLocale(): Locale =
+        Locale.getDefault()
 
 // TODO this seems not to be the systemLocale
 fun Context.getSystemLocale(): Locale {

@@ -54,7 +54,7 @@ class MainScreen : ScreenFragment<Any>() {
     /**
      * View created
      */
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Setup views

@@ -21,7 +21,7 @@ fun Fragment.removeScrollingExcessHeightWithinViewPager() {
         if (layoutParams is CoordinatorLayout.LayoutParams) {
             if (layoutParams.behavior is AppBarLayout.ScrollingViewBehavior) {
                 val tv = TypedValue()
-                this.activity.theme.resolveAttribute(R.attr.actionBarSize, tv, true)
+                this.activity?.theme?.resolveAttribute(R.attr.actionBarSize, tv, true)
                 val actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
 
                 view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, actionBarHeight)

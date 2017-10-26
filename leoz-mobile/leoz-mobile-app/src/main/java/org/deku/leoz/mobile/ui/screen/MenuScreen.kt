@@ -22,6 +22,7 @@ import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
+import sx.android.getDrawableCompat
 import sx.android.getLayoutInflater
 
 /**
@@ -115,7 +116,7 @@ class MenuScreen : ScreenFragment<Any>() {
                               savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.screen_menu, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxMenuList.adapter = MenuListAdapter(
@@ -126,20 +127,20 @@ class MenuScreen : ScreenFragment<Any>() {
                                 description = this.getText(R.string.vehicle_loading).toString(),
                                 counter1 = deliveryList.pendingParcels.get().count(),
                                 counter2 = deliveryList.loadedParcels.blockingFirst().value.count(),
-                                icon = ContextCompat.getDrawable(this.context, R.drawable.ic_truck_loading)
+                                icon = this.context.getDrawableCompat(R.drawable.ic_truck_loading)
                         ),
                         Entry(
                                 entryTypeType = EntryType.DELIVERY,
                                 description = this.getText(R.string.tour).toString(),
                                 counter = delivery.pendingStops.blockingFirst().value.count(),
-                                icon = ContextCompat.getDrawable(this.context, R.drawable.ic_format_list_bulleted)
+                                icon = this.context.getDrawableCompat(R.drawable.ic_format_list_bulleted)
                         ),
                         Entry(
                                 type = EntryType.UNLOADING,
                                 description = this.getText(R.string.vehicle_unloading).toString(),
                                 counter1 = deliveryList.loadedParcels.get().count(),
                                 counter2 = deliveryList.pendingParcels.blockingFirst().value.count(),
-                                icon = ContextCompat.getDrawable(this.context, R.drawable.ic_truck_unloading)
+                                icon = this.context.getDrawableCompat(R.drawable.ic_truck_unloading)
                         )
                 ))
 
