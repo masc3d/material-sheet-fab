@@ -16,6 +16,6 @@ fun Activity.inflateMenu(@MenuRes id: Int): Menu {
 
 fun Fragment.inflateMenu(@MenuRes id: Int): Menu {
     val mb = android.support.v7.view.menu.MenuBuilder(this.context)
-    this.activity.menuInflater.inflate(id, mb)
+    this.activity?.menuInflater?.inflate(id, mb)
     return mb
 }
