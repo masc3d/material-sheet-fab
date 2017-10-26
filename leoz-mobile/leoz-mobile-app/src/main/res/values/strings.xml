@@ -321,4 +321,5 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
+    <string name="accept_always">Accept always</string>
 </resources>
