@@ -24,7 +24,7 @@ interface ParcelServiceV1 {
         const val STATION_NO = "station-no"
         const val LOADINGLIST_NO = "loadinglist-no"
         const val SCANCODE = "parcel-no"
-
+        const val BAG_ID = "bag-id"
     }
 
     /**
@@ -89,21 +89,21 @@ interface ParcelServiceV1 {
     }
 
     @GET
-    @Path("/export/{$STATION_NO}")
+    @Path("/export/station/{$STATION_NO}")
     @ApiOperation(value = "Get parcels to export")
     fun getParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
-    @Path("/export/bag/{$STATION_NO}")
+    @Path("/export/bag/station/{$STATION_NO}")
     @ApiOperation(value = "Get parcels to export in Bag")
     fun getParcels2ExportInBagByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
-    @Path("/export/loaded/{$STATION_NO}")
+    @Path("/export/loaded/station/{$STATION_NO}")
     @ApiOperation(value = "Get loaded parcels to export")
     fun getLoadedParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
@@ -130,6 +130,7 @@ interface ParcelServiceV1 {
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): Boolean
 
+    @Serializable(0x5abfa519181a30)
     data class Order2Export(
             var orderId: Long = 0,
             var deliveryAddress: Address = Address(),
@@ -139,6 +140,7 @@ interface ParcelServiceV1 {
 
     )
 
+    @Serializable(0xbb30fca9069776)
     data class Parcel2Export(
             var orderId: Long = 0,
             var parcelNo: Long = 0,
@@ -150,12 +152,27 @@ interface ParcelServiceV1 {
             var cReference: String? = null
     )
 
+    @Serializable(0xd035c452897ee3)
     data class ParcelStatus(
-            var parcelNo:Long=0,
-            var creator:String="",
-            var status:Int=0,
-            var errorcode:Int=0,
-            var note:String=""
+            var parcelNo: Long = 0,
+            var creator: String = "",
+            var status: Int = 0,
+            var errorcode: Int = 0,
+            var note: String = ""
+    )
+
+    @Path("/{SCANCODE}/status")
+    @ApiOperation(value = "Get status")
+    fun getStatus(
+            @PathParam(SCANCODE) @ApiParam(value = "Scancode") scanCode: String
+    ): List<ParcelStatus>
+
+    @GET
+    @Path("/export/bag/{$BAG_ID}/station/{$STATION_NO}")
+    @ApiOperation(value = "Get parcels in Bag")
+    fun getParcelsFilledInBagByBagID(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
     )
 }
 

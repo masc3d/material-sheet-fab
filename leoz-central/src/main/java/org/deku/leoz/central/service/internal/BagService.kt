@@ -1153,21 +1153,31 @@ class BagService : BagService {
         if (un.hasError)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
         val bagNo = un.value.value.toLong()
-        if(un.value.type!=UnitNumber.Type.BagId)
+        if (un.value.type != UnitNumber.Type.BagId)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
         val statusrecord = depotRepository.getBagStatus(bagNo)
-        statusrecord?:throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
+        statusrecord ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
         return statusrecord.toBagStatus()
     }
 
     override fun isPickupStation(stationNo: Int, orderID: Long): Boolean {
-        var ret=false
-        val order=parcelRepository.getOrderById(orderID)
-        order?:throw DefaultProblem(title="Order not found")
-        if(order.depotnrabd==stationNo)
-            ret=true
+        var ret = false
+        val order = parcelRepository.getOrderById(orderID)
+        order ?: throw DefaultProblem(title = "Order not found")
+        if (order.depotnrabd == stationNo)
+            ret = true
         return ret
     }
 
+    override fun reopenBag(bagID: Long, stationNo: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    override fun fillBagStationExport(bagID: Long, stationNo: Int, unitNo: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun closeBagStationExport(bagID: Long, stationNo: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

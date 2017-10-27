@@ -9,6 +9,7 @@ import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagNumberRange
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
+import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import java.util.*
 
@@ -194,7 +195,8 @@ interface BagService {
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getStatus(
-            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long): BagStatus
+            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long
+    ): BagStatus
 
     @GET
     @Path("/station/{$STATION_NO}/isPickupStation/{$ID}")
@@ -206,6 +208,40 @@ interface BagService {
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @PathParam(ID) @ApiParam(value = "OrderID", example = "21734710251", required = true) orderID: Long
 
-    ):Boolean
+    ): Boolean
 
+    @PATCH
+    @Path("/{$ID}/reopen/station/{$STATION_NO}")
+    @ApiOperation(value = "Reopen bag")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
+    )
+    fun reopenBag(
+            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+
+    )
+
+    @PATCH
+    @Path("/{$ID}/station/{$STATION_NO}/fill/{$UNIT}")
+    @ApiOperation(value = "Fill bag in station-export")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
+    )
+    fun fillBagStationExport(
+            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @PathParam(UNIT) @ApiParam(value = "unit", example = "123456789877", required = true) unitNo: String?
+    )
+
+    @PATCH
+    @Path("/{$ID}/station/{$STATION_NO}/close")
+    @ApiOperation(value = "Close bag in station-export")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
+    )
+    fun closeBagStationExport(
+            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+    )
 }

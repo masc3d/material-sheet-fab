@@ -641,7 +641,7 @@ open class ParcelProcessing {
                         result = false
                     else {
                         if (pathToDelete != null) {
-                             Files.delete(pathToDelete)
+                            Files.delete(pathToDelete)
                         }
                     }
                 }

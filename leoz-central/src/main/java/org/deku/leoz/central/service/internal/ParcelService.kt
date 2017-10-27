@@ -979,5 +979,13 @@ open class ParcelServiceV1 :
         )
         return true
     }
+
+    override fun getStatus(scanCode: String): List<ParcelServiceV1.ParcelStatus> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getParcelsFilledInBagByBagID(stationNo: Int, bagId: Long) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
 
