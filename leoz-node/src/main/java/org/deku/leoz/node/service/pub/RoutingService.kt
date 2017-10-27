@@ -273,7 +273,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 //
 //        val qRoute = QMstRoute.mstRoute
 
-        val rRoutes = routeRepository.getFindRouteQuery().create { query, p ->
+        val rRoutes = routeRepository.findRouteQuery.create { query, p ->
             query
                     .set(p.layer, routingLayer.layer)
                     .set(p.country, requestParticipant?.country?.toUpperCase())

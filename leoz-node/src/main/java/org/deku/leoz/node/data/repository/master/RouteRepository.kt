@@ -43,19 +43,17 @@ interface RouteRepositoryExtension {
         val validDate = Param(Timestamp::class.java)
     }
 
-    // TODO: should be reverted to property and lazy implementation when upstream https://jira.spring.io/browse/DATACMNS-1197 is resolved
-    fun getFindRouteQuery(): NamedQuery<MstRoute, FindRouteQueryParams>
+    val findRouteQuery: NamedQuery<MstRoute, FindRouteQueryParams>
 }
 
 class RouteRepositoryImpl : RouteRepositoryExtension {
-
     @Inject
     private lateinit var routeRepository: RouteRepository
 
     @Inject
     private lateinit var entityManager: EntityManager
 
-    val _findRouteQuery by lazy {
+    override val findRouteQuery by lazy {
         NamedQuery(
                 entityManager = entityManager,
                 resultType = MstRoute::class.java,
@@ -77,9 +75,5 @@ class RouteRepositoryImpl : RouteRepositoryExtension {
                             )
                 }
         )
-    }
-
-    override fun getFindRouteQuery(): NamedQuery<MstRoute, RouteRepositoryExtension.FindRouteQueryParams> {
-        return _findRouteQuery
     }
 }
