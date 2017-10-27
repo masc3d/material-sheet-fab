@@ -43,6 +43,7 @@
     <string name="continue_without">Continue without</string>
 
     <string name="delivered">Delivered</string>
+    <string name="deliver">Deliver</string>
 
     <string name="delivery">Delivery</string>
     <string name="delivery_failed">Delivery failed</string>

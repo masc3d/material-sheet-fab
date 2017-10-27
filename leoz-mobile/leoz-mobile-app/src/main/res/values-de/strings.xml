@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="accept_always">Immer akzeptieren</string>
+
     <string name="action_retry">Erneut versuchen</string>
     <string name="action_settings">Einstellungen</string>
     <string name="action_sign_in">Anmelden / Registrieren</string>
@@ -37,6 +39,8 @@
 
     <string name="continue_text">Fortfahren</string>
     <string name="continue_without">Ohne fortfahren</string>
+
+    <string name="deliver">Zustellen</string>
 
     <string name="delivered">Zugestellt</string>
 
@@ -275,5 +279,4 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="accept_always">Immer akzeptieren</string>
 </resources>
