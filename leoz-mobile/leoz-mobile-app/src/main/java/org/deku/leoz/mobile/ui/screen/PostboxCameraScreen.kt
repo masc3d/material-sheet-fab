@@ -10,6 +10,10 @@ import org.deku.leoz.mobile.R
  */
 class PostboxCameraScreen : BaseCameraScreen<Any>() {
 
+    init {
+        this.allowMultiplePictures = false
+    }
+
     override fun createOverlayView(viewGroup: ViewGroup): View? {
         return this.activity.layoutInflater
                 .inflate(R.layout.view_delivery_postbox, viewGroup, false)

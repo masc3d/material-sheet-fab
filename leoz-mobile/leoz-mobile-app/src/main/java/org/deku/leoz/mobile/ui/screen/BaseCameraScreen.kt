@@ -54,6 +54,9 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray)
     }
 
+    /** Allow multiple pictures */
+    protected var allowMultiplePictures = true
+
     private val torchEnabledProperty = ObservableRxProperty(false)
     private var torchEnabled: Boolean by torchEnabledProperty
 
@@ -257,7 +260,10 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                 when (it.id) {
                     R.id.action_camera_trigger,
                     R.id.action_camera_flash -> it.visible = true
-                    else -> it.visible = false
+
+                    R.id.action_camera_discard,
+                    R.id.action_camera_save,
+                    R.id.action_camera_save_finish -> it.visible = false
                 }
             }
         }
@@ -271,7 +277,10 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                 when (it.id) {
                     R.id.action_camera_trigger,
                     R.id.action_camera_flash -> it.visible = false
-                    else -> it.visible = true
+
+                    R.id.action_camera_discard,
+                    R.id.action_camera_save_finish -> it.visible = true
+                    R.id.action_camera_save -> it.visible = allowMultiplePictures
                 }
             }
         }
