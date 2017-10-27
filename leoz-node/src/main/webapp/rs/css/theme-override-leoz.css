@@ -12,13 +12,12 @@ body {
 .info .main .title {
     padding-bottom: 0.5em;
     padding-left: 1.7em;
+    background-image: url('../images/logo-round.png');
+    background-size: 1.35em;
+    background-repeat: no-repeat;
 }
 
 #swagger-ui {
-    background-image: url('../images/logo-round.png');
-    background-size: 3em;
-    background-position: 1.2em 4.1em;
-    background-repeat: no-repeat;
 }
 
 .swagger-ui .topbar .download-url-wrapper .download-url-button {
