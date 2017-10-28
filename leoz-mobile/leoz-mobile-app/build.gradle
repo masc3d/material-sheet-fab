@@ -408,12 +408,13 @@ def removeSqliteLibs() {
 }
 
 afterEvaluate {
-    tasks.packageRelease.doFirst {
-        removeSqliteLibs()
+    if (tasks.findByName('packageRelease') != null) {
+        tasks.packageRelease.doFirst {
+            removeSqliteLibs()
+        }
     }
 
     // masc20170731. workaround for release builds failing
-    // (when switching between product flavors, as we usually work in `dev` but native bundle is `prod`
     android.applicationVariants.findAll {
         it.buildType.name == 'release'
     }.forEach {
