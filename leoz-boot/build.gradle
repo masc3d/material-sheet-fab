@@ -3,7 +3,7 @@ apply plugin: 'application'
 apply plugin: 'distribution'
 apply plugin: 'sx-packager'
 
-version '0.35-RELEASE'
+version '0.36-RELEASE'
 sourceCompatibility = 1.8
 mainClassName = "org.deku.leoz.boot.Application"
 
