@@ -46,7 +46,7 @@ abstract class Setup(
                     LinuxSetup(bundleName = bundleName, mainClass = mainClass)
 
                 else ->
-                    throw UnsupportedOperationException("Setup is not supported for this OS")
+                    NoopSetup(bundleName = bundleName, mainClass = mainClass)
             }
         }
     }
@@ -110,6 +110,26 @@ abstract class Setup(
                 }
             }
         }
+    }
+
+    /**
+     * Setup implementation which doesn't do anything (used for unsupported operating systems)
+     */
+    class NoopSetup(
+            bundleName: String,
+            mainClass: Class<*>
+    ) : Setup(
+            bundleName = bundleName, mainClass = mainClass
+    ) {
+        override fun prepareProduction() {}
+
+        override fun install() {}
+
+        override fun uninstall() {}
+
+        override fun start() {}
+
+        override fun stop() {}
     }
 
     /**
