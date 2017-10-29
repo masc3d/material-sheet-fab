@@ -427,11 +427,11 @@ afterEvaluate {
  * Should run prior to assembly of apk.
  * Flyway uses a specific internal scanning mechanism for android, only scanning assets
  */
-task flywaySyncMigrations(type: Sync) {
+task syncFlywayMigrations(type: Sync) {
     from new File(project.rootDir, 'leoz-mobile-data/src/main/resources/db/migration')
     into new File(project.projectDir, 'src/main/assets/db/migration')
 }
-tasks.preBuild.dependsOn(tasks.flywaySyncMigrations)
+tasks.preBuild.dependsOn(tasks.syncFlywayMigrations)
 
 packager {
     title = 'Leoz Mobile'
