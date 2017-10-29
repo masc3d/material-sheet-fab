@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 import io.swagger.annotations.*
+import org.deku.leoz.config.Rest
 import sx.rs.auth.ApiKey
 
 /**
@@ -34,22 +35,22 @@ interface ApplicationService {
 
     @GET
     @Path("/restart")
-    @ApiOperation(value = "Restart application")
+    @ApiOperation(value = "Restart application", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun restart()
 
     @GET
     @Path("/bundle-update")
-    @ApiOperation(value = "Trigger application bundle udpates")
+    @ApiOperation(value = "Trigger application bundle udpates", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun bundleUpdate()
 
     @GET
     @Path("/notify-bundle-update")
-    @ApiOperation(value = "Notify remote nodes about bundle update")
+    @ApiOperation(value = "Notify remote nodes about bundle update", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun notifyBundleUpdate(@ApiParam(value = "Bundle name") @QueryParam("bundle-name") bundleName: String)
 
     @GET
     @Path("/sync-with-remote-node")
-    @ApiOperation(value = "Trigger entity sync")
+    @ApiOperation(value = "Trigger entity sync", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun syncWithRemoteNode(
             @QueryParam("clean")
             @ApiParam(defaultValue = "false", value = "Perform clean sync (drop data prior to entity requst)")
@@ -57,6 +58,6 @@ interface ApplicationService {
 
     @GET
     @Path("/sync-with-central-database")
-    @ApiOperation(value = "Trigger central database sync")
+    @ApiOperation(value = "Trigger central database sync", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun syncWithCentralDatabase(@QueryParam("clean") @ApiParam(defaultValue = "false", value = "Perform clean sync (drop existing data)") clean: Boolean)
 }
