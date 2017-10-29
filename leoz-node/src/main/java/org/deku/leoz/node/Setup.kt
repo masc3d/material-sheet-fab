@@ -9,11 +9,13 @@ import org.deku.leoz.YamlPersistence
 import sx.packager.BundleProcessInterface
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.node.config.RemotePeerConfiguration
+import org.ini4j.Ini
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import sx.annotationOfType
+import sx.packager.Bundle
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -54,7 +56,8 @@ abstract class Setup(
     /**
      * Executes command.
      */
-    protected fun execute(command: List<String>) {
+    protected fun execute(vararg command: String) {
+        log.trace("Command ${command.joinToString(" ")}")
 
         /** Log helper */
         fun logResult(result: ProcessExecutor.Result) {
@@ -67,7 +70,7 @@ abstract class Setup(
         try {
             logResult(
                     ProcessExecutor.run(
-                            command = command,
+                            command = command.toList(),
                             trim = true,
                             omitEmptyLines = true))
         } catch (e: ProcessExecutor.ProcessRunException) {
@@ -175,7 +178,8 @@ abstract class Setup(
 
             val classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
 
-            val command = listOf(this.leozsvcExecutable.file.toString(),
+            this.execute(
+                    this.leozsvcExecutable.file.toString(),
                     "//IS/${this.serviceId}",
                     "--DisplayName=Leoz service (${this.serviceId})",
                     "--Description=Leoz system service (${this.serviceId})",
@@ -192,9 +196,6 @@ abstract class Setup(
                     "--StopMethod=stop",
                     "--Classpath=${classPath}")
 
-            log.trace("Command ${java.lang.String.join(" ", command)}")
-            this.execute(command)
-
             log.info("Installed successfully")
         }
 
@@ -209,9 +210,9 @@ abstract class Setup(
 
             log.info("Uninstalling service")
 
-            this.execute(listOf(
+            this.execute(
                     this.leozsvcExecutable.file.toString(),
-                    "//DS/${serviceId}"))
+                    "//DS/${serviceId}")
 
             log.info("Uninstalled successfully")
         }
@@ -222,7 +223,7 @@ abstract class Setup(
         override fun start() {
             log.info("Starting service")
 
-            this.execute(listOf("net", "start", serviceId))
+            this.execute("net", "start", serviceId)
 
             log.info("Started sucessfully")
         }
@@ -238,7 +239,7 @@ abstract class Setup(
 
             log.info("Stopping service")
 
-            this.execute(listOf("net", "stop", serviceId))
+            this.execute("net", "stop", serviceId)
 
             log.info("Stopped successfully")
         }
@@ -273,6 +274,9 @@ abstract class Setup(
         }
     }
 
+    /**
+     * Linux setup implementation
+     */
     class LinuxSetup(
             bundleName: String,
             mainClass: Class<*>)
@@ -283,31 +287,68 @@ abstract class Setup(
 
         private val storage: Storage by Kodein.global.lazy.instance()
 
+        private val serviceName by lazy {
+            this.bundleName
+        }
+
         private val systemdServiceFile by lazy {
             storage.userHomeDirectory
                     .resolve(".config")
                     .resolve("systemd")
                     .resolve("user")
-                    .resolve("${bundleName}.service")
+                    .resolve("${serviceName}.service")
+        }
+
+        /** Execute systemd command */
+        private fun executeSystemd(vararg command: String) {
+            this.execute(*arrayOf("systemctl", "--user").plus(command))
+        }
+
+        /** systemd reload */
+        private fun systemdReload() {
+            this.executeSystemd("daemon-reload")
         }
 
         override fun install() {
-            super.install()
-            // TODO implement
+            // Write systemd config
+            Ini().also { ini ->
+                ini.config.isStrictOperator = true
+
+                ini.add("Unit").also {
+                    it["Description"] = "${serviceName} system service"
+                }
+
+                ini.add("Service").also {
+                    it["Type"] = "simple"
+                    it["ExecStart"] = "${Bundle.load(this.javaClass).executable}"
+                    it["Restart"] = "on-abort"
+                }
+
+                ini.add("Install").also {
+                    it["WantedBy"] = "default.target"
+                }
+            }
+                    .store(this.systemdServiceFile)
+
+            this.systemdReload()
+
+            this.executeSystemd("enable", serviceName)
         }
 
         override fun uninstall() {
-            super.uninstall()
-            // TODO implement
+            this.executeSystemd("disable", serviceName)
+
+            this.systemdServiceFile.delete()
+
+            this.systemdReload()
         }
 
         override fun start() {
-            super.start()
-            // TODO implement
+            this.executeSystemd("start", serviceName)
         }
 
         override fun stop() {
-            super.stop()
+            this.executeSystemd("stop", serviceName)
         }
     }
 
