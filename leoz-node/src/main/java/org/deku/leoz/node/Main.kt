@@ -140,7 +140,7 @@ open class Main {
         }
 
         // Support for leoz bundle process commandline interface
-        val setup = Setup(
+        val setup = Setup.create(
                 bundleName = this.app.name,
                 mainClass = this.javaClass)
 
