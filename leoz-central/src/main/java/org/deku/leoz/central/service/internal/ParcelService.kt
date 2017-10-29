@@ -122,13 +122,14 @@ open class ParcelServiceV1 :
 
             val scannedDate = it.time.toTimestamp()
 
-            //val parcelNo = parcelRepository.getUnitNo(it.parcelId)
-            val parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
+            var parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
 
-            parcelNo ?:
-                    throw DefaultProblem(
-                            title = "Missing parcelNo"
-                    )
+            if (parcelNo == null) {
+                parcelNo = 0
+                log.info("Deleted Parcel. Id= [${it.parcelId}]")
+            }
+            //dodo  events[].parcelScancode shuld be filled to handle deleted or moved parcel in mysql between deliverylist and delivered event
+
             val parcelScan = parcelNo.toString()
             val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
             recordMessages.userId = message.userId
@@ -520,7 +521,7 @@ open class ParcelServiceV1 :
         orderIdList.forEach {
             val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
             if (orderRecord != null) {
-                if(orderRecord.bagidnra!=null)
+                if (orderRecord.bagidnra != null)
                     return@forEach
                 val order = orderRecord.toOrder2Export()
                 val pp = parcels.filter { f -> f.orderid == it }
