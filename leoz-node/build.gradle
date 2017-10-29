@@ -62,39 +62,16 @@ mainClassName = 'org.deku.leoz.node.Main'
 //region Constants
 def GENERATED_DIR = file('src/generated')
 def PROTOTYPE_TEST_DIR = file('src/prototype/java')
-// For proper integration with gradle task's up-to-date checks, JPA weaving destination directory
-// must be separate from the original compiler class output directory.
-// However the final output folder needs to remain `build/classes` for IJ run configurations to work,
-// so the only way to achieve this without breaking things is to update all tasks writing to `build/classes`
-// to use a new location and leave all writing to `build/classes` to the weaving task.
-def UNWEAVED_CLASSES_DIR = new File(project.buildDir, "classes-unweaved")
 
 // Database constants
 def PROJECT_DB_DIR = file('src/main/resources/db/node')
 
-def DB_DIR = new File(project.buildDir, 'db')
-def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')
-def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
-// TODO: enabling TO_UPPER until DataGrip/IntelliJ support disabling it properly https://youtrack.jetbrains.com/issue/DBE-3292
-def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=true"
-// Tables file which contains mapping to @Serializable uids
-def DB_TABLES_XML = new File(PROJECT_DB_DIR, "tables.xml")
-
-// SQL migrations (used for flyway eg.)
-def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
-
-def JOOQ_PACKAGE_NAME = "org.deku.leoz.node.data.jooq"
-def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
-def QUERYDSL_GENERATED_DIR = new File(GENERATED_DIR, 'querydsl')
 def WS_WSDL_DIR = file('src/main/resources/wsdl')
 def WS_CXF_GENERATED_DIR = new File(GENERATED_DIR, 'cxf')
 
 class Constants {
     static JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
 }
-
-def JPA_GENERATED_PACKAGE = Constants.JPA_GENERATED_PACKAGE
-def JPA_TASK_GROUP = 'jpa'
 //endregion
 
 clean {
