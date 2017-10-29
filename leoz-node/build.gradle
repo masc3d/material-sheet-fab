@@ -407,25 +407,6 @@ tasks.classes.dependsOn(copyRsyncPlatformDirToBuild)
 // Include leoz global platform/binaries
 tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
 
-/**
- * Task for syncing webapp content to build/classes
- */
-task copyWebapp(type: Sync) {
-    from 'src/main/webapp'
-    into new File(UNWEAVED_CLASSES_DIR, 'webapp')
-}
-tasks.compileJava.dependsOn(copyWebapp)
-
-/**
- * Task for syncing vaadin webapp content to build/classes
- */
-task copyVaadinWebapp(type: Sync) {
-    from 'src/main/webapp/VAADIN'
-    into new File(UNWEAVED_CLASSES_DIR, 'VAADIN')
-}
-tasks.compileJava.dependsOn(copyVaadinWebapp)
-//endregion
-
 //region JPA
 compileJava {
     destinationDir = UNWEAVED_CLASSES_DIR
@@ -434,6 +415,25 @@ compileJava {
 processResources {
     destinationDir = UNWEAVED_CLASSES_DIR
 }
+
+/**
+ * Task for syncing webapp content to build/classes
+ */
+task copyWebapp(type: Sync) {
+    from 'src/main/webapp'
+    into new File(processResources.destinationDir, 'webapp')
+}
+tasks.compileJava.dependsOn(copyWebapp)
+
+/**
+ * Task for syncing vaadin webapp content to build/classes
+ */
+task copyVaadinWebapp(type: Sync) {
+    from 'src/main/webapp/VAADIN'
+    into new File(processResources.destinationDir, 'VAADIN')
+}
+tasks.compileJava.dependsOn(copyVaadinWebapp)
+//endregion
 
 /**
  * Task for statically weaving eclipselink entitiy classes.
