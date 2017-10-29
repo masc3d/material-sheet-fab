@@ -34,6 +34,14 @@ open class Storage(
 
     // Directories
 
+    /** The process owning user's home directory */
+    val userHomeDirectory by lazy {
+        when {
+            SystemUtils.IS_OS_WINDOWS -> File(System.getenv("USERPROFILE"))
+            else -> File(System.getProperty("user.home"))
+        }
+    }
+
     /**
      * Private base directory name
      */
@@ -48,68 +56,63 @@ open class Storage(
      * Private leoz directory
      */
     val privateDirectory by lazy {
-        val d = File(this.privateBaseDirectory, privateDirectoryName)
-        if (!d.exists()) {
-            try {
-                d.mkdirs()
+        File(this.privateBaseDirectory, privateDirectoryName).also {
+            if (!it.exists()) {
+                try {
+                    it.mkdirs()
 
-                // Set permissions if the directory was created
-                if (SystemUtils.IS_OS_WINDOWS) {
-                    Files.getFileAttributeView(
-                            d.toPath(),
-                            DosFileAttributeView::class.java).setHidden(true)
+                    // Set permissions if the directory was created
+                    if (SystemUtils.IS_OS_WINDOWS) {
+                        Files.getFileAttributeView(
+                                it.toPath(),
+                                DosFileAttributeView::class.java).setHidden(true)
 
-                    PermissionUtil.setAclAllowEverything(
-                            path = d,
-                            principals = *arrayOf(
-                                    PermissionUtil.Win32.SID.Users.fqn,
-                                    PermissionUtil.Win32.SID.LocalSystem.fqn))
+                        PermissionUtil.setAclAllowEverything(
+                                path = it,
+                                principals = *arrayOf(
+                                        PermissionUtil.Win32.SID.Users.fqn,
+                                        PermissionUtil.Win32.SID.LocalSystem.fqn))
+                    }
+                } catch (e: Exception) {
+                    if (it.exists()) {
+                        it.deleteRecursively()
+                    }
+                    throw e
                 }
-            } catch(e: Exception) {
-                if (d.exists()) {
-                    d.deleteRecursively()
-                }
-                throw e
             }
         }
-        d
     }
 
     /**
      * Public leoz directory
      */
     val publicDirectory: File by lazy {
-        val d = File(this.publicBaseDirectory, this.baseName.capitalize())
-        d.mkdirs()
-        d
+        File(this.publicBaseDirectory, this.baseName.capitalize())
+                .also { it.mkdirs() }
     }
 
     /** Local data directory */
     val dataDirectory: File by lazy {
-        val d = File(File(this.privateDirectory, "data"), this.appName)
-        d.mkdirs()
-        d
+        File(File(this.privateDirectory, "data"), this.appName)
+                .also { it.mkdirs() }
     }
 
     /** Etc/settings directory */
     val etcDirectory: File by lazy {
-        val d = File(File(this.privateDirectory, "etc"), this.appName)
-        d.mkdirs()
-        d
+        File(File(this.privateDirectory, "etc"), this.appName)
+                .also { it.mkdirs() }
     }
 
     /** Local log directory */
     val logDirectory: File by lazy {
-        val d = File(this.privateDirectory, "log");
-        d.mkdirs()
-        d
+        File(this.privateDirectory, "log")
+                .also { it.mkdirs() }
     }
 
     /** Local bundles directory */
     protected val bundlesDirectory: File by lazy {
-        val d = File(this.privateDirectory, "bundles")
-        d.mkdirs()
-        d
+        File(this.privateDirectory, "bundles")
+                .also { it.mkdirs() }
     }
 
     val bundleInstallationDirectory: File by lazy {
@@ -120,9 +123,8 @@ open class Storage(
 
     /** Run directory, containing runtime related files, eg. bundle lock files */
     val runDirectory: File by lazy {
-        val d = File(this.privateDirectory, "run")
-        d.mkdirs()
-        d
+        File(this.privateDirectory, "run")
+                .also { it.mkdirs() }
     }
 
     /** Create bundle lock filename */
@@ -136,7 +138,7 @@ open class Storage(
     }
 
     /** Create bundle pid file name */
-    fun bundlePidFileName(appName: String) : String {
+    fun bundlePidFileName(appName: String): String {
         return appName + ".pid"
     }
 
