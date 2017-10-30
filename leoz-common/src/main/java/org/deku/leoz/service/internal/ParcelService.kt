@@ -65,9 +65,6 @@ interface ParcelServiceV1 {
             val reason: Int = 0,
             val parcelId: Long = 0,
 
-            // TODO: remove. parcelId is sufficient
-            val parcelScancode: String = "", //possibly alphanumeric
-
             val time: Date = Date(),
             val latitude: Double? = null,
             val longitude: Double? = null,
