@@ -1,6 +1,7 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
+import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
@@ -87,40 +88,40 @@ interface ParcelServiceV1 {
 
     @GET
     @Path("/export/station/{$STATION_NO}")
-    @ApiOperation(value = "Get parcels to export")
+    @ApiOperation(value = "Get parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
     @Path("/export/bag/station/{$STATION_NO}")
-    @ApiOperation(value = "Get parcels to export in Bag")
+    @ApiOperation(value = "Get parcels to export in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportInBagByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
     @Path("/export/loaded/station/{$STATION_NO}")
-    @ApiOperation(value = "Get loaded parcels to export")
+    @ApiOperation(value = "Get loaded parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getLoadedParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
     @Path("/loadinglist/new")
-    @ApiOperation(value = "Get new loadinglist-no")
+    @ApiOperation(value = "Get new loadinglist-no", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNewLoadinglistNo(): Long
 
     @GET
     @Path("/loadinglist/{$LOADINGLIST_NO}")
-    @ApiOperation(value = "Get parcels by loadinglist")
+    @ApiOperation(value = "Get parcels by loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportByLoadingList(
             @PathParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
     ): List<ParcelServiceV1.Order2Export>
 
     @PUT
     @Path("/export")
-    @ApiOperation(value = "Export parcel")
+    @ApiOperation(value = "Export parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun export(
             @QueryParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = "",
             @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", required = true) loadingListNo: Long,
@@ -159,14 +160,14 @@ interface ParcelServiceV1 {
     )
 
     @Path("/{SCANCODE}/status")
-    @ApiOperation(value = "Get status")
+    @ApiOperation(value = "Get status", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getStatus(
             @PathParam(SCANCODE) @ApiParam(value = "Scancode") scanCode: String
     ): List<ParcelStatus>
 
     @GET
     @Path("/export/bag/{$BAG_ID}/station/{$STATION_NO}")
-    @ApiOperation(value = "Get parcels in Bag")
+    @ApiOperation(value = "Get parcels in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcelsFilledInBagByBagID(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long

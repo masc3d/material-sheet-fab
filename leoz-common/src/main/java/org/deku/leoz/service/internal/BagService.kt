@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
+import org.deku.leoz.config.Rest
 import org.deku.leoz.service.entity.ServiceError
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
@@ -94,7 +95,7 @@ interface BagService {
 
     @sx.rs.PATCH
     @Path("/{${ID}}/initialize")
-    @ApiOperation("Initialize bag")
+    @ApiOperation("Initialize bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -104,7 +105,7 @@ interface BagService {
 
     @GET
     @Path("/{${ID}}/is-free")
-    @ApiOperation("Check if bag is free")
+    @ApiOperation("Check if bag is free", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -114,7 +115,7 @@ interface BagService {
 
     @GET
     @Path("/{${ID}}/is-ok")
-    @ApiOperation("Check if bag is ok")
+    @ApiOperation("Check if bag is ok", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -124,7 +125,7 @@ interface BagService {
 
     @GET
     @Path("/util/number-range")
-    @ApiOperation("Get number range")
+    @ApiOperation("Get number range", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -132,7 +133,7 @@ interface BagService {
 
     @GET
     @Path("/section/{${ID}}")
-    @ApiOperation("Get all section depots")
+    @ApiOperation("Get all section depots", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -142,7 +143,7 @@ interface BagService {
 
     @GET
     @Path("/section/{${ID}}/left")
-    @ApiOperation("Get section depots left")
+    @ApiOperation("Get section depots left", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -152,7 +153,7 @@ interface BagService {
 
     @GET
     @Path("/diff")
-    @ApiOperation("Get diff list")
+    @ApiOperation("Get diff list", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -160,7 +161,7 @@ interface BagService {
 
     @sx.rs.PATCH
     @Path("/{${ID}}/arrival")
-    @ApiOperation("Line Arrival")
+    @ApiOperation("Line Arrival", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -169,7 +170,7 @@ interface BagService {
 
     @sx.rs.PATCH
     @Path("/{${ID}}/in")
-    @ApiOperation("incoming bag")
+    @ApiOperation("incoming bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -179,7 +180,7 @@ interface BagService {
 
     @GET
     @Path("/station/{$STATION_NO}/send-back")
-    @ApiOperation("Count bags to send back")
+    @ApiOperation("Count bags to send back", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -190,7 +191,7 @@ interface BagService {
 
     @GET
     @Path("/{${ID}}/status")
-    @ApiOperation("Get status of Bag-ID")
+    @ApiOperation("Get status of Bag-ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -200,7 +201,7 @@ interface BagService {
 
     @GET
     @Path("/station/{$STATION_NO}/isPickupStation/{$ID}")
-    @ApiOperation("Is station=Pickup Station")
+    @ApiOperation("Is station=Pickup Station", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -212,7 +213,7 @@ interface BagService {
 
     @PATCH
     @Path("/{$ID}/reopen/station/{$STATION_NO}")
-    @ApiOperation(value = "Reopen bag")
+    @ApiOperation(value = "Reopen bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -224,7 +225,7 @@ interface BagService {
 
     @PATCH
     @Path("/{$ID}/station/{$STATION_NO}/fill/{$UNIT}")
-    @ApiOperation(value = "Fill bag in station-export")
+    @ApiOperation(value = "Fill bag in station-export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
@@ -236,7 +237,7 @@ interface BagService {
 
     @PATCH
     @Path("/{$ID}/station/{$STATION_NO}/close")
-    @ApiOperation(value = "Close bag in station-export")
+    @ApiOperation(value = "Close bag in station-export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
