@@ -244,6 +244,15 @@ export const LANG_EN_TRANS = {
   'importlist': 'Importlist',
   'quickscan': 'Quickscan',
   'refresh': 'Refresh',
+  'to': 'to',
+  'typeOfPackaging': 'Type of Packaging',
+  'parcelno': 'Parcel No',
+  'packs': 'Parcels',
+  'vol-Weight': 'Vol Weight',
+  'real-Weight': 'Real Weight',
+  'length': 'Length',
+  'width': 'Width',
+  'height': 'Height',
   // deliveryscan form
   'deliverylistscan': 'Deliverylist scan',
   'tourno': 'Tour No',
@@ -265,4 +274,11 @@ export const LANG_EN_TRANS = {
   'realWeight': 'Real Weight',
   'volumeWeight': 'Volume Weight',
   'effectiveWeight': 'Effective Weight',
+  // deliveryscan list
+  'pos': 'Pos',
+  'consignee': 'Consignee',
+  'deadline': 'Deadline',
+  'shipmentno': 'Ship No',
+  'deliverystatus': 'Status',
+  'deliverycode': 'Code',
 };
