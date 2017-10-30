@@ -65,8 +65,12 @@ abstract class Setup(
         fun logResult(result: ProcessExecutor.Result) {
             if (result.output.isNotEmpty())
                 log.info(result.output)
-            if (result.error.isNotEmpty())
-                log.error(result.error)
+            if (result.error.isNotEmpty()) {
+                if (result.exitCode == 0)
+                    log.info(result.error)
+                else
+                    log.error(result.error)
+            }
         }
 
         return try {
@@ -290,6 +294,10 @@ abstract class Setup(
         }
 
         private val systemdServiceFile by lazy {
+            File("/etc/systemd/system/${serviceName}.service")
+        }
+
+        private val systemdUserServiceFile by lazy {
             storage.userHomeDirectory
                     .resolve(".config")
                     .resolve("systemd")
@@ -298,8 +306,14 @@ abstract class Setup(
         }
 
         /** Execute systemd command */
-        private fun executeSystemd(vararg command: String, logError: Boolean = true) {
-            this.execute(logError = logError, command = *arrayOf("systemctl", "--user").plus(command))
+        private fun executeSystemd(vararg command: String, userMode: Boolean = false, logError: Boolean = true) {
+            this.execute(logError = logError, command = *arrayOf(
+                    "systemctl"
+            )
+                    .let {
+                        if (userMode) it.plus("--user") else it
+                    }
+                    .plus(command))
         }
 
         /** systemd reload */
