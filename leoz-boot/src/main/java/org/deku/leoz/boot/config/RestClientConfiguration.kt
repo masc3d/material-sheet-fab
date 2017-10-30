@@ -18,7 +18,10 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
         val module = Kodein.Module {
             /** Rest configuration */
             bind<RestClientConfiguration>() with eagerSingleton {
-                RestClientConfiguration()
+                RestClientConfiguration().also {
+                    it.host = "leoz.derkurier.de"
+                    it.https = true
+                }
             }
 
             /** Rest client */
