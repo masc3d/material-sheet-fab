@@ -333,6 +333,7 @@ abstract class Setup(
                 ini.add("Service").also {
                     it["Type"] = "simple"
                     it["ExecStart"] = "${Bundle.load(this.javaClass).executable}"
+                    it["KillMode"] = "process"
                     it["Restart"] = "on-abort"
                 }
 
