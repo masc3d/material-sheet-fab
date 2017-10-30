@@ -77,9 +77,9 @@
           <p style="text-align: center">{{'openOnBaglist' | translate}} {{openPackcount}}</p>
           <p-dataTable [value]="openPackages$ | async" resizableColumns="true" responsive="true"
                        [emptyMessage]="'noDataAvailable' | translate">
-            <p-column field="packageId" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
+            <p-column field="parcelNo" header="{{'parcelno' | translate}}" [sortable]="true"></p-column>
             <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
-            <p-column field="weight" header="{{'weight' | translate}}" [sortable]="true"></p-column>
+            <p-column field="realWeight" header="{{'weight' | translate}}" [sortable]="true"></p-column>
             <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}" [sortable]="true"></p-column>
             <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="true">
               <ng-template let-package="rowData" pTemplate="body">
