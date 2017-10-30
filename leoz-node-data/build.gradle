@@ -102,8 +102,6 @@ sourceSets {
             srcDirs += JOOQ_GENERATED_DIR
             srcDirs += QUERYDSL_GENERATED_DIR
         }
-        // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
-        output.resourcesDir = sourceSets.main.output.classesDir
     }
 
     test {

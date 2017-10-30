@@ -297,10 +297,6 @@ run {
     standardInput = System.in
 }
 
-// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
-sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
-compileJava.dependsOn(processResources)
-
 tasks.classes.dependsOn(copyRsyncPlatformDirToBuild)
 tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
 tasks.compileJava.dependsOn(tasks.generateMainJooqSchemaSource)

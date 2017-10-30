@@ -92,9 +92,6 @@ sourceSets {
         java {
             srcDirs += WS_CXF_GENERATED_DIR
         }
-
-        // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
-        output.resourcesDir = sourceSets.main.output.classesDir
     }
 
     test {
