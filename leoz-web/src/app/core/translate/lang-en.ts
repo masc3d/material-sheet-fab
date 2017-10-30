@@ -234,7 +234,7 @@ export const LANG_EN_TRANS = {
   'llDriver': '(Contractor/Driver)',
   'page': 'Page',
   'printingDate': 'Printingdate',
-  // importscan form - importscan quick
+  // importscan form - importscan quick - importscan check
   'newShipment': 'New Shipment',
   'allShipments': 'All Shipments',
   'controlscan': 'Controlscan',
@@ -253,6 +253,7 @@ export const LANG_EN_TRANS = {
   'length': 'Length',
   'width': 'Width',
   'height': 'Height',
+  'import_controllist': 'Import Controllist',
   // deliveryscan form
   'deliverylistscan': 'Deliverylist scan',
   'tourno': 'Tour No',

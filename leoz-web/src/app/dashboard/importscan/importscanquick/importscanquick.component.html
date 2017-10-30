@@ -39,7 +39,8 @@
         </div>
         <div class="ui-g-12 ui-lg-2 ui-g-nopad">
           <div style="padding-left: 10px; width: 94%;">
-            <button pButton type="button" label="{{'controlscan' | translate}}"></button>
+            <button pButton type="button" label="{{'controlscan' | translate}}"
+                    (click)="router.navigate( [ 'dashboard/importscan/importscancheck' ] )"></button>
           </div>
         </div>
         <div class="ui-g-12 ui-lg-2 ui-g-nopad">

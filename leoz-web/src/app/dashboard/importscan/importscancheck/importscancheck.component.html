@@ -1,0 +1,74 @@
+<form [formGroup]="importscancheckForm" style="padding-top: 10px;">
+  <div class="ui-fluid">
+    <div class="ui-g" style="margin-bottom: 30px;">
+      <div class="ui-g-12 ui-lg-12 ui-g-nopad">
+        <input #scanfield formControlName="scanfield"
+               style="height: 26px; font-size: 20px;
+                          background-color: #FFFFC6; border:1px solid darkgrey">
+      </div>
+    </div>
+    <style>
+      .row-importscan {
+        font-size:14px;padding:5px;border-bottom:1px solid #D5D5D5;
+      }
+      .row-importscan > div {
+        padding: 0; height:30px;
+      }
+    </style>
+    <p-dataScroller [value]="shipments" [rows]="10" [inline]="true" scrollHeight="calc(100vh - 296px)"
+                    [style]="{'min-height': '465px', 'height': 'calc(100vh - 296px)'}">
+      <p-header>
+        {{ 'import_controllist' | translate }}
+      </p-header>
+
+      <ng-template let-shipments pTemplate="body">
+        <div class="ui-g row-importscan">
+            <div class="ui-g-12 ui-md-2">{{shipments.senderline1}}</div>
+            <div class="ui-g-12 ui-md-1">===>></div>
+            <div class="ui-g-12 ui-md-2">{{shipments.deliveryline1}}</div>
+            <div class="ui-g-12 ui-md-1">{{'from' | translate}}: {{shipments.senderstation}}</div>
+            <div class="ui-g-12 ui-md-1">{{'to' | translate}}: {{shipments.deliverystation}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.deliveryzip}} {{shipments.deliverycity}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.parcelno}}</div>
+            <div class="ui-g-12 ui-md-1">
+              <i class="fa fa-refresh" style="color: #184b7d;"></i>
+            </div>
+        </div>
+      </ng-template>
+    </p-dataScroller>
+
+    <div class="ui-g" style="padding-top: 50px;">
+      <div class="ui-g-12 ui-lg-12 no-pad">
+        <hr/>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+          <div style="padding-left: 10px; width: 98%;">
+            <button pButton type="button" label="{{'newShipment' | translate}}"></button>
+          </div>
+        </div>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+          <div style="padding-left: 10px; width: 98%;">
+            <button pButton type="button" label="{{'quickscan' | translate}}"
+                    (click)="router.navigate( [ 'dashboard/importscan/importscanquick' ] )"></button>
+          </div>
+        </div>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+          <div style="padding-left: 10px; width: 98%;">
+            <button pButton type="button" label="{{'allShipments' | translate}}"
+                    (click)="router.navigate( [ 'dashboard/importscan/importscanlist' ] )"></button>
+          </div>
+        </div>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+          <div style="padding-left: 10px; width: 98%;">
+            <button pButton type="button" label="{{'listprinting' | translate}}"></button>
+          </div>
+        </div>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+          <div style="padding-left: 10px; width: 98%;">
+            <button pButton type="button" label="{{'refresh' | translate}}"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>

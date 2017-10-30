@@ -234,7 +234,7 @@ export const LANG_DE_TRANS = {
   'llDriver': '(Unternehmer/Fahrer)',
   'page': 'Seite',
   'printingDate': 'Druckdatum',
-  // importscan form - importscan quick
+  // importscan form - importscan quick - importscan check
   'newShipment': 'Nacherfassen',
   'allShipments': 'Alle Sendungen',
   'controlscan': 'Kontrollscan',
@@ -253,6 +253,7 @@ export const LANG_DE_TRANS = {
   'length': 'Länge',
   'width': 'Breite',
   'height': 'Höhe',
+  'import_controllist': 'Import Kontrollliste',
   // deliveryscan form
   'deliverylistscan': 'Rollkartenscan',
   'tourno': 'Tour Nr',
