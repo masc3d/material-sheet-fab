@@ -244,6 +244,15 @@ export const LANG_DE_TRANS = {
   'importlist': 'Importliste',
   'quickscan': 'Quickscan',
   'refresh': 'Aktualisieren',
+  'to': 'nach',
+  'typeOfPackaging': 'Verpackungsart',
+  'parcelno': 'PkSt Nr',
+  'packs': 'PkSt',
+  'vol-Weight': 'Vol Gew.',
+  'real-Weight': 'Real Gew.',
+  'length': 'Länge',
+  'width': 'Breite',
+  'height': 'Höhe',
   // deliveryscan form
   'deliverylistscan': 'Rollkartenscan',
   'tourno': 'Tour Nr',
@@ -265,5 +274,12 @@ export const LANG_DE_TRANS = {
   'realWeight': 'Realgewicht',
   'volumeWeight': 'Volumengewicht',
   'effectiveWeight': 'Effektivgewicht',
+  // deliveryscan list
+  'pos': 'Pos',
+  'consignee': 'Empfänger',
+  'deadline': 'Termin',
+  'shipmentno': 'Sdg Nr',
+  'deliverystatus': 'Status',
+  'deliverycode': 'Code',
 };
 

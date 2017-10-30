@@ -256,26 +256,49 @@
 
       <div class="ui-g-12 ui-lg-8" style="padding:0;">
         <p-fieldset id="fieldsetPackages" legend="{{'packages' | translate}}">
-              <p style="text-align: center">{{'onLoadlist' | translate}} {{loadedPackcount}}</p>
-              <p-dataTable [value]="loadedPackages$ | async" resizableColumns="true" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate">
-                <p-column field="parcelNo" header="{{'packageId' | translate}}" [sortable]="true"></p-column>
-                <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
-                <p-column field="city" header="{{'city' | translate}}" [sortable]="true"></p-column>
-                <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}"
-                          [sortable]="true"></p-column>
-                <p-column field="loadinglistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
-                <p-column field="typeOfPackaging" header="{{'valore' | translate}}" [sortable]="true">
-                  <ng-template let-package="rowData" pTemplate="body">
-                    <span *ngIf="package.typeOfPackaging === 91; else noValoreLoaded">
-                      {{ 'yes' | translate }}
-                    </span>
-                    <ng-template #noValoreLoaded>
-                      {{ 'no' | translate }}
-                    </ng-template>
-                  </ng-template>
-                </p-column>
-              </p-dataTable>
+
+          <style>
+            .row-deliveryscan {
+              font-size:14px;padding:5px;border-bottom:1px solid #D5D5D5;
+            }
+            .row-deliveryscan > div {
+              padding: 0; height:30px;
+            }
+          </style>
+          <p-dataScroller [value]="shipments" [rows]="10" [inline]="true" scrollHeight="100%"
+                          [style]="{'height': '413px'}">
+
+            <ng-template let-shipments pTemplate="body">
+              <div class="ui-g row-deliveryscan">
+
+
+                <div class="ui-g-12 ui-md-1">{{'pos' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliverypos}}</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliveryline1}}</div>
+                <div class="ui-g-12 ui-md-1">{{'deadline' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliverydate}}</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliverytime}}</div>
+
+                <div class="ui-g-12 ui-md-1">{{'shipmentno' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.shipmentno}}</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliverystreet}}</div>
+                <div class="ui-g-12 ui-md-1">{{'deliverystatus' | translate}}:</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliverystatus}}</div>
+
+                <div class="ui-g-12 ui-md-1">{{'parcelno' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.parcelno}}</div>
+                <div class="ui-g-12 ui-md-1">{{shipments.deliveryzip}}</div>
+                <div class="ui-g-12 ui-md-3">{{shipments.deliverycity}}</div>
+                <div class="ui-g-12 ui-md-1">{{'deliverycode' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliverycode}}</div>
+
+                <div class="ui-g-12 ui-md-2">
+                  <i class="fa fa-trash-o" style="color: #184b7d;"></i>
+                </div>
+
+              </div>
+            </ng-template>
+          </p-dataScroller>
         </p-fieldset>
       </div>
     </div>

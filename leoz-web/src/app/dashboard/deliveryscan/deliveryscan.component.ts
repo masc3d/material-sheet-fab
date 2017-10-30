@@ -9,6 +9,7 @@ import { TranslateService } from '../../core/translate/translate.service';
 import { KeyUpEventService } from '../../core/key-up-event.service';
 import { BrowserCheck } from '../../core/auth/browser-check';
 import { Package } from '../../core/models/package.model';
+import { Deliveryscan } from '../../core/models/deliveryscan.model';
 
 
 @Component( {
@@ -32,6 +33,8 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
 
   deliveryscanForm: FormGroup;
 
+  shipments: Deliveryscan[];
+
   exportdate: any;
   latestMarkedIndex: number;
   latestDirection: string;
@@ -40,6 +43,9 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
   public scanInProgress: boolean;
   private waitingForResults: number;
   private receivedResponses: number;
+
+  public shortScanMsg = '';
+  styleShortScanMsg = { 'background-color': '#ffffff', 'color': '#000000' };
 
   notMicrodoof: boolean;
 
@@ -93,7 +99,84 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
       basedon: [ 'standard' ],
       basedonscan: [ '' ]
     } );
-
+    this.shipments = [ {
+        deliverypos: 1,
+        deliveryline1: 'alte Freiheit Werbung',
+        deliverystreet: 'Amsterdamer Str',
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        shipmentno: '84259511468',
+        parcelno: '84259511468',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        deliverystatus: 1,
+        deliverycode: 2
+    },
+      {
+        deliverypos: 1,
+        deliveryline1: 'alte Freiheit Werbung',
+        deliverystreet: 'Amsterdamer Str',
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        shipmentno: '84259511468',
+        parcelno: '84259511468',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        deliverystatus: 1,
+        deliverycode: 2
+      },
+      {
+        deliverypos: 1,
+        deliveryline1: 'alte Freiheit Werbung',
+        deliverystreet: 'Amsterdamer Str',
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        shipmentno: '84259511468',
+        parcelno: '84259511468',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        deliverystatus: 1,
+        deliverycode: 2
+      },
+      {
+        deliverypos: 1,
+        deliveryline1: 'alte Freiheit Werbung',
+        deliverystreet: 'Amsterdamer Str',
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        shipmentno: '84259511468',
+        parcelno: '84259511468',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        deliverystatus: 1,
+        deliverycode: 2
+      },
+      {
+        deliverypos: 1,
+        deliveryline1: 'alte Freiheit Werbung',
+        deliverystreet: 'Amsterdamer Str',
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        shipmentno: '84259511468',
+        parcelno: '84259511468',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        deliverystatus: 1,
+        deliverycode: 2
+      },
+      {
+        deliverypos: 1,
+        deliveryline1: 'alte Freiheit Werbung',
+        deliverystreet: 'Amsterdamer Str',
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        shipmentno: '84259511468',
+        parcelno: '84259511468',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        deliverystatus: 1,
+        deliverycode: 2
+      }];
   }
 
   private createDeliverylistOptions(): SelectItem[] {
