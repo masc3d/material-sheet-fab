@@ -30,9 +30,8 @@ abstract class Setup(
         val bundleName: String,
         val mainClass: Class<*>) : BundleProcessInterface() {
 
-    private var log = LoggerFactory.getLogger(this.javaClass)
-
-    private val storage: Storage by Kodein.global.lazy.instance()
+    protected var log = LoggerFactory.getLogger(this.javaClass)
+    protected val storage: Storage by Kodein.global.lazy.instance()
 
     /** Setup base path */
     var basePath: Path
@@ -54,9 +53,12 @@ abstract class Setup(
     }
 
     /**
-     * Executes command.
+     * Executes command.+
+     * @param command Command to execute
+     * @param logError If error should be logged
+     * @return ProcessExecutor result
      */
-    protected fun execute(vararg command: String) {
+    protected fun execute(vararg command: String, logError: Boolean = true): ProcessExecutor.Result {
         log.trace("Command ${command.joinToString(" ")}")
 
         /** Log helper */
@@ -67,14 +69,17 @@ abstract class Setup(
                 log.error(result.error)
         }
 
-        try {
-            logResult(
-                    ProcessExecutor.run(
-                            command = command.toList(),
-                            trim = true,
-                            omitEmptyLines = true))
+        return try {
+            ProcessExecutor.run(
+                    command = command.toList(),
+                    trim = true,
+                    omitEmptyLines = true).also {
+                logResult(it)
+            }
         } catch (e: ProcessExecutor.ProcessRunException) {
-            logResult(e.result)
+            if (logError)
+                logResult(e.result)
+
             throw(e)
         }
     }
@@ -144,11 +149,6 @@ abstract class Setup(
     ) : Setup(
             bundleName = bundleName, mainClass = mainClass
     ) {
-
-        private val log = LoggerFactory.getLogger(this.javaClass)
-
-        private val storage: Storage by Kodein.global.lazy.instance()
-
         private val leozsvcExecutable: EmbeddedExecutable by lazy {
             EmbeddedExecutable("leoz-svc")
         }
@@ -285,8 +285,6 @@ abstract class Setup(
                     bundleName = bundleName, mainClass = mainClass
             ) {
 
-        private val storage: Storage by Kodein.global.lazy.instance()
-
         private val serviceName by lazy {
             this.bundleName
         }
@@ -300,8 +298,8 @@ abstract class Setup(
         }
 
         /** Execute systemd command */
-        private fun executeSystemd(vararg command: String) {
-            this.execute(*arrayOf("systemctl", "--user").plus(command))
+        private fun executeSystemd(vararg command: String, logError: Boolean = true) {
+            this.execute(logError = logError, command = *arrayOf("systemctl", "--user").plus(command))
         }
 
         /** systemd reload */
@@ -336,7 +334,11 @@ abstract class Setup(
         }
 
         override fun uninstall() {
-            this.executeSystemd("disable", serviceName)
+            try {
+                this.executeSystemd(logError = false, command = *arrayOf("disable", serviceName))
+            } catch (e: ProcessExecutor.ProcessRunException) {
+                log.warn("Could not disable [${serviceName}], ${e.result.error}")
+            }
 
             this.systemdServiceFile.delete()
 
