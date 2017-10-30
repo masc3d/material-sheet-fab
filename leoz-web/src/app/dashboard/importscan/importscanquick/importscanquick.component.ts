@@ -32,7 +32,7 @@ export class ImportscanquickComponent extends AbstractTranslateComponent impleme
 
   constructor( private fb: FormBuilder,
                public translate: TranslateService,
-               protected router: Router ) {
+               public router: Router ) {
     super( translate, () => {
     } );
   }

@@ -6,7 +6,7 @@ import { SelectItem } from 'primeng/primeng';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
-import { Package } from '../../../core/models/package.model';
+import { Importscan } from 'app/core/models/importscan.model';
 
 @Component( {
   selector: 'app-importscanlist',
@@ -17,11 +17,11 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
   importscanlistForm: FormGroup;
   scanOptions: SelectItem[];
 
-  packages: Package[];
+  shipments: Importscan[];
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
-               protected router: Router ) {
+               public router: Router ) {
     super( translate, () => {
       this.scanOptions = this.createScanOptions();
     } );
@@ -35,20 +35,120 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
       msgfield: [ null ],
       printlabel: [ null ]
     } );
-    this.packages = [ {
-      parcelNo: 123,
-      orderId: 456,
-      parcelPosition: 1,
-      loadinglistNo: 789,
-      typeOfPackaging: 1,
-      realWeight: 2.2,
-      dateOfStationOut: new Date(),
-      creference: 'dsdf',
-
-      zip: '03189',
-      city: 'Orihuela Costa',
-      devliveryStation: 321
-    } ];
+    this.shipments = [ {
+      senderline1: 'General Logistics Sys',
+      deliveryline1: 'alte Freiheit Werbung',
+      senddate: '23.10.2017',
+      senderstation: 348,
+      deliverystation: 50,
+      deliveryzip: '50825',
+      deliverycity: 'Köln',
+      parcelno: '84259511468(0)',
+      deliverydate: '24.10.2017',
+      deliverytime: '12:00',
+      typeOfPackaging: 94,
+      realWeight: 39.40,
+      noOfPacks: 1,
+      volWeight: 0,
+      length: 0,
+      width: 0,
+      height: 0
+    },
+      {
+        senderline1: 'General Logistics Sys',
+        deliveryline1: 'alte Freiheit Werbung',
+        senddate: '23.10.2017',
+        senderstation: 348,
+        deliverystation: 50,
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        parcelno: '84259511468(0)',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        typeOfPackaging: 94,
+        realWeight: 39.40,
+        noOfPacks: 1,
+        volWeight: 0,
+        length: 0,
+        width: 0,
+        height: 0
+      },
+      {
+        senderline1: 'General Logistics Sys',
+        deliveryline1: 'alte Freiheit Werbung',
+        senddate: '23.10.2017',
+        senderstation: 348,
+        deliverystation: 50,
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        parcelno: '84259511468(0)',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        typeOfPackaging: 94,
+        realWeight: 39.40,
+        noOfPacks: 1,
+        volWeight: 0,
+        length: 0,
+        width: 0,
+        height: 0
+      },
+      {
+        senderline1: 'General Logistics Sys',
+        deliveryline1: 'alte Freiheit Werbung',
+        senddate: '23.10.2017',
+        senderstation: 348,
+        deliverystation: 50,
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        parcelno: '84259511468(0)',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        typeOfPackaging: 94,
+        realWeight: 39.40,
+        noOfPacks: 1,
+        volWeight: 0,
+        length: 0,
+        width: 0,
+        height: 0
+      },
+      {
+        senderline1: 'General Logistics Sys',
+        deliveryline1: 'alte Freiheit Werbung',
+        senddate: '23.10.2017',
+        senderstation: 348,
+        deliverystation: 50,
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        parcelno: '84259511468(0)',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        typeOfPackaging: 94,
+        realWeight: 39.40,
+        noOfPacks: 1,
+        volWeight: 0,
+        length: 0,
+        width: 0,
+        height: 0
+      },
+      {
+        senderline1: 'General Logistics Systems',
+        deliveryline1: 'alte Freiheit Werbung',
+        senddate: '23.10.2017',
+        senderstation: 348,
+        deliverystation: 50,
+        deliveryzip: '50825',
+        deliverycity: 'Köln',
+        parcelno: '84259511468(0)',
+        deliverydate: '24.10.2017',
+        deliverytime: '12:00',
+        typeOfPackaging: 94,
+        realWeight: 39.40,
+        noOfPacks: 1,
+        volWeight: 0,
+        length: 0,
+        width: 0,
+        height: 0
+      }];
   }
 
   private createScanOptions(): SelectItem[] {
