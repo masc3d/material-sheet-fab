@@ -4,6 +4,7 @@ import {
   ButtonModule,
   CalendarModule,
   CheckboxModule,
+  DataScrollerModule,
   DataTableModule,
   DropdownModule,
   FieldsetModule,
@@ -34,7 +35,8 @@ import { DatePipe } from '@angular/common';
     RadioButtonModule,
     InputTextareaModule,
     TabViewModule,
-    DeliveryscanRoutingModule
+    DeliveryscanRoutingModule,
+    DataScrollerModule,
   ],
   declarations: [ DeliveryscanComponent ],
   providers: [
