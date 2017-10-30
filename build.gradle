@@ -12,10 +12,10 @@ buildscript {
         v_javamail = '1.6.0'
         v_junit = '4.12'
         v_kotlin = '1.1.51'
-        v_material_dialogs = '0.9.4.7'
+        v_material_dialogs = '0.9.5.0'
         v_ormlite = '5.0'
         v_paho = '1.1.1'
-        v_roboelectric = '3.5'
+        v_roboelectric = '3.5.1'
         v_rxlifecycle = '2.2.0'
     }
 
@@ -141,7 +141,7 @@ dependencies {
     testImplementation(
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
-            "org.robolectric:shadows-multidex:3.5",
+            "org.robolectric:shadows-multidex:3.5.1",
 
             // MQTT client
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
