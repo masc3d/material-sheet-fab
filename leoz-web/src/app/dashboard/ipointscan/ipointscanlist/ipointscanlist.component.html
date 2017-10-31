@@ -1,0 +1,84 @@
+<form [formGroup]="ipointscanlistForm" style="padding-top: 10px;">
+  <div class="ui-fluid">
+    <div class="ui-g" style="margin-bottom: 30px;">
+      <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+        <p-dropdown [options]="scanOptions" placeholder="{{ 'packNumber' | translate }}"></p-dropdown>
+      </div>
+      <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+        <div style="padding-left: 10px; width: 98%;">
+          <p-checkbox name="printlabel" value="printlabel" label="{{'printlabel' | translate}}"></p-checkbox>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        <div style="padding-left: 10px; width: 98%;">
+          <p-checkbox name="novalidation" value="novalidation" label="{{'scan_without_validating' | translate}}"></p-checkbox>
+        </div>
+      </div>
+
+    </div>
+    <style>
+      .row-importscan {
+        font-size:14px;padding:5px;border-bottom:1px solid #D5D5D5;
+      }
+      .row-importscan > div {
+        padding: 0; height:30px;
+      }
+    </style>
+    <p-dataScroller [value]="shipments" [rows]="10" [inline]="true" scrollHeight="calc(100vh - 296px)"
+                    [style]="{'min-height': '465px', 'height': 'calc(100vh - 296px)'}">
+      <p-header>
+        {{ 'ipointlist' | translate }}
+      </p-header>
+
+      <ng-template let-shipments pTemplate="body">
+        <div class="ui-g row-importscan">
+            <div class="ui-g-12 ui-md-2">{{shipments.parcelno}}</div>
+            <div class="ui-g-12 ui-md-1">{{'real-Weight' | translate}}:</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.realWeight}}</div>
+            <div class="ui-g-12 ui-md-1">{{'length' | translate}}:</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.length}}</div>
+            <div class="ui-g-12 ui-md-1">{{'width' | translate}}:</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.width}}</div>
+            <div class="ui-g-12 ui-md-1">{{'height' | translate}}:</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.height}}</div>
+            <div class="ui-g-12 ui-md-1">{{'vol-Weight' | translate}}:</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.volWeight}}</div>
+
+            <div class="ui-g-12 ui-md-2">{{'typeOfPackaging' | translate}}:</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.typeOfPackaging}}</div>
+            <div class="ui-g-12 ui-md-8">
+              <i class="fa fa-refresh" style="color: #184b7d;"></i>
+            </div>
+        </div>
+      </ng-template>
+    </p-dataScroller>
+
+    <div class="ui-g" style="padding-top: 50px;">
+      <div class="ui-g-12 ui-lg-12 no-pad">
+        <hr/>
+
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+            <button pButton type="button" label="{{'ipoint_quickscan' | translate}}"
+                    (click)="router.navigate( [ 'dashboard/ipointscan/ipointscanquick' ] )"></button>
+        </div>
+        <div class="ui-g-12 ui-lg-1 ui-g-nopad">
+          &nbsp;
+        </div>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+            <div class="ui-g-12">{{'total_real_Weight' | translate}}:</div>
+        </div>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+          <div class="ui-g-12">{{shipments.realWeight}}220 Kg</div>
+        </div>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+            <div class="ui-g-12">{{'total_vol_Weight' | translate}}:</div>
+        </div>
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+            <div class="ui-g-12">{{shipments.volWeight}}243 Kg</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</form>

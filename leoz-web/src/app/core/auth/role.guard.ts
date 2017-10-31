@@ -15,13 +15,15 @@ export class RoleGuard implements CanActivate {
       'tour',
       'stationloading',
       'importscan',
-      'deliveryscan'],
+      'deliveryscan',
+      'ipointscan'],
     'POWERUSER': [
       'user',
       'tour',
       'stationloading',
       'importscan',
-      'deliveryscan' ],
+      'deliveryscan',
+      'ipointscan' ],
   };
 
   constructor( private router: Router ) {
