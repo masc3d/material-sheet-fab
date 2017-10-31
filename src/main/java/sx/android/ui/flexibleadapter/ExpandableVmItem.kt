@@ -22,7 +22,7 @@ class ExpandableVmItem<EVM, IVM>(
         val isTransitionsEnabled: Boolean = false,
         var isExpandableOnClick: Boolean = true
 )
-    : AbstractExpandableHeaderItem<VmHolder, SectionableVmItem<IVM>>() {
+    : AbstractExpandableHeaderItem<VmHolder, VmItem<IVM>>() {
 
     override fun equals(other: Any?): Boolean =
             this === other

@@ -1,4 +1,4 @@
-package sx.android.ui.flexibleadapter
+package sx.android.ui.flexibleadapter.ext
 
 import android.support.v7.widget.RecyclerView
 import eu.davidea.flexibleadapter.FlexibleAdapter
