@@ -8,8 +8,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.ExpandableVmItem
-import sx.android.ui.flexibleadapter.VmItem
+import sx.android.ui.flexibleadapter.HeaderVmItem
+import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.ObservableRxProperty
 import sx.rx.bind
@@ -20,9 +20,7 @@ import sx.rx.bind
  */
 class SectionsAdapter
     :
-        FlexibleAdapter<
-                ExpandableVmItem<*, *>
-                >
+        FlexibleAdapter<HeaderVmItem<*, *>>
         (listOf(), null, true),
         CompositeDisposableSupplier {
 
@@ -55,7 +53,7 @@ class SectionsAdapter
                 if (item != null) {
                     this@SectionsAdapter.itemClickEventSubject.onNext(item)
 
-                    if (item is ExpandableVmItem<*, *> && item.viewModel is SectionViewModel<*>) {
+                    if (item is HeaderVmItem<*, *> && item.viewModel is SectionViewModel<*>) {
 
                         val section = item.viewModel as SectionViewModel<*>
 
@@ -117,10 +115,10 @@ class SectionsAdapter
      * @param sectionViewModel Parcel section view model
      */
     fun <T, S : SectionViewModel<T>> addSection(
-            sectionVmItemProvider: () -> ExpandableVmItem<SectionViewModel<T>, *>,
-            vmItemProvider: (item: T) -> VmItem<*>) {
+            sectionVmItemProvider: () -> HeaderVmItem<SectionViewModel<T>, *>,
+            vmItemProvider: (item: T) -> SimpleVmItem<*>) {
 
-        fun createSectionItem(): ExpandableVmItem<SectionViewModel<T>, *> {
+        fun createSectionItem(): HeaderVmItem<SectionViewModel<T>, *> {
             return sectionVmItemProvider.invoke()
                     .also {
                         it.isExpanded = false
@@ -191,10 +189,10 @@ class SectionsAdapter
      * Return flexible item for specific section
      * @param section Section
      */
-    fun itemOf(section: SectionViewModel<*>): ExpandableVmItem<*, *>? {
+    fun itemOf(section: SectionViewModel<*>): HeaderVmItem<*, *>? {
         return this.headerItems.firstOrNull {
-            it is ExpandableVmItem<*, *> && it.viewModel == section
-        } as? ExpandableVmItem<*, *>
+            it is HeaderVmItem<*, *> && it.viewModel == section
+        } as? HeaderVmItem<*, *>
     }
 
     /**

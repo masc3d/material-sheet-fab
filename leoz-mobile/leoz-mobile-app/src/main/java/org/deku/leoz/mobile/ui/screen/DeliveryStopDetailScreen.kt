@@ -45,8 +45,8 @@ import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.Device
 import sx.android.aidc.*
-import sx.android.ui.flexibleadapter.ExpandableVmItem
 import sx.android.ui.flexibleadapter.VmItem
+import sx.android.ui.flexibleadapter.SimpleVmItem
 
 class DeliveryStopDetailScreen
     :
@@ -83,7 +83,7 @@ class DeliveryStopDetailScreen
     }
 
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
-            ExpandableVmItem<
+            VmItem<
                     SectionViewModel<Any>, *>
             >>({
         FlexibleAdapter(
@@ -147,14 +147,14 @@ class DeliveryStopDetailScreen
 
         if (services.count() > 0) {
             flexibleAdapter.addItem(
-                    ExpandableVmItem<SectionViewModel<Any>, Any>(
+                    VmItem<SectionViewModel<Any>, Any>(
                             view = R.layout.item_section_header,
                             variable = BR.header,
                             viewModel = serviceSection
                     ).also {
                         it.subItems = services
                                 .map {
-                                    VmItem<Any>(
+                                    SimpleVmItem<Any>(
                                             view = R.layout.item_service,
                                             variable = BR.service,
                                             viewModel = ServiceViewModel(
@@ -171,7 +171,7 @@ class DeliveryStopDetailScreen
         val orders = stop.tasks.map { it.order }.distinct()
 
         flexibleAdapter.addItem(
-                ExpandableVmItem<SectionViewModel<Any>, Any>(
+                VmItem<SectionViewModel<Any>, Any>(
                         view = R.layout.item_section_header,
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
@@ -183,7 +183,7 @@ class DeliveryStopDetailScreen
                         )
                 ).also {
                     it.subItems = orders.map {
-                        VmItem<Any>(
+                        SimpleVmItem<Any>(
                                 view = R.layout.item_ordertask,
                                 variable = BR.orderTask,
                                 viewModel = OrderTaskViewModel(it.pickupTask)
@@ -197,7 +197,7 @@ class DeliveryStopDetailScreen
         val parcels = stop.tasks.flatMap { it.order.parcels }
 
         flexibleAdapter.addItem(
-                ExpandableVmItem<SectionViewModel<Any>, Any>(
+                VmItem<SectionViewModel<Any>, Any>(
                         view = R.layout.item_section_header,
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
@@ -209,7 +209,7 @@ class DeliveryStopDetailScreen
                         )
                 ).also {
                     it.subItems = parcels.map {
-                        VmItem<Any>(
+                        SimpleVmItem<Any>(
                                 view = R.layout.item_parcel_card,
                                 variable = BR.parcel,
                                 viewModel = ParcelViewModel(it, showOrderTask = false)

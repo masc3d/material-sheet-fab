@@ -47,8 +47,8 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.ExpandableVmItem
-import sx.android.ui.flexibleadapter.VmItem
+import sx.android.ui.flexibleadapter.HeaderVmItem
+import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.format.format
 
 /**
@@ -148,9 +148,9 @@ class VehicleUnloadingScreen :
     //endregion
 
     fun SectionViewModel<ParcelEntity>.toFlexibleItem()
-            : ExpandableVmItem<SectionViewModel<ParcelEntity>, Any> {
+            : HeaderVmItem<SectionViewModel<ParcelEntity>, Any> {
 
-        return ExpandableVmItem<SectionViewModel<ParcelEntity>, Any>(
+        return HeaderVmItem<SectionViewModel<ParcelEntity>, Any>(
                 view = R.layout.item_section_header,
                 variable = BR.header,
                 viewModel = this
@@ -160,9 +160,9 @@ class VehicleUnloadingScreen :
     }
 
     fun ParcelEntity.toFlexibleItem()
-            : VmItem<ParcelViewModel> {
+            : SimpleVmItem<ParcelViewModel> {
 
-        return VmItem(
+        return SimpleVmItem(
                 view = R.layout.item_parcel_card,
                 variable = BR.parcel,
                 viewModel = ParcelViewModel(this)

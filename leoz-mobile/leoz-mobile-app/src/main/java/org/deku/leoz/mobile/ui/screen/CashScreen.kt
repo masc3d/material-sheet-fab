@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.hideSoftInput
 import sx.android.showSoftInput
-import sx.android.ui.flexibleadapter.ExpandableVmItem
 import sx.android.ui.flexibleadapter.VmItem
+import sx.android.ui.flexibleadapter.SimpleVmItem
 import java.text.NumberFormat
 import java.util.*
 
@@ -94,7 +94,7 @@ class CashScreen : ScreenFragment<Any>() {
     }
 
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
-            ExpandableVmItem<
+            VmItem<
                     SectionViewModel<Any>, *>
             >>({
         FlexibleAdapter(listOf())
@@ -134,7 +134,7 @@ class CashScreen : ScreenFragment<Any>() {
         val orders = this.deliveryStop.orders.blockingFirst()
 
         flexibleAdapter.addItem(
-                ExpandableVmItem<SectionViewModel<Any>, Any>(
+                VmItem<SectionViewModel<Any>, Any>(
                         view = R.layout.item_section_header,
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
@@ -146,7 +146,7 @@ class CashScreen : ScreenFragment<Any>() {
                         )
                 ).also {
                     it.subItems = orders.map {
-                        VmItem<Any>(
+                        SimpleVmItem<Any>(
                                 //TODO: To be replaced by an item which includes the cash value (hide zip-code and city)
                                 view = R.layout.item_ordertask,
                                 variable = BR.orderTask,
