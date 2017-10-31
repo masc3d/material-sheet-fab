@@ -4,39 +4,31 @@ import android.support.annotation.AnyRes
 import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
 import android.view.View
+import eightbitlab.com.blurview.BlurView
+import eightbitlab.com.blurview.RenderScriptBlur
 import eu.davidea.flexibleadapter.FlexibleAdapter
-import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
-import eu.davidea.flexibleadapter.items.IFlexible
-import eu.davidea.flexibleadapter.items.IHeader
-import eu.davidea.flexibleadapter.items.ISectionable
+import eu.davidea.flexibleadapter.items.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
 /**
- * Flexible view model item
+ * Flexible expandable view model header/item.
+ * Can be used as both an expandable item or header.
  * Created by masc on 26.06.17.
- * @property view The view layout resource ID
- * @property variable View model binding ID
- * @property viewModel The view model
- * @property dragHandleViewId The view id of the drag handle (wheb moving items is supported)
- * @property beginDelayedTransition Begins a transition everytime the binding is rebound (eg. bound fields change)
  */
-open class VmItem<VM>(
+open class VmItem<VM, IVM>(
         @LayoutRes val view: Int,
         @AnyRes val variable: Int,
         val viewModel: VM,
-        @IdRes private val dragHandleViewId: Int = 0
+        val blurRadius: Float = 1F,
+        @IdRes val dragHandleViewId: Int = 0,
+        var isExpandableOnClick: Boolean = true,
+        private val isHeader: Boolean = false
 ) :
-        AbstractFlexibleItem<VmHolder>(),
+        AbstractExpandableItem<VmHolder, SimpleVmItem<IVM>>(),
         ISectionable<VmHolder, IHeader<VmHolder>> {
 
-    override fun equals(other: Any?): Boolean = (this === other)
-
-    override fun hashCode(): Int = super.hashCode()
-
-    /** Composite disposable for maintaining view holder subscriptions */
-    private val viewHolderSubscriptions = CompositeDisposable()
-
+    //region ISectionable
     var _header: IHeader<VmHolder>? = null
 
     override fun setHeader(header: IHeader<VmHolder>?) {
@@ -45,6 +37,10 @@ open class VmItem<VM>(
 
     override fun getHeader(): IHeader<VmHolder>?
             = _header
+    //endregion
+
+    /** Composite disposable for maintaining view holder subscriptions */
+    private val viewHolderSubscriptions = CompositeDisposable()
 
     private val itemReleasedEventSubject by lazy { PublishSubject.create<Int>() }
     /** Item released event */
@@ -79,13 +75,34 @@ open class VmItem<VM>(
     }
 
     override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): VmHolder {
-        val holder = VmHolder(
+        // Blur view support
+        if (view is BlurView) {
+            val rootView = adapter.recyclerView
+
+            // Remove background. it's commonly only set for design preview, as blur view uses custom attribute `blurOverlayColor`
+            view.background = null
+
+            view.setupWith(rootView)
+                    .windowBackground(adapter.recyclerView.background)
+                    .blurAlgorithm(RenderScriptBlur(view.context))
+                    .blurRadius(this.blurRadius)
+        }
+
+        return VmHolder(
                 view = view,
                 adapter = adapter,
-                dragHandleViewId = dragHandleViewId)
-
-        return holder
+                isStickyHeader = this.isHeader,
+                dragHandleViewId = this.dragHandleViewId,
+                isExpandableOnClick = isExpandableOnClick)
     }
 
-    override fun getLayoutRes(): Int = this.view
+    override fun getLayoutRes(): Int =
+            this.view
+
+
+    override fun equals(other: Any?): Boolean =
+            this === other
+
+    override fun hashCode(): Int =
+            super.hashCode()
 }

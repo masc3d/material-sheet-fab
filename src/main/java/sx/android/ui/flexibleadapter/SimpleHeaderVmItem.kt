@@ -1,7 +1,6 @@
 package sx.android.ui.flexibleadapter
 
 import android.support.annotation.AnyRes
-import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
 import eu.davidea.flexibleadapter.items.IHeader
 import org.slf4j.LoggerFactory
@@ -15,23 +14,18 @@ import org.slf4j.LoggerFactory
  * @param viewModel The view model
  * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
  */
-open class HeaderVmItem<VM, IVM>(
+class SimpleHeaderVmItem<VM>(
         @LayoutRes view: Int,
         @AnyRes variable: Int,
         viewModel: VM,
-        blurRadius: Float = 1F,
-        @IdRes dragHandleViewId: Int = 0,
-        isExpandableOnClick: Boolean = true
+        blurRadius: Float = 1F
 ) :
         IHeader<VmHolder>,
-        VmItem<VM, IVM>(
+        HeaderVmItem<VM, Any>(
                 view = view,
                 variable = variable,
                 viewModel = viewModel,
-                blurRadius = blurRadius,
-                isExpandableOnClick = isExpandableOnClick,
-                dragHandleViewId = dragHandleViewId,
-                isHeader = true
+                blurRadius = blurRadius
         ) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
