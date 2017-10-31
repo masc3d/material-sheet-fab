@@ -19,12 +19,12 @@ import io.reactivex.subjects.PublishSubject
  * @property dragHandleViewId The view id of the drag handle (wheb moving items is supported)
  * @property beginDelayedTransition Begins a transition everytime the binding is rebound (eg. bound fields change)
  */
-open class FlexibleVmItem<VM>(
+open class VmItem<VM>(
         @LayoutRes val view: Int,
         @AnyRes val variable: Int,
         val viewModel: VM,
         @IdRes private val dragHandleViewId: Int = 0
-) : AbstractFlexibleItem<FlexibleVmHolder>() {
+) : AbstractFlexibleItem<VmHolder>() {
 
     override fun equals(other: Any?): Boolean = (this === other)
 
@@ -39,7 +39,7 @@ open class FlexibleVmItem<VM>(
 
     override fun bindViewHolder(
             adapter: FlexibleAdapter<out IFlexible<*>>,
-            viewHolder: FlexibleVmHolder,
+            viewHolder: VmHolder,
             position: Int,
             payloads: MutableList<Any?>) {
 
@@ -58,15 +58,15 @@ open class FlexibleVmItem<VM>(
         )
     }
 
-    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: FlexibleVmHolder?, position: Int) {
+    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: VmHolder?, position: Int) {
         super.unbindViewHolder(adapter, holder, position)
 
         // Unbind view holder
         holder?.binding?.unbind()
     }
 
-    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
-        val holder = FlexibleVmHolder(
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): VmHolder {
+        val holder = VmHolder(
                 view = view,
                 adapter = adapter,
                 dragHandleViewId = dragHandleViewId)
