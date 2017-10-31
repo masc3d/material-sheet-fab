@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory
  * @property beginDelayedTransition Begins a delayed transition initially
  * @param dragHandleViewId The view id of the drag handle (wheb moving items is supported)
  */
-class FlexibleVmHolder(
+class VmHolder(
         val view: View,
         val adapter: FlexibleAdapter<out IFlexible<*>>,
         val isStickyHeader: Boolean = false,
@@ -51,7 +51,7 @@ class FlexibleVmHolder(
             private var started = false
 
             override fun onPreBind(binding: ViewDataBinding): Boolean {
-                if (!started && this@FlexibleVmHolder.beginDelayedTransition) {
+                if (!started && this@VmHolder.beginDelayedTransition) {
                     TransitionManager.beginDelayedTransition(binding.root as ViewGroup, AutoTransition().also {
                         it.addListener(object : TransitionListenerAdapter() {
                             override fun onTransitionStart(transition: Transition) {
@@ -60,12 +60,12 @@ class FlexibleVmHolder(
 
                             override fun onTransitionCancel(transition: Transition) {
                                 started = false
-                                this@FlexibleVmHolder.beginDelayedTransition = false
+                                this@VmHolder.beginDelayedTransition = false
                             }
 
                             override fun onTransitionEnd(transition: Transition) {
                                 started = false
-                                this@FlexibleVmHolder.beginDelayedTransition = false
+                                this@VmHolder.beginDelayedTransition = false
                             }
                         })
                     })

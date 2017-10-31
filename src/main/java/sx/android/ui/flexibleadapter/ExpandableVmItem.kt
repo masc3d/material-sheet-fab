@@ -14,7 +14,7 @@ import eu.davidea.flexibleadapter.items.IFlexible
  * Can be used as both an expandable item or header.
  * Created by masc on 26.06.17.
  */
-class FlexibleExpandableVmItem<EVM, IVM>(
+class ExpandableVmItem<EVM, IVM>(
         @LayoutRes val view: Int,
         @AnyRes val variable: Int,
         val viewModel: EVM,
@@ -22,7 +22,7 @@ class FlexibleExpandableVmItem<EVM, IVM>(
         val isTransitionsEnabled: Boolean = false,
         var isExpandableOnClick: Boolean = true
 )
-    : AbstractExpandableHeaderItem<FlexibleVmHolder, FlexibleSectionableVmItem<IVM>>() {
+    : AbstractExpandableHeaderItem<VmHolder, SectionableVmItem<IVM>>() {
 
     override fun equals(other: Any?): Boolean =
             this === other
@@ -32,7 +32,7 @@ class FlexibleExpandableVmItem<EVM, IVM>(
 
     override fun bindViewHolder(
             adapter: FlexibleAdapter<out IFlexible<*>>,
-            viewHolder: FlexibleVmHolder,
+            viewHolder: VmHolder,
             position: Int,
             payloads: MutableList<Any?>) {
 
@@ -40,13 +40,13 @@ class FlexibleExpandableVmItem<EVM, IVM>(
         viewHolder.binding.executePendingBindings()
     }
 
-    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: FlexibleVmHolder?, position: Int) {
+    override fun unbindViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, holder: VmHolder?, position: Int) {
         super.unbindViewHolder(adapter, holder, position)
         // Unbind view holder
         holder?.binding?.unbind()
     }
 
-    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): FlexibleVmHolder {
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): VmHolder {
         // Blur view support
         if (view is BlurView) {
             val rootView = adapter.recyclerView
@@ -60,7 +60,7 @@ class FlexibleExpandableVmItem<EVM, IVM>(
                     .blurRadius(this.blurRadius)
         }
 
-        return FlexibleVmHolder(
+        return VmHolder(
                 view = view,
                 adapter = adapter,
                 isStickyHeader = true,
