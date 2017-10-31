@@ -77,7 +77,7 @@ class DeliveryStopListScreen
 
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
-                    FlexibleVmItem<
+                    VmItem<
                             *>>>({
         FlexibleAdapter(listOf())
     })
@@ -148,7 +148,7 @@ class DeliveryStopListScreen
                         this.aidcReader.enabled = !editMode
 
                         this.flexibleAdapter.allBoundViewHolders
-                                .mapNotNull { it as? FlexibleVmHolder }
+                                .mapNotNull { it as? VmHolder }
                                 .forEach {
                                     it.beginDelayedTransition()
                                 }
@@ -350,7 +350,7 @@ class DeliveryStopListScreen
 
         // Items
         flexibleAdapter.addItem(
-                FlexibleHeaderVmItem(
+                HeaderVmItem(
                         view = R.layout.view_delivery_stop_list_stats,
                         variable = BR.stats,
                         viewModel = StopListStatisticsViewModel(
@@ -370,7 +370,7 @@ class DeliveryStopListScreen
                 delivery.pendingStops
                         .blockingFirst().value
                         .map {
-                            val item = FlexibleVmItem(
+                            val item = VmItem(
                                     view = R.layout.item_stop,
                                     variable = BR.stop,
                                     viewModel = StopViewModel(

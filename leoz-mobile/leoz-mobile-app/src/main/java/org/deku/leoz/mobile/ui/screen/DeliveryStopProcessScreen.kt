@@ -62,8 +62,8 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
-import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
+import sx.android.ui.flexibleadapter.ExpandableVmItem
+import sx.android.ui.flexibleadapter.SectionableVmItem
 import sx.android.ui.materialdialogs.addAll
 import sx.format.format
 
@@ -237,9 +237,9 @@ class DeliveryStopProcessScreen :
     //endregion
 
     fun <T> SectionViewModel<T>.toFlexibleItem()
-            : FlexibleExpandableVmItem<SectionViewModel<T>, Any> {
+            : ExpandableVmItem<SectionViewModel<T>, Any> {
 
-        return FlexibleExpandableVmItem<SectionViewModel<T>, Any>(
+        return ExpandableVmItem<SectionViewModel<T>, Any>(
                 view = R.layout.item_section_header,
                 variable = BR.header,
                 viewModel = this
@@ -249,9 +249,9 @@ class DeliveryStopProcessScreen :
     }
 
     fun ParcelEntity.toFlexibleItem()
-            : FlexibleSectionableVmItem<ParcelViewModel> {
+            : SectionableVmItem<ParcelViewModel> {
 
-        return FlexibleSectionableVmItem(
+        return SectionableVmItem(
                 view = R.layout.item_parcel_card,
                 variable = BR.parcel,
                 viewModel = ParcelViewModel(this, showOrderTask = false)
@@ -259,9 +259,9 @@ class DeliveryStopProcessScreen :
     }
 
     fun OrderEntity.toFlexibleItem()
-            : FlexibleSectionableVmItem<OrderTaskViewModel> {
+            : SectionableVmItem<OrderTaskViewModel> {
 
-        return FlexibleSectionableVmItem(
+        return SectionableVmItem(
                 view = R.layout.item_ordertask,
                 variable = BR.orderTask,
                 viewModel = OrderTaskViewModel(this.pickupTask)
@@ -611,7 +611,7 @@ class DeliveryStopProcessScreen :
                 .subscribe { item ->
                     log.debug("ONITEMCLICK")
 
-                    ((item as? FlexibleSectionableVmItem<*>)
+                    ((item as? SectionableVmItem<*>)
                             ?.viewModel as? OrderTaskViewModel)
                             ?.also { orderTaskViewModel ->
                                 MaterialDialog.Builder(context)

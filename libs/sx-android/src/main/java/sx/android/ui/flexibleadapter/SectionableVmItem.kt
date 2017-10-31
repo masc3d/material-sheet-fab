@@ -15,26 +15,26 @@ import eu.davidea.flexibleadapter.items.ISectionable
  * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
  * @param dragHandleViewId The view id of the drag handle (wheb moving items is supported)
  */
-open class FlexibleSectionableVmItem<VM>(
+open class SectionableVmItem<VM>(
         @LayoutRes view: Int,
         @AnyRes variable: Int,
         viewModel: VM,
         @IdRes dragHandleViewId: Int = 0
 ) :
-        ISectionable<FlexibleVmHolder, IHeader<FlexibleVmHolder>>,
-        FlexibleVmItem<VM>(
+        ISectionable<VmHolder, IHeader<VmHolder>>,
+        VmItem<VM>(
                 view = view,
                 variable = variable,
                 viewModel = viewModel,
                 dragHandleViewId = dragHandleViewId) {
 
-    var _header: IHeader<FlexibleVmHolder>? = null
+    var _header: IHeader<VmHolder>? = null
 
-    override fun setHeader(header: IHeader<FlexibleVmHolder>?) {
+    override fun setHeader(header: IHeader<VmHolder>?) {
         _header = header
     }
 
-    override fun getHeader(): IHeader<FlexibleVmHolder>?
+    override fun getHeader(): IHeader<VmHolder>?
             = _header
 
     init {

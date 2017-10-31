@@ -4,9 +4,7 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.text.InputType
 import android.view.View
-import android.widget.CompoundButton
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -55,8 +53,8 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
-import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
+import sx.android.ui.flexibleadapter.ExpandableVmItem
+import sx.android.ui.flexibleadapter.SectionableVmItem
 import sx.format.format
 
 /**
@@ -175,9 +173,9 @@ class VehicleLoadingScreen :
     //endregion
 
     fun SectionViewModel<ParcelEntity>.toFlexibleItem()
-            : FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any> {
+            : ExpandableVmItem<SectionViewModel<ParcelEntity>, Any> {
 
-        return FlexibleExpandableVmItem<SectionViewModel<ParcelEntity>, Any>(
+        return ExpandableVmItem<SectionViewModel<ParcelEntity>, Any>(
                 view = R.layout.item_section_header,
                 variable = BR.header,
                 viewModel = this
@@ -187,9 +185,9 @@ class VehicleLoadingScreen :
     }
 
     fun ParcelEntity.toFlexibleItem()
-            : FlexibleSectionableVmItem<ParcelViewModel> {
+            : SectionableVmItem<ParcelViewModel> {
 
-        return FlexibleSectionableVmItem(
+        return SectionableVmItem(
                 view = R.layout.item_parcel_card,
                 variable = BR.parcel,
                 viewModel = ParcelViewModel(this)

@@ -16,7 +16,6 @@ import io.reactivex.Observable
 import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.ui.Headers
@@ -29,8 +28,8 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.android.hideSoftInput
 import sx.android.showSoftInput
-import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
-import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
+import sx.android.ui.flexibleadapter.ExpandableVmItem
+import sx.android.ui.flexibleadapter.SectionableVmItem
 import java.text.NumberFormat
 import java.util.*
 
@@ -95,7 +94,7 @@ class CashScreen : ScreenFragment<Any>() {
     }
 
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
-            FlexibleExpandableVmItem<
+            ExpandableVmItem<
                     SectionViewModel<Any>, *>
             >>({
         FlexibleAdapter(listOf())
@@ -135,7 +134,7 @@ class CashScreen : ScreenFragment<Any>() {
         val orders = this.deliveryStop.orders.blockingFirst()
 
         flexibleAdapter.addItem(
-                FlexibleExpandableVmItem<SectionViewModel<Any>, Any>(
+                ExpandableVmItem<SectionViewModel<Any>, Any>(
                         view = R.layout.item_section_header,
                         variable = BR.header,
                         viewModel = SectionViewModel<Any>(
@@ -147,7 +146,7 @@ class CashScreen : ScreenFragment<Any>() {
                         )
                 ).also {
                     it.subItems = orders.map {
-                        FlexibleSectionableVmItem<Any>(
+                        SectionableVmItem<Any>(
                                 //TODO: To be replaced by an item which includes the cash value (hide zip-code and city)
                                 view = R.layout.item_ordertask,
                                 variable = BR.orderTask,
