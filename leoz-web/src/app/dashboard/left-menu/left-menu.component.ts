@@ -21,10 +21,10 @@ import { BagscanGuard } from '../../core/auth/bagscan.guard';
         {{ 'loggedinas' | translate }}:<br>{{myEmail}}
       </div>
       <div *ngIf="debitorStations.length === 1" style="margin-top: 15px; margin-left: 10px">
-        {{ 'activeStation' | translate }}:<br>{{activeStation.stationNo}}
+        {{ 'forStation' | translate }}:<br>{{activeStation.stationNo}}
       </div>
-      <div *ngIf="debitorStations.length > 1" style="margin-top: 15px; margin-left: 10px">
-        {{ 'activeStation' | translate }}:<br>
+      <div *ngIf="debitorStations.length > 1" style="margin-top: 15px; margin-left: 10px;">
+        {{ 'forStation' | translate }}:<br>
         <p-dropdown [options]="debitorStations" [ngModel]="activeStation"
                     (onChange)="changeActiveStation($event.value)"></p-dropdown>
       </div>
@@ -75,9 +75,11 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( debitorStations: Station[] ) => {
         this.debitorStations = [];
-        debitorStations.forEach( ( station: Station ) => {
-          this.debitorStations.push( { label: station.stationNo.toString(), value: station } );
-        } );
+        if(debitorStations) {
+          debitorStations.forEach( ( station: Station ) => {
+            this.debitorStations.push( { label: station.stationNo.toString(), value: station } );
+          } );
+        }
       } );
 
     this.auth.activeStation$
@@ -251,7 +253,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'deliveryscan' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/deliveryscan',
           command: closeMenu
         },
         {

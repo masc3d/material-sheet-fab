@@ -384,10 +384,10 @@ class UserService : UserService {
     override fun get(): User {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
         apiKey ?:
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
 
         if (!authorizedUserRecord.isActive) {
@@ -400,11 +400,11 @@ class UserService : UserService {
                     title = "user account expired",
                     status = Response.Status.UNAUTHORIZED)
         }
-        if (Date() > authorizedUserRecord.passwordExpiresOn) {
-            throw DefaultProblem(
-                    title = "user password expired",
-                    status = Response.Status.UNAUTHORIZED)
-        }
+//        if (Date() > authorizedUserRecord.passwordExpiresOn) {
+//            throw DefaultProblem(
+//                    title = "user password expired",
+//                    status = Response.Status.UNAUTHORIZED)
+//        }
         return authorizedUserRecord.toUser()
     }
 

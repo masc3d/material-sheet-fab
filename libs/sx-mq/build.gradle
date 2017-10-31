@@ -3,14 +3,14 @@ version '1.0'
 
 buildscript {
     ext {
-        v_activemq = '5.15.0'
+        v_activemq = '5.15.2'
         v_artemis = '1.5.4'
         v_kodein = '4.1.0'
         v_kotlin = '1.1.51'
         v_kryo = '4.0.1'
         v_kryo_serializers = '0.42'
         v_protostuff = '1.5.3'
-        v_spring = '5.0.0.RELEASE'
+        v_spring = '5.0.1.RELEASE'
     }
 
     dependencies {
@@ -103,6 +103,9 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
+
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
 
             // Logging
             "ch.qos.logback:logback-classic:1.2.3",

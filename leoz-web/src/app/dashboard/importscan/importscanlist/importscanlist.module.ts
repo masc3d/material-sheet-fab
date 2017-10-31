@@ -4,12 +4,13 @@ import { SharedModule } from '../../../shared/shared.module';
 import { ImportscanlistRoutingModule } from './importscanlist-routing.module';
 import { ImportscanlistComponent } from './importscanlist.component';
 import {
-ButtonModule,
-CheckboxModule,
-DataTableModule,
-DropdownModule,
-RadioButtonModule,
-TabViewModule
+  ButtonModule,
+  CheckboxModule,
+  DataScrollerModule,
+  DataTableModule,
+  DropdownModule,
+  RadioButtonModule,
+  TabViewModule
 } from 'primeng/primeng';
 
 @NgModule({
@@ -21,7 +22,8 @@ TabViewModule
     DropdownModule,
     ButtonModule,
     CheckboxModule,
-    RadioButtonModule
+    RadioButtonModule,
+    DataScrollerModule,
   ],
   declarations: [ImportscanlistComponent],
   exports: [ImportscanlistComponent],

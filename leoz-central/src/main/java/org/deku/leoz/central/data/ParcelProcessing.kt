@@ -19,7 +19,10 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 
 @Named
@@ -171,28 +174,28 @@ open class ParcelProcessing {
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
-//                    val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
-//                    if (!file.exists())
-//                        return@forEach
-//                    else {
-//                        val pathMobile = storage.mobileDataDirectory.toPath()
-//                        val fileNameInfo = userId.toString()
-//                        val loc = Location.SB
-//                        val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
-//                        val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
-//                        val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
-//                        val copyOption = StandardCopyOption.REPLACE_EXISTING
-//                        Files.copy(file.toPath(), pathFileMobile, copyOption)
-//                        if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
-//                            pathToDelete = file.toPath()
-//
-//                            val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
-////wenn LEO soweit ist .jpg anzuzeigen...
-//                            //parcelRecord.bmpfilename = bmp
-//                            //parcelRecord.store()
-//                        } else
-//                            return@forEach
-//                    }
+                    val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
+                    if (!file.exists())
+                        return@forEach
+                    else {
+                        val pathMobile = storage.mobileDataDirectory.toPath()
+                        val fileNameInfo = userId.toString()
+                        val loc = Location.SB
+                        val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
+                        val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
+                        val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
+                        val copyOption = StandardCopyOption.REPLACE_EXISTING
+                        Files.copy(file.toPath(), pathFileMobile, copyOption)
+                        if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
+                            pathToDelete = file.toPath()
+
+                            val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+//wenn LEO soweit ist .jpg anzuzeigen...
+                            parcelRecord.bmpfilename = bmp
+                            parcelRecord.store()
+                        } else
+                            return@forEach
+                    }
                 }
 
                 val checkPicturePath = parcelAddInfo.pictureLocation != null
@@ -638,7 +641,7 @@ open class ParcelProcessing {
                         result = false
                     else {
                         if (pathToDelete != null) {
-                            // Files.delete(pathToDelete)
+                            Files.delete(pathToDelete)
                         }
                     }
                 }

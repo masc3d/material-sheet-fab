@@ -7,11 +7,14 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.*
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
 import org.deku.leoz.model.UnitNumber
@@ -19,6 +22,7 @@ import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
 import sx.rx.CompositeDisposableSupplier
@@ -40,6 +44,14 @@ class DeliveryList : CompositeDisposableSupplier {
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     //region Self-observing queries
+    private val parcelsQuery = ObservableQuery<ParcelEntity>(
+            name = "Delivery list parcels",
+            query = db.store.select(ParcelEntity::class)
+                    .where(ParcelEntity.STATE.ne(Parcel.State.DELIVERED))
+                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
+                    .get()
+    ).bind(this)
+
     private val loadedParcelsQuery = ObservableQuery<ParcelEntity>(
             name = "Loaded parcels",
             query = db.store.select(ParcelEntity::class)
@@ -107,6 +119,11 @@ class DeliveryList : CompositeDisposableSupplier {
      * Missing parcels
      */
     val missingParcels = missingParcelsQuery.result
+
+    /**
+     * Delivery list parcels (all non-delivered parcels)
+     */
+    val parcels = parcelsQuery.result
 
     /**
      * Extension method for filtering distinct service orders

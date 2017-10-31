@@ -59,6 +59,9 @@ idea {
         excludeDirs += file('leoz-build')
         excludeDirs += file('leoz-mobile')
         excludeDirs += file('release')
+        excludeDirs += file('leoz-web').toPath()
+                .resolve('node_modules')
+                .toFile()
     }
 }
 

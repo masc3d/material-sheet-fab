@@ -27,27 +27,27 @@ private val meta = listOf(
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.ABSENT,
                 R.string.event_reason_absent,
-                R.drawable.ic_event
+                R.drawable.ic_absent
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.REFUSED,
                 R.string.event_reason_refuse,
-                R.drawable.ic_event
+                R.drawable.ic_refused
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.VACATION,
                 R.string.event_reason_vacation,
-                R.drawable.ic_event
+                R.drawable.ic_vacation
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.ADDRESS_WRONG,
                 R.string.event_reason_address_wrong,
-                R.drawable.ic_event
+                R.drawable.ic_wrong_address
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.MOVED,
                 R.string.event_reason_moved,
-                R.drawable.ic_event
+                R.drawable.ic_wrong_address
         ),
         NotDeliveredReasonMeta(
                 EventNotDeliveredReason.DAMAGED,

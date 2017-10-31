@@ -54,6 +54,9 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray)
     }
 
+    /** Allow multiple pictures */
+    protected var allowMultiplePictures = true
+
     private val torchEnabledProperty = ObservableRxProperty(false)
     private var torchEnabled: Boolean by torchEnabledProperty
 
@@ -74,7 +77,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_camera, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxProgressContainer.visibility = View.VISIBLE
@@ -127,37 +130,37 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         this.actionItems = listOf(
                 ActionItem(
                         id = R.id.action_camera_trigger,
+                        colorRes = R.color.colorPrimary,
                         iconRes = android.R.drawable.ic_menu_camera,
-                        iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary
+                        iconTintRes = android.R.color.white
                 ),
                 ActionItem(
                         id = R.id.action_camera_flash,
+                        colorRes = R.color.colorDarkGrey,
                         iconRes = R.drawable.ic_flash,
                         iconTintRes = android.R.color.black,
-                        colorRes = R.color.colorDarkGrey,
                         alignEnd = false
                 ),
                 ActionItem(
                         id = R.id.action_camera_save_finish,
+                        colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_finish,
                         iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary,
                         visible = false
                 ),
                 ActionItem(
                         id = R.id.action_camera_save,
+                        colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_done_plus,
                         iconTintRes = android.R.color.white,
-                        colorRes = R.color.colorPrimary,
                         visible = false
                 ),
                 ActionItem
                 (
                         id = R.id.action_camera_discard,
+                        colorRes = R.color.colorGrey,
                         iconRes = R.drawable.ic_circle_cancel,
-                        iconTintRes = android.R.color.black,
-                        colorRes = R.color.colorAccent,
+                        iconTintRes = android.R.color.white,
                         alignEnd = false,
                         visible = false
                 )
@@ -238,7 +241,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                             } ?: log.warn("Image save invoked without picture data being available")
 
                             when (actionId) {
-                                R.id.action_camera_save_finish -> this.fragmentManager.popBackStack()
+                                R.id.action_camera_save_finish -> this.fragmentManager?.popBackStack()
                                 else -> this.showCaptureActions()
                             }
                         }
@@ -257,7 +260,10 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                 when (it.id) {
                     R.id.action_camera_trigger,
                     R.id.action_camera_flash -> it.visible = true
-                    else -> it.visible = false
+
+                    R.id.action_camera_discard,
+                    R.id.action_camera_save,
+                    R.id.action_camera_save_finish -> it.visible = false
                 }
             }
         }
@@ -271,7 +277,10 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                 when (it.id) {
                     R.id.action_camera_trigger,
                     R.id.action_camera_flash -> it.visible = false
-                    else -> it.visible = true
+
+                    R.id.action_camera_discard,
+                    R.id.action_camera_save_finish -> it.visible = true
+                    R.id.action_camera_save -> it.visible = allowMultiplePictures
                 }
             }
         }

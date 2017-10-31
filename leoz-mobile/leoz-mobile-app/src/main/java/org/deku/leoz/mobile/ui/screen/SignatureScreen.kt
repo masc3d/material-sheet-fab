@@ -62,7 +62,7 @@ class SignatureScreen
 
     private val descriptionText: String by lazy {
         this@SignatureScreen.getString(R.string.signature_conclusion,
-                stop.tasks.map { it.order }.distinct().count().toString(),
+                delivery.activeStop?.orders?.blockingFirst()?.count().toString(),
                 delivery.activeStop?.deliveredParcelAmount?.blockingFirst().toString(),
                 stop.address.line1)
     }
@@ -94,7 +94,7 @@ class SignatureScreen
             // Inflate the layout for this fragment
             inflater.inflate(R.layout.screen_signature, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxConclusion.text = descriptionText
@@ -117,9 +117,9 @@ class SignatureScreen
                 ),
                 ActionItem(
                         id = R.id.action_signature_clear,
-                        colorRes = R.color.colorAccent,
+                        colorRes = R.color.colorGrey,
                         iconRes = R.drawable.ic_circle_cancel,
-                        iconTintRes = android.R.color.black,
+                        iconTintRes = android.R.color.white,
                         alignEnd = false,
                         visible = false
                 )

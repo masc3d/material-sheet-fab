@@ -8,6 +8,7 @@ import com.neovisionaries.i18n.CurrencyCode
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.rx.CompositeDisposableSupplier
+import sx.rx.ObservableRxProperty
 import sx.rx.behave
 import sx.rx.bind
 import java.util.*
@@ -152,25 +154,42 @@ class DeliveryStop(
     val stop = stopQuery.result.map { it.value.first() }
             .behave(this)
 
+    val excludedOrdersProperty = ObservableRxProperty<List<OrderEntity>>(listOf())
+    var excludedOrders by excludedOrdersProperty
+
+    val excludedParcels by lazy {
+        this.excludedOrdersProperty
+                .map {
+                    it.value.flatMap { it.parcels.map { it as ParcelEntity } }
+                }
+    }
+
     /**
      * All parcels of this stop. Also includes missing parcels
      * As requery has the shortcoming of not firing self observable queries via joins, have to merge manually
      * */
-    val parcels = Observable.merge(
-            this.stopParcelsQuery.result.map {
-                it.value.sortedByDescending { it.modificationTime }
-            },
+    val parcels =
+            Observable.combineLatest(
+                    Observable.merge(
+                            this.stopParcelsQuery.result.map {
+                                it.value.sortedByDescending { it.modificationTime }
+                            },
 
-            this.stopOrderTasksQuery.result.map {
-                it.value.flatMap {
-                    it.order.parcels
-                            .sortedByDescending { it.modificationTime }
-                            .map { it as ParcelEntity }
-                }
-                        .distinct()
-            }
-    )
-            .behave(this)
+                            this.stopOrderTasksQuery.result.map {
+                                it.value.flatMap {
+                                    it.order.parcels
+                                            .sortedByDescending { it.modificationTime }
+                                            .map { it as ParcelEntity }
+                                }
+                                        .distinct()
+                            }
+                    ),
+                    this.excludedParcels,
+                    BiFunction { t1: List<ParcelEntity>, t2: List<ParcelEntity> ->
+                        t1.subtract(t2)
+                    }
+            )
+                    .behave(this)
 
     /** Stop orders */
     val orders = this.parcels.map { it.map { it.order as OrderEntity }.distinct() }
@@ -286,17 +305,18 @@ class DeliveryStop(
     /**
      * Cash amount to collect for this stop
      */
-    val cashAmountToCollect by lazy {
-        this.orders.blockingFirst()
-                .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.cashAmount }
-                .sum()
-    }
+    val cashAmountToCollect: Double
+        get() =
+            this.orders.blockingFirst()
+                    .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.cashAmount }
+                    .sum()
 
-    val cashCurrencyCode by lazy {
-        this.orders.blockingFirst()
-                .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.currency }
-                .firstOrNull() ?: CurrencyCode.EUR.name
-    }
+
+    val cashCurrencyCode: String
+        get() =
+            this.orders.blockingFirst()
+                    .mapNotNull { it.meta.firstValueByTypeOrNull(Order.CashService::class.java)?.currency }
+                    .firstOrNull() ?: CurrencyCode.EUR.name
 
     val recipientCountryCode by lazy {
         com.neovisionaries.i18n.CountryCode.valueOf(this.stop.blockingFirst().address.countryCode)
@@ -316,10 +336,14 @@ class DeliveryStop(
      * Resets all parcels to pending state and removes all event information
      */
     fun reset(): Completable {
-        this.resetCloseStopState()
-
         val stop = this.entity
 
+        this.resetCloseStopState()
+
+        // Reset excluded orders
+        this.excludedOrders = listOf()
+
+        // Reset parcel states
         return db.store.withTransaction {
             stop.state = Stop.State.PENDING
             update(stop)
@@ -453,7 +477,23 @@ class DeliveryStop(
         val stop = this.entity
 
         return db.store.withTransaction {
-            // Close the stop persistently
+            // Split excluded orders into separate stops
+            this@DeliveryStop.excludedOrders.forEach {
+                // Remove excluded order tasks
+                stop.tasks.remove(it.deliveryTask)
+                update(stop)
+
+                // Create new stop
+                Stop.create(
+                        state = Stop.State.PENDING,
+                        position = 0.0,
+                        tasks = listOf(it.deliveryTask)
+                ).also {
+                    insert(it)
+                }
+            }
+
+            // Close this stop persistently
             stop.state = Stop.State.CLOSED
             update(stop)
         }

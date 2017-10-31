@@ -26,33 +26,28 @@ open class Storage(appName: String)
 
     /** Bundle repository directory */
     val bundleRepositoryDirectory by lazy {
-        val d = File(this.bundlesDirectory, "repository")
-        d.mkdirs()
-        d
+        File(this.bundlesDirectory, "repository")
+                .also { it.mkdirs() }
     }
 
     val sshDataDirectory by lazy {
-        val d = File(this.dataDirectory, "ssh")
-        d.mkdirs()
-        d
+        File(this.dataDirectory, "ssh")
+                .also { it.mkdirs() }
     }
 
     val transferDirectory by lazy {
-        val d = File(this.publicDirectory, "transfer")
-        d.mkdirs()
-        d
+        File(this.publicDirectory, "transfer")
+                .also { it.mkdirs() }
     }
 
     val mobileDataDirectory by lazy {
-        val d = File(this.publicDirectory, "mobile")
-        d.mkdirs()
-        d
+        File(this.publicDirectory, "mobile")
+                .also { it.mkdirs() }
     }
 
     val workTmpDataDirectory by lazy {
-        val d = File(this.publicDirectory, "workTmp")
-        d.mkdirs()
-        d
+        File(this.publicDirectory, "workTmp")
+                .also { it.mkdirs() }
     }
 
     // Files

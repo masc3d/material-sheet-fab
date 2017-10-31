@@ -1,12 +1,15 @@
 package org.deku.leoz.mobile.config
 
 import android.content.Context
-import android.content.res.Configuration
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.settings.DebugSettings
+import org.deku.leoz.mobile.settings.LocationSettings
+import org.deku.leoz.mobile.settings.RemoteSettings
+import org.deku.leoz.mobile.settings.UserSettings
 import org.slf4j.LoggerFactory
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap

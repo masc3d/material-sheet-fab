@@ -19,7 +19,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleunloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.DebugSettings
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleunloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -288,7 +288,8 @@ class VehicleUnloadingScreen :
                     when (it.itemId) {
                         R.id.action_reset -> {
                             db.store.withTransaction {
-                                orderRepository.removeAll()
+                                orderRepository
+                                        .removeAll()
                                         .blockingAwait()
                             }
                                     .subscribeOn(db.scheduler)
@@ -296,15 +297,18 @@ class VehicleUnloadingScreen :
                         }
 
                         R.id.action_vehicle_unloading_dev_mark_all_unloaded -> {
-                            db.store.withTransaction {
-                                select(ParcelEntity::class)
-                                        .where(ParcelEntity.STATE.eq(Parcel.State.PENDING))
-                                        .get()
-                                        .forEach {
-                                            it.state = Parcel.State.LOADED
-                                            parcelRepository.update(it).blockingGet()
-                                        }
-                            }
+                            db.store
+                                    .select(ParcelEntity::class)
+                                    .where(ParcelEntity.STATE.eq(Parcel.State.LOADED))
+                                    .get()
+                                    .observable()
+                                    .collectInto(ArrayList<ParcelEntity>(), { t1, t2 ->
+                                        t1.add(t2)
+                                    })
+                                    .flatMapCompletable {
+                                        vehicleUnloading
+                                                .unload(it)
+                                    }
                                     .subscribeOn(db.scheduler)
                                     .subscribe()
                         }
@@ -537,7 +541,8 @@ class VehicleUnloadingScreen :
                 }
             }
             else -> {
-                this.vehicleUnloading.unload(parcel)
+                this.vehicleUnloading
+                        .unload(parcel)
                         .subscribe()
 
                 this.parcelListAdapter.selectedSection = unloadedSection

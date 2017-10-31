@@ -16,6 +16,7 @@ import com.github.salomonbrys.kodein.erased.singleton
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.ui.BaseActivity
@@ -107,7 +108,7 @@ open class Application : MultiDexApplication() {
     }
 
     override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(BaseContextWrapper.wrap(context = base!!, language = null))
+        super.attachBaseContext(LocaleContextWrapper.wrap(context = base!!, language = null))
     }
 
     override fun onTerminate() {

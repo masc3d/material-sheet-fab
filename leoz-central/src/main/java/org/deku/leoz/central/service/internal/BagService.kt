@@ -21,6 +21,9 @@ import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import org.deku.leoz.central.data.repository.DepotJooqRepository
+import org.deku.leoz.central.data.repository.ParcelJooqRepository
+import org.deku.leoz.central.data.repository.toBagStatus
+import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.BagService
 import org.deku.leoz.service.internal.entity.BagDiff
@@ -30,6 +33,7 @@ import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.time.toShortTime
+import sx.rs.DefaultProblem
 import sx.time.toLocalDate
 
 /**
@@ -54,7 +58,10 @@ class BagService : BagService {
     @Inject
     private lateinit var routingService: org.deku.leoz.node.service.pub.RoutingService
 
-    fun getNextDeliveryDate(sendDate:Date,stationDest:String,countryDest:String,zipDest:String): java.time.LocalDate {
+    @Inject
+    private lateinit var parcelRepository: ParcelJooqRepository
+
+    fun getNextDeliveryDate(sendDate: Date, stationDest: String, countryDest: String, zipDest: String): java.time.LocalDate {
         //return java.time.LocalDate.now().plusDays(1)
         val routingRequest = RoutingService.Request(sendDate = ShortDate(sendDate.toTimestamp()),
                 desiredDeliveryDate = null,
@@ -145,11 +152,11 @@ class BagService : BagService {
             //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
-                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(), "100", "DE", "36285")
             } else {
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //workDate=nextwerktag(workDate,"100","DE","36285"
-                workDate = getNextDeliveryDate(workDate.toDate(),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.toDate(), "100", "DE", "36285")
             }
             val status: Double = 5.0
             //val dt:java.util.Date=workDate.toDate()
@@ -264,9 +271,9 @@ class BagService : BagService {
                 throw ServiceException(ErrorCode.INSERT_SEAL_MOVE_YELLOW_FAILED)
             }
             return true
-        } catch(e: ServiceException) {
+        } catch (e: ServiceException) {
             throw e
-        } catch(e: Exception) {
+        } catch (e: Exception) {
 
             logHistoryRepository.save(
                     depotId = initBag,
@@ -320,11 +327,11 @@ class BagService : BagService {
 
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
-                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(), "100", "DE", "36285")
             } else {
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //workDate=nextwerktag(workDate,"100","DE","36285"
-                workDate = getNextDeliveryDate(workDate.toDate(),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.toDate(), "100", "DE", "36285")
             }
             val status: Double = 1.0
             //val dt:java.util.Date=workDate.toDate()
@@ -398,9 +405,9 @@ class BagService : BagService {
 
 
             return true
-        } catch(e: ServiceException) {
+        } catch (e: ServiceException) {
             throw e
-        } catch(e: Exception) {
+        } catch (e: Exception) {
 
             logHistoryRepository.save(
                     depotId = isBagFree,
@@ -615,11 +622,11 @@ class BagService : BagService {
                     .fetch()
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
-                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(), "100", "DE", "36285")
             } else {
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //workDate=nextwerktag(workDate,"100","DE","36285"
-                workDate = getNextDeliveryDate(workDate.toDate(),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.toDate(), "100", "DE", "36285")
             }
             //val dt:java.util.Date=workDate.toDate()
             val dt: Date = workDate.toDate()
@@ -708,11 +715,11 @@ class BagService : BagService {
                     .fetch()
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
-                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(), "100", "DE", "36285")
             } else {
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //workDate=nextwerktag(workDate,"100","DE","36285"
-                workDate = getNextDeliveryDate(workDate.toDate(),"100","DE","36285")
+                workDate = getNextDeliveryDate(workDate.toDate(), "100", "DE", "36285")
             }
             //val dt:java.util.Date=workDate.toDate()
             val dt: Date = workDate.toDate()
@@ -851,9 +858,9 @@ class BagService : BagService {
             }
              **/
             return BagResponse(ok, info)
-        } catch(e: ServiceException) {
+        } catch (e: ServiceException) {
             throw e
-        } catch(e: Exception) {
+        } catch (e: Exception) {
 
             logHistoryRepository.save(
                     depotId = isBagOk,
@@ -910,9 +917,9 @@ class BagService : BagService {
 
 
             return diff
-        } catch(e: ServiceException) {
+        } catch (e: ServiceException) {
             throw e
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logHistoryRepository.save(
                     depotId = gDiff,
                     info = e.message ?: e.toString(),
@@ -1062,9 +1069,9 @@ class BagService : BagService {
 
 
             return BagResponse(ok, info, color)
-        } catch(e: ServiceException) {
+        } catch (e: ServiceException) {
             throw e
-        } catch(e: Exception) {
+        } catch (e: Exception) {
 
             logHistoryRepository.save(
                     depotId = logLineArrival,
@@ -1124,9 +1131,9 @@ class BagService : BagService {
             }
             //ToDO unload...
             return BagResponse(ok, info, color)
-        } catch(e: ServiceException) {
+        } catch (e: ServiceException) {
             throw e
-        } catch(e: Exception) {
+        } catch (e: Exception) {
 
             logHistoryRepository.save(
                     depotId = logIn,
@@ -1141,5 +1148,36 @@ class BagService : BagService {
         return depotRepository.getCountBags2SendBagByStation(stationNo)
     }
 
+    override fun getStatus(bagId: Long): BagService.BagStatus {
+        val un = UnitNumber.parseLabel(bagId.toString())
+        if (un.hasError)
+            throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
+        val bagNo = un.value.value.toLong()
+        if (un.value.type != UnitNumber.Type.BagId)
+            throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
+        val statusrecord = depotRepository.getBagStatus(bagNo)
+        statusrecord ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
+        return statusrecord.toBagStatus()
+    }
 
+    override fun isPickupStation(stationNo: Int, orderID: Long): Boolean {
+        var ret = false
+        val order = parcelRepository.getOrderById(orderID)
+        order ?: throw DefaultProblem(title = "Order not found")
+        if (order.depotnrabd == stationNo)
+            ret = true
+        return ret
+    }
+
+    override fun reopenBag(bagID: Long, stationNo: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun fillBagStationExport(bagID: Long, stationNo: Int, unitNo: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun closeBagStationExport(bagID: Long, stationNo: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

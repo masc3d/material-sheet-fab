@@ -7,6 +7,9 @@ import org.deku.leoz.config.Rest
 import sx.rs.DefaultProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
+import org.slf4j.LoggerFactory
+import sx.mq.MqChannel
+import sx.mq.MqHandler
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -20,7 +23,12 @@ import javax.ws.rs.core.Response
 @Named
 //@ApiKey(false) custom API Key Check
 @Path("internal/v1/deliverylist")
-class DeliveryListService : DeliveryListService {
+class DeliveryListService
+    :
+        DeliveryListService,
+        MqHandler<DeliveryListService.StopOrderUpdateMessage>
+{
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Context
     private lateinit var httpHeaders: HttpHeaders
@@ -136,5 +144,12 @@ class DeliveryListService : DeliveryListService {
                 date = ShortDate(r.deliveryListDate)
         )
         return l
+    }
+
+    /**
+     * Message handler receiving updated delivery lists
+     */
+    override fun onMessage(message: DeliveryListService.StopOrderUpdateMessage, replyChannel: MqChannel?) {
+        log.trace("Delivery list update received [${message}]")
     }
 }

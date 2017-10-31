@@ -71,3 +71,4 @@ leoz-core/platform
 profiles_settings.xml
 markdown-navigator.xml
 leoz-mobile/leoz-mobile-app/src/generated
+leoz-node-data/src/generated

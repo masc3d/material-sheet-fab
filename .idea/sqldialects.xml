@@ -3,7 +3,5 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/leoz-central-schema/db" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/leoz-central/db/mysql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/leoz-central/src/main/resources/db/central/migration" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/leoz-node/src/main/resources/db/node/migration" dialect="H2" />
   </component>
 </project>

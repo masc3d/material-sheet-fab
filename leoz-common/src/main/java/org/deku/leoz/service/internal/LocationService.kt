@@ -92,7 +92,7 @@ interface LocationServiceV1 {
      */
     @GET
     @Path("/recent/")
-    @ApiOperation(value = "Get recent location data", hidden = true)
+    @ApiOperation(value = "Get recent location data", hidden = true, authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @Deprecated(message = "This function is deprecated and replaced in LocationServiceV2.", replaceWith = ReplaceWith(expression = "LocationServiceV2.getRecent"), level = DeprecationLevel.WARNING)
     fun getRecent(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
@@ -119,6 +119,10 @@ interface LocationServiceV2 {
         const val FROM = "from"
         const val TO = "to"
         const val DURATION = "duration"
+        const val LON_FIRST = "lon-first"
+        const val LAT_FIRST = "lat-first"
+        const val LON_SECOND = "lon-second"
+        const val LAT_SECOND = "lat-second"
     }
 
     /**
@@ -150,7 +154,7 @@ interface LocationServiceV2 {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "Get location data")
+    @ApiOperation(value = "Get location data", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
@@ -165,11 +169,21 @@ interface LocationServiceV2 {
      */
     @GET
     @Path("/recent/")
-    @ApiOperation(value = "Get recent location data")
+    @ApiOperation(value = "Get recent location data", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getRecent(
             @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
             @QueryParam(DURATION) @ApiParam(value = "Duration in Minutes") duration: Int? = null,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
     ): List<GpsData>
+
+    @GET
+    @Path("/getDistance")
+    @ApiOperation(value = "Get distance between two location data in km", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getDistance(
+            @QueryParam(LON_FIRST) @ApiParam(value = "first longitude", required = true, example = "8.3926") lonFirst: Double,
+            @QueryParam(LAT_FIRST) @ApiParam(value = "first latitude", required = true, example = "49.5131") latFirst: Double,
+            @QueryParam(LON_SECOND) @ApiParam(value = "first longitude", required = true, example = "9.585760") lonSecond: Double,
+            @QueryParam(LAT_SECOND) @ApiParam(value = "first longitude", required = true, example = "50.9082916666667") latSecond: Double
+    ): Long
 }

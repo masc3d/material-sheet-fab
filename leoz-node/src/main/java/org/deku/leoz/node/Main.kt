@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import java.lang.UnsupportedOperationException
 import java.net.URLClassLoader
 
 /**
@@ -83,7 +84,8 @@ open class Main {
          * Static main entry point
          * @param args process arguments
          */
-        @JvmStatic fun main(args: Array<String>) {
+        @JvmStatic
+        fun main(args: Array<String>) {
             Main().run(args)
         }
 
@@ -91,7 +93,9 @@ open class Main {
          * Stop application entry point
          * This one is only used externally, eg. by the service wrapper when running as a service.
          */
-        @Suppress("unused_parameter") @JvmStatic fun stop(args: Array<String>) {
+        @Suppress("unused_parameter")
+        @JvmStatic
+        fun stop(args: Array<String>) {
             val app: Application = Kodein.global.instance()
             app.shutdown()
         }
@@ -140,14 +144,18 @@ open class Main {
         }
 
         // Support for leoz bundle process commandline interface
-        val setup = Setup(
-                bundleName = this.app.name,
-                mainClass = this.javaClass)
 
         val storage: Storage = Kodein.global.instance()
         val logConfiguration: LogConfiguration = Kodein.global.instance()
 
-        val command = setup.parse(args)
+        val command = run {
+            val setup = Setup.create(
+                    bundleName = this.app.name,
+                    mainClass = this.javaClass)
+
+            setup.parse(args)
+        }
+
         if (command != null) {
             try {
                 // Setup should write to dedicated logfile
@@ -181,7 +189,7 @@ open class Main {
                         .build()
 
                 springApplication.run(*args)
-            } catch(e: Throwable) {
+            } catch (e: Throwable) {
                 // In some situations spring will prevent further logging due to turboFilterList, thus clearing it here
                 val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
                 loggerContext.turboFilterList.clear()
@@ -190,3 +198,4 @@ open class Main {
         }
     }
 }
+

@@ -114,7 +114,7 @@ interface UserService {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "Get user")
+    @ApiOperation(value = "Get user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
@@ -123,7 +123,7 @@ interface UserService {
 
     @GET
     @Path("/{$USER_ID}")
-    @ApiOperation(value = "Get user by ID")
+    @ApiOperation(value = "Get user by ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getById(
             @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
@@ -135,7 +135,7 @@ interface UserService {
      */
     @POST
     @Path("/")
-    @ApiOperation(value = "Create user")
+    @ApiOperation(value = "Create user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun create(
             @ApiParam(value = "User") user: User,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
@@ -149,7 +149,7 @@ interface UserService {
      */
     @PUT
     @Path("/")
-    @ApiOperation(value = "Update user")
+    @ApiOperation(value = "Update user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
                @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
@@ -157,18 +157,19 @@ interface UserService {
 
     @POST
     @Path("/{$USER_ID}/sendAppLink")
-    @ApiOperation(value = "Send App download-link")
+    @ApiOperation(value = "Send App download-link", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun sendDownloadLink(@PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): Boolean
 
     @PATCH
     @Path("/{$USER_ID}/changePassword")
-    @ApiOperation(value = "Change users password")
+    @ApiOperation(value = "Change users password", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun changePassword(
             @ApiParam(value = "old_password") oldPassword: String,
             @ApiParam(value = "new_password") newPassword: String
     )
+
     @GET
     @Path("/auth")
-    @ApiOperation(value = "Get auth user")
+    @ApiOperation(value = "Get auth user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(): User
 }

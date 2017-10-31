@@ -5,13 +5,13 @@ import { Observable } from 'rxjs/Observable';
 
 import { SelectItem } from 'primeng/primeng';
 
-import { Package } from './package.model';
+import { Package } from '../../../core/models/package.model';
 import { Loadinglist } from 'app/dashboard/stationloading/loadinglistscan/loadinglist.model';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
 import { Station } from '../../../core/auth/station.model';
-import { Shipment } from './shipment.model';
+import { Shipment } from '../../../core/models/shipment.model';
 
 @Injectable()
 export class LoadinglistService {

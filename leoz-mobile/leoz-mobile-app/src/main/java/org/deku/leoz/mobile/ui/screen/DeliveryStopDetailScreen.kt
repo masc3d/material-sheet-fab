@@ -18,6 +18,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
+import eu.davidea.flexibleadapter.SelectableAdapter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.item_stop.*
@@ -36,13 +37,13 @@ import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
-import org.deku.leoz.model.EventNotDeliveredReason
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.model.UnitNumber
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
+import sx.android.Device
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.FlexibleExpandableVmItem
 import sx.android.ui.flexibleadapter.FlexibleSectionableVmItem
@@ -111,7 +112,7 @@ class DeliveryStopDetailScreen
             // Inflate the layout for this fragment
             inflater.inflate(R.layout.screen_delivery_detail, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
@@ -218,6 +219,10 @@ class DeliveryStopDetailScreen
         )
         //endregion
 
+        flexibleAdapter.mode = SelectableAdapter.Mode.SINGLE
+        // Since 5.0.0-rc3 click events will only be forwarded to holders when there's a click listener registered
+        flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { pos -> false })
+
         flexibleAdapter.setStickyHeaders(true)
         flexibleAdapter.showAllHeaders()
         flexibleAdapter.collapseAll()
@@ -302,16 +307,24 @@ class DeliveryStopDetailScreen
                         }
 
                         R.id.action_call -> {
-                            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + stop.address.phone))
+                            val device: Device by Kodein.global.lazy.instance()
                             val dialogBuilder = MaterialDialog.Builder(context)
-                            dialogBuilder.title(R.string.title_confirm_call)
-                            dialogBuilder.content(stop.address.phone)
-                            dialogBuilder.positiveText(R.string.call)
-                            dialogBuilder.negativeText(android.R.string.cancel)
-                            dialogBuilder.cancelable(true)
-                            dialogBuilder.onPositive { _, _ ->
-                                startActivity(intent)
+
+                            if (device.telephonyEnabled) {
+                                val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + stop.address.phone))
+                                dialogBuilder.title(R.string.title_confirm_call)
+                                dialogBuilder.positiveText(R.string.call)
+                                dialogBuilder.negativeText(android.R.string.cancel)
+                                dialogBuilder.onPositive { _, _ ->
+                                    startActivity(intent)
+                                }
+                            } else {
+                                dialogBuilder.title(R.string.title_phone_number)
+                                dialogBuilder.neutralText(R.string.dismiss)
                             }
+
+                            dialogBuilder.cancelable(true)
+                            dialogBuilder.content(stop.address.phone)
                             dialogBuilder.build().show()
                         }
                     }

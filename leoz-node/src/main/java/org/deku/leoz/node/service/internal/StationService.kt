@@ -1,13 +1,10 @@
 package org.deku.leoz.node.service.internal
 
-import org.deku.leoz.config.Rest
 import org.deku.leoz.node.data.jpa.MstStation
-import org.deku.leoz.node.data.jpa.QMstDebitorStation
 import org.deku.leoz.node.data.jpa.QMstStation
 import org.deku.leoz.node.data.repository.master.DebitorStationRepository
 import org.deku.leoz.node.data.repository.master.StationRepository
 import org.deku.leoz.service.internal.UserService
-//import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
 import sx.rs.DefaultProblem
@@ -19,9 +16,6 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
-
-//import org.deku.leoz.central.data.repository.UserJooqRepository
-import org.deku.leoz.service.internal.ParcelServiceV1
 
 /**
  * Created by masc on 17.09.14.

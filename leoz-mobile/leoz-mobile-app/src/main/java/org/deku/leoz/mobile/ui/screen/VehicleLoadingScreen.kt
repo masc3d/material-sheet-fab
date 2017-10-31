@@ -4,7 +4,9 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.text.InputType
 import android.view.View
+import android.widget.CompoundButton
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -21,7 +23,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.DebugSettings
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -123,6 +125,9 @@ class VehicleLoadingScreen :
 
     /** The current/most recently selected damaged parcel */
     private var currentDamagedParcel: ParcelEntity? = null
+
+    private var acceptForgeinOrdersWithoutConsent: Boolean = false
+    private var forgeinOrderCounter: Int = 0
 
     // region Sections
     val loadedSection by lazy {
@@ -473,7 +478,9 @@ class VehicleLoadingScreen :
                                 name = "Delivery lists",
                                 multipleChoice = true,
                                 entries = dlInfos
-                                        .sortedWith(compareBy({ it.date.date }, { it.id }))
+                                        .sortedWith(
+                                                compareByDescending({ it.date.date })
+                                        )
                                         .map {
                                             val data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
                                             SyntheticInput.Entry(
@@ -612,18 +619,30 @@ class VehicleLoadingScreen :
                                                 )
                                     }
 
-                                    if (this.deliveryList.ids.get().isEmpty()) {
+                                    if (this.deliveryList.ids.get().isEmpty() || acceptForgeinOrdersWithoutConsent) {
                                         mergeOrder()
                                     } else {
-                                        MaterialDialog.Builder(this.activity)
+                                        val dialog = MaterialDialog.Builder(this.activity)
                                                 .title(R.string.order_not_on_delivery_list)
                                                 .content(R.string.order_not_on_delivery_list_confirmation)
                                                 .positiveText(android.R.string.yes)
                                                 .negativeText(android.R.string.no)
                                                 .onPositive { _, _ ->
+                                                    forgeinOrderCounter++
                                                     mergeOrder()
                                                 }
-                                                .build().show()
+
+                                        if (forgeinOrderCounter >= 3) {
+                                            dialog.checkBoxPrompt(
+                                                    getString(R.string.accept_always),
+                                                    false,
+                                                    { _, isChecked ->
+                                                        this.acceptForgeinOrdersWithoutConsent = isChecked
+                                                    }
+                                            )
+                                        }
+
+                                        dialog.build().show()
                                     }
 
                                 },

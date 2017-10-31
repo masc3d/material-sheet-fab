@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
+import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -25,7 +27,7 @@ import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.DebugSettings
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
@@ -34,8 +36,10 @@ import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -117,6 +121,7 @@ class DeliveryStopProcessScreen :
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
     private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
 
@@ -144,7 +149,7 @@ class DeliveryStopProcessScreen :
                 icon = R.drawable.ic_delivery,
                 color = android.R.color.black,
                 background = R.drawable.section_background_green,
-                title = getString(R.string.delivered),
+                title = getString(R.string.deliver),
                 items = this.deliveryStop.deliveredParcels
         )
     }
@@ -194,12 +199,23 @@ class DeliveryStopProcessScreen :
         )
     }
 
+    val excludedSection by lazy {
+        SectionViewModel<ParcelEntity>(
+                icon = R.drawable.ic_split,
+                color = android.R.color.black,
+                background = R.drawable.section_background_accent,
+                showIfEmpty = true,
+                title = getString(R.string.excluded),
+                items = this.deliveryStop.excludedParcels
+        )
+    }
+
     /**
      * Extension for creating sections from event/reason enum
      */
     fun EventNotDeliveredReason.toSection(): SectionViewModel<ParcelEntity> {
         return SectionViewModel<ParcelEntity>(
-                icon = R.drawable.ic_event,
+                icon = this.mobile.icon,
                 color = android.R.color.black,
                 background = R.drawable.section_background_accent,
                 showIfEmpty = false,
@@ -252,7 +268,7 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    private val parcelListAdapterInstance = LazyInstance<SectionsAdapter>({
+    private val processAdapterInstance = LazyInstance<SectionsAdapter>({
         val adapter = SectionsAdapter()
 
         adapter.addSection(
@@ -270,11 +286,6 @@ class DeliveryStopProcessScreen :
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
-        adapter.addSection(
-                sectionVmItemProvider = { this.orderSection.toFlexibleItem() },
-                vmItemProvider = { it.toFlexibleItem() }
-        )
-
         this.sectionByEvent.forEach {
             adapter.addSection(
                     sectionVmItemProvider = { it.value.toFlexibleItem() },
@@ -282,9 +293,14 @@ class DeliveryStopProcessScreen :
             )
         }
 
+        adapter.addSection(
+                sectionVmItemProvider = { this.orderSection.toFlexibleItem() },
+                vmItemProvider = { it.toFlexibleItem() }
+        )
+
         adapter
     })
-    private val parcelListAdapter get() = parcelListAdapterInstance.get()
+    private val processAdapter get() = processAdapterInstance.get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -313,7 +329,7 @@ class DeliveryStopProcessScreen :
         return binding.root
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Set screen menu
@@ -324,9 +340,9 @@ class DeliveryStopProcessScreen :
                 }
             }
 
-        this.parcelListAdapterInstance.reset()
+        this.processAdapterInstance.reset()
 
-        this.uxRecyclerView.adapter = parcelListAdapter
+        this.uxRecyclerView.adapter = processAdapter
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
         //region Action items
@@ -374,7 +390,7 @@ class DeliveryStopProcessScreen :
     }
 
     override fun onDestroyView() {
-        this.parcelListAdapter.dispose()
+        this.processAdapter.dispose()
 
         super.onDestroyView()
     }
@@ -404,10 +420,11 @@ class DeliveryStopProcessScreen :
                 .subscribe {
                     when (it.itemId) {
                         R.id.action_reset -> {
-                            this.deliveryStop.reset()
+                            this.deliveryStop
+                                    .reset()
                                     .subscribe()
 
-                            this.parcelListAdapter.selectedSection = this.deliveredSection
+                            this.processAdapter.selectedSection = this.deliveredSection
                         }
 
                         R.id.action_delivery_process_dev_show_cash_screen -> {
@@ -422,21 +439,40 @@ class DeliveryStopProcessScreen :
                 .subscribe {
                     when (it) {
                         R.id.action_delivery_select_delivered -> {
-                            this.parcelListAdapter.selectedSection = this.deliveredSection
+                            this.processAdapter.selectedSection = this.deliveredSection
                         }
 
                         R.id.action_delivery_select_event -> {
-
                             MaterialDialog.Builder(this.context)
                                     .title(context.getString(org.deku.leoz.mobile.R.string.dialog_title_event_selection))
                                     .adapter(MaterialSimpleListAdapter({ d, _, item ->
                                         when (item.tag) {
                                             is EventNotDeliveredReason -> {
                                                 this.onEventSelected(item.tag as EventNotDeliveredReason)
+                                            }
+                                            else -> {
+                                                if (item.id == R.string.exclude.toLong()) {
+                                                    this.processAdapter.addSection(
+                                                            sectionVmItemProvider = { this.excludedSection.toFlexibleItem() },
+                                                            vmItemProvider = { it.toFlexibleItem() }
+                                                    )
+
+                                                    this.processAdapter.selectedSection = this.excludedSection
+                                                }
+                                            }
                                         }
-                                    }
                                         d.dismiss()
                                     }).also {
+                                        if (this.deliveryStop.orders.blockingFirst().count() > 1) {
+                                            it.add(MaterialSimpleListItem.Builder(context)
+                                                    .backgroundColor(Color.WHITE)
+                                                    .icon(R.drawable.ic_split)
+                                                    .content(R.string.exclude)
+                                                    .id(R.string.exclude.toLong())
+                                                    .build()
+                                            )
+                                        }
+
                                         it.addAll(
                                                 this.deliveryStop.allowedParcelEvents
                                                         .plus(this.deliveryStop.allowedStopEvents)
@@ -469,7 +505,7 @@ class DeliveryStopProcessScreen :
         Observable.combineLatest(
                 this.deliveryStop.damagedParcels,
                 // Also fire when selected section changes */
-                this.parcelListAdapter.selectedSectionProperty.filter {
+                this.processAdapter.selectedSectionProperty.filter {
                     it.value != this.damagedSection
                 },
 
@@ -481,19 +517,48 @@ class DeliveryStopProcessScreen :
                 .observeOnMainThread()
                 .subscribe {
                     if (it.count() > 0) {
-                        this.parcelListAdapter.addSection(
+                        this.processAdapter.addSection(
                                 sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
                                 vmItemProvider = { it.toFlexibleItem() }
                         )
                     } else {
-                        this.parcelListAdapter.removeSection(this.damagedSection)
+                        this.processAdapter.removeSection(this.damagedSection)
 
-                        if (this.parcelListAdapter.selectedSection == null) {
-                            this.parcelListAdapter.selectedSection = this.deliveredSection
+                        if (this.processAdapter.selectedSection == null) {
+                            this.processAdapter.selectedSection = this.deliveredSection
                         }
                     }
                 }
         //endregion
+
+        // Excluded orders
+        Observable.combineLatest(
+                this.deliveryStop.excludedParcels,
+
+                this.processAdapter.selectedSectionProperty.filter {
+                    it.value != this.excludedSection
+                },
+
+                BiFunction { _: Any, _: Any ->
+                    this.deliveryStop.excludedParcels.blockingFirst()
+                }
+        )
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOnMainThread()
+                .subscribe {
+                    if (it.count() > 0) {
+                        this.processAdapter.addSection(
+                                sectionVmItemProvider = { this.excludedSection.toFlexibleItem() },
+                                vmItemProvider = { it.toFlexibleItem() }
+                        )
+                    } else {
+                        this.processAdapter.removeSection(this.excludedSection)
+
+                        if (this.processAdapter.selectedSection == null) {
+                            this.processAdapter.selectedSection = this.deliveredSection
+                        }
+                    }
+                }
 
         //region Initially selected section
         val sectionWithMaxEvents = this.sectionByEvent.map {
@@ -503,10 +568,10 @@ class DeliveryStopProcessScreen :
                 .maxBy { it.second.count() }
                 ?.first
 
-        this.parcelListAdapter.selectedSection = sectionWithMaxEvents ?: deliveredSection
+        this.processAdapter.selectedSection = sectionWithMaxEvents ?: deliveredSection
         // endregion
 
-        this.parcelListAdapter.selectedSectionProperty
+        this.processAdapter.selectedSectionProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     val section = it.value
@@ -541,7 +606,7 @@ class DeliveryStopProcessScreen :
                     }
                 }
 
-        this.parcelListAdapter.itemClickEvent
+        this.processAdapter.itemClickEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe { item ->
                     log.debug("ONITEMCLICK")
@@ -555,21 +620,45 @@ class DeliveryStopProcessScreen :
                                             item.tag.also {
                                                 when (it) {
                                                     is EventNotDeliveredReason -> {
-                                            // Stop level event
+                                                        // Stop level event
                                                         this.deliveryStop.assignOrderLevelEvent(
                                                                 order = orderTaskViewModel.orderTask.order,
                                                                 reason = it
                                                         )
-                                                    .observeOnMainThread()
-                                                    .subscribeBy(
-                                                            onComplete = {
-                                                                this.parcelListAdapter.selectedSection = sectionByEvent.getValue(it)
-                                                            })
-                                        }
+                                                                .observeOnMainThread()
+                                                                .subscribeBy(
+                                                                        onComplete = {
+                                                                            this.processAdapter.selectedSection = sectionByEvent.getValue(it)
+                                                                        })
+                                                    }
+                                                    else -> {
+                                                        if (item.id == R.string.exclude.toLong()) {
+                                                            this.deliveryStop.excludedOrders = this.deliveryStop.excludedOrders.plus(
+                                                                    orderTaskViewModel.orderTask.order as OrderEntity
+                                                            )
+
+                                                            this.processAdapter.addSection(
+                                                                    sectionVmItemProvider = { this.excludedSection.toFlexibleItem() },
+                                                                    vmItemProvider = { it.toFlexibleItem() }
+                                                            )
+
+                                                            this.processAdapter.selectedSection = this.excludedSection
+                                                        }
+                                                    }
                                                 }
                                                 d.dismiss()
                                             }
                                         }).also {
+                                            if (this.deliveryStop.orders.blockingFirst().count() > 1) {
+                                                it.add(MaterialSimpleListItem.Builder(context)
+                                                        .backgroundColor(Color.WHITE)
+                                                        .icon(R.drawable.ic_split)
+                                                        .content(R.string.exclude)
+                                                        .id(R.string.exclude.toLong())
+                                                        .build()
+                                                )
+                                            }
+
                                             it.addAll(
                                                     this.deliveryStop.allowedOrderEvents
                                                             .map { it.toMaterialSimpleListItem(context) }
@@ -579,22 +668,47 @@ class DeliveryStopProcessScreen :
                             }
                 }
 
-        this.syntheticInputs = listOf(
-                SyntheticInput(
-                        name = "Parcels",
-                        entries = this.deliveryStop.parcels.blockingFirst().map
-                        {
-                            val unitNumber = UnitNumber.parse(it.number).value
-                            SyntheticInput.Entry(
-                                    symbologyType = SymbologyType.Interleaved25,
-                                    data = unitNumber.label
+        // Synthetic inputs
+        Observable.combineLatest(
+                this.deliveryStop.parcels.switchMap {
+                    Observable.just(
+                            SyntheticInput(
+                                    name = "Stop Parcels",
+                                    entries = it.map
+                                    {
+                                        val unitNumber = UnitNumber.parse(it.number).value
+                                        SyntheticInput.Entry(
+                                                symbologyType = SymbologyType.Interleaved25,
+                                                data = unitNumber.label
+                                        )
+                                    }
+                            ))
+                },
+                this.deliveryList.loadedParcels.map { it.value }.switchMap {
+                    Observable.just(
+                            SyntheticInput(
+                                    name = "Parcels",
+                                    entries = it.map
+                                    {
+                                        val unitNumber = UnitNumber.parse(it.number).value
+                                        SyntheticInput.Entry(
+                                                symbologyType = SymbologyType.Interleaved25,
+                                                data = unitNumber.label
+                                        )
+                                    }
                             )
-                        }
-                )
+                    )
+                },
+                BiFunction { t1: SyntheticInput, t2: SyntheticInput ->
+                    listOf(t1, t2)
+                }
         )
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    this.syntheticInputs = it
+                }
 
         // Observe changes which affect action items
-
         Observable.merge(
                 this.deliveryStop.pendingParcels,
                 this.deliveryStop.stop
@@ -651,64 +765,77 @@ class DeliveryStopProcessScreen :
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        var parcel = this.deliveryStop.parcels.blockingFirst().firstOrNull { it.number == unitNumber.value }
+        // Regular stop parcels
+        this.deliveryStop
+                .parcels
+                .blockingFirst()
+                .firstOrNull { it.number == unitNumber.value }
+                ?.also {
+                    this.onParcel(it)
+                    return
+                }
 
-        if (parcel == null) {
-            // Parcel does not belong to this delivery stop, ask for stop merge
-            feedback.warning()
+        // Other stop parcels (merge support)
+        this.parcelRepository
+                .entities
+                .firstOrNull { it.number == unitNumber.value }
+                ?.also { parcel ->
+                    val sourceStop = parcel.order.deliveryTask.stop
+                            ?: throw IllegalStateException("No stop for task")
 
-            parcel = this.parcelRepository.entities.firstOrNull { it.number == unitNumber.value }
-            val sourceStop = parcel?.order?.deliveryTask?.stop
+                    // Stops may only be merged under specific conditions (eg. zipcode matches)
+                    if (sourceStop.address.zipCode == this.deliveryStop.entity.address.zipCode) {
+                        // Parcel does not belong to this delivery stop, ask for stop merge
+                        feedback.warning()
 
-            if (parcel != null && sourceStop != null) {
-                MaterialDialog.Builder(context)
-                        .title(R.string.title_stop_merge)
-                        .cancelable(true)
-                        .content(R.string.dialog_content_stop_merge)
-                        .positiveText(android.R.string.yes)
-                        .onPositive { _, _ ->
-                            db.store.withTransaction {
-                                stopRepository.mergeInto(
-                                        source = sourceStop,
-                                        target = deliveryStop.entity
-                                )
-                                        .blockingAwait()
-                            }
-                                    .toCompletable()
-                                    .subscribeOn(db.scheduler)
-                                    .subscribeBy(
-                                            onError = {
-                                                log.error(it.message, it)
-                                                feedback.error()
-                                            })
-                        }
-                        .negativeText(android.R.string.no)
-                        .build().show()
-            } else {
-                this.activity.snackbarBuilder
-                        .message(R.string.error_invalid_parcel)
-                        .build().show()
+                        MaterialDialog.Builder(context)
+                                .title(R.string.title_stop_merge)
+                                .cancelable(true)
+                                .content(R.string.dialog_content_stop_merge)
+                                .positiveText(android.R.string.yes)
+                                .onPositive { _, _ ->
+                                    db.store.withTransaction {
+                                        stopRepository.mergeInto(
+                                                source = sourceStop,
+                                                target = deliveryStop.entity
+                                        )
+                                                .blockingAwait()
+                                    }
+                                            .toCompletable()
+                                            .subscribeOn(db.scheduler)
+                                            .subscribeBy(
+                                                    onError = {
+                                                        log.error(it.message, it)
+                                                        feedback.error()
+                                                    })
+                                }
+                                .negativeText(android.R.string.no)
+                                .build()
+                                .show()
 
-                return
-            }
+                        return
+                    }
+                }
 
-        }
+        feedback.error()
 
-        this.onParcel(parcel)
+        this.activity.snackbarBuilder
+                .message(R.string.error_invalid_parcel)
+                .build().show()
     }
 
     /**
      * On valid parcel entry
      */
     fun onParcel(parcel: ParcelEntity) {
-        when (parcelListAdapter.selectedSection) {
+        when (processAdapter.selectedSection) {
 
             deliveredSection, pendingSection, orderSection -> {
                 this.deliveryStop.deliverParcel(parcel)
                         .subscribe()
 
-                if (this.parcelListAdapter.selectedSection != deliveredSection)
-                    this.parcelListAdapter.selectedSection = deliveredSection
+                if (this.processAdapter.selectedSection != deliveredSection)
+                    this.processAdapter.selectedSection = deliveredSection
             }
 
             damagedSection -> {
@@ -745,9 +872,13 @@ class DeliveryStopProcessScreen :
                     })
                 }
             }
-            else -> {
-                // TODO: add support for scanning/adding parcel to damaged section
-                feedback.warning()
+
+            excludedSection -> {
+                if (!this.deliveryStop.excludedOrders.contains(parcel.order)) {
+                    this.deliveryStop.excludedOrders = this.deliveryStop.excludedOrders.plus(
+                            parcel.order as OrderEntity
+                    )
+                }
             }
         }
     }
@@ -872,13 +1003,12 @@ class DeliveryStopProcessScreen :
                 // Parcel level event
                 when (event) {
                     EventNotDeliveredReason.DAMAGED -> {
-                        log.trace("DAMAGED SECTION SELECTED")
-                        this.parcelListAdapter.addSection(
+                        this.processAdapter.addSection(
                                 sectionVmItemProvider = { this.damagedSection.toFlexibleItem() },
                                 vmItemProvider = { it.toFlexibleItem() }
                         )
 
-                        this.parcelListAdapter.selectedSection = this.damagedSection
+                        this.processAdapter.selectedSection = this.damagedSection
                     }
 
                     else -> {
@@ -891,7 +1021,7 @@ class DeliveryStopProcessScreen :
                         .observeOnMainThread()
                         .subscribeBy(
                                 onComplete = {
-                                    this.parcelListAdapter.selectedSection = sectionByEvent.getValue(event)
+                                    this.processAdapter.selectedSection = sectionByEvent.getValue(event)
                                 })
             }
         }

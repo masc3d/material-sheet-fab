@@ -8,7 +8,7 @@ import 'rxjs/add/operator/filter';
 import { SelectItem } from 'primeng/primeng';
 
 import { Loadinglist } from './loadinglist.model';
-import { Package } from './package.model';
+import { Package } from '../../../core/models/package.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { LoadinglistService } from './loadinglist.service';

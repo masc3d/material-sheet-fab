@@ -33,133 +33,69 @@ import kotlin.properties.Delegates
  * Main application (javafx) class
  * Created by masc on 29-Jul-15.
  */
-class Application : javafx.application.Application() {
+class Application {
     companion object {
+        private val log = LoggerFactory.getLogger(Application::class.java)
+
         /**
          * Main application entry point
          */
-        @JvmStatic fun main(args: Array<String>) {
-            // Leoz bundle process commandline interface
-            val setup = Setup()
-            val command = setup.parse(args)
-            if (command != null) {
-                command.run()
-                System.exit(0)
-                return
-            }
+        @JvmStatic
+        fun main(args: Array<String>) {
+            try {
+                // Leoz bundle process commandline interface support
+                val setup = Setup()
 
-            javafx.application.Application.launch(Application::class.java, *args)
-        }
-    }
+                val command = setup.parse(args)
+                if (command != null) {
+                    command.run()
+                    System.exit(0)
+                    return
+                }
 
-    private val log = LoggerFactory.getLogger(this.javaClass)
-
-    /** Application settings */
-    private val settings: Settings by Kodein.global.lazy.instance()
-
-    /** Primary stage */
-    private var primaryStage: Stage by Delegates.notNull()
-        private set
-
-    private val boot by lazy { Boot() }
-
-    private val bootTask by lazy {
-        this.boot.boot(this.settings)
-    }
-
-    /**
-     * JavaFX start
-     */
-    override fun start(primaryStage: Stage) {
-        try {
-            this.primaryStage = primaryStage
-
-            // Injection setup
-            log.info("Setting up injection")
-            Kodein.global.addImport(ApplicationConfiguration.module)
-            Kodein.global.addImport(StorageConfiguration.module)
-            Kodein.global.addImport(LogConfiguration.module)
-            Kodein.global.addImport(RsyncConfiguration.module)
-            Kodein.global.addImport(DiscoveryConfiguration.module)
-            Kodein.global.addImport(RestClientConfiguration.module)
-            Kodein.global.addImport(BundleConfiguration.module)
-            Kodein.global.addImport(SshConfiguration.module)
-            log.info("Done setting up injection")
-
-            // Uncaught threaded exception handler
-            Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
-                override fun uncaughtException(t: Thread, e: Throwable) {
-                    log.error(e.message, e)
-                    Platform.runLater {
-                        this@Application.exit(-1)
+                // Uncaught threaded exception handler
+                Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
+                    override fun uncaughtException(t: Thread, e: Throwable) {
+                        log.error(e.message, e)
                     }
+                })
+
+                // Injection setup
+                log.info("Setting up injection")
+                Kodein.global.addImport(ApplicationConfiguration.module)
+                Kodein.global.addImport(StorageConfiguration.module)
+                Kodein.global.addImport(LogConfiguration.module)
+                Kodein.global.addImport(RsyncConfiguration.module)
+                Kodein.global.addImport(DiscoveryConfiguration.module)
+                Kodein.global.addImport(RestClientConfiguration.module)
+                Kodein.global.addImport(BundleConfiguration.module)
+                Kodein.global.addImport(SshConfiguration.module)
+                log.info("Done setting up injection")
+
+                val settings = Kodein.global.instance<Settings>()
+                log.info("${settings}")
+
+                // Parse leoz-boot command line
+                val jc = JCommander(settings)
+                jc.parse(*args)
+
+                if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
+                    Boot().boot(settings).subscribeBy(
+                            onComplete = {
+                                System.exit(0)
+                            },
+                            onError = {
+                                log.error(it.message, it)
+                                System.exit(-1)
+                            })
+                } else {
+                    javafx.application.Application.launch(org.deku.leoz.boot.fx.Application::class.java)
                 }
-            })
 
-            log.info("${this.settings}")
-
-            // Parse leoz-boot command line
-            val jc = JCommander(this.settings)
-            jc.parse(*this.parameters.raw.toTypedArray())
-
-            if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
-                // Execute boot task on this thread
-                this.bootTask.subscribeBy(
-                    onComplete = {
-                        this@Application.exit(0)
-                    },
-                    onError = {
-                        log.error(it.message, it)
-                        this@Application.exit(-1)
-                    })
-            } else {
-                // Setup JavaFX stage
-                val loader = FXMLLoader(this.javaClass.getResource("/fx/Main.fxml"))
-                val root = loader.load<Parent>()
-                val controller = loader.getController<MainController>()
-                controller.exitEvent.subscribe {
-                    this.exit(it)
-                }
-
-                primaryStage.title = "Leoz"
-                primaryStage.scene = Scene(root, 800.0, 475.0)
-                ResizeHelper.addResizeListener(primaryStage)
-
-                val screenBounds = Screen.getPrimary().bounds
-                val rootBounds = root.boundsInLocal
-
-                val img = this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")
-                primaryStage.icons.add(Image(img))
-                primaryStage.initStyle(StageStyle.UNDECORATED)
-                primaryStage.y = (screenBounds.height - rootBounds.height) / 2
-                primaryStage.x = (screenBounds.width - rootBounds.width) / 2
-                primaryStage.show()
-
-                // Execute boot task via main controller
-                Platform.runLater {
-                    controller.run(this.bootTask)
-                }
+            } catch (e: Exception) {
+                log.error(e.message, e)
+                System.exit(-1)
             }
-        } catch(e: Exception) {
-            log.error(e.message, e)
-            this.exit(-1)
         }
-    }
-
-    /**
-     * Exit application
-     */
-    fun exit(exitCode: Int) {
-        this.primaryStage.close()
-
-        // Platform exit code is rather slow, thus delaying invocation to prevent perceivable delay closing the stage/window
-        Platform.runLater {
-            Platform.exit()
-            System.exit(exitCode)
-        }
-    }
-
-    override fun stop() {
-        super.stop()
     }
 }

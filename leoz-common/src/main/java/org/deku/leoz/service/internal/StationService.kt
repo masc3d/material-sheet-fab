@@ -2,10 +2,8 @@ package org.deku.leoz.service.internal
 
 import javax.ws.rs.*
 import io.swagger.annotations.*
-import org.deku.leoz.config.Rest
 import org.deku.leoz.service.internal.entity.Station
 import org.deku.leoz.service.internal.entity.StationV2
-import sx.rs.auth.ApiKey
 import javax.ws.rs.core.MediaType
 
 /**

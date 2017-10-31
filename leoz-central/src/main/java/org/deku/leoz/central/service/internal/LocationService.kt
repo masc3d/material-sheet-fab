@@ -390,7 +390,7 @@ open class LocationServiceV1
 @Path("internal/v2/location")
 class LocationServiceV2 :
         org.deku.leoz.service.internal.LocationServiceV2,
-        MqHandler<LocationServiceV2.GpsMessage>{
+        MqHandler<LocationServiceV2.GpsMessage> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -524,5 +524,30 @@ class LocationServiceV2 :
 //todo
             posRepository.save(r)
         }
+    }
+
+    override fun getDistance(lonFirst: Double, latFirst: Double, lonSecond: Double, latSecond: Double): Long {
+
+        try {
+            if (lonSecond == 0.0 && latSecond == 0.0)
+                throw DefaultProblem(
+                        detail = "Invalid geo-data",
+                        status = Response.Status.BAD_REQUEST)
+            val tLat = (latSecond - latFirst) * Math.PI / 180
+            val tLon = (lonSecond - lonFirst) * Math.PI / 180
+            val oLat = latFirst * Math.PI / 180
+            val oLastLat = latSecond * Math.PI / 180
+            val a = Math.pow(Math.sin(tLat / 2), 2.0) + Math.pow(Math.sin(tLon / 2), 2.0) * Math.cos(oLat) * Math.cos(oLastLat)
+            val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+            val tDist = Math.round(6371 * c)//(,1)
+            return tDist
+
+        } catch (e: Exception) {
+            throw DefaultProblem(
+                    detail = e.toString(),
+                    status = Response.Status.BAD_REQUEST)
+        }
+
+
     }
 }

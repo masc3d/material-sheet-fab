@@ -1,0 +1,306 @@
+<form [formGroup]="deliveryscanForm" style="padding-top: 10px">
+  <div class="ui-fluid">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-lg-8 no-pad" style="padding: 0;">
+        <p-fieldset legend="{{'deliverylistscan' | translate}}">
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              <p-dropdown [options]="tourOptions" placeholder="{{ 'tourno' | translate }}" [autoWidth]="true"
+                          [style]="{'width': '80%'}"></p-dropdown>
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              <p-dropdown [options]="deliverydateOptions" placeholder="{{ 'deliverydate' | translate }}" [autoWidth]="true"
+                          [style]="{'width': '80%'}"></p-dropdown>
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              <button pButton type="button" label="{{'help' | translate}}"
+                      style="width:80%"></button>
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              <button pButton type="button" label="{{'preview' | translate}}"
+                      style="width:80%"></button>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              <button pButton type="button" label="{{'newDeliverylist' | translate}}"
+                      style="width:80%"></button>
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="margin-top: 5px;">
+              12345678
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              <button pButton type="button" label="{{'save' | translate}}"
+                      style="width:80%"></button>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              <p-dropdown [options]="deliverylistOptions" placeholder="{{ 'deliverylistno' | translate }}" [autoWidth]="true"
+                          [style]="{'width': '80%'}"></p-dropdown>
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              <button pButton type="button" label="{{'print' | translate}}"
+                      style="width:80%"></button>
+            </div>
+          </div>
+        </p-fieldset>
+      </div>
+      <div class="ui-g-12 ui-lg-4" style="padding: 0;">
+        <p-fieldset legend="{{'sorting' | translate}}">
+          <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12">
+              <p-radioButton name="basedon" value="standard" formControlName="basedon"
+                             label="{{'standard' | translate}}"></p-radioButton>
+            </div>
+            <div class="ui-g-12">
+              <p-radioButton name="basedon" value="sortZip" formControlName="basedon"
+                             label="{{'sortZip' | translate}}"></p-radioButton>
+            </div>
+            <div class="ui-g-12">
+              <p-radioButton name="basedon" value="sortDeadline" formControlName="basedon"
+                             label="{{'sortDeadline' | translate}}"></p-radioButton>
+            </div>
+          </div>
+          <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12">
+              <p-radioButton name="basedonscan" value="withImportScan" formControlName="basedonscan"
+                             label="{{'withImportScan' | translate}}"></p-radioButton>
+            </div>
+            <div class="ui-g-12">
+              <p-radioButton name="basedonscan" value="justActualDeliverydate" formControlName="basedonscan"
+                             label="{{'justforDeliverydate' | translate}}"></p-radioButton>
+            </div>
+            <div class="ui-g-12">
+              <p-radioButton name="basedonscan" value="justActualTour" formControlName="basedonscan"
+                             label="{{'justActualTour' | translate}}"></p-radioButton>
+            </div>
+          </div>
+
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-4" style="padding:0;">
+        <p-fieldset legend="{{'scanmsgfield' | translate}}">
+          <div class="ui-g-12 ui-g-nopad"
+               style="height: 69px; padding-top: 15px; margin-bottom:5px; border:1px solid darkgrey; text-align: center; font-size: 30px">
+            {{shortScanMsg | translate}}
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-8" style="padding: 0;">
+        <p-fieldset legend="{{'scanfield' | translate}}">
+          <input #scanfield pInputText formControlName="scanfield"
+                 style="font-size: 40px; margin-bottom:5px; background-color: #FFFFC6; border:1px solid darkgrey">
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-4" style="padding:0; border: 1px solid transparent !important;">
+        <p-fieldset legend="{{'information' | translate}}">
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'tourNo' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              7
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'deliverylistNo' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              12345678
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'shipmentCount' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              22
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'packageCount' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              43
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'T8' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              2
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'ON' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              4
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'T9' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              3
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'ND' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              1
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'T10' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              6
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'afternoon' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              2
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'free' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              1
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+          </div>
+
+
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'realWeight' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              420.80 Kg
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'volumeWeight' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              160.10 Kg
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 5px">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey; padding-left: 5px;">
+              {{'effectiveWeight' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 5px;">
+              465.60 Kg
+            </div>
+            <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+              &nbsp;
+            </div>
+          </div>
+
+          <div class="ui-g-12 ui-g-nopad" [ngStyle]="styleShortScanMsg"
+               style="margin-top: 2px; padding: 5px; border:1px solid darkgrey; height:120px; background-color:#FFFFC6; overflow-y: scroll">
+            {{shortScanMsg | translate}}
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-8" style="padding:0;">
+        <p-fieldset id="fieldsetPackages" legend="{{'packages' | translate}}">
+
+          <style>
+            .row-deliveryscan {
+              font-size:14px;padding:5px;border-bottom:1px solid #D5D5D5;
+            }
+            .row-deliveryscan > div {
+              padding: 0; height:30px;
+            }
+          </style>
+          <p-dataScroller [value]="shipments" [rows]="10" [inline]="true" scrollHeight="100%"
+                          [style]="{'height': '413px'}">
+
+            <ng-template let-shipments pTemplate="body">
+              <div class="ui-g row-deliveryscan">
+
+
+                <div class="ui-g-12 ui-md-1">{{'pos' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliverypos}}</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliveryline1}}</div>
+                <div class="ui-g-12 ui-md-1">{{'deadline' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliverydate}}</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliverytime}}</div>
+
+                <div class="ui-g-12 ui-md-1">{{'shipmentno' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.shipmentno}}</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliverystreet}}</div>
+                <div class="ui-g-12 ui-md-1">{{'deliverystatus' | translate}}:</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliverystatus}}</div>
+
+                <div class="ui-g-12 ui-md-1">{{'parcelno' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.parcelno}}</div>
+                <div class="ui-g-12 ui-md-1">{{shipments.deliveryzip}}</div>
+                <div class="ui-g-12 ui-md-3">{{shipments.deliverycity}}</div>
+                <div class="ui-g-12 ui-md-1">{{'deliverycode' | translate}}:</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliverycode}}</div>
+
+                <div class="ui-g-12 ui-md-2">
+                  <i class="fa fa-trash-o" style="color: #184b7d;"></i>
+                </div>
+
+              </div>
+            </ng-template>
+          </p-dataScroller>
+        </p-fieldset>
+      </div>
+    </div>
+  </div>
+</form>

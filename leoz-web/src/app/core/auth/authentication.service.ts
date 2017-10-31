@@ -83,6 +83,13 @@ export class AuthenticationService {
         },
         ( error: Response ) => {
           console.log( error );
+          const defaultStation = <Station> {
+            stationNo: -1,
+            exportValuablesAllowed: false,
+            exportValuablesWithoutBagAllowed: false
+          };
+          localStorage.setItem( 'debitorStations', JSON.stringify( [-1] ) );
+          this.changeActiveStation( defaultStation );
         } );
   }
 

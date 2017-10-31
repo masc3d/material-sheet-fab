@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.ui
 import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.support.v4.app.FragmentManager
 import com.tinsuke.icekick.extension.freezeInstanceState
 import com.tinsuke.icekick.extension.unfreezeInstanceState
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
@@ -35,13 +36,13 @@ open class Fragment<P> : RxAppCompatDialogFragment() {
      * Kotlin property for wrapping/unwrapping parameter parcels
      */
     private class ParametersProperty<P> : ReadWriteProperty<Fragment<P>, P> {
-        override fun getValue(thisRef: Fragment<P>, property: KProperty<*>): P {
-            return Parcels.unwrap<P>(thisRef.arguments.getParcelable<Parcelable>(BUNDLE_PARAMETERS))
-        }
+        override fun getValue(thisRef: Fragment<P>, property: KProperty<*>): P =
+                Parcels.unwrap<P>(thisRef.arguments?.getParcelable<Parcelable>(BUNDLE_PARAMETERS))
 
         override fun setValue(thisRef: Fragment<P>, property: KProperty<*>, value: P) {
-            thisRef.arguments = Bundle()
-            thisRef.arguments.putParcelable(BUNDLE_PARAMETERS, Parcels.wrap(value))
+            thisRef.arguments = Bundle().also {
+                it.putParcelable(BUNDLE_PARAMETERS, Parcels.wrap(value))
+            }
         }
     }
 
@@ -99,4 +100,7 @@ open class Fragment<P> : RxAppCompatDialogFragment() {
         // IceKick integration
         unfreezeInstanceState(savedInstanceState)
     }
+
+    override fun getContext(): Context =
+            super.getContext() ?: throw IllegalStateException("Context not available")
 }

@@ -1,10 +1,13 @@
 package sx.android
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.provider.Settings
+import android.support.annotation.RequiresApi
+import org.slf4j.LoggerFactory
 import sx.text.toHexString
 import java.util.*
 
@@ -12,6 +15,8 @@ import java.util.*
  * Generic android device class, exposing device specific information like ids and serials
  * Created by masc on 26/02/2017.
  */
+
+@SuppressLint("HardwareIds")
 open class Device(private val context: Context) {
 
     companion object {
@@ -26,8 +31,7 @@ open class Device(private val context: Context) {
         enum class Type {
             Generic,
             Honeywell,
-            Motorola,
-            Blackview
+            Motorola
         }
 
         /**
@@ -37,7 +41,6 @@ open class Device(private val context: Context) {
             when {
                 this.name.contains("honeywell", ignoreCase = true)  -> Type.Honeywell
                 this.name.contains("motorola", ignoreCase = true)   -> Type.Motorola
-                this.name.contains("blackview", ignoreCase = true)  -> Type.Blackview
                 else -> Type.Generic
             }
         }
@@ -65,7 +68,13 @@ open class Device(private val context: Context) {
 
     val imei: String by lazy {
         val telephonyManager = this.context.getTelephonyManager()
-        try { telephonyManager.deviceId ?: "" } catch(e: SecurityException) { throw e }
+        try {
+            @Suppress("DEPRECATION")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                telephonyManager.imei ?: ""
+            else
+                telephonyManager.deviceId ?: ""
+        } catch(e: SecurityException) { throw e }
     }
 
     val phone: String by lazy {
@@ -92,7 +101,13 @@ open class Device(private val context: Context) {
      */
     val serial: String by lazy {
         when (this.isEmulator) {
-            false -> Build.SERIAL
+            false -> {
+                @Suppress("DEPRECATION")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    try { Build.getSerial() } catch (s: SecurityException) { throw s }
+                else
+                    Build.SERIAL
+            }
             // Generate a random serial number for emulators
             true -> {
                 // For emulators, generate an artifical random serial and preserve it until the application is reinstalled
@@ -120,16 +135,36 @@ open class Device(private val context: Context) {
 
     val mobileDateEnabled: Boolean
         get() {
-            /**
-             * Apply this check only to honeywell devices, as they are known to work with this "unofficial API" access/check
-             * TODO: To be replaced by a reliable function
-             */
             if (this.manufacturer.type != Manufacturer.Type.Honeywell) {
-                return true
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val telephonyManager = this.context.getTelephonyManager()
+                    return telephonyManager.isDataEnabled
+                } else {
+                    // TODO find a reliable way for android versions below API level 26
+                    return true
+                }
+            } else {
+                // TODO: inofficial api/configuration setting., likely to break in future versions. should be improved or removed.
+                return Settings.Global.getInt(context.contentResolver, "mobile_data", 1) == 1
             }
-            // TODO: inofficial api/configuration setting., likely to break in future versions. should be improved or removed.
-            return Settings.Global.getInt(context.contentResolver, "mobile_data", 1) == 1
         }
+
+    val telephonyEnabled: Boolean by lazy {
+        try {
+            val telephonyManager = this.context.getTelephonyManager()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                telephonyManager.isVoiceCapable
+            } else {
+                when {
+                    telephonyManager.line1Number == null -> false
+                    telephonyManager.line1Number.isEmpty() -> telephonyManager.subscriberId != null && telephonyManager.subscriberId.isNotEmpty()
+                    else -> true
+                }
+            }
+        } catch (e: SecurityException) {
+            false
+        }
+    }
 
     override fun toString(): String =
             "Device(imei=${imei}, androidId=${androidId}) androidVersion=${androidVersion} serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"

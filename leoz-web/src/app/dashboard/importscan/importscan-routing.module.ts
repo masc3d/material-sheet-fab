@@ -14,6 +14,10 @@ const routes: Routes = [
       {
         path: 'importscanlist', data: [ 'importscanlist' ],
         loadChildren: 'app/dashboard/importscan/importscanlist/importscanlist.module#ImportscanlistModule'
+      },
+      {
+        path: 'importscancheck', data: [ 'importscancheck' ],
+        loadChildren: 'app/dashboard/importscan/importscancheck/importscancheck.module#ImportscancheckModule'
       }
     ]
   }

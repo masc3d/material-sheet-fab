@@ -62,6 +62,8 @@ import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.service.UpdateService
+import org.deku.leoz.mobile.settings.DebugSettings
+import org.deku.leoz.mobile.settings.RemoteSettings
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.activity.StartupActivity
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment

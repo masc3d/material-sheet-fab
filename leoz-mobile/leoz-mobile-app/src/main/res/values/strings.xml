@@ -25,9 +25,9 @@
 
     <string name="capture_image">Capture image</string>
 
+    <string name="cash_not_sufficient">Cash amount not sufficient</string>
     <string name="cash_service">Cash-Service</string>
     <string name="cash_value">Cash value</string>
-    <string name="cash_not_sufficient">Cash amount not sufficient</string>
 
     <string name="change">Change</string>
 
@@ -43,6 +43,7 @@
     <string name="continue_without">Continue without</string>
 
     <string name="delivered">Delivered</string>
+    <string name="deliver">Deliver</string>
 
     <string name="delivery">Delivery</string>
     <string name="delivery_failed">Delivery failed</string>
@@ -54,10 +55,14 @@
     <string name="device_check_instruction_to_continue">You are not allowed to continue the delivery without completing this check.</string>
     <string name="device_check_instructions">You have got 3 attempts to enter the correct digits. If all three fail, the devlivery failed.</string>
 
-    <string name="dialog_content_stop_merge">Do you want to merge this stop?</string>
     <string name="dialog_content_outdated_orders">Orders are outdated. All data must be erased in order to proceed. Continue?</string>
+    <string name="dialog_content_stop_merge">Do you want to merge this stop?</string>
+    <string name="dialog_text_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
+    <string name="dialog_text_gps_disabled">The GPS location on your device is disabled. To continue, you must enable GPS location!</string>
     <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
+    <string name="dialog_title_developer_enabled">Developer options enabled</string>
     <string name="dialog_title_event_selection">Event selection</string>
+    <string name="dialog_title_gps_disabled">GPS location provider is not enabled</string>
 
     <string name="dismiss">Dismiss</string>
 
@@ -83,9 +88,9 @@
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_parcel">Invalid parcel</string>
     <string name="error_invalid_password">This password is too short</string>
-    <string name="error_unknown_parcel">Unkonwn parcel</string>
     <string name="error_no_corresponding_order">No corresponding order</string>
     <string name="error_no_corresponding_stop">No corresponding stop</string>
+    <string name="error_unknown_parcel">Unkonwn parcel</string>
 
     <string name="event_reason_absent">Consignee absent</string>
     <string name="event_reason_address_wrong">Wrong address</string>
@@ -102,6 +107,10 @@
     <string name="event_reason_xc_damaged">XC object damaged</string>
     <string name="event_reason_xc_not_ready">XC object not ready</string>
     <string name="event_reason_xc_wrong">XC wrong object</string>
+
+    <string name="exclude">Exclude</string>
+
+    <string name="excluded">Excluded</string>
 
     <string name="exit_application">Exit application</string>
     <string name="exit_application_prompt">Do you really want to exit the application?</string>
@@ -257,11 +266,13 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="services">Services</string>
 
     <string name="signature_conclusion">I acknowledge the receipt of:\nOrders: %1$s\nParcels: %2$s\nRecipient: %3$s</string>
+    <string name="signature_on_paper">Signature on paper</string>
     <string name="signature_signed_by_name">Name: %s</string>
 
-    <string name="signature_on_paper">Signature on paper</string>
-
     <string name="skip">Skip</string>
+
+    <string name="sort_distance">By distance</string>
+    <string name="sort_zip">By zip</string>
 
     <string name="station_id">Station ID</string>
 
@@ -274,6 +285,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="title_cash_collection">Cash collection</string>
     <string name="title_confirm_call">Confirm call</string>
     <string name="title_missing_signature">Signature missing</string>
+    <string name="title_phone_number">Phone number:</string>
     <string name="title_reset_data">Reset data</string>
     <string name="title_specify_deliverylist">Specify a delivery list</string>
     <string name="title_stop_detailt">Stop Details</string>
@@ -281,13 +293,14 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="title_stop_merge">Stop merge</string>
     <string name="title_stop_process">Delivery</string>
 
-    <string name="tour">Tour</string>
-
     <string name="to_neighbour">To neighbour</string>
     <string name="to_postbox">To postbox</string>
     <string name="to_recipient">To recipient</string>
 
+    <string name="tour">Tour</string>
+
     <string name="unknown">Unknown</string>
+
     <string name="unloaded">Unloaded</string>
 
     <string name="update">Update</string>
@@ -299,10 +312,9 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="vehicle_loading_finalize_dialog_title">Finalize loading</string>
     <string name="vehicle_loading_unload_parcel_dialog">Unload parcel?</string>
     <string name="vehicle_loading_unload_parcel_dialog_title">Parcel has been loaded</string>
-
     <string name="vehicle_unloading">Unloading</string>
-    <string name="vehicle_unloading_finalize_dialog_title">Finalize unloading</string>
     <string name="vehicle_unloading_finalize_dialog">All pending parcels will be marked missing.</string>
+    <string name="vehicle_unloading_finalize_dialog_title">Finalize unloading</string>
 
     <string name="version">Version</string>
     <string name="version_available">v%s is available</string>
@@ -310,6 +322,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
+    <string name="accept_always">Accept always</string>
     <string name="dialog_title_gps_disabled">GPS location provider is not enabled</string>
     <string name="dialog_text_gps_disabled">The GPS location on your device is disabled. To continue, you must enable GPS location!</string>
     <string name="dialog_title_developer_enabled">Developer options enabled</string>

@@ -66,7 +66,7 @@ class AidcCameraFragment : Fragment<Any>() {
             // Inflate the layout for this fragment
             inflater.inflate(R.layout.fragment_aidc_camera, container, false)
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         this.fab_aidc_camera_torch.setOnClickListener {

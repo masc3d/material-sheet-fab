@@ -2,9 +2,10 @@ package org.deku.leoz.node.web.ui
 
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
-import com.vaadin.data.util.BeanItemContainer
+import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.server.ThemeResource
 import com.vaadin.server.VaadinRequest
+import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.spring.annotation.SpringUI
 import com.vaadin.ui.*
 import org.deku.leoz.node.data.jpa.MstStation
@@ -39,7 +40,7 @@ class MainUI : UI() {
 
     /** Filter text field */
     val filter = TextField()
-    val grid = Grid()
+    val grid = Grid<MstStation>(MstStation::class.java)
 
     @Override
     override fun init(request: VaadinRequest) {
@@ -81,12 +82,12 @@ class MainUI : UI() {
     }
 
     private fun configureComponents() {
-        filter.textChangeEventMode = AbstractTextField.TextChangeEventMode.EAGER
-        filter.inputPrompt = "Filter depots.."
-        filter.addTextChangeListener({ e -> refresh(e.text) })
+        filter.valueChangeMode = ValueChangeMode.EAGER
+        filter.placeholder = "Filter depots.."
+        filter.addValueChangeListener({ e -> refresh(e.value) })
 
         val qStation = QMstStation.mstStation
-        grid.containerDataSource = BeanItemContainer(MstStation::class.java)
+        grid.dataProvider = ListDataProvider<MstStation>(listOf())
         grid.setColumnOrder(
                 qStation.stationNr.metadata.name,
                 qStation.address1.metadata.name,
@@ -121,7 +122,6 @@ class MainUI : UI() {
     }
 
     private fun refresh(stringFilter: String) {
-        grid.containerDataSource = BeanItemContainer(
-                MstStation::class.java, stationRepository.findWithQuery(stringFilter))
+        grid.dataProvider = ListDataProvider<MstStation>(stationRepository.findWithQuery(stringFilter))
     }
 }
