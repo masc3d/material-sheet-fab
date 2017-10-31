@@ -26,7 +26,7 @@ class HeaderVmItem<VM>(
         val blurRadius: Float = 1F
 ) :
         IHeader<VmHolder>,
-        SectionableVmItem<VM>(
+        VmItem<VM>(
                 view = view,
                 variable = variable,
                 viewModel = viewModel) {
