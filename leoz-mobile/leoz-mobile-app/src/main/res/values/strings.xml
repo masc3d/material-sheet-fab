@@ -323,9 +323,5 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="yes_start_tour">Yes, start tour</string>
     <string name="accept_always">Accept always</string>
-    <string name="dialog_title_gps_disabled">GPS location provider is not enabled</string>
-    <string name="dialog_text_gps_disabled">The GPS location on your device is disabled. To continue, you must enable GPS location!</string>
-    <string name="dialog_title_developer_enabled">Developer options enabled</string>
-    <string name="dialog_text_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
     <string name="running">running</string>
 </resources>
