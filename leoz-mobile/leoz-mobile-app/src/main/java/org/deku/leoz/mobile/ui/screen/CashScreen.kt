@@ -29,7 +29,7 @@ import sx.LazyInstance
 import sx.android.hideSoftInput
 import sx.android.showSoftInput
 import sx.android.ui.flexibleadapter.ExpandableVmItem
-import sx.android.ui.flexibleadapter.SectionableVmItem
+import sx.android.ui.flexibleadapter.VmItem
 import java.text.NumberFormat
 import java.util.*
 
@@ -146,7 +146,7 @@ class CashScreen : ScreenFragment<Any>() {
                         )
                 ).also {
                     it.subItems = orders.map {
-                        SectionableVmItem<Any>(
+                        VmItem<Any>(
                                 //TODO: To be replaced by an item which includes the cash value (hide zip-code and city)
                                 view = R.layout.item_ordertask,
                                 variable = BR.orderTask,

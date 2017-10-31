@@ -9,7 +9,7 @@ import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.ExpandableVmItem
-import sx.android.ui.flexibleadapter.SectionableVmItem
+import sx.android.ui.flexibleadapter.VmItem
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.ObservableRxProperty
 import sx.rx.bind
@@ -118,7 +118,7 @@ class SectionsAdapter
      */
     fun <T, S : SectionViewModel<T>> addSection(
             sectionVmItemProvider: () -> ExpandableVmItem<SectionViewModel<T>, *>,
-            vmItemProvider: (item: T) -> SectionableVmItem<*>) {
+            vmItemProvider: (item: T) -> VmItem<*>) {
 
         fun createSectionItem(): ExpandableVmItem<SectionViewModel<T>, *> {
             return sectionVmItemProvider.invoke()

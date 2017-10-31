@@ -63,7 +63,7 @@ import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.ExpandableVmItem
-import sx.android.ui.flexibleadapter.SectionableVmItem
+import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.materialdialogs.addAll
 import sx.format.format
 
@@ -249,9 +249,9 @@ class DeliveryStopProcessScreen :
     }
 
     fun ParcelEntity.toFlexibleItem()
-            : SectionableVmItem<ParcelViewModel> {
+            : VmItem<ParcelViewModel> {
 
-        return SectionableVmItem(
+        return VmItem(
                 view = R.layout.item_parcel_card,
                 variable = BR.parcel,
                 viewModel = ParcelViewModel(this, showOrderTask = false)
@@ -259,9 +259,9 @@ class DeliveryStopProcessScreen :
     }
 
     fun OrderEntity.toFlexibleItem()
-            : SectionableVmItem<OrderTaskViewModel> {
+            : VmItem<OrderTaskViewModel> {
 
-        return SectionableVmItem(
+        return VmItem(
                 view = R.layout.item_ordertask,
                 variable = BR.orderTask,
                 viewModel = OrderTaskViewModel(this.pickupTask)
@@ -611,7 +611,7 @@ class DeliveryStopProcessScreen :
                 .subscribe { item ->
                     log.debug("ONITEMCLICK")
 
-                    ((item as? SectionableVmItem<*>)
+                    ((item as? VmItem<*>)
                             ?.viewModel as? OrderTaskViewModel)
                             ?.also { orderTaskViewModel ->
                                 MaterialDialog.Builder(context)

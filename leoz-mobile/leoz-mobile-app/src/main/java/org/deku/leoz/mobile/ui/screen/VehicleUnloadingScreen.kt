@@ -48,7 +48,7 @@ import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.ExpandableVmItem
-import sx.android.ui.flexibleadapter.SectionableVmItem
+import sx.android.ui.flexibleadapter.VmItem
 import sx.format.format
 
 /**
@@ -160,9 +160,9 @@ class VehicleUnloadingScreen :
     }
 
     fun ParcelEntity.toFlexibleItem()
-            : SectionableVmItem<ParcelViewModel> {
+            : VmItem<ParcelViewModel> {
 
-        return SectionableVmItem(
+        return VmItem(
                 view = R.layout.item_parcel_card,
                 variable = BR.parcel,
                 viewModel = ParcelViewModel(this)

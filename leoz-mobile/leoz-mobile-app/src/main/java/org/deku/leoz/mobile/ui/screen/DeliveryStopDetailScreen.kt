@@ -46,7 +46,7 @@ import sx.aidc.SymbologyType
 import sx.android.Device
 import sx.android.aidc.*
 import sx.android.ui.flexibleadapter.ExpandableVmItem
-import sx.android.ui.flexibleadapter.SectionableVmItem
+import sx.android.ui.flexibleadapter.VmItem
 
 class DeliveryStopDetailScreen
     :
@@ -154,7 +154,7 @@ class DeliveryStopDetailScreen
                     ).also {
                         it.subItems = services
                                 .map {
-                                    SectionableVmItem<Any>(
+                                    VmItem<Any>(
                                             view = R.layout.item_service,
                                             variable = BR.service,
                                             viewModel = ServiceViewModel(
@@ -183,7 +183,7 @@ class DeliveryStopDetailScreen
                         )
                 ).also {
                     it.subItems = orders.map {
-                        SectionableVmItem<Any>(
+                        VmItem<Any>(
                                 view = R.layout.item_ordertask,
                                 variable = BR.orderTask,
                                 viewModel = OrderTaskViewModel(it.pickupTask)
@@ -209,7 +209,7 @@ class DeliveryStopDetailScreen
                         )
                 ).also {
                     it.subItems = parcels.map {
-                        SectionableVmItem<Any>(
+                        VmItem<Any>(
                                 view = R.layout.item_parcel_card,
                                 variable = BR.parcel,
                                 viewModel = ParcelViewModel(it, showOrderTask = false)

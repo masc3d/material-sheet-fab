@@ -7,6 +7,8 @@ import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
+import eu.davidea.flexibleadapter.items.IHeader
+import eu.davidea.flexibleadapter.items.ISectionable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
@@ -24,7 +26,9 @@ open class VmItem<VM>(
         @AnyRes val variable: Int,
         val viewModel: VM,
         @IdRes private val dragHandleViewId: Int = 0
-) : AbstractFlexibleItem<VmHolder>() {
+) :
+        AbstractFlexibleItem<VmHolder>(),
+        ISectionable<VmHolder, IHeader<VmHolder>> {
 
     override fun equals(other: Any?): Boolean = (this === other)
 
@@ -32,6 +36,15 @@ open class VmItem<VM>(
 
     /** Composite disposable for maintaining view holder subscriptions */
     private val viewHolderSubscriptions = CompositeDisposable()
+
+    var _header: IHeader<VmHolder>? = null
+
+    override fun setHeader(header: IHeader<VmHolder>?) {
+        _header = header
+    }
+
+    override fun getHeader(): IHeader<VmHolder>?
+            = _header
 
     private val itemReleasedEventSubject by lazy { PublishSubject.create<Int>() }
     /** Item released event */

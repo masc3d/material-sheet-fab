@@ -41,6 +41,7 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.*
+import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
 import sx.rx.ObservableRxProperty
 
 /**
