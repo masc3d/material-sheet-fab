@@ -153,7 +153,6 @@ export const LANG_DE_TRANS = {
   'scanfield': 'Scanfeld',
   'loadinglistscan': 'Ladelistenscan',
   'bagscan': 'Bagscan',
-  'packageId': 'PkSt Nr',
   'zip': 'PLZ',
   'city': 'Ort',
   'devliveryStation': 'Lieferdepot',
@@ -282,5 +281,13 @@ export const LANG_DE_TRANS = {
   'shipmentno': 'Sdg Nr',
   'deliverystatus': 'Status',
   'deliverycode': 'Code',
+  // ipointlist, ipointquick
+  'scan_without_validating': 'Scan ohne Prüfung',
+  'ipointlist': 'I-Punkt Liste',
+  'ipoint_quickscan': 'I-Punkt Quickscan',
+  'total_real_Weight': 'Gesamt Realgewicht',
+  'total_vol_Weight': 'Gesamt Vol. Gewicht',
+  'ipointListcan': 'I-Punkt Listenscan',
+  'packages_to_scan': 'Packstücke zu scannen',
 };
 
