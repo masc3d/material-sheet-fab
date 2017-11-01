@@ -351,7 +351,7 @@ class DeliveryStopListScreen
 
         // Items
         flexibleAdapter.addItem(
-                SimpleHeaderVmItem<StopListStatisticsViewModel>(
+                SimpleVmHeaderItem<StopListStatisticsViewModel>(
                         view = R.layout.view_delivery_stop_list_stats,
                         variable = BR.stats,
                         viewModel = StopListStatisticsViewModel(

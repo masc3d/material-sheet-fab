@@ -62,7 +62,7 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.HeaderVmItem
+import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.materialdialogs.addAll
 import sx.format.format
@@ -237,9 +237,9 @@ class DeliveryStopProcessScreen :
     //endregion
 
     fun <T> SectionViewModel<T>.toFlexibleItem()
-            : HeaderVmItem<SectionViewModel<T>, Any> {
+            : VmHeaderItem<SectionViewModel<T>, Any> {
 
-        return HeaderVmItem<SectionViewModel<T>, Any>(
+        return VmHeaderItem<SectionViewModel<T>, Any>(
                 view = R.layout.item_section_header,
                 variable = BR.header,
                 viewModel = this

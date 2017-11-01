@@ -8,7 +8,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.HeaderVmItem
+import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.rx.CompositeDisposableSupplier
 import sx.rx.ObservableRxProperty
@@ -20,7 +20,7 @@ import sx.rx.bind
  */
 class SectionsAdapter
     :
-        FlexibleAdapter<HeaderVmItem<*, *>>
+        FlexibleAdapter<VmHeaderItem<*, *>>
         (listOf(), null, true),
         CompositeDisposableSupplier {
 
@@ -53,7 +53,7 @@ class SectionsAdapter
                 if (item != null) {
                     this@SectionsAdapter.itemClickEventSubject.onNext(item)
 
-                    if (item is HeaderVmItem<*, *> && item.viewModel is SectionViewModel<*>) {
+                    if (item is VmHeaderItem<*, *> && item.viewModel is SectionViewModel<*>) {
 
                         val section = item.viewModel as SectionViewModel<*>
 
@@ -115,10 +115,10 @@ class SectionsAdapter
      * @param sectionViewModel Parcel section view model
      */
     fun <T, S : SectionViewModel<T>> addSection(
-            sectionVmItemProvider: () -> HeaderVmItem<SectionViewModel<T>, *>,
+            sectionVmItemProvider: () -> VmHeaderItem<SectionViewModel<T>, *>,
             vmItemProvider: (item: T) -> SimpleVmItem<*>) {
 
-        fun createSectionItem(): HeaderVmItem<SectionViewModel<T>, *> {
+        fun createSectionItem(): VmHeaderItem<SectionViewModel<T>, *> {
             return sectionVmItemProvider.invoke()
                     .also {
                         it.isExpanded = false
@@ -189,10 +189,10 @@ class SectionsAdapter
      * Return flexible item for specific section
      * @param section Section
      */
-    fun itemOf(section: SectionViewModel<*>): HeaderVmItem<*, *>? {
+    fun itemOf(section: SectionViewModel<*>): VmHeaderItem<*, *>? {
         return this.headerItems.firstOrNull {
-            it is HeaderVmItem<*, *> && it.viewModel == section
-        } as? HeaderVmItem<*, *>
+            it is VmHeaderItem<*, *> && it.viewModel == section
+        } as? VmHeaderItem<*, *>
     }
 
     /**
