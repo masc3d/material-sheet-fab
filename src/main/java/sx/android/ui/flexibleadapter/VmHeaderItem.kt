@@ -40,5 +40,7 @@ open class VmHeaderItem<VM, IVM>(
 
     init {
         this.isSelectable = false
+        this.isHidden = false
+        this.isExpanded = true
     }
 }
