@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.config.ParcelServiceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
@@ -75,14 +76,51 @@ open class ParcelProcessing {
             events.forEach {
                 var pathToDelete: Path? = null
 
+                val addInfo = it.additionalInfo?.toString() ?: "{}"
+
+                val mapper = ObjectMapper()
+                val parcelAddInfo: ParcelDeliveryAdditionalinfo = mapper.readValue(addInfo, ParcelDeliveryAdditionalinfo::class.java)
+                val checkPictureFile = parcelAddInfo.pictureFileUID != null
+
+                //var parcelNo=it.parcelNo?.toLong()
+//                parcelNo ?:
+//                        return@forEach
+
+                val parcel=it.parcelId?:0.toLong()
+                val parcelRecord =parcelRepository.getParcelByParcelId(parcel)
+
+                when(parcel){
+                    0.toLong()->{
+                        log.info("parcelId=0,messageID=${it.id.toString()}")
+                        it.isProccessed = 1
+                        it.store()
+                        return@forEach
+                    }
+                    else->{
+
+                    }
+                }
+
+                if(parcelRecord ==null) {
+                    log.info("parcelId=$parcel,messageID=${it.id.toString()} no parcelRecord")
+                    it.isProccessed = 1
+                    it.store()
+                    return@forEach
+                }
+                val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
+                if(orderRecord ==null) {
+                    log.info("parcelId=$parcel,messageID=${it.id.toString()} no orderRecord")
+                    it.isProccessed = 1
+                    it.store()
+                    return@forEach
+                }
+
                 var insertStatus = true
                 val r = dslContext.newRecord(Tables.TBLSTATUS)
 
-                val parcelNo = it.parcelNo?.toLong()
-                parcelNo ?:
-                        return false
+                val parcelNo =parcelRecord.colliebelegnr.toLong()
 
-                val parcelScan = parcelNo.toLong().toString()
+                val parcelScan = parcelNo.toString()
 
                 val user = userRepository.findById(it.userId)
                 val userEmail = user?.email ?: ""
@@ -110,12 +148,12 @@ open class ParcelProcessing {
                 r.erzeugerstation = "002"
 
 
-                val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
-                parcelRecord ?:
-                        return false
-                val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
-                orderRecord ?:
-                        return false
+                //val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
+//                parcelRecord ?:
+//                        return@forEach
+//                val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
+//                orderRecord ?:
+//                        return@forEach
 
                 val userId = it.userId
                 //if (userId != null) {
@@ -135,10 +173,7 @@ open class ParcelProcessing {
                     pasCleared = false
                 var pasReset = false
 
-                val addInfo = it.additionalInfo?.toString() ?: "{}"
 
-                val mapper = ObjectMapper()
-                val parcelAddInfo: ParcelDeliveryAdditionalinfo = mapper.readValue(addInfo, ParcelDeliveryAdditionalinfo::class.java)
                 val checkDamaged = parcelAddInfo.damagedFileUIDs != null
 
                 if (checkDamaged) {
@@ -171,9 +206,13 @@ open class ParcelProcessing {
                     }
                 }
 
-                val checkPictureFile = parcelAddInfo.pictureFileUID != null
+
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
+                    if(pictureUID==null){
+                        log.info("parcelId=$parcel,messageID=${it.id.toString()} pictureID null")
+                        return@forEach
+                    }
                     val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
                     if (!file.exists())
                         return@forEach
@@ -181,7 +220,7 @@ open class ParcelProcessing {
                         val pathMobile = storage.mobileDataDirectory.toPath()
                         val fileNameInfo = userId.toString()
                         val loc = Location.SB
-                        val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
+                        val mobileFilename = FileName(pictureUID, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
                         val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
                         val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
                         val copyOption = StandardCopyOption.REPLACE_EXISTING
