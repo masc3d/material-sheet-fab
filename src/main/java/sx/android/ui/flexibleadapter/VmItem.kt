@@ -12,9 +12,19 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 
 /**
- * Flexible expandable view model header/item.
- * Can be used as both an expandable item or header.
+ * View model item for flexible adapter.
+ *
+ * THis is the base class of all view model items and implements all relevant interfaces
+ * except for IHeader which flexibleadapter uses to distinct headers from regular items.
+ *
  * Created by masc on 26.06.17.
+ * @param view The view layout resource ID
+ * @param variable View model binding ID
+ * @param viewModel The view model
+ * @param blurRadius Blur radius (applicable when root layout of view is a BlurView)
+ * @param dragHandleViewId View id of the drag handle
+ * @param isExpandableOnClick If subitems should be expandable on click
+ * @param isHeader Indicates if this item represents a header. Should only be set by derived classes implementing IHeader
  */
 open class VmItem<VM, IVM>(
         @LayoutRes val view: Int,
