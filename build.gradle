@@ -16,11 +16,17 @@ ext {
     // Flyway instances. A set of flyway tasks will be created for each one.
     instances += [
             // Integration
-            leox  : [
-                    url     : 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false',
+            leozDemo  : [
+                    url     : 'jdbc:mysql://leoz-demo.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 49
+                    target  : 52
+            ],
+            leozT1  : [
+                    url     : 'jdbc:mysql://leoz-t1.derkurier.de:3320?useSSL=false',
+                    user    : 'root',
+                    password: 'dekudb',
+                    target  : 52
             ],
             // Production/live
             live  : [
@@ -28,7 +34,7 @@ ext {
                     user    : 'migration',
                     password: 'dekudb',
                     baseline: 2,
-                    target  : 49
+                    target  : 52
             ],
             // Test 61
             test61: [
