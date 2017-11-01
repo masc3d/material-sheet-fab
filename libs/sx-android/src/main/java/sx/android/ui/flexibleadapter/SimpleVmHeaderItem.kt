@@ -26,11 +26,4 @@ class SimpleVmHeaderItem<VM>(
                 variable = variable,
                 viewModel = viewModel,
                 blurRadius = blurRadius
-        ) {
-
-    private val log = LoggerFactory.getLogger(this.javaClass)
-
-    init {
-        this.isSelectable = false
-    }
-}
+        )
