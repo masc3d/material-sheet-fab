@@ -95,3 +95,6 @@ fun Date.toCalendar(timezone: TimeZone = TimeZone.getDefault()): Calendar {
     cal.time = this
     return cal
 }
+
+fun java.time.LocalDate.workDate(): java.time.LocalDate =
+    java.time.LocalDateTime.now().minusHours((5)).toLocalDate()
