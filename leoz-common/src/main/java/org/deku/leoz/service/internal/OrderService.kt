@@ -32,14 +32,14 @@ interface OrderService {
 
     @GET
     @Path("/{$ORDERID}")
-    @ApiOperation(value = "Get order by order ID")
+    @ApiOperation(value = "Get order by order ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getById(
             @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long
     ): Order
 
     @GET
     @Path("/{$ORDERID}")
-    @ApiOperation(value = "Get order by order ID")
+    @ApiOperation(value = "Get order by order ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getById(
             @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
@@ -54,7 +54,7 @@ interface OrderService {
 
     @GET
     @Path("/")
-    @ApiOperation(value = "Get orders")
+    @ApiOperation(value = "Get orders", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
@@ -64,7 +64,7 @@ interface OrderService {
 
     @GET
     @Path("/")
-    @ApiOperation(value = "Get orders")
+    @ApiOperation(value = "Get orders", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
