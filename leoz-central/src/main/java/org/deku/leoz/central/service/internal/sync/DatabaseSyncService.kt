@@ -124,13 +124,17 @@ constructor(
                 }
 
         this.presets.forEach {
-            when (it) {
-                is SimplePreset<*, *> ->
-                    @Suppress("UNCHECKED_CAST")
-                    this.update(
-                            preset = it as SimplePreset<Record, Any>,
-                            syncIdMap = syncIdMap,
-                            deleteBeforeUpdate = clean)
+            try {
+                when (it) {
+                    is SimplePreset<*, *> ->
+                        @Suppress("UNCHECKED_CAST")
+                        this.update(
+                                preset = it as SimplePreset<Record, Any>,
+                                syncIdMap = syncIdMap,
+                                deleteBeforeUpdate = clean)
+                }
+            } catch(e: Exception) {
+                log.error(e.message, e)
             }
         }
 
@@ -189,7 +193,6 @@ constructor(
             // masc20150530. JOOQ cursor requires an explicit transaction
             transactionJooq.execute<Any> { _ ->
                 // Read source records newer than destination timestamp
-                try {
                 val source = genericJooqRepository.findNewerThan(
                         destMaxSyncId,
                         p.sourceTable,
@@ -208,7 +211,7 @@ constructor(
                             // Convert to entity
                             val entity = p.conversionFunction(record)
                             // Store entity
-                            entityManager.persist(entity)
+                            entityManager.merge(entity)
                             // Flush every now and then (improves performance)
                             if (count++ % 100 == 0) {
                                 try {
@@ -241,10 +244,6 @@ constructor(
                 }
 
                 null
-                } catch (e: Exception) {
-                    log.error("SychEntyty " + " Error: " + e.toString())
-                }
-
             }
             Unit
         }
@@ -255,7 +254,9 @@ constructor(
      */
     var interval: Duration
         get() = this.service.period ?: Duration.ZERO
-        set(value) { this.service.period = value }
+        set(value) {
+            this.service.period = value
+        }
 
     open fun start() {
         this.service.start()
