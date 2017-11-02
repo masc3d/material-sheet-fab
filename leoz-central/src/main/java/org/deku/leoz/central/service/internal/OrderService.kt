@@ -61,10 +61,14 @@ class OrderService : OrderService {
                     val authorizedUserRecord = userRepository.findByKey(apiKey)
                     authorizedUserRecord ?:
                             throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-                    when {
-//todo include send_date
-                        order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId
-                        ->
+
+                    /**
+                     * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
+                     * ADMIN-User are allowed to access every order.
+                     */
+                    if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+                        //todo include send_date (JT)
+                        if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
                             throw DefaultProblem(status = Response.Status.FORBIDDEN)
                     }
                 }
@@ -102,10 +106,14 @@ class OrderService : OrderService {
             val authorizedUserRecord = userRepository.findByKey(apiKey)
             authorizedUserRecord ?:
                     throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-            when {
-//todo include send_date
-                order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId
-                ->
+
+            /**
+             * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
+             * ADMIN-User are allowed to access every order.
+             */
+            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+                //todo include send_date (JT)
+                if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
                     throw DefaultProblem(status = Response.Status.FORBIDDEN)
             }
         }
