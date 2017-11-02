@@ -18,7 +18,7 @@ export class BagscanService extends LoadinglistService {
   protected validateBackLabelUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/backlabel`;
   protected validateBackSealUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/backseal`;
 /*  protected packageUrl = `${environment.apiUrl}/internal/v1/bagscan/packages/`;*/
-  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/bag/`;
+  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/bag/station/`;
   protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/bagscan/new`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/bagscan/report/header`;
 
