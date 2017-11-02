@@ -29,6 +29,13 @@ class ParcelJooqRepository {
 
     lateinit var dslContext: DSLContext
 
+    fun getCountParcelsByBmp(bmpFilename:String,orderid:Long):Int{
+        return dslContext.selectCount()
+                .from(Tables.TBLAUFTRAGCOLLIES)
+                .where(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME.eq(bmpFilename)
+                        .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble())))
+                .fetchOne(0,Int::class.java)
+    }
 
     fun setSignaturePath(parcelNumber: String, path: String) {
         dslContext.update(Tables.TBLAUFTRAGCOLLIES)

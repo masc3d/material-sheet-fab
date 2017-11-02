@@ -219,17 +219,19 @@ open class ParcelProcessing {
                     val mobileFilename = FileName(pictureUID, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
                     val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
                     val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
+                    val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
                     val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
-                    if (!file.exists())
-                        if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
-                            val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+                    if (!file.exists()) {
+                        val countBmp = parcelRepository.getCountParcelsByBmp(bmp, parcelRecord.orderid.toLong())
+                        //if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
+                        if (countBmp > 0) {
 //wenn LEO soweit ist .jpg anzuzeigen...
                             parcelRecord.bmpfilename = bmp
                             parcelRecord.store()
 
                         } else
                             return@forEach
-                    else {
+                    } else {
 
 
                         val copyOption = StandardCopyOption.REPLACE_EXISTING
@@ -237,7 +239,6 @@ open class ParcelProcessing {
                         if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
                             pathToDelete = file.toPath()
 
-                            val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
 //wenn LEO soweit ist .jpg anzuzeigen...
                             parcelRecord.bmpfilename = bmp
                             parcelRecord.store()
