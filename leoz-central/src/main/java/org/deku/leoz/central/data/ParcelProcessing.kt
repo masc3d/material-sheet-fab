@@ -86,29 +86,29 @@ open class ParcelProcessing {
 //                parcelNo ?:
 //                        return@forEach
 
-                val parcel=it.parcelId?:0.toLong()
-                val parcelRecord =parcelRepository.getParcelByParcelId(parcel)
+                val parcel = it.parcelId ?: 0.toLong()
+                val parcelRecord = parcelRepository.getParcelByParcelId(parcel)
 
-                when(parcel){
-                    0.toLong()->{
+                when (parcel) {
+                    0.toLong() -> {
                         log.info("parcelId=0,messageID=${it.id.toString()}")
                         it.isProccessed = 1
                         it.store()
                         return@forEach
                     }
-                    else->{
+                    else -> {
 
                     }
                 }
 
-                if(parcelRecord ==null) {
+                if (parcelRecord == null) {
                     log.info("parcelId=$parcel,messageID=${it.id.toString()} no parcelRecord")
                     it.isProccessed = 1
                     it.store()
                     return@forEach
                 }
                 val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
-                if(orderRecord ==null) {
+                if (orderRecord == null) {
                     log.info("parcelId=$parcel,messageID=${it.id.toString()} no orderRecord")
                     it.isProccessed = 1
                     it.store()
@@ -118,7 +118,7 @@ open class ParcelProcessing {
                 var insertStatus = true
                 val r = dslContext.newRecord(Tables.TBLSTATUS)
 
-                val parcelNo =parcelRecord.colliebelegnr.toLong()
+                val parcelNo = parcelRecord.colliebelegnr.toLong()
 
                 val parcelScan = parcelNo.toString()
 
@@ -209,20 +209,29 @@ open class ParcelProcessing {
 
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
-                    if(pictureUID==null){
+                    if (pictureUID == null) {
                         log.info("parcelId=$parcel,messageID=${it.id.toString()} pictureID null")
                         return@forEach
                     }
+                    val pathMobile = storage.mobileDataDirectory.toPath()
+                    val fileNameInfo = userId.toString()
+                    val loc = Location.SB
+                    val mobileFilename = FileName(pictureUID, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
+                    val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
+                    val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
                     val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
                     if (!file.exists())
-                        return@forEach
+                        if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
+                            val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
+//wenn LEO soweit ist .jpg anzuzeigen...
+                            parcelRecord.bmpfilename = bmp
+                            parcelRecord.store()
+
+                        } else
+                            return@forEach
                     else {
-                        val pathMobile = storage.mobileDataDirectory.toPath()
-                        val fileNameInfo = userId.toString()
-                        val loc = Location.SB
-                        val mobileFilename = FileName(pictureUID, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
-                        val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
-                        val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
+
+
                         val copyOption = StandardCopyOption.REPLACE_EXISTING
                         Files.copy(file.toPath(), pathFileMobile, copyOption)
                         if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
