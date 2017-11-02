@@ -423,13 +423,13 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   }
 
   public scanPackNo( packageId: string ) {
-    this.loadinglistService.scanPack( packageId, String( this.activeLoadinglist.loadlistNo ) )
+    this.loadinglistService.scanPack( packageId, this.activeLoadinglist.loadlistNo)
       .subscribe( ( response: HttpResponse<any> ) => {
           const json = response;
           // switch (response.status) {
           switch (json.status) {
-            case 201:
-              this.handleSuccess( json['msgText'] );
+            case 200:
+              this.handleSuccess( 'success' );
               break;
             case 301:
               this.handleError( json['packageId'], json['msgText'] );

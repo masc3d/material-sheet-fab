@@ -17,8 +17,8 @@ import { sumAndRound } from '../../../core/math/sumAndRound';
 @Injectable()
 export class LoadinglistService {
 
-  // protected packageUrl = `${environment.apiUrl}/internal/v1/loadinglist/packages`;
-  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/`;
+  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/station/`;
+  protected scanUrl = `${environment.apiUrl}/internal/v1/parcel/export`;
   protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/parcel/loadinglist/new`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/loadinglist/report/header`;
 
@@ -131,10 +131,9 @@ export class LoadinglistService {
     } );
   }
 
-  scanPack( packageId: string, loadlistNo: string ): Observable<HttpResponse<any>> {
-
-    return this.http.post( this.packageUrl,
-      { 'packageId': packageId, 'loadlistNo': loadlistNo } );
+  scanPack( packageId: string, loadlistNo: number ): Observable<HttpResponse<any>> {
+    return this.http.put( this.scanUrl,
+      { 'parcel-no': packageId, 'loadinglist-no': loadlistNo, 'station-no': this.activeStation.stationNo } );
   }
 
   setActiveLoadinglist( selected: number ) {
