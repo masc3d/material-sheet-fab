@@ -18,10 +18,11 @@ class OrderTableJooqRepository {
     lateinit var dslContext: DSLContext
 
     fun findOrderByOrderNumber(orderNo: Long): TblauftragRecord? {
+        if(orderNo==0.toLong()) return null
         return dslContext.select()
                 .from(Tables.TBLAUFTRAG)
                 .where(Tables.TBLAUFTRAG.ORDERID.eq(orderNo.toDouble()))
-                .and(Tables.TBLAUFTRAG.ORDERID.greaterThan(0.0))
+                //.and(Tables.TBLAUFTRAG.ORDERID.greaterThan(0.0))
                 ?.fetchOneInto(Tblauftrag.TBLAUFTRAG)
     }
 }
