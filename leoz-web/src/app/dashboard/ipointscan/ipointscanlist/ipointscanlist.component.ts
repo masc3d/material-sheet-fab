@@ -6,7 +6,7 @@ import { SelectItem } from 'primeng/primeng';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
-import { Ipointscan } from '../../../core/models/ipointscan.model';
+import { Package } from '../../../core/models/package.model';
 
 @Component( {
   selector: 'app-ipointscanlist',
@@ -17,7 +17,10 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
   ipointscanlistForm: FormGroup;
   scanOptions: SelectItem[];
 
-  shipments: Ipointscan[];
+  parcels: Package[];
+
+  realWeightTotal: number;
+  volWeightTotal: number;
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
@@ -34,11 +37,26 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
       scanfield: [ null ],
       msgfield: [ null ],
       printlabel: [ null ],
-      novalidation: [null],
+      novalidation: [ null ],
       basedon: [ null ]
     } );
-    this.shipments = [ {
-      parcelno: '84259511468(0)',
+    this.parcels = [];
+    this.realWeightTotal = 0;
+    this.volWeightTotal = 0;
+    this.callInitialShipmentService();
+  }
+
+  private createScanOptions(): SelectItem[] {
+    const scanOptions = [];
+    scanOptions.push( { label: this.translate.instant( '84259511468(0)' ), value: 1 } );
+    scanOptions.push( { label: this.translate.instant( '84259511469(7)' ), value: 2 } );
+    scanOptions.push( { label: this.translate.instant( '84259511470(4)' ), value: 3 } );
+    return scanOptions;
+  }
+
+  private callInitialShipmentService() {
+    this.parcels = [ {
+      parcelNo: 84259511468,
       deliverydate: '24.10.2017',
       deliverytime: '12:00',
       typeOfPackaging: 94,
@@ -49,7 +67,7 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
       height: 0
     },
       {
-        parcelno: '84259511469(7)',
+        parcelNo: 84259511469,
         deliverydate: '24.10.2017',
         deliverytime: '12:00',
         typeOfPackaging: 94,
@@ -60,7 +78,7 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
         height: 0
       },
       {
-        parcelno: '84259511470(4)',
+        parcelNo: 84259511470,
         deliverydate: '24.10.2017',
         deliverytime: '12:00',
         typeOfPackaging: 94,
@@ -69,15 +87,20 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
         length: 0,
         width: 0,
         height: 0
-      },
-      ];
+      }
+    ];
+    this.calcTotals();
   }
 
-  private createScanOptions(): SelectItem[] {
-    const scanOptions = [];
-    scanOptions.push( { label: this.translate.instant( '84259511468(0)' ), value: 1 } );
-    scanOptions.push( { label: this.translate.instant( '84259511469(7)' ), value: 2 } );
-    scanOptions.push( { label: this.translate.instant( '84259511470(4)' ), value: 3 } );
-    return scanOptions;
+  private calcTotals() {
+    this.realWeightTotal = this.sumAndRound(this.parcels
+      .map( ( parcel: Package ) => parcel.realWeight ));
+    this.volWeightTotal = this.sumAndRound(this.parcels
+      .map( ( parcel: Package ) => parcel.volWeight ));
+  }
+
+  private sumAndRound( input: number[], digits = 1) {
+    const digitFactor = digits * 10;
+    return Math.round( input.reduce( ( a, b ) => a + b, 0 ) * digitFactor ) / digitFactor;
   }
 }
