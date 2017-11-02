@@ -16,6 +16,7 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStatusCodes
 import android.content.IntentSender
 import android.location.Location
+import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -69,11 +70,13 @@ class LocationServiceGMS:
     }
 
     override fun onConnectionSuspended(p0: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        log.warn("Google API connection suspended!")
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        log.warn("Connection to Google API failed. Fallback to android location service.")
+        ContextCompat.startForegroundService(this.applicationContext, Intent(applicationContext, LocationService::class.java))
+        this.stopSelf()
     }
 
     val locationListener = LocationListener {

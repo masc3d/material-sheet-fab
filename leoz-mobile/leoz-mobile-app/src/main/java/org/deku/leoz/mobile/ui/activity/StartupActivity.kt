@@ -149,6 +149,7 @@ class StartupActivity : BaseActivity() {
                                         (locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationServiceGMS::class.java)) -> {
                                             ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
                                         }
+
                                         (!locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationService::class.java)) -> {
                                             ContextCompat.startForegroundService(this, Intent(applicationContext, LocationService::class.java))
                                         }
