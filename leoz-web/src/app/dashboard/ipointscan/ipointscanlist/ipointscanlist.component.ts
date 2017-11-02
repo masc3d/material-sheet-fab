@@ -7,6 +7,7 @@ import { SelectItem } from 'primeng/primeng';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { Package } from '../../../core/models/package.model';
+import { sumAndRound } from '../../../core/math/sumAndRound';
 
 @Component( {
   selector: 'app-ipointscanlist',
@@ -93,14 +94,9 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
   }
 
   private calcTotals() {
-    this.realWeightTotal = this.sumAndRound(this.parcels
+    this.realWeightTotal = sumAndRound(this.parcels
       .map( ( parcel: Package ) => parcel.realWeight ));
-    this.volWeightTotal = this.sumAndRound(this.parcels
+    this.volWeightTotal = sumAndRound(this.parcels
       .map( ( parcel: Package ) => parcel.volWeight ));
-  }
-
-  private sumAndRound( input: number[], digits = 1) {
-    const digitFactor = digits * 10;
-    return Math.round( input.reduce( ( a, b ) => a + b, 0 ) * digitFactor ) / digitFactor;
   }
 }

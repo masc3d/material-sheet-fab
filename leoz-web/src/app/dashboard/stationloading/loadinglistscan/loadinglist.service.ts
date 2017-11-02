@@ -12,6 +12,7 @@ import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
 import { Station } from '../../../core/auth/station.model';
 import { Shipment } from '../../../core/models/shipment.model';
+import { sumAndRound } from '../../../core/math/sumAndRound';
 
 @Injectable()
 export class LoadinglistService {
@@ -142,9 +143,8 @@ export class LoadinglistService {
   }
 
   sumWeights( packages: Package[] ) {
-    return Math.round( packages
-      .map( ( p ) => p.realWeight )
-      .reduce( ( a, b ) => a + b, 0 ) * 10 ) / 10;
+    return sumAndRound( packages
+      .map( ( parcel: Package ) => parcel.realWeight ));
   }
 
   private createLoadinglist( loadlistNo: number, allPackages: Package[] ) {
