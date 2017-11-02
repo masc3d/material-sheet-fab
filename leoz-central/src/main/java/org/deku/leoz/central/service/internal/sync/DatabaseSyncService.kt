@@ -189,6 +189,7 @@ constructor(
             // masc20150530. JOOQ cursor requires an explicit transaction
             transactionJooq.execute<Any> { _ ->
                 // Read source records newer than destination timestamp
+                try {
                 val source = genericJooqRepository.findNewerThan(
                         destMaxSyncId,
                         p.sourceTable,
@@ -210,8 +211,12 @@ constructor(
                             entityManager.persist(entity)
                             // Flush every now and then (improves performance)
                             if (count++ % 100 == 0) {
-                                entityManager.flush()
-                                entityManager.clear()
+                                try {
+                                    entityManager.flush()
+                                    entityManager.clear()
+                                } catch (e: Exception) {
+                                    log.error("SychEntyty " + entity.toString() + " Error: " + e.toString())
+                                }
                             }
                         }
                     }
@@ -234,9 +239,13 @@ constructor(
                 } else {
                     log.trace(lfmt("Uptodate [${destMaxSyncId}]"))
                 }
-                null
-            }
 
+                null
+                } catch (e: Exception) {
+                    log.error("SychEntyty " + " Error: " + e.toString())
+                }
+
+            }
             Unit
         }
     }
