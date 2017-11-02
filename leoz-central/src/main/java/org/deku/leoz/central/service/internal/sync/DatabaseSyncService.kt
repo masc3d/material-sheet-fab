@@ -9,7 +9,6 @@ import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
-import sx.concurrent.Service
 import java.util.concurrent.ScheduledExecutorService
 import javax.inject.Inject
 import javax.inject.Named
@@ -60,9 +59,7 @@ constructor(
         private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
     }
 
-    /**
-     * Database sync preset
-     */
+    /** Base interface for all sync presets */
     interface Preset {}
 
     /**
@@ -75,13 +72,17 @@ constructor(
      * @property destQdslSyncIdPath Destination QueryDSL sync id field path
      * @property conversionFunction    Conversion function JOOQ record -> JPA entity
      */
-    class SimplePreset<TCentralRecord : org.jooq.Record, TEntity>(
+    open class SimplePreset<TCentralRecord : org.jooq.Record, TEntity>(
             val sourceTable: org.jooq.impl.TableImpl<TCentralRecord>,
             val sourceTableSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
             val destQdslEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
             val destQdslSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
             val conversionFunction: (TCentralRecord) -> TEntity
-    ) : Preset
+    ) : Preset {
+        override fun toString(): String =
+                "Preset [${sourceTable.name} -> ${destQdslEntityPath.metadata.name}]"
+
+    }
 
     //region Events
     interface EventListener : sx.event.EventListener {
@@ -133,8 +134,8 @@ constructor(
                                 syncIdMap = syncIdMap,
                                 deleteBeforeUpdate = clean)
                 }
-            } catch(e: Exception) {
-                log.error(e.message, e)
+            } catch (e: Exception) {
+                log.error("${it} failed. ${e.message}")
             }
         }
 
@@ -214,12 +215,8 @@ constructor(
                             entityManager.merge(entity)
                             // Flush every now and then (improves performance)
                             if (count++ % 100 == 0) {
-                                try {
-                                    entityManager.flush()
-                                    entityManager.clear()
-                                } catch (e: Exception) {
-                                    log.error("SychEntyty " + entity.toString() + " Error: " + e.toString())
-                                }
+                                entityManager.flush()
+                                entityManager.clear()
                             }
                         }
                     }
