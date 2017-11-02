@@ -1,8 +1,8 @@
 export interface Package {
   parcelNo: number;
-  typeOfPackaging: number;
-  realWeight: number;
 
+  realWeight?: number;
+  typeOfPackaging?: number;
   orderId?: number;
   parcelPosition?: number;
   loadinglistNo?: number;

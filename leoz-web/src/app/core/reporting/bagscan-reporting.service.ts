@@ -6,6 +6,7 @@ import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
 
 import { ReportingService } from './reporting.service';
+import { checkdigitInt25 } from '../math/checkdigitInt25';
 
 @Injectable()
 export class BagscanReportingService extends ReportingService {
@@ -18,7 +19,7 @@ export class BagscanReportingService extends ReportingService {
 
     let belegNr = '345678901';
     belegNr = ('000000000000' + belegNr).substr(-11);
-    const checkSum = this.getChecksum(belegNr);
+    const checkSum = checkdigitInt25(belegNr);
     const barcode = belegNr + checkSum;
     console.log(barcode);
     console.log(belegNr + '(' + checkSum + ')');
@@ -63,26 +64,4 @@ export class BagscanReportingService extends ReportingService {
     } ), 1 );
   }
 
-  getChecksum( belegNr: string ): number {
-    let oddSum = 0;
-    let evenSum = 0;
-    let counter = 1;
-
-    belegNr
-      .split( '' )
-      .reverse()
-      .forEach( ( char: string ) => {
-        if (counter % 2 === 0) {
-          evenSum += parseInt( char, 10 );
-        } else {
-          oddSum += parseInt( char, 10 );
-        }
-        counter += 1;
-      } );
-    /*
-     * Modulo 10 von (Summe aus iOddsum*3 und iEvenSum ) von 10 abziehen,
-     * Modulo 10 des Ergebnisses ist die Prüfziffer der ersten 9 Stellen
-     */
-    return (10 - ( ( (oddSum * 3) + evenSum) % 10) ) % 10;
-  }
 }

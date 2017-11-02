@@ -4,11 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.repository.MailQueueRepository
-import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
-import org.deku.leoz.central.data.repository.isActive
-import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AllowedStations
 import sx.rs.DefaultProblem
@@ -20,6 +17,7 @@ import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.model.UserRole
+import org.deku.leoz.node.data.repository.master.StationRepository
 import java.util.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.HttpHeaders
@@ -43,6 +41,9 @@ class UserService : UserService {
 
     @Inject
     private lateinit var mailRepository: MailQueueRepository
+
+    @Inject
+    private lateinit var depotRepository: DepotJooqRepository
 
     @Context
     private lateinit var httpHeaders: HttpHeaders
@@ -125,13 +126,26 @@ class UserService : UserService {
     }
 
 
-    override fun create(user: User, apiKey: String?, sendAppLink: Boolean) {
+    override fun create(user: User, apiKey: String?, stationMatchcode: String?, debitorNr: Long?, sendAppLink: Boolean) {
 
-        var rec = userRepository.findByMail(user.email)
+        val rec = userRepository.findByMail(user.email)
         if (rec != null) {
             throw DefaultProblem(
                     status = Response.Status.BAD_REQUEST,
                     title = "email exists")
+        }
+
+        if (user.debitorId == null) {
+            when {
+                debitorNr != null -> {
+                    user.debitorId = userRepository.findDebitorIdByNr(debitorNr.toDouble())
+                }
+
+                !stationMatchcode.isNullOrEmpty() -> {
+                    user.debitorId = depotRepository.findByMatchcode(matchcode = stationMatchcode!!).debitorId
+                }
+            }
+
         }
 
         update(email = user.email, user = user, apiKey = apiKey, sendAppLink = sendAppLink)

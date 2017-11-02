@@ -105,9 +105,10 @@ export class MockHttpInterceptor implements HttpInterceptor {
           }
         default:
           return new Observable( resp => {
-            resp.next( new HttpErrorResponse( {
-              status: 201,
-              error: new Error( 'Unknown RequestMethod' )
+            // resp.next( new HttpErrorResponse( {
+            resp.next( new HttpResponse( {
+              status: 201
+              // error: new Error( 'Unknown RequestMethod' )
             } ) );
             resp.complete();
           } );
