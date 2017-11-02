@@ -112,6 +112,9 @@ dependencies {
             // JavaMail
             "com.sun.mail:android-mail:$v_javamail",
             "com.sun.mail:android-activation:$v_javamail",
+
+            // GMS
+            "com.google.android.gms:play-services-location:11.4.0",
     )
 
     compileOnly(
