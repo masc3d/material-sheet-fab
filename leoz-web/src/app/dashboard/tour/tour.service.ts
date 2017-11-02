@@ -77,7 +77,7 @@ export class TourService {
     } );
   }
 
-  private getAllLocations(): Observable<any[]> {
+  private getAllLocations(): Observable<Object> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
     let usedUrl = this.locationUrl;
     let queryParameters = new HttpParams().set( 'debitor-id', String( currUser.user.debitorId ) );
@@ -100,7 +100,7 @@ export class TourService {
     } );
   }
 
-  private getRoute( userId: number ): Observable<Position[][]> {
+  private getRoute( userId: number ): Observable<Object> {
     let usedUrl = this.locationUrl;
 
     let queryParameters = new HttpParams().set( 'user-id', String( userId ) );
@@ -169,7 +169,7 @@ export class TourService {
     this.selectedDate = selectedDate;
     this.resetDisplay();
     this.getRoute( selectedDriver.id )
-      .subscribe( ( driverLocations ) => {
+      .subscribe( ( driverLocations: Position[][] ) => {
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
@@ -206,7 +206,7 @@ export class TourService {
     this.resetDisplay();
     this.driverService.getDrivers();
     this.getAllLocations()
-      .subscribe( ( allLocations ) => {
+      .subscribe( ( allLocations: any[] ) => {
           const allMarkers = [];
           if (allLocations && allLocations.length > 0) {
             allLocations.forEach( ( userLocation: any ) => {

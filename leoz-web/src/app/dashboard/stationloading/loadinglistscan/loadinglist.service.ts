@@ -131,7 +131,7 @@ export class LoadinglistService {
     } );
   }
 
-  scanPack( packageId: string, loadlistNo: number ): Observable<HttpResponse<any>> {
+  scanPack( packageId: string, loadlistNo: number ): Observable<Object> {
     return this.http.put( this.scanUrl,
       { 'parcel-no': packageId, 'loadinglist-no': loadlistNo, 'station-no': this.activeStation.stationNo } );
   }
