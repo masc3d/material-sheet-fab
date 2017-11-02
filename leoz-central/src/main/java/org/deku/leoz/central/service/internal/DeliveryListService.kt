@@ -4,6 +4,7 @@ import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.config.Rest
+import org.deku.leoz.model.UserRole
 import sx.rs.DefaultProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
@@ -58,10 +59,13 @@ class DeliveryListService
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
                 throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-        when {
-            deliveryListRecord.debitorId.toInt() != authorizedUserRecord.debitorId
-//                depotRepository.findDebitorDepots(authorizedUserRecord.debitorId).map { (deliveryListRecord.deliveryStation.toInt()) }.isEmpty()
-            ->
+
+        /**
+         * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
+         * ADMIN-User are allowed to access every delivery-list.
+         */
+        if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+            if (deliveryListRecord.debitorId.toInt() != authorizedUserRecord.debitorId)
                 throw DefaultProblem(status = Response.Status.FORBIDDEN)
         }
 
