@@ -34,6 +34,9 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.patloew.rxlocation.GoogleApiConnectionException
 import com.patloew.rxlocation.RxLocation
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
@@ -576,7 +579,7 @@ abstract class Activity : BaseActivity(),
     }
 
     override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(BaseContextWrapper.wrap(context = newBase!!, language = null))
+        super.attachBaseContext(LocaleContextWrapper.wrap(context = newBase!!, language = null))
     }
 
     private val cameraAidcFragment: AidcCameraFragment?
@@ -1081,20 +1084,24 @@ abstract class Activity : BaseActivity(),
 
     private fun checkLocationSettings() {
         log.debug("Check location settings")
-        if (locationServices.locationSettings.useGoogleLocationService) {
+        val googleSupport = device.googleApiSupported
+
+        if (locationServices.locationSettings.useGoogleLocationService && googleSupport) {
             RxLocation(applicationContext).settings().checkAndHandleResolutionCompletable(this.locationServices.locationRequest)
                     .bindToLifecycle(this)
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onComplete = {
-                                log.debug("LocationSettings satisfied")
+                                log.trace("LocationSettings satisfied")
                             },
                             onError = {
                                 log.warn("LocationSettings not satisfied!", it)
-                                //this.app.terminate()
                             }
                     )
         } else {
+            if (!googleSupport)
+                log.warn("GooglePlay-Services are not supported by this device")
+
             val provider = locationServices.locationManager
             if (!provider.isProviderEnabled(LocationManager.GPS_PROVIDER) || !provider.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 MaterialDialog.Builder(this)

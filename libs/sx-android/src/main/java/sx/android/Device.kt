@@ -7,6 +7,8 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.provider.Settings
 import android.support.annotation.RequiresApi
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import org.slf4j.LoggerFactory
 import sx.text.toHexString
 import java.util.*
@@ -165,6 +167,18 @@ open class Device(private val context: Context) {
             false
         }
     }
+
+    val googleApiSupported: Boolean
+        get() {
+            val apiAvailability = GoogleApiAvailability.getInstance()
+            val status = apiAvailability.isGooglePlayServicesAvailable(this.context)
+
+            if(status != ConnectionResult.SUCCESS) {
+                return false
+            }
+
+            return true
+        }
 
     override fun toString(): String =
             "Device(imei=${imei}, androidId=${androidId}) androidVersion=${androidVersion} serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"

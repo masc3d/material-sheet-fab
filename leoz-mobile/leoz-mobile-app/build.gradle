@@ -275,8 +275,6 @@ dependencies {
 
             //RX Location
             "com.patloew.rxlocation:rxlocation:1.0.3",
-            // GMS
-            "com.google.android.gms:play-services-location:11.4.0",
             //"com.google.android.gms:play-services-places:9.4.0",
 
             // Volley

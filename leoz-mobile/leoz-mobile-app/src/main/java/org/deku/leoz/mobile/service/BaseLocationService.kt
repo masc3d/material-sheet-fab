@@ -1,12 +1,10 @@
 package org.deku.leoz.mobile.service
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -22,13 +20,14 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.mobile.LocationSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
+import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.ui.activity.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV1
+import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
 import java.util.*
@@ -103,6 +102,7 @@ abstract class BaseLocationService: Service() {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 this.locationServices.locationManager.registerGnssStatusCallback(gnssStatusCallback)
             } else {
+                @Suppress("DEPRECATION")
                 this.locationServices.locationManager.addGpsStatusListener(gpsStatusListener)
             }
         }
@@ -186,9 +186,9 @@ abstract class BaseLocationService: Service() {
         // TODO: Store location data in database and send it as an set of multiple positions once.
 
         mqttChannels.central.transient.channel().send(
-                message = LocationServiceV1.GpsMessage(
+                message = LocationServiceV2.GpsMessage(
                         userId = this@BaseLocationService.login.authenticatedUser?.id,
-                        nodeId = this@BaseLocationService.identity.uid.value,
+                        nodeKey = this@BaseLocationService.identity.uid.value,
                         dataPoints = arrayOf(currentPosition)
                 )
         )

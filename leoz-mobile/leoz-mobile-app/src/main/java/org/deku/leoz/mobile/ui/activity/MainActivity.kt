@@ -10,7 +10,6 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.deku.leoz.mobile.Application
-import org.deku.leoz.mobile.LocationSettings
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable

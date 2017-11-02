@@ -10,6 +10,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.mobile.settings.LocationSettings
 import org.threeten.bp.Duration
 
 /**
