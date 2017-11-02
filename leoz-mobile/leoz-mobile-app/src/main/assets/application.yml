@@ -46,6 +46,9 @@ location:
    # Period in seconds
    period: 20
    allow-mock-location: false
+   # GoogleLocation API specific settings
+   useGoogleLocationService: true
+   smallestDisplacement: 250
 
 # Developer/debug settings
 debug:

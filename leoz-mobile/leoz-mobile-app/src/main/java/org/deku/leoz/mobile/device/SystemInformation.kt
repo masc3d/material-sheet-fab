@@ -19,7 +19,9 @@ data class SystemInformation(
         /** Android version */
         var androidVersion: String = "",
         /** Current application version */
-        val applicationVersion: String
+        val applicationVersion: String,
+        /** Whether GoogleApi is supported by the device or not */
+        val googleApiSupport: Boolean
 ) {
     companion object
 }
@@ -40,6 +42,7 @@ fun SystemInformation.Companion.create(
             serial = device.serial,
             imei = if (device.imei.isNotBlank()) device.imei else DUMMY_IMEI,
             androidVersion = device.androidVersion,
-            applicationVersion = application.version
+            applicationVersion = application.version,
+            googleApiSupport = device.googleApiSupported
     )
 }

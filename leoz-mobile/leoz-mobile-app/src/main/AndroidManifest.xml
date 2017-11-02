@@ -53,6 +53,9 @@
         <service
             android:name=".service.LocationService"
             android:enabled="true"/>
+        <service
+            android:name=".service.LocationServiceGMS"
+            android:enabled="true"/>
 
         <!-- FileProvider, required on newer android versions for sharing files between processes
         Required for eg. system apk installer to access downloaded apk file -->

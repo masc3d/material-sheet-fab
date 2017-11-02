@@ -4,9 +4,11 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
@@ -23,6 +25,7 @@ import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
@@ -75,6 +78,7 @@ class StartupActivity : BaseActivity() {
         // Load log configuration first
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
+//        Kodein.global.instance<BroadcastReceiverConfiguration>()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
@@ -113,10 +117,13 @@ class StartupActivity : BaseActivity() {
                         throw IllegalStateException("AidcReader initialization timed out", it)
                     }
 
+//            val ovGoogleApi = (this.application as Application).checkGoogleApiAvailability(this)
+
             // Merge and subscribe
             Observable.mergeArray(
                     ovPermissions.cast(Any::class.java),
-                    ovAidcReader.cast(Any::class.java)
+                    ovAidcReader.cast(Any::class.java) /** ,
+                    ovGoogleApi.toObservable() */
             )
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
@@ -132,8 +139,24 @@ class StartupActivity : BaseActivity() {
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
 
+                                    val locationSettings: LocationSettings by Kodein.global.lazy.instance()
+
                                     // Initialize ThreeTen (java.time / JSR-310 compatibility drop-in)
                                     AndroidThreeTen.init(this.application)
+
+                                    // Start location based services
+                                    when {
+                                        (locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationServiceGMS::class.java)) -> {
+                                            ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
+                                        }
+
+                                        (!locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationService::class.java)) -> {
+                                            ContextCompat.startForegroundService(this, Intent(applicationContext, LocationService::class.java))
+                                        }
+                                        else -> {
+                                            log.debug("LocationService already running.")
+                                        }
+                                    }
 
                                     // Write device management identity
                                     try {
@@ -177,17 +200,7 @@ class StartupActivity : BaseActivity() {
                                         it.dispatcher.start()
                                     }
 
-                                    // Initialize location service
-                                    run {
-                                        val locationSettings = Kodein.global.instance<LocationSettings>()
-
-                                        if (locationSettings.enabled) {
-                                            this.startService(
-                                                    Intent(applicationContext, LocationService::class.java))
-                                        }
-                                    }
-
-                                    // Send node info message
+                                    // Send authorization message
                                     run {
                                         val mqEndpoints = Kodein.global.instance<MqttEndpoints>()
                                         mqEndpoints.central.main.channel().send(
@@ -217,6 +230,7 @@ class StartupActivity : BaseActivity() {
                                 log.error(e.message, e)
 
                                 this@StartupActivity.finishAffinity()
+                                System.exit(0)
                             })
         } else {
             this.startMainActivity(withAnimation = false)
