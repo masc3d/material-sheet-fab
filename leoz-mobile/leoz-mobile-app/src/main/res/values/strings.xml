@@ -323,4 +323,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="yes_start_tour">Yes, start tour</string>
     <string name="accept_always">Accept always</string>
+    <string name="bike">Bike</string>
+    <string name="car">Car</string>
+    <string name="van">Van</string>
+    <string name="truck">Truck</string>
 </resources>

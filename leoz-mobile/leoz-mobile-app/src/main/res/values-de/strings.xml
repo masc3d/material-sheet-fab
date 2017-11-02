@@ -279,4 +279,8 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
+    <string name="bike">Fahrrad</string>
+    <string name="car">Auto</string>
+    <string name="truck">LKW</string>
+    <string name="van">Transporter</string>
 </resources>
