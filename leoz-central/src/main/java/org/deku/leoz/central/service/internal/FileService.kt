@@ -83,11 +83,8 @@ class FileServiceV1 :
         // File names/extensions
 
         val extension = mimeType.extension
-        //val filename = "${fileUid}.${extension}" //${extension} includes dot already
         val filename = "${fileUid}${extension}"
-        //val metaFilename = "${fileUid}.${extension}.meta"
         val metaFilename = "${fileUid}${extension}.meta"
-        //val tempFilename = "${fileUid}.${extension}.temp"
         val tempFilename = "${fileUid}${extension}.temp"
 
         // Files
