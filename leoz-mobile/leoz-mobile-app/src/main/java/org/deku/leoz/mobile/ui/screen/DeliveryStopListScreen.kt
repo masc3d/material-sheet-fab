@@ -41,6 +41,7 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.*
+import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
 import sx.rx.ObservableRxProperty
 
 /**
@@ -77,8 +78,8 @@ class DeliveryStopListScreen
 
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
-                    FlexibleVmItem<
-                            *>>>({
+                    VmItem<
+                            *, Any>>>({
         FlexibleAdapter(listOf())
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
@@ -148,7 +149,7 @@ class DeliveryStopListScreen
                         this.aidcReader.enabled = !editMode
 
                         this.flexibleAdapter.allBoundViewHolders
-                                .mapNotNull { it as? FlexibleVmHolder }
+                                .mapNotNull { it as? VmHolder }
                                 .forEach {
                                     it.beginDelayedTransition()
                                 }
@@ -350,7 +351,7 @@ class DeliveryStopListScreen
 
         // Items
         flexibleAdapter.addItem(
-                FlexibleHeaderVmItem(
+                SimpleVmHeaderItem<StopListStatisticsViewModel>(
                         view = R.layout.view_delivery_stop_list_stats,
                         variable = BR.stats,
                         viewModel = StopListStatisticsViewModel(
@@ -370,7 +371,7 @@ class DeliveryStopListScreen
                 delivery.pendingStops
                         .blockingFirst().value
                         .map {
-                            val item = FlexibleVmItem(
+                            val item = SimpleVmItem(
                                     view = R.layout.item_stop,
                                     variable = BR.stop,
                                     viewModel = StopViewModel(

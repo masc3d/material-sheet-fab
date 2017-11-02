@@ -41,13 +41,19 @@ export const routes = [
         path: 'importscancheck', data: [ 'importscancheck' ],
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
-        loadChildren: 'app/dashboard/importscancheck.module#ImportscancheckModule'
+        loadChildren: 'app/dashboard/importscan/importscan.module#ImportscanModule'
       },
       {
         path: 'deliveryscan', data: [ 'deliveryscan' ],
         canActivate: [ AuthenticationGuard,
                        RoleGuard ],
         loadChildren: 'app/dashboard/deliveryscan/deliveryscan.module#DeliveryscanModule'
+      },
+      {
+        path: 'ipointscan', data: [ 'ipointscan' ],
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/ipointscan/ipointscan.module#IpointscanModule'
       }
     ]
   }

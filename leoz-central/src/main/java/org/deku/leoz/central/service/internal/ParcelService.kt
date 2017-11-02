@@ -115,27 +115,27 @@ open class ParcelServiceV1 :
 
         log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
 
-        val parcelIds = events.map { it.parcelId }.toList()
-        val mapParcels = orderRepository.getUnitNumbers(parcelIds)
+        //val parcelIds = events.map { it.parcelId }.toList()
+        //val mapParcels = orderRepository.getUnitNumbers(parcelIds)
 
         events.forEach {
 
             val scannedDate = it.time.toTimestamp()
 
-            var parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
+            //var parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
 
-            if (parcelNo == null) {
-                parcelNo = 0
-                log.info("Deleted Parcel. Id= [${it.parcelId}]")
-            }
+//            if (parcelNo == null) {
+//                parcelNo = 0
+//                log.info("Deleted Parcel. Id= [${it.parcelId}]")
+//            }
             //dodo  events[].parcelScancode shuld be filled to handle deleted or moved parcel in mysql between deliverylist and delivered event
 
-            val parcelScan = parcelNo.toString()
+            //val parcelScan = parcelNo.toString()
             val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
             recordMessages.userId = message.userId
             recordMessages.nodeId = message.nodeId
             recordMessages.parcelId = it.parcelId
-            recordMessages.parcelNo = parcelScan
+            //recordMessages.parcelNo = parcelScan
             recordMessages.scanned = scannedDate
             recordMessages.eventValue = it.event
             recordMessages.reasonId = it.reason
@@ -259,7 +259,7 @@ open class ParcelServiceV1 :
                     }
 
                     if (signature != null) {
-                        val sigFilename = saveImage(scannedDate, Location.SB, signature, parcelScan, message.userId, mimetype, Location.SB_Original)
+                        val sigFilename = saveImage(scannedDate, Location.SB, signature, UUID.randomUUID().toString(), message.userId, mimetype, Location.SB_Original)
                         if (sigFilename != "") {
                             //parcelRepository.setSignaturePath(parcelScan, sigPath)
                             parcelAddInfo.pictureLocation = Location.SB.toString()

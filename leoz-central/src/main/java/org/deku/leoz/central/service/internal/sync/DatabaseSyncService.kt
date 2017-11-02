@@ -9,7 +9,6 @@ import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
-import sx.concurrent.Service
 import java.util.concurrent.ScheduledExecutorService
 import javax.inject.Inject
 import javax.inject.Named
@@ -60,9 +59,7 @@ constructor(
         private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
     }
 
-    /**
-     * Database sync preset
-     */
+    /** Base interface for all sync presets */
     interface Preset {}
 
     /**
@@ -75,13 +72,17 @@ constructor(
      * @property destQdslSyncIdPath Destination QueryDSL sync id field path
      * @property conversionFunction    Conversion function JOOQ record -> JPA entity
      */
-    class SimplePreset<TCentralRecord : org.jooq.Record, TEntity>(
+    open class SimplePreset<TCentralRecord : org.jooq.Record, TEntity>(
             val sourceTable: org.jooq.impl.TableImpl<TCentralRecord>,
             val sourceTableSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
             val destQdslEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
             val destQdslSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
             val conversionFunction: (TCentralRecord) -> TEntity
-    ) : Preset
+    ) : Preset {
+        override fun toString(): String =
+                "Preset [${sourceTable.name} -> ${destQdslEntityPath.metadata.name}]"
+
+    }
 
     //region Events
     interface EventListener : sx.event.EventListener {
@@ -124,13 +125,17 @@ constructor(
                 }
 
         this.presets.forEach {
-            when (it) {
-                is SimplePreset<*, *> ->
-                    @Suppress("UNCHECKED_CAST")
-                    this.update(
-                            preset = it as SimplePreset<Record, Any>,
-                            syncIdMap = syncIdMap,
-                            deleteBeforeUpdate = clean)
+            try {
+                when (it) {
+                    is SimplePreset<*, *> ->
+                        @Suppress("UNCHECKED_CAST")
+                        this.update(
+                                preset = it as SimplePreset<Record, Any>,
+                                syncIdMap = syncIdMap,
+                                deleteBeforeUpdate = clean)
+                }
+            } catch (e: Exception) {
+                log.error("${it} failed. ${e.message}")
             }
         }
 
@@ -207,7 +212,7 @@ constructor(
                             // Convert to entity
                             val entity = p.conversionFunction(record)
                             // Store entity
-                            entityManager.persist(entity)
+                            entityManager.merge(entity)
                             // Flush every now and then (improves performance)
                             if (count++ % 100 == 0) {
                                 entityManager.flush()
@@ -234,9 +239,9 @@ constructor(
                 } else {
                     log.trace(lfmt("Uptodate [${destMaxSyncId}]"))
                 }
+
                 null
             }
-
             Unit
         }
     }
@@ -246,7 +251,9 @@ constructor(
      */
     var interval: Duration
         get() = this.service.period ?: Duration.ZERO
-        set(value) { this.service.period = value }
+        set(value) {
+            this.service.period = value
+        }
 
     open fun start() {
         this.service.start()

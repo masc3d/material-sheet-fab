@@ -12,12 +12,13 @@ import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
 import { Station } from '../../../core/auth/station.model';
 import { Shipment } from '../../../core/models/shipment.model';
+import { sumAndRound } from '../../../core/math/sumAndRound';
 
 @Injectable()
 export class LoadinglistService {
 
-  // protected packageUrl = `${environment.apiUrl}/internal/v1/loadinglist/packages`;
-  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/`;
+  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/station/`;
+  protected scanUrl = `${environment.apiUrl}/internal/v1/parcel/export`;
   protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/parcel/loadinglist/new`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/loadinglist/report/header`;
 
@@ -130,10 +131,9 @@ export class LoadinglistService {
     } );
   }
 
-  scanPack( packageId: string, loadlistNo: string ): Observable<HttpResponse<any>> {
-
-    return this.http.post( this.packageUrl,
-      { 'packageId': packageId, 'loadlistNo': loadlistNo } );
+  scanPack( packageId: string, loadlistNo: number ): Observable<Object> {
+    return this.http.put( this.scanUrl,
+      { 'parcel-no': packageId, 'loadinglist-no': loadlistNo, 'station-no': this.activeStation.stationNo } );
   }
 
   setActiveLoadinglist( selected: number ) {
@@ -142,9 +142,8 @@ export class LoadinglistService {
   }
 
   sumWeights( packages: Package[] ) {
-    return Math.round( packages
-      .map( ( p ) => p.realWeight )
-      .reduce( ( a, b ) => a + b, 0 ) * 10 ) / 10;
+    return sumAndRound( packages
+      .map( ( parcel: Package ) => parcel.realWeight ));
   }
 
   private createLoadinglist( loadlistNo: number, allPackages: Package[] ) {

@@ -23,13 +23,13 @@
 
       <ng-template let-shipments pTemplate="body">
         <div class="ui-g row-importscan">
-            <div class="ui-g-12 ui-md-2">{{shipments.senderline1}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.senderAddress.line1}}</div>
             <div class="ui-g-12 ui-md-1">===>></div>
-            <div class="ui-g-12 ui-md-2">{{shipments.deliveryline1}}</div>
-            <div class="ui-g-12 ui-md-1">{{'from' | translate}}: {{shipments.senderstation}}</div>
-            <div class="ui-g-12 ui-md-1">{{'to' | translate}}: {{shipments.deliverystation}}</div>
-            <div class="ui-g-12 ui-md-2">{{shipments.deliveryzip}} {{shipments.deliverycity}}</div>
-            <div class="ui-g-12 ui-md-2">{{shipments.parcelno}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.deliveryAddress.line1}}</div>
+            <div class="ui-g-12 ui-md-1">{{'from' | translate}}: {{shipments.senderStation}}</div>
+            <div class="ui-g-12 ui-md-1">{{'to' | translate}}: {{shipments.deliveryStation}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.deliveryAddress.zipCode}} {{shipments.deliveryAddress.city}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.parcels[0]?.parcelNo}}</div>
             <div class="ui-g-12 ui-md-1">
               <i class="fa fa-refresh" style="color: #184b7d;"></i>
             </div>

@@ -153,7 +153,6 @@ export const LANG_EN_TRANS = {
   'scanfield': 'Scanfield',
   'loadinglistscan': 'Loadlistscan',
   'bagscan': 'Bagscan',
-  'packageId': 'PackNo',
   'zip': 'Zip',
   'city': 'City',
   'devliveryStation': 'Station of delivery',
@@ -282,4 +281,12 @@ export const LANG_EN_TRANS = {
   'shipmentno': 'Ship No',
   'deliverystatus': 'Status',
   'deliverycode': 'Code',
+  // ipointlist, ipointquick
+  'scan_without_validating': 'Scan without validating',
+  'ipointlist': 'I-Point List',
+  'ipoint_quickscan': 'I-Point quickscan',
+  'total_real_Weight': 'Total real weight',
+  'total_vol_Weight': 'Total vol weight',
+  'ipointListcan': 'I-Point listscan',
+  'packages_to_scan': 'Packages to scan',
 };

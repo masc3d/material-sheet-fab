@@ -692,13 +692,15 @@ abstract class Activity : BaseActivity(),
                     log.info("ACTION ITEMS CAHNGED")
                     val items = mutableListOf(*it.value.toTypedArray())
 
-                    if (this.device.manufacturer.type == Device.Manufacturer.Type.Generic) {
+                    // TODO Do not generally expect Motorola devices as a professional scanner, as there are Moto android consumer devices too.
+                    // Support maybe should be decided on model level, not manufacturer
+                    if (this.device.manufacturer.type == Device.Manufacturer.Type.Honeywell) {
                         items.add(
                                 0,
                                 ActionItem(
-                                        id = R.id.action_aidc_camera,
+                                        id = R.id.action_aidc_keyboard,
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
-                                        iconRes = R.drawable.ic_barcode,
+                                        iconRes = R.drawable.ic_keyboard,
                                         iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         visible = this.aidcReader.enabled,
                                         alignEnd = false
@@ -708,9 +710,9 @@ abstract class Activity : BaseActivity(),
                         items.add(
                                 0,
                                 ActionItem(
-                                        id = R.id.action_aidc_keyboard,
+                                        id = R.id.action_aidc_camera,
                                         colorRes = AIDC_ACTION_ITEM_COLOR,
-                                        iconRes = R.drawable.ic_keyboard,
+                                        iconRes = R.drawable.ic_barcode,
                                         iconTintRes = AIDC_ACTION_ITEM_TINT,
                                         visible = this.aidcReader.enabled,
                                         alignEnd = false

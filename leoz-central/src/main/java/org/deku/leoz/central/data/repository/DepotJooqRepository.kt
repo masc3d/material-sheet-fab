@@ -64,6 +64,15 @@ open class DepotJooqRepository {
                 .fetchInto(String::class.java)
     }
 
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    open fun findByMatchcode(matchcode: String): TbldepotlisteRecord {
+        return dslContext
+                .select()
+                .from(Tables.TBLDEPOTLISTE)
+                .where(Tables.TBLDEPOTLISTE.DEPOTMATCHCODE.eq(matchcode))
+                .fetchOneInto(TbldepotlisteRecord::class.java)
+    }
+
     open fun getCountBags2SendBagByStation(stationNo: Int): Int {
         val countBagsUsedByStation: Int = dslContext.selectCount()
                 .from(Tables.SSO_S_MOVEPOOL)

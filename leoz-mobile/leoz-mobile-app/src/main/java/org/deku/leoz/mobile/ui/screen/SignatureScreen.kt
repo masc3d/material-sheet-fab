@@ -86,6 +86,7 @@ class SignatureScreen
     }
 
     override fun onDestroy() {
+        this.resetLanguage()
         super.onDestroy()
     }
 
@@ -141,6 +142,7 @@ class SignatureScreen
                             this.uxSignaturePad.clear()
                         }
                         R.id.action_signature_paper -> {
+                            this.resetLanguage()
                             this.activity.showScreen(SignOnPaperCameraScreen().also {
                                 it.setTargetFragment(this, 0)
                                 it.parameters = SignOnPaperCameraScreen.Parameters(

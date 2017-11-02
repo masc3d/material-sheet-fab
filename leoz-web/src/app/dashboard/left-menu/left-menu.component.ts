@@ -217,7 +217,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'i-point' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/ipointscan/ipointscanlist',
           command: closeMenu
         },
         {

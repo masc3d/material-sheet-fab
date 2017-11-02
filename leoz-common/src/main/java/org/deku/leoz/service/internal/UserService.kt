@@ -25,6 +25,8 @@ interface UserService {
         const val DEBITOR_ID = "debitor-id"
         const val PREF_TYPE = "preference-type"
         const val SEND_APP_LINK_SMS = "send-app-sms"
+        const val STATION_MATCHCODE = "station-matchcode"
+        const val DEBITOR_NR = "debitor-nr"
         //const val DEBITOR_NO = "debitor-no"
         //const val Rest.AUTH_APIKEY_NAME = "x-api-key"
     }
@@ -139,6 +141,8 @@ interface UserService {
     fun create(
             @ApiParam(value = "User") user: User,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
+            @QueryParam(value = STATION_MATCHCODE) @ApiParam(value = "Station Matchcode", example = "011", required = false) stationMatchcode: String? = null,
+            @QueryParam(value = DEBITOR_NR) @ApiParam(value = "Debitor No.", example = "12345678", required = false) debitorNr: Long? = null,
             @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "true") @DefaultValue("true") sendAppLink: Boolean = true
     )
 

@@ -35,6 +35,7 @@ import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.time.toShortTime
 import sx.rs.DefaultProblem
 import sx.time.toLocalDate
+import sx.time.workDate
 
 /**
  * Bundle service (leoz-central)
@@ -81,7 +82,7 @@ class BagService : BagService {
     }
 
     fun getWorkingDate(): java.time.LocalDate {
-        return java.time.LocalDateTime.now().minusHours((6)).toLocalDate()
+        return java.time.LocalDateTime.now().minusHours((5)).toLocalDate()
     }
 
     override fun get(id: String): String {
@@ -317,7 +318,7 @@ class BagService : BagService {
 
         val isBagFree = "isBagFree"
         try {
-            var workDate: LocalDate = getWorkingDate()
+            var workDate: LocalDate= getWorkingDate()
             val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
                     .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(workDate.toTimestamp()))
