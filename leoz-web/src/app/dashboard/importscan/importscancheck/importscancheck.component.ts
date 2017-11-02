@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
-import { Importscancheck } from '../../../core/models/importscancheck.model';
+import { Shipment } from '../../../core/models/shipment.model';
 
 @Component( {
   selector: 'app-importscancheck',
@@ -14,7 +14,7 @@ export class ImportscancheckComponent extends AbstractTranslateComponent impleme
 
   importscancheckForm: FormGroup;
 
-  shipments: Importscancheck[];
+  shipments: Shipment[];
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
@@ -30,59 +30,36 @@ export class ImportscancheckComponent extends AbstractTranslateComponent impleme
       msgfield: [ null ],
       printlabel: [ null ]
     } );
-    this.shipments = [ {
-      senderline1: 'General Logistics Sys',
-      deliveryline1: 'alte Freiheit Werbung',
-      senderstation: 348,
-      deliverystation: 50,
-      deliveryzip: '50825',
-      deliverycity: 'Köln',
-      parcelno: '84259511468(0)'
-    },
+    this.shipments = [
       {
-        senderline1: 'General Logistics Sys',
-        deliveryline1: 'alte Freiheit Werbung',
-        senderstation: 348,
-        deliverystation: 50,
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        parcelno: '84259511468(0)'
+        senderAddress: {
+          line1: 'General Logistics Sys'
+        },
+        deliveryAddress: {
+          line1: 'alte Freiheit Werbung',
+          zipCode: '50825',
+          city: 'Köln'
+        },
+        senderStation: 348,
+        deliveryStation: 50,
+        parcels: [ {
+          parcelNo: 84259511468
+        } ]
       },
       {
-        senderline1: 'General Logistics Sys',
-        deliveryline1: 'alte Freiheit Werbung',
-        senderstation: 348,
-        deliverystation: 50,
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        parcelno: '84259511468(0)'
-      },
-      {
-        senderline1: 'General Logistics Sys',
-        deliveryline1: 'alte Freiheit Werbung',
-        senderstation: 348,
-        deliverystation: 50,
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        parcelno: '84259511468(0)'
-      },
-      {
-        senderline1: 'General Logistics Sys',
-        deliveryline1: 'alte Freiheit Werbung',
-        senderstation: 348,
-        deliverystation: 50,
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        parcelno: '84259511468(0)'
-      },
-      {
-        senderline1: 'General Logistics Sys',
-        deliveryline1: 'alte Freiheit Werbung',
-        senderstation: 348,
-        deliverystation: 50,
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        parcelno: '84259511468(0)'
-      }];
+        senderAddress: {
+          line1: 'General Logistics Sys'
+        },
+        deliveryAddress: {
+          line1: 'alte Freiheit Werbung',
+          zipCode: '50825',
+          city: 'Köln'
+        },
+        senderStation: 348,
+        deliveryStation: 50,
+        parcels: [ {
+          parcelNo: 84259511468
+        } ]
+      } ];
   }
 }

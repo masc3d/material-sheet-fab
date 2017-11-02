@@ -9,7 +9,7 @@ import { TranslateService } from '../../core/translate/translate.service';
 import { KeyUpEventService } from '../../core/key-up-event.service';
 import { BrowserCheck } from '../../core/auth/browser-check';
 import { Package } from '../../core/models/package.model';
-import { Deliveryscan } from '../../core/models/deliveryscan.model';
+import { Shipment } from '../../core/models/shipment.model';
 
 
 @Component( {
@@ -33,7 +33,7 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
 
   deliveryscanForm: FormGroup;
 
-  shipments: Deliveryscan[];
+  shipments: Shipment[];
 
   exportdate: any;
   latestMarkedIndex: number;
@@ -99,84 +99,42 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
       basedon: [ 'standard' ],
       basedonscan: [ '' ]
     } );
-    this.shipments = [ {
-        deliverypos: 1,
-        deliveryline1: 'alte Freiheit Werbung',
-        deliverystreet: 'Amsterdamer Str',
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        shipmentno: '84259511468',
-        parcelno: '84259511468',
-        deliverydate: '24.10.2017',
-        deliverytime: '12:00',
-        deliverystatus: 1,
-        deliverycode: 2
-    },
+    this.shipments = [
       {
-        deliverypos: 1,
-        deliveryline1: 'alte Freiheit Werbung',
-        deliverystreet: 'Amsterdamer Str',
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        shipmentno: '84259511468',
-        parcelno: '84259511468',
-        deliverydate: '24.10.2017',
-        deliverytime: '12:00',
-        deliverystatus: 1,
-        deliverycode: 2
+        deliveryAddress: {
+          line1: 'alte Freiheit Werbung',
+          street: 'Amsterdamer Str',
+          zipCode: '50825',
+          city: 'Köln'
+        },
+        orderId: 84259511468,
+        deliveryPos: 1,
+        deliveryDate: '24.10.2017',
+        deliveryTime: '12:00',
+        deliveryStatus: 1,
+        deliveryCode: 2,
+        parcels: [ {
+          parcelNo: 84259511468
+        } ]
       },
       {
-        deliverypos: 1,
-        deliveryline1: 'alte Freiheit Werbung',
-        deliverystreet: 'Amsterdamer Str',
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        shipmentno: '84259511468',
-        parcelno: '84259511468',
-        deliverydate: '24.10.2017',
-        deliverytime: '12:00',
-        deliverystatus: 1,
-        deliverycode: 2
-      },
-      {
-        deliverypos: 1,
-        deliveryline1: 'alte Freiheit Werbung',
-        deliverystreet: 'Amsterdamer Str',
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        shipmentno: '84259511468',
-        parcelno: '84259511468',
-        deliverydate: '24.10.2017',
-        deliverytime: '12:00',
-        deliverystatus: 1,
-        deliverycode: 2
-      },
-      {
-        deliverypos: 1,
-        deliveryline1: 'alte Freiheit Werbung',
-        deliverystreet: 'Amsterdamer Str',
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        shipmentno: '84259511468',
-        parcelno: '84259511468',
-        deliverydate: '24.10.2017',
-        deliverytime: '12:00',
-        deliverystatus: 1,
-        deliverycode: 2
-      },
-      {
-        deliverypos: 1,
-        deliveryline1: 'alte Freiheit Werbung',
-        deliverystreet: 'Amsterdamer Str',
-        deliveryzip: '50825',
-        deliverycity: 'Köln',
-        shipmentno: '84259511468',
-        parcelno: '84259511468',
-        deliverydate: '24.10.2017',
-        deliverytime: '12:00',
-        deliverystatus: 1,
-        deliverycode: 2
-      }];
+        deliveryAddress: {
+          line1: 'alte Freiheit Werbung',
+          street: 'Amsterdamer Str',
+          zipCode: '50825',
+          city: 'Köln'
+        },
+        orderId: 84259511468,
+        deliveryPos: 1,
+        deliveryDate: '24.10.2017',
+        deliveryTime: '12:00',
+        deliveryStatus: 1,
+        deliveryCode: 2,
+        parcels: [ {
+          parcelNo: 84259511468
+        } ]
+      }
+    ];
   }
 
   private createDeliverylistOptions(): SelectItem[] {
@@ -185,12 +143,14 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
     listOptions.push( { label: this.translate.instant( '12398765' ), value: 0 } );
     return listOptions;
   }
+
   private createTourOptions(): SelectItem[] {
     const tourOptions = [];
     tourOptions.push( { label: this.translate.instant( '5' ), value: 1 } );
     tourOptions.push( { label: this.translate.instant( '7' ), value: 0 } );
     return tourOptions;
   }
+
   private createDeliverydateOptions(): SelectItem[] {
     const dateOptions = [];
     dateOptions.push( { label: this.translate.instant( '20.10.2107' ), value: 1 } );

@@ -26,40 +26,40 @@
 
       <ng-template let-shipments pTemplate="body">
         <div class="ui-g row-importscan">
-            <div class="ui-g-12 ui-md-2">{{shipments.senderline1}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.senderAddress.line1}}</div>
             <div class="ui-g-12 ui-md-1">===>></div>
-            <div class="ui-g-12 ui-md-2">{{shipments.deliveryline1}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.deliveryAddress.line1}}</div>
             <div class="ui-g-12 ui-md-1">{{'from' | translate}}:</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.senderstation}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.senderStation}}</div>
             <div class="ui-g-12 ui-md-1">{{'to' | translate}}:</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.deliverystation}}</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.deliveryzip}}</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.deliverycity}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.deliveryStation}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.deliveryAddress.zipCode}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.deliveryAddress.city}}</div>
             <div class="ui-g-12 ui-md-1">
               <i class="fa fa-refresh" style="color: #184b7d;"></i>
             </div>
 
-            <div class="ui-g-12 ui-md-2">{{shipments.senddate}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.shipmentDate | date:dateFormat}}</div>
             <div class="ui-g-12 ui-md-1">===>></div>
-            <div class="ui-g-12 ui-md-1">{{shipments.deliverydate}}</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.deliverytime}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.deliveryDate}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.deliveryTime}}</div>
             <div class="ui-g-12 ui-md-1">{{'parcelno' | translate}}:</div>
-            <div class="ui-g-12 ui-md-2">{{shipments.parcelno}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.parcels[0]?.parcelNo}}</div>
             <div class="ui-g-12 ui-md-2">{{'typeOfPackaging' | translate}}:</div>
-            <div class="ui-g-12 ui-md-2">{{shipments.typeOfPackaging}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.parcels[0]?.typeOfPackaging}}</div>
 
             <div class="ui-g-12 ui-md-1">{{'packs' | translate}}:</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.noOfPacks}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.parcels.length}}</div>
             <div class="ui-g-12 ui-md-1">{{'real-Weight' | translate}}:</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.realWeight}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.parcels[0]?.realWeight}}</div>
             <div class="ui-g-12 ui-md-1">{{'vol-Weight' | translate}}:</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.volWeight}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.parcels[0]?.volWeight}}</div>
             <div class="ui-g-12 ui-md-1">{{'length' | translate}}:</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.length}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.parcels[0]?.length}}</div>
             <div class="ui-g-12 ui-md-1">{{'width' | translate}}:</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.width}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.parcels[0]?.width}}</div>
             <div class="ui-g-12 ui-md-1">{{'height' | translate}}:</div>
-            <div class="ui-g-12 ui-md-1">{{shipments.height}}</div>
+            <div class="ui-g-12 ui-md-1">{{shipments.parcels[0]?.height}}</div>
 
         </div>
       </ng-template>

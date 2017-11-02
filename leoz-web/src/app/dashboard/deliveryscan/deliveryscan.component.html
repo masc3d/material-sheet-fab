@@ -273,24 +273,24 @@
 
 
                 <div class="ui-g-12 ui-md-1">{{'pos' | translate}}:</div>
-                <div class="ui-g-12 ui-md-2">{{shipments.deliverypos}}</div>
-                <div class="ui-g-12 ui-md-4">{{shipments.deliveryline1}}</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliveryPos}}</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliveryAddress.line1}}</div>
                 <div class="ui-g-12 ui-md-1">{{'deadline' | translate}}:</div>
-                <div class="ui-g-12 ui-md-2">{{shipments.deliverydate}}</div>
-                <div class="ui-g-12 ui-md-2">{{shipments.deliverytime}}</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliveryDate}}</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliveryTime}}</div>
 
                 <div class="ui-g-12 ui-md-1">{{'shipmentno' | translate}}:</div>
-                <div class="ui-g-12 ui-md-2">{{shipments.shipmentno}}</div>
-                <div class="ui-g-12 ui-md-4">{{shipments.deliverystreet}}</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.orderId}}</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliveryAddress.street}}</div>
                 <div class="ui-g-12 ui-md-1">{{'deliverystatus' | translate}}:</div>
-                <div class="ui-g-12 ui-md-4">{{shipments.deliverystatus}}</div>
+                <div class="ui-g-12 ui-md-4">{{shipments.deliveryStatus}}</div>
 
                 <div class="ui-g-12 ui-md-1">{{'parcelno' | translate}}:</div>
-                <div class="ui-g-12 ui-md-2">{{shipments.parcelno}}</div>
-                <div class="ui-g-12 ui-md-1">{{shipments.deliveryzip}}</div>
-                <div class="ui-g-12 ui-md-3">{{shipments.deliverycity}}</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.parcels[0]?.parcelNo}}</div>
+                <div class="ui-g-12 ui-md-1">{{shipments.deliveryAddress.zipCode}}</div>
+                <div class="ui-g-12 ui-md-3">{{shipments.deliveryAddress.city}}</div>
                 <div class="ui-g-12 ui-md-1">{{'deliverycode' | translate}}:</div>
-                <div class="ui-g-12 ui-md-2">{{shipments.deliverycode}}</div>
+                <div class="ui-g-12 ui-md-2">{{shipments.deliveryCode}}</div>
 
                 <div class="ui-g-12 ui-md-2">
                   <i class="fa fa-trash-o" style="color: #184b7d;"></i>

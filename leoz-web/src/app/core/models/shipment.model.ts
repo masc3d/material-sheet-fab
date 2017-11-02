@@ -2,9 +2,17 @@ import { Address } from './address.model';
 import { Package } from './package.model';
 
 export interface Shipment {
-  orderId: number;
   deliveryAddress: Address;
-  deliveryStation: number;
-  shipmentDate: Date;
   parcels: Package[];
+
+  orderId?: number;
+  senderAddress?: Address;
+  senderStation?: number;
+  shipmentDate?: Date;
+  deliveryStation?: number;
+  deliveryDate?: string;
+  deliveryTime?: string;
+  deliveryPos?: number;
+  deliveryStatus?: number;
+  deliveryCode?: number;
 }
