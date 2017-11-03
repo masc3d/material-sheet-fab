@@ -16,6 +16,7 @@ buildscript {
     }
 
     ext {
+        v_android_gms = '11.4.2'
         v_anko = '0.10.2'
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.5.0'
@@ -275,7 +276,7 @@ dependencies {
 
             //RX Location
             "com.patloew.rxlocation:rxlocation:1.0.3",
-            //"com.google.android.gms:play-services-places:9.4.0",
+            "com.google.android.gms:play-services-location:$v_android_gms",
 
             // Volley
             "com.android.volley:volley:1.0.0",
