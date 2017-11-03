@@ -9,9 +9,11 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.instacart.library.truetime.TrueTimeRx
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.identity.Identity
@@ -37,6 +39,8 @@ import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.mq.mqtt.channel
 import java.util.concurrent.TimeUnit
+import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.settings.RemoteSettings
 
 
 /**
@@ -45,6 +49,8 @@ import java.util.concurrent.TimeUnit
  */
 class StartupActivity : BaseActivity() {
     val log = LoggerFactory.getLogger(this.javaClass)
+
+    val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
 
     companion object {
         val EXTRA_ACTIVITY = "ACTIVITY"
@@ -117,13 +123,11 @@ class StartupActivity : BaseActivity() {
                         throw IllegalStateException("AidcReader initialization timed out", it)
                     }
 
-//            val ovGoogleApi = (this.application as Application).checkGoogleApiAvailability(this)
 
             // Merge and subscribe
             Observable.mergeArray(
                     ovPermissions.cast(Any::class.java),
-                    ovAidcReader.cast(Any::class.java) /** ,
-                    ovGoogleApi.toObservable() */
+                    ovAidcReader.cast(Any::class.java)
             )
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
@@ -232,6 +236,7 @@ class StartupActivity : BaseActivity() {
                                 this@StartupActivity.finishAffinity()
                                 System.exit(0)
                             })
+
         } else {
             this.startMainActivity(withAnimation = false)
         }

@@ -36,6 +36,8 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.instacart.library.truetime.TrueTime
+import com.instacart.library.truetime.TrueTimeRx
 import com.patloew.rxlocation.GoogleApiConnectionException
 import com.patloew.rxlocation.RxLocation
 import com.trello.rxlifecycle2.android.ActivityEvent
@@ -1121,6 +1123,27 @@ abstract class Activity : BaseActivity(),
                         }
                         .show()
             }
+        }
+    }
+
+    fun initializeTrueTime(): Observable<Boolean> {
+        return Observable.create {
+            val subscriber = it
+            TrueTimeRx.build()
+                    .initializeRx("time.apple.com")
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ date ->
+                        run {
+                            log.trace("TrueTime was initialized at [$date]")
+                            subscriber.onNext(true)
+                            subscriber.onComplete()
+                        }
+                    }) { throwable ->
+                        run {
+                            log.error("TrueTime init failed: ", throwable)
+                            subscriber.onError(throwable)
+                        }
+                    }
         }
     }
 }
