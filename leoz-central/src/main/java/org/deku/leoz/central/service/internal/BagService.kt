@@ -82,12 +82,14 @@ class BagService : BagService {
     }
 
     fun getWorkingDate(): java.time.LocalDate {
-        return java.time.LocalDateTime.now().minusHours((5)).toLocalDate()
+        //return java.time.LocalDateTime.now().minusHours((5)).toLocalDate()
+        val n=java.time.LocalDateTime.now()
+        return n.workDate()
     }
 
     override fun get(id: String): String {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        return "String Bag:" + id
+        return "String Bag: $id WorkingDate: "+ getWorkingDate().toString()
     }
 
     /**

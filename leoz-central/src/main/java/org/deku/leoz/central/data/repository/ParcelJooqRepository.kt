@@ -17,6 +17,8 @@ import org.deku.leoz.service.internal.entity.Address
 import org.jooq.types.UInteger
 import sx.time.toSqlDate
 import sx.time.toTimestamp
+import sx.time.workDate
+import java.time.LocalDate
 
 
 /**
@@ -29,11 +31,11 @@ class ParcelJooqRepository {
 
     lateinit var dslContext: DSLContext
 
-    fun getCountParcelsByBmp(bmpFilename:String,orderid:Long):Int{
+    fun getCountParcelsByBmp(bmpFilename:String):Int{
         return dslContext.selectCount()
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .where(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME.eq(bmpFilename)
-                        .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble())))
+                )// .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble())))
                 .fetchOne(0,Int::class.java)
     }
 
@@ -92,13 +94,16 @@ class ParcelJooqRepository {
                 .fetchOneInto(Tblauftrag.TBLAUFTRAG)
     }
 
-    fun getParcels2ExportByLoadingList(loadinglistNo: Long): List<TblauftragcolliesRecord>? {
+    fun getParcels2ExportByLoadingList(loadinglistNo: Long,sendDate:LocalDate=java.time.LocalDateTime.now().workDate()): List<TblauftragcolliesRecord>? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
+                .join(Tables.TBLAUFTRAG)
+                .on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID))
                 .where(
                         Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.eq(loadinglistNo.toDouble())
                                 .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                                 .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                                .and(Tables.TBLAUFTRAG.VERLADEDATUM.eq(sendDate.toTimestamp()))
                 )
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
