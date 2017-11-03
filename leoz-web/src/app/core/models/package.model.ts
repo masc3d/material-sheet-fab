@@ -16,5 +16,6 @@ export interface Package {
   volWeight?: number;
   length?: number;
   width?: number;
-  height?: number
+  height?: number;
+  checksum?: number;
 }

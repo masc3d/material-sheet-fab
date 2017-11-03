@@ -7,6 +7,7 @@ import { SelectItem } from 'primeng/primeng';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { Shipment } from '../../../core/models/shipment.model';
+import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
 
 @Component( {
   selector: 'app-importscanlist',
@@ -58,7 +59,8 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
             volWeight: 1,
             length: 2,
             width: 3,
-            height: 4
+            height: 4,
+            checksum: checkdigitInt25('84259511468')
           }
         ]
       },
@@ -78,13 +80,14 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
         deliveryTime: '12:00',
         parcels: [
           {
-            parcelNo: 84259511468,
+            parcelNo: 84259511469,
             typeOfPackaging: 94,
             realWeight: 39.40,
             volWeight: 0,
             length: 0,
             width: 0,
-            height: 0
+            height: 0,
+            checksum: checkdigitInt25('84259511469')
           }
         ]
       }

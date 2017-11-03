@@ -8,6 +8,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
 import { TranslateService } from '../../../core/translate/translate.service';
 import { Package } from '../../../core/models/package.model';
 import { sumAndRound } from '../../../core/math/sumAndRound';
+import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
 
 @Component( {
   selector: 'app-ipointscanlist',
@@ -22,6 +23,7 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
 
   realWeightTotal: number;
   volWeightTotal: number;
+  checkSum: number;
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
@@ -49,13 +51,14 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
 
   private createScanOptions(): SelectItem[] {
     const scanOptions = [];
-    scanOptions.push( { label: this.translate.instant( '84259511468(0)' ), value: 1 } );
-    scanOptions.push( { label: this.translate.instant( '84259511469(7)' ), value: 2 } );
-    scanOptions.push( { label: this.translate.instant( '84259511470(4)' ), value: 3 } );
+    scanOptions.push( { label: this.translate.instant( '84259511468(3)' ), value: 1 } );
+    scanOptions.push( { label: this.translate.instant( '84259511469(0)' ), value: 2 } );
+    scanOptions.push( { label: this.translate.instant( '84259511470(6)' ), value: 3 } );
     return scanOptions;
   }
 
   private callInitialShipmentService() {
+
     this.parcels = [ {
       parcelNo: 84259511468,
       deliverydate: '24.10.2017',
@@ -65,7 +68,9 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
       volWeight: 0,
       length: 0,
       width: 0,
-      height: 0
+      height: 0,
+      checksum: checkdigitInt25('84259511468')
+
     },
       {
         parcelNo: 84259511469,
@@ -76,7 +81,8 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
         volWeight: 0,
         length: 0,
         width: 0,
-        height: 0
+        height: 0,
+        checksum: checkdigitInt25('84259511469')
       },
       {
         parcelNo: 84259511470,
@@ -87,7 +93,8 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
         volWeight: 0,
         length: 0,
         width: 0,
-        height: 0
+        height: 0,
+        checksum: checkdigitInt25('84259511470')
       }
     ];
     this.calcTotals();
