@@ -40,6 +40,7 @@ import sx.android.aidc.AidcReader
 import sx.mq.mqtt.channel
 import java.util.concurrent.TimeUnit
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.config.TimeConfiguration
 import org.deku.leoz.mobile.settings.RemoteSettings
 
 
@@ -85,6 +86,7 @@ class StartupActivity : BaseActivity() {
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
 //        Kodein.global.instance<BroadcastReceiverConfiguration>()
+        Kodein.global.instance<TimeConfiguration.Time>()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")

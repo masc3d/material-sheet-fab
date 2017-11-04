@@ -68,6 +68,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(ServiceConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
+        Kodein.global.addImport(TimeConfiguration.module)
         //endregion
 
         //region Global exception handler

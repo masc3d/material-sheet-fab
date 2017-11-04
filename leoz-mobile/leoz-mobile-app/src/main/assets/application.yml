@@ -17,7 +17,7 @@ remote:
 
    # NTP Server
    ntp:
-      host: 'time.gls-group.eu'
+      host: 'time.google.com'
 
 # Database settings
 database:

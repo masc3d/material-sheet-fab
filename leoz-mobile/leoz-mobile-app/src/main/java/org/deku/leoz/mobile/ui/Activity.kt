@@ -1125,25 +1125,4 @@ abstract class Activity : BaseActivity(),
             }
         }
     }
-
-    fun initializeTrueTime(): Observable<Boolean> {
-        return Observable.create {
-            val subscriber = it
-            TrueTimeRx.build()
-                    .initializeRx("time.apple.com")
-                    .subscribeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ date ->
-                        run {
-                            log.trace("TrueTime was initialized at [$date]")
-                            subscriber.onNext(true)
-                            subscriber.onComplete()
-                        }
-                    }) { throwable ->
-                        run {
-                            log.error("TrueTime init failed: ", throwable)
-                            subscriber.onError(throwable)
-                        }
-                    }
-        }
-    }
 }
