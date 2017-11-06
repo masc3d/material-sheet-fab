@@ -33,13 +33,26 @@
         android:orientation="vertical"
         >
 
-        <include layout="@layout/item_stop" />
+        <TextView
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stop to be added"/>
+
+        <include android:id="@+id/uxSourceStop" layout="@layout/item_stop" />
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Active stop"/>
 
         <ImageView
+            android:id="@+id/uxStopMergeImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <include layout="@layout/item_stop" />
+        <include android:id="@+id/uxTargetStop" layout="@layout/item_stop" />
 
     </LinearLayout>
 

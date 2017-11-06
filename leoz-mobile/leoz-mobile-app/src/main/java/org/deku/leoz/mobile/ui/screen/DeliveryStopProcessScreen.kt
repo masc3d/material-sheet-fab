@@ -47,6 +47,7 @@ import org.deku.leoz.mobile.model.toMaterialSimpleListItem
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
+import org.deku.leoz.mobile.ui.dialog.StopMergeDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
@@ -788,10 +789,11 @@ class DeliveryStopProcessScreen :
                         // Parcel does not belong to this delivery stop, ask for stop merge
                         feedback.warning()
 
-                        MaterialDialog.Builder(context)
+                        val dialog = MaterialDialog.Builder(context)
                                 .title(R.string.title_stop_merge)
                                 .cancelable(true)
-                                .content(R.string.dialog_content_stop_merge)
+                                .customView(R.layout.dialog_stop_merge, true)
+                                //.content(R.string.dialog_content_stop_merge)
                                 .positiveText(android.R.string.yes)
                                 .onPositive { _, _ ->
                                     db.store.withTransaction {
@@ -811,7 +813,6 @@ class DeliveryStopProcessScreen :
                                 }
                                 .negativeText(android.R.string.no)
                                 .build()
-                                .show()
 
                         return
                     }
