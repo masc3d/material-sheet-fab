@@ -9,6 +9,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.settings.RemoteSettings
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -31,7 +32,6 @@ class TimeConfiguration {
         private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
 
         private val log = LoggerFactory.getLogger(this.javaClass)
-        private var initCounter: Int = 0
 
         //val dateTimeOffsetProperty = PublishSubject.create<Float?>()
         //val dateTimeOffset = dateTimeOffsetProperty.hide()
@@ -44,10 +44,13 @@ class TimeConfiguration {
             Schedulers.newThread().schedulePeriodicallyDirect(
                     {
                         val offset = getOffset()
-                        if (offset == null)
-                            it.onError(IllegalStateException("TrueTimeRx not yet initialized"))
-                        else
+                        if (offset == null) {
+                            //it.onError(IllegalStateException("TrueTimeRx not yet initialized"))
+                            log.warn("TrueTimeRx not yet initialized")
+                        }
+                        else {
                             it.onNext(offset)
+                        }
                     },
                     0,
                     5,
@@ -88,8 +91,7 @@ class TimeConfiguration {
                                     }
                                 }) { throwable ->
                                     run {
-                                        log.error("TrueTime init failed. Counter [$initCounter]", throwable)
-                                        initCounter++
+                                        log.error("TrueTime init failed.", throwable)
                                         subscriber.onError(throwable)
                                     }
                                 }
