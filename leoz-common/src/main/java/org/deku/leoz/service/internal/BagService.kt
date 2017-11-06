@@ -34,6 +34,8 @@ interface BagService {
         const val YELLOWSEAL = "yellowseal"
         const val SECTION = "section"
         const val STATION_NO = "station-no"
+        const val REDSEAL="redseal"
+        const val TEXT="text"
     }
 
     @ApiModel(description = "Bag Status Model")
@@ -190,41 +192,65 @@ interface BagService {
     ): Int
 
     @GET
-    @Path("/{${ID}}/status")
-    @ApiOperation("Get status of Bag-ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @Path("/{$ID}/export/station/{$STATION_NO}/isValid")
+    @ApiOperation("Check Bag-ID is valid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
-    fun getStatus(
-            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long
-    ): BagStatus
+    fun bagStationExportIsValid(
+            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+    ): Boolean
 
     @GET
-    @Path("/station/{$STATION_NO}/isPickupStation/{$ID}")
-    @ApiOperation("Is station=Pickup Station", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @Path("/export/station/{$STATION_NO}/yellowSeal/{$YELLOWSEAL}/isValid")
+    @ApiOperation("Check yellow seal is valid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
-    fun isPickupStation(
+    fun yellowSealStationExportIsValid(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @PathParam(ID) @ApiParam(value = "OrderID", example = "21734710251", required = true) orderID: Long
+            @PathParam(YELLOWSEAL) @ApiParam(value = "Yellow seal number", example = "900200000001", required = true) yellowSeal: Long
+    ): Boolean
 
+    @GET
+    @Path("/export/station/{$STATION_NO}/redSeal/{$REDSEAL}/isValid")
+    @ApiOperation("Check red seal is valid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
+    )
+    fun redSealStationExportIsValid(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @PathParam(REDSEAL) @ApiParam(value = "Red seal number", example = "900200000001", required = true) redSeal: Long
     ): Boolean
 
     @PATCH
-    @Path("/{$ID}/reopen/station/{$STATION_NO}")
+    @Path("/{$ID}/export/station/{$STATION_NO}/setRedSeal/{$REDSEAL}")
+    @ApiOperation(value = "Set red seal", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
+    )
+    fun setBagStationExportRedSeal(
+            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @PathParam(REDSEAL) @ApiParam(value = "Red seal number", example = "900200000001", required = true) redSeal: Long,
+            @QueryParam(TEXT) @ApiParam(value="Text",required = true) text:String
+    )
+
+    @PATCH
+    @Path("/{$ID}/reopen/export/station/{$STATION_NO}")
     @ApiOperation(value = "Reopen bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
-    fun reopenBag(
+    fun reopenBagStationExport(
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
 
     )
 
     @PATCH
-    @Path("/{$ID}/station/{$STATION_NO}/fill/{$UNIT}")
+    @Path("/{$ID}/export/station/{$STATION_NO}/fill/{$UNIT}")
     @ApiOperation(value = "Fill bag in station-export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
