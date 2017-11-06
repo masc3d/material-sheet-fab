@@ -4,22 +4,13 @@ import android.content.Context
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
-import com.instacart.library.truetime.InvalidNtpServerResponseException
 import com.instacart.library.truetime.TrueTimeRx
-import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.BooleanSupplier
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
-import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.settings.RemoteSettings
 import org.slf4j.LoggerFactory
-import org.threeten.bp.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
