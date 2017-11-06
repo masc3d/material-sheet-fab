@@ -108,12 +108,12 @@ interface ParcelServiceV1 {
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
-    @Path("/loadinglist/new")
+    @Path("/export/loadinglist/new")
     @ApiOperation(value = "Get new loadinglist-no", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNewLoadinglistNo(): Long
 
     @GET
-    @Path("/loadinglist/{$LOADINGLIST_NO}")
+    @Path("/export/loadinglist/{$LOADINGLIST_NO}")
     @ApiOperation(value = "Get parcels by loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportByLoadingList(
             @PathParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
@@ -159,7 +159,7 @@ interface ParcelServiceV1 {
             var note: String = ""
     )
 
-    @Path("/{SCANCODE}/status")
+    @Path("/status/{SCANCODE}")
     @ApiOperation(value = "Get status", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getStatus(
             @PathParam(SCANCODE) @ApiParam(value = "Scancode") scanCode: String
@@ -172,5 +172,15 @@ interface ParcelServiceV1 {
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
     )
+
+    @GET
+    @Path("/{SCANCODE}/isValidBagBackLabel/station/{$STATION_NO}")
+    @ApiOperation(value = "Check bag-Backlabel is valid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun isValidBagBackLabel(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @PathParam(SCANCODE) @ApiParam(value = "Scancode",required = true) scanCode: String
+    )
+
+
 }
 
