@@ -81,7 +81,8 @@ class TimeConfiguration {
                 val subscriber = it
                         TrueTimeRx.build()
                                 .withSharedPreferences(context)
-                                .withLoggingEnabled(true)
+                                .withLoggingEnabled(true) // TODO Logging should be ok to become disabled after some time gathering experience with this library
+                                .withRetryCount(5) // TODO Set to 5 retries because of pending firewall rules regarding GLS WiFi and GLS M2M network (time.google.com not reachable from these networks right now)
                                 .initializeRx(remoteSettings.ntp.host)
                                 .subscribeOn(Schedulers.io())
                                 .subscribe({ date ->
