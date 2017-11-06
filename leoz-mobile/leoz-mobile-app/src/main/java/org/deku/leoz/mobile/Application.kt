@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -16,6 +17,8 @@ import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.deku.leoz.mobile.settings.DebugSettings
+import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.slf4j.LoggerFactory
 
@@ -28,6 +31,7 @@ open class Application : MultiDexApplication() {
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    //private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
     internal val bundle = Bundle()
 
@@ -51,17 +55,20 @@ open class Application : MultiDexApplication() {
         })
 
         // Higher level modules
+        Kodein.global.addImport(AidcConfiguration.module)
         Kodein.global.addImport(ApplicationConfiguration.module)
-        Kodein.global.addImport(ExecutorConfiguration.module)
+        Kodein.global.addImport(BroadcastReceiverConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
+        Kodein.global.addImport(DeviceConfiguration.module)
+        Kodein.global.addImport(ExecutorConfiguration.module)
         Kodein.global.addImport(RepositoryConfiguration.module)
+        Kodein.global.addImport(LocationServicesConfiguration.module)
         Kodein.global.addImport(ModelConfiguration.module)
+        Kodein.global.addImport(MqttConfiguration.module)
         Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(ServiceConfiguration.module)
-        Kodein.global.addImport(DeviceConfiguration.module)
-        Kodein.global.addImport(AidcConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
-        Kodein.global.addImport(MqttConfiguration.module)
+        Kodein.global.addImport(TimeConfiguration.module)
         //endregion
 
         //region Global exception handler
@@ -105,6 +112,13 @@ open class Application : MultiDexApplication() {
         super.attachBaseContext(LocaleContextWrapper.wrap(context = base!!, language = null))
     }
 
+    override fun onTerminate() {
+        log.debug("ONTERMINATE")
+//        this.unregisterBroadcastReceiver()
+        stopLocationServices()
+        super.onTerminate()
+    }
+
     /**
      * Application version
      * @return
@@ -129,6 +143,8 @@ open class Application : MultiDexApplication() {
      * Terminate/kill application immediately
      */
     fun terminate() {
+//        this.unregisterBroadcastReceiver()
+        stopLocationServices()
         android.os.Process.killProcess(android.os.Process.myPid())
     }
 
@@ -151,6 +167,43 @@ open class Application : MultiDexApplication() {
         super.onTrimMemory(level)
     }
     //endregion
+
+    fun isServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     *  This function will stop running location services (a.t.m. LocationService and LocationServiceGMS)
+     */
+    fun stopLocationServices() {
+        try {
+            when {
+                isServiceRunning(LocationServiceGMS::class.java) -> {
+                    //log.debug("LocationServiceGMS is running. Stopping now")
+                    this.stopService(android.content.Intent(this, LocationServiceGMS::class.java))
+                }
+                isServiceRunning(LocationService::class.java) -> {
+                    //log.debug("LocationService is running. Stopping now")
+                    this.stopService(android.content.Intent(this, LocationService::class.java))
+                }
+                else -> log.warn("Seems that no LocationService is running")
+            }
+        } catch (e: Exception) {
+            log.warn("Stopping location service failed", e)
+        }
+    }
+
+//    private fun unregisterBroadcastReceiver() {
+//        log.debug("Unregister BroadcastReceiver")
+//        val broadcastManager = LocalBroadcastManager.getInstance(this)
+//        broadcastManager.unregisterReceiver(locationProviderChangedReceiver)
+//    }
 }
 
 val BaseActivity.app: Application get() = this.application as Application

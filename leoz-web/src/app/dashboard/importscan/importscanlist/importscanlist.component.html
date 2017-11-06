@@ -44,7 +44,7 @@
             <div class="ui-g-12 ui-md-1">{{shipments.deliveryDate}}</div>
             <div class="ui-g-12 ui-md-1">{{shipments.deliveryTime}}</div>
             <div class="ui-g-12 ui-md-1">{{'parcelno' | translate}}:</div>
-            <div class="ui-g-12 ui-md-2">{{shipments.parcels[0]?.parcelNo}}</div>
+            <div class="ui-g-12 ui-md-2">{{shipments.parcels[0]?.parcelNo}} ({{shipments.parcels[0]?.checksum}}) </div>
             <div class="ui-g-12 ui-md-2">{{'typeOfPackaging' | translate}}:</div>
             <div class="ui-g-12 ui-md-2">{{shipments.parcels[0]?.typeOfPackaging}}</div>
 

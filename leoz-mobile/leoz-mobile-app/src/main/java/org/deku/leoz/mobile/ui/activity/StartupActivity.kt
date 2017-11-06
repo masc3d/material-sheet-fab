@@ -4,12 +4,16 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
+import com.instacart.library.truetime.TrueTimeRx
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.identity.Identity
@@ -23,6 +27,7 @@ import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
@@ -34,6 +39,9 @@ import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.mq.mqtt.channel
 import java.util.concurrent.TimeUnit
+import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.config.TimeConfiguration
+import org.deku.leoz.mobile.settings.RemoteSettings
 
 
 /**
@@ -42,6 +50,8 @@ import java.util.concurrent.TimeUnit
  */
 class StartupActivity : BaseActivity() {
     val log = LoggerFactory.getLogger(this.javaClass)
+
+    val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
 
     companion object {
         val EXTRA_ACTIVITY = "ACTIVITY"
@@ -75,6 +85,8 @@ class StartupActivity : BaseActivity() {
         // Load log configuration first
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
+//        Kodein.global.instance<BroadcastReceiverConfiguration>()
+        Kodein.global.instance<TimeConfiguration.Time>()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
@@ -113,6 +125,7 @@ class StartupActivity : BaseActivity() {
                         throw IllegalStateException("AidcReader initialization timed out", it)
                     }
 
+
             // Merge and subscribe
             Observable.mergeArray(
                     ovPermissions.cast(Any::class.java),
@@ -132,8 +145,24 @@ class StartupActivity : BaseActivity() {
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
 
+                                    val locationSettings: LocationSettings by Kodein.global.lazy.instance()
+
                                     // Initialize ThreeTen (java.time / JSR-310 compatibility drop-in)
                                     AndroidThreeTen.init(this.application)
+
+                                    // Start location based services
+                                    when {
+                                        (locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationServiceGMS::class.java)) -> {
+                                            ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
+                                        }
+
+                                        (!locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationService::class.java)) -> {
+                                            ContextCompat.startForegroundService(this, Intent(applicationContext, LocationService::class.java))
+                                        }
+                                        else -> {
+                                            log.debug("LocationService already running.")
+                                        }
+                                    }
 
                                     // Write device management identity
                                     try {
@@ -177,17 +206,7 @@ class StartupActivity : BaseActivity() {
                                         it.dispatcher.start()
                                     }
 
-                                    // Initialize location service
-                                    run {
-                                        val locationSettings = Kodein.global.instance<LocationSettings>()
-
-                                        if (locationSettings.enabled) {
-                                            this.startService(
-                                                    Intent(applicationContext, LocationService::class.java))
-                                        }
-                                    }
-
-                                    // Send node info message
+                                    // Send authorization message
                                     run {
                                         val mqEndpoints = Kodein.global.instance<MqttEndpoints>()
                                         mqEndpoints.central.main.channel().send(
@@ -217,7 +236,9 @@ class StartupActivity : BaseActivity() {
                                 log.error(e.message, e)
 
                                 this@StartupActivity.finishAffinity()
+                                System.exit(0)
                             })
+
         } else {
             this.startMainActivity(withAnimation = false)
         }

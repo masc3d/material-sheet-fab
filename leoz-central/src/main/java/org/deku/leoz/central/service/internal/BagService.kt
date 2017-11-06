@@ -82,12 +82,14 @@ class BagService : BagService {
     }
 
     fun getWorkingDate(): java.time.LocalDate {
-        return java.time.LocalDateTime.now().minusHours((5)).toLocalDate()
+        //return java.time.LocalDateTime.now().minusHours((5)).toLocalDate()
+        val n = java.time.LocalDateTime.now()
+        return n.workDate()
     }
 
     override fun get(id: String): String {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        return "String Bag:" + id
+        return "String Bag: $id WorkingDate: " + getWorkingDate().toString()
     }
 
     /**
@@ -318,7 +320,7 @@ class BagService : BagService {
 
         val isBagFree = "isBagFree"
         try {
-            var workDate: LocalDate= getWorkingDate()
+            var workDate: LocalDate = getWorkingDate()
             val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
                     .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(workDate.toTimestamp()))
@@ -1149,28 +1151,13 @@ class BagService : BagService {
         return depotRepository.getCountBags2SendBagByStation(stationNo)
     }
 
-    override fun getStatus(bagId: Long): BagService.BagStatus {
-        val un = UnitNumber.parseLabel(bagId.toString())
-        if (un.hasError)
-            throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
-        val bagNo = un.value.value.toLong()
-        if (un.value.type != UnitNumber.Type.BagId)
-            throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
-        val statusrecord = depotRepository.getBagStatus(bagNo)
-        statusrecord ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
-        return statusrecord.toBagStatus()
+
+    override fun bagStationExportIsValid(bagID: Long, stationNo: Int): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun isPickupStation(stationNo: Int, orderID: Long): Boolean {
-        var ret = false
-        val order = parcelRepository.getOrderById(orderID)
-        order ?: throw DefaultProblem(title = "Order not found")
-        if (order.depotnrabd == stationNo)
-            ret = true
-        return ret
-    }
 
-    override fun reopenBag(bagID: Long, stationNo: Int) {
+    override fun reopenBagStationExport(bagID: Long, stationNo: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -1179,6 +1166,14 @@ class BagService : BagService {
     }
 
     override fun closeBagStationExport(bagID: Long, stationNo: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun redSealStationExportIsValid(stationNo: Int, redSeal: Long): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun yellowSealStationExportIsValid(stationNo: Int, yellowSeal: Long): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

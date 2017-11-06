@@ -23,13 +23,20 @@ class RemoteSettings(private val map: sx.ConfigurationMap) {
         val nativePort: Int by map.value(0)
     }
 
+    @sx.ConfigurationMapPath("remote.ntp")
+    inner class Ntp {
+        val host: String by map.value("time.gls-group.eu")
+    }
+
     val http = Http()
     val broker = Broker()
+    val ntp = Ntp()
 
     override fun toString(): String {
         return "Host: $host\n" +
                 "Port: ${Http().port}\n" +
                 "SSL: ${Http().ssl}\n" +
-                "NativePort (Broker): ${Broker().nativePort}"
+                "NativePort (Broker): ${Broker().nativePort}\n" +
+                "NTP-Host: ${ntp.host}"
     }
 }

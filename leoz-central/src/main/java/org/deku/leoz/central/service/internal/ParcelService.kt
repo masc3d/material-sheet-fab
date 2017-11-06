@@ -454,11 +454,15 @@ open class ParcelServiceV1 :
                 title = "No orders found"
         )
         val orders2export = orders.map { it.toOrder2Export() }
-        orders2export.forEach {
+        loop@ for (it in orders2export) {
             val parcels = parcelRepository.getParcels2ExportByOrderid(it.orderId)
-            parcels ?: return@forEach
-            if (parcels.count() == 0)
-                return@forEach
+            parcels ?: continue@loop
+            if (parcels.count() == 0) {
+                it.parcels = null
+                continue@loop
+
+
+            }
             it.parcels = parcels.map { f -> f.toParcel2Export() }
         }
         val ordersFiltered = orders2export.filter { it.parcels != null }
@@ -518,11 +522,11 @@ open class ParcelServiceV1 :
             )
         val orderIdList = parcels.map { it.orderid }.distinct()
         val orderList: MutableList<ParcelServiceV1.Order2Export> = mutableListOf<ParcelServiceV1.Order2Export>()
-        orderIdList.forEach {
+        loop@ for (it in orderIdList) {
             val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
             if (orderRecord != null) {
                 if (orderRecord.bagidnra != null)
-                    return@forEach
+                    continue@loop
                 val order = orderRecord.toOrder2Export()
                 val pp = parcels.filter { f -> f.orderid == it }
                 if (pp.count() > 0) {
@@ -541,11 +545,13 @@ open class ParcelServiceV1 :
                 title = "No orders found"
         )
         val orders2export = orders.map { it.toOrder2Export() }
-        orders2export.forEach {
+        loop@ for (it in orders2export) {
             val parcels = parcelRepository.getLoadedParcels2ExportByOrderid(it.orderId)
-            parcels ?: return@forEach
-            if (parcels.count() == 0)
-                return@forEach
+            parcels ?: continue@loop
+            if (parcels.count() == 0) {
+                it.parcels = null
+                continue@loop
+            }
             it.parcels = parcels.map { f -> f.toParcel2Export() }
         }
         val ordersFiltered = orders2export.filter { it.parcels != null }
@@ -986,6 +992,10 @@ open class ParcelServiceV1 :
     }
 
     override fun getParcelsFilledInBagByBagID(stationNo: Int, bagId: Long) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun isValidBagBackLabel(stationNo: Int, scanCode: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

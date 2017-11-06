@@ -73,7 +73,8 @@ open class ParcelProcessing {
             val events = messagesRepository.findUnprocessedMsg()
             events ?: return true
 
-            events.forEach {
+            //events.forEach {
+            loop@ for(it in events){
                 var pathToDelete: Path? = null
 
                 val addInfo = it.additionalInfo?.toString() ?: "{}"
@@ -82,9 +83,7 @@ open class ParcelProcessing {
                 val parcelAddInfo: ParcelDeliveryAdditionalinfo = mapper.readValue(addInfo, ParcelDeliveryAdditionalinfo::class.java)
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
 
-                //var parcelNo=it.parcelNo?.toLong()
-//                parcelNo ?:
-//                        return@forEach
+
 
                 val parcel = it.parcelId ?: 0.toLong()
                 val parcelRecord = parcelRepository.getParcelByParcelId(parcel)
@@ -94,7 +93,8 @@ open class ParcelProcessing {
                         log.info("parcelId=0,messageID=${it.id.toString()}")
                         it.isProccessed = 1
                         it.store()
-                        return@forEach
+                        //return@forEach
+                        continue@loop
                     }
                     else -> {
 
@@ -105,14 +105,16 @@ open class ParcelProcessing {
                     log.info("parcelId=$parcel,messageID=${it.id.toString()} no parcelRecord")
                     it.isProccessed = 1
                     it.store()
-                    return@forEach
+                    //return@forEach
+                    continue@loop
                 }
                 val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
                 if (orderRecord == null) {
                     log.info("parcelId=$parcel,messageID=${it.id.toString()} no orderRecord")
                     it.isProccessed = 1
                     it.store()
-                    return@forEach
+                    //return@forEach
+                    continue@loop
                 }
 
                 var insertStatus = true
@@ -148,12 +150,7 @@ open class ParcelProcessing {
                 r.erzeugerstation = "002"
 
 
-                //val parcelRecord = parcelRepository.findParcelByUnitNumber(parcelNo)
-//                parcelRecord ?:
-//                        return@forEach
-//                val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
-//                orderRecord ?:
-//                        return@forEach
+
 
                 val userId = it.userId
                 //if (userId != null) {
@@ -211,7 +208,8 @@ open class ParcelProcessing {
                     val pictureUID = parcelAddInfo.pictureFileUID
                     if (pictureUID == null) {
                         log.info("parcelId=$parcel,messageID=${it.id.toString()} pictureID null")
-                        return@forEach
+                        //return@forEach
+                        continue@loop
                     }
                     val pathMobile = storage.mobileDataDirectory.toPath()
                     val fileNameInfo = userId.toString()
@@ -222,28 +220,30 @@ open class ParcelProcessing {
                     val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
                     val file = File(storage.workTmpDataDirectory, "$pictureUID.jpg")
                     if (!file.exists()) {
-                        val countBmp = parcelRepository.getCountParcelsByBmp(bmp, parcelRecord.orderid.toLong())
-                        //if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
+                        val countBmp = parcelRepository.getCountParcelsByBmp(bmp)
+                        //if (mobileFilename.getPath().resolve(newFile).toFile().exists()) { //LeoRobo war evtl. schneller
                         if (countBmp > 0) {
 //wenn LEO soweit ist .jpg anzuzeigen...
                             parcelRecord.bmpfilename = bmp
                             parcelRecord.store()
 
                         } else
-                            return@forEach
+                            //return@forEach
+                            continue@loop
                     } else {
 
 
                         val copyOption = StandardCopyOption.REPLACE_EXISTING
                         Files.copy(file.toPath(), pathFileMobile, copyOption)
-                        if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {
+                        if (mobileFilename.getPath().resolve(newFile).toFile().exists()) {//LeoRobo war evtl. schneller??
                             pathToDelete = file.toPath()
 
 //wenn LEO soweit ist .jpg anzuzeigen...
                             parcelRecord.bmpfilename = bmp
                             parcelRecord.store()
                         } else
-                            return@forEach
+                            //return@forEach
+                            continue@loop
                     }
                 }
 

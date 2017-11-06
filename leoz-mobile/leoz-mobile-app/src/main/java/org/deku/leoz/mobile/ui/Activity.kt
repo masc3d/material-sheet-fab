@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
@@ -33,14 +34,21 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.instacart.library.truetime.TrueTime
+import com.instacart.library.truetime.TrueTimeRx
+import com.patloew.rxlocation.GoogleApiConnectionException
+import com.patloew.rxlocation.RxLocation
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
@@ -49,6 +57,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.config.TimeConfiguration
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
@@ -73,7 +82,6 @@ import org.deku.leoz.mobile.ui.vm.ConnectivityViewModel
 import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.locationManager
 import org.slf4j.LoggerFactory
 import sx.aidc.SymbologyType
 import sx.android.ApplicationStateMonitor
@@ -117,9 +125,13 @@ abstract class Activity : BaseActivity(),
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
     private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
     private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
+    private val locationServices: LocationServices by Kodein.global.lazy.instance()
 
     private val device: Device by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
+
+
+    private val time: TimeConfiguration.Time by Kodein.global.lazy.instance()
 
     // AIDC readers
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -368,10 +380,7 @@ abstract class Activity : BaseActivity(),
                 .subscribe {
                     this.onForeground()
                 }
-
-        this.onForeground()
     }
-
 
     override fun onPause() {
         this.isPaused = true
@@ -566,6 +575,7 @@ abstract class Activity : BaseActivity(),
             }
 
             R.id.nav_logout -> {
+                (this.application as Application).stopLocationServices()
                 this.login.logout()
             }
         }
@@ -573,6 +583,10 @@ abstract class Activity : BaseActivity(),
         this.uxDrawerLayout.closeDrawer(GravityCompat.START)
 
         return false
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(LocaleContextWrapper.wrap(context = newBase!!, language = null))
     }
 
     private val cameraAidcFragment: AidcCameraFragment?
@@ -835,7 +849,43 @@ abstract class Activity : BaseActivity(),
                             this.cameraAidcFragmentVisible = false
                     }
                 }
+
+        this.locationServices.locationSettingsChangedEvent
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    log.trace("LocationSettingsChangedEvent fired")
+                    checkLocationSettings()
+                }
+
+        this.time.trueTimeOffset
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    log.trace("TrueTime observable emit value [$it]")
+                    if (it != null) {
+                        if (it > 150F) {
+                            MaterialDialog.Builder(this)
+                                    .title(getString(R.string.dialog_title_time_misconfigured))
+                                    .content(R.string.dialog_content_time_misconfigured, Math.round(it))
+                                    .positiveText(R.string.action_settings)
+                                    .negativeText(R.string.close)
+                                    .cancelable(false)
+                                    .onPositive { dialog, which ->
+                                        val intent = Intent(android.provider.Settings.ACTION_DATE_SETTINGS)
+                                        startActivity(intent)
+                                    }
+                                    .onNegative { dialog, which ->
+                                        this.app.terminate()
+                                    }
+                                    .build().show()
+                        }
+                    }
+                }
+
         //endregion
+
+        checkLocationSettings()
     }
 
     /**
@@ -1061,27 +1111,48 @@ abstract class Activity : BaseActivity(),
                     .show()
         }
 
-        val locationManager = this.locationManager
-        if (sequenceOf(
-                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER).also {
-                    log.trace("LOCATION PROVIDER GPS $it")
-                },
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER).also {
-                    log.trace("LOCATION PROVIDER NETWORK $it")
-                }
-        ).all { false }) {
-            MaterialDialog.Builder(this)
-                    .title(getString(R.string.dialog_title_gps_disabled))
-                    .content(getString(R.string.dialog_text_gps_disabled))
-                    .positiveText("Settings")
-                    .negativeText("Abort")
-                    .onPositive { _, _ ->
-                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                        this.startActivityForResult(intent, 0)
-                    }
-                    .onNegative { _, _ -> this.finishAffinity() }
-                    .cancelable(false)
-                    .show()
+        checkLocationSettings()
+    }
+
+    private fun checkLocationSettings() {
+        log.debug("Check location settings")
+        val googleSupport = device.googleApiSupported
+
+        if (locationServices.locationSettings.useGoogleLocationService && googleSupport) {
+            RxLocation(applicationContext).settings().checkAndHandleResolutionCompletable(this.locationServices.locationRequest)
+                    .bindToLifecycle(this)
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy(
+                            onComplete = {
+                                log.trace("LocationSettings satisfied")
+                            },
+                            onError = {
+                                log.warn("LocationSettings not satisfied!", it)
+                            }
+                    )
+        } else {
+            if (!googleSupport)
+                log.warn("GooglePlay-Services are not supported by this device")
+
+            val provider = locationServices.locationManager
+            if (!provider.isProviderEnabled(LocationManager.GPS_PROVIDER) || !provider.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                MaterialDialog.Builder(this)
+                        .title("Location settings not satisfied")
+                        .content("You disabled either GPS or Network locations. Both must be enabled to continue.")
+                        .positiveText(R.string.action_settings)
+                        .negativeText(R.string.cancel)
+                        .onPositive { _, _ ->
+                            startActivity(
+                                    Intent(
+                                            android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                                    )
+                            )
+                        }
+                        .onNegative { _, _ ->
+                            this.app.terminate()
+                        }
+                        .show()
+            }
         }
     }
 }

@@ -15,6 +15,10 @@ remote:
    broker:
       native-port: 13001
 
+   # NTP Server
+   ntp:
+      host: 'time.google.com'
+
 # Database settings
 database:
    # Automatically removes SQLite database on startup
@@ -46,6 +50,9 @@ location:
    # Period in seconds
    period: 20
    allow-mock-location: false
+   # GoogleLocation API specific settings
+   useGoogleLocationService: true
+   smallestDisplacement: 250
 
 # Developer/debug settings
 debug:

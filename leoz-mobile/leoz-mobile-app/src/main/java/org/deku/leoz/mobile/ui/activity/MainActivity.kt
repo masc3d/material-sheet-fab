@@ -8,6 +8,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.android.schedulers.AndroidSchedulers
+import org.deku.leoz.mobile.Application
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
@@ -17,6 +19,8 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.process.Login
+import org.deku.leoz.mobile.service.LocationService
+import org.deku.leoz.mobile.service.LocationServiceGMS
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.Activity
