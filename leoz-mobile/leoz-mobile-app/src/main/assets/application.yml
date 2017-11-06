@@ -15,6 +15,10 @@ remote:
    broker:
       native-port: 13001
 
+   # NTP Server
+   ntp:
+      host: 'time.google.com'
+
 # Database settings
 database:
    # Automatically removes SQLite database on startup
