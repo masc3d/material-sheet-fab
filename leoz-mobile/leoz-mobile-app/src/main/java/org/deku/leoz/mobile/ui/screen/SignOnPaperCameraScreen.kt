@@ -17,6 +17,10 @@ class SignOnPaperCameraScreen : BaseCameraScreen<SignOnPaperCameraScreen.Paramet
     class Parameters @ParcelConstructor constructor(
             var name: String
     )
+    
+    init {
+        this.allowMultiplePictures = false
+    }
 
     override fun createOverlayView(viewGroup: ViewGroup): View? {
         return this.activity.layoutInflater
