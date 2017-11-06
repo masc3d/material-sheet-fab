@@ -814,6 +814,8 @@ class DeliveryStopProcessScreen :
                                 .negativeText(android.R.string.no)
                                 .build()
 
+                        dialog.show()
+
                         return
                     }
                 }
