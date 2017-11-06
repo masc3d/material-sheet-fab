@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/dialog_whatsnew"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/deku_background_selector"
-    android:orientation="vertical"
+              android:id="@+id/dialog_whatsnew"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/deku_background_selector"
+              android:orientation="vertical"
     >
 
     <LinearLayout
@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:text="Vehicle selection"
+            android:text="@string/title_stop_merge"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             />
 
@@ -33,15 +33,13 @@
         android:orientation="vertical"
         >
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/uxVehicleTypeList"
+        <include layout="@layout/item_stop" />
+
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:dividerHeight="0dp"
-            android:longClickable="false"
-            android:scrollbars="vertical"
-            android:focusable="true"/>
+            android:layout_height="wrap_content" />
+
+        <include layout="@layout/item_stop" />
 
     </LinearLayout>
 
