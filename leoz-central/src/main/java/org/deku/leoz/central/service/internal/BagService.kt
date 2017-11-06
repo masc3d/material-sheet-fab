@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.HistoryJooqRepository
 import org.deku.leoz.node.rest.ServiceException
@@ -24,6 +25,7 @@ import org.deku.leoz.central.data.repository.DepotJooqRepository
 import org.deku.leoz.central.data.repository.ParcelJooqRepository
 import org.deku.leoz.central.data.repository.toBagStatus
 import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.counter
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.BagService
 import org.deku.leoz.service.internal.entity.BagDiff
@@ -61,6 +63,9 @@ class BagService : BagService {
 
     @Inject
     private lateinit var parcelRepository: ParcelJooqRepository
+
+    @Inject
+    private lateinit var userService: UserService
 
     fun getNextDeliveryDate(sendDate: Date, stationDest: String, countryDest: String, zipDest: String): java.time.LocalDate {
         //return java.time.LocalDate.now().plusDays(1)
@@ -1151,7 +1156,6 @@ class BagService : BagService {
         return depotRepository.getCountBags2SendBagByStation(stationNo)
     }
 
-
     override fun bagStationExportIsValid(bagID: Long, stationNo: Int): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -1175,5 +1179,15 @@ class BagService : BagService {
 
     override fun yellowSealStationExportIsValid(stationNo: Int, yellowSeal: Long): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun setBagStationExportRedSeal(bagID: Long, stationNo: Int, redSeal: Long, text: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getNewBagLoadinglistNo(): Long {
+        val user = userService.get()
+
+        return Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000
     }
 }
