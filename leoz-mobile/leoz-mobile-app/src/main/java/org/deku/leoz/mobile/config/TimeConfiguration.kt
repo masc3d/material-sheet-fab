@@ -6,17 +6,22 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.instacart.library.truetime.InvalidNtpServerResponseException
 import com.instacart.library.truetime.TrueTimeRx
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BooleanSupplier
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.mobile.settings.RemoteSettings
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by prangenberg on 04.11.17.
@@ -37,8 +42,30 @@ class TimeConfiguration {
         private val log = LoggerFactory.getLogger(this.javaClass)
         private var initCounter: Int = 0
 
-        val dateTimeOffsetProperty = PublishSubject.create<Float>()
-        val dateTimeOffset = dateTimeOffsetProperty.hide()
+        //val dateTimeOffsetProperty = PublishSubject.create<Float?>()
+        //val dateTimeOffset = dateTimeOffsetProperty.hide()
+
+
+        /**
+         * This observable emits every 5 minutes the current Date/Time offset.
+         */
+        val trueTimeOffset = Observable.create<Float?> {
+            Schedulers.newThread().schedulePeriodicallyDirect(
+                    {
+                        val offset = getOffset()
+                        if (offset == null)
+                            it.onError(IllegalStateException("TrueTimeRx not yet initialized"))
+                        else
+                            it.onNext(offset)
+                    },
+                    0,
+                    5,
+                    TimeUnit.MINUTES)
+        }
+                /* .doOnNext { dateTimeOffsetProperty.onNext(it ?: 0F) }
+                .toHotIoObservable(this.log)
+                */
+                // .subscribe { dateTimeOffsetProperty.onNext(it ?: 0F) }
 
         init {
             initializeTrueTime()
@@ -46,8 +73,7 @@ class TimeConfiguration {
                     .subscribeBy(
                             onComplete = {
                                 log.debug("Initializing TrueTime succeeded")
-                                val offset = (this.current()!!.time - Date().time) / 1000F
-                                dateTimeOffsetProperty.onNext(offset)
+                                //dateTimeOffsetProperty.onNext(getOffset()!!)
                             },
 
                             onError = {
@@ -56,27 +82,26 @@ class TimeConfiguration {
                     )
         }
 
-        private fun initializeTrueTime(): Observable<Boolean> {
-            return Observable.create {
+        private fun initializeTrueTime(): Completable { // Observable<Boolean> {
+            return Completable.create {
                 val subscriber = it
-                TrueTimeRx.build()
-                        .withSharedPreferences(context)
-                        .withLoggingEnabled(true)
-                        .initializeRx(remoteSettings.ntp.host)
-                        .subscribeOn(Schedulers.io())
-                        .subscribe({ date ->
-                            run {
-                                log.trace("TrueTime was initialized at [$date]")
-                                subscriber.onNext(true)
-                                subscriber.onComplete()
-                            }
-                        }) { throwable ->
-                            run {
-                                log.error("TrueTime init failed. Counter [$initCounter]", throwable)
-                                initCounter++
-                                subscriber.onError(throwable)
-                            }
-                        }
+                        TrueTimeRx.build()
+                                .withSharedPreferences(context)
+                                .withLoggingEnabled(true)
+                                .initializeRx(remoteSettings.ntp.host)
+                                .subscribeOn(Schedulers.io())
+                                .subscribe({ date ->
+                                    run {
+                                        log.trace("TrueTime was initialized at [$date]")
+                                        subscriber.onComplete()
+                                    }
+                                }) { throwable ->
+                                    run {
+                                        log.error("TrueTime init failed. Counter [$initCounter]", throwable)
+                                        initCounter++
+                                        subscriber.onError(throwable)
+                                    }
+                                }
             }
         }
 
@@ -87,5 +112,7 @@ class TimeConfiguration {
 
             return TrueTimeRx.now()
         }
+
+        private fun getOffset(): Float? = if (!TrueTimeRx.isInitialized()) null else (this.current()!!.time - Date().time) / 1000F
     }
 }

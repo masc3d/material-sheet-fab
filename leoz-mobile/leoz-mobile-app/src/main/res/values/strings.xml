@@ -324,4 +324,6 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="yes_start_tour">Yes, start tour</string>
     <string name="accept_always">Accept always</string>
     <string name="running">running</string>
+    <string name="dialog_title_time_misconfigured">Date/Time misconfiguration</string>
+    <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s seconds</string>
 </resources>

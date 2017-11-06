@@ -48,6 +48,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
@@ -56,6 +57,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.config.TimeConfiguration
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
@@ -127,6 +129,9 @@ abstract class Activity : BaseActivity(),
 
     private val device: Device by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
+
+
+    private val time: TimeConfiguration.Time by Kodein.global.lazy.instance()
 
     // AIDC readers
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -849,8 +854,33 @@ abstract class Activity : BaseActivity(),
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    log.debug("LocationSettingsChangedEvent fired")
+                    log.trace("LocationSettingsChangedEvent fired")
                     checkLocationSettings()
+                }
+
+        this.time.trueTimeOffset
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    log.trace("TrueTime observable emit value [$it]")
+                    if (it != null) {
+                        if (it > 150F) {
+                            MaterialDialog.Builder(this)
+                                    .title(getString(R.string.dialog_title_time_misconfigured))
+                                    .content(R.string.dialog_content_time_misconfigured, Math.round(it))
+                                    .positiveText(R.string.action_settings)
+                                    .negativeText(R.string.close)
+                                    .cancelable(false)
+                                    .onPositive { dialog, which ->
+                                        val intent = Intent(android.provider.Settings.ACTION_DATE_SETTINGS)
+                                        startActivity(intent)
+                                    }
+                                    .onNegative { dialog, which ->
+                                        this.app.terminate()
+                                    }
+                                    .build().show()
+                        }
+                    }
                 }
 
         //endregion
