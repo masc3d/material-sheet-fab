@@ -33,7 +33,7 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
-import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding
+import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding 
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
@@ -793,8 +793,8 @@ class DeliveryStopProcessScreen :
                         // Parcel does not belong to this delivery stop, ask for stop merge
                         feedback.warning()
 
-                        val animationDown = AnimationUtils.loadAnimation(this.context, R.anim.slide_down)
-                        val animationUp = AnimationUtils.loadAnimation(this.context, R.anim.slide_up)
+                        val animationDown = AnimationUtils.loadAnimation(this.context, R.anim.slide_down_half_outfading_mergedialog)
+                        val animationUp = AnimationUtils.loadAnimation(this.context, R.anim.slide_up_half_reverting)
 
                         val animationHandler = Handler()
 
