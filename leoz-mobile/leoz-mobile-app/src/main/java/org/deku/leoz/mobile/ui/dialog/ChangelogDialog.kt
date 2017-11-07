@@ -17,14 +17,14 @@ class ChangelogDialog : Dialog(R.layout.dialog_whatsnew) {
 
     private lateinit var items: List<ChangelogItem>
 
-    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<ChangelogItem>>({
+    private val adapterInstance = LazyInstance<FlexibleAdapter<ChangelogItem>>({
         FlexibleAdapter(
                 // Items
                 items,
                 // Listener
                 this)
     })
-    private val flexibleAdapter get() = flexibleAdapterInstance.get()
+    private val adapter get() = adapterInstance.get()
 
     companion object {
         fun create(items: List<ChangelogItem>): ChangelogDialog {
@@ -43,15 +43,15 @@ class ChangelogDialog : Dialog(R.layout.dialog_whatsnew) {
                 })
                 .setCancelable(false)
         // Flexible adapter needs to be re-created with views
-        flexibleAdapterInstance.reset()
+        adapterInstance.reset()
 
-        builderView.uxChangeList.adapter = flexibleAdapter
+        builderView.uxChangeList.adapter = adapter
         builderView.uxChangeList.layoutManager = LinearLayoutManager(context)
         //this.uxStopList.addItemDecoration(dividerItemDecoration)
 
-        flexibleAdapter.isLongPressDragEnabled = false
-        flexibleAdapter.isHandleDragEnabled = false
-        flexibleAdapter.isSwipeEnabled = false
+        adapter.isLongPressDragEnabled = false
+        adapter.isHandleDragEnabled = false
+        adapter.isSwipeEnabled = false
 
         return builder.create()
     }
