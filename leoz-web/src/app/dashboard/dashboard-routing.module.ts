@@ -54,6 +54,12 @@ export const routes = [
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/ipointscan/ipointscan.module#IpointscanModule'
+      },
+      {
+        path: 'deliverydispo', data: [ 'deliverydispo' ],
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/deliverydispo/deliverydispo.module#DeliverydispoModule'
       }
     ]
   }
