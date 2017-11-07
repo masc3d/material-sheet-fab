@@ -162,9 +162,10 @@ class StopViewModel(
     val isCountdownVisible: ObservableField<Boolean> by lazy {
         Observable.combineLatest(
                 this.editModeProperty.map { it.value },
+                this.stop.stateProperty.map { it.value == Stop.State.PENDING },
                 countdownTimespan.map { stop.appointmentState != AppointmentState.NONE },
-                BiFunction { editMode: Boolean, state: Boolean ->
-                    !editMode && state
+                io.reactivex.functions.Function3 { editMode: Boolean, stopState: Boolean, appointmentState: Boolean ->
+                    !editMode && stopState && appointmentState
                 }
         )
 
