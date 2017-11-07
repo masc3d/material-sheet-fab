@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="accept_always">Accept always</string>
+
     <string name="action_retry">Retry</string>
     <string name="action_settings">Settings</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -36,6 +38,7 @@
     <string name="clear">Clear</string>
 
     <string name="close">Close</string>
+
     <string name="closed">Closed</string>
 
     <string name="contact">Contact</string>
@@ -57,12 +60,16 @@
 
     <string name="dialog_content_outdated_orders">Orders are outdated. All data must be erased in order to proceed. Continue?</string>
     <string name="dialog_content_stop_merge">Do you want to merge this stop?</string>
+    <string name="dialog_content_stop_reopen">Re-open this stop?</string>
+    <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s seconds</string>
     <string name="dialog_text_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
     <string name="dialog_text_gps_disabled">The GPS location on your device is disabled. To continue, you must enable GPS location!</string>
     <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
     <string name="dialog_title_developer_enabled">Developer options enabled</string>
     <string name="dialog_title_event_selection">Event selection</string>
     <string name="dialog_title_gps_disabled">GPS location provider is not enabled</string>
+    <string name="dialog_title_stop_reopen">Stop activation</string>
+    <string name="dialog_title_time_misconfigured">Date/Time misconfiguration</string>
 
     <string name="dismiss">Dismiss</string>
 
@@ -236,6 +243,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="reset">Reset</string>
 
+    <string name="running">running</string>
+
     <string name="service_cash_delivery">Cash on delivery</string>
     <string name="service_department_delivery">Department delivery</string>
     <string name="service_documented_personal">Documented personal delivery</string>
@@ -283,6 +292,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="title_activity_delivery">Delivery</string>
     <string name="title_alternativedelivery">Alternative Recipient</string>
     <string name="title_cash_collection">Cash collection</string>
+    <string name="title_closed_stop_list">Closed Stops</string>
     <string name="title_confirm_call">Confirm call</string>
     <string name="title_missing_signature">Signature missing</string>
     <string name="title_phone_number">Phone number:</string>
@@ -290,7 +300,6 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="title_specify_deliverylist">Specify a delivery list</string>
     <string name="title_stop_detailt">Stop Details</string>
     <string name="title_stop_list">Tour</string>
-    <string name="title_closed_stop_list">Closed Stops</string>
     <string name="title_stop_merge">Stop merge</string>
     <string name="title_stop_process">Delivery</string>
 
@@ -323,8 +332,4 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
-    <string name="accept_always">Accept always</string>
-    <string name="running">running</string>
-    <string name="dialog_title_time_misconfigured">Date/Time misconfiguration</string>
-    <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s seconds</string>
 </resources>

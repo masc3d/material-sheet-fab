@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -19,6 +20,7 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
@@ -30,6 +32,7 @@ import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Headers
@@ -368,12 +371,12 @@ class DeliveryStopListScreen
         adapter.setStickyHeaders(true)
         adapter.showAllHeaders()
 
-        adapter.addListener(FlexibleAdapter.OnItemClickListener { item ->
+        adapter.addListener(FlexibleAdapter.OnItemClickListener { pos ->
             // Ignore click/selection in edit mode
             if (this.editMode)
                 return@OnItemClickListener true
 
-            adapter.getItem(item)
+            adapter.getItem(pos)
                     ?.viewModel
                     ?.also { viewModel ->
                         when (viewModel) {
@@ -392,6 +395,50 @@ class DeliveryStopListScreen
                     }
 
             true
+        })
+
+        adapter.addListener(FlexibleAdapter.OnItemLongClickListener { pos ->
+            if (this.stopType == Stop.State.CLOSED) {
+                // Show re-open dialog
+                MaterialDialog.Builder(context)
+                        .title(R.string.dialog_title_stop_reopen)
+                        .content(R.string.dialog_content_stop_reopen)
+                        .positiveText(android.R.string.yes)
+                        .negativeText(android.R.string.no)
+                        .onPositive { dialog, which ->
+                            dialog.dismiss()
+                            adapter.getItem(pos)
+                                    ?.viewModel
+                                    ?.also { viewModel ->
+                                        when (viewModel) {
+                                            is StopViewModel -> {
+                                                this.db.store.withTransaction {
+                                                    val stop = viewModel.stop as StopEntity
+
+                                                    // Re-open stop
+                                                    stop.state = Stop.State.PENDING
+
+                                                    // Move re-activated stop to top
+                                                    stopRepository.move(stop, null)
+                                                            .blockingGet()
+
+                                                    stopRepository
+                                                            .update(stop)
+                                                            .blockingGet()
+                                                }
+                                                        .subscribeOn(db.scheduler)
+                                                        .observeOnMainThread()
+                                                        .subscribeBy(onSuccess =  {
+                                                            // Switch to pending view when done
+                                                            this.stopType = Stop.State.PENDING
+                                                        })
+                                            }
+                                        }
+                                    }
+                        }
+                        .build()
+                        .show()
+            }
         })
 
         adapter.addListener(object : FlexibleAdapter.OnItemMoveListener {
