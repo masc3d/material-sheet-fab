@@ -34,11 +34,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import com.instacart.library.truetime.TrueTime
-import com.instacart.library.truetime.TrueTimeRx
-import com.patloew.rxlocation.GoogleApiConnectionException
 import com.patloew.rxlocation.RxLocation
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
@@ -48,7 +43,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
@@ -57,7 +51,6 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.config.TimeConfiguration
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
@@ -87,6 +80,7 @@ import sx.aidc.SymbologyType
 import sx.android.ApplicationStateMonitor
 import sx.android.Connectivity
 import sx.android.Device
+import sx.android.NtpTime
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
@@ -131,7 +125,7 @@ abstract class Activity : BaseActivity(),
     private val identity: Identity by Kodein.global.lazy.instance()
 
 
-    private val time: TimeConfiguration.Time by Kodein.global.lazy.instance()
+    private val ntpTime: NtpTime by Kodein.global.lazy.instance()
 
     // AIDC readers
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -858,7 +852,7 @@ abstract class Activity : BaseActivity(),
                     checkLocationSettings()
                 }
 
-        this.time.trueTimeOffset
+        this.ntpTime.offsetObservable
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
