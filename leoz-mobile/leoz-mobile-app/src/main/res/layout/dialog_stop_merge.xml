@@ -8,24 +8,6 @@
     >
 
     <LinearLayout
-        style="@style/AppTheme.Layout.Content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:text="@string/title_stop_merge"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
         style="@style/AppTheme.Layout.Screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -33,26 +15,44 @@
         android:orientation="vertical"
         >
 
-        <TextView
-            style="@style/TextAppearance.AppCompat.Large"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stop to be added"/>
+            android:orientation="vertical"
+            android:id="@+id/uxSourceStopContainer">
 
-        <include android:id="@+id/uxSourceStop" layout="@layout/item_stop" />
+            <TextView
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stop to be added"/>
 
-        <TextView
-            style="@style/TextAppearance.AppCompat.Large"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Active stop"/>
+            <include android:id="@+id/uxSourceStop" layout="@layout/item_stop_merge_dialog" />
+
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/uxStopMergeImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <include android:id="@+id/uxTargetStop" layout="@layout/item_stop" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/uxtargetStopContainer">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Active stop"/>
+
+            <include android:id="@+id/uxTargetStop" layout="@layout/item_stop_merge_dialog" />
+
+        </LinearLayout>
+
+
 
     </LinearLayout>
 

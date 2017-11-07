@@ -289,4 +289,5 @@
     <string name="truck">LKW</string>
     <string name="van">Transporter</string>
     <string name="closed">Geschlossen</string>
+    <string name="proceed">Fortfahren</string>
 </resources>

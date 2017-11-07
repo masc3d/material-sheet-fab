@@ -333,4 +333,5 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="van">Van</string>
     <string name="truck">Truck</string>
     <string name="running">running</string>
+    <string name="proceed">Proceed</string>
 </resources>
