@@ -815,6 +815,8 @@ class DeliveryStopProcessScreen :
                                 .negativeText(android.R.string.no)
                                 .build()
 
+                        dialog.customView.findViewById(R.id.uxSourceStop)
+
                         dialog.show()
 
                         return

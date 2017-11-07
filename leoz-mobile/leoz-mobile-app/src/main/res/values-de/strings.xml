@@ -288,8 +288,5 @@
     <string name="car">Auto</string>
     <string name="truck">LKW</string>
     <string name="van">Transporter</string>
-    <string name="running">läuft</string>
-    <string name="dialog_title_time_misconfigured">Datum/Zeit falsch</string>
-    <string name="dialog_content_time_misconfigured">Die Zeit auf Ihrem Gerät scheint falsch konfiguriert zu sein. Bitte aktivieren Sie die automatische Konfiguration der Zeit(-Zone) für das beste Ergebnis, oder korrigieren Sie die Zeit manuell.\n\nDifferenz: %s Sekunden</string>
     <string name="closed">Geschlossen</string>
 </resources>
