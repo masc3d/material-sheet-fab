@@ -13,6 +13,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
@@ -46,6 +47,8 @@ class DeliveryStop(
 
     private val identity: Identity by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
+
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     /**
      * Allowed events for this stop (all levels)
@@ -346,7 +349,10 @@ class DeliveryStop(
         // Reset parcel states
         return db.store.withTransaction {
             stop.state = Stop.State.PENDING
-            update(stop)
+            stopRepository
+                    .update(stop)
+                    .blockingGet()
+
 
             stop.tasks
                     .flatMap { it.order.parcels }
@@ -367,7 +373,9 @@ class DeliveryStop(
         val stop = this.entity
         if (stop.state == Stop.State.CLOSED) {
             stop.state = Stop.State.PENDING
-            db.store.toBlocking().update(stop)
+            stopRepository
+                    .update(stop)
+                    .blockingGet()
         }
     }
 
@@ -495,7 +503,9 @@ class DeliveryStop(
 
             // Close this stop persistently
             stop.state = Stop.State.CLOSED
-            update(stop)
+            stopRepository
+                    .update(stop)
+                    .blockingGet()
         }
                 .toCompletable()
                 .concatWith(Completable.fromCallable {

@@ -2,11 +2,13 @@ package org.deku.leoz.mobile.model.repository
 
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Single
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.mobile.model.entity.*
 import org.slf4j.LoggerFactory
 import sx.requery.scalarOr
+import java.util.*
 
 /**
  * Stop repository
@@ -45,6 +47,14 @@ class StopRepository(
                 }
                 .map { it.stop ?: throw IllegalArgumentException() }
                 .firstElement()
+    }
+
+    /**
+     * Update stop including modification time
+     */
+    override fun update(entity: StopEntity): Single<StopEntity> {
+        entity.modificationTime = Date()
+        return super.update(entity)
     }
 
     /**
@@ -118,7 +128,7 @@ class StopRepository(
             val afterPosition = after?.position ?: 0.0
 
             // Get first stop where position is greater or null if there's none (last position)
-            val nextAfter = when(persist) {
+            val nextAfter = when (persist) {
                 true -> {
                     store
                             .select(StopEntity::class)
@@ -132,7 +142,7 @@ class StopRepository(
                     // If changes are not persisted, query reference cache instead for consistency
                     this.entities
                             .asSequence()
-                            .filter { it.position > afterPosition}
+                            .filter { it.position > afterPosition }
                             .sortedBy { it.position }
                             .firstOrNull()
                 }

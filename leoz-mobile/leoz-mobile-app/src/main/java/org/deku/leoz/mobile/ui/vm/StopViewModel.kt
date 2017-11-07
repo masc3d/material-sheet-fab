@@ -15,6 +15,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.gojuno.koptional.None
+import com.gojuno.koptional.toOptional
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.toObservable
@@ -213,11 +215,21 @@ class StopViewModel(
                 .keys
                 .let {
                     if (it.count() > 1)
-                        null
+                        None
                     else
-                        it.first()
+                        it.first().toOptional()
                 }
         }
+    }
+
+    val modificationTime: ObservableField<String> by lazy {
+        this.stop.modificationTimeProperty
+                .map {
+                    it.value?.let {
+                        SimpleDateFormat("dd.mm.yyyy HH:mm", Locale.getDefault()).format(it)
+                    } ?: ""
+                }
+                .toField()
     }
 
     /** Stop state tag text */
@@ -226,7 +238,7 @@ class StopViewModel(
             when (it.value) {
                 Stop.State.PENDING -> context.getString(R.string.pending)
                 Stop.State.CLOSED -> {
-                    this.reason.blockingFirst().let {
+                    this.reason.blockingFirst().toNullable().let {
                         if (it != null)
                             it.mobile.textOrName(context)
                         else

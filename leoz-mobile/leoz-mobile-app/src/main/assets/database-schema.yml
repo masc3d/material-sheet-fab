@@ -2,4 +2,4 @@
 # Major increases indicate breaking changes and will reset the database on migration
 # Minor increases indicate soft/compatible migrations (only fields with default value or indexes added)
 major: 6
-minor: 2
+minor: 3
