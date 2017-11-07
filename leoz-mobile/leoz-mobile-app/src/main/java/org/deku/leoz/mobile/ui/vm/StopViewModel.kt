@@ -17,6 +17,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.toObservable
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.mobile
@@ -24,6 +25,8 @@ import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
 import sx.rx.ObservableRxProperty
+import sx.rx.behave
+import sx.rx.toSingletonObservable
 import sx.time.TimeSpan
 import sx.time.toCalendar
 import java.text.SimpleDateFormat
@@ -189,16 +192,24 @@ class StopViewModel(
     }
     //endregion
 
+    /** Stop parcels (observable fireing when stop state changes) */
     private val parcels by lazy {
-        stop.tasks
-                .map { it.order }
-                .flatMap { it.parcels }
+        Observable.combineLatest(
+                stop.tasks
+                        .map { it.order }
+                        .flatMap { it.parcels }
+                        .toSingletonObservable(),
+                this.stop.stateProperty.map { it.value },
+                BiFunction { parcels: List<Parcel>, state: Stop.State ->
+                    parcels
+                }
+        )
     }
 
     /** Stop level event reason */
     private val reason by lazy {
-        this.parcels
-                .groupBy { it.reason }
+        this.parcels.map {
+            it.groupBy { it.reason }
                 .keys
                 .let {
                     if (it.count() > 1)
@@ -206,14 +217,16 @@ class StopViewModel(
                     else
                         it.first()
                 }
+        }
     }
 
+    /** Stop state tag text */
     val tagText: ObservableField<String> by lazy {
         stop.stateProperty.map {
             when (it.value) {
                 Stop.State.PENDING -> context.getString(R.string.pending)
                 Stop.State.CLOSED -> {
-                    this.reason.let {
+                    this.reason.blockingFirst().let {
                         if (it != null)
                             it.mobile.textOrName(context)
                         else
@@ -225,12 +238,13 @@ class StopViewModel(
         }.toField()
     }
 
+    /** Stop state tag color */
     val tagColor: ObservableField<Int> by lazy {
         stop.stateProperty.map {
             when (stop.state) {
                 Stop.State.PENDING -> R.color.colorWhiteSmoke
                 else -> {
-                    if (this.parcels.all { it.state == Parcel.State.DELIVERED })
+                    if (this.parcels.blockingFirst().all { it.state == Parcel.State.DELIVERED })
                         R.color.colorGreenTransparent
                     else
                         R.color.colorAccentTransparent
