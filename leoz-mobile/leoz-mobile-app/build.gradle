@@ -24,6 +24,7 @@ buildscript {
         v_roboelectric = '3.5.1'
         v_rxlifecycle = '2.2.0'
         v_stetho = '1.5.0'
+        v_truetime = '3.3'
     }
 }
 
@@ -269,6 +270,13 @@ dependencies {
             "com.github.andrewlord1990:snackbarbuilder:0.9.0",
 
             "com.github.BlacKCaT27:CurrencyEditText:2.0.2",
+
+            // GMS
+            "com.google.android.gms:play-services-location:$v_android_gms",
+
+            // TrueTime
+            "com.github.instacart.truetime-android:library:$v_truetime",
+            "com.github.instacart.truetime-android:library-extension-rx:$v_truetime",
 
             //
             // FOR TESTING
