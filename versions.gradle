@@ -45,7 +45,7 @@ buildscript {
         v_roaster = '2.20.1.Final'
         v_slf4j = '1.7.25'
         v_snappy = '1.1.2.4'
-        v_snakeyaml = '1.18'
+        v_snakeyaml = '1.19'
         v_spring = '5.0.1.RELEASE'
         v_spring_data_jpa = '2.0.1.RELEASE'
         v_spring_data_commons = '2.0.1.RELEASE'

@@ -250,7 +250,7 @@ open class Application :
                 // in a deadlock in {@link org.springframework.boot.autoconfigure;.BackgroundPreinitializer.onApplicationEvent}
                 // when waiting for pre-init to complete. This deadlock will also suppress logging of the causing exception.
                 config.openStream().use {
-                    Yaml().load(it)
+                    Yaml().loadAll(it)
                 }
             }
 
