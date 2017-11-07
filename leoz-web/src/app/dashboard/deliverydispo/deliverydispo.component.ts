@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -9,7 +9,8 @@ import { Shipmentsums } from '../../core/models/shipmentsums.model';
 
 @Component( {
   selector: 'app-deliverydispo',
-  templateUrl: './deliverydispo.component.html'
+  templateUrl: './deliverydispo.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class DeliverydispoComponent extends AbstractTranslateComponent implements OnInit {
 
@@ -20,8 +21,9 @@ export class DeliverydispoComponent extends AbstractTranslateComponent implement
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                public router: Router ) {
-    super( translate, () => {
+    super( translate, cd, () => {
     } );
   }
 

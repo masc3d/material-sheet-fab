@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +12,8 @@ import { Component } from '@angular/core';
     <img src="assets/images/deku-logo-background.png" width="100%" height="100%" alt="logo"></span>
       </div>
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -8,7 +8,8 @@ import { Shipment } from '../../../core/models/shipment.model';
 
 @Component( {
   selector: 'app-importscancheck',
-  templateUrl: './importscancheck.component.html'
+  templateUrl: './importscancheck.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class ImportscancheckComponent extends AbstractTranslateComponent implements OnInit {
 
@@ -18,8 +19,9 @@ export class ImportscancheckComponent extends AbstractTranslateComponent impleme
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                public router: Router ) {
-    super( translate, () => {
+    super( translate, cd, () => {
     } );
   }
 

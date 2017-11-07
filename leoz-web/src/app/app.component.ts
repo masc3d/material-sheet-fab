@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { TranslateService } from './core/translate/translate.service';
 import { environment } from '../environments/environment';
 
@@ -8,7 +8,8 @@ import { environment } from '../environments/environment';
   template: `
     <app-top-bar></app-top-bar>
     <router-outlet></router-outlet>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
 

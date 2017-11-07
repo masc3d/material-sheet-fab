@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/primeng';
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
@@ -12,14 +12,16 @@ import { Station } from '../../core/auth/station.model';
     <div style="border: 1px solid gray; padding: 5px">
         <router-outlet></router-outlet>
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 
 export class StationloadingComponent extends AbstractTranslateComponent implements OnInit {
   items: MenuItem[];
 
-  constructor( protected translate: TranslateService ) {
-    super( translate, () => this.items = this.createItems() );
+  constructor( protected translate: TranslateService,
+               protected cd: ChangeDetectorRef) {
+    super( translate, cd, () => this.items = this.createItems() );
   }
 
   ngOnInit() {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -11,7 +11,8 @@ import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
 
 @Component( {
   selector: 'app-importscanlist',
-  templateUrl: './importscanlist.component.html'
+  templateUrl: './importscanlist.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class ImportscanlistComponent extends AbstractTranslateComponent implements OnInit {
 
@@ -22,8 +23,9 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                public router: Router ) {
-    super( translate, () => {
+    super( translate, cd, () => {
       this.scanOptions = this.createScanOptions();
     } );
   }

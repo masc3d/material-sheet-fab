@@ -1,4 +1,7 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit,
+  ViewChild
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/filter';
@@ -20,6 +23,7 @@ import { BagscanReportingService } from '../../../core/reporting/bagscan-reporti
 @Component( {
   selector: 'app-bagscan',
   templateUrl: './bagscan.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [ `
     .chargeLvlGreen {
       color: white;
@@ -72,11 +76,12 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   constructor( private fb: FormBuilder,
                private bagscanService: BagscanService,
                public translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                private keyUpService: KeyUpEventService,
                private soundService: SoundService,
                private reportingService: BagscanReportingService,
                private printingService: PrintingService ) {
-    super( translate, () => {
+    super( translate, cd, () => {
       this.baglists = this.createBaglistItems( this.baglistItems );
     } );
   }

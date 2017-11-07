@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
@@ -32,7 +32,8 @@ interface ScanMsg {
 
 @Component( {
   selector: 'app-loadinglistscan',
-  templateUrl: './loadinglistscan.component.html'
+  templateUrl: './loadinglistscan.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class LoadinglistscanComponent extends AbstractTranslateComponent implements OnInit {
 
@@ -82,13 +83,14 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   constructor( private fb: FormBuilder,
                private loadinglistService: LoadinglistService,
                protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                private datePipe: DatePipe,
                private keyUpService: KeyUpEventService,
                private soundService: SoundService,
                private reportingService: LoadinglistReportingService,
                private printingService: PrintingService,
                private browserCheck: BrowserCheck ) {
-    super( translate, () => {
+    super( translate, cd, () => {
       this.loadlists = this.createLoadinglistItems( this.loadlistItems );
       this.exportdate = this.initExportdate();
     } );

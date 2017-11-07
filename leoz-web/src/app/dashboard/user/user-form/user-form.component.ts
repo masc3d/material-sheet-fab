@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs/Observable';
@@ -18,6 +18,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 @Component( {
   selector: 'app-user-form',
   templateUrl: './user-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger( 'myself', [
       state( 'inactive', style( {
@@ -50,8 +51,9 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
                private userService: UserService,
                private msgService: MsgService,
                private roleGuard: RoleGuard,
+               protected cd: ChangeDetectorRef,
                protected translate: TranslateService ) {
-    super( translate, () => {
+    super( translate, cd, () => {
       this.roleOptions = this.createRoleOptions();
       this.stateOptions = this.createStateOptions();
       const expiresOnControl = this.userForm.get( 'expiresOn' );

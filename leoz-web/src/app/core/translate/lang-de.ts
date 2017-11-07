@@ -274,6 +274,7 @@ export const LANG_DE_TRANS = {
   'realWeight': 'Realgewicht',
   'volumeWeight': 'Volumengewicht',
   'effectiveWeight': 'Effektivgewicht',
+  'sorting': 'Sortierung',
   // deliveryscan list, delivery dispo
   'pos': 'Pos',
   'consignee': 'Empfänger',

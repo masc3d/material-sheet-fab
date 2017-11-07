@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import 'rxjs/add/operator/takeUntil';
 
 import { MapComponent } from '@yaga/leaflet-ng2';
@@ -32,9 +32,12 @@ import { DateMomentjsPipe } from '../../../core/translate/date-momentjs.pipe';
         </yaga-popup>
         <yaga-icon [iconUrl]="iconUrl" [iconSize]="iconSize"></yaga-icon>
       </yaga-marker>
-    </yaga-map>`
+    </yaga-map>`,
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class TourMapComponent extends AbstractTranslateComponent implements OnInit {
+
+  dateFormatLong: string;
 
   markerLat: number;
   markerLng: number;
@@ -58,9 +61,10 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
   private geoJsonLayer: L.GeoJSON;
 
   constructor( protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                private tourService: TourService,
                private datePipe: DateMomentjsPipe ) {
-    super( translate );
+    super( translate, cd );
   }
 
   ngOnInit(): void {
@@ -267,16 +271,20 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
       };
 
       this.geoJsonLayer = L.geoJSON( geoJson, {
-        onEachFeature: function(feature, layer) {
-          if (feature.properties && feature.properties['popupContent']) {
-            layer.bindPopup(feature.properties['popupContent'], {closeButton: false, offset: L.point(0, -20)});
-            layer.on('mouseover', function() { layer.openPopup(); });
-            layer.on('mouseout', function() { layer.closePopup(); });
+        onEachFeature: function ( feature, layer ) {
+          if (feature.properties && feature.properties[ 'popupContent' ]) {
+            layer.bindPopup( feature.properties[ 'popupContent' ], { closeButton: false, offset: L.point( 0, -20 ) } );
+            layer.on( 'mouseover', function () {
+              layer.openPopup();
+            } );
+            layer.on( 'mouseout', function () {
+              layer.closePopup();
+            } );
           }
         },
 
         pointToLayer: function ( feature, latlng ) {
-          return L.circleMarker( latlng, {radius: 2} );
+          return L.circleMarker( latlng, { radius: 2 } );
         }
       } );
 

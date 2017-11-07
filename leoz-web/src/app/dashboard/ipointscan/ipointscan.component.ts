@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component( {
   selector: 'app-ipointscan',
@@ -6,7 +6,8 @@ import { Component } from '@angular/core';
     <div style="padding: 5px">
         <router-outlet></router-outlet>
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 
 export class IpointscanComponent {}

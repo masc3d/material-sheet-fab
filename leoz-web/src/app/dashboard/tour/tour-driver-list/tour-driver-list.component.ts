@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
@@ -74,7 +74,8 @@ interface CallbackArguments {
         </ng-template>
       </p-column>
     </p-dataTable>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class TourDriverListComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
   intervalOptions: SelectItem[];
@@ -104,10 +105,11 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   constructor( private driverService: DriverService,
                private tourService: TourService,
+               protected cd: ChangeDetectorRef,
                private userService: UserService,
                protected translate: TranslateService,
                private roleGuard: RoleGuard ) {
-    super( translate, () => {
+    super( translate, cd, () => {
       this.intervalOptions = this.createIntervalOptions();
       if (this.tourDate) {
         this.tourDate = new Date( this.tourDate );
