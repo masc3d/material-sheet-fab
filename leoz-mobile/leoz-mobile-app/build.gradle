@@ -282,6 +282,8 @@ dependencies {
             // FOR TESTING
             //
 
+            "com.github.lzyzsd:circleprogress:1.2.1",
+
             //RX Location
             "com.patloew.rxlocation:rxlocation:1.0.3",
             "com.google.android.gms:play-services-location:$v_android_gms",

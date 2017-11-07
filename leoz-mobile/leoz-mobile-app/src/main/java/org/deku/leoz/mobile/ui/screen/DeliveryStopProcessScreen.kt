@@ -33,7 +33,7 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
-import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding 
+import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
