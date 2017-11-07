@@ -188,26 +188,50 @@ class StopViewModel(
     }
     //endregion
 
-    val tagText: String by lazy {
-        when (stop.state) {
-            Stop.State.PENDING -> context.getString(R.string.pending)
-            Stop.State.CLOSED -> context.getString(R.string.closed)
-            else -> ""
-        }
+    /** Stop level event reason */
+    private val reason by lazy {
+        stop.tasks
+                .map { it.order }
+                .flatMap { it.parcels }
+                .groupBy { it.reason }
+                .keys
+                .let {
+                    if (it.count() > 1)
+                        null
+                    else
+                        it.first()
+                }
     }
 
-    @get:ColorRes
-    val tagColor: Int by lazy {
-        when (stop.state) {
-            Stop.State.PENDING -> R.color.colorGrey
-            else -> {
-                val hasEvents = stop.tasks.map { it.order }.flatMap { it.parcels }.all { it.reason == null }
-                if (hasEvents)
-                    R.color.colorAccent
-                else
-                    R.color.colorGreen
+    val tagText: ObservableField<String> by lazy {
+        stop.stateProperty.map {
+            when (it.value) {
+                Stop.State.PENDING -> context.getString(R.string.pending)
+                Stop.State.CLOSED -> {
+                    this.reason.let {
+                        if (it != null)
+                            it.mobile.textOrName(context)
+                        else
+                            context.getString(R.string.closed)
+                    }
+                }
+                else -> ""
             }
-        }
+        }.toField()
+    }
+
+    val tagColor: ObservableField<Int> by lazy {
+        stop.stateProperty.map {
+            when (stop.state) {
+                Stop.State.PENDING -> R.color.colorWhiteSmoke
+                else -> {
+                    if (this.reason != null)
+                        R.color.colorAccent
+                    else
+                        R.color.colorGreen
+                }
+            }
+        }.toField()
     }
 
     override fun removeOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {

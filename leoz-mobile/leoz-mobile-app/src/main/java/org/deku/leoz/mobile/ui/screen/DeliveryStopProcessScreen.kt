@@ -149,7 +149,7 @@ class DeliveryStopProcessScreen :
                 icon = R.drawable.ic_delivery,
                 color = android.R.color.black,
                 background = R.drawable.section_background_green,
-                title = getString(R.string.deliver),
+                title = getString(R.string.delivered),
                 items = this.deliveryStop.deliveredParcels
         )
     }
