@@ -188,11 +188,15 @@ class StopViewModel(
     }
     //endregion
 
-    /** Stop level event reason */
-    private val reason by lazy {
+    private val parcels by lazy {
         stop.tasks
                 .map { it.order }
                 .flatMap { it.parcels }
+    }
+
+    /** Stop level event reason */
+    private val reason by lazy {
+        this.parcels
                 .groupBy { it.reason }
                 .keys
                 .let {
@@ -225,10 +229,10 @@ class StopViewModel(
             when (stop.state) {
                 Stop.State.PENDING -> R.color.colorWhiteSmoke
                 else -> {
-                    if (this.reason != null)
-                        R.color.colorAccent
+                    if (this.parcels.all { it.state == Parcel.State.DELIVERED })
+                        R.color.colorGreenTransparent
                     else
-                        R.color.colorGreen
+                        R.color.colorAccentTransparent
                 }
             }
         }.toField()
