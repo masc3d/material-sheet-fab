@@ -15,7 +15,9 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
@@ -23,6 +25,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenDeliveryStopListBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Delivery
@@ -40,7 +43,10 @@ import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.*
+import sx.android.ui.flexibleadapter.SimpleVmHeaderItem
+import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.android.ui.flexibleadapter.VmHolder
+import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
 import sx.rx.ObservableRxProperty
 
@@ -76,10 +82,12 @@ class DeliveryStopListScreen
     private val editModeProperty = ObservableRxProperty(false)
     private var editMode by editModeProperty
 
+    private val stopTypeProperty = ObservableRxProperty(Stop.State.PENDING)
+    private var stopType by stopTypeProperty
+
     private val flexibleAdapterInstance = LazyInstance<
             FlexibleAdapter<
-                    VmItem<
-                            *, Any>>>({
+                    VmItem<*, Any>>>({
         FlexibleAdapter(listOf())
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
@@ -126,26 +134,50 @@ class DeliveryStopListScreen
                 )
         )
 
+        // Update action button visibilty
+        Observable.combineLatest(
+                this.stopTypeProperty,
+                this.editModeProperty,
+                BiFunction { x: Any, y: Any -> Unit }
+        )
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    // Update action items
+                    this.actionItems = this.actionItems.apply {
+                        first { it.id == R.id.action_edit }
+                                .visible = !editMode && stopType == Stop.State.PENDING
+
+                        first { it.id == R.id.action_done }
+                                .visible = editMode
+
+                        first { it.id == R.id.action_cancel }
+                                .visible = editMode
+
+                        first { it.id == R.id.action_sort }
+                                .visible = editMode
+
+                        first { it.id == R.id.action_delivery_list_show_pending }
+                                .visible = !editMode &&
+                                stopType == Stop.State.CLOSED &&
+                                delivery.pendingStops.blockingFirst().value.count() > 0
+
+                        first { it.id == R.id.action_delivery_list_show_closed }
+                                .visible = !editMode &&
+                                stopType == Stop.State.PENDING &&
+                                delivery.closedStops.blockingFirst().value.count() > 0
+                    }
+                }
+
+        this.stopTypeProperty
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    this@DeliveryStopListScreen.updateStops()
+                }
+
         this.editModeProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     it.value.also { editMode ->
-                        // Update action items
-                        this.actionItems = this.actionItems.apply {
-                            first { it.id == R.id.action_edit }
-                                    .visible = !editMode
-
-                            first { it.id == R.id.action_done }
-                                    .visible = editMode
-
-                            first { it.id == R.id.action_cancel }
-                                    .visible = editMode
-
-                            first { it.id == R.id.action_sort }
-                                    .visible = editMode
-                        }
-
-
                         this.aidcReader.enabled = !editMode
 
                         this.flexibleAdapter.allBoundViewHolders
@@ -169,6 +201,14 @@ class DeliveryStopListScreen
                     when (it) {
                         R.id.action_edit -> {
                             this.editMode = true
+                        }
+
+                        R.id.action_delivery_list_show_pending -> {
+                            this.stopType = Stop.State.PENDING
+                        }
+
+                        R.id.action_delivery_list_show_closed -> {
+                            this.stopType = Stop.State.CLOSED
                         }
 
                         R.id.action_sort_zip_asc -> {
@@ -266,6 +306,19 @@ class DeliveryStopListScreen
                         iconRes = R.drawable.ic_pencil,
                         iconTintRes = android.R.color.white
                 ),
+                ActionItem(
+                        id = R.id.action_delivery_list_show_closed,
+                        colorRes = R.color.colorGrey,
+                        iconRes = R.drawable.ic_stop_list_closed,
+                        iconTintRes = android.R.color.white
+                ),
+                ActionItem(
+                        id = R.id.action_delivery_list_show_pending,
+                        colorRes = R.color.colorGrey,
+                        iconRes = R.drawable.ic_stop_list,
+                        iconTintRes = android.R.color.white,
+                        visible = false
+                ),
 
                 // Edit mode actions
                 ActionItem(
@@ -349,13 +402,28 @@ class DeliveryStopListScreen
 
         })
 
+        this.updateStops()
+
+        this.editMode = false
+        this.stopType = Stop.State.PENDING
+    }
+
+    fun updateStops() {
+        val stops = when (this.stopType) {
+            Stop.State.CLOSED -> delivery.closedStops.blockingFirst().value
+            else -> delivery.pendingStops.blockingFirst().value
+        }
+
+        flexibleAdapter.clear()
+
         // Items
         flexibleAdapter.addItem(
                 SimpleVmHeaderItem<StopListStatisticsViewModel>(
                         view = R.layout.view_delivery_stop_list_stats,
                         variable = BR.stats,
                         viewModel = StopListStatisticsViewModel(
-                                stops = this.delivery.pendingStops.blockingFirst().value,
+                                context = this.context,
+                                stops = stops,
                                 timerEvent = this.timerEvent)
                 ).also {
                     it.isSelectable = false
@@ -368,58 +436,57 @@ class DeliveryStopListScreen
                 // Position
                 flexibleAdapter.itemCount,
                 // Items
-                delivery.pendingStops
-                        .blockingFirst().value
-                        .map {
-                            val item = SimpleVmItem(
-                                    view = R.layout.item_stop,
-                                    variable = BR.stop,
-                                    viewModel = StopViewModel(
-                                            stop = it,
-                                            timerEvent = this.timerEvent),
-                                    dragHandleViewId = R.id.uxHandle
-                            )
+                stops.map {
+                    val item = SimpleVmItem(
+                            view = R.layout.item_stop,
+                            variable = BR.stop,
+                            viewModel = StopViewModel(
+                                    isStateVisible = this.stopType == Stop.State.CLOSED,
+                                    stop = it,
+                                    timerEvent = this.timerEvent),
+                            dragHandleViewId = R.id.uxHandle
+                    )
 
-                            item.isEnabled = true
-                            item.isDraggable = true
-                            item.isSwipeable = false
+                    item.isEnabled = true
+                    item.isDraggable = true
+                    item.isSwipeable = false
 
-                            // Item move / position change event handler
-                            item.itemReleasedEvent
-                                    .bindUntilEvent(this@DeliveryStopListScreen, FragmentEvent.PAUSE)
-                                    .subscribe { position ->
-                                        // Get the item it was moved after
-                                        val previousItem = when {
-                                            position >= this.adapterFirstStopItemIndex -> flexibleAdapter.getItem(position - 1)
-                                            else -> null
-                                        }
-
-                                        val previousItemViewModel: StopViewModel? = previousItem?.viewModel as? StopViewModel
-
-                                        // Update entity stop position acoordingly
-                                        db.store.withTransaction {
-                                            stopRepository
-                                                    .move(
-                                                            stop = item.viewModel.stop,
-                                                            after = previousItemViewModel?.stop,
-                                                            // Only persist immedaitely when not in edit mode
-                                                            persist = !this@DeliveryStopListScreen.editMode
-                                                    )
-                                                    .blockingAwait()
-                                        }
-                                                .subscribeOn(db.scheduler)
-                                                .subscribe()
-
-                                        // When not in edit mode, Send stop list order update on every move
-                                        if (!this@DeliveryStopListScreen.editMode)
-                                            this.delivery.sendStopOrderUpdate()
-                                                    .subscribe()
+                    if (this.stopType == Stop.State.PENDING) {
+                        // Item move / position change event handler
+                        item.itemReleasedEvent
+                                .bindUntilEvent(this@DeliveryStopListScreen, FragmentEvent.PAUSE)
+                                .subscribe { position ->
+                                    // Get the item it was moved after
+                                    val previousItem = when {
+                                        position >= this.adapterFirstStopItemIndex -> flexibleAdapter.getItem(position - 1)
+                                        else -> null
                                     }
 
-                            item
-                        })
+                                    val previousItemViewModel: StopViewModel? = previousItem?.viewModel as? StopViewModel
 
-        this.editMode = false
+                                    // Update entity stop position acoordingly
+                                    db.store.withTransaction {
+                                        stopRepository
+                                                .move(
+                                                        stop = item.viewModel.stop,
+                                                        after = previousItemViewModel?.stop,
+                                                        // Only persist immedaitely when not in edit mode
+                                                        persist = !this@DeliveryStopListScreen.editMode
+                                                )
+                                                .blockingAwait()
+                                    }
+                                            .subscribeOn(db.scheduler)
+                                            .subscribe()
+
+                                    // When not in edit mode, Send stop list order update on every move
+                                    if (!this@DeliveryStopListScreen.editMode)
+                                        this.delivery.sendStopOrderUpdate()
+                                                .subscribe()
+                                }
+                    }
+
+                    item
+                })
     }
 
     /**

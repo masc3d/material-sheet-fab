@@ -271,4 +271,9 @@ interface BagService {
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     )
+
+    @GET
+    @Path("/export/station/bagloadinglist/new")
+    @ApiOperation(value = "Get new loadinglist-no for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getNewBagLoadinglistNo(): Long
 }

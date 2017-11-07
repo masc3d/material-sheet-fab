@@ -8,6 +8,10 @@
 
         <import type="org.deku.leoz.mobile.R"/>
 
+        <import type="android.graphics.drawable.ColorDrawable"/>
+
+        <import type="android.databinding.adapters.Converters"/>
+
         <import type="android.view.View"/>
 
         <variable
@@ -306,6 +310,25 @@
 
                 </FrameLayout>
 
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    android:visibility="@{safeUnbox(stop.isStateVisible) ? View.VISIBLE : View.GONE}"
+                    >
+
+                    <sx.android.view.BadgeTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:alpha="0.9"
+                        android:background="@{stop.tagColor}"
+                        android:text="@{stop.tagText}"
+                        android:textAllCaps="true"
+                        />
+
+                </FrameLayout>
+
             </LinearLayout>
 
             <FrameLayout
@@ -333,37 +356,6 @@
             </FrameLayout>
 
         </LinearLayout>
-
-
-        <!-- Status icons -->
-        <!--<LinearLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:visibility="gone">-->
-
-        <!--<ImageView-->
-        <!--android:id="@+id/imageView"-->
-        <!--android:layout_width="@dimen/icon_size"-->
-        <!--android:layout_height="@dimen/icon_size"-->
-        <!--app:srcCompat="@drawable/ic_information_outline"/>-->
-
-        <!--<ImageView-->
-        <!--android:id="@+id/imageView2"-->
-        <!--android:layout_width="@dimen/icon_size"-->
-        <!--android:layout_height="@dimen/icon_size"-->
-        <!--android:layout_marginLeft="5dp"-->
-        <!--android:layout_marginRight="5dp"-->
-        <!--app:srcCompat="@drawable/ic_clock_alert"/>-->
-
-        <!--<ImageView-->
-        <!--android:id="@+id/imageView10"-->
-        <!--android:layout_width="@dimen/icon_size"-->
-        <!--android:layout_height="@dimen/icon_size"-->
-        <!--app:srcCompat="@drawable/ic_alert_outline"/>-->
-
-        <!--</LinearLayout>-->
 
     </android.support.v7.widget.CardView>
 </layout>

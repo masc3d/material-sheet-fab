@@ -3,8 +3,14 @@ package org.deku.leoz.mobile.ui.vm
 import android.content.Context
 import android.databinding.BaseObservable
 import android.databinding.ObservableField
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.support.annotation.ColorInt
+import android.support.annotation.ColorRes
+import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -29,7 +35,9 @@ import java.util.*
  */
 class StopViewModel(
         val stop: Stop,
-        val timerEvent: Observable<Unit>) : BaseObservable() {
+        val timerEvent: Observable<Unit>,
+        val isStateVisible: Boolean = false
+) : BaseObservable() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -113,10 +121,10 @@ class StopViewModel(
 
     val services: List<ParcelService> by lazy {
         stop.tasks
-                        .flatMap { it.services }
-                        .distinct()
-                        .filter { it.mobile.text != null }
-                }
+                .flatMap { it.services }
+                .distinct()
+                .filter { it.mobile.text != null }
+    }
 
     val hasServices: Boolean by lazy {
         this.services.count() > 0
@@ -179,6 +187,28 @@ class StopViewModel(
                 .toField()
     }
     //endregion
+
+    val tagText: String by lazy {
+        when (stop.state) {
+            Stop.State.PENDING -> context.getString(R.string.pending)
+            Stop.State.CLOSED -> context.getString(R.string.closed)
+            else -> ""
+        }
+    }
+
+    @get:ColorRes
+    val tagColor: Int by lazy {
+        when (stop.state) {
+            Stop.State.PENDING -> R.color.colorGrey
+            else -> {
+                val hasEvents = stop.tasks.map { it.order }.flatMap { it.parcels }.all { it.reason == null }
+                if (hasEvents)
+                    R.color.colorAccent
+                else
+                    R.color.colorGreen
+            }
+        }
+    }
 
     override fun removeOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {
         super.removeOnPropertyChangedCallback(callback)

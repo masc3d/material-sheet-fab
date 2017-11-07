@@ -157,7 +157,7 @@ class DeliveryStopProcessScreen :
 
     val pendingSection by lazy {
         SectionViewModel<ParcelEntity>(
-                icon = R.drawable.ic_format_list_bulleted,
+                icon = R.drawable.ic_stop_list,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
@@ -386,6 +386,7 @@ class DeliveryStopProcessScreen :
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
         binding.stop = StopViewModel(
+                isStateVisible = true,
                 stop = this.stop,
                 timerEvent = this.timerEvent)
     }

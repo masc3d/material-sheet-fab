@@ -6,6 +6,10 @@ import android.net.Uri
 import android.view.View
 import android.widget.ImageView
 import sx.android.view.CircularProgressView
+import android.graphics.drawable.ColorDrawable
+import android.databinding.BindingConversion
+
+
 
 /**
  * Data binding adatpers

@@ -1,8 +1,11 @@
 package org.deku.leoz.mobile.ui.vm
 
+import android.content.Context
 import android.databinding.BaseObservable
 import io.reactivex.Observable
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.AppointmentState
+import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.appointmentState
 import org.slf4j.LoggerFactory
@@ -15,6 +18,7 @@ import java.util.*
  * Created by masc on 08.09.17.
  */
 class StopListStatisticsViewModel(
+        val context: Context,
         val stops: List<StopEntity>,
         val timerEvent: Observable<Unit>
 ) : BaseObservable() {
@@ -63,8 +67,19 @@ class StopListStatisticsViewModel(
         }
     }
 
+    private val allStopsClosed by lazy {
+        this.stops.all { it.state == Stop.State.CLOSED }
+    }
+
     private val systemTime by lazy {
         this.tickEvent.map { Date().toCalendar() }
+    }
+
+    val heading by lazy {
+        when {
+            this.allStopsClosed -> context.getText(R.string.closed)
+            else -> ""
+        }
     }
 
     val clockHours by lazy {
