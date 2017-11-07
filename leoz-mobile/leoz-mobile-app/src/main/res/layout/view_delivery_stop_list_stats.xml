@@ -59,15 +59,18 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
                             android:text="@{stats.stopCount, default = 100}"
                             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                            android:layout_marginEnd="@dimen/margin"
+                            android:layout_marginEnd="@dimen/medium_margin"
                             />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
                             android:text="@{stats.heading, default = `Closed`}"
+                            android:textColor="@color/colorGrey"
                             android:textAppearance="@style/TextAppearance.AppCompat.Title"
                             />
 
