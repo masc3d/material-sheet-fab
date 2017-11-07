@@ -61,6 +61,14 @@
                             android:layout_height="wrap_content"
                             android:text="@{stats.stopCount, default = 100}"
                             android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                            android:layout_marginEnd="@dimen/margin"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{stats.heading, default = `Closed`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Title"
                             />
 
                     </LinearLayout>

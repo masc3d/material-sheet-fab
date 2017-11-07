@@ -133,7 +133,7 @@ class MenuScreen : ScreenFragment<Any>() {
                                 entryTypeType = EntryType.DELIVERY,
                                 description = this.getText(R.string.tour).toString(),
                                 counter = delivery.pendingStops.blockingFirst().value.count(),
-                                icon = this.context.getDrawableCompat(R.drawable.ic_format_list_bulleted)
+                                icon = this.context.getDrawableCompat(R.drawable.ic_stop_list)
                         ),
                         Entry(
                                 type = EntryType.UNLOADING,

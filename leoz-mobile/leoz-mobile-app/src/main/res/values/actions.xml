@@ -17,6 +17,8 @@
     <item name="action_deliver_fail" type="id"/>
     <item name="action_deliver_cancel" type="id"/>
     <item name="action_deliver_action" type="id"/>
+    <item name="action_delivery_list_show_pending" type="id"/>
+    <item name="action_delivery_list_show_closed" type="id"/>
     <item name="action_delivery_close_stop" type="id"/>
     <item name="action_delivery_close_stop_extra" type="id"/>
     <item name="action_delivery_select_delivered" type="id"/>

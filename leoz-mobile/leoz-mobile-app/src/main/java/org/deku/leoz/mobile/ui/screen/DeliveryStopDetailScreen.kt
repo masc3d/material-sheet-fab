@@ -117,6 +117,7 @@ class DeliveryStopDetailScreen
 
         val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
         binding.stop = StopViewModel(
+                isStateVisible = true,
                 stop = this.stop,
                 timerEvent = this.timerEvent)
 
