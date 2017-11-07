@@ -51,7 +51,6 @@ import org.deku.leoz.mobile.model.toMaterialSimpleListItem
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
-import org.deku.leoz.mobile.ui.dialog.StopMergeDialog
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
@@ -804,8 +803,6 @@ class DeliveryStopProcessScreen :
                                 .iconRes(R.drawable.ic_merge)
                                 .cancelable(true)
                                 .customView(R.layout.dialog_stop_merge, true)
-                                //.content(R.string.dialog_content_stop_merge)
-
                                 .positiveText(R.string.proceed)
                                 .onPositive { _, _ ->
                                     db.store.withTransaction {
@@ -827,21 +824,18 @@ class DeliveryStopProcessScreen :
                                 .build()
 
                         val customView = dialog.customView
-
                         val sourceContainer = customView?.findViewById<LinearLayout>(R.id.uxSourceStopContainer)
                         val targetContainer = customView?.findViewById<LinearLayout>(R.id.uxtargetStopContainer)
+                        val sourceView = customView?.findViewById<View>(R.id.uxSourceStop)
+                        val targetView = customView?.findViewById<View>(R.id.uxTargetStop)
 
                         val runnable = object : Runnable {
                             override fun run() {
-                                //sourceContainer?.startAnimation(AnimationUtils.loadAnimation(this@DeliveryStopProcessScreen.context, R.anim.main_fadein))
                                 sourceContainer?.startAnimation(animationDown)
-                                //targetContainer?.startAnimation(animationUp)
-                                animationHandler.postDelayed(this, 2500)
+                                targetContainer?.startAnimation(animationUp)
+                                animationHandler.postDelayed(this, 5000)
                             }
                         }
-
-                        val sourceView = customView?.findViewById<View>(R.id.uxSourceStop)
-                        val targetView = customView?.findViewById<View>(R.id.uxTargetStop)
 
                         val bindingSourceStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(sourceView)
                         bindingSourceStop.stop = StopViewModel(
@@ -857,7 +851,7 @@ class DeliveryStopProcessScreen :
 
                         dialog.show()
 
-                        animationHandler.postDelayed(runnable, 200)
+                        animationHandler.postDelayed(runnable, 1000)
 
                         return
                     }
