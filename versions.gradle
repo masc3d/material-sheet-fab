@@ -5,7 +5,7 @@ buildscript {
 
         v_activemq = '5.15.2'
         v_artemis = '1.5.4'
-        v_apache_cxf = '3.2.0'
+        v_apache_cxf = '3.2.1'
         v_apache_httpclient = '4.5.3'
         v_autovalue = '1.5'
         v_commons_lang = '3.6'
@@ -14,7 +14,7 @@ buildscript {
         v_eclipselink = '2.6.4'
         v_feign = '9.5.1'
         v_flyway = '4.2.0'
-        v_fxform2 = '8.1.4'
+        v_fxform2 = '8.1.5'
         v_guava = '23.0'
         v_h2 = '1.4.196'
         v_ini4j = '0.5.4'
@@ -49,7 +49,7 @@ buildscript {
         v_spring = '5.0.1.RELEASE'
         v_spring_data_jpa = '2.0.1.RELEASE'
         v_spring_data_commons = '2.0.1.RELEASE'
-        v_springboot = '2.0.0.M5'
+        v_springboot = '2.0.0.M6'
         // masc20172404. must not be updated to > 1.2.0 until upstream issue is resolved. https://git.derkurier.de/leoz/leoz/issues/100
         v_sshd = '1.6.0'
         v_swagger = '1.5.16'

@@ -232,7 +232,7 @@ dependencies {
             "org.javassist:javassist:$v_javassist",
 
             // pdfbox
-            "org.apache.pdfbox:pdfbox:2.0.7",
+            "org.apache.pdfbox:pdfbox:2.0.8",
 
             // Tika, content analysis framework
             "org.apache.tika:tika-core:1.16",
