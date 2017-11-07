@@ -216,7 +216,7 @@ class StopViewModel(
                         if (it != null)
                             it.mobile.textOrName(context)
                         else
-                            context.getString(R.string.closed)
+                            context.getString(R.string.delivered)
                     }
                 }
                 else -> ""
