@@ -41,9 +41,9 @@
                     android:id="@+id/uxHeaderImageView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:contentDescription="TODO"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/img_street_1"
-                    android:contentDescription="TODO"/>
+                    android:src="@drawable/img_street_1"/>
 
                 <!-- Header overlay -->
                 <FrameLayout
@@ -79,11 +79,11 @@
 
                 <LinearLayout
                     android:id="@+id/uxStatusBar"
-                    android:gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|end"
                     android:layout_marginEnd="@dimen/small_margin"
+                    android:gravity="center_vertical"
                     >
 
                     <ImageView
@@ -91,9 +91,9 @@
                         android:layout_width="@dimen/icon_size"
                         android:layout_height="@dimen/icon_size"
                         android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/margin"
                         android:src="@drawable/ic_dev"
                         android:tint="@color/colorDev"
-                        android:layout_marginEnd="@dimen/margin"
                         />
 
                     <ProgressBar
@@ -121,9 +121,7 @@
 
                 </LinearLayout>
 
-
             </android.support.v7.widget.Toolbar>
-
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

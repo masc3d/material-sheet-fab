@@ -4,7 +4,6 @@ package org.deku.leoz.mobile.ui.screen
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,7 +58,8 @@ class MenuScreen : ScreenFragment<Any>() {
                     true
                 }
                 EntryType.DELIVERY -> {
-                    delivery.pendingStops.blockingFirst().value.count() > 0
+                    delivery.pendingStops.blockingFirst().value.count() > 0 ||
+                            delivery.closedStops.blockingFirst().value.count() > 0
                 }
                 EntryType.UNLOADING -> {
                     deliveryList.loadedParcels.get().count() > 0
