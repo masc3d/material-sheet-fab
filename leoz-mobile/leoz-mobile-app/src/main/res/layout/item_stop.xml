@@ -323,7 +323,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center_vertical"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:text="@{stop.modificationTime, default = `dd.mm HH:mm:ss`}"
+                        android:text="@{stop.closingTime, default = `dd.mm HH:mm:ss`}"
                         />
 
                     <sx.android.view.BadgeTextView

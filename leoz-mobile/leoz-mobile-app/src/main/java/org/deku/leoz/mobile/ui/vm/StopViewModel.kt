@@ -3,14 +3,8 @@ package org.deku.leoz.mobile.ui.vm
 import android.content.Context
 import android.databinding.BaseObservable
 import android.databinding.ObservableField
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -19,7 +13,6 @@ import com.gojuno.koptional.None
 import com.gojuno.koptional.toOptional
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import io.reactivex.rxkotlin.toObservable
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.mobile
@@ -27,7 +20,6 @@ import org.deku.leoz.model.ParcelService
 import org.slf4j.LoggerFactory
 import sx.android.databinding.toField
 import sx.rx.ObservableRxProperty
-import sx.rx.behave
 import sx.rx.toSingletonObservable
 import sx.time.TimeSpan
 import sx.time.toCalendar
@@ -212,22 +204,24 @@ class StopViewModel(
     private val reason by lazy {
         this.parcels.map {
             it.groupBy { it.reason }
-                .keys
-                .let {
-                    if (it.count() > 1)
-                        None
-                    else
-                        it.first().toOptional()
-                }
+                    .keys
+                    .let {
+                        if (it.count() > 1)
+                            None
+                        else
+                            it.first().toOptional()
+                    }
         }
     }
 
-    val modificationTime: ObservableField<String> by lazy {
+    val closingTime: ObservableField<String> by lazy {
         this.stop.modificationTimeProperty
                 .map {
-                    it.value?.let {
-                        SimpleDateFormat("dd.mm.yyyy HH:mm", Locale.getDefault()).format(it)
-                    } ?: ""
+                    if (this.stop.state == Stop.State.CLOSED)
+                        it.value?.let {
+                            SimpleDateFormat("dd.mm.yyyy HH:mm", Locale.getDefault()).format(it)
+                        } ?: ""
+                    else ""
                 }
                 .toField()
     }
