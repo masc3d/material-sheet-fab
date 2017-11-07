@@ -3,13 +3,12 @@ package org.deku.leoz.mobile.ui.extension
 import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.support.v4.content.ContextCompat
+import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
+import org.slf4j.LoggerFactory
 import sx.android.view.CircularProgressView
-import android.graphics.drawable.ColorDrawable
-import android.databinding.BindingConversion
-
-
 
 /**
  * Data binding adatpers
@@ -17,6 +16,8 @@ import android.databinding.BindingConversion
  */
 class DataBindingAdatpers {
     companion object {
+        private val log = LoggerFactory.getLogger(DataBindingAdatpers::class.java)
+
         @BindingAdapter("android:src")
         @JvmStatic
         fun setImageUri(view: ImageView, imageUri: String?) {
@@ -48,7 +49,26 @@ class DataBindingAdatpers {
         @BindingAdapter("android:background")
         @JvmStatic
         fun setBackground(view: View, resource: Int) {
-            view.setBackgroundResource(resource)
+            if (resource != 0) {
+                val value = TypedValue().also {
+                    view.resources.getValue(resource, it, true)
+                }
+
+                when {
+                // Support for background color
+                    value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT -> {
+                        view.setBackgroundColor(value.data)
+                    }
+                // Background drawable
+                    value.type == TypedValue.TYPE_REFERENCE -> {
+                        view.background = ContextCompat.getDrawable(view.context, resource)
+                    }
+                // Other types of resource
+                    else -> {
+                        view.setBackgroundResource(resource)
+                    }
+                }
+            }
         }
 
         @BindingAdapter("cpv_progress")

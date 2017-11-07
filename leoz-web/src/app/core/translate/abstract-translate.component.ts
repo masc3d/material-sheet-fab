@@ -1,4 +1,4 @@
-import { OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
@@ -15,6 +15,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
   locale: any;
 
   constructor( protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                protected doOnSubscribe?: Function ) {
   }
 
@@ -30,6 +31,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
         if (this.doOnSubscribe) {
           this.doOnSubscribe( lang );
         }
+        this.cd.markForCheck();
       } );
     this.dateFormat = this.translate.setDateformat( 'internal' );
     this.dateFormatLong = this.translate.setDateformat( 'internalLong' );

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../core/auth/authentication.service';
@@ -10,12 +10,15 @@ import { Message } from 'primeng/primeng';
 import { MsgService } from '../shared/msg/msg.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { AbstractTranslateComponent } from '../core/translate/abstract-translate.component';
+import { TranslateService } from '../core/translate/translate.service';
 
 @Component( {
   selector: 'app-login',
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
-export class LoginComponent implements OnInit {
+export class LoginComponent extends AbstractTranslateComponent implements OnInit {
 
   loading = false;
   private autoLogin = `${environment.autologin}`;
@@ -28,10 +31,15 @@ export class LoginComponent implements OnInit {
   constructor( private fb: FormBuilder,
                private router: Router,
                private authenticationService: AuthenticationService,
+               protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                private msgService: MsgService ) {
+    super( translate, cd );
   }
 
   ngOnInit() {
+    super.ngOnInit();
+
     this.msgService.clear();
     this.errMsgs$ = this.msgService.msgs$;
 
@@ -43,7 +51,7 @@ export class LoginComponent implements OnInit {
       password: [ null, [ Validators.required ] ],
     } );
 
-    if ( this.autoLogin === 'yes') {
+    if (this.autoLogin === 'yes') {
       this.loginForm.patchValue( {
         username: this.devUser,
         password: this.devPass
@@ -68,7 +76,7 @@ export class LoginComponent implements OnInit {
             this.router.navigate( [ 'dashboard/home' ] );
           } else {
             this.loading = false;
-            console.log('handleResponse( resp )', resp);
+            console.log( 'handleResponse( resp )', resp );
             this.msgService.handleResponse( resp );
           }
         },

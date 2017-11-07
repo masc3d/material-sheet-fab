@@ -1,7 +1,9 @@
 package org.deku.leoz.mobile.model.entity
 
+import android.databinding.Bindable
 import android.databinding.Observable
 import io.requery.*
+import org.deku.leoz.mobile.data.BR
 import sx.android.databinding.BaseRxObservable
 import sx.io.serialization.Serializable
 
@@ -33,6 +35,7 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     @get:Key @get:Generated
     abstract val id: Int
 
+    @get:Bindable
     @get:Column(nullable = false)
     @get:Index
     abstract var state: State
@@ -49,6 +52,9 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     @get:Lazy
     @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val meta: MutableList<StopMeta>
+
+    val stateProperty by lazy { ObservableRxField<Stop.State>(BR.state, { this.state }) }
+
 }
 
 fun Stop.Companion.create(

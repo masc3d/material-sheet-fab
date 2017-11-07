@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { UserService } from '../user.service';
@@ -50,7 +50,8 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
         </ng-template>
       </p-column>
     </p-dataTable>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class UserListComponent extends AbstractTranslateComponent implements OnInit {
 
@@ -62,8 +63,9 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
   constructor( private userService: UserService,
                private msgService: MsgService,
                public translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                private roleGuard: RoleGuard ) {
-    super( translate );
+    super( translate, cd );
   }
 
   ngOnInit() {

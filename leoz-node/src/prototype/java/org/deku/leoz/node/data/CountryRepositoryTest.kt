@@ -25,7 +25,7 @@ class CountryRepositoryTest {
 
     @Test
     fun test() {
-        val country = countryRepository.findOne("DE")
+        val country = countryRepository.findById("DE")
 
         val ts = Timestamp.valueOf(LocalDateTime.of(2014, 1, 1, 0, 0))
         for (c in countryRepository.findAll(QMstCountry.mstCountry.timestamp.after(ts))) {

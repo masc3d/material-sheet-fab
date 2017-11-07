@@ -86,6 +86,7 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
+import sx.android.view.setIconTint
 import sx.android.view.setIconTintRes
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
@@ -300,6 +301,20 @@ abstract class Activity : BaseActivity(),
 
         //region Progress bar / activity indicator
         this.uxProgressBar.visibility = View.GONE
+
+        if (this.debugSettings.enabled || !this.remoteSettings.hostIsProductive) {
+            this.uxDevIcon.visibility = View.VISIBLE
+
+            this.uxDevIcon.setIconTint(
+                    if (this.remoteSettings.hostIsProductive) {
+                        ContextCompat.getColor(this, android.R.color.black)
+                    } else {
+                        ContextCompat.getColor(this, R.color.colorDevTransparent)
+                    }
+            )
+        } else {
+            this.uxDevIcon.visibility = View.GONE
+        }
 
         // Change progress bar color, as this is apparently not themable and there's no proper
         // way to do this in xml layout that is compatible down to 4.x
@@ -945,8 +960,7 @@ abstract class Activity : BaseActivity(),
         fragment.accentColorProperty
                 .bindUntilEvent(fragment, FragmentEvent.PAUSE)
                 .subscribe {
-                    this.uxHeaderAccentBar.backgroundColor = if (remoteSettings.hostIsProductive || it.value != R.color.colorAccent)
-                        ContextCompat.getColor(this, it.value) else ContextCompat.getColor(this, R.color.colorDev)
+                    this.uxHeaderAccentBar.backgroundColor = ContextCompat.getColor(this, it.value)
                 }
 
         fragment.flipScreenProperty

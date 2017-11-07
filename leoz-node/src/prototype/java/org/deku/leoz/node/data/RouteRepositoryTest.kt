@@ -63,7 +63,7 @@ open class RouteRepositoryTest {
     open fun testFind() {
         for (i in 0..20) {
             val sw = Stopwatch.createStarted()
-            val result = routeRepository.findOne(46179)
+            val result = routeRepository.findById(46179)
             log.info("${sw} ${result}")
         }
     }

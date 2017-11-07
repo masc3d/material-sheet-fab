@@ -1,4 +1,4 @@
-import { Component, Inject, Renderer2 } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { TranslateService } from '../core/translate/translate.service';
 
@@ -18,7 +18,8 @@ import { TranslateService } from '../core/translate/translate.service';
         <i class="fa fa-bars" style="color: #ffffff; font-size: 32px;"></i>
       </div>
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TopBarComponent {
 

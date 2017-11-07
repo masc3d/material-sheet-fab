@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import 'rxjs/add/operator/filter';
 
@@ -14,7 +14,8 @@ import { Shipment } from '../../core/models/shipment.model';
 
 @Component( {
   selector: 'app-deliveryscan',
-  templateUrl: './deliveryscan.component.html'
+  templateUrl: './deliveryscan.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class DeliveryscanComponent extends AbstractTranslateComponent implements OnInit {
 
@@ -51,9 +52,10 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                private keyUpService: KeyUpEventService,
                private browserCheck: BrowserCheck ) {
-    super( translate, () => {
+    super( translate, cd, () => {
       this.deliverylistOptions = this.createDeliverylistOptions();
       this.deliverydateOptions = this.createDeliverydateOptions();
       this.tourOptions = this.createTourOptions();

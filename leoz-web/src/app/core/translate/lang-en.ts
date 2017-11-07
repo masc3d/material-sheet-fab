@@ -274,13 +274,31 @@ export const LANG_EN_TRANS = {
   'realWeight': 'Real Weight',
   'volumeWeight': 'Volume Weight',
   'effectiveWeight': 'Effective Weight',
-  // deliveryscan list
+  'sorting': 'Sorting',
+  // deliveryscan list, delivery dispo
   'pos': 'Pos',
   'consignee': 'Consignee',
   'deadline': 'Deadline',
   'shipmentno': 'Ship No',
   'deliverystatus': 'Status',
   'deliverycode': 'Code',
+  'shipment': 'Shipments',
+  'count': 'Count',
+  'expected': 'to expect',
+  'throughHub': 'through HUB',
+  'onTruck': 'on truck',
+  'withImportscan': 'with importscan',
+  'filter': 'Filter',
+  'uptoDeliverydate': 'up to deliverydate',
+  'forDeliverydate': 'for deliverydate',
+  'withStock': 'on stock',
+  'select': 'Select',
+  'hidePU': 'hide PickUps',
+  'glsDelivery': 'GLS delivery',
+  'allTours': 'all Tours',
+  'justForTour': 'just for Tour',
+  'predispo': 'pre Dispo',
+  'detailedDispo': 'detailed Dispo',
   // ipointlist, ipointquick
   'scan_without_validating': 'Scan without validating',
   'ipointlist': 'I-Point List',
@@ -290,3 +308,10 @@ export const LANG_EN_TRANS = {
   'ipointListcan': 'I-Point listscan',
   'packages_to_scan': 'Packages to scan',
 };
+
+
+
+
+
+
+

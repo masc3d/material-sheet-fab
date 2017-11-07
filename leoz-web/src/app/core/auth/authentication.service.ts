@@ -36,6 +36,7 @@ export class AuthenticationService {
     localStorage.removeItem( 'currentUser' );
     localStorage.removeItem( 'debitorStations' );
     localStorage.removeItem( 'activeStation' );
+    localStorage.removeItem( 'version' );
     this.router.navigate( [ 'login' ] );
   }
 
@@ -55,6 +56,7 @@ export class AuthenticationService {
         this.roleGuard.userRole = user.role;
         if (user.active) {
           localStorage.setItem( 'currentUser', JSON.stringify( userJson ) );
+          localStorage.setItem('version', environment.version );
           this.fetchStations( user.debitorId );
         } else {
           this.msgService.error( 'user account deactivated' );

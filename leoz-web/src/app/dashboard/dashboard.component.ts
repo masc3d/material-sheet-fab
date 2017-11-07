@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
 import { KeyUpEventService } from '../core/key-up-event.service';
 
 @Component( {
@@ -7,7 +7,8 @@ import { KeyUpEventService } from '../core/key-up-event.service';
     <app-left-menu></app-left-menu>
     <div id="main">
       <router-outlet></router-outlet>
-    </div>`
+    </div>`,
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class DashboardComponent {
 

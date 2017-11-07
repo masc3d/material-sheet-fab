@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -8,6 +8,7 @@ import { TranslateService } from '../../../core/translate/translate.service';
 @Component( {
   selector: 'app-importscanquick',
   templateUrl: './importscanquick.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [ `
     .chargeLvlGreen {
       color: white;
@@ -32,8 +33,9 @@ export class ImportscanquickComponent extends AbstractTranslateComponent impleme
 
   constructor( private fb: FormBuilder,
                public translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                public router: Router ) {
-    super( translate, () => {
+    super( translate, cd, () => {
     } );
   }
 

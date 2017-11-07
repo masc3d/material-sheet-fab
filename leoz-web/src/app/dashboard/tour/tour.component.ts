@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MsgService } from '../../shared/msg/msg.service';
 import { Observable } from 'rxjs/Observable';
 import { Message } from 'primeng/primeng';
@@ -10,7 +10,8 @@ import { Message } from 'primeng/primeng';
     <app-msg-box [msgs]="msgs$ | async"></app-msg-box>
     <app-tour-driver-list></app-tour-driver-list>
     <app-tour-map></app-tour-map>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class TourComponent implements OnInit {
   msgs$: Observable<Message[]>;

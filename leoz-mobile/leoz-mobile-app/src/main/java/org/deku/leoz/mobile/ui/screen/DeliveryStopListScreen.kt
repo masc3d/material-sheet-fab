@@ -11,6 +11,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.tinsuke.icekick.extension.serialState
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
@@ -82,7 +83,12 @@ class DeliveryStopListScreen
     private val editModeProperty = ObservableRxProperty(false)
     private var editMode by editModeProperty
 
-    private val stopTypeProperty = ObservableRxProperty(Stop.State.PENDING)
+    /**
+     * Indicates if aidc fragment is pinned
+     */
+    private var stopTypeState by serialState(Stop.State.PENDING)
+
+    private val stopTypeProperty = ObservableRxProperty<Stop.State>(this.stopTypeState)
     private var stopType by stopTypeProperty
 
     private val flexibleAdapterInstance = LazyInstance<
@@ -171,6 +177,8 @@ class DeliveryStopListScreen
         this.stopTypeProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
+                    this.stopTypeState = it.value
+
                     this@DeliveryStopListScreen.updateStops()
                 }
 
@@ -402,10 +410,21 @@ class DeliveryStopListScreen
 
         })
 
-        this.updateStops()
+        when (this.stopType) {
+            Stop.State.PENDING -> {
+                if (this.delivery.pendingStops.blockingFirst().value.count() == 0)
+                    this.stopType = Stop.State.CLOSED
+            }
+
+            Stop.State.CLOSED -> {
+                if (this.delivery.closedStops.blockingFirst().value.count() == 0)
+                    this.stopType = Stop.State.PENDING
+            }
+
+            else -> Unit
+        }
 
         this.editMode = false
-        this.stopType = Stop.State.PENDING
     }
 
     fun updateStops() {

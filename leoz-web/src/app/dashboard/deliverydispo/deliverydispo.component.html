@@ -1,0 +1,97 @@
+<form [formGroup]="deliverydispoForm" style="padding-top: 10px">
+  <div class="ui-fluid">
+    <div class="ui-g">
+
+      <div class="ui-g-12 ui-lg-4" style="padding:0; border: 1px solid transparent !important;">
+        <p-fieldset [style]="{'height': '150px'}" legend="{{'filter' | translate}}">
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="filter" value="filter" label="{{'expected' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="filter" value="filter" label="{{'throughHub' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="filter" value="filter" label="{{'onTruck' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="filter" value="filter" label="{{'withImportscan' | translate}}"></p-radioButton>
+          </div>
+        </p-fieldset>
+        <p-fieldset [style]="{'height': '150px'}" legend="{{'dispo' | translate}}">
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="dispo" value="dispo" label="{{'uptoDeliverydate' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="dispo" value="dispo" label="{{'forDeliverydate' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="dispo" value="dispo" label="{{'withStock' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <input #scanfield formControlName="scanfield"
+                   style="height: 26px; font-size: 20px;
+                          background-color: #FFFFC6; border:1px solid darkgrey">
+          </div>
+        </p-fieldset>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <button pButton type="button" label="{{'select' | translate}}"></button>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <button pButton type="button" label="{{'hidePU' | translate}}"></button>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-tabView>
+              <p-dataTable resizableColumns="false" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate">
+                <p-column [style]="{'max-width': '50px'}" field="tour" header="{{'tour' | translate}}"></p-column>
+                <p-column field="deadline" header="{{'deadline' | translate}}"></p-column>
+                <p-column field="Count" header="{{'count' | translate}}"></p-column>
+              </p-dataTable>
+            </p-tabView>
+          </div>
+        <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+          <p-tabView>
+            <p-dataTable resizableColumns="false" responsive="true"
+                         [emptyMessage]="'noDataAvailable' | translate">
+              <p-column [style]="{'max-width': '50px'}" field="tour" header="{{'tour' | translate}}"></p-column>
+              <p-column field="weight" header="{{'weight' | translate}}"></p-column>
+              <p-column field="packs" header="{{'packs' | translate}}"></p-column>
+              <p-column field="shipments" header="{{'shipment' | translate}}"></p-column>
+            </p-dataTable>
+          </p-tabView>
+        </div>
+
+        <p-fieldset [style]="{'height': '150px'}" legend="{{'tour' | translate}}">
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="tour" value="tour" label="{{'glsDelivery' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="tour" value="tour" label="{{'allTours' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <p-radioButton name="tour" value="tour" label="{{'justForTour' | translate}}"></p-radioButton>
+          </div>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <input #scanfield formControlName="scanfield"
+                   style="height: 26px; font-size: 20px;
+                          background-color: #FFFFC6; border:1px solid darkgrey">
+          </div>
+        </p-fieldset>
+          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+            <button pButton type="button" label="{{'help' | translate}}"></button>
+          </div>
+      </div>
+
+      <div class="ui-g-12 ui-lg-8" style="padding:0;">
+          <p-tabView>
+            <p-tabPanel header="{{'predispo' | translate}}">
+
+            </p-tabPanel>
+            <p-tabPanel header="{{'detailedDispo' | translate}}">
+
+            </p-tabPanel>
+          </p-tabView>
+      </div>
+    </div>
+  </div>
+</form>

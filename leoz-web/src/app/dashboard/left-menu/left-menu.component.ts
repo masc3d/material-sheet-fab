@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 import { MenuItem, SelectItem } from 'primeng/primeng';
@@ -29,8 +29,8 @@ import { BagscanGuard } from '../../core/auth/bagscan.guard';
                     (onChange)="changeActiveStation($event.value)"></p-dropdown>
       </div>
     </div>
-  `
-
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 } )
 
 export class LeftMenuComponent extends AbstractTranslateComponent implements OnInit {
@@ -49,8 +49,9 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
                private auth: AuthenticationService,
                private router: Router,
                private bagscanGuard: BagscanGuard,
+               protected cd: ChangeDetectorRef,
                protected translate: TranslateService ) {
-    super( translate, () => {
+    super( translate, cd, () => {
       // this.items = this.createItems();
       if (this.usedMenu === 'leoz') {
         this.items = this.createItems();
@@ -247,7 +248,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'deliverydispo' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/deliverydispo',
           command: closeMenu
         },
         {

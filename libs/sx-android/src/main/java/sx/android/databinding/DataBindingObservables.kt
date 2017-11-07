@@ -39,6 +39,8 @@ abstract class BaseRxObservable : BaseObservable() {
             fields.put(
                     bindingId,
                     this)
+
+            this.emitValue()
         }
 
         internal fun emitValue() {
