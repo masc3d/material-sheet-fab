@@ -41,17 +41,7 @@ class StopMergeDialog(context: Context): AlertDialog(context, R.layout.dialog_st
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val bindingSourceStop = DataBindingUtil.bind<ItemStopBinding>(this.uxSourceStop)
-        bindingSourceStop.stop = StopViewModel(
-                stop = this.sourceStop,
-                timerEvent = Observable.empty()
-        )
 
-        val bindingTargetStop = DataBindingUtil.bind<ItemStopBinding>(this.uxTargetStop)
-        bindingTargetStop.stop = StopViewModel(
-                stop = targetStop,
-                timerEvent = Observable.empty()
-        )
     }
 
 }

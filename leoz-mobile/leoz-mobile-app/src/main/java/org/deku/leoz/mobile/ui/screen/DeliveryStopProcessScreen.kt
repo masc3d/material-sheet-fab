@@ -815,7 +815,20 @@ class DeliveryStopProcessScreen :
                                 .negativeText(android.R.string.no)
                                 .build()
 
-                        dialog.customView.findViewById(R.id.uxSourceStop)
+                        val sourceView = dialog.customView?.findViewById<View>(R.id.uxSourceStop)
+                        val targetView = dialog.customView?.findViewById<View>(R.id.uxTargetStop)
+
+                        val bindingSourceStop = DataBindingUtil.bind<ItemStopBinding>(sourceView)
+                        bindingSourceStop.stop = StopViewModel(
+                                stop = sourceStop,
+                                timerEvent = Observable.empty()
+                        )
+
+                        val bindingTargetStop = DataBindingUtil.bind<ItemStopBinding>(targetView)
+                        bindingTargetStop.stop = StopViewModel(
+                                stop = this.deliveryStop.entity,
+                                timerEvent = Observable.empty()
+                        )
 
                         dialog.show()
 
