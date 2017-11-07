@@ -86,6 +86,16 @@
                     android:layout_marginEnd="@dimen/small_margin"
                     >
 
+                    <ImageView
+                        android:id="@+id/uxDevIcon"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_dev"
+                        android:tint="@color/colorDev"
+                        android:layout_marginEnd="@dimen/margin"
+                        />
+
                     <ProgressBar
                         android:id="@+id/uxProgressBar"
                         android:layout_width="@dimen/progress_size_medium"

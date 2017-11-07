@@ -7,6 +7,7 @@
     <color name="colorDarkGrey">#494949</color>
     <color name="colorDarkIcon">#777777</color>
     <color name="colorDev">#832c99</color>
+    <color name="colorDevTransparent">#dd832c99</color>
     <color name="colorGreen">#28d228</color>
     <color name="colorGreenTransparent">#dd28d228</color>
     <color name="colorGrey">#797979</color>
