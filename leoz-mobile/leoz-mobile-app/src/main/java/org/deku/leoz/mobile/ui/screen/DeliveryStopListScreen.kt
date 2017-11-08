@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -19,6 +20,7 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
@@ -29,6 +31,7 @@ import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
+import org.deku.leoz.mobile.model.entity.appointmentEnd
 import org.deku.leoz.mobile.model.process.Delivery
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -81,22 +84,21 @@ class DeliveryStopListScreen
             .bindToLifecycle(this)
 
     private val editModeProperty = ObservableRxProperty(false)
+    /** Edit mode */
     private var editMode by editModeProperty
 
-    /**
-     * Indicates if aidc fragment is pinned
-     */
     private var stopTypeState by serialState(Stop.State.PENDING)
 
     private val stopTypeProperty = ObservableRxProperty<Stop.State>(this.stopTypeState)
+    /** Stop type */
     private var stopType by stopTypeProperty
 
-    private val flexibleAdapterInstance = LazyInstance<
+    private val adapterInstance = LazyInstance<
             FlexibleAdapter<
                     VmItem<*, Any>>>({
         FlexibleAdapter(listOf())
     })
-    private val flexibleAdapter get() = flexibleAdapterInstance.get()
+    private val adapter get() = adapterInstance.get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,7 +142,7 @@ class DeliveryStopListScreen
                 )
         )
 
-        // Update action button visibilty
+        // Update action button visibility
         Observable.combineLatest(
                 this.stopTypeProperty,
                 this.editModeProperty,
@@ -188,13 +190,13 @@ class DeliveryStopListScreen
                     it.value.also { editMode ->
                         this.aidcReader.enabled = !editMode
 
-                        this.flexibleAdapter.allBoundViewHolders
+                        this.adapter.allBoundViewHolders
                                 .mapNotNull { it as? VmHolder }
                                 .forEach {
                                     it.beginDelayedTransition()
                                 }
 
-                        this.flexibleAdapter.currentItems
+                        this.adapter.currentItems
                                 .asSequence()
                                 .mapNotNull { it.viewModel as? StopViewModel }
                                 .forEach {
@@ -245,6 +247,22 @@ class DeliveryStopListScreen
                             )
                         }
 
+                        R.id.action_sort_appointment_asc -> {
+                            this.updateAdapterPositions(
+                                    this.delivery.pendingStops
+                                            .blockingFirst().value
+                                            .sortedWith(
+                                                    compareBy<StopEntity> { it.appointmentEnd }
+                                                            .thenByDescending { it.tasks.any { it.isFixedAppointment } }
+                                            )
+                                            .also {
+                                                it.forEachIndexed { index, stopEntity ->
+                                                    stopEntity.position = index.toDouble()
+                                                }
+                                            }
+                            )
+                        }
+
                         R.id.action_sort_distance -> {
                             // TODO add support for sorting by geo distance (need testdata)
                         }
@@ -287,8 +305,8 @@ class DeliveryStopListScreen
 
         // Sticky header may not show when fragment is resumed.
         // Workaround is to reset the sticky header flag
-        this.flexibleAdapter.setStickyHeaders(false)
-        this.flexibleAdapter.setStickyHeaders(true)
+        this.adapter.setStickyHeaders(false)
+        this.adapter.setStickyHeaders(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -355,28 +373,26 @@ class DeliveryStopListScreen
         )
 
         // Flexible adapter needs to be re-created with views
-        flexibleAdapterInstance.reset()
+        adapterInstance.reset()
 
-        this.uxStopList.adapter = flexibleAdapter
+        this.uxStopList.adapter = adapter
         this.uxStopList.layoutManager = LinearLayoutManager(context)
 
-        flexibleAdapter.customizeScrollBehavior(
+        adapter.customizeScrollBehavior(
                 scrollSpeed = 30.0F
         )
 
-        flexibleAdapter.isLongPressDragEnabled = true
-        flexibleAdapter.isHandleDragEnabled = true
-        flexibleAdapter.isSwipeEnabled = true
+        adapter.isSwipeEnabled = true
 
-        flexibleAdapter.setStickyHeaders(true)
-        flexibleAdapter.showAllHeaders()
+        adapter.setStickyHeaders(true)
+        adapter.showAllHeaders()
 
-        flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { item ->
+        adapter.addListener(FlexibleAdapter.OnItemClickListener { pos ->
             // Ignore click/selection in edit mode
             if (this.editMode)
                 return@OnItemClickListener true
 
-            flexibleAdapter.getItem(item)
+            adapter.getItem(pos)
                     ?.viewModel
                     ?.also { viewModel ->
                         when (viewModel) {
@@ -397,7 +413,51 @@ class DeliveryStopListScreen
             true
         })
 
-        flexibleAdapter.addListener(object : FlexibleAdapter.OnItemMoveListener {
+        adapter.addListener(FlexibleAdapter.OnItemLongClickListener { pos ->
+            if (this.stopType == Stop.State.CLOSED) {
+                // Show re-open dialog
+                MaterialDialog.Builder(context)
+                        .title(R.string.dialog_title_stop_reopen)
+                        .content(R.string.dialog_content_stop_reopen)
+                        .positiveText(android.R.string.yes)
+                        .negativeText(android.R.string.no)
+                        .onPositive { dialog, which ->
+                            dialog.dismiss()
+                            adapter.getItem(pos)
+                                    ?.viewModel
+                                    ?.also { viewModel ->
+                                        when (viewModel) {
+                                            is StopViewModel -> {
+                                                this.db.store.withTransaction {
+                                                    val stop = viewModel.stop as StopEntity
+
+                                                    // Re-open stop
+                                                    stop.state = Stop.State.PENDING
+
+                                                    // Move re-activated stop to top
+                                                    stopRepository.move(stop, null)
+                                                            .blockingGet()
+
+                                                    stopRepository
+                                                            .update(stop)
+                                                            .blockingGet()
+                                                }
+                                                        .subscribeOn(db.scheduler)
+                                                        .observeOnMainThread()
+                                                        .subscribeBy(onSuccess = {
+                                                            // Switch to pending view when done
+                                                            this.stopType = Stop.State.PENDING
+                                                        })
+                                            }
+                                        }
+                                    }
+                        }
+                        .build()
+                        .show()
+            }
+        })
+
+        adapter.addListener(object : FlexibleAdapter.OnItemMoveListener {
             override fun onActionStateChanged(p0: RecyclerView.ViewHolder?, p1: Int) {
             }
 
@@ -433,10 +493,16 @@ class DeliveryStopListScreen
             else -> delivery.pendingStops.blockingFirst().value
         }
 
-        flexibleAdapter.clear()
+        adapter.clear()
+
+        // Enable item drag if applicable
+        (this.stopType == Stop.State.PENDING).also {
+            adapter.isLongPressDragEnabled = it
+            adapter.isHandleDragEnabled = it
+        }
 
         // Items
-        flexibleAdapter.addItem(
+        adapter.addItem(
                 SimpleVmHeaderItem<StopListStatisticsViewModel>(
                         view = R.layout.view_delivery_stop_list_stats,
                         variable = BR.stats,
@@ -451,9 +517,9 @@ class DeliveryStopListScreen
                 }
         )
 
-        flexibleAdapter.addItems(
+        adapter.addItems(
                 // Position
-                flexibleAdapter.itemCount,
+                adapter.itemCount,
                 // Items
                 stops.map {
                     val item = SimpleVmItem(
@@ -477,7 +543,7 @@ class DeliveryStopListScreen
                                 .subscribe { position ->
                                     // Get the item it was moved after
                                     val previousItem = when {
-                                        position >= this.adapterFirstStopItemIndex -> flexibleAdapter.getItem(position - 1)
+                                        position >= this.adapterFirstStopItemIndex -> adapter.getItem(position - 1)
                                         else -> null
                                     }
 
@@ -512,13 +578,13 @@ class DeliveryStopListScreen
      * First adpater item index which is a stop
      */
     val adapterFirstStopItemIndex by lazy {
-        this.flexibleAdapter.currentItems.firstOrNull {
+        this.adapter.currentItems.firstOrNull {
             it.viewModel is StopViewModel
         }
                 ?.let {
-                    this.flexibleAdapter.getGlobalPositionOf(it)
+                    this.adapter.getGlobalPositionOf(it)
                 }
-                ?: this.flexibleAdapter.currentItems.count()
+                ?: this.adapter.currentItems.count()
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
@@ -551,17 +617,17 @@ class DeliveryStopListScreen
         // Restore positions
         stops
                 .forEachIndexed { index, pendingStop ->
-                    val item = flexibleAdapter.currentItems.first {
+                    val item = adapter.currentItems.first {
                         it.viewModel.let {
                             it is StopViewModel && it.stop == pendingStop
                         }
                     }
 
-                    val currentPosition = flexibleAdapter.getGlobalPositionOf(item)
+                    val currentPosition = adapter.getGlobalPositionOf(item)
                     val desiredPosition = index + this.adapterFirstStopItemIndex
 
                     if (currentPosition != desiredPosition) {
-                        flexibleAdapter.moveItem(
+                        adapter.moveItem(
                                 currentPosition,
                                 desiredPosition
                         )

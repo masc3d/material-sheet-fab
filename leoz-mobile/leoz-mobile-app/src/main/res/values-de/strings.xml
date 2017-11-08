@@ -16,12 +16,16 @@
 
     <string name="barcode_label">Barcode Label</string>
 
+    <string name="bike">Fahrrad</string>
+
     <string name="call">Anrufen</string>
 
     <string name="cancel">Abbrechen</string>
     <string name="cancel_process">Prozess abbrechen</string>
 
     <string name="capture_image">Bild erfassen</string>
+
+    <string name="car">Auto</string>
 
     <string name="cash_not_sufficient">Betrag nicht ausreichend</string>
     <string name="cash_service">Nachnahme Service</string>
@@ -34,6 +38,8 @@
     <string name="clear">Leeren</string>
 
     <string name="close">Schließen</string>
+
+    <string name="closed">Geschlossen</string>
 
     <string name="contact">Kontakt</string>
 
@@ -54,6 +60,7 @@
 
     <string name="dialog_content_outdated_orders">Aufträge sind veraltet. Um fortzufahren müssen alle Daten gelöscht werden.</string>
     <string name="dialog_content_stop_merge">Möchten Sie diesen Stop zusammenführen?</string>
+    <string name="dialog_content_stop_reopen">Stop erneut öffnen?</string>
     <string name="dialog_content_time_misconfigured">Die Zeit auf Ihrem Gerät scheint falsch konfiguriert zu sein. Bitte aktivieren Sie die automatische Konfiguration der Zeit(-Zone) für das beste Ergebnis, oder korrigieren Sie die Zeit manuell.\n\nDifferenz: %s Sekunden</string>
     <string name="dialog_text_developer_enabled">Entwickleroptionen sind aktiviert. Um fortzufahren müssen diese deaktiviert werden.</string>
     <string name="dialog_text_gps_disabled">Der GPS Standortdienst ist deaktiviert. Um fortzufahren, muss GPS aktiviert werden.</string>
@@ -61,6 +68,7 @@
     <string name="dialog_title_developer_enabled">Entwickleroptionen aktiviert</string>
     <string name="dialog_title_event_selection">Event Auswahl</string>
     <string name="dialog_title_gps_disabled">GPS Standort ist deaktiviert</string>
+    <string name="dialog_title_stop_reopen">Stopaktivierung</string>
     <string name="dialog_title_time_misconfigured">Datum/Zeit falsch</string>
 
     <string name="dismiss">Verwerfen</string>
@@ -181,6 +189,8 @@
     <string name="please_sign_here">Bitte hier unterschreiben</string>
     <string name="please_wait">Bitte warten</string>
 
+    <string name="proceed">Fortfahren</string>
+
     <string name="prompt_password">Passwort (optional)</string>
     <string name="prompt_reinstall">Bitte installieren Sie die Anwendung neu</string>
 
@@ -230,6 +240,7 @@
 
     <string name="skip">Überspringen</string>
 
+    <string name="sort_appointment">Nach Termin</string>
     <string name="sort_distance">Nach Distanz</string>
     <string name="sort_zip">Nach PLZ</string>
 
@@ -259,6 +270,8 @@
 
     <string name="tour">Tour</string>
 
+    <string name="truck">LKW</string>
+
     <string name="unknown">Unbekannt</string>
 
     <string name="unloaded">Entladen</string>
@@ -266,6 +279,8 @@
     <string name="update">Aktualisieren</string>
 
     <string name="user">Benutzer:</string>
+
+    <string name="van">Transporter</string>
 
     <string name="vehicle_loading">Beladung</string>
     <string name="vehicle_loading_finalize_dialog">Alle ausstehenden Pakete werden als fehlend markiert.</string>
@@ -282,10 +297,4 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="bike">Fahrrad</string>
-    <string name="car">Auto</string>
-    <string name="truck">LKW</string>
-    <string name="van">Transporter</string>
-    <string name="closed">Geschlossen</string>
-    <string name="proceed">Fortfahren</string>
 </resources>

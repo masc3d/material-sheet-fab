@@ -109,7 +109,7 @@ class MenuScreen : ScreenFragment<Any>() {
         this.title = "mobileX Tour"
         this.headerImage = Headers.street
 
-        this.aidcEnabled = true
+        this.aidcEnabled = false
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

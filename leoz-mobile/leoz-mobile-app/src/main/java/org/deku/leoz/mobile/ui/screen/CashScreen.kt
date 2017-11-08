@@ -99,7 +99,7 @@ class CashScreen : ScreenFragment<Any>() {
             >>({
         FlexibleAdapter(listOf())
     })
-    private val flexibleAdapter get() = flexibleAdapterInstance.get()
+    private val adapter get() = flexibleAdapterInstance.get()
 
     override fun onCreateView(inflater: android.view.LayoutInflater, container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? =
@@ -123,17 +123,17 @@ class CashScreen : ScreenFragment<Any>() {
 
         //"${decimalFormat.format(delivery.activeStop?.cashAmountToCollect)} €"
         this.flexibleAdapterInstance.reset()
-        this.uxOrderCashList.adapter = flexibleAdapter
+        this.uxOrderCashList.adapter = adapter
         this.uxOrderCashList.layoutManager = LinearLayoutManager(context)
 
-        flexibleAdapter.isLongPressDragEnabled = false
-        flexibleAdapter.isHandleDragEnabled = false
-        flexibleAdapter.isSwipeEnabled = false
+        adapter.isLongPressDragEnabled = false
+        adapter.isHandleDragEnabled = false
+        adapter.isSwipeEnabled = false
 
         //region Orders
         val orders = this.deliveryStop.orders.blockingFirst()
 
-        flexibleAdapter.addItem(
+        adapter.addItem(
                 VmItem<SectionViewModel<Any>, Any>(
                         view = R.layout.item_section_header,
                         variable = BR.header,
@@ -157,12 +157,12 @@ class CashScreen : ScreenFragment<Any>() {
         )
         //endregion
 
-        flexibleAdapter.setStickyHeaders(true)
-        flexibleAdapter.showAllHeaders()
-        flexibleAdapter.collapseAll()
+        adapter.setStickyHeaders(true)
+        adapter.showAllHeaders()
+        adapter.collapseAll()
 
-        flexibleAdapter.currentItems.firstOrNull().also {
-            flexibleAdapter.expand(it)
+        adapter.currentItems.firstOrNull().also {
+            adapter.expand(it)
         }
 
         // Action items

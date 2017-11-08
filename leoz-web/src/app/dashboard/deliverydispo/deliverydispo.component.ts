@@ -19,11 +19,18 @@ export class DeliverydispoComponent extends AbstractTranslateComponent implement
   shipments: Shipment[];
   shipmentSums: Shipmentsums[];
 
+  dateFormatPrimeng: string;
+  deliveryDate = null;
+  locale: any;
+
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                public router: Router ) {
     super( translate, cd, () => {
+      if (this.deliveryDate) {
+        this.deliveryDate = new Date( this.deliveryDate );
+      }
     } );
   }
 

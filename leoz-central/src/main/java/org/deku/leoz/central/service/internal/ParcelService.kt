@@ -2,6 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.querydsl.core.group.GroupBy.groupBy
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
@@ -9,6 +10,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.ParcelProcessing
 import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.node.Storage
 import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.ParcelServiceV1
@@ -454,24 +456,42 @@ open class ParcelServiceV1 :
                 title = "No orders found"
         )
         val orders2export = orders.map { it.toOrder2Export() }
-        loop@ for (it in orders2export) {
-            val parcels = parcelRepository.getParcels2ExportByOrderid(it.orderId)
-            parcels ?: continue@loop
-            if (parcels.count() == 0) {
-                it.parcels = null
-                continue@loop
 
 
-            }
-            it.parcels = parcels.map { f -> f.toParcel2Export() }
-        }
-        val ordersFiltered = orders2export.filter { it.parcels != null }
-        if (ordersFiltered.count() == 0)
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "No parcels found"
-            )
-        return ordersFiltered
+        var allParcels= parcelRepository.getParcels2ExportByOrderids(orders.map { it.orderid.toLong() })
+        allParcels ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "No parcels found"
+        )
+
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        //allParcels = allParcels.groupBy{it.orderid.toLong()}
+
+//        return orders.map{
+//            it.toOrder2Export().also { order->order.parcels=allParcels
+//                    .getOrNull(order.orderId.toInt(), listOf<TblauftragcolliesRecord>())?.map { pp->pp.toParcel2Export() } }
+//        }
+
+
+//        loop@ for (it in orders2export) {
+//            val parcels = parcelRepository.getParcels2ExportByOrderid(it.orderId)
+//            parcels ?: continue@loop
+//            if (parcels.count() == 0) {
+//                it.parcels = null
+//                continue@loop
+//
+//
+//            }
+//            it.parcels = parcels.map { f -> f.toParcel2Export() }
+//        }
+//        val ordersFiltered = orders2export.filter { it.parcels != null }
+//        if (ordersFiltered.count() == 0)
+//            throw DefaultProblem(
+//                    status = Response.Status.NOT_FOUND,
+//                    title = "No parcels found"
+//            )
+//        return ordersFiltered
 
     }
 
@@ -483,84 +503,87 @@ open class ParcelServiceV1 :
     }
 
     override fun getParcels2ExportByLoadingList(loadinglistNo: Long): List<ParcelServiceV1.Order2Export> {
-        val parcels = parcelRepository.getParcels2ExportByLoadingList(loadinglistNo)
-        parcels ?: throw DefaultProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "No parcels found for this list"
-        )
-        if (parcels.count() == 0)
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "No parcels found for this list"
-            )
-        val orderIdList = parcels.map { it.orderid }.distinct()
-        val orderList: MutableList<ParcelServiceV1.Order2Export> = mutableListOf<ParcelServiceV1.Order2Export>()
-        orderIdList.forEach {
-            val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
-            if (orderRecord != null) {
-                val order = orderRecord.toOrder2Export()
-                val pp = parcels.filter { f -> f.orderid == it }
-                if (pp.count() > 0) {
-                    order.parcels = pp.map { it.toParcel2Export() }
-                    orderList.add(order)
-                }
-            }
-        }
-        return orderList
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//        val parcels = parcelRepository.getParcels2ExportByLoadingList(loadinglistNo)
+//        parcels ?: throw DefaultProblem(
+//                status = Response.Status.NOT_FOUND,
+//                title = "No parcels found for this list"
+//        )
+//        if (parcels.count() == 0)
+//            throw DefaultProblem(
+//                    status = Response.Status.NOT_FOUND,
+//                    title = "No parcels found for this list"
+//            )
+//        val orderIdList = parcels.map { it.orderid }.distinct()
+//        val orderList: MutableList<ParcelServiceV1.Order2Export> = mutableListOf<ParcelServiceV1.Order2Export>()
+//        orderIdList.forEach {
+//            val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
+//            if (orderRecord != null) {
+//                val order = orderRecord.toOrder2Export()
+//                val pp = parcels.filter { f -> f.orderid == it }
+//                if (pp.count() > 0) {
+//                    order.parcels = pp.map { it.toParcel2Export() }
+//                    orderList.add(order)
+//                }
+//            }
+//        }
+//        return orderList
     }
 
     override fun getParcels2ExportInBagByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
-        val parcels = parcelRepository.getParcels2ExportInBagByStation(stationNo)
-        parcels ?: throw DefaultProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "No parcels found for this station"
-        )
-        if (parcels.count() == 0)
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "No parcels found for this station"
-            )
-        val orderIdList = parcels.map { it.orderid }.distinct()
-        val orderList: MutableList<ParcelServiceV1.Order2Export> = mutableListOf<ParcelServiceV1.Order2Export>()
-        loop@ for (it in orderIdList) {
-            val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
-            if (orderRecord != null) {
-                if (orderRecord.bagidnra != null)
-                    continue@loop
-                val order = orderRecord.toOrder2Export()
-                val pp = parcels.filter { f -> f.orderid == it }
-                if (pp.count() > 0) {
-                    order.parcels = pp.map { it.toParcel2Export() }
-                    orderList.add(order)
-                }
-            }
-        }
-        return orderList
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//        val parcels = parcelRepository.getParcels2ExportInBagByStation(stationNo)
+//        parcels ?: throw DefaultProblem(
+//                status = Response.Status.NOT_FOUND,
+//                title = "No parcels found for this station"
+//        )
+//        if (parcels.count() == 0)
+//            throw DefaultProblem(
+//                    status = Response.Status.NOT_FOUND,
+//                    title = "No parcels found for this station"
+//            )
+//        val orderIdList = parcels.map { it.orderid }.distinct()
+//        val orderList: MutableList<ParcelServiceV1.Order2Export> = mutableListOf<ParcelServiceV1.Order2Export>()
+//        loop@ for (it in orderIdList) {
+//            val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
+//            if (orderRecord != null) {
+//                if (orderRecord.bagidnra != null)
+//                    continue@loop
+//                val order = orderRecord.toOrder2Export()
+//                val pp = parcels.filter { f -> f.orderid == it }
+//                if (pp.count() > 0) {
+//                    order.parcels = pp.map { it.toParcel2Export() }
+//                    orderList.add(order)
+//                }
+//            }
+//        }
+//        return orderList
     }
 
     override fun getLoadedParcels2ExportByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
-        val orders = parcelRepository.getOrders2ExportByStation(stationNo)
-        orders ?: throw DefaultProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "No orders found"
-        )
-        val orders2export = orders.map { it.toOrder2Export() }
-        loop@ for (it in orders2export) {
-            val parcels = parcelRepository.getLoadedParcels2ExportByOrderid(it.orderId)
-            parcels ?: continue@loop
-            if (parcels.count() == 0) {
-                it.parcels = null
-                continue@loop
-            }
-            it.parcels = parcels.map { f -> f.toParcel2Export() }
-        }
-        val ordersFiltered = orders2export.filter { it.parcels != null }
-        if (ordersFiltered.count() == 0)
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "No parcels found"
-            )
-        return ordersFiltered
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//        val orders = parcelRepository.getOrders2ExportByStation(stationNo)
+//        orders ?: throw DefaultProblem(
+//                status = Response.Status.NOT_FOUND,
+//                title = "No orders found"
+//        )
+//        val orders2export = orders.map { it.toOrder2Export() }
+//        loop@ for (it in orders2export) {
+//            val parcels = parcelRepository.getLoadedParcels2ExportByOrderid(it.orderId)
+//            parcels ?: continue@loop
+//            if (parcels.count() == 0) {
+//                it.parcels = null
+//                continue@loop
+//            }
+//            it.parcels = parcels.map { f -> f.toParcel2Export() }
+//        }
+//        val ordersFiltered = orders2export.filter { it.parcels != null }
+//        if (ordersFiltered.count() == 0)
+//            throw DefaultProblem(
+//                    status = Response.Status.NOT_FOUND,
+//                    title = "No parcels found"
+//            )
+//        return ordersFiltered
     }
 
     override fun export(scanCode: String, loadingListNo: Long, stationNo: Int): Boolean {
@@ -995,8 +1018,5 @@ open class ParcelServiceV1 :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun isValidBagBackLabel(stationNo: Int, scanCode: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }
 

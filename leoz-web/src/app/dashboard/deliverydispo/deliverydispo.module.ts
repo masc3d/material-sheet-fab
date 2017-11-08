@@ -5,10 +5,12 @@ import { DeliverydispoRoutingModule } from './deliverydispo-routing.module';
 import { DeliverydispoComponent } from './deliverydispo.component';
 import {
   ButtonModule,
+  CalendarModule,
   CheckboxModule,
   DataScrollerModule,
   DataTableModule,
-  DropdownModule, FieldsetModule,
+  DropdownModule,
+  FieldsetModule,
   RadioButtonModule,
   TabViewModule
 } from 'primeng/primeng';
@@ -21,6 +23,7 @@ import {
     FieldsetModule,
     TabViewModule,
     DropdownModule,
+    CalendarModule,
     ButtonModule,
     CheckboxModule,
     RadioButtonModule,

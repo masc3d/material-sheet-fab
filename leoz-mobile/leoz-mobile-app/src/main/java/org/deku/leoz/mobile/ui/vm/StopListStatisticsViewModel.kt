@@ -51,7 +51,9 @@ class StopListStatisticsViewModel(
             var upcomingCount = 0
             var soonCount = 0
             var overdueCount = 0
-            this.stops.forEach {
+            this.stops
+                    .filter { it.state == Stop.State.PENDING }
+                    .forEach {
                 when (it.appointmentState) {
                     AppointmentState.UPCOMING -> upcomingCount++
                     AppointmentState.SOON -> soonCount++
