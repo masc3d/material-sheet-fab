@@ -31,8 +31,8 @@ import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
+import org.deku.leoz.mobile.model.entity.appointmentEnd
 import org.deku.leoz.mobile.model.process.Delivery
-import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Headers
@@ -53,6 +53,7 @@ import sx.android.ui.flexibleadapter.VmHolder
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
 import sx.rx.ObservableRxProperty
+import java.util.*
 
 /**
  * Delivery stop list screen
@@ -247,6 +248,23 @@ class DeliveryStopListScreen
                             )
                         }
 
+                        R.id.action_sort_appointment_asc -> {
+                            this.updateAdapterPositions(
+                                    this.delivery.pendingStops
+                                            .blockingFirst().value
+                                            .sortedWith(
+                                                    compareBy(
+                                                            { it.appointmentEnd },
+                                                            { it.tasks.any { it.isFixedAppointment }})
+                                            )
+                                            .also {
+                                                it.forEachIndexed { index, stopEntity ->
+                                                    stopEntity.position = index.toDouble()
+                                                }
+                                            }
+                            )
+                        }
+
                         R.id.action_sort_distance -> {
                             // TODO add support for sorting by geo distance (need testdata)
                         }
@@ -428,7 +446,7 @@ class DeliveryStopListScreen
                                                 }
                                                         .subscribeOn(db.scheduler)
                                                         .observeOnMainThread()
-                                                        .subscribeBy(onSuccess =  {
+                                                        .subscribeBy(onSuccess = {
                                                             // Switch to pending view when done
                                                             this.stopType = Stop.State.PENDING
                                                         })

@@ -280,6 +280,7 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="skip">Skip</string>
 
+    <string name="sort_appointment">By appointment</string>
     <string name="sort_distance">By distance</string>
     <string name="sort_zip">By zip</string>
 
