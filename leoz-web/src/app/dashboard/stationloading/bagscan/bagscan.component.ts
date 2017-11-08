@@ -1,12 +1,17 @@
 import {
-  ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
   ViewChild
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/filter';
 
-import { SelectItem } from 'primeng/primeng';
+import { LazyLoadEvent, SelectItem } from 'primeng/primeng';
 
 import { Loadinglist } from '../loadinglistscan/loadinglist.model';
 import { Package } from '../../../core/models/package.model';
@@ -52,6 +57,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   @ViewChild( 'reasonDetails' ) reasonDetailsField: ElementRef;
 
   public openPackages$: Observable<Package[]>;
+  lazyOpenPackages: Package[];
   openPackagesArr: Package[];
   activeBaglist: Loadinglist;
   activeBagData: BagData;
@@ -72,6 +78,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   baglistItems: SelectItem[];
   baglists: SelectItem[];
   bagscanForm: FormGroup;
+  loading: boolean;
 
   constructor( private fb: FormBuilder,
                private bagscanService: BagscanService,
@@ -88,6 +95,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
 
   ngOnInit() {
     super.ngOnInit();
+    this.loading = true;
 
     this.displayEmergencySealBlock = false;
 
@@ -105,6 +113,11 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       .subscribe( ( packages: Package[] ) => {
         this.openPackagesArr = packages;
         this.openPackcount = this.openPackagesArr.length;
+        this.loading = false;
+        if (this.openPackagesArr.length > 0) {
+          this.loadOpenPackagesLazy( null );
+        }
+        console.log( 'this.bagscanService.openPackages$ changed......' );
       } );
 
     this.bagscanService.allPackages$
@@ -180,6 +193,19 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.registerKeyboardEvents();
   }
 
+  loadOpenPackagesLazy( event: LazyLoadEvent ) {
+    console.log('LazyLoadEvent: ', event);
+    this.loading = true;
+    if (this.openPackagesArr.length > 0) {
+      const startIndex = event ? event.first : 0;
+      const rows = event ? event.rows : 40;
+      this.lazyOpenPackages = this.openPackagesArr.slice(startIndex, startIndex + rows);
+      console.log('this.lazyOpenPackages:', this.lazyOpenPackages);
+    }
+    this.loading = false;
+    this.cd.markForCheck();
+  }
+
   private registerKeyboardEvents() {
     this.keyUpService.keyUpEvents$
       .filter( ( ev: KeyboardEvent ) => ev.key === 'F2' )
@@ -244,7 +270,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
           // const json = response;
           const json = response.body;
           switch (response.status) {
-          // switch (json.status) {
+            // switch (json.status) {
             case 201:
               this.handleSuccess( 'valid bagId',
                 () => {
@@ -348,7 +374,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
       this.bagscanForm.get( 'backSeal' ).disable();
       this.displayEmergencySealBlock = true;
       this.clearEmergencySealFields();
-      setTimeout(() => this.blueSealNoField.nativeElement.focus(), 0);
+      setTimeout( () => this.blueSealNoField.nativeElement.focus(), 0 );
     }
   }
 
@@ -470,10 +496,10 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   }
 
   generateLabel() {
-    console.log('generateLabel...');
+    console.log( 'generateLabel...' );
     this.printingService.printReports(
-      this.reportingService.generateReports(  ),
-                'lbl.pdf', false );
+      this.reportingService.generateReports(),
+      'lbl.pdf', false );
   }
 
 }

@@ -75,13 +75,16 @@
       <div class="ui-g-12 ui-lg-6 no-pad" style="padding: 0; border:1px solid darkgrey">
         <div class="ui-g-12 ui-g-nopad">
           <p style="text-align: center">{{'openOnBaglist' | translate}} {{openPackcount}}</p>
-          <p-dataTable [value]="openPackages$ | async" resizableColumns="true" responsive="true"
+          <p-dataTable [value]="lazyOpenPackages" resizableColumns="true" responsive="true"
+                       scrollable="true" scrollHeight="300px" [rows]="20" virtualScroll="virtualScroll"
+                       [totalRecords]="openPackcount" loadingIcon="fa-spinner"
+                       [lazy]="true" (onLazyLoad)="loadOpenPackagesLazy($event)" [loading]="loading"
                        [emptyMessage]="'noDataAvailable' | translate">
-            <p-column field="parcelNo" header="{{'parcelno' | translate}}" [sortable]="true"></p-column>
-            <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
-            <p-column field="realWeight" header="{{'weight' | translate}}" [sortable]="true"></p-column>
-            <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}" [sortable]="true"></p-column>
-            <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="true">
+            <p-column field="parcelNo" header="{{'parcelno' | translate}}" [sortable]="false"></p-column>
+            <p-column field="zip" header="{{'zip' | translate}}" [sortable]="false"></p-column>
+            <p-column field="realWeight" header="{{'weight' | translate}}" [sortable]="false"></p-column>
+            <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}" [sortable]="false"></p-column>
+            <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="false">
               <ng-template let-package="rowData" pTemplate="body">
                     <span *ngIf="package.typeOfPackaging === 91; else noValoreLoaded">
                       {{ 'yes' | translate }}
