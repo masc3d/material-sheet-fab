@@ -10,10 +10,7 @@ import android.graphics.drawable.TransitionDrawable
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
+import android.support.design.widget.*
 import android.support.transition.Fade
 import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
@@ -23,10 +20,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.text.InputType
 import android.util.TypedValue
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.ProgressBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.andrewlord1990.snackbarbuilder.SnackbarBuilder
@@ -76,6 +70,7 @@ import org.deku.leoz.mobile.ui.vm.MqStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.UpdateServiceViewModel
 import org.jetbrains.anko.backgroundColor
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
 import sx.android.ApplicationStateMonitor
 import sx.android.Connectivity
@@ -112,6 +107,44 @@ abstract class Activity : BaseActivity(),
 
         val AIDC_ACTION_ITEM_COLOR = R.color.colorDarkGrey
         val AIDC_ACTION_ITEM_TINT = android.R.color.white
+    }
+
+    /**
+     * Activity content behavior, applied to content area.
+     */
+    private inner class ContentBehavior : AppBarLayout.ScrollingViewBehavior() {
+
+        /** Hide delay in milliseconds */
+        private val HIDE_DELAY = 100L
+
+        val hideAction = Runnable {
+            TransitionManager.beginDelayedTransition(
+                    uxActionOverlay,
+                    Fade().also { it.duration = 300 })
+
+            uxActionOverlay.visibility = View.GONE
+        }
+
+        override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, child: View, target: View, type: Int) {
+            uxActionOverlay.removeCallbacks(hideAction)
+
+            TransitionManager.beginDelayedTransition(
+                    uxActionOverlay,
+                    Fade().also { it.duration = 150 })
+
+            uxActionOverlay.visibility = View.VISIBLE
+
+            super.onStopNestedScroll(coordinatorLayout, child, target, type)
+        }
+
+        override fun onStartNestedScroll(coordinatorLayout: CoordinatorLayout, child: View, directTargetChild: View, target: View, axes: Int, type: Int): Boolean {
+            uxActionOverlay.postDelayed(this.hideAction, HIDE_DELAY)
+
+            super.onStartNestedScroll(coordinatorLayout, child, directTargetChild, target, axes, type)
+
+            // Always return true to retrieve more scroll events, eg. `onStopNestedScroll`
+            return true
+        }
     }
 
     /** Indicates the activity has been paused */
@@ -299,9 +332,12 @@ abstract class Activity : BaseActivity(),
         }
         //endregion
 
-        //region Progress bar / activity indicator
-        this.uxProgressBar.visibility = View.GONE
+        // Customized layout behavior for content area
+        (this.uxContainer.layoutParams as CoordinatorLayout.LayoutParams).also {
+            it.behavior = ContentBehavior()
+        }
 
+        // Debug / productive host indication
         if (this.debugSettings.enabled || !this.remoteSettings.hostIsProductive) {
             this.uxDevIcon.visibility = View.VISIBLE
 
@@ -315,6 +351,9 @@ abstract class Activity : BaseActivity(),
         } else {
             this.uxDevIcon.visibility = View.GONE
         }
+
+        //region Progress bar / activity indicator
+        this.uxProgressBar.visibility = View.GONE
 
         // Change progress bar color, as this is apparently not themable and there's no proper
         // way to do this in xml layout that is compatible down to 4.x
