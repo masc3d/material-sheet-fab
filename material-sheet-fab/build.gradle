@@ -37,12 +37,12 @@ ext {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion v_android_buildtools
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 27
     }
 
     buildTypes {
