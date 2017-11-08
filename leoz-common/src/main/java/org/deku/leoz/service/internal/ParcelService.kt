@@ -5,6 +5,7 @@ import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
+import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*
@@ -107,8 +108,8 @@ interface ParcelServiceV1 {
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
-    @GET
-    @Path("/export/loadinglist/new")
+    @POST
+    @Path("/loadinglist")
     @ApiOperation(value = "Get new loadinglist-no", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNewLoadinglistNo(): Long
 
@@ -119,7 +120,7 @@ interface ParcelServiceV1 {
             @PathParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
     ): List<ParcelServiceV1.Order2Export>
 
-    @PUT
+    @PATCH
     @Path("/export")
     @ApiOperation(value = "Export parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun export(
@@ -159,7 +160,8 @@ interface ParcelServiceV1 {
             var note: String = ""
     )
 
-    @Path("/status/{SCANCODE}")
+    @GET
+    @Path("/{SCANCODE}/status")
     @ApiOperation(value = "Get status", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getStatus(
             @PathParam(SCANCODE) @ApiParam(value = "Scancode") scanCode: String
@@ -173,13 +175,7 @@ interface ParcelServiceV1 {
             @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
     )
 
-    @GET
-    @Path("/{SCANCODE}/isValidBagBackLabel/station/{$STATION_NO}")
-    @ApiOperation(value = "Check bag-Backlabel is valid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun isValidBagBackLabel(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @PathParam(SCANCODE) @ApiParam(value = "Scancode",required = true) scanCode: String
-    )
+
 
 
 }

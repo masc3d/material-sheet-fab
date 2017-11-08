@@ -161,6 +161,22 @@ class ParcelJooqRepository {
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
 
+    fun getParcels2ExportByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord>? {
+//        return dslContext.select()
+//                .from(Tables.TBLAUFTRAGCOLLIES)
+//                .where(
+//                        Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
+//                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+//                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
+//                .fetchInto(TblauftragcolliesRecord::class.java)
+        return dslContext.fetch(
+                Tables.TBLAUFTRAGCOLLIES,
+                Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
+                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
+                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+        )
+    }
+
     fun getLoadedParcels2ExportByOrderid(orderId: Long): List<TblauftragcolliesRecord>? {
         return dslContext.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
