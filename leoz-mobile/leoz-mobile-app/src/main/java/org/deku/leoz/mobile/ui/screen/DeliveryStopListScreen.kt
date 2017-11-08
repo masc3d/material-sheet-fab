@@ -53,7 +53,6 @@ import sx.android.ui.flexibleadapter.VmHolder
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
 import sx.rx.ObservableRxProperty
-import java.util.*
 
 /**
  * Delivery stop list screen
@@ -253,9 +252,8 @@ class DeliveryStopListScreen
                                     this.delivery.pendingStops
                                             .blockingFirst().value
                                             .sortedWith(
-                                                    compareBy(
-                                                            { it.appointmentEnd },
-                                                            { it.tasks.any { it.isFixedAppointment }})
+                                                    compareBy<StopEntity> { it.appointmentEnd }
+                                                            .thenByDescending { it.tasks.any { it.isFixedAppointment } }
                                             )
                                             .also {
                                                 it.forEachIndexed { index, stopEntity ->
