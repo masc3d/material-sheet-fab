@@ -219,7 +219,7 @@ class StopViewModel(
                 .map {
                     if (this.stop.state == Stop.State.CLOSED)
                         it.value?.let {
-                            SimpleDateFormat("dd.mm.yyyy HH:mm", Locale.getDefault()).format(it)
+                            SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(it)
                         } ?: ""
                     else ""
                 }
