@@ -52,7 +52,7 @@ dependencies {
             "com.gojuno.koptional:koptional:1.2.0",
             "com.gojuno.koptional:koptional-rxjava2-extensions:1.2.0",
 
-            "org.apache.commons:commons-lang3:3.6"
+            "org.apache.commons:commons-lang3:3.7"
     )
 
     compileOnly(
