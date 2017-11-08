@@ -64,7 +64,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var state: State
 
     @get:Bindable
-    @get:Index
+    @get:Index("parcel_reason_index")
     abstract var reason: EventNotDeliveredReason?
 
     @get:Bindable

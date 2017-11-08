@@ -39,14 +39,14 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
 
     @get:Bindable
     @get:Column(nullable = false)
-    @get:Index
+    @get:Index("stop_state_index")
     abstract var state: State
 
     @get:Lazy
     @get:OneToMany
     abstract val tasks: MutableList<OrderTask>
 
-    @get:Index
+    @get:Index("stop_position_index")
     @get:Column(nullable = false)
     /** Stop position as a decimal. Insertions or position changes require calculation of average */
     abstract var position: Double
