@@ -68,7 +68,7 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     abstract var reason: EventNotDeliveredReason?
 
     @get:Bindable
-    @get:Index
+    @get:Index("parcel_modificationtime_index")
     abstract var modificationTime: Date?
 
     @get:Lazy
@@ -79,9 +79,6 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
     @get:Column(name = "order_", nullable = false)
     @get:ManyToOne
     abstract var order: Order
-
-    val loadingStateProperty by lazy { ObservableRxField<State>(BR.state, { this.state }) }
-    val modificationTimeProperty by lazy { ObservableRxField<Date?>(BR.modificationTime, { this.modificationTime }) }
 }
 
 fun Parcel.Companion.create(

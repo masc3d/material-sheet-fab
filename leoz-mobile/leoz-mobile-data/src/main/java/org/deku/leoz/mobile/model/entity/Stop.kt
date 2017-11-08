@@ -56,7 +56,7 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     abstract val meta: MutableList<StopMeta>
 
     @get:Bindable
-    @get:Index
+    @get:Index("stop_modificationtime_index")
     abstract var modificationTime: Date?
 
     val stateProperty by lazy { ObservableRxField<Stop.State>(BR.state, { this.state }) }
