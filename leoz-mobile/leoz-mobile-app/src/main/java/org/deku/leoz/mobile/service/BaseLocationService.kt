@@ -29,6 +29,7 @@ import org.deku.leoz.mobile.ui.activity.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
+import sx.android.NtpTime
 import sx.mq.mqtt.channel
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -48,6 +49,7 @@ abstract class BaseLocationService: Service() {
     private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
     private val notifications: Notifications by Kodein.global.lazy.instance()
+    private val ntpTime: NtpTime by Kodein.global.lazy.instance()
     protected val locationServices: org.deku.leoz.mobile.LocationServices by Kodein.global.lazy.instance()
 
     private var gnssStatusCallback: GnssStatus.Callback? = null
@@ -126,6 +128,16 @@ abstract class BaseLocationService: Service() {
         if (!locationRequirementsCheck(locationNew = location, locationOld = this@BaseLocationService.locationCache.lastLocation)) {
             log.debug("Location does not match requirements.")
             return
+        }
+
+        /**
+         * This is to ensure that no "corrupt" time is emitted in the GPSMessage, which is likely to happen because of an Android Bug
+         * See Issue #247 for more information
+         * If the location time differs more than ~15 minutes from the real/device time, the real/device time is used
+         */
+        val date = ntpTime.currentNtpDateTime() ?: Date()
+        if ((date.time - location.time) > 1000000) {
+            location.time = date.time
         }
 
         val currentPosition = LocationServiceV1.GpsDataPoint(
