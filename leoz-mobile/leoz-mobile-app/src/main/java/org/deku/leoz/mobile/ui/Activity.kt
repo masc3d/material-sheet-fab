@@ -633,9 +633,9 @@ abstract class Activity : BaseActivity(),
         return false
     }
 
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(LocaleContextWrapper.wrap(context = newBase!!, language = null))
-    }
+//    override fun attachBaseContext(newBase: Context?) {
+//        super.attachBaseContext(LocaleContextWrapper.wrap(context = newBase!!, language = null))
+//    }
 
     private val cameraAidcFragment: AidcCameraFragment?
         get() = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName) as? AidcCameraFragment

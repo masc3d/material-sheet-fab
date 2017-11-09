@@ -19,6 +19,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
+import org.deku.leoz.mobile.Notifications
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
@@ -46,70 +47,12 @@ abstract class BaseLocationService: Service() {
     private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
     private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
-    private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
+    private val notifications: Notifications by Kodein.global.lazy.instance()
     protected val locationServices: org.deku.leoz.mobile.LocationServices by Kodein.global.lazy.instance()
 
     private var gnssStatusCallback: GnssStatus.Callback? = null
     @Suppress("DEPRECATION")
     private var gpsStatusListener: GpsStatus.Listener? = null
-
-    private val showTaskIntent by lazy {
-        Intent(applicationContext, StartupActivity::class.java).also {
-            it.action = Intent.ACTION_VIEW
-            it.addCategory(Intent.CATEGORY_LAUNCHER)
-            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-    }
-
-    private val pendingIntent by lazy {
-        PendingIntent.getActivity(
-            this,
-            0,
-            showTaskIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-    }
-
-    private val notification by lazy {
-        val notificationChannel: NotificationChannel
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelName = "mobileX"
-            val channelDescription = "mobileX Notifications"
-            val importance = NotificationManager.IMPORTANCE_HIGH
-
-            notificationChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, importance).also {
-                it.description = channelDescription
-                it.enableLights(true)
-                it.lightColor = Color.RED
-                it.enableVibration(false)
-            }
-
-            this.notificationManager.createNotificationChannel(notificationChannel)
-        }
-
-
-
-        @Suppress("DEPRECATION")
-        val builder: NotificationCompat.Builder = NotificationCompat.Builder(this)
-
-
-        builder.setContentTitle(getString(R.string.app_name_long))
-                .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setWhen(System.currentTimeMillis())
-                .setContentIntent(pendingIntent)
-                .setChannelId(NOTIFICATION_CHANNEL_ID)
-                .build().also {
-            it.flags += Notification.FLAG_FOREGROUND_SERVICE
-        }
-    }
-
-    companion object {
-        const val NOTIFICATION_ID = 100
-        const val NOTIFICATION_CHANNEL_ID = "LEOZ"
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         log.debug("ONSTARTCOMMAND")
@@ -125,7 +68,8 @@ abstract class BaseLocationService: Service() {
 
         this.registerBroadcastReceiver()
         setNotification()
-        startForeground(NOTIFICATION_ID, notification)
+        startForeground(notifications.serviceNotification)
+        //startForeground(notifications.serviceNotification.id, notifications.serviceNotification.notification)
         return START_STICKY
     }
 
@@ -161,12 +105,12 @@ abstract class BaseLocationService: Service() {
 
     private fun setNotification() {
         log.debug("Set notification")
-        notificationManager.notify(NOTIFICATION_ID, notification)
+        notifications.serviceNotification.show()
     }
 
     private fun removeNotification() {
         log.debug("Remove notification")
-        notificationManager.cancel(NOTIFICATION_ID)
+        notifications.serviceNotification.cancel()
     }
 
     fun reportLocation(location: Location) {
@@ -248,4 +192,5 @@ abstract class BaseLocationService: Service() {
 
         return false
     }
+
 }

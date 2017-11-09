@@ -65,6 +65,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(LocationServicesConfiguration.module)
         Kodein.global.addImport(ModelConfiguration.module)
         Kodein.global.addImport(MqttConfiguration.module)
+        Kodein.global.addImport(NotificationConfiguration.module)
         Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(ServiceConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
@@ -108,9 +109,9 @@ open class Application : MultiDexApplication() {
         }
     }
 
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(LocaleContextWrapper.wrap(context = base!!, language = null))
-    }
+//    override fun attachBaseContext(base: Context?) {
+//        super.attachBaseContext(LocaleContextWrapper.wrap(context = base!!, language = null))
+//    }
 
     override fun onTerminate() {
         log.debug("ONTERMINATE")
