@@ -87,6 +87,7 @@ import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Leoz activity base class
@@ -906,16 +907,18 @@ abstract class Activity : BaseActivity(),
                     checkLocationSettings()
                 }
 
-        this.ntpTime.offsetObservable
+        Observable
+                .interval(5, TimeUnit.MINUTES)
+                .map { this.ntpTime.deviation }
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     log.trace("TrueTime observable emit value [$it]")
                     if (it != null) {
-                        if (it > 150F) {
+                        if (it.abs() > Duration.ofSeconds(150)) {
                             MaterialDialog.Builder(this)
                                     .title(getString(R.string.dialog_title_time_misconfigured))
-                                    .content(R.string.dialog_content_time_misconfigured, Math.round(it))
+                                    .content(R.string.dialog_content_time_misconfigured, it.toString())
                                     .positiveText(R.string.action_settings)
                                     .negativeText(R.string.close)
                                     .cancelable(false)

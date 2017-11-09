@@ -5,14 +5,12 @@ import android.app.*
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.GnssStatus
 import android.location.GpsStatus
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -20,12 +18,10 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Notifications
-import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.settings.LocationSettings
-import org.deku.leoz.mobile.ui.activity.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
@@ -136,7 +132,7 @@ abstract class BaseLocationService: Service() {
          * See Issue #247 for more information
          * If the location time differs more than ~15 minutes from the real/device time, the real/device time is used
          */
-        val date = ntpTime.currentNtpDateTime() ?: Date()
+        val date = ntpTime.time ?: Date()
         if ((date.time - location.time) > 1000000) {
             log.warn("The location timestamp [${location.time}] seems to be unreliable. Using [${date.time}] instead. Difference in minutes [${TimeSpan(date.time - location.time).totalMinutes}]")
             location.time = date.time

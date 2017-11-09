@@ -57,7 +57,7 @@
     <string name="dialog_content_outdated_orders">Aufträge sind veraltet. Um fortzufahren müssen alle Daten gelöscht werden.</string>
     <string name="dialog_content_stop_merge">Möchten Sie diesen Stop zusammenführen?</string>
     <string name="dialog_content_stop_reopen">Stop erneut öffnen?</string>
-    <string name="dialog_content_time_misconfigured">Die Zeit auf Ihrem Gerät scheint falsch konfiguriert zu sein. Bitte aktivieren Sie die automatische Konfiguration der Zeit(-Zone) für das beste Ergebnis, oder korrigieren Sie die Zeit manuell.\n\nDifferenz: %s Sekunden</string>
+    <string name="dialog_content_time_misconfigured">Die Zeit auf Ihrem Gerät scheint falsch konfiguriert zu sein. Bitte aktivieren Sie die automatische Konfiguration der Zeit(-Zone) für das beste Ergebnis, oder korrigieren Sie die Zeit manuell.\n\nDifferenz: %s</string>
     <string name="dialog_text_developer_enabled">Entwickleroptionen sind aktiviert. Um fortzufahren müssen diese deaktiviert werden.</string>
     <string name="dialog_text_gps_disabled">Der GPS Standortdienst ist deaktiviert. Um fortzufahren, muss GPS aktiviert werden.</string>
     <string name="dialog_text_missing_signature">Es wurde keine Unterschrift gegeben. Hat der Kunde auf Papier unterschrieben?</string>
