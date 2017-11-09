@@ -1,9 +1,8 @@
-<form [formGroup]="deliverydispoForm" style="padding-top: 10px">
   <div class="ui-fluid">
     <div class="ui-g">
 
       <div class="ui-g-12 ui-lg-2" style="padding:0; border: 1px solid transparent !important;">
-        <p-fieldset [style]="{'height': '150px'}" legend="{{'filter' | translate}}">
+        <p-fieldset [style]="{'height': 'auto'}" legend="{{'filter' | translate}}">
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
             <p-radioButton name="filter" value="filter" label="{{'expected' | translate}}"></p-radioButton>
           </div>
@@ -13,11 +12,11 @@
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
             <p-radioButton name="filter" value="filter" label="{{'onTruck' | translate}}"></p-radioButton>
           </div>
-          <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
+          <div class="ui-g-12 ui-g-nopad" style="padding: 10px 0 10px 0;">
             <p-radioButton name="filter" value="filter" label="{{'withImportscan' | translate}}"></p-radioButton>
           </div>
         </p-fieldset>
-        <p-fieldset [style]="{'height': '160px'}" legend="{{'dispo' | translate}}">
+        <p-fieldset [style]="{'height': 'auto'}" legend="{{'dispo' | translate}}">
             <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
               <p-radioButton name="dispo" value="dispo" label="{{'uptoDeliverydate' | translate}}"></p-radioButton>
             </div>
@@ -27,14 +26,11 @@
             <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
               <p-radioButton name="dispo" value="dispo" label="{{'withStock' | translate}}"></p-radioButton>
             </div>
-            <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
-            <div>
-             <!--[(ngModel)]="deliveryDate"-->
+            <div class="ui-g-12 ui-g-nopad" style="padding: 10px 0 10px 0;">
               <p-calendar [showIcon]="true" [readonlyInput]="true" [dateFormat]="dateFormatPrimeng" [locale]="locale"
-                           [selectOtherMonths]="true">
+                          [(ngModel)]="deliveryDate" [selectOtherMonths]="true">
               </p-calendar>
             </div>
-          </div>
         </p-fieldset>
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
             <button pButton type="button" label="{{'select' | translate}}"></button>
@@ -64,7 +60,7 @@
           </p-tabView>
         </div>
 
-        <p-fieldset [style]="{'height': '130px'}" legend="{{'tour' | translate}}">
+        <p-fieldset [style]="{'height': 'auto'}" legend="{{'tour' | translate}}">
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
             <p-radioButton name="tour" value="tour" label="{{'glsDelivery' | translate}}"></p-radioButton>
           </div>
@@ -75,8 +71,7 @@
           <div class="ui-g-12 ui-g-nopad">
             <div class="ui-g-12" style="padding-left: 0;">
               <p-radioButton name="tour" value="tour" label="{{'justForTour' | translate}}"></p-radioButton>
-              <input #scanfield formControlName="scanfield"
-                   style="height: 26px; width: 50px; background-color: #FFFFC6; border:1px solid darkgrey">
+              <input [(ngModel)]="tourNo" style="height: 26px; width: 50px; background-color: #FFFFC6; border:1px solid darkgrey">
             </div>
           </div>
         </p-fieldset>
@@ -86,12 +81,12 @@
           </div>
       </div>
 
-      <div class="ui-g-12 ui-lg-10" style="padding:0;">
-          <p-tabView>
-            <p-tabPanel header="{{'predispo' | translate}}">
+      <div id="tabViewWrapper" class="ui-g-12 ui-lg-10" style="padding:0;">
+          <p-tabView [style]="{'height': '100%'}">
+            <p-tabPanel header="{{'predispo' | translate}}" [style]="{'height': '100%'}">
               <p-dataTable resizableColumns="false" responsive="true"
                            [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '300px'}">
+                           [style]="{'height': '50%'}">
                 <p-header>
                   {{ 'tourdispo' | translate }}
                 </p-header>
@@ -110,7 +105,7 @@
               </p-dataTable>
               <p-dataTable resizableColumns="false" responsive="true"
                            [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '300px'}">
+                           [style]="{'height': '50%'}">
                 <p-header>
                   {{ 'tourinfo' | translate }}
                 </p-header>
@@ -131,7 +126,7 @@
             <p-tabPanel header="{{'detailedDispo' | translate}}">
               <p-dataTable resizableColumns="false" responsive="true"
                            [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '300px'}">
+                           [style]="{'height': '50%'}">
                 <p-header>
                   {{ 'tour-deliverydispo' | translate }}
                 </p-header>
@@ -174,4 +169,3 @@
       </div>
     </div>
   </div>
-</form>

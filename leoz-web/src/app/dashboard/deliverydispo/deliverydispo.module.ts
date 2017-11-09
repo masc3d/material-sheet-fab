@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { SharedModule } from '../../shared/shared.module';
 import { DeliverydispoRoutingModule } from './deliverydispo-routing.module';
@@ -18,6 +19,7 @@ import {
 @NgModule({
   imports: [
     SharedModule,
+    FormsModule,
     DeliverydispoRoutingModule,
     DataTableModule,
     FieldsetModule,
