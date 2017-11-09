@@ -10,6 +10,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
+ * Ntp time implementation based on truetime
  * Created by prangenberg on 07.11.17.
  */
 open class NtpTime(
@@ -24,14 +25,13 @@ open class NtpTime(
     /**
      * This observable emits every 5 minutes the current Date/Time offset.
      */
-    val offsetObservable = Observable.create<Float?> {
-        Schedulers.newThread().schedulePeriodicallyDirect(
+    val offsetObservable: Observable<Float?> = Observable.create {
+        Schedulers.computation().schedulePeriodicallyDirect(
                 {
                     val offset = getOffset()
                     if (offset == null) {
-                        log.warn("TrueTimeRx not yet initialized")
-                    }
-                    else {
+                        log.warn("TrueTime not yet initialized")
+                    } else {
                         it.onNext(offset)
                     }
                 },
@@ -67,5 +67,9 @@ open class NtpTime(
         return TrueTimeRx.now()
     }
 
-    private fun getOffset(): Float? = if (!TrueTimeRx.isInitialized()) null else (this.currentNtpDateTime()!!.time - Date().time) / 1000F
+    private fun getOffset(): Float? =
+            if (!TrueTimeRx.isInitialized())
+                null
+            else
+                (this.currentNtpDateTime()!!.time - Date().time) / 1000F
 }
