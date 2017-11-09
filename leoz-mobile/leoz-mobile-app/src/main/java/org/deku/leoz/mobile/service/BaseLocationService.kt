@@ -31,6 +31,7 @@ import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
 import sx.android.NtpTime
 import sx.mq.mqtt.channel
+import sx.time.TimeSpan
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -137,6 +138,7 @@ abstract class BaseLocationService: Service() {
          */
         val date = ntpTime.currentNtpDateTime() ?: Date()
         if ((date.time - location.time) > 1000000) {
+            log.warn("The location timestamp [${location.time}] seems to be unreliable. Using [${date.time}] instead. Difference in minutes [${TimeSpan(date.time - location.time).totalMinutes}]")
             location.time = date.time
         }
 
