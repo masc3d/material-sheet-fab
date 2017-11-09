@@ -2,12 +2,11 @@ package sx.android
 
 import android.content.Context
 import com.instacart.library.truetime.TrueTimeRx
-import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 /**
  * Ntp time implementation based on truetime
@@ -21,24 +20,6 @@ open class NtpTime(
 ) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    /**
-     * This observable emits every 5 minutes the current Date/Time offset.
-     */
-    val offsetObservable: Observable<Float?> = Observable.create {
-        Schedulers.computation().schedulePeriodicallyDirect(
-                {
-                    val offset = getOffset()
-                    if (offset == null) {
-                        log.warn("TrueTime not yet initialized")
-                    } else {
-                        it.onNext(offset)
-                    }
-                },
-                0,
-                5,
-                TimeUnit.MINUTES)
-    }
 
     init {
         TrueTimeRx.build()
@@ -59,17 +40,20 @@ open class NtpTime(
                 )
     }
 
-    fun currentNtpDateTime(): Date? {
-        if (!TrueTimeRx.isInitialized()) {
-            return null
+    /**
+     * Ntp time
+     */
+    val time: Date?
+        get() = if (!TrueTimeRx.isInitialized())
+            null
+        else
+            TrueTimeRx.now()
+
+    /**
+     * Deviation to system time
+     */
+    val deviation: Duration?
+        get() = this.time?.let {
+            Duration.ofMillis(it.time - Date().time)
         }
-
-        return TrueTimeRx.now()
-    }
-
-    private fun getOffset(): Float? =
-            if (!TrueTimeRx.isInitialized())
-                null
-            else
-                (this.currentNtpDateTime()!!.time - Date().time) / 1000F
 }
