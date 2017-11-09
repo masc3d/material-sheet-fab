@@ -451,47 +451,29 @@ open class ParcelServiceV1 :
 
     override fun getParcels2ExportByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
         val orders = parcelRepository.getOrders2ExportByStation(stationNo)
-        orders ?: throw DefaultProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "No orders found"
-        )
-        val orders2export = orders.map { it.toOrder2Export() }
+        if (orders.count() == 0)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No orders found"
+            )
 
 
-        var allParcels= parcelRepository.getParcels2ExportByOrderids(orders.map { it.orderid.toLong() })
-        allParcels ?: throw DefaultProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "No parcels found"
-        )
-
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-
-        //allParcels = allParcels.groupBy{it.orderid.toLong()}
-
-//        return orders.map{
-//            it.toOrder2Export().also { order->order.parcels=allParcels
-//                    .getOrNull(order.orderId.toInt(), listOf<TblauftragcolliesRecord>())?.map { pp->pp.toParcel2Export() } }
-//        }
+        var allParcels = parcelRepository.getParcels2ExportByOrderids(orders.map { it.orderid.toLong() }.toList())?.groupBy { it.orderid }
+        if (allParcels.count() == 0)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No parcels found"
+            )
 
 
-//        loop@ for (it in orders2export) {
-//            val parcels = parcelRepository.getParcels2ExportByOrderid(it.orderId)
-//            parcels ?: continue@loop
-//            if (parcels.count() == 0) {
-//                it.parcels = null
-//                continue@loop
-//
-//
-//            }
-//            it.parcels = parcels.map { f -> f.toParcel2Export() }
-//        }
-//        val ordersFiltered = orders2export.filter { it.parcels != null }
-//        if (ordersFiltered.count() == 0)
-//            throw DefaultProblem(
-//                    status = Response.Status.NOT_FOUND,
-//                    title = "No parcels found"
-//            )
-//        return ordersFiltered
+        return orders.map {
+            it.toOrder2Export().also { order ->
+                order.parcels = allParcels
+                        .getOrDefault(order.orderId.toDouble(), listOf())
+                        ?.map { it.toParcel2Export() }
+            }
+        }.filter { it.parcels.count() > 0 }
+
 
     }
 
@@ -599,10 +581,11 @@ open class ParcelServiceV1 :
                 when {
                     gun.hasError -> {
                         val unitRecords = parcelRepository.getParcelsByCreferenceAndStation(stationNo, scanCode)
-                        unitRecords ?: throw DefaultProblem(
-                                status = Response.Status.NOT_FOUND,
-                                title = "Parcel not found"
-                        )
+                        if (unitRecords.count() == 0)
+                            throw DefaultProblem(
+                                    status = Response.Status.NOT_FOUND,
+                                    title = "Parcel not found"
+                            )
                         if (unitRecords.count() > 1) {
                             throw DefaultProblem(
                                     status = Response.Status.BAD_REQUEST,
@@ -663,10 +646,11 @@ open class ParcelServiceV1 :
         }
         var checkOk = true
         val allUnitsOfOrder = parcelRepository.getParcelsByOrderId(orderRecord.orderid.toLong())
-        allUnitsOfOrder ?: throw DefaultProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "Parcels not found"
-        )
+        if (allUnitsOfOrder.count() == 0)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Parcels not found"
+            )
         allUnitsOfOrder.forEach {
             if (it.erstlieferstatus.toInt() == 8 && it.erstlieferfehler.toInt() != 30)
                 checkOk = false

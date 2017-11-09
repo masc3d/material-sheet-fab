@@ -311,7 +311,6 @@ class BagService : BagService {
     }
 
 
-
     override fun getSectionDepots(section: Int?, position: Int?): List<String> {
         if (section == null) {
             throw ServiceException(ErrorCode.SECTION_MISSING)
@@ -409,7 +408,6 @@ class BagService : BagService {
             throw BadRequestException(e.message)
         }
     }
-
 
 
     override fun getDiff(): List<BagDiff> {

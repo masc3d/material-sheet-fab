@@ -135,7 +135,7 @@ interface ParcelServiceV1 {
             var deliveryAddress: Address = Address(),
             var deliveryStation: Int = 0,
             var shipmentDate: java.sql.Date? = null,
-            var parcels: List<Parcel2Export>? = null//= listOf()
+            var parcels: List<Parcel2Export> = listOf()
 
     )
 
@@ -174,8 +174,6 @@ interface ParcelServiceV1 {
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
     )
-
-
 
 
 }
