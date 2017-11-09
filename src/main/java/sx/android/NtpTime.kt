@@ -50,11 +50,11 @@ open class NtpTime(
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {
-                            log.trace("Initializing TrueTime succeeded")
+                            log.trace("TrueTime initialization succeeded")
                         },
 
                         onError = {
-                            log.warn("Initializing TrueTime failed with error.", it)
+                            log.error("TrueTime initialization failed: ${it.message}")
                         }
                 )
     }
