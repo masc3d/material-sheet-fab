@@ -65,7 +65,7 @@
     <string name="dialog_content_outdated_orders">Orders are outdated. All data must be erased in order to proceed. Continue?</string>
     <string name="dialog_content_stop_merge">Do you want to merge this stop?</string>
     <string name="dialog_content_stop_reopen">Re-open this stop?</string>
-    <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s</string>
+    <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s seconds</string>
     <string name="dialog_text_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
     <string name="dialog_text_gps_disabled">The GPS location on your device is disabled. To continue, you must enable GPS location!</string>
     <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
