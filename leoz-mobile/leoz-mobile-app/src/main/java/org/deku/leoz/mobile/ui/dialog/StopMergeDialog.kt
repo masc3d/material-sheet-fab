@@ -40,8 +40,6 @@ class StopMergeDialog(context: Context): AlertDialog(context, R.layout.dialog_st
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
     }
 
 }

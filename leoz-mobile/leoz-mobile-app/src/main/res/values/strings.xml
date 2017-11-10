@@ -20,12 +20,16 @@
 
     <string name="barcode_label">Barcode label</string>
 
+    <string name="bike">Bike</string>
+
     <string name="call">Call</string>
 
     <string name="cancel">Cancel</string>
     <string name="cancel_process">Cancel process</string>
 
     <string name="capture_image">Capture image</string>
+
+    <string name="car">Car</string>
 
     <string name="cash_not_sufficient">Cash amount not sufficient</string>
     <string name="cash_service">Cash-Service</string>
@@ -226,6 +230,8 @@ Kontaktmöglichkeit
 Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder über ein Kontaktformular in Verbindung zu treten. In diesem Fall werden die vom Nutzer gemachten Angaben zum Zwecke der Bearbeitung seiner Kontaktaufnahme gespeichert. Eine Weitergabe an Dritte erfolgt nicht. Ein Abgleich der so erhobenen Daten mit Daten, die möglicherweise durch andere Komponenten unserer Seite erhoben werden, erfolgt ebenfalls nicht.
     </string>
 
+    <string name="proceed">Proceed</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
     <string name="prompt_password">Password (optional)</string>
@@ -310,6 +316,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="tour">Tour</string>
 
+    <string name="truck">Truck</string>
+
     <string name="unknown">Unknown</string>
 
     <string name="unloaded">Unloaded</string>
@@ -317,6 +325,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="update">Update</string>
 
     <string name="user">User</string>
+
+    <string name="van">Van</string>
 
     <string name="vehicle_loading">Loading</string>
     <string name="vehicle_loading_finalize_dialog">All pending parcels will be marked missing.</string>
@@ -333,11 +343,4 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
-    <string name="accept_always">Accept always</string>
-    <string name="bike">Bike</string>
-    <string name="car">Car</string>
-    <string name="van">Van</string>
-    <string name="truck">Truck</string>
-    <string name="running">running</string>
-    <string name="proceed">Proceed</string>
 </resources>

@@ -16,12 +16,16 @@
 
     <string name="barcode_label">Barcode Label</string>
 
+    <string name="bike">Fahrrad</string>
+
     <string name="call">Anrufen</string>
 
     <string name="cancel">Abbrechen</string>
     <string name="cancel_process">Prozess abbrechen</string>
 
     <string name="capture_image">Bild erfassen</string>
+
+    <string name="car">Auto</string>
 
     <string name="cash_not_sufficient">Betrag nicht ausreichend</string>
     <string name="cash_service">Nachnahme Service</string>
@@ -185,6 +189,8 @@
     <string name="please_sign_here">Bitte hier unterschreiben</string>
     <string name="please_wait">Bitte warten</string>
 
+    <string name="proceed">Fortfahren</string>
+
     <string name="prompt_password">Passwort (optional)</string>
     <string name="prompt_reinstall">Bitte installieren Sie die Anwendung neu</string>
 
@@ -234,6 +240,7 @@
 
     <string name="skip">Überspringen</string>
 
+    <string name="sort_appointment">Nach Termin</string>
     <string name="sort_distance">Nach Distanz</string>
     <string name="sort_zip">Nach PLZ</string>
 
@@ -263,6 +270,8 @@
 
     <string name="tour">Tour</string>
 
+    <string name="truck">LKW</string>
+
     <string name="unknown">Unbekannt</string>
 
     <string name="unloaded">Entladen</string>
@@ -270,6 +279,8 @@
     <string name="update">Aktualisieren</string>
 
     <string name="user">Benutzer:</string>
+
+    <string name="van">Transporter</string>
 
     <string name="vehicle_loading">Beladung</string>
     <string name="vehicle_loading_finalize_dialog">Alle ausstehenden Pakete werden als fehlend markiert.</string>
@@ -286,11 +297,4 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="sort_appointment">Nach Termin</string>
-    <string name="bike">Fahrrad</string>
-    <string name="car">Auto</string>
-    <string name="truck">LKW</string>
-    <string name="van">Transporter</string>
-    <string name="closed">Geschlossen</string>
-    <string name="proceed">Fortfahren</string>
 </resources>
