@@ -15,11 +15,9 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
-import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleunloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleunloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -30,6 +28,7 @@ import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.VehicleUnloading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -47,8 +46,8 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
 
 /**
@@ -133,7 +132,7 @@ class VehicleUnloadingScreen :
                 items = this.deliveryList.loadedParcels.map { it.value }
         )
     }
-    
+
     //endregion
 
     fun SectionViewModel<ParcelEntity>.toFlexibleItem()
