@@ -207,7 +207,7 @@ class DeliveryStop(
             .behave(this)
 
     /** Missing parcels */
-    val missingParcels = this.parcels.map { it.filter { it.state == Parcel.State.MISSING } }
+    val missingParcels = this.parcels.map { it.filter { it.state == Parcel.State.PENDING } }
             .behave(this)
 
     /** Damaged parcels */
@@ -236,7 +236,7 @@ class DeliveryStop(
             .behave(this)
 
     val parcelTotalAmount = this.parcels
-            .map { it.filter { it.state != Parcel.State.MISSING }.count() }
+            .map { it.filter { it.state != Parcel.State.PENDING }.count() }
             .distinctUntilChanged()
             .behave(this)
 
@@ -544,7 +544,7 @@ class DeliveryStop(
                                         ParcelServiceV1.Event(
                                                 event = when {
                                                     it.state == Parcel.State.DELIVERED -> Event.DELIVERED.value
-                                                    it.state == Parcel.State.MISSING -> Event.NOT_IN_DELIVERY.value
+                                                    it.state == Parcel.State.PENDING -> Event.NOT_IN_DELIVERY.value
                                                     else -> Event.DELIVERY_FAIL.value
                                                 },
                                                 reason = when {
@@ -582,3 +582,5 @@ class DeliveryStop(
                 .subscribeOn(db.scheduler)
     }
 }
+
+fun StopEntity.toDeliveryStop(): DeliveryStop = DeliveryStop(this)

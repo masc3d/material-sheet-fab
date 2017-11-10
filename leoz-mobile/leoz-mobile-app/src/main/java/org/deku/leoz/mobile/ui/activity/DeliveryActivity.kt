@@ -210,7 +210,7 @@ class DeliveryActivity : Activity(),
         }
 
         // If parcel is missing, mark as loaded
-        if (parcel.state == Parcel.State.MISSING) {
+        if (parcel.state == Parcel.State.PENDING) {
             parcel.state = Parcel.State.LOADED
             parcelRepository.update(parcel as ParcelEntity)
                     .subscribeOn(db.scheduler)

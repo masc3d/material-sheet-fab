@@ -133,18 +133,7 @@ class VehicleUnloadingScreen :
                 items = this.deliveryList.loadedParcels.map { it.value }
         )
     }
-
-    val missingSection by lazy {
-        SectionViewModel<ParcelEntity>(
-                icon = R.drawable.ic_missing,
-                color = R.color.colorGrey,
-                background = R.drawable.section_background_grey,
-                showIfEmpty = false,
-                expandOnSelection = true,
-                title = getString(R.string.missing),
-                items = this.deliveryList.missingParcels.map { it.value }
-        )
-    }
+    
     //endregion
 
     fun SectionViewModel<ParcelEntity>.toFlexibleItem()
@@ -179,11 +168,6 @@ class VehicleUnloadingScreen :
 
         adapter.addSection(
                 sectionVmItemProvider = { this.pendingSection.toFlexibleItem() },
-                vmItemProvider = { it.toFlexibleItem() }
-        )
-
-        adapter.addSection(
-                sectionVmItemProvider = { this.missingSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
@@ -333,25 +317,7 @@ class VehicleUnloadingScreen :
                         }
 
                         R.id.action_vehicle_unloading_finished -> {
-                            MaterialDialog.Builder(context)
-                                    .title(R.string.vehicle_unloading_finalize_dialog_title)
-                                    .content(R.string.vehicle_unloading_finalize_dialog)
-                                    .negativeText(R.string.no_go_back)
-                                    .positiveText(android.R.string.yes)
-                                    .onPositive { _, _ ->
-                                        this.vehicleUnloading
-                                                .finalize()
-                                                .observeOnMainThread()
-                                                .subscribeBy(
-                                                        onComplete = {
-                                                            this.listener?.onVehicleUnloadingFinalized()
-                                                        },
-                                                        onError = {
-                                                            log.error(it.message, it)
-                                                        }
-                                                )
-                                    }
-                                    .show()
+                            this.listener?.onVehicleUnloadingFinalized()
                         }
 
                         else -> log.warn("Unhandled ActionEvent [$it]")

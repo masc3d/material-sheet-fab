@@ -72,7 +72,6 @@ fun OrderService.Order.Parcel.toParcel(): Parcel {
     ).also {
         it.state = when {
             this.isDelivered -> Parcel.State.DELIVERED
-            this.isMissing -> Parcel.State.MISSING
             else -> Parcel.State.PENDING
         }
         it.isDamaged = this.isDamaged

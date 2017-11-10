@@ -29,8 +29,6 @@ abstract class Parcel : BaseRxObservable(), Persistable, Observable {
         PENDING,
         /** Parcel has been loaded */
         LOADED,
-        /** Parcel could not be loaded as it was missing */
-        MISSING,
         /** Parcel has been delivered */
         DELIVERED
     }
