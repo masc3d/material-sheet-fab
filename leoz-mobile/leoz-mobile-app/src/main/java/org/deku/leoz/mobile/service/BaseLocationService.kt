@@ -124,7 +124,6 @@ abstract class BaseLocationService: Service() {
         }
 
         this.registerBroadcastReceiver()
-        setNotification()
         startForeground(NOTIFICATION_ID, notification)
         return START_STICKY
     }
@@ -153,20 +152,9 @@ abstract class BaseLocationService: Service() {
     override fun onDestroy() {
         log.debug("ONDESTROY")
         this.unregisterBroadcastReceiver()
-        removeNotification()
         stopForeground(true)
 
         super.onDestroy()
-    }
-
-    private fun setNotification() {
-        log.debug("Set notification")
-        notificationManager.notify(NOTIFICATION_ID, notification)
-    }
-
-    private fun removeNotification() {
-        log.debug("Remove notification")
-        notificationManager.cancel(NOTIFICATION_ID)
     }
 
     fun reportLocation(location: Location) {
