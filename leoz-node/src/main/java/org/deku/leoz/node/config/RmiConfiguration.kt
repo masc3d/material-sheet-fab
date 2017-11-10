@@ -19,16 +19,20 @@ open class RmiConfiguration {
     private val rmiPort: Int = 13101
 
     @Bean
-    open fun rmiRegistry(): RmiRegistryFactoryBean =
-            RmiRegistryFactoryBean().also {
-                it.port = rmiPort
-                it.setAlwaysCreate(true)
-            }
+    open fun rmiRegistry(): RmiRegistryFactoryBean {
+        System.setProperty("java.rmi.server.hostname", rmiHost)
+
+        return RmiRegistryFactoryBean().also {
+            it.port = rmiPort
+            it.setAlwaysCreate(true)
+        }
+    }
 
     @Bean
-    open fun connectorServerFactoryBean(): ConnectorServerFactoryBean =
-            ConnectorServerFactoryBean().also {
-                it.setObjectName("connector:name=rmi")
-                it.setServiceUrl("service:jmx:rmi://${rmiHost}:${rmiPort}/jndi/rmi://${rmiHost}:${rmiPort}/jmxrmi")
-            }
+    open fun connectorServerFactoryBean(): ConnectorServerFactoryBean {
+        return ConnectorServerFactoryBean().also {
+            it.setObjectName("connector:name=rmi")
+            it.setServiceUrl("service:jmx:rmi://${rmiHost}:${rmiPort}/jndi/rmi://${rmiHost}:${rmiPort}/jmxrmi")
+        }
+    }
 }
