@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
+import android.databinding.OnRebindCallback
+import android.databinding.ViewDataBinding
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
@@ -221,6 +223,7 @@ abstract class Activity : BaseActivity(),
         fun show() {
             refCount++
             this.progressBar.post {
+                TransitionManager.beginDelayedTransition(this.progressBar.parent as ViewGroup)
                 this.progressBar.visibility = View.VISIBLE
             }
         }
@@ -232,6 +235,7 @@ abstract class Activity : BaseActivity(),
             refCount--
             if (refCount == 0)
                 this.progressBar.post {
+                    TransitionManager.beginDelayedTransition(this.progressBar.parent as ViewGroup)
                     this.progressBar.visibility = View.GONE
                 }
         }
