@@ -470,14 +470,17 @@ class DeliveryStopListScreen
 
         })
 
+        val pendingStopCount = this.delivery.pendingStops.blockingFirst().value.count()
+        val closedStopCount = this.delivery.closedStops.blockingFirst().value.count()
+
         when (this.stopType) {
             Stop.State.PENDING -> {
-                if (this.delivery.pendingStops.blockingFirst().value.count() == 0)
+                if (pendingStopCount == 0)
                     this.stopType = Stop.State.CLOSED
             }
 
             Stop.State.CLOSED -> {
-                if (this.delivery.closedStops.blockingFirst().value.count() == 0)
+                if (closedStopCount == 0)
                     this.stopType = Stop.State.PENDING
             }
 

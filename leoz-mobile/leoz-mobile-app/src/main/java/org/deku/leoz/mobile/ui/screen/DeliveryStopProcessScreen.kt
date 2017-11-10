@@ -4,6 +4,7 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.app.FragmentManager
 import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
 import android.view.LayoutInflater
@@ -27,7 +28,6 @@ import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
@@ -45,6 +45,7 @@ import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.toMaterialSimpleListItem
 import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.extension.inflateMenu
@@ -62,8 +63,8 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.materialdialogs.addAll
 import sx.format.format
 
@@ -892,9 +893,11 @@ class DeliveryStopProcessScreen :
                         onComplete = {
                             this.delivery.activeStop = null
 
+                            val isLastPendingStop = this.delivery.pendingStops.blockingFirst().value.count() == 0
+
                             this.activity.supportFragmentManager.popBackStack(
                                     DeliveryStopListScreen::class.java.canonicalName,
-                                    0)
+                                    if (isLastPendingStop) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
                         },
                         onError = {
                             log.error(it.message, it)
@@ -982,16 +985,7 @@ class DeliveryStopProcessScreen :
                         }
                     }
                     else -> {
-                        this.deliveryStop.finalize()
-                                .observeOnMainThread()
-                                .subscribeBy(
-                                        onComplete = {
-                                            // TODO: move state control to model
-                                            this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
-                                        },
-                                        onError = {
-                                            log.error(it.message, it)
-                                        })
+                        this.finalizeStop()
                     }
                 }
             }
