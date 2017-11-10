@@ -40,8 +40,6 @@ class VehicleLoading : CompositeDisposableSupplier {
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
 
     //region Repositories
-    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
-    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     //endregion
 

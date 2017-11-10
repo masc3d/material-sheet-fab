@@ -247,7 +247,8 @@ class VehicleLoadingScreen :
                         id = R.id.action_vehicle_loading_finished,
                         colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_finish,
-                        iconTintRes = android.R.color.white
+                        iconTintRes = android.R.color.white,
+                        visible = false
                 ),
                 ActionItem(
                         id = R.id.action_vehicle_loading_load,
@@ -373,6 +374,17 @@ class VehicleLoadingScreen :
                                         .visible = false
                             }
                         }
+                    }
+                }
+
+        this.deliveryList.loadedParcels
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    val loadedParcelCount = it.value.count()
+
+                    this.actionItems = this.actionItems.apply {
+                        first { it.id == R.id.action_vehicle_loading_finished }
+                                .visible = loadedParcelCount > 0
                     }
                 }
 
