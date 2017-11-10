@@ -5,29 +5,30 @@ import android.app.*
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.GnssStatus
 import android.location.GpsStatus
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.mobile.Notifications
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.settings.LocationSettings
+import org.deku.leoz.mobile.ui.activity.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
-import sx.android.NtpTime
 import sx.mq.mqtt.channel
-import sx.time.TimeSpan
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -45,13 +46,70 @@ abstract class BaseLocationService: Service() {
     private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
     private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
-    private val notifications: Notifications by Kodein.global.lazy.instance()
-    private val ntpTime: NtpTime by Kodein.global.lazy.instance()
+    private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     protected val locationServices: org.deku.leoz.mobile.LocationServices by Kodein.global.lazy.instance()
 
     private var gnssStatusCallback: GnssStatus.Callback? = null
     @Suppress("DEPRECATION")
     private var gpsStatusListener: GpsStatus.Listener? = null
+
+    private val showTaskIntent by lazy {
+        Intent(applicationContext, StartupActivity::class.java).also {
+            it.action = Intent.ACTION_VIEW
+            it.addCategory(Intent.CATEGORY_LAUNCHER)
+            it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
+
+    private val pendingIntent by lazy {
+        PendingIntent.getActivity(
+            this,
+            0,
+            showTaskIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
+
+    private val notification by lazy {
+        val notificationChannel: NotificationChannel
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "mobileX"
+            val channelDescription = "mobileX Notifications"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+
+            notificationChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, importance).also {
+                it.description = channelDescription
+                it.enableLights(true)
+                it.lightColor = Color.RED
+                it.enableVibration(false)
+            }
+
+            this.notificationManager.createNotificationChannel(notificationChannel)
+        }
+
+
+
+        @Suppress("DEPRECATION")
+        val builder: NotificationCompat.Builder = NotificationCompat.Builder(this)
+
+
+        builder.setContentTitle(getString(R.string.app_name_long))
+                .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
+                .setAutoCancel(true)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setWhen(System.currentTimeMillis())
+                .setContentIntent(pendingIntent)
+                .setChannelId(NOTIFICATION_CHANNEL_ID)
+                .build().also {
+            it.flags += Notification.FLAG_FOREGROUND_SERVICE
+        }
+    }
+
+    companion object {
+        const val NOTIFICATION_ID = 100
+        const val NOTIFICATION_CHANNEL_ID = "LEOZ"
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         log.debug("ONSTARTCOMMAND")
@@ -67,8 +125,7 @@ abstract class BaseLocationService: Service() {
 
         this.registerBroadcastReceiver()
         setNotification()
-        startForeground(notifications.serviceNotification)
-        //startForeground(notifications.serviceNotification.id, notifications.serviceNotification.notification)
+        startForeground(NOTIFICATION_ID, notification)
         return START_STICKY
     }
 
@@ -104,12 +161,12 @@ abstract class BaseLocationService: Service() {
 
     private fun setNotification() {
         log.debug("Set notification")
-        notifications.serviceNotification.show()
+        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     private fun removeNotification() {
         log.debug("Remove notification")
-        notifications.serviceNotification.cancel()
+        notificationManager.cancel(NOTIFICATION_ID)
     }
 
     fun reportLocation(location: Location) {
@@ -125,17 +182,6 @@ abstract class BaseLocationService: Service() {
         if (!locationRequirementsCheck(locationNew = location, locationOld = this@BaseLocationService.locationCache.lastLocation)) {
             log.debug("Location does not match requirements.")
             return
-        }
-
-        /**
-         * This is to ensure that no "corrupt" time is emitted in the GPSMessage, which is likely to happen because of an Android Bug
-         * See Issue #247 for more information
-         * If the location time differs more than ~15 minutes from the real/device time, the real/device time is used
-         */
-        val date = ntpTime.time ?: Date()
-        if ((date.time - location.time) > 1000000) {
-            log.warn("The location timestamp [${location.time}] seems to be unreliable. Using [${date.time}] instead. Difference in minutes [${TimeSpan(date.time - location.time).totalMinutes}]")
-            location.time = date.time
         }
 
         val currentPosition = LocationServiceV1.GpsDataPoint(
@@ -202,5 +248,4 @@ abstract class BaseLocationService: Service() {
 
         return false
     }
-
 }
