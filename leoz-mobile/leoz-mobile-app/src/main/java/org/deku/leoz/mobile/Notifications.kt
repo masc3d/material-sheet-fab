@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import org.deku.leoz.mobile.ui.activity.StartupActivity
 
@@ -19,9 +20,7 @@ class Notifications(val context: Context) {
 
     private val notificationManager by lazy { context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager }
 
-    val channel: Channel by lazy {
-        Channel(this.context, this.notificationManager)
-    }
+    val channel: Channel = Channel(this.context, this.notificationManager)
 
     val showTaskIntent by lazy {
         Intent(this.context, StartupActivity::class.java).also {
@@ -59,29 +58,14 @@ class Notifications(val context: Context) {
     }
 
     class Channel(val context: Context, val notificationManager: NotificationManager) {
+
         companion object {
             const val NOTIFICATION_CHANNEL_ID_MAIN = "leoz"
         }
 
-        val mainChannel: NotificationChannel? by lazy {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                null
-            else {
-                val notificationChannel: NotificationChannel
-                val channelName = ""
-                val channelDescription = "mobileX Notifications"
-                val importance = NotificationManager.IMPORTANCE_HIGH
-
-                notificationChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_MAIN, channelName, importance).also {
-                    it.description = channelDescription
-                    it.enableLights(true)
-                    it.lightColor = Color.RED
-                    it.enableVibration(false)
-                }
-
-                this.notificationManager.createNotificationChannel(notificationChannel)
-                notificationChannel
-            }
+        @RequiresApi(Build.VERSION_CODES.O)
+        val mainChannel: NotificationChannel? = NotificationChannel(NOTIFICATION_CHANNEL_ID_MAIN, "mobileX", NotificationManager.IMPORTANCE_HIGH).also {
+            notificationManager.createNotificationChannel(it)
         }
     }
 
