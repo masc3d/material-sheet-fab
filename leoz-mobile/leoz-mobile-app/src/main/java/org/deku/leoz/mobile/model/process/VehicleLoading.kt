@@ -9,6 +9,7 @@ import io.reactivex.disposables.CompositeDisposable
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.Parcel
+import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.filterValuesByType
 import org.deku.leoz.mobile.model.repository.OrderRepository
@@ -39,8 +40,6 @@ class VehicleLoading : CompositeDisposableSupplier {
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
 
     //region Repositories
-    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
-    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     //endregion
 
@@ -90,61 +89,41 @@ class VehicleLoading : CompositeDisposableSupplier {
     //endregion
 
     /**
-     * Finalizes the loading process, marking all parcels with pending loading state as missing
+     * Load parcel(s)
+     * @param parcels Parcel(s) to load
      */
-    fun finalize(): Completable {
-        return db.store.withTransaction {
-            // Set all pending parcels to MISSING
-            val pendingParcels = parcelRepository.entities.filter { it.state == Parcel.State.PENDING }
+    fun load(parcels: List<ParcelEntity>): Completable {
+        return Completable.fromAction {
+            val lastLocation = this@VehicleLoading.locationCache.lastLocation
 
-            pendingParcels.forEach {
-                it.state = Parcel.State.MISSING
-                update(it)
-            }
+            db.store.withTransaction {
+                parcels.forEach { parcel ->
+                    parcel.state = Parcel.State.LOADED
 
-            // Set all stops which contain LOADED parcels to PENDING
-            val stopsWithLoadedParcels = parcelRepository.entities
-                    .filter { it.state == Parcel.State.LOADED }
-                    .flatMap { it.order.tasks.mapNotNull { it.stop } }
-                    .filter { it.state != Stop.State.CLOSED }
-                    .distinct()
+                    parcelRepository
+                            .update(parcel)
+                            .blockingGet()
 
-            stopsWithLoadedParcels.forEach {
-                it.state = Stop.State.PENDING
-                update(it)
-            }
+                    // Set all stops which contain LOADED parcels to PENDING
+                    val stopsWithLoadedParcels = parcelRepository.entities
+                            .filter { it.state == Parcel.State.LOADED }
+                            .flatMap { it.order.tasks.mapNotNull { it.stop } }
+                            .filter { it.state != Stop.State.CLOSED }
+                            .distinct()
 
-            // Reset state for remaining stops
-            stopRepository.entities
-                    .subtract(stopsWithLoadedParcels)
-                    .filter { it.state != Stop.State.CLOSED }
-                    .forEach {
-                        it.state = Stop.State.NONE
+                    stopsWithLoadedParcels.forEach {
+                        it.state = Stop.State.PENDING
                         update(it)
                     }
-        }
-                .toCompletable()
-                .concatWith(Completable.fromCallable {
-                    // Select parcels for which to send status events
-                    val parcels = parcelRepository.entities.filter {
-                        it.state == Parcel.State.LOADED ||
-                                it.state == Parcel.State.MISSING
-                    }
-
-                    val lastLocation = this@VehicleLoading.locationCache.lastLocation
 
                     // Send compound parcel message with loading states
                     mqttChannels.central.main.channel().send(
                             ParcelServiceV1.ParcelMessage(
-                                    userId = this.login.authenticatedUser?.id,
-                                    nodeId = this.identity.uid.value,
+                                    userId = this@VehicleLoading.login.authenticatedUser?.id,
+                                    nodeId = this@VehicleLoading.identity.uid.value,
                                     events = parcels.map {
                                         ParcelServiceV1.Event(
-                                                event = when {
-                                                    it.state == Parcel.State.LOADED -> Event.IN_DELIVERY.value
-                                                    it.state == Parcel.State.MISSING -> Event.NOT_IN_DELIVERY.value
-                                                    else -> Event.DELIVERY_FAIL.value
-                                                },
+                                                event = Event.IN_DELIVERY.value,
                                                 reason = Reason.NORMAL.id,
                                                 parcelId = it.id,
                                                 latitude = lastLocation?.latitude,
@@ -166,7 +145,13 @@ class VehicleLoading : CompositeDisposableSupplier {
                                     }.toTypedArray()
                             )
                     )
-                })
+                }
+            }
+                    .blockingGet()
+        }
                 .subscribeOn(db.scheduler)
+
     }
+
+    fun load(parcel: ParcelEntity): Completable = this.load(listOf(parcel))
 }

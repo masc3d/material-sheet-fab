@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+// import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
@@ -10,30 +10,36 @@ import { Shipmentsums } from '../../core/models/shipmentsums.model';
 @Component( {
   selector: 'app-deliverydispo',
   templateUrl: './deliverydispo.component.html',
+  styles: [`
+  .ui-tabview-panel {
+    height: 100% !important;
+  }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class DeliverydispoComponent extends AbstractTranslateComponent implements OnInit {
 
-  deliverydispoForm: FormGroup;
-
   shipments: Shipment[];
   shipmentSums: Shipmentsums[];
 
-  constructor( private fb: FormBuilder,
-               protected translate: TranslateService,
+  dateFormatPrimeng: string;
+  deliveryDate = null;
+  locale: any;
+
+  tourNo: string;
+
+  constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                public router: Router ) {
     super( translate, cd, () => {
+        this.deliveryDate = this.deliveryDate ? new Date( this.deliveryDate ) : new Date();
     } );
   }
 
   ngOnInit() {
     super.ngOnInit();
-    this.deliverydispoForm = this.fb.group( {
-      scanfield: [ null ],
-      msgfield: [ null ],
-      printlabel: [ null ]
-    } );
+    this.deliveryDate = new Date();
+    this.tourNo = '';
     this.shipmentSums = [
       {
         tour: 1,

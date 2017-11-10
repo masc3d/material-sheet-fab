@@ -76,14 +76,6 @@ class DeliveryList : CompositeDisposableSupplier {
                     .get()
     ).bind(this)
 
-    private val missingParcelsQuery = ObservableQuery<ParcelEntity>(
-            name = "Missing parcels",
-            query = db.store.select(ParcelEntity::class)
-                    .where(ParcelEntity.STATE.eq(Parcel.State.MISSING))
-                    .orderBy(ParcelEntity.MODIFICATION_TIME.desc())
-                    .get()
-    ).bind(this)
-
     private val deliveryListIdQuery = ObservableTupleQuery<Long>(
             name = "Delivery list ids",
             query = db.store.select(OrderEntity.DELIVERY_LIST_ID)
@@ -114,11 +106,6 @@ class DeliveryList : CompositeDisposableSupplier {
      * Pending parcels
      */
     val pendingParcels = pendingParcelsQuery.result
-
-    /**
-     * Missing parcels
-     */
-    val missingParcels = missingParcelsQuery.result
 
     /**
      * Delivery list parcels (all non-delivered parcels)

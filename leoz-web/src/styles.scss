@@ -299,7 +299,12 @@ p-tabpanel > div {
 .ui-panelmenu .ui-panelmenu-content .ui-menuitem-link {
   color: #000000 !important;
 }
-
+#tabViewWrapper div.ui-tabview-panels {
+  height: calc(100% - 30px);
+}
+#tabViewWrapper div.ui-tabview-panel.ui-widget-content {
+  height: 100%;
+}
 .ui-fieldset {
   border: 1px solid darkgrey;
   background-color: transparent;

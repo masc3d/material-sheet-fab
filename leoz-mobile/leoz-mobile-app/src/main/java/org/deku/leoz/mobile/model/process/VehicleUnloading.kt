@@ -151,21 +151,4 @@ class VehicleUnloading : CompositeDisposableSupplier {
      * Unload single parcel
      */
     fun unload(parcel: ParcelEntity): Completable = this.unload(listOf(parcel))
-
-    /**
-     * Finalizes the unloading process, marking all parcels which have not been unloaded as missing
-     */
-    fun finalize(): Completable {
-        return db.store.withTransaction {
-            // Set all pending parcels to MISSING
-            val loadedParcels = parcelRepository.entities.filter { it.state == Parcel.State.LOADED }
-
-            loadedParcels.forEach {
-                it.state = Parcel.State.MISSING
-                update(it)
-            }
-        }
-                .subscribeOn(db.scheduler)
-                .toCompletable()
-    }
 }

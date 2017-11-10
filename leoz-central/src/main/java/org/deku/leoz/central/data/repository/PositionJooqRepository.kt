@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import javax.inject.Inject
 import javax.inject.Named
 import org.deku.leoz.central.data.jooq.tables.records.TadNodeGeopositionRecord
+import org.slf4j.LoggerFactory
 import sx.time.toTimestamp
 import java.util.*
 
@@ -18,6 +19,8 @@ class PositionJooqRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dslContext: DSLContext
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     fun findByUserId(id: Int, from: Date, to: Date): List<TadNodeGeopositionRecord>? {
 
@@ -43,7 +46,12 @@ class PositionJooqRepository {
     }
 
     fun save(geopositionRecord: TadNodeGeopositionRecord): Boolean {
-        return (geopositionRecord.store() > 0)
+        try {
+            return (geopositionRecord.store() > 0)
+        } catch (e: Exception) {
+            log.error(e.toString())
+            return false
+        }
     }
 
 }

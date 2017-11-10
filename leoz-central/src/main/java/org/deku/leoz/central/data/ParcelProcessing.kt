@@ -74,7 +74,7 @@ open class ParcelProcessing {
             events ?: return true
 
             //events.forEach {
-            loop@ for(it in events){
+            loop@ for (it in events) {
                 var pathToDelete: Path? = null
 
                 val addInfo = it.additionalInfo?.toString() ?: "{}"
@@ -82,7 +82,6 @@ open class ParcelProcessing {
                 val mapper = ObjectMapper()
                 val parcelAddInfo: ParcelDeliveryAdditionalinfo = mapper.readValue(addInfo, ParcelDeliveryAdditionalinfo::class.java)
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
-
 
 
                 val parcel = it.parcelId ?: 0.toLong()
@@ -148,8 +147,6 @@ open class ParcelProcessing {
                 r.fehlercode = reason.oldValue.toUInteger()
 
                 r.erzeugerstation = "002"
-
-
 
 
                 val userId = it.userId
@@ -228,7 +225,7 @@ open class ParcelProcessing {
                             parcelRecord.store()
 
                         } else
-                            //return@forEach
+                        //return@forEach
                             continue@loop
                     } else {
 
@@ -242,7 +239,7 @@ open class ParcelProcessing {
                             parcelRecord.bmpfilename = bmp
                             parcelRecord.store()
                         } else
-                            //return@forEach
+                        //return@forEach
                             continue@loop
                     }
                 }
@@ -288,7 +285,10 @@ open class ParcelProcessing {
                             else -> {
                             }
                         }
-                        r.text = recipientInfo.toString()
+                        val textForStatus = if (recipientInfo.toString().length > 200) recipientInfo.toString().substring(0, 200) else recipientInfo.toString()
+                        //r.text = recipientInfo.toString()
+                        r.text = textForStatus
+                        val textForOrder = if (recipientInfo.toString().length > 35) recipientInfo.toString().substring(0, 35) else recipientInfo.toString()
 
                         val oldValue = parcelRecord.lieferstatus
                         parcelRecord.lieferstatus = r.kzStatus.toShort() //4
@@ -307,21 +307,24 @@ open class ParcelProcessing {
                         }
 
                         val oldRecipient = orderRecord.empfaenger ?: ""
-                        orderRecord.empfaenger = r.text
-                        if (orderRecord.store() > 0 && !oldRecipient.equals(r.text)) {
-
+                        //orderRecord.empfaenger = r.text
+                        orderRecord.empfaenger = textForOrder
+                        //if (orderRecord.store() > 0 && !oldRecipient.equals(r.text)) {
+                        if (orderRecord.store() > 0 && !oldRecipient.equals(textForOrder)) {
 
                             fieldHistoryRepository.addEntry(
                                     orderId = parcelRecord.orderid.toLong(),
                                     unitNo = parcelRecord.colliebelegnr.toLong(),
                                     fieldName = "empfaenger",
                                     oldValue = oldRecipient,
-                                    newValue = r.text,
+                                    //newValue = r.text,
+                                    newValue = textForOrder,
                                     changer = "I",
                                     point = "IM"
                             )
                         }
-                        if (!orderRecord.empfaenger.equals(r.text)) {
+                        //if (!orderRecord.empfaenger.equals(r.text)) {
+                        if (!orderRecord.empfaenger.equals(textForOrder)) {
                             //TODO WLtransfer ASD D in Auftrag gescheitert
                         }
 
@@ -385,7 +388,8 @@ open class ParcelProcessing {
                                             unitInBagStatusRecord.kzStatus = r.kzStatus
                                             unitInBagStatusRecord.erzeugerstation = r.erzeugerstation
                                             unitInBagStatusRecord.fehlercode = r.fehlercode
-                                            unitInBagStatusRecord.text = r.text
+                                            //unitInBagStatusRecord.text = r.text
+                                            unitInBagStatusRecord.text = textForStatus
                                             unitInBagStatusRecord.infotext = r.infotext
                                             r.store()
 
@@ -418,21 +422,24 @@ open class ParcelProcessing {
                                                 }
 
                                                 val unitInBagOldRecipient = unitInBagOrderRecord.empfaenger ?: ""
-                                                unitInBagOrderRecord.empfaenger = r.text
-                                                if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(r.text)) {
-
+                                                //unitInBagOrderRecord.empfaenger = r.text
+                                                unitInBagOrderRecord.empfaenger = textForOrder
+                                                //if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(r.text)) {
+                                                if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(textForOrder)) {
 
                                                     fieldHistoryRepository.addEntry(
                                                             orderId = it.orderid.toLong(),
                                                             unitNo = it.colliebelegnr.toLong(),
                                                             fieldName = "empfaenger",
                                                             oldValue = unitInBagOldRecipient,
-                                                            newValue = r.text,
+                                                            //newValue = r.text,
+                                                            newValue = textForOrder,
                                                             changer = "I",
                                                             point = "IM"
                                                     )
                                                 }
-                                                if (!unitInBagOrderRecord.empfaenger.equals(r.text)) {
+                                                //if (!unitInBagOrderRecord.empfaenger.equals(r.text)) {
+                                                if (!unitInBagOrderRecord.empfaenger.equals(textForOrder)) {
                                                     //TODO WLtransfer ASD D in Auftrag gescheitert
                                                 }
 

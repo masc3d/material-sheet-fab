@@ -6,6 +6,7 @@ import io.requery.*
 import org.deku.leoz.mobile.data.BR
 import sx.android.databinding.BaseRxObservable
 import sx.io.serialization.Serializable
+import java.util.*
 
 /**
  * Mobile stop entity
@@ -32,19 +33,20 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
         CLOSED
     }
 
-    @get:Key @get:Generated
+    @get:Key
+    @get:Generated
     abstract val id: Int
 
     @get:Bindable
     @get:Column(nullable = false)
-    @get:Index
+    @get:Index("stop_state_index")
     abstract var state: State
 
     @get:Lazy
     @get:OneToMany
     abstract val tasks: MutableList<OrderTask>
 
-    @get:Index
+    @get:Index("stop_position_index")
     @get:Column(nullable = false)
     /** Stop position as a decimal. Insertions or position changes require calculation of average */
     abstract var position: Double
@@ -53,7 +55,12 @@ abstract class Stop : BaseRxObservable(), Persistable, Observable {
     @get:OneToMany(cascade = arrayOf(CascadeAction.SAVE, CascadeAction.DELETE))
     abstract val meta: MutableList<StopMeta>
 
+    @get:Bindable
+    @get:Index("stop_modificationtime_index")
+    abstract var modificationTime: Date?
+
     val stateProperty by lazy { ObservableRxField<Stop.State>(BR.state, { this.state }) }
+    val modificationTimeProperty by lazy { ObservableRxField(BR.modificationTime, { this.modificationTime }) }
 
 }
 

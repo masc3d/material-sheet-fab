@@ -1,19 +1,18 @@
 package org.deku.leoz.mobile.service
 
 import android.Manifest
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.GnssStatus
 import android.location.GpsStatus
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -72,12 +71,28 @@ abstract class BaseLocationService: Service() {
     }
 
     private val notification by lazy {
+        val notificationChannel: NotificationChannel
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelName = "mobileX"
+            val channelDescription = "mobileX Notifications"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+
+            notificationChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, importance).also {
+                it.description = channelDescription
+                it.enableLights(true)
+                it.lightColor = Color.RED
+                it.enableVibration(false)
+            }
+
+            this.notificationManager.createNotificationChannel(notificationChannel)
+        }
+
+
+
         @Suppress("DEPRECATION")
-        val builder: Notification.Builder =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
-                else
-                    Notification.Builder(this)
+        val builder: NotificationCompat.Builder = NotificationCompat.Builder(this)
+
 
         builder.setContentTitle(getString(R.string.app_name_long))
                 .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
@@ -85,6 +100,7 @@ abstract class BaseLocationService: Service() {
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pendingIntent)
+                .setChannelId(NOTIFICATION_CHANNEL_ID)
                 .build().also {
             it.flags += Notification.FLAG_FOREGROUND_SERVICE
         }
@@ -108,7 +124,6 @@ abstract class BaseLocationService: Service() {
         }
 
         this.registerBroadcastReceiver()
-        setNotification()
         startForeground(NOTIFICATION_ID, notification)
         return START_STICKY
     }
@@ -137,20 +152,9 @@ abstract class BaseLocationService: Service() {
     override fun onDestroy() {
         log.debug("ONDESTROY")
         this.unregisterBroadcastReceiver()
-        removeNotification()
         stopForeground(true)
 
         super.onDestroy()
-    }
-
-    private fun setNotification() {
-        log.debug("Set notification")
-        notificationManager.notify(NOTIFICATION_ID, notification)
-    }
-
-    private fun removeNotification() {
-        log.debug("Remove notification")
-        notificationManager.cancel(NOTIFICATION_ID)
     }
 
     fun reportLocation(location: Location) {

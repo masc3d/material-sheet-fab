@@ -498,3 +498,9 @@ enum class counter(val value:Int){
     FIELD_HISTORY(19),
     LOADING_LIST(4000)
 }
+
+enum class BagStatus(val value:Int){
+    CLOSED_FROM_STATION(value = 2),
+    CLOSED_FROM_HUB(value = 6),
+    OPENED(value=5)
+}

@@ -55,7 +55,7 @@ dependencies {
             "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
 
             // logging
-            "org.apache.commons:commons-lang3:3.6",
+            "org.apache.commons:commons-lang3:3.7",
             "ch.qos.logback:logback-classic:1.2.3",
             "org.slf4j:jcl-over-slf4j:1.7.25",
 

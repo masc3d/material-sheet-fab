@@ -92,7 +92,7 @@ class DeliveryStopDetailScreen
                 this
         )
     })
-    private val flexibleAdapter get() = flexibleAdapterInstance.get()
+    private val adapter get() = flexibleAdapterInstance.get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,13 +124,13 @@ class DeliveryStopDetailScreen
         // Flexible adapter needs to be re-created with views
         flexibleAdapterInstance.reset()
 
-        this.uxDetailList.adapter = flexibleAdapter
+        this.uxDetailList.adapter = adapter
         this.uxDetailList.layoutManager = LinearLayoutManager(context)
         //this.uxStopList.addItemDecoration(dividerItemDecoration)
 
-        flexibleAdapter.isLongPressDragEnabled = false
-        flexibleAdapter.isHandleDragEnabled = false
-        flexibleAdapter.isSwipeEnabled = false
+        adapter.isLongPressDragEnabled = false
+        adapter.isHandleDragEnabled = false
+        adapter.isSwipeEnabled = false
 
         // Build detail list
 
@@ -147,7 +147,7 @@ class DeliveryStopDetailScreen
                 items = Observable.fromIterable(listOf(services)))
 
         if (services.count() > 0) {
-            flexibleAdapter.addItem(
+            adapter.addItem(
                     VmItem<SectionViewModel<Any>, Any>(
                             view = R.layout.item_section_header,
                             variable = BR.header,
@@ -171,7 +171,7 @@ class DeliveryStopDetailScreen
         //region Orders
         val orders = stop.tasks.map { it.order }.distinct()
 
-        flexibleAdapter.addItem(
+        adapter.addItem(
                 VmItem<SectionViewModel<Any>, Any>(
                         view = R.layout.item_section_header,
                         variable = BR.header,
@@ -197,7 +197,7 @@ class DeliveryStopDetailScreen
         //region Parcels
         val parcels = stop.tasks.flatMap { it.order.parcels }
 
-        flexibleAdapter.addItem(
+        adapter.addItem(
                 VmItem<SectionViewModel<Any>, Any>(
                         view = R.layout.item_section_header,
                         variable = BR.header,
@@ -220,19 +220,19 @@ class DeliveryStopDetailScreen
         )
         //endregion
 
-        flexibleAdapter.mode = SelectableAdapter.Mode.SINGLE
+        adapter.mode = SelectableAdapter.Mode.SINGLE
         // Since 5.0.0-rc3 click events will only be forwarded to holders when there's a click listener registered
-        flexibleAdapter.addListener(FlexibleAdapter.OnItemClickListener { pos -> false })
+        adapter.addListener(FlexibleAdapter.OnItemClickListener { pos -> false })
 
-        flexibleAdapter.setStickyHeaders(true)
-        flexibleAdapter.showAllHeaders()
-        flexibleAdapter.collapseAll()
+        adapter.setStickyHeaders(true)
+        adapter.showAllHeaders()
+        adapter.collapseAll()
 
         // Expand service section
-        flexibleAdapter.currentItems.firstOrNull {
+        adapter.currentItems.firstOrNull {
             it.viewModel == serviceSection
         }?.also {
-            flexibleAdapter.expand(it)
+            adapter.expand(it)
         }
 
         this.actionItems = listOf(

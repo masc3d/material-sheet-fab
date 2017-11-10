@@ -21,7 +21,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -34,6 +33,7 @@ import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.rx.composeAsRest
 import org.deku.leoz.mobile.rx.toHotIoObservable
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -53,8 +53,8 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
 
 /**
@@ -64,10 +64,6 @@ class VehicleLoadingScreen :
         ScreenFragment<Any>(),
         BaseCameraScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    companion object {
-        val SUPPORT_UNLOAD_ON_SCAN = false
-    }
 
     interface Listener {
         fun onVehicleLoadingFinalized()
@@ -159,17 +155,6 @@ class VehicleLoadingScreen :
         )
     }
 
-    val missingSection by lazy {
-        SectionViewModel<ParcelEntity>(
-                icon = R.drawable.ic_missing,
-                color = R.color.colorGrey,
-                background = R.drawable.section_background_grey,
-                showIfEmpty = false,
-                expandOnSelection = true,
-                title = getString(R.string.missing),
-                items = this.deliveryList.missingParcels.map { it.value }
-        )
-    }
     //endregion
 
     fun SectionViewModel<ParcelEntity>.toFlexibleItem()
@@ -207,10 +192,10 @@ class VehicleLoadingScreen :
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
-        adapter.addSection(
-                sectionVmItemProvider = { this.missingSection.toFlexibleItem() },
-                vmItemProvider = { it.toFlexibleItem() }
-        )
+//        adapter.addSection(
+//                sectionVmItemProvider = { this.missingSection.toFlexibleItem() },
+//                vmItemProvider = { it.toFlexibleItem() }
+//        )
 
         adapter
     })
@@ -262,7 +247,8 @@ class VehicleLoadingScreen :
                         id = R.id.action_vehicle_loading_finished,
                         colorRes = R.color.colorPrimary,
                         iconRes = R.drawable.ic_finish,
-                        iconTintRes = android.R.color.white
+                        iconTintRes = android.R.color.white,
+                        visible = false
                 ),
                 ActionItem(
                         id = R.id.action_vehicle_loading_load,
@@ -321,16 +307,11 @@ class VehicleLoadingScreen :
                         }
 
                         R.id.action_vehicle_loading_dev_mark_all_loaded -> {
-                            db.store.withTransaction {
-                                select(ParcelEntity::class)
-                                        .where(ParcelEntity.STATE.eq(Parcel.State.PENDING))
-                                        .get()
-                                        .forEach {
-                                            it.state = Parcel.State.LOADED
-                                            parcelRepository.update(it).blockingGet()
-                                        }
-                            }
-                                    .subscribeOn(db.scheduler)
+                            this@VehicleLoadingScreen.vehicleLoading.load(
+                                    db.store.select(ParcelEntity::class)
+                                            .where(ParcelEntity.STATE.eq(Parcel.State.PENDING))
+                                            .get().toList()
+                            )
                                     .subscribe()
                         }
                     }
@@ -354,25 +335,7 @@ class VehicleLoadingScreen :
                         }
 
                         R.id.action_vehicle_loading_finished -> {
-                            MaterialDialog.Builder(context)
-                                    .title(R.string.vehicle_loading_finalize_dialog_title)
-                                    .content(R.string.vehicle_loading_finalize_dialog)
-                                    .negativeText(R.string.no_go_back)
-                                    .positiveText(R.string.yes_start_tour)
-                                    .onPositive { _, _ ->
-                                        this.vehicleLoading
-                                                .finalize()
-                                                .observeOnMainThread()
-                                                .subscribeBy(
-                                                        onComplete = {
-                                                            this.listener?.onVehicleLoadingFinalized()
-                                                        },
-                                                        onError = {
-                                                            log.error(it.message, it)
-                                                        }
-                                                )
-                                    }
-                                    .show()
+                            this.listener?.onVehicleLoadingFinalized()
                         }
 
                         else -> log.warn("Unhandled ActionEvent [$it]")
@@ -411,6 +374,17 @@ class VehicleLoadingScreen :
                                         .visible = false
                             }
                         }
+                    }
+                }
+
+        this.deliveryList.loadedParcels
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    val loadedParcelCount = it.value.count()
+
+                    this.actionItems = this.actionItems.apply {
+                        first { it.id == R.id.action_vehicle_loading_finished }
+                                .visible = loadedParcelCount > 0
                     }
                 }
 
@@ -693,33 +667,8 @@ class VehicleLoadingScreen :
                 }
             }
             else -> {
-                if (parcel.state == Parcel.State.LOADED) {
-                    if (SUPPORT_UNLOAD_ON_SCAN) {
-                        this.feedback.warning()
-                        this.aidcReader.enabled = false
-
-                        MaterialDialog.Builder(this.context)
-                                .title(R.string.vehicle_loading_unload_parcel_dialog_title)
-                                .content(R.string.vehicle_loading_unload_parcel_dialog)
-                                .negativeText(getString(android.R.string.no))
-                                .positiveText(getString(android.R.string.yes))
-                                .dismissListener {
-                                    this.aidcReader.enabled = true
-                                }
-                                .onPositive { _, _ ->
-                                    parcel.state = Parcel.State.PENDING
-                                    this.parcelRepository.update(parcel)
-                                            .subscribeOn(db.scheduler)
-                                            .subscribe()
-                                }
-                                .show()
-                    }
-                } else {
-                    parcel.state = Parcel.State.LOADED
-                    this.parcelRepository.update(parcel)
-                            .subscribeOn(db.scheduler)
-                            .subscribe()
-                }
+                this.vehicleLoading.load(parcel)
+                        .subscribe()
 
                 this.parcelListAdapter.selectedSection = loadedSection
             }

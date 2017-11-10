@@ -56,7 +56,7 @@ class Delivery : CompositeDisposableSupplier {
             name = "Closed stops",
             query = db.store.select(StopEntity::class)
                     .where(StopEntity.STATE.eq(Stop.State.CLOSED))
-                    .orderBy(StopEntity.POSITION.asc())
+                    .orderBy(StopEntity.MODIFICATION_TIME.desc())
                     .get()
     )
             .bind(this)

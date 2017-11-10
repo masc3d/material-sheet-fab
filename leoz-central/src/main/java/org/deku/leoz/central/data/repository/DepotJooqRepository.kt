@@ -6,6 +6,7 @@ import org.deku.leoz.central.data.jooq.tables.SsoSMov
 import org.deku.leoz.central.data.jooq.tables.SsoSMovepool
 import org.deku.leoz.central.data.jooq.tables.records.SsoSMovepoolRecord
 import org.deku.leoz.central.data.jooq.tables.records.TbldepotlisteRecord
+import org.deku.leoz.model.BagStatus
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
@@ -103,12 +104,21 @@ open class DepotJooqRepository {
         return dslContext.fetchOne(SsoSMovepool.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
         //return record
     }
+
+//    open fun getUnitNo(orderid:Long?):Long?{
+//        if (orderid==null) return null
+//        return dslContext.select(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(Tables.TBLAUFTRAGCOLLIES)
+//                .where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble()))
+//                .fetchOne(0,Long::class.java)
+//    }
 }
 
 fun SsoSMovepoolRecord.toBagStatus(): BagService.BagStatus {
-    val status = BagService.BagStatus(this.bagNumber.toLong(),
+    val status = BagService.BagStatus(
+            this.bagNumber.toLong(),
             this.sealNumberGreen?.toLong(),
-            this.status?.toInt(),
+            //this.status?.toInt(),
+            BagStatus.values().find { it.value == this.status?.toInt() },
             this.statusTime,
             this.lastdepot?.toLong(),
             this.sealNumberYellow?.toLong(),
@@ -123,3 +133,20 @@ fun SsoSMovepoolRecord.toBagStatus(): BagService.BagStatus {
     )
     return status
 }
+//fun SsoSMovepoolRecord.toBag(): BagService.Bag{
+//    val bag=BagService.Bag(
+//            this.bagNumber.toLong(),
+//            this.sealNumberGreen?.toLong(),
+//            BagStatus.values().find{it.value==this.status?.toInt()},
+//            this.statusTime,
+//            this.lastdepot?.toLong(),
+//            this.sealNumberYellow?.toLong(),
+//            this.sealNumberRed?.toLong(),
+//            depotRepository.getUnitNo(this.orderhub2depot?.toLong()),
+//            //this.orderhub2depot?.toLong(),
+//            depotRepository.getUnitNo(this.orderdepot2hub?.toLong()),
+//            //this.orderdepot2hub?.toLong(),
+//            this.workDate
+//    )
+//    return bag
+//}

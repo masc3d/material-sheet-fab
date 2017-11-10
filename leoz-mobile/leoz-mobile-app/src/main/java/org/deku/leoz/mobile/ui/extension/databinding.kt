@@ -3,9 +3,11 @@ package org.deku.leoz.mobile.ui.extension
 import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import org.slf4j.LoggerFactory
 import sx.android.view.CircularProgressView
@@ -69,6 +71,13 @@ class DataBindingAdatpers {
                     }
                 }
             }
+        }
+
+        @BindingAdapter("animatedVisibility")
+        @JvmStatic
+        fun animatedVisibility(view: View, visibility: Int) {
+            TransitionManager.beginDelayedTransition(view.parent as ViewGroup)
+            view.visibility = visibility
         }
 
         @BindingAdapter("cpv_progress")

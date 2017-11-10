@@ -15,11 +15,9 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
-import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleunloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ScreenVehicleunloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
@@ -30,6 +28,7 @@ import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.VehicleUnloading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
@@ -47,8 +46,8 @@ import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
 
 /**
@@ -134,17 +133,6 @@ class VehicleUnloadingScreen :
         )
     }
 
-    val missingSection by lazy {
-        SectionViewModel<ParcelEntity>(
-                icon = R.drawable.ic_missing,
-                color = R.color.colorGrey,
-                background = R.drawable.section_background_grey,
-                showIfEmpty = false,
-                expandOnSelection = true,
-                title = getString(R.string.missing),
-                items = this.deliveryList.missingParcels.map { it.value }
-        )
-    }
     //endregion
 
     fun SectionViewModel<ParcelEntity>.toFlexibleItem()
@@ -179,11 +167,6 @@ class VehicleUnloadingScreen :
 
         adapter.addSection(
                 sectionVmItemProvider = { this.pendingSection.toFlexibleItem() },
-                vmItemProvider = { it.toFlexibleItem() }
-        )
-
-        adapter.addSection(
-                sectionVmItemProvider = { this.missingSection.toFlexibleItem() },
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
@@ -333,25 +316,7 @@ class VehicleUnloadingScreen :
                         }
 
                         R.id.action_vehicle_unloading_finished -> {
-                            MaterialDialog.Builder(context)
-                                    .title(R.string.vehicle_unloading_finalize_dialog_title)
-                                    .content(R.string.vehicle_unloading_finalize_dialog)
-                                    .negativeText(R.string.no_go_back)
-                                    .positiveText(android.R.string.yes)
-                                    .onPositive { _, _ ->
-                                        this.vehicleUnloading
-                                                .finalize()
-                                                .observeOnMainThread()
-                                                .subscribeBy(
-                                                        onComplete = {
-                                                            this.listener?.onVehicleUnloadingFinalized()
-                                                        },
-                                                        onError = {
-                                                            log.error(it.message, it)
-                                                        }
-                                                )
-                                    }
-                                    .show()
+                            this.listener?.onVehicleUnloadingFinalized()
                         }
 
                         else -> log.warn("Unhandled ActionEvent [$it]")
