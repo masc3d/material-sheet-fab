@@ -3,7 +3,7 @@ import { TranslateService } from './core/translate/translate.service';
 import { environment } from '../environments/environment';
 
 @Component({
-  moduleId: module.id,
+  // moduleId: module.id,
   selector: 'app-root',
   template: `
     <app-top-bar></app-top-bar>
