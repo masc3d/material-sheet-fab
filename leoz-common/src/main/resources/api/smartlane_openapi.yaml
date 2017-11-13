@@ -1998,6 +1998,8 @@ paths:
               plz_list:
                 description: a list of postal codes which shall be aggregated to one tour area
                 type: array
+                items:
+                  type: string
               items:
                 type: string
       responses:
