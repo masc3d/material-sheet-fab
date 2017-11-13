@@ -485,31 +485,13 @@ open class ParcelServiceV1 :
     }
 
     override fun getParcels2ExportByLoadingList(loadinglistNo: Long): List<ParcelServiceV1.Order2Export> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//        val parcels = parcelRepository.getParcels2ExportByLoadingList(loadinglistNo)
-//        parcels ?: throw DefaultProblem(
-//                status = Response.Status.NOT_FOUND,
-//                title = "No parcels found for this list"
-//        )
-//        if (parcels.count() == 0)
-//            throw DefaultProblem(
-//                    status = Response.Status.NOT_FOUND,
-//                    title = "No parcels found for this list"
-//            )
-//        val orderIdList = parcels.map { it.orderid }.distinct()
-//        val orderList: MutableList<ParcelServiceV1.Order2Export> = mutableListOf<ParcelServiceV1.Order2Export>()
-//        orderIdList.forEach {
-//            val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
-//            if (orderRecord != null) {
-//                val order = orderRecord.toOrder2Export()
-//                val pp = parcels.filter { f -> f.orderid == it }
-//                if (pp.count() > 0) {
-//                    order.parcels = pp.map { it.toParcel2Export() }
-//                    orderList.add(order)
-//                }
-//            }
-//        }
-//        return orderList
+        val parcels = parcelRepository.getParcels2ExportByLoadingList(loadinglistNo)
+        if (parcels.count() == 0)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No parcels found for this list"
+            )
+        return parcels
     }
 
     override fun getParcels2ExportInBagByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
@@ -568,6 +550,7 @@ open class ParcelServiceV1 :
 //        return ordersFiltered
     }
 
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun export(scanCode: String, loadingListNo: Long, stationNo: Int): Boolean {
         val user = userService.get()
 
