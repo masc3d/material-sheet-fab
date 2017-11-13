@@ -36,7 +36,7 @@ repositories {
 //region Prototype test setup
 test {
     useJUnit {
-        includeCategories 'sx.junit.StandardTest', 'sx.junit.PrototypeTest'
+        includeCategories 'sx.junit.StandardTest'
     }
 }
 
