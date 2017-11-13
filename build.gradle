@@ -20,13 +20,13 @@ ext {
                     url     : 'jdbc:mysql://leoz-demo.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 56
+                    target  : 57
             ],
             leozT1  : [
                     url     : 'jdbc:mysql://leoz-t1.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 56
+                    target  : 57
             ],
             // Production/live
             live  : [
@@ -34,7 +34,7 @@ ext {
                     user    : 'migration',
                     password: 'dekudb',
                     baseline: 2,
-                    target  : 56
+                    target  : 57
             ],
             // Test 61
             test61: [
