@@ -189,7 +189,7 @@ processResources {
  */
 task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     inputs.dir compileJava.destinationDir
-    outputs.dir sourceSets.main.output.classesDir
+    outputs.dir sourceSets.main.output.classesDirs.first()
 
     dependsOn tasks.compileJava, tasks.compileKotlin, tasks.processResources
     mustRunAfter tasks.compileJava, tasks.compileKotlin, tasks.processResources
@@ -197,7 +197,7 @@ task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     main 'org.eclipse.persistence.tools.weaving.jpa.StaticWeave'
     args '-persistenceinfo', DB_DIR,
             compileJava.destinationDir.getAbsolutePath(),
-            sourceSets.main.output.classesDir
+            sourceSets.main.output.classesDirs.first()
 
     doFirst {
         // masc20170327. eclipselink weaver does not detect removed classes, thus may produce inconsistent output if output directory is not clean.
