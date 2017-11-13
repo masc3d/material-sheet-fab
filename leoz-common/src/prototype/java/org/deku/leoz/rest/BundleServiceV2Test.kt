@@ -6,6 +6,7 @@ import org.deku.leoz.config.RestClientTestConfiguration
 import org.deku.leoz.service.internal.BundleServiceV1
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import sx.rs.proxy.FeignClientProxy
 import java.io.ByteArrayOutputStream
@@ -14,6 +15,7 @@ import java.io.ByteArrayOutputStream
  * BundleService test
  * Created by masc on 02/02/2017.
  */
+@Category(sx.junit.PrototypeTest::class)
 class BundleServiceV2Test {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

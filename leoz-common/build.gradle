@@ -101,15 +101,14 @@ dependencies {
             "com.esotericsoftware:kryo:$v_kryo",
             "de.javakaffee:kryo-serializers:$v_kryo_serializers",
 
-            dependencies.create("io.socket:socket.io-client:$v_socketio") {
-                // excluding org.json which is provided by Android
-                exclude group: 'org.json', module: 'json'
-            },
-
             // Logging
             "ch.qos.logback:logback-classic:$v_logback",
 
-            "io.swagger:swagger-codegen:$v_swagger_codegen",
+            // Socket.IO
+            "io.socket:socket.io-client:$v_socketio",
+
+            // For swagger-jaxrs generated stubs (as we currently use `jaxrs-cxf` for generation
+            // (as it's the only flavor generating non-generic return types)
             "org.apache.cxf:cxf-rt-frontend-jaxrs:$v_apache_cxf"
     )
 
@@ -128,7 +127,10 @@ dependencies {
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
 
             // MQTT client
-            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
+
+            // Socket.IO
+            "io.socket:socket.io-client:$v_socketio"
     )
 }
 

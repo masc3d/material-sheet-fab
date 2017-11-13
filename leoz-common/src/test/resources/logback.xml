@@ -10,5 +10,5 @@
     </root>
 
     <logger name="ROOT" level="INFO"/>
-    <logger name="org.deku.leoz" level="DEBUG"/>"
+    <logger name="org.deku.leoz" level="TRACE"/>"
 </configuration>

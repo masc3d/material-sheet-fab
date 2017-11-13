@@ -6,10 +6,12 @@ import org.deku.leoz.service.internal.StationService
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import org.deku.leoz.config.RestClientTestConfiguration
+import org.junit.experimental.categories.Category
 
 /**
  * Created by n3 on 10/12/2016.
  */
+@Category(sx.junit.PrototypeTest::class)
 class StationServiceTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
