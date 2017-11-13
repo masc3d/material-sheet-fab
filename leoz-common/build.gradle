@@ -146,8 +146,6 @@ task smartlaneGenerateSwaggerApi {
         config.apiPackage = "org.deku.leoz.smartlane.api"
         config.modelPackage = "org.deku.leoz.smartlane.model"
         config.setLang('jaxrs-cxf')
-        config.setAdditionalProperties([
-        ])
         new DefaultGenerator().opts(config.toClientOptInput()).generate()
     }
 }
