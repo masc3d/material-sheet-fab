@@ -10,10 +10,11 @@ buildscript {
         v_jgit = '4.8.0.201706111038-r'
         v_jsch = '0.0.9'
         v_querydsl = '4.1.4'
-        v_kotlin = '1.1.51'
+        v_kotlin = '1.1.60'
         v_koptional = '1.2.0'
         v_requery = '1.4.1'
         v_resteasy = '3.1.4.Final'
+        v_socketio = '1.0.0'
         v_slf4j = '1.7.25'
     }
 
