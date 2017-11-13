@@ -16,7 +16,7 @@ buildscript {
     }
 
     ext {
-        v_android_gms = '11.4.2'
+        v_android_gms = '11.6.0'
         v_anko = '0.10.2'
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.5.0'
@@ -247,7 +247,7 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
-            'com.github.pwittchen:reactivenetwork-rx2:0.12.1',
+            'com.github.pwittchen:reactivenetwork-rx2:0.12.2',
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:$v_kryo") {
