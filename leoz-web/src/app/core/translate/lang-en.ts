@@ -315,6 +315,13 @@ export const LANG_EN_TRANS = {
   'total_vol_Weight': 'Total vol weight',
   'ipointListcan': 'I-Point listscan',
   'packages_to_scan': 'Packages to scan',
+  // tourzipmapping
+  'tourzipmapping': 'Tour/Zip mapping',
+  'driverNo': 'Driver No',
+  'drivername': 'Drivername',
+  'fromZip': 'from Zip',
+  'toZip': 'to Zip',
+  'setnewArea': 'set new area',
 };
 
 

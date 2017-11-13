@@ -60,6 +60,12 @@ export const routes = [
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/deliverydispo/deliverydispo.module#DeliverydispoModule'
+      },
+      {
+        path: 'tourzipmapping', data: [ 'tourzipmapping' ],
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/tourzipmapping/tourzipmapping.module#TourzipmappingModule'
       }
     ]
   }
