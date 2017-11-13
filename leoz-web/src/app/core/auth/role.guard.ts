@@ -18,7 +18,8 @@ export class RoleGuard implements CanActivate {
       'deliverydispo',
       'deliveryscan',
       'tourzipmapping',
-      'ipointscan'],
+      'ipointscan',
+      'order'],
     'POWERUSER': [
       'user',
       'tour',
@@ -27,7 +28,8 @@ export class RoleGuard implements CanActivate {
       'deliverydispo',
       'deliveryscan',
       'tourzipmapping',
-      'ipointscan' ],
+      'ipointscan',
+      'order' ],
   };
 
   constructor( private router: Router ) {

@@ -182,7 +182,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'record-order' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/order',
           command: closeMenu
         },
         {
