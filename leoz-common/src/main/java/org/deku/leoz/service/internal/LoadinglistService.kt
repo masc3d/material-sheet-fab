@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AdditionalInfo
+import org.deku.leoz.model.LoadinglistType
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
 import sx.rs.PATCH
@@ -19,23 +20,33 @@ import javax.ws.rs.core.MediaType
 @ApiKey(false)
 interface LoadinglistService {
     companion object {
-        const val ID="loading-list"
+        const val ID = "loading-list"
     }
 
-    @POST
-    @Path("/")
-    @ApiOperation(value = "Generate new loadinglistNo", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getNewLoadinglistNo(): Long
+    @Serializable(0x2e5b98b7a7694f)
+    data class Loadinglist(val loadinglistNo: Long,val orders: List<ParcelServiceV1.Order2Export> = listOf()) {
+        val loadinglistType by lazy {
+            if (this.loadinglistNo < 100000)
+                LoadinglistType.BAG
+            else LoadinglistType.NORMAL
+        }
+    }
 
-    @POST
-    @Path("/bag")
-    @ApiOperation(value = "Generate new loadinglistNo for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getNewBagLoadinglistNo(): Long
 
-    @GET
-    @Path("/{$ID}")
-    @ApiOperation(value = "Get parcels by loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcels2ExportByLoadingList(
-            @PathParam(ID) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
-    ): List<ParcelServiceV1.Order2Export>
-}
+        @POST
+        @Path("/")
+        @ApiOperation(value = "Create new loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+        fun getNewLoadinglistNo(): Long
+
+        @POST
+        @Path("/bag")
+        @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+        fun getNewBagLoadinglistNo(): Long
+
+        @GET
+        @Path("/{$ID}")
+        @ApiOperation(value = "Get loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+        fun getParcels2ExportByLoadingList(
+                @PathParam(ID) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
+        ): Loadinglist?
+    }

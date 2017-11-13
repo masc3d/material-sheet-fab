@@ -10,6 +10,7 @@ import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagNumberRange
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
+import sx.io.serialization.Serializable
 import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import java.util.*
@@ -39,6 +40,7 @@ interface BagService {
     }
 
     @ApiModel(description = "Bag Status Model")
+    @Serializable(0x32028b91dda15f)
     data class BagStatus(
             var bagNumber: Long? = null,
             var sealNumberGreen: Long? = null,
@@ -58,6 +60,7 @@ interface BagService {
     )
 
     @ApiModel(description = "Bag Model")
+    @Serializable(0x9097b34565a17d)
     data class Bag(
             var bagNumber: Long? = null,
             var sealNumberGreen: Long? = null,
@@ -124,23 +127,23 @@ interface BagService {
 
 
     @GET
-    @Path("/section/{${ID}}")
+    @Path("/section/{${SECTION}}")
     @ApiOperation("Get all section depots", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getSectionDepots(
-            @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
+            @ApiParam(value = "Section", example = "1") @PathParam(SECTION) section: Int?,
             @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): List<String>
 
     @GET
-    @Path("/section/{${ID}}/left")
+    @Path("/section/{${SECTION}}/left")
     @ApiOperation("Get section depots left", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getSectionDepotsLeft(
-            @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
+            @ApiParam(value = "Section", example = "1") @PathParam(SECTION) section: Int?,
             @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): SectionDepotsLeft
 
     @GET
@@ -233,7 +236,7 @@ interface BagService {
 
     @POST
     @Path("/loadinglist")
-    @ApiOperation(value = "Get new loadinglist-no for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNewBagLoadinglistNo(): Long
 
     @GET
