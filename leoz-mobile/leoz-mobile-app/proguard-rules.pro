@@ -67,14 +67,16 @@
 -dontwarn com.trello.rxlifecycle.**
 -dontwarn de.javakaffee.kryoserializers.**
 -dontwarn feign.DefaultMethodHandler
--dontwarn org.objenesis.**
+-dontwarn io.swagger.jaxrs.**
 -dontwarn javax.**
 -dontwarn kotlin.**
 -dontwarn okio.**
 -dontwarn org.apache.commons.logging.**
+-dontwarn org.apache.cxf.jaxrs.**
 -dontwarn org.eclipse.persistence.**
 -dontwarn org.flywaydb.**
 -dontwarn org.ini4j.spi.**
+-dontwarn org.objenesis.**
 -dontwarn org.yaml.snakeyaml.**
 -dontwarn org.slf4j.**
 -dontwarn rx.internal.**

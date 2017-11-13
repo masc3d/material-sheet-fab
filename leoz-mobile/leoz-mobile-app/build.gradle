@@ -278,6 +278,17 @@ dependencies {
             "com.github.instacart.truetime-android:library:$v_truetime",
             "com.github.instacart.truetime-android:library-extension-rx:$v_truetime",
 
+            // For swagger jaxrs annotations
+            dependencies.create("io.swagger:swagger-jaxrs:$v_swagger") {
+                transitive false
+            },
+
+            // Socket.IO
+            dependencies.create("io.socket:socket.io-client:$v_socketio") {
+                // excluding org.json which is provided by Android
+                exclude group: 'org.json', module: 'json'
+            },
+
             //
             // FOR TESTING
             //
