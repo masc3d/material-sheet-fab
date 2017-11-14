@@ -2,13 +2,13 @@ package org.deku.leoz.rest
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
-import org.deku.leoz.config.RestClientTestConfiguration
+import org.deku.leoz.config.RestClientTestFactory
 import org.deku.leoz.service.internal.BundleServiceV1
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
-import sx.rs.proxy.FeignClientProxy
+import sx.rs.proxy.FeignClient
 import java.io.ByteArrayOutputStream
 
 /**
@@ -20,13 +20,13 @@ class BundleServiceV2Test {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val kodein = Kodein {
-        import(RestClientTestConfiguration.module)
+        import(RestClientTestFactory.module)
     }
 
     @Test
     fun testDownload() {
         // For binary response stream, need to build target manually, so we can inject a decoder implementation
-        val feignClientProxy = kodein.instance<FeignClientProxy>()
+        val feignClientProxy = kodein.instance<FeignClient>()
 
         val bundleService: BundleServiceV2 = feignClientProxy.target(
                 apiType = BundleServiceV2::class.java,

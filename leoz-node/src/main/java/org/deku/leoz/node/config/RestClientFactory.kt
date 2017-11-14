@@ -1,12 +1,12 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.RestClientConfiguration
+import org.deku.leoz.config.RestClientFactory
 import org.deku.leoz.node.Application
-import sx.rs.proxy.RestClientProxy
+import sx.rs.proxy.RestClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import sx.rs.proxy.RestEasyClientProxy
+import sx.rs.proxy.RestEasyClient
 import java.net.URI
 import javax.annotation.PostConstruct
 import javax.inject.Inject
@@ -16,10 +16,13 @@ import javax.inject.Inject
  */
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
-open class RestClientConfiguration : RestClientConfiguration() {
+open class RestClientFactory : RestClientFactory() {
+    override fun create(
+            baseUri: URI,
+            ignoreSsl: Boolean,
+            apiKey: String?): RestClient {
 
-    override fun createClientProxy(baseUri: URI, ignoreSsl: Boolean, apiKey: String?): RestClientProxy {
-        return RestEasyClientProxy(baseUri, ignoreSsl)
+        return RestEasyClient(baseUri, ignoreSsl)
     }
 
     @Inject
@@ -33,6 +36,6 @@ open class RestClientConfiguration : RestClientConfiguration() {
     }
 
     @get:Bean
-    open val restClient: RestClientProxy
-        get() = this.createDefaultClientProxy()
+    open val restClient: RestClient
+        get() = this.create()
 }

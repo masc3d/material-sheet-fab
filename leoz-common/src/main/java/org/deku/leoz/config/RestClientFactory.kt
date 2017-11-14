@@ -5,18 +5,18 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
 import org.deku.leoz.service.internal.*
-import sx.rs.proxy.RestClientProxy
+import sx.rs.proxy.RestClient
 import java.net.URI
 
 /**
  * Base class for JAX/RS REST client configurations
  * Created by masc on 07/11/2016.
  */
-abstract class RestClientConfiguration {
+abstract class RestClientFactory {
     /**
      * Overridden in derived configurations to provide a specific proxy client
      */
-    abstract fun createClientProxy(baseUri: URI, ignoreSsl: Boolean, apiKey: String? = null): RestClientProxy
+    abstract fun create(baseUri: URI, ignoreSsl: Boolean, apiKey: String? = null): RestClient
 
     /**
      * HTTP host to use for rest clients
@@ -51,21 +51,21 @@ abstract class RestClientConfiguration {
     /**
      * Factory method for creating a leoz rest client
      */
-    fun createClientProxy(uri: URI): RestClientProxy {
+    fun create(uri: URI): RestClient {
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
         val ignoreSslCertificate = !uri.host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)
 
-        return this.createClientProxy(uri, ignoreSslCertificate, this.apiKey)
+        return this.create(uri, ignoreSslCertificate, this.apiKey)
     }
 
     /**
      * Factory method for creating a default leoz rest client
      * using the configurations remote settings (host/port)
      */
-    fun createDefaultClientProxy(): RestClientProxy {
+    fun create(): RestClient {
         val uri = this.createUri(https, host, port)
 
-        return this.createClientProxy(uri)
+        return this.create(uri)
     }
 
     companion object {
@@ -73,35 +73,35 @@ abstract class RestClientConfiguration {
             /**
              * Helper for creating service proxy
              */
-            fun <T> createServiceProxy(config: RestClientConfiguration, serviceType: Class<T>): T =
-                    config.createDefaultClientProxy().create(serviceType)
+            fun <T> createProxy(clientFactory: RestClientFactory, serviceType: Class<T>): T =
+                    clientFactory.create().proxy(serviceType)
 
             bind<StationService>() with provider {
-                createServiceProxy(config = instance(), serviceType = StationService::class.java)
+                createProxy(clientFactory = instance(), serviceType = StationService::class.java)
             }
 
             bind<BundleServiceV2>() with provider {
-                createServiceProxy(config = instance(), serviceType = BundleServiceV2::class.java)
+                createProxy(clientFactory = instance(), serviceType = BundleServiceV2::class.java)
             }
 
             bind<DeliveryListService>() with provider {
-                 createServiceProxy(config = instance(), serviceType = DeliveryListService::class.java)
+                createProxy(clientFactory = instance(), serviceType = DeliveryListService::class.java)
             }
 
             bind<OrderService>() with provider {
-                createServiceProxy(config = instance(), serviceType = OrderService::class.java)
+                createProxy(clientFactory = instance(), serviceType = OrderService::class.java)
             }
 
             bind<UserService>() with provider {
-                createServiceProxy(config = instance(), serviceType = UserService::class.java)
+                createProxy(clientFactory = instance(), serviceType = UserService::class.java)
             }
 
             bind<AuthorizationService>() with provider {
-                createServiceProxy(config = instance(), serviceType = AuthorizationService::class.java)
+                createProxy(clientFactory = instance(), serviceType = AuthorizationService::class.java)
             }
 
             bind<LocationServiceV2>() with provider {
-                createServiceProxy(config = instance(), serviceType = LocationServiceV2::class.java)
+                createProxy(clientFactory = instance(), serviceType = LocationServiceV2::class.java)
             }
         }
     }

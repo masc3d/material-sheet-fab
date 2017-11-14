@@ -9,7 +9,7 @@ import org.deku.leoz.service.internal.BundleServiceV2
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
-import sx.rs.proxy.FeignClientProxy
+import sx.rs.proxy.FeignClient
 import java.io.ByteArrayOutputStream
 
 /**
@@ -34,9 +34,9 @@ class BundleServiceTest : WebserviceTest() {
     @Test
     fun testDownload() {
         // For binary response stream, need to build target manually, so we can inject a decoder implementation
-        val feignClientProxy: FeignClientProxy = Kodein.global.instance()
+        val feignClient: FeignClient = Kodein.global.instance()
 
-        val bundleService: BundleServiceV2 = feignClientProxy.target(
+        val bundleService: BundleServiceV2 = feignClient.target(
                 apiType = BundleServiceV2::class.java,
                 output = ByteArrayOutputStream(),
                 progressCallback = { p: Float, bytesCopied: Long ->

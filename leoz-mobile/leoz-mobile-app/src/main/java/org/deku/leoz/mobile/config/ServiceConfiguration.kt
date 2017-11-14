@@ -12,7 +12,7 @@ import org.deku.leoz.mobile.service.UpdateService
 import org.threeten.bp.Duration
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
-import sx.rs.proxy.FeignClientProxy
+import sx.rs.proxy.FeignClient
 
 /**
  * Service configuration
@@ -63,7 +63,7 @@ class ServiceConfiguration {
 
                 val settings = Settings(instance<ConfigurationMap>())
 
-                val restClientConfiguration: org.deku.leoz.config.RestClientConfiguration = instance()
+                val restClientFactory: org.deku.leoz.config.RestClientFactory = instance()
 
                 val service = UpdateService(
                         executorService = instance(),
@@ -71,13 +71,13 @@ class ServiceConfiguration {
                         versionAlias = settings.versionAlias,
                         identity = instance(),
                         period = Duration.ofSeconds(settings.period.toLong()),
-                        restClientProxy = restClientConfiguration.createClientProxy(
-                                uri = restClientConfiguration.createUri(
+                        restClient = restClientFactory.create(
+                                uri = restClientFactory.createUri(
                                         host = settings.remote.host,
                                         port = settings.remote.http.port,
                                         https = settings.remote.http.ssl
                                 )
-                        ) as FeignClientProxy
+                        ) as FeignClient
                 )
 
                 service.force = settings.force

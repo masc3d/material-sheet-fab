@@ -1,15 +1,12 @@
 package org.deku.leoz.node.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
 import org.deku.leoz.node.service.internal.AuthorizationClientService
-import sx.rs.proxy.RestClientProxy
+import sx.rs.proxy.RestClient
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.slf4j.LoggerFactory
@@ -55,7 +52,7 @@ open class UpdateConfiguration {
     @Inject
     private lateinit var bundleInstaller: BundleInstaller
     @Inject
-    private lateinit var restClientProxy: Optional<RestClientProxy>
+    private lateinit var restClient: Optional<RestClient>
     @Inject
     private lateinit var bundleService: org.deku.leoz.node.service.internal.BundleServiceV2
     @Inject
@@ -66,8 +63,8 @@ open class UpdateConfiguration {
      * direct reference to the BundleService of this process (leoz-central)
      */
     private val bundleServiceProxy by lazy {
-        if (this.restClientProxy.isPresent)
-            this.restClientProxy.get().create(BundleServiceV2::class.java)
+        if (this.restClient.isPresent)
+            this.restClient.get().proxy(BundleServiceV2::class.java)
         else
             this.bundleService
     }

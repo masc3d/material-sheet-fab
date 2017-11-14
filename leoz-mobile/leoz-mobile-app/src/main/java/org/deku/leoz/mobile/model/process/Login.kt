@@ -46,7 +46,7 @@ class Login {
     private val db: Database by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
-    private val restConfiguration: org.deku.leoz.config.RestClientConfiguration by Kodein.global.lazy.instance()
+    private val restConfiguration: org.deku.leoz.config.RestClientFactory by Kodein.global.lazy.instance()
 
     /**
      * SALT for hashing passwords locally

@@ -66,7 +66,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(ModelConfiguration.module)
         Kodein.global.addImport(MqttConfiguration.module)
         Kodein.global.addImport(NotificationConfiguration.module)
-        Kodein.global.addImport(RestClientConfiguration.module)
+        Kodein.global.addImport(RestClientFactory.module)
         Kodein.global.addImport(ServiceConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
         Kodein.global.addImport(TimeConfiguration.module)

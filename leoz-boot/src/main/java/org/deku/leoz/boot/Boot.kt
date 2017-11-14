@@ -7,9 +7,9 @@ import com.github.salomonbrys.kodein.lazy
 import com.google.common.base.Strings
 import org.deku.leoz.Storage
 import org.deku.leoz.boot.config.BundleConfiguration
-import org.deku.leoz.boot.config.RestClientConfiguration
+import org.deku.leoz.boot.config.RestClientFactory
 import org.deku.leoz.bundle.*
-import sx.rs.proxy.RestClientProxy
+import sx.rs.proxy.RestClient
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.DiscoveryService
 import org.slf4j.LoggerFactory
@@ -37,7 +37,7 @@ class Boot {
 
     // Injections
     private val storage: Storage by Kodein.global.lazy.instance()
-    private val restConfiguration: RestClientConfiguration by Kodein.global.lazy.instance()
+    private val restConfiguration: RestClientFactory by Kodein.global.lazy.instance()
     private val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
     private val installer: BundleInstaller by Kodein.global.lazy.instance()
     private val discoveryService: DiscoveryService by Kodein.global.lazy.instance()
@@ -172,8 +172,8 @@ class Boot {
                 if (versionPattern != null) {
                     finalVersionPattern = versionPattern
                 } else {
-                    val restClient: RestClientProxy = Kodein.global.instance()
-                    val bundleService = restClient.create(BundleServiceV2::class.java)
+                    val restClient: RestClient = Kodein.global.instance()
+                    val bundleService = restClient.proxy(BundleServiceV2::class.java)
 
                     val updateInfo = bundleService.info(bundleName = bundleName, versionAlias = versionAlias)
                     log.info("${updateInfo}")
