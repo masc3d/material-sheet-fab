@@ -15,7 +15,7 @@ import sx.rs.proxy.FeignClient
  * Rest client configuration
  * Created by masc on 14.11.17.
  */
-class RestConfiguration {
+class RestClientConfiguration {
     companion object {
         private val log = LoggerFactory.getLogger(RestClientFactory::class.java)
 
