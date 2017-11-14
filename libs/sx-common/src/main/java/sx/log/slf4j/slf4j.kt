@@ -29,6 +29,9 @@ fun Logger.trace(it: Any?) {
     this.trace(it.toString())
 }
 
+/**
+ * Helper for installing the JUL (java.util.logging) bridge,
+ */
 fun Logger.installJulBridge() {
     LogManager.getLogManager().reset()
     SLF4JBridgeHandler.removeHandlersForRootLogger()
