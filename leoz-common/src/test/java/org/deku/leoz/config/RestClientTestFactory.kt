@@ -3,6 +3,7 @@ package org.deku.leoz.config
 import com.github.salomonbrys.kodein.*
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
+import org.deku.leoz.RestClientFactory
 import sx.rs.proxy.FeignClient
 import sx.rs.proxy.RestClient
 import java.net.URI
@@ -10,7 +11,7 @@ import java.net.URI
 /**
  * Created by masc on 16/03/2017.
  */
-class RestClientTestFactory : org.deku.leoz.config.RestClientFactory() {
+class RestClientTestFactory : RestClientFactory() {
     override fun create(baseUri: URI, ignoreSsl: Boolean, apiKey: String?): RestClient {
         return FeignClient(
                 baseUri = baseUri,
@@ -22,13 +23,13 @@ class RestClientTestFactory : org.deku.leoz.config.RestClientFactory() {
 
     companion object {
         val module = Kodein.Module {
-            import(org.deku.leoz.config.RestClientFactory.module)
+            import(RestClientFactory.module)
 
             bind<FeignClient>() with provider {
                 instance<RestClientFactory>().create() as FeignClient
             }
 
-            bind<org.deku.leoz.config.RestClientFactory>() with singleton {
+            bind<RestClientFactory>() with singleton {
                 RestClientTestFactory()
             }
         }

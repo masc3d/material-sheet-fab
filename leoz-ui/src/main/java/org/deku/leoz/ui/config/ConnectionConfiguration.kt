@@ -7,6 +7,7 @@ import org.deku.leoz.service.internal.DiscoveryInfo
 import org.deku.leoz.service.internal.DiscoveryService
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.ui.RestClientFactory
 import sx.net.UdpDiscoveryService
 import kotlin.properties.Delegates
 

@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.RestClientFactory
+import org.deku.leoz.RestClientFactory
 import org.deku.leoz.node.Application
 import sx.rs.proxy.RestClient
 import org.springframework.context.annotation.Bean
@@ -16,26 +16,24 @@ import javax.inject.Inject
  */
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
-open class RestClientFactory : RestClientFactory() {
-    override fun create(
-            baseUri: URI,
-            ignoreSsl: Boolean,
-            apiKey: String?): RestClient {
-
-        return RestEasyClient(baseUri, ignoreSsl)
-    }
-
+open class RestClientConfiguration {
     @Inject
     private lateinit var remotePeerConfiguration: RemotePeerConfiguration
 
-    @PostConstruct
-    open fun onInitialize() {
-        this.host = remotePeerConfiguration.host!!
-        this.port = remotePeerConfiguration.httpPort!!
-        this.https = true
-    }
+    @get:Bean
+    open val restClientFactory: org.deku.leoz.node.rest.RestClientFactory
+        get() = org.deku.leoz.node.rest.RestClientFactory()
 
     @get:Bean
     open val restClient: RestClient
-        get() = this.create()
+        get() = this.restClientFactory.create()
+
+    @PostConstruct
+    open fun onInitialize() {
+        this.restClientFactory.also {
+            it.host = remotePeerConfiguration.host!!
+            it.port = remotePeerConfiguration.httpPort!!
+            it.https = true
+        }
+    }
 }

@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
+import org.deku.leoz.RestClientFactory
 import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.mobile.service.NotificationService
@@ -63,7 +64,7 @@ class ServiceConfiguration {
 
                 val settings = Settings(instance<ConfigurationMap>())
 
-                val restClientFactory: org.deku.leoz.config.RestClientFactory = instance()
+                val restClientFactory: RestClientFactory = instance()
 
                 val service = UpdateService(
                         executorService = instance(),

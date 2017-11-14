@@ -1,33 +1,20 @@
 package org.deku.leoz.ui.config
 
-import com.github.salomonbrys.kodein.*
-import org.deku.leoz.config.Rest
-import sx.rs.proxy.RestClient
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.provider
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.StationService
+import org.deku.leoz.ui.RestClientFactory
 import org.slf4j.LoggerFactory
-import sx.rs.proxy.JerseyClient
-import java.net.URI
+import sx.rs.proxy.RestClient
 
 /**
- * Rest configuration
- * Created by masc on 08/11/2016.
+ * Created by masc on 14.11.17.
  */
-class RestClientFactory : org.deku.leoz.config.RestClientFactory() {
-    override fun create(
-            baseUri: URI,
-            ignoreSsl: Boolean,
-            apiKey: String?): RestClient {
-
-        return JerseyClient(baseUri, ignoreSsl)
-    }
-
-    init {
-        this.host = "localhost"
-        this.https = false
-        this.port = Rest.DEFAULT_PORT
-    }
-
+class RestClientConfiguration {
     companion object {
         val log = LoggerFactory.getLogger(RestClientFactory::class.java)
 

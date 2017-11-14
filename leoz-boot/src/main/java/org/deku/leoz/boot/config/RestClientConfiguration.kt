@@ -1,23 +1,17 @@
 package org.deku.leoz.boot.config
 
-import com.github.salomonbrys.kodein.*
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.provider
+import org.deku.leoz.boot.RestClientFactory
 import sx.rs.proxy.RestClient
-import sx.rs.proxy.RestEasyClient
-import java.net.URI
 
 /**
- * Rest configuration
- * Created by masc on 08/11/2016.
+ * Created by masc on 14.11.17.
  */
-class RestClientFactory : org.deku.leoz.config.RestClientFactory() {
-    override fun create(
-            baseUri: URI,
-            ignoreSsl: Boolean,
-            apiKey: String?): RestClient {
-
-        return RestEasyClient(baseUri, ignoreSsl)
-    }
-
+class RestClientConfiguration {
     companion object {
         val module = Kodein.Module {
             /** Rest configuration */
@@ -28,7 +22,7 @@ class RestClientFactory : org.deku.leoz.config.RestClientFactory() {
                 }
             }
 
-            /** Rest client */
+            /** Rest client provider */
             bind<RestClient>() with provider {
                 instance<RestClientFactory>().create()
             }

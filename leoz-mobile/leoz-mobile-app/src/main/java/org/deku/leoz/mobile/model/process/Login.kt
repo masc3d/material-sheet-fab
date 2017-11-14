@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import org.deku.leoz.RestClientFactory
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.SharedPreference
@@ -19,8 +20,6 @@ import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
-import sx.android.Device
-import sx.android.IdleTimer
 import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
 import sx.text.parseHex
@@ -46,7 +45,7 @@ class Login {
     private val db: Database by Kodein.global.lazy.instance()
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
 
-    private val restConfiguration: org.deku.leoz.config.RestClientFactory by Kodein.global.lazy.instance()
+    private val restConfiguration: RestClientFactory by Kodein.global.lazy.instance()
 
     /**
      * SALT for hashing passwords locally

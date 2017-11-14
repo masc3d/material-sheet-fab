@@ -47,7 +47,7 @@ class Application {
                 Kodein.global.addImport(LogConfiguration.module)
                 Kodein.global.addImport(RsyncConfiguration.module)
                 Kodein.global.addImport(DiscoveryConfiguration.module)
-                Kodein.global.addImport(RestClientFactory.module)
+                Kodein.global.addImport(RestClientConfiguration.module)
                 Kodein.global.addImport(BundleConfiguration.module)
                 Kodein.global.addImport(SshConfiguration.module)
                 log.info("Done setting up injection")

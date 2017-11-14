@@ -111,7 +111,7 @@ class Application : Application() {
         Kodein.global.addImport(LogConfiguration.module)
         Kodein.global.addImport(RsyncConfiguration.module)
         Kodein.global.addImport(MessagingConfiguration.module)
-        Kodein.global.addImport(RestClientFactory.module)
+        Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(BundleConfiguration.module)
         Kodein.global.addImport(BundleUpdateConfiguration.module)
         Kodein.global.addImport(LeoBridgeConfiguration.module)
