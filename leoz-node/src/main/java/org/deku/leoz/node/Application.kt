@@ -27,7 +27,7 @@ import sx.Dispose
 import sx.JarManifest
 import sx.Process
 import sx.io.ProcessLockFile
-import sx.logging.slf4j.info
+import sx.log.slf4j.info
 import sx.platform.JvmUtil
 import java.net.URL
 import java.util.*
