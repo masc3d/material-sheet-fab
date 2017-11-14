@@ -348,11 +348,7 @@ class DeliveryStopDetailScreen
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        var result: Result<Parcel> = Result(error = IllegalArgumentException(getString(R.string.error_invalid_barcode)))
-
-        try {
-            result = Result(value = Parcel.parseLabel(event.data))
-        } catch (e: IllegalArgumentException) { }
+        val result: Result<Parcel> = Parcel.parseLabel(event.data)
 
         when {
             result.hasError -> {

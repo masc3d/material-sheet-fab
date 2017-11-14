@@ -416,11 +416,7 @@ class VehicleUnloadingScreen :
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        var result: Result<org.deku.leoz.model.Parcel> = Result(error = IllegalArgumentException(getString(R.string.error_invalid_barcode)))
-
-        try {
-            result = Result(value = org.deku.leoz.model.Parcel.parseLabel(event.data))
-        } catch (e: IllegalArgumentException) { }
+        val result: Result<org.deku.leoz.model.Parcel> = org.deku.leoz.model.Parcel.parseLabel(event.data)
 
         when {
             result.hasError -> {
