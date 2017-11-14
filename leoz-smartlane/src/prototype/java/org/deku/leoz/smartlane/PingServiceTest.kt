@@ -1,4 +1,4 @@
-package org.deku.leoz.smartlane.socketio
+package org.deku.leoz.smartlane
 
 import org.junit.Test
 import org.junit.experimental.categories.Category

@@ -19,6 +19,7 @@ include ':leoz-central'
 include ':leoz-central-schema'
 include ':leoz-boot'
 include ':leoz-ui'
+include ':leoz-smartlane'
 
 project(':sx-common').projectDir = file('libs/sx-common')
 project(':sx-discovery').projectDir = file('libs/sx-discovery')

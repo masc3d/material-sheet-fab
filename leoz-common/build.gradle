@@ -1,17 +1,10 @@
-import io.swagger.codegen.config.CodegenConfigurator
-import io.swagger.codegen.DefaultGenerator
-
 buildscript {
-    ext {
-        v_swagger_codegen = '2.2.3'
-    }
     repositories {
         mavenCentral()
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-        classpath "io.swagger:swagger-codegen:$v_swagger_codegen"
     }
 }
 
@@ -23,11 +16,6 @@ group = 'org.deku.leoz'
 version = '1.0'
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
-
-//region Constants
-def GENERATED_DIR = file('src/generated')
-def GENERATED_SMARTLANE_DIR = new File(GENERATED_DIR, 'smartlane')
-//endregion
 
 repositories {
     mavenCentral()
@@ -41,11 +29,6 @@ test {
 }
 
 sourceSets {
-    main {
-        java {
-            srcDirs += GENERATED_SMARTLANE_DIR
-        }
-    }
     test {
         java {
             srcDirs += file('src/prototype/java')
@@ -84,7 +67,7 @@ dependencies {
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
 
             // JAX-RS
-            "javax.ws.rs:javax.ws.rs-api:2.0.1",
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
 
             // REST
             "io.github.openfeign:feign-core:$v_feign",
@@ -102,14 +85,7 @@ dependencies {
             "de.javakaffee:kryo-serializers:$v_kryo_serializers",
 
             // Logging
-            "ch.qos.logback:logback-classic:$v_logback",
-
-            // Socket.IO
-            "io.socket:socket.io-client:$v_socketio",
-
-            // For swagger-jaxrs generated stubs (as we currently use `jaxrs-cxf` for generation
-            // (as it's the only flavor generating non-generic return types)
-            "org.apache.cxf:cxf-rt-frontend-jaxrs:$v_apache_cxf"
+            "ch.qos.logback:logback-classic:$v_logback"
     )
 
     testCompile(
@@ -127,49 +103,9 @@ dependencies {
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
 
             // MQTT client
-            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
-
-            // Socket.IO
-            "io.socket:socket.io-client:$v_socketio"
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 }
 
-def swaggerOutputDir = file('build/swagger')
 
-task smartlaneGenerateSwaggerApi {
-    def swaggerInput = file('src/main/resources/api/smartlane_openapi.yaml')
-
-    inputs.file(swaggerInput)
-    outputs.dir(swaggerOutputDir)
-    doLast {
-        def config = new CodegenConfigurator()
-        config.setInputSpec(swaggerInput.toString())
-        config.setOutputDir(swaggerOutputDir.path)
-        config.apiPackage = "org.deku.leoz.smartlane.api"
-        config.modelPackage = "org.deku.leoz.smartlane.model"
-        config.setLang('jaxrs-cxf')
-        new DefaultGenerator().opts(config.toClientOptInput()).generate()
-    }
-}
-
-task smartlaneGenerate(type: Sync) {
-    from swaggerOutputDir.toPath()
-            .resolve('src')
-            .resolve('gen')
-            .resolve('java')
-            .toFile()
-
-    into GENERATED_DIR.toPath()
-            .resolve('smartlane')
-            .toFile()
-
-    dependsOn smartlaneGenerateSwaggerApi
-}
-
-tasks.compileJava.dependsOn smartlaneGenerate
-tasks.compileKotlin.dependsOn smartlaneGenerate
-
-clean.doFirst {
-    delete(GENERATED_DIR)
-}
 

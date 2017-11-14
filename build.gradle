@@ -214,7 +214,7 @@ subprojects {
                         )
                     }
 
-                    entryCompression ZipEntryCompression.STORED
+                    entryCompression ZipEntryCompression.DEFLATED
                 }
             }
         }

@@ -1,0 +1,125 @@
+import io.swagger.codegen.config.CodegenConfigurator
+import io.swagger.codegen.DefaultGenerator
+
+group 'org.deku.leoz'
+version '0.1'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+        classpath "io.swagger:swagger-codegen:$v_swagger_codegen"
+    }
+}
+
+apply plugin: 'kotlin'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile(
+            project(':sx-common'),
+
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+    )
+
+    compileOnly(
+            // Swagger for json doc
+            "io.swagger:swagger-annotations:$v_swagger",
+            "io.swagger:swagger-jaxrs:$v_swagger",
+
+            // Socket.IO
+            "io.socket:socket.io-client:$v_socketio",
+
+            // For swagger-jaxrs generated stubs (as we currently use `jaxrs-cxf` for generation
+            // (as it's the only flavor generating non-generic return types)
+            "org.apache.cxf:cxf-rt-frontend-jaxrs:$v_apache_cxf"
+    )
+
+    testCompile(
+            "junit:junit:$v_junit",
+            "ch.qos.logback:logback-classic:$v_logback",
+
+            // Socket.IO
+            "io.socket:socket.io-client:$v_socketio"
+    )
+}
+
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
+//region Constants
+def GENERATED_DIR = file('src/generated')
+def GENERATED_SMARTLANE_DIR = new File(GENERATED_DIR, 'smartlane')
+//endregion
+
+sourceSets {
+    main {
+        java {
+            srcDirs += GENERATED_SMARTLANE_DIR
+        }
+    }
+}
+
+def swaggerOutputDir = file('build/swagger')
+
+task smartlaneGenerateSwaggerApi {
+    def swaggerInput = file('src/main/resources/smartlane_openapi.yaml')
+
+    inputs.file(swaggerInput)
+    outputs.dir(swaggerOutputDir)
+    doLast {
+        def config = new CodegenConfigurator()
+        config.setInputSpec(swaggerInput.toString())
+        config.setOutputDir(swaggerOutputDir.path)
+        config.apiPackage = "org.deku.leoz.smartlane.api"
+        config.modelPackage = "org.deku.leoz.smartlane.model"
+        config.setLang('jaxrs-cxf')
+        new DefaultGenerator().opts(config.toClientOptInput()).generate()
+    }
+}
+
+task smartlaneGenerate(type: Sync) {
+    from swaggerOutputDir.toPath()
+            .resolve('src')
+            .resolve('gen')
+            .resolve('java')
+            .toFile()
+
+    into GENERATED_DIR.toPath()
+            .resolve('smartlane')
+            .toFile()
+
+    dependsOn smartlaneGenerateSwaggerApi
+}
+
+tasks.compileJava.dependsOn smartlaneGenerate
+tasks.compileKotlin.dependsOn smartlaneGenerate
+
+clean.doFirst {
+    delete(GENERATED_DIR)
+}

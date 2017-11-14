@@ -1,11 +1,10 @@
-package org.deku.leoz.smartlane.socketio
+package org.deku.leoz.smartlane
 
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import java.net.URI
-import sx.logging.slf4j.*
 
 /**
  * Created by masc on 12.11.17.
