@@ -41,9 +41,7 @@ import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.mobile.ui.vm.SectionsAdapter
-import org.deku.leoz.model.DekuDeliveryListNumber
-import org.deku.leoz.model.UnitNumber
-import org.deku.leoz.model.assertAny
+import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
@@ -495,6 +493,10 @@ class VehicleLoadingScreen :
                                     UnitNumber.Type.Bag)
                 },
                 Observable.fromCallable {
+                    GlsUnitNumber
+                            .parseLabel(event.data)
+                },
+                Observable.fromCallable {
                     DekuDeliveryListNumber.parseLabel(event.data)
                 }
         )
@@ -514,6 +516,9 @@ class VehicleLoadingScreen :
                 when (resultValue) {
                     is UnitNumber -> {
                         this.onInput(resultValue)
+                    }
+                    is GlsUnitNumber -> {
+                        this.onInput(resultValue.toUnitNumber())
                     }
                     is DekuDeliveryListNumber -> {
                         this.onInput(resultValue)

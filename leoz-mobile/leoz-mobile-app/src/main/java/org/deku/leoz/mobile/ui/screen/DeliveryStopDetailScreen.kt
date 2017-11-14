@@ -37,11 +37,11 @@ import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
-import org.deku.leoz.model.ParcelService
-import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.*
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.Device
 import sx.android.aidc.*
@@ -348,7 +348,11 @@ class DeliveryStopDetailScreen
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result = UnitNumber.parseLabel(event.data)
+        var result: Result<Parcel> = Result(error = IllegalArgumentException(getString(R.string.error_invalid_barcode)))
+
+        try {
+            result = Result(value = Parcel.parseLabel(event.data))
+        } catch (e: IllegalArgumentException) { }
 
         when {
             result.hasError -> {
@@ -359,7 +363,7 @@ class DeliveryStopDetailScreen
                         .build().show()
             }
             else -> {
-                this.onInput(result.value)
+                this.onInput(unitNumber = result.value.number)
             }
         }
     }

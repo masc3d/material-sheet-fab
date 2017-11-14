@@ -51,13 +51,11 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
-import org.deku.leoz.model.EventDeliveredReason
-import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.ParcelService
-import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.*
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
@@ -750,10 +748,14 @@ class DeliveryStopProcessScreen :
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result = UnitNumber.parseLabel(event.data)
+        var result: Result<Parcel> = Result(error = IllegalArgumentException(getString(R.string.error_invalid_barcode)))
+
+        try {
+            result = Result(value = Parcel.parseLabel(event.data))
+        } catch (e: IllegalArgumentException) { }
 
         when {
-            result.hasError -> {
+            result!!.hasError -> {
                 feedback.warning()
 
                 this.activity.snackbarBuilder
@@ -761,7 +763,7 @@ class DeliveryStopProcessScreen :
                         .build().show()
             }
             else -> {
-                this.onInput(result.value)
+                this.onInput(unitNumber = result.value.number)
             }
         }
     }
