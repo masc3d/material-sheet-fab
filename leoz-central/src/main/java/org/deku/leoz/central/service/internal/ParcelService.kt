@@ -981,7 +981,7 @@ open class ParcelServiceV1 :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getParcelsFilledInBagByBagID(stationNo: Int, bagId: Long) {
+    override fun getParcelsFilledInBagByBagID(bagId: Long): List<ParcelServiceV1.Order2Export> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

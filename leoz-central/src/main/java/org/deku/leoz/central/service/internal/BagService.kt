@@ -23,7 +23,7 @@ import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import org.deku.leoz.central.data.repository.DepotJooqRepository
 import org.deku.leoz.central.data.repository.ParcelJooqRepository
-import org.deku.leoz.central.data.repository.toBagStatus
+import org.deku.leoz.central.data.repository.toBag
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.counter
 import org.deku.leoz.service.entity.ShortDate
@@ -97,19 +97,28 @@ class BagService : BagService {
         return n.workDate()
     }
 
-    override fun get(id: Long): BagService.BagStatus {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        //return "String Bag: $id WorkingDate: " + getWorkingDate().toString()
+    override fun get(id: Long): BagService.Bag {
         val un = UnitNumber.parseLabel(id.toString())
         when {
             un.hasError -> {
                 throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
             }
         }
-        if (un.value.type != UnitNumber.Type.Bag)
+        if (un.value.type != UnitNumber.Type.BagId)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
 
-        return depotRepository.getBagStatus(un.value.value.toLong())?.toBagStatus() ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
+        val bag=depotRepository.getBag(un.value.value.toLong())?.toBag()
+        bag  ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
+        val oid=bag.orderhub2depot
+        if(oid!=null) {
+            bag.unitNo = depotRepository.getUnitNo(oid)
+        }
+        val oidBack=bag.orderdepot2hub
+        if(oidBack!=null) {
+            bag.unitNoBack = depotRepository.getUnitNo(oidBack)
+            bag.orders2export=parcelService.getParcelsFilledInBagByBagID(oidBack)
+        }
+        return bag
     }
 
     /**
@@ -711,8 +720,5 @@ class BagService : BagService {
         return Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000
     }
 
-    override fun getParcelsFilledInBagByBagID(stationNo: Int, bagId: Long) {
-        val user = userService.get()
-        return parcelService.getParcelsFilledInBagByBagID(stationNo, bagId)
-    }
+
 }
