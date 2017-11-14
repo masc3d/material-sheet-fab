@@ -9,6 +9,7 @@ import sx.rs.proxy.RestClient
 import java.net.URI
 
 /**
+ * Rest client test configuration
  * Created by masc on 16/03/2017.
  */
 class RestClientTestFactory : RestClientFactory() {
@@ -23,7 +24,7 @@ class RestClientTestFactory : RestClientFactory() {
 
     companion object {
         val module = Kodein.Module {
-            import(RestClientFactory.module)
+            import(RestClientConfiguration.module)
 
             bind<FeignClient>() with provider {
                 instance<RestClientFactory>().create() as FeignClient
