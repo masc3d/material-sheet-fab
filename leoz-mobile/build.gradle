@@ -12,6 +12,7 @@ apply from: '../common.gradle'
 
 buildscript {
     ext {
+        v_android_gradle = '3.0.0'
         v_android_buildtools = '27.0.1'
         v_android_support = '27.0.1'
         v_android_test = '1.0.1'
@@ -34,7 +35,7 @@ buildscript {
     dependencies {
         // masc20171004. as of 3.0.0-beta7, agp must solely be included on root project level to avoid
         // local project configuration/variant resolution to work properly.
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath "com.android.tools.build:gradle:$v_android_gradle"
         classpath "sx:sx-ssh:0.1"
         classpath "sx:sx-packager-gradle:0.1"
         classpath "com.github.ben-manes:gradle-versions-plugin:0.15.0"
@@ -73,7 +74,11 @@ subprojects {
 
     // Set boot classpath for all subprojects (eliminates warning in conjunction with setting sourceCompatibility)
     tasks.withType(JavaCompile) {
-        options.bootClasspath = ManagementFactory.getRuntimeMXBean().bootClassPath
+        options.bootstrapClasspath = files(
+                ManagementFactory.getRuntimeMXBean().bootClassPath
+                        .split(":")
+                        .collect { new File(it) }
+        )
     }
 
     // Setup common sx-packager-gradle plugin properties for all subprojects
