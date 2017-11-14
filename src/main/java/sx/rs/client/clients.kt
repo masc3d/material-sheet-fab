@@ -1,4 +1,4 @@
-package sx.rs.proxy
+package sx.rs.client
 
 import feign.Client
 import feign.Feign
