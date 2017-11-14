@@ -96,7 +96,7 @@ open class DepotJooqRepository {
         return diff
     }
 
-    open fun getBagStatus(bagId: Long): SsoSMovepoolRecord? {
+    open fun getBag(bagId: Long): SsoSMovepoolRecord? {
 //        val record = dslContext.select()
 //                .from(Tables.SSO_S_MOVEPOOL)
 //                .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
@@ -105,16 +105,16 @@ open class DepotJooqRepository {
         //return record
     }
 
-//    open fun getUnitNo(orderid:Long?):Long?{
-//        if (orderid==null) return null
-//        return dslContext.select(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(Tables.TBLAUFTRAGCOLLIES)
-//                .where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble()))
-//                .fetchOne(0,Long::class.java)
-//    }
+    open fun getUnitNo(orderid:Long):Long?{
+        if (orderid==0.toLong()) return null
+        return dslContext.select(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(Tables.TBLAUFTRAGCOLLIES)
+                .where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble()))
+                .fetchOne(0,Long::class.java)
+    }
 }
 
-fun SsoSMovepoolRecord.toBagStatus(): BagService.BagStatus {
-    val status = BagService.BagStatus(
+fun SsoSMovepoolRecord.toBag(): BagService.Bag {
+    val status = BagService.Bag(
             this.bagNumber.toLong(),
             this.sealNumberGreen?.toLong(),
             //this.status?.toInt(),

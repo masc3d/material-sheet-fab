@@ -39,45 +39,35 @@ interface BagService {
         const val TEXT="text"
     }
 
-    @ApiModel(description = "Bag Status Model")
-    @Serializable(0x32028b91dda15f)
-    data class BagStatus(
-            var bagNumber: Long? = null,
-            var sealNumberGreen: Long? = null,
-            //var status: Int? = null,
-            var status: org.deku.leoz.model.BagStatus? = null,
-            var statusTimestamp: Date? = null,
-            var lastDepot: Long? = null,
-            var sealNumberYellow: Long? = null,
-            var sealNumberRed: Long? = null,
-            var orderhub2depot: Long? = null,
-            var orderdepot2hub: Long? = null,
-            var initStatus: Int = 0,
-            var workdate: Date? = null,
-            var printed: Int? = null,
-            var multibag: Int = 0,
-            var movepool: String? = null
-    )
-
     @ApiModel(description = "Bag Model")
-    @Serializable(0x9097b34565a17d)
+    @Serializable(0x32028b91dda15f)
     data class Bag(
-            var bagNumber: Long? = null,
-            var sealNumberGreen: Long? = null,
-            var status: org.deku.leoz.model.BagStatus? = null,
-            var statusTimestamp: Date? = null,
-            var lastDepot: Long? = null,
-            var sealNumberYellow: Long? = null,
-            var sealNumberRed: Long? = null,
-            var unitNo: Long? = null,
-            var unitNoBack: Long? = null,
-            var workdate: Date? = null
+            val bagNumber: Long? = null,
+            val sealNumberGreen: Long? = null,
+            //var status: Int? = null,
+            val status: org.deku.leoz.model.BagStatus? = null,
+            val statusTimestamp: Date? = null,
+            val lastStation: Long? = null,
+            val sealNumberYellow: Long? = null,
+            val sealNumberRed: Long? = null,
+            val orderhub2depot: Long? = null,
+            val orderdepot2hub: Long? = null,
+            val initStatus: Int = 0,
+            val workdate: Date? = null,
+            val printed: Int? = null,
+            val multibag: Int = 0,
+            val movepool: String? = null
+    ){
+        var unitNo: Long? = null
+        var unitNoBack: Long?=null
+        var orders2export:List<ParcelServiceV1.Order2Export> = listOf()
+    }
 
-    )
+
 
     @GET
     @Path("/{${ID}}")
-    fun get(@PathParam(ID) id: Long): BagStatus
+    fun get(@PathParam(ID) id: Long): Bag
 
     enum class ErrorCode constructor(private val mValue: Int) {
         BAG_ID_MISSING(1000),
@@ -239,11 +229,5 @@ interface BagService {
     @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNewBagLoadinglistNo(): Long
 
-    @GET
-    @Path("/{$ID}/station/{$STATION_NO}")
-    @ApiOperation(value = "Get parcels in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcelsFilledInBagByBagID(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @PathParam(ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
-    )
+
 }
