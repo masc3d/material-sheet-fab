@@ -1,6 +1,9 @@
-package sx.logging.slf4j
+package sx.log.slf4j
 
 import org.slf4j.Logger
+import org.slf4j.bridge.SLF4JBridgeHandler
+import java.util.logging.Level
+import java.util.logging.LogManager
 
 /**
  * Slf4j extensinos
@@ -24,4 +27,11 @@ fun Logger.error(it: Any?) {
 
 fun Logger.trace(it: Any?) {
     this.trace(it.toString())
+}
+
+fun Logger.installJulBridge() {
+    LogManager.getLogManager().reset()
+    SLF4JBridgeHandler.removeHandlersForRootLogger()
+    SLF4JBridgeHandler.install()
+    LogManager.getLogManager().getLogger("").setLevel(Level.FINEST);
 }
