@@ -25,7 +25,7 @@ open class NtpTime(
         TrueTimeRx.build()
                 .withSharedPreferences(this.context)
                 .withLoggingEnabled(this.trueTimeInternalLoggingEnabled)
-                .withRetryCount(this.maxRetryCount)
+                //.withRetryCount(this.maxRetryCount)
                 .initializeRx(this.ntpHost)
                 .ignoreElements()
                 .subscribeOn(Schedulers.io())
