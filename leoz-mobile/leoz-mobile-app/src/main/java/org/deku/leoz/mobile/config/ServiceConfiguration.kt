@@ -5,7 +5,7 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import org.deku.leoz.RestClientFactory
+import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.mobile.service.NotificationService
@@ -13,7 +13,7 @@ import org.deku.leoz.mobile.service.UpdateService
 import org.threeten.bp.Duration
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
-import sx.rs.proxy.FeignClient
+import sx.rs.client.FeignClient
 
 /**
  * Service configuration

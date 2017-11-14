@@ -8,7 +8,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import org.deku.leoz.RestClientFactory
+import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.SharedPreference

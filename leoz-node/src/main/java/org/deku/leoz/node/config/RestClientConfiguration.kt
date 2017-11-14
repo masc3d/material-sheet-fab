@@ -1,13 +1,10 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.RestClientFactory
 import org.deku.leoz.node.Application
-import sx.rs.proxy.RestClient
+import sx.rs.client.RestClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import sx.rs.proxy.RestEasyClient
-import java.net.URI
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 

@@ -1,15 +1,15 @@
 package org.deku.leoz.boot
 
-import com.github.salomonbrys.kodein.*
-import sx.rs.proxy.RestClient
-import sx.rs.proxy.RestEasyClient
+import org.deku.leoz.rest.RestClientFactory
+import sx.rs.client.RestClient
+import sx.rs.client.RestEasyClient
 import java.net.URI
 
 /**
  * Rest configuration
  * Created by masc on 08/11/2016.
  */
-class RestClientFactory : org.deku.leoz.RestClientFactory() {
+class RestClientFactory : RestClientFactory() {
     override fun create(
             baseUri: URI,
             ignoreSsl: Boolean,

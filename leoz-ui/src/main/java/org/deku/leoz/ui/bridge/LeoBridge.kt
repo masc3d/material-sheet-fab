@@ -6,7 +6,7 @@ import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.server.ResourceConfig
 import io.reactivex.subjects.PublishSubject
 import sx.Disposable
-import sx.rs.proxy.JerseyClient
+import sx.rs.client.JerseyClient
 import java.io.IOException
 import java.net.URI
 

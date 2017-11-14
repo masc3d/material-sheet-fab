@@ -4,7 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
-import org.deku.leoz.RestClientFactory
+import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.service.internal.*
 
 /**

@@ -1,8 +1,8 @@
 package org.deku.leoz.node.rest
 
-import org.deku.leoz.RestClientFactory
-import sx.rs.proxy.RestClient
-import sx.rs.proxy.RestEasyClient
+import org.deku.leoz.rest.RestClientFactory
+import sx.rs.client.RestClient
+import sx.rs.client.RestEasyClient
 import java.net.URI
 
 /**

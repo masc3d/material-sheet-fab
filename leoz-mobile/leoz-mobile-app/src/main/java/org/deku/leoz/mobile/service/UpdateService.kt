@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.android.ApplicationPackage
 import sx.concurrent.Service
-import sx.rs.proxy.FeignClient
+import sx.rs.client.FeignClient
 import sx.rx.ObservableRxProperty
 import sx.util.zip.verify
 import java.io.File

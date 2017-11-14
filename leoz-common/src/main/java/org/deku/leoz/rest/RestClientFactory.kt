@@ -1,17 +1,12 @@
-package org.deku.leoz
+package org.deku.leoz.rest
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.erased.bind
-import com.github.salomonbrys.kodein.erased.instance
-import com.github.salomonbrys.kodein.erased.provider
 import org.deku.leoz.config.HostConfiguration
 import org.deku.leoz.config.Rest
-import org.deku.leoz.service.internal.*
-import sx.rs.proxy.RestClient
+import sx.rs.client.RestClient
 import java.net.URI
 
 /**
- * Base class for JAX/RS REST client configurations
+ * Base class for JAX/RS REST client factories
  * Created by masc on 07/11/2016.
  */
 abstract class RestClientFactory {

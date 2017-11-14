@@ -3,9 +3,9 @@ package org.deku.leoz.config
 import com.github.salomonbrys.kodein.*
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
-import org.deku.leoz.RestClientFactory
-import sx.rs.proxy.FeignClient
-import sx.rs.proxy.RestClient
+import org.deku.leoz.rest.RestClientFactory
+import sx.rs.client.FeignClient
+import sx.rs.client.RestClient
 import java.net.URI
 
 /**

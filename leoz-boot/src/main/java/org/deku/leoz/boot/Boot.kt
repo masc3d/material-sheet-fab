@@ -8,7 +8,7 @@ import com.google.common.base.Strings
 import org.deku.leoz.Storage
 import org.deku.leoz.boot.config.BundleConfiguration
 import org.deku.leoz.bundle.*
-import sx.rs.proxy.RestClient
+import sx.rs.client.RestClient
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.DiscoveryService
 import org.slf4j.LoggerFactory

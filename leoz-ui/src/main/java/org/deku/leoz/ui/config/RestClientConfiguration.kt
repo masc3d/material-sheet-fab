@@ -9,7 +9,7 @@ import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.ui.RestClientFactory
 import org.slf4j.LoggerFactory
-import sx.rs.proxy.RestClient
+import sx.rs.client.RestClient
 
 /**
  * Created by masc on 14.11.17.

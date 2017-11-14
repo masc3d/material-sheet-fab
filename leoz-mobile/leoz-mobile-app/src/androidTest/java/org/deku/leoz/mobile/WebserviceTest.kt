@@ -3,7 +3,7 @@ package org.deku.leoz.mobile
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import org.deku.leoz.RestClientFactory
+import org.deku.leoz.mobile.rest.RestClientFactory
 
 /**
  * Created by masc on 05/02/2017.

@@ -6,7 +6,7 @@ import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.provider
 import org.deku.leoz.boot.RestClientFactory
-import sx.rs.proxy.RestClient
+import sx.rs.client.RestClient
 
 /**
  * Created by masc on 14.11.17.

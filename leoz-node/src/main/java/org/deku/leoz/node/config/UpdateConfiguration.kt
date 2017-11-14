@@ -6,7 +6,7 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
 import org.deku.leoz.node.service.internal.AuthorizationClientService
-import sx.rs.proxy.RestClient
+import sx.rs.client.RestClient
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.slf4j.LoggerFactory

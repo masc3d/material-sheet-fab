@@ -8,7 +8,7 @@ import org.deku.leoz.service.internal.BundleServiceV2
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
-import sx.rs.proxy.FeignClient
+import sx.rs.client.FeignClient
 import java.io.ByteArrayOutputStream
 
 /**

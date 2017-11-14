@@ -5,11 +5,11 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
-import org.deku.leoz.RestClientFactory
 import org.deku.leoz.config.RestClientConfiguration
+import org.deku.leoz.mobile.rest.RestClientFactory
 import org.deku.leoz.mobile.settings.RemoteSettings
 import org.slf4j.LoggerFactory
-import sx.rs.proxy.FeignClient
+import sx.rs.client.FeignClient
 
 /**
  * Rest client configuration
@@ -23,7 +23,7 @@ class RestClientConfiguration {
             import(RestClientConfiguration.module)
 
             bind<RestClientFactory>() with eagerSingleton {
-                org.deku.leoz.mobile.RestClientFactory()
+                RestClientFactory()
             }
 
             bind<FeignClient>() with provider {
