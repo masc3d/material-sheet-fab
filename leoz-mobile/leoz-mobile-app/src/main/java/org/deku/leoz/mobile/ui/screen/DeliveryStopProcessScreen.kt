@@ -44,7 +44,6 @@ import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.toMaterialSimpleListItem
-import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -67,7 +66,7 @@ import sx.android.ui.materialdialogs.addAll
 import sx.format.format
 
 /**
- * A simple [Fragment] subclass.
+ * Delivery stop process screen
  */
 class DeliveryStopProcessScreen :
         ScreenFragment<DeliveryStopProcessScreen.Parameters>(),
@@ -111,8 +110,6 @@ class DeliveryStopProcessScreen :
     private val feedback: Feedback by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
-    private val mqttEndPoints: MqttEndpoints by Kodein.global.lazy.instance()
-
     //region Model classes
     private val db: Database by Kodein.global.lazy.instance()
 
@@ -143,8 +140,8 @@ class DeliveryStopProcessScreen :
     //endregion
 
     //region Sections
-    val deliveredSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val deliveredSection: SectionViewModel<ParcelEntity> by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_delivery,
                 color = android.R.color.black,
                 background = R.drawable.section_background_green,
@@ -153,8 +150,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val pendingSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val pendingSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_stop_list,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -164,8 +161,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val orderSection by lazy {
-        SectionViewModel<OrderEntity>(
+    private val orderSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_order,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -176,8 +173,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val missingSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val missingSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_missing,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -187,8 +184,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val damagedSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val damagedSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_damaged,
                 color = android.R.color.black,
                 background = R.drawable.section_background_accent,
@@ -198,8 +195,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val excludedSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val excludedSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_split,
                 color = android.R.color.black,
                 background = R.drawable.section_background_accent,
@@ -212,8 +209,8 @@ class DeliveryStopProcessScreen :
     /**
      * Extension for creating sections from event/reason enum
      */
-    fun EventNotDeliveredReason.toSection(): SectionViewModel<ParcelEntity> {
-        return SectionViewModel<ParcelEntity>(
+    private fun EventNotDeliveredReason.toSection(): SectionViewModel<ParcelEntity> {
+        return SectionViewModel(
                 icon = this.mobile.icon,
                 color = android.R.color.black,
                 background = R.drawable.section_background_accent,
@@ -228,14 +225,14 @@ class DeliveryStopProcessScreen :
     /**
      * Section by event/reason
      */
-    val sectionByEvent by lazy {
+    private val sectionByEvent by lazy {
         mapOf(*this.deliveryStop.allowedEvents.map {
             Pair(it, it.toSection())
         }.toTypedArray())
     }
     //endregion
 
-    fun <T> SectionViewModel<T>.toFlexibleItem()
+    private fun <T> SectionViewModel<T>.toFlexibleItem()
             : VmHeaderItem<SectionViewModel<T>, Any> {
 
         return VmHeaderItem<SectionViewModel<T>, Any>(
@@ -247,7 +244,7 @@ class DeliveryStopProcessScreen :
         }
     }
 
-    fun ParcelEntity.toFlexibleItem()
+    private fun ParcelEntity.toFlexibleItem()
             : SimpleVmItem<ParcelViewModel> {
 
         return SimpleVmItem(
@@ -257,7 +254,7 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    fun OrderEntity.toFlexibleItem()
+    private fun OrderEntity.toFlexibleItem()
             : SimpleVmItem<OrderTaskViewModel> {
 
         return SimpleVmItem(
@@ -267,7 +264,7 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    private val processAdapterInstance = LazyInstance<SectionsAdapter>({
+    private val processAdapterInstance = LazyInstance({
         val adapter = SectionsAdapter()
 
         adapter.addSection(
@@ -751,7 +748,7 @@ class DeliveryStopProcessScreen :
         val result: Result<Parcel> = Parcel.parseLabel(event.data)
 
         when {
-            result!!.hasError -> {
+            result.hasError -> {
                 feedback.warning()
 
                 this.activity.snackbarBuilder
@@ -827,7 +824,7 @@ class DeliveryStopProcessScreen :
     /**
      * On valid parcel entry
      */
-    fun onParcel(parcel: ParcelEntity) {
+    private fun onParcel(parcel: ParcelEntity) {
         when (processAdapter.selectedSection) {
 
             deliveredSection, pendingSection, orderSection -> {
@@ -990,7 +987,7 @@ class DeliveryStopProcessScreen :
         }
     }
 
-    fun onEventSelected(event: EventNotDeliveredReason) {
+    private fun onEventSelected(event: EventNotDeliveredReason) {
         when {
             this.deliveryStop.allowedParcelEvents.contains(event) -> {
                 // Parcel level event
