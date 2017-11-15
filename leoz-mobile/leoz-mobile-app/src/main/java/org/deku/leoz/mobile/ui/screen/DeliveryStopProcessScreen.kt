@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui.screen
 
+import android.animation.Animator
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.graphics.Color
@@ -827,8 +828,52 @@ class DeliveryStopProcessScreen :
 
                         val runnable = object : Runnable {
                             override fun run() {
-                                sourceContainer?.startAnimation(animationDown)
-                                targetContainer?.startAnimation(animationUp)
+                                //sourceContainer?.startAnimation(animationDown)
+                                if (sourceContainer != null && targetContainer != null) {
+                                    sourceContainer.animate()
+                                            .alpha(0f)
+                                            .setListener(object: Animator.AnimatorListener {
+                                                override fun onAnimationRepeat(p0: Animator?) {
+
+                                                }
+
+                                                override fun onAnimationCancel(p0: Animator?) {
+
+                                                }
+
+                                                override fun onAnimationStart(p0: Animator?) {
+
+                                                }
+
+                                                override fun onAnimationEnd(p0: Animator?) {
+                                                    sourceContainer.animate().alpha(1f).setStartDelay(1000).start()
+                                                }
+                                            })
+                                            .start()
+
+                                    targetContainer.animate()
+                                            .translationY(-50f)
+                                            .setListener(object: Animator.AnimatorListener {
+                                                override fun onAnimationRepeat(p0: Animator?) {
+
+                                                }
+
+                                                override fun onAnimationCancel(p0: Animator?) {
+
+                                                }
+
+                                                override fun onAnimationStart(p0: Animator?) {
+
+                                                }
+
+                                                override fun onAnimationEnd(p0: Animator?) {
+                                                    targetContainer.animate().translationY(50f).setStartDelay(1000).start()
+                                                }
+                                            })
+                                            .start()
+                                }
+
+                                //targetContainer?.startAnimation(animationUp)
                                 animationHandler.postDelayed(this, 5000)
                             }
                         }
