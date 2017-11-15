@@ -102,6 +102,16 @@ interface BundleServiceV2 {
             @PathParam(VERSION) version: String
     ): Response
 
+    @GET
+    @Path("/{${NAME}}/{${ALIAS}}/latest/download")
+    @ApiOperation(value = "Download latest bundle. Only supported for android bundles (for now)")
+    @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
+    fun downloadLatest(
+            @PathParam(NAME) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,
+            @PathParam(ALIAS) alias: String,
+            @QueryParam(KEY) nodeKey: String? = null
+    ): Response
+
     @PATCH
     @Path("/clean")
     @ApiOperation(value = "Clean repository, removes all unused bundles")
