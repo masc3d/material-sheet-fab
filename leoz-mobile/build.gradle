@@ -1,9 +1,9 @@
-import java.lang.management.ManagementFactory
-
 import sx.packager.BundleRepository
-import sx.ssh.SshTunnelProvider
-import sx.ssh.SshHost
 import sx.rsync.Rsync
+import sx.ssh.SshHost
+import sx.ssh.SshTunnelProvider
+
+import java.lang.management.ManagementFactory
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
@@ -81,6 +81,14 @@ subprojects {
         )
     }
 
+    project.plugins.whenPluginAdded { plugin ->
+        if (plugin instanceof com.android.build.gradle.AppPlugin ||
+                plugin instanceof com.android.build.gradle.LibraryPlugin) {
+            tasks.cleanAll.dependsOn(tasks.clean)
+            tasks.cleanAll.dependsOn(tasks.cleanBuildCache)
+        }
+    }
+
     // Setup common sx-packager-gradle plugin properties for all subprojects
     plugins.withType(sx.packager.gradle.PackagerPlugin).whenPluginAdded {
         SshTunnelProvider mySshTunnelProvider = new SshTunnelProvider(
@@ -119,3 +127,5 @@ task clean(type: Delete) {
     group 'build'
     delete rootProject.buildDir
 }
+
+tasks.cleanAll.dependsOn(clean)
