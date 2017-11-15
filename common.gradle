@@ -10,3 +10,15 @@ task cleanGradleCache {
         new File(this.project.rootDir, '.gradle').deleteDir()
     }
 }
+
+allprojects {
+    task cleanAll {
+        group = 'build'
+        dependsOn cleanGradleCache
+    }
+
+    project.plugins.whenPluginAdded { plugin ->
+        if (plugin instanceof JavaPlugin)
+            tasks.cleanAll.dependsOn(tasks.clean)
+    }
+}
