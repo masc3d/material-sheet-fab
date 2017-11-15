@@ -77,6 +77,7 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        google()
         maven {
             url 'leoz-build/repo'
         }
