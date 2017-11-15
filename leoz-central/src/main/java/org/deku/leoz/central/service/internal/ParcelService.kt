@@ -37,6 +37,7 @@ import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.service.internal.LoadinglistService
 import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.pub.RoutingService
@@ -477,10 +478,10 @@ open class ParcelServiceV1 :
 
     }
 
-    override fun getNewLoadinglistNo(): Long {
+    override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
         val user = userService.get()
 
-        return Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 300000
+        return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 300000)
 
     }
 

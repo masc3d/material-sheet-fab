@@ -28,6 +28,7 @@ import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.counter
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.BagService
+import org.deku.leoz.service.internal.LoadinglistService
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
@@ -107,16 +108,16 @@ class BagService : BagService {
         if (un.value.type != UnitNumber.Type.BagId)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
 
-        val bag=depotRepository.getBag(un.value.value.toLong())?.toBag()
-        bag  ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
-        val oid=bag.orderhub2depot
-        if(oid!=null) {
+        val bag = depotRepository.getBag(un.value.value.toLong())?.toBag()
+        bag ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
+        val oid = bag.orderhub2depot
+        if (oid != null) {
             bag.unitNo = depotRepository.getUnitNo(oid)
         }
-        val oidBack=bag.orderdepot2hub
-        if(oidBack!=null) {
+        val oidBack = bag.orderdepot2hub
+        if (oidBack != null) {
             bag.unitNoBack = depotRepository.getUnitNo(oidBack)
-            bag.orders2export=parcelService.getParcelsFilledInBagByBagID(oidBack)
+            bag.orders2export = parcelService.getParcelsFilledInBagByBagID(oidBack)
         }
         return bag
     }
@@ -714,10 +715,10 @@ class BagService : BagService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getNewBagLoadinglistNo(): Long {
+    override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
         val user = userService.get()
 
-        return Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000
+        return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000)
     }
 
 
