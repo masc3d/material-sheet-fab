@@ -9,6 +9,8 @@ schemes:
 basePath: /api
 produces:
   - application/json
+consumes:
+  - application/json
 securityDefinitions:
   jwt:
     type: apiKey

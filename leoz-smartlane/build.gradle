@@ -30,6 +30,13 @@ dependencies {
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
+            // JSR-310
+            "org.threeten:threetenbp:1.3.6",
+
+            // REST client
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
+
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
     )
