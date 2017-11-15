@@ -35,8 +35,8 @@ interface BagService {
         const val YELLOWSEAL = "yellowseal"
         const val SECTION = "section"
         const val STATION_NO = "station-no"
-        const val REDSEAL="redseal"
-        const val TEXT="text"
+        const val REDSEAL = "redseal"
+        const val TEXT = "text"
     }
 
     @ApiModel(description = "Bag Model")
@@ -57,12 +57,11 @@ interface BagService {
             val printed: Int? = null,
             val multibag: Int = 0,
             val movepool: String? = null
-    ){
+    ) {
         var unitNo: Long? = null
-        var unitNoBack: Long?=null
-        var orders2export:List<ParcelServiceV1.Order2Export> = listOf()
+        var unitNoBack: Long? = null
+        var orders2export: List<ParcelServiceV1.Order2Export> = listOf()
     }
-
 
 
     @GET
@@ -115,9 +114,8 @@ interface BagService {
             @ApiParam(value = "Bag init request") bagInitRequest: BagInitRequest): Boolean
 
 
-
     @GET
-    @Path("/section/{${SECTION}}")
+    @Path("/section/{$SECTION}")
     @ApiOperation("Get all section depots", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
@@ -127,7 +125,7 @@ interface BagService {
             @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): List<String>
 
     @GET
-    @Path("/section/{${SECTION}}/left")
+    @Path("/section/{$SECTION}}/left")
     @ApiOperation("Get section depots left", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
@@ -145,7 +143,7 @@ interface BagService {
     fun getDiff(): List<BagDiff>
 
     @sx.rs.PATCH
-    @Path("/{${ID}}/arrival")
+    @Path("/{$ID}/arrival")
     @ApiOperation("Line Arrival", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
@@ -154,7 +152,7 @@ interface BagService {
             @ApiParam(value = "Scan id", example = "10055618") @PathParam(ID) scanId: String?): BagResponse
 
     @sx.rs.PATCH
-    @Path("/{${ID}}/in")
+    @Path("/{$ID}/in")
     @ApiOperation("Incoming bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
@@ -175,7 +173,6 @@ interface BagService {
     ): Int
 
 
-
     @PATCH
     @Path("/{$ID}/setRedSeal")
     @ApiOperation(value = "Set red seal", authorizations = arrayOf(Authorization(Rest.API_KEY)))
@@ -186,7 +183,7 @@ interface BagService {
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @QueryParam(REDSEAL) @ApiParam(value = "Red seal number", example = "900200000001", required = true) redSeal: Long,
-            @QueryParam(TEXT) @ApiParam(value="Text",required = true) text:String
+            @QueryParam(TEXT) @ApiParam(value = "Text", required = true) text: String
     )
 
     @PATCH
@@ -227,7 +224,7 @@ interface BagService {
     @POST
     @Path("/loadinglist")
     @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getNewBagLoadinglistNo(): Long
+    fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist
 
 
 }

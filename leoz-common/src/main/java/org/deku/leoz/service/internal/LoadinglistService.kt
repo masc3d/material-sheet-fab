@@ -24,7 +24,7 @@ interface LoadinglistService {
     }
 
     @Serializable(0x2e5b98b7a7694f)
-    data class Loadinglist(val loadinglistNo: Long,val orders: List<ParcelServiceV1.Order2Export> = listOf()) {
+    data class Loadinglist(val loadinglistNo: Long, val orders: List<ParcelServiceV1.Order2Export> = listOf()) {
         val loadinglistType by lazy {
             if (this.loadinglistNo < 100000)
                 LoadinglistType.BAG
@@ -33,20 +33,20 @@ interface LoadinglistService {
     }
 
 
-        @POST
-        @Path("/")
-        @ApiOperation(value = "Create new loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-        fun getNewLoadinglistNo(): Long
+    @POST
+    @Path("/")
+    @ApiOperation(value = "Create new loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getNewLoadinglistNo(): Loadinglist
 
-        @POST
-        @Path("/bag")
-        @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-        fun getNewBagLoadinglistNo(): Long
+    @POST
+    @Path("/bag")
+    @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getNewBagLoadinglistNo(): Loadinglist
 
-        @GET
-        @Path("/{$ID}")
-        @ApiOperation(value = "Get loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-        fun getParcels2ExportByLoadingList(
-                @PathParam(ID) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
-        ): Loadinglist?
-    }
+    @GET
+    @Path("/{$ID}")
+    @ApiOperation(value = "Get loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getParcels2ExportByLoadingList(
+            @PathParam(ID) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
+    ): Loadinglist?
+}

@@ -1,8 +1,8 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.model.LoadinglistType
 import org.deku.leoz.service.internal.BagService
+import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.LoadinglistService
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.UserService
@@ -15,8 +15,8 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
 @Named
-@Path("internal/v1/loadinglist")
-class LoadinglistService : org.deku.leoz.service.internal.LoadinglistService {
+@Path("internal/v1/export")
+class ExportService : org.deku.leoz.service.internal.ExportService {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
@@ -30,27 +30,23 @@ class LoadinglistService : org.deku.leoz.service.internal.LoadinglistService {
     @Inject
     private lateinit var bagService: BagService
 
+    override fun export(scanCode: String, loadingListNo: Long, stationNo: Int): Boolean {
+        return parcelService.export(scanCode, loadingListNo, stationNo)
+    }
+
+    override fun getLoadedParcels2ExportByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
+        return parcelService.getLoadedParcels2ExportByStationNo(stationNo)
+    }
+
     override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
-        val user = userService.get()
         return parcelService.getNewLoadinglistNo()
     }
 
-    override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
-        val user = userService.get()
-        return bagService.getNewBagLoadinglistNo()
+    override fun getParcels2ExportByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
+        return parcelService.getParcels2ExportByStationNo(stationNo)
     }
 
-    override fun getParcels2ExportByLoadingList(loadinglistNo: Long): LoadinglistService.Loadinglist? {
-        val user = userService.get()
-        val orders = parcelService.getParcels2ExportByLoadingList(loadinglistNo)
-        if (orders.count() == 0)
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "No orders found"
-            )
-        val loadinglist = LoadinglistService.Loadinglist(loadinglistNo = loadinglistNo, orders = orders)
-
-        return loadinglist
+    override fun getParcels2ExportInBagByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
+        return parcelService.getParcels2ExportInBagByStationNo(stationNo)
     }
-
 }

@@ -111,7 +111,7 @@ interface ParcelServiceV1 {
     @POST
     @Path("/loadinglist")
     @ApiOperation(value = "Create new loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getNewLoadinglistNo(): Long
+    fun getNewLoadinglistNo(): LoadinglistService.Loadinglist
 
     @GET
     @Path("/export/loadinglist/{$LOADINGLIST_NO}")
