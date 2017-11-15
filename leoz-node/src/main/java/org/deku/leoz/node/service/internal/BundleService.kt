@@ -160,6 +160,7 @@ open class BundleServiceV1 : BundleServiceV1 {
 @Path("internal/v2/bundle")
 @Api(value = "Bundle operations")
 open class BundleServiceV2 : BundleServiceV2 {
+
     @Inject
     protected lateinit var bundleServiceV1: BundleServiceV1
 
@@ -174,6 +175,19 @@ open class BundleServiceV2 : BundleServiceV2 {
         return bundleServiceV1.download(
                 bundleName = bundleName,
                 version = version
+        )
+    }
+
+    override fun downloadLatest(bundleName: String, alias: String, nodeKey: String?): Response {
+        val currentBundleInfo = this.info(
+                bundleName = bundleName,
+                versionAlias = alias,
+                nodeKey = nodeKey
+        )
+
+        return this.download(
+                bundleName = bundleName,
+                version = currentBundleInfo.latestDesignatedVersion!!
         )
     }
 
