@@ -26,6 +26,10 @@ class RestClientConfiguration {
                 RestClientFactory()
             }
 
+            bind<org.deku.leoz.rest.RestClientFactory>() with eagerSingleton {
+                instance<RestClientFactory>()
+            }
+
             bind<FeignClient>() with provider {
                 instance<RestClientFactory>().create() as FeignClient
             }
