@@ -36,8 +36,7 @@ import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.mobile.ui.vm.SectionsAdapter
-import org.deku.leoz.model.UnitNumber
-import org.deku.leoz.model.assertAny
+import org.deku.leoz.model.*
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
@@ -417,19 +416,7 @@ class VehicleUnloadingScreen :
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result = Observable.concat(
-                Observable.fromCallable {
-                    UnitNumber
-                            .parseLabel(event.data)
-                            .assertAny(
-                                    UnitNumber.Type.Parcel,
-                                    UnitNumber.Type.Bag)
-                },
-                Observable.empty()
-        )
-                .takeUntil { !it.hasError }
-                .last(Result(error = IllegalArgumentException("Invalid barcode")))
-                .blockingGet()
+        val result: Result<org.deku.leoz.model.Parcel> = org.deku.leoz.model.Parcel.parseLabel(event.data)
 
         when {
             result.hasError -> {
@@ -438,7 +425,7 @@ class VehicleUnloadingScreen :
                         .build().show()
             }
             else -> {
-                this.onInput(result.value)
+                this.onInput(unitNumber = result.value.number)
             }
         }
     }

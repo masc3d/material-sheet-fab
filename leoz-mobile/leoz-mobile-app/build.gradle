@@ -16,7 +16,7 @@ buildscript {
     }
 
     ext {
-        v_android_gms = '11.4.2'
+        v_android_gms = '11.6.0'
         v_anko = '0.10.2'
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.5.0'
@@ -247,7 +247,7 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
-            'com.github.pwittchen:reactivenetwork-rx2:0.12.1',
+            'com.github.pwittchen:reactivenetwork-rx2:0.12.2',
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:$v_kryo") {
@@ -277,6 +277,17 @@ dependencies {
             // TrueTime
             "com.github.instacart.truetime-android:library:$v_truetime",
             "com.github.instacart.truetime-android:library-extension-rx:$v_truetime",
+
+            // For swagger jaxrs annotations
+            dependencies.create("io.swagger:swagger-jaxrs:$v_swagger") {
+                transitive false
+            },
+
+            // Socket.IO
+            dependencies.create("io.socket:socket.io-client:$v_socketio") {
+                // excluding org.json which is provided by Android
+                exclude group: 'org.json', module: 'json'
+            },
 
             //
             // FOR TESTING
@@ -362,7 +373,7 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:3.0.0"
+            "com.android.databinding:compiler:$v_android_gradle"
     )
 }
 

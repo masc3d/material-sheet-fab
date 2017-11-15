@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.logging.slf4j.info
+import sx.log.slf4j.info
 import sx.rsync.Rsync
 import sx.rsync.RsyncServer
 import java.io.File

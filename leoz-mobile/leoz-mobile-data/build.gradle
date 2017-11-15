@@ -8,6 +8,7 @@ buildscript {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'idea'
 
@@ -71,7 +72,7 @@ dependencies {
 
     kapt(
             "io.requery:requery-processor:$v_requery",
-            "com.android.databinding:compiler:3.0.0"
+            "com.android.databinding:compiler:$v_android_gradle"
     )
 
     testImplementation(

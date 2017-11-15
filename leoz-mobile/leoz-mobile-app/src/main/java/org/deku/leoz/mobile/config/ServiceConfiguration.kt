@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
+import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.mobile.service.NotificationService
@@ -12,7 +13,7 @@ import org.deku.leoz.mobile.service.UpdateService
 import org.threeten.bp.Duration
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
-import sx.rs.proxy.FeignClientProxy
+import sx.rs.client.FeignClient
 
 /**
  * Service configuration
@@ -63,7 +64,7 @@ class ServiceConfiguration {
 
                 val settings = Settings(instance<ConfigurationMap>())
 
-                val restClientConfiguration: org.deku.leoz.config.RestClientConfiguration = instance()
+                val restClientFactory: RestClientFactory = instance()
 
                 val service = UpdateService(
                         executorService = instance(),
@@ -71,13 +72,13 @@ class ServiceConfiguration {
                         versionAlias = settings.versionAlias,
                         identity = instance(),
                         period = Duration.ofSeconds(settings.period.toLong()),
-                        restClientProxy = restClientConfiguration.createClientProxy(
-                                uri = restClientConfiguration.createUri(
+                        restClient = restClientFactory.create(
+                                uri = restClientFactory.createUri(
                                         host = settings.remote.host,
                                         port = settings.remote.http.port,
                                         https = settings.remote.http.ssl
                                 )
-                        ) as FeignClientProxy
+                        ) as FeignClient
                 )
 
                 service.force = settings.force

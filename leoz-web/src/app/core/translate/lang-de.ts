@@ -315,5 +315,12 @@ export const LANG_DE_TRANS = {
   'total_vol_Weight': 'Gesamt Vol. Gewicht',
   'ipointListcan': 'I-Punkt Listenscan',
   'packages_to_scan': 'Packstücke zu scannen',
+  // tourzipmapping
+  'tourzipmapping': 'Tour/PLZ Zuordnung',
+  'driverNo': 'Fahrer Nr',
+  'drivername': 'Fahrername',
+  'fromZip': 'von PLZ',
+  'toZip': 'nach PLZ',
+  'setnewArea': 'neuen Bereich festlegen',
 };
 

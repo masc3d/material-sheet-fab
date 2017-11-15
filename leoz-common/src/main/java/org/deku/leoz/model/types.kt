@@ -504,3 +504,9 @@ enum class BagStatus(val value:Int){
     CLOSED_FROM_HUB(value = 6),
     OPENED(value=5)
 }
+
+enum class LoadinglistType{
+    NORMAL,
+    BAG
+}
+

@@ -248,6 +248,9 @@ dependencies {
             // joda time (spring-5.0 requirement)
             "joda-time:joda-time:2.9.9",
 
+            // Socket.IO
+            "io.socket:socket.io-client:$v_socketio",
+
             // TODO: for testing jinq
             "org.jinq:jinq-jpa:+",
 

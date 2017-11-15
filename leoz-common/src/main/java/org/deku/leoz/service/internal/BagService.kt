@@ -10,6 +10,7 @@ import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagNumberRange
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
+import sx.io.serialization.Serializable
 import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import java.util.*
@@ -38,43 +39,35 @@ interface BagService {
         const val TEXT="text"
     }
 
-    @ApiModel(description = "Bag Status Model")
-    data class BagStatus(
-            var bagNumber: Long? = null,
-            var sealNumberGreen: Long? = null,
-            //var status: Int? = null,
-            var status: org.deku.leoz.model.BagStatus? = null,
-            var statusTimestamp: Date? = null,
-            var lastDepot: Long? = null,
-            var sealNumberYellow: Long? = null,
-            var sealNumberRed: Long? = null,
-            var orderhub2depot: Long? = null,
-            var orderdepot2hub: Long? = null,
-            var initStatus: Int = 0,
-            var workdate: Date? = null,
-            var printed: Int? = null,
-            var multibag: Int = 0,
-            var movepool: String? = null
-    )
-
     @ApiModel(description = "Bag Model")
+    @Serializable(0x32028b91dda15f)
     data class Bag(
-            var bagNumber: Long? = null,
-            var sealNumberGreen: Long? = null,
-            var status: org.deku.leoz.model.BagStatus? = null,
-            var statusTimestamp: Date? = null,
-            var lastDepot: Long? = null,
-            var sealNumberYellow: Long? = null,
-            var sealNumberRed: Long? = null,
-            var unitNo: Long? = null,
-            var unitNoBack: Long? = null,
-            var workdate: Date? = null
+            val bagNumber: Long? = null,
+            val sealNumberGreen: Long? = null,
+            //var status: Int? = null,
+            val status: org.deku.leoz.model.BagStatus? = null,
+            val statusTimestamp: Date? = null,
+            val lastStation: Long? = null,
+            val sealNumberYellow: Long? = null,
+            val sealNumberRed: Long? = null,
+            val orderhub2depot: Long? = null,
+            val orderdepot2hub: Long? = null,
+            val initStatus: Int = 0,
+            val workdate: Date? = null,
+            val printed: Int? = null,
+            val multibag: Int = 0,
+            val movepool: String? = null
+    ){
+        var unitNo: Long? = null
+        var unitNoBack: Long?=null
+        var orders2export:List<ParcelServiceV1.Order2Export> = listOf()
+    }
 
-    )
+
 
     @GET
     @Path("/{${ID}}")
-    fun get(@PathParam(ID) id: Long): BagStatus
+    fun get(@PathParam(ID) id: Long): Bag
 
     enum class ErrorCode constructor(private val mValue: Int) {
         BAG_ID_MISSING(1000),
@@ -124,23 +117,23 @@ interface BagService {
 
 
     @GET
-    @Path("/section/{${ID}}")
+    @Path("/section/{${SECTION}}")
     @ApiOperation("Get all section depots", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getSectionDepots(
-            @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
+            @ApiParam(value = "Section", example = "1") @PathParam(SECTION) section: Int?,
             @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): List<String>
 
     @GET
-    @Path("/section/{${ID}}/left")
+    @Path("/section/{${SECTION}}/left")
     @ApiOperation("Get section depots left", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun getSectionDepotsLeft(
-            @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
+            @ApiParam(value = "Section", example = "1") @PathParam(SECTION) section: Int?,
             @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): SectionDepotsLeft
 
     @GET
@@ -233,14 +226,8 @@ interface BagService {
 
     @POST
     @Path("/loadinglist")
-    @ApiOperation(value = "Get new loadinglist-no for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNewBagLoadinglistNo(): Long
 
-    @GET
-    @Path("/{$ID}/station/{$STATION_NO}")
-    @ApiOperation(value = "Get parcels in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcelsFilledInBagByBagID(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @PathParam(ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
-    )
+
 }

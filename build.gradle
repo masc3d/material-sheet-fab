@@ -90,7 +90,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
 
         classpath(
-                "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0",
                 'com.github.ben-manes:gradle-versions-plugin:0.15.0',
                 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
         )
@@ -150,7 +149,11 @@ subprojects {
 
     // Set boot classpath for all subprojects (eliminates warning in conjunction with setting sourceCompatibility)
     tasks.withType(JavaCompile) {
-        options.bootClasspath = ManagementFactory.getRuntimeMXBean().bootClassPath
+        options.bootstrapClasspath = files(
+                ManagementFactory.getRuntimeMXBean().bootClassPath
+                        .split(":")
+                        .collect { new File(it) }
+        )
     }
 
     ext {
@@ -183,8 +186,8 @@ subprojects {
 
         project.idea {
             module {
-                outputDir = project.sourceSets.main.output.classesDir
-                testOutputDir = project.sourceSets.test.output.classesDir
+                outputDir = project.sourceSets.main.output.classesDirs.first()
+                testOutputDir = project.sourceSets.test.output.classesDirs.first()
             }
         }
         //endregion
@@ -211,13 +214,10 @@ subprojects {
                         )
                     }
 
-                    entryCompression ZipEntryCompression.STORED
+                    entryCompression ZipEntryCompression.DEFLATED
                 }
             }
         }
-
-        // Analzye tasks (analyze* for showing unused dependencies eg.)
-        project.apply plugin: 'ca.cutterslade.analyze'
 
         // Remove dependency to check task, as analysis plugin is good for hinting at dependency, but there's also false positives
         check.dependsOn.remove('analyzeDependencies')

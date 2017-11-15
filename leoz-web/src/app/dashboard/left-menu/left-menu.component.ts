@@ -182,7 +182,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'record-order' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/order',
           command: closeMenu
         },
         {
@@ -236,13 +236,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'tourplanning' ),
           icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'driver' ),
-          icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/tourzipmapping',
           command: closeMenu
         },
         {
@@ -255,12 +249,6 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
           label: this.translate.instant( 'deliveryscan' ),
           icon: '',
           routerLink: '/dashboard/deliveryscan',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'driver-assignment' ),
-          icon: '',
-          routerLink: '',
           command: closeMenu
         },
       ]

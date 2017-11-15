@@ -39,7 +39,7 @@ export class StationloadingComponent extends AbstractTranslateComponent implemen
       routerLink: 'loadinglistscan'
     } );
 
-    if(activeStation && activeStation.exportValuablesAllowed) {
+    if (activeStation && activeStation.exportValuablesAllowed) {
       items.push( {
         label: this.translate.instant( 'bagscan' ),
         icon: '',

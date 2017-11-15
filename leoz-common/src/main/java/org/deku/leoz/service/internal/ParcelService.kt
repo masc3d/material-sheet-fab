@@ -110,7 +110,7 @@ interface ParcelServiceV1 {
 
     @POST
     @Path("/loadinglist")
-    @ApiOperation(value = "Get new loadinglist-no", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Create new loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNewLoadinglistNo(): Long
 
     @GET
@@ -168,12 +168,11 @@ interface ParcelServiceV1 {
     ): List<ParcelStatus>
 
     @GET
-    @Path("/export/bag/{$BAG_ID}/station/{$STATION_NO}")
+    @Path("/export/bag/{$BAG_ID}")
     @ApiOperation(value = "Get parcels in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcelsFilledInBagByBagID(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
-    )
+    ):List<ParcelServiceV1.Order2Export>
 
 
 }

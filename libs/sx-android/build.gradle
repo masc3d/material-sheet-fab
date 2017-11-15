@@ -5,14 +5,15 @@ buildscript {
     }
 
     ext {
+        v_android_gradle = '3.0.0'
         v_android_buildtools = '27.0.1'
         v_android_support = '27.0.0'
         v_android_test = '1.0.1'
-        v_android_gms = '11.4.2'
+        v_android_gms = '11.6.0'
         v_anko = '0.10.2'
         v_javamail = '1.6.0'
         v_junit = '4.12'
-        v_kotlin = '1.1.51'
+        v_kotlin = '1.1.60'
         v_material_dialogs = '0.9.5.0'
         v_ormlite = '5.0'
         v_paho = '1.1.1'
@@ -25,8 +26,11 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
@@ -40,6 +44,7 @@ repositories {
 android {
     compileSdkVersion 27
     buildToolsVersion v_android_buildtools
+
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 27
@@ -66,7 +71,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-
 
         debug {
             minifyEnabled false
@@ -130,7 +134,7 @@ dependencies {
             "com.afollestad.material-dialogs:commons:$v_material_dialogs",
 
             // ReactiveNetwork
-            "com.github.pwittchen:reactivenetwork-rx2:0.12.1",
+            "com.github.pwittchen:reactivenetwork-rx2:0.12.2",
 
             // Flexible adapter
             "eu.davidea:flexible-adapter:5.0.0-rc3",
@@ -169,5 +173,9 @@ dependencies {
             },
 
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+    )
+
+    kapt(
+            "com.android.databinding:compiler:$v_android_gradle"
     )
 }

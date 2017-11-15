@@ -1,10 +1,9 @@
-package sx.rs.proxy
+package sx.rs.client
 
 import feign.Client
 import feign.Feign
 import feign.Request
 import feign.Retryer
-import feign.jackson.JacksonDecoder
 import feign.jaxrs.JAXRSContract
 import feign.okhttp.OkHttpClient
 import org.glassfish.jersey.client.ClientProperties
@@ -41,7 +40,7 @@ private class IgnoringX509TrustManager : X509TrustManager {
  * @property ignoreSslCertificate Ignore SSL certificates
  * Created by masc on 06/11/2016.
  */
-abstract class RestClientProxy(
+abstract class RestClient(
         val baseUri: URI,
         val ignoreSslCertificate: Boolean = false) {
 
@@ -54,15 +53,15 @@ abstract class RestClientProxy(
         ignoringCertificateSslContext
     }
 
-    abstract fun <T> create(serviceClass: Class<T>): T
+    abstract fun <T> proxy(serviceClass: Class<T>): T
 }
 
 /**
  * Jersey client proxy implementation
  */
-class JerseyClientProxy(
+class JerseyClient(
         baseUri: URI,
-        ignoreSslCertificate: Boolean = false) : RestClientProxy(baseUri, ignoreSslCertificate) {
+        ignoreSslCertificate: Boolean = false) : RestClient(baseUri, ignoreSslCertificate) {
 
     private val client by lazy {
         var clientBuilder = JerseyClientBuilder()
@@ -78,7 +77,7 @@ class JerseyClientProxy(
     }
 
 
-    override fun <T> create(serviceClass: Class<T>): T {
+    override fun <T> proxy(serviceClass: Class<T>): T {
         val webTarget = this.client.target(baseUri)
         return WebResourceFactory.newResource(serviceClass, webTarget)
     }
@@ -87,9 +86,9 @@ class JerseyClientProxy(
 /**
  * RESTEasy client proxy implementation
  */
-class RestEasyClientProxy(
+class RestEasyClient(
         baseUri: URI,
-        ignoreSslCertificate: Boolean = false) : RestClientProxy(baseUri, ignoreSslCertificate) {
+        ignoreSslCertificate: Boolean = false) : RestClient(baseUri, ignoreSslCertificate) {
 
     private val client by lazy {
         var clientBuilder = ResteasyClientBuilder()
@@ -104,7 +103,7 @@ class RestEasyClientProxy(
         clientBuilder.build()
     }
 
-    override fun <T> create(serviceClass: Class<T>): T {
+    override fun <T> proxy(serviceClass: Class<T>): T {
         val webTarget: ClientWebTarget = this.client.target(baseUri) as ClientWebTarget
 
         // return webTarget.proxy(serviceClass)
@@ -120,13 +119,13 @@ class RestEasyClientProxy(
 /**
  * Feign client proxy implementation
  */
-class FeignClientProxy(
+class FeignClient(
         baseUri: URI,
         ignoreSslCertificate: Boolean = false,
         val headers: Map<String, String>? = null,
         val encoder: feign.codec.Encoder,
         val decoder: feign.codec.Decoder)
-    : RestClientProxy(baseUri, ignoreSslCertificate) {
+    : RestClient(baseUri, ignoreSslCertificate) {
 
     /**
      * A client without https cerfificate validation
@@ -171,7 +170,7 @@ class FeignClientProxy(
                 }
     }
 
-    override fun <T> create(serviceClass: Class<T>): T =
+    override fun <T> proxy(serviceClass: Class<T>): T =
             this.builder.target(serviceClass, this.baseUri.toString())
 
     /**
@@ -184,7 +183,7 @@ class FeignClientProxy(
 
         return this.builder.decoder(
                 sx.feign.StreamDecoder(
-                        fallbackDecoder = this@FeignClientProxy.decoder,
+                        fallbackDecoder = this@FeignClient.decoder,
                         output = output,
                         progressCallback = progressCallback
                 ))

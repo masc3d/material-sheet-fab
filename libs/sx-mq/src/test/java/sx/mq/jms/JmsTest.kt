@@ -7,7 +7,7 @@ import com.github.salomonbrys.kodein.lazy
 import org.junit.After
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.logging.slf4j.info
+import sx.log.slf4j.info
 import sx.mq.MqBroker
 import sx.mq.config.MqTestConfiguration
 import javax.jms.ConnectionFactory

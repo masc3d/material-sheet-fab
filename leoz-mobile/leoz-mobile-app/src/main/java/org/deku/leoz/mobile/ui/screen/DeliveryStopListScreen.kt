@@ -41,9 +41,13 @@ import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
+import org.deku.leoz.model.GlsUnitNumber
+import org.deku.leoz.model.Parcel
 import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.toUnitNumber
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.rx.observeOnMainThread
@@ -470,14 +474,17 @@ class DeliveryStopListScreen
 
         })
 
+        val pendingStopCount = this.delivery.pendingStops.blockingFirst().value.count()
+        val closedStopCount = this.delivery.closedStops.blockingFirst().value.count()
+
         when (this.stopType) {
             Stop.State.PENDING -> {
-                if (this.delivery.pendingStops.blockingFirst().value.count() == 0)
+                if (pendingStopCount == 0)
                     this.stopType = Stop.State.CLOSED
             }
 
             Stop.State.CLOSED -> {
-                if (this.delivery.closedStops.blockingFirst().value.count() == 0)
+                if (closedStopCount == 0)
                     this.stopType = Stop.State.PENDING
             }
 
@@ -590,7 +597,7 @@ class DeliveryStopListScreen
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result = UnitNumber.parseLabel(event.data)
+        val result: Result<Parcel> = Parcel.parseLabel(event.data)
 
         when {
             result.hasError -> {
@@ -601,7 +608,7 @@ class DeliveryStopListScreen
                         .build().show()
             }
             else -> {
-                this.onInput(result.value)
+                this.onInput(unitNumber = result.value.number)
             }
         }
     }

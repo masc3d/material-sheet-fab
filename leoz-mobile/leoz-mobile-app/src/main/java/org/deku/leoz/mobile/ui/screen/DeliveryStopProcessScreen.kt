@@ -4,6 +4,7 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.app.FragmentManager
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
@@ -30,7 +31,6 @@ import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_delivery_process.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding
@@ -48,31 +48,29 @@ import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.toMaterialSimpleListItem
-import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.*
-import org.deku.leoz.model.EventDeliveredReason
-import org.deku.leoz.model.EventNotDeliveredReason
-import org.deku.leoz.model.ParcelService
-import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.*
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
-import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
+import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.materialdialogs.addAll
 import sx.format.format
 
 /**
- * A simple [Fragment] subclass.
+ * Delivery stop process screen
  */
 class DeliveryStopProcessScreen :
         ScreenFragment<DeliveryStopProcessScreen.Parameters>(),
@@ -116,8 +114,6 @@ class DeliveryStopProcessScreen :
     private val feedback: Feedback by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
-    private val mqttEndPoints: MqttEndpoints by Kodein.global.lazy.instance()
-
     //region Model classes
     private val db: Database by Kodein.global.lazy.instance()
 
@@ -148,8 +144,8 @@ class DeliveryStopProcessScreen :
     //endregion
 
     //region Sections
-    val deliveredSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val deliveredSection: SectionViewModel<ParcelEntity> by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_delivery,
                 color = android.R.color.black,
                 background = R.drawable.section_background_green,
@@ -158,8 +154,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val pendingSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val pendingSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_stop_list,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -169,8 +165,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val orderSection by lazy {
-        SectionViewModel<OrderEntity>(
+    private val orderSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_order,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -181,8 +177,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val missingSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val missingSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_missing,
                 color = R.color.colorGrey,
                 background = R.drawable.section_background_grey,
@@ -192,8 +188,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val damagedSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val damagedSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_damaged,
                 color = android.R.color.black,
                 background = R.drawable.section_background_accent,
@@ -203,8 +199,8 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    val excludedSection by lazy {
-        SectionViewModel<ParcelEntity>(
+    private val excludedSection by lazy {
+        SectionViewModel(
                 icon = R.drawable.ic_split,
                 color = android.R.color.black,
                 background = R.drawable.section_background_accent,
@@ -217,8 +213,8 @@ class DeliveryStopProcessScreen :
     /**
      * Extension for creating sections from event/reason enum
      */
-    fun EventNotDeliveredReason.toSection(): SectionViewModel<ParcelEntity> {
-        return SectionViewModel<ParcelEntity>(
+    private fun EventNotDeliveredReason.toSection(): SectionViewModel<ParcelEntity> {
+        return SectionViewModel(
                 icon = this.mobile.icon,
                 color = android.R.color.black,
                 background = R.drawable.section_background_accent,
@@ -233,14 +229,14 @@ class DeliveryStopProcessScreen :
     /**
      * Section by event/reason
      */
-    val sectionByEvent by lazy {
+    private val sectionByEvent by lazy {
         mapOf(*this.deliveryStop.allowedEvents.map {
             Pair(it, it.toSection())
         }.toTypedArray())
     }
     //endregion
 
-    fun <T> SectionViewModel<T>.toFlexibleItem()
+    private fun <T> SectionViewModel<T>.toFlexibleItem()
             : VmHeaderItem<SectionViewModel<T>, Any> {
 
         return VmHeaderItem<SectionViewModel<T>, Any>(
@@ -252,7 +248,7 @@ class DeliveryStopProcessScreen :
         }
     }
 
-    fun ParcelEntity.toFlexibleItem()
+    private fun ParcelEntity.toFlexibleItem()
             : SimpleVmItem<ParcelViewModel> {
 
         return SimpleVmItem(
@@ -262,7 +258,7 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    fun OrderEntity.toFlexibleItem()
+    private fun OrderEntity.toFlexibleItem()
             : SimpleVmItem<OrderTaskViewModel> {
 
         return SimpleVmItem(
@@ -272,7 +268,7 @@ class DeliveryStopProcessScreen :
         )
     }
 
-    private val processAdapterInstance = LazyInstance<SectionsAdapter>({
+    private val processAdapterInstance = LazyInstance({
         val adapter = SectionsAdapter()
 
         adapter.addSection(
@@ -753,7 +749,7 @@ class DeliveryStopProcessScreen :
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result = UnitNumber.parseLabel(event.data)
+        val result: Result<Parcel> = Parcel.parseLabel(event.data)
 
         when {
             result.hasError -> {
@@ -764,7 +760,7 @@ class DeliveryStopProcessScreen :
                         .build().show()
             }
             else -> {
-                this.onInput(result.value)
+                this.onInput(unitNumber = result.value.number)
             }
         }
     }
@@ -867,7 +863,7 @@ class DeliveryStopProcessScreen :
     /**
      * On valid parcel entry
      */
-    fun onParcel(parcel: ParcelEntity) {
+    private fun onParcel(parcel: ParcelEntity) {
         when (processAdapter.selectedSection) {
 
             deliveredSection, pendingSection, orderSection -> {
@@ -931,9 +927,11 @@ class DeliveryStopProcessScreen :
                         onComplete = {
                             this.delivery.activeStop = null
 
+                            val isLastPendingStop = this.delivery.pendingStops.blockingFirst().value.count() == 0
+
                             this.activity.supportFragmentManager.popBackStack(
                                     DeliveryStopListScreen::class.java.canonicalName,
-                                    0)
+                                    if (isLastPendingStop) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0)
                         },
                         onError = {
                             log.error(it.message, it)
@@ -1021,23 +1019,14 @@ class DeliveryStopProcessScreen :
                         }
                     }
                     else -> {
-                        this.deliveryStop.finalize()
-                                .observeOnMainThread()
-                                .subscribeBy(
-                                        onComplete = {
-                                            // TODO: move state control to model
-                                            this.activity.supportFragmentManager.popBackStack(DeliveryStopListScreen::class.java.canonicalName, 0)
-                                        },
-                                        onError = {
-                                            log.error(it.message, it)
-                                        })
+                        this.finalizeStop()
                     }
                 }
             }
         }
     }
 
-    fun onEventSelected(event: EventNotDeliveredReason) {
+    private fun onEventSelected(event: EventNotDeliveredReason) {
         when {
             this.deliveryStop.allowedParcelEvents.contains(event) -> {
                 // Parcel level event

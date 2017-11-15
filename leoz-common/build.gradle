@@ -60,13 +60,14 @@ dependencies {
 
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
+            "io.swagger:swagger-jaxrs:$v_swagger",
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
 
             // JAX-RS
-            "javax.ws.rs:javax.ws.rs-api:2.0.1",
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
 
             // REST
             "io.github.openfeign:feign-core:$v_feign",
@@ -105,4 +106,6 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 }
+
+
 

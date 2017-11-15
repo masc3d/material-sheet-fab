@@ -7,6 +7,7 @@ import org.deku.leoz.service.internal.DiscoveryInfo
 import org.deku.leoz.service.internal.DiscoveryService
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.ui.RestClientFactory
 import sx.net.UdpDiscoveryService
 import kotlin.properties.Delegates
 
@@ -34,8 +35,8 @@ class ConnectionConfiguration {
     }
 
     // Injections
-    val restConfiguration: RestClientConfiguration by Kodein.global.lazy.instance()
-    val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
+    private val restClientFactory: RestClientFactory by Kodein.global.lazy.instance()
+    private val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
 
     class NodeUpdatedEvent(
             val node: UdpDiscoveryService.Node<DiscoveryInfo>? = null
@@ -60,7 +61,7 @@ class ConnectionConfiguration {
 
         if (oldHost != newHost) {
             // Delegate setting to configurations
-            this.restConfiguration.host = newHost
+            this.restClientFactory.host = newHost
             this.bundleConfiguration.rsyncHost = newHost
             log.info("Updated remote host to [${newHost}]")
 

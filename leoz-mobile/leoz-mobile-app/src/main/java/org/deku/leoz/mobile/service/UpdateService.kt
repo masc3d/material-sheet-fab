@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.android.ApplicationPackage
 import sx.concurrent.Service
-import sx.rs.proxy.FeignClientProxy
+import sx.rs.client.FeignClient
 import sx.rx.ObservableRxProperty
 import sx.util.zip.verify
 import java.io.File
@@ -32,7 +32,7 @@ import java.util.zip.ZipFile
  * @property versionAlias Bundle version alias override
  * @property identity This node's identity
  * @param period Update period interval
- * @param restClientProxy Feign client proxy to use
+ * @param restClient Feign client proxy to use
  * Created by masc on 10/02/2017.
  */
 class UpdateService(
@@ -41,7 +41,7 @@ class UpdateService(
         val versionAlias: String? = null,
         val identity: Identity,
         period: Duration,
-        private val restClientProxy: FeignClientProxy
+        private val restClient: FeignClient
 ) : Service(
         executorService = executorService,
         initialDelay = Duration.ofSeconds(1),
@@ -127,7 +127,7 @@ class UpdateService(
         log.info("Update cycle [${bundleName}] version alias [${this.versionAlias}] node uid [${this.identity.shortUid}]")
 
         try {
-            val bundleService = this.restClientProxy.create(BundleServiceV2::class.java)
+            val bundleService = this.restClient.proxy(BundleServiceV2::class.java)
 
             val updateInfo = bundleService.info(
                     bundleName = this.bundleName,
@@ -172,7 +172,7 @@ class UpdateService(
                 // For binary response stream, need to build target manually, so we can inject a decoder implementation
 
                 FileOutputStream(downloadFile).use { stream ->
-                    restClientProxy.target(
+                    restClient.target(
                             apiType = BundleServiceV2::class.java,
                             output = stream,
                             progressCallback = { p: Float, bytesCopied: Long ->

@@ -11,7 +11,7 @@ import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
 import sx.mq.MqHandler
-import sx.logging.slf4j.info
+import sx.log.slf4j.info
 import sx.time.toTimestamp
 import java.text.DecimalFormat
 import java.util.*
