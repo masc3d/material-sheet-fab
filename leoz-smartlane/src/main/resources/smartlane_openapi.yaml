@@ -1659,7 +1659,7 @@ paths:
         - in: query
           name: numvehicles
           description: "fix maximum number of tours that can be planned. If this parameter is set to a specific value, the actual number of drivers in the system will be ignored. No route will be calculated if this value is not enough for the necessary number of tours."
-          default: number of driver objects in the system. If there are no drivers in the system, a maximum of 5 is assumed.
+          default: 0
           type: integer
           format: int32
           required: false
