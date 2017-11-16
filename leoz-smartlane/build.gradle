@@ -62,7 +62,8 @@ dependencies {
             "ch.qos.logback:logback-classic:$v_logback",
 
             // Socket.IO
-            "io.socket:socket.io-client:$v_socketio"
+            "io.socket:socket.io-client:$v_socketio",
+            "io.swagger:swagger-jaxrs:$v_swagger"
     )
 }
 
