@@ -46,7 +46,7 @@ class Connectivity(
                 // Connection timeout
                 Duration.ofSeconds(5).toMillis().toInt(),
                 // Empty error handler to suppress failed connection message spam
-                { e, m -> }
+                { _, _ -> }
         )
                 .subscribeOn(Schedulers.io())
     }

@@ -6,7 +6,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.slf4j.LoggerFactory
-import sx.logging.slf4j.info
+import sx.log.slf4j.info
 import java.io.File
 import java.util.*
 
