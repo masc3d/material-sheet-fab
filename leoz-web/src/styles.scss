@@ -209,11 +209,13 @@ input.ng-valid, select.ng-valid, p-dropdown.ng-valid > div > label {
   padding: 0;
   height: 30px;
 }
+
 /*** overwriting styles from primeng **/
 /* Input, Textarea */
 input, textarea, .inputField {
   border:1px solid darkgrey;
   padding-left: 4px;
+  width: calc(100% - 4px);
 }
 /* Input */
 input {
@@ -221,6 +223,10 @@ input {
 }
 .inputField {
   height: auto;
+}
+/* Dropdown */
+.ui-dropdown.ui-widget {
+  width: calc(100% - 4px);
 }
 /* PanelMenu */
 .ui-panelmenu .ui-panelmenu-header.ui-state-active,
