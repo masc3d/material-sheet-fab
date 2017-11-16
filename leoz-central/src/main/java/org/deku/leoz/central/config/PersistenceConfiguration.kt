@@ -5,14 +5,19 @@ import org.apache.commons.dbcp2.BasicDataSource
 import org.flywaydb.core.Flyway
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
+import org.jooq.impl.DefaultConfiguration
 import org.jooq.impl.DefaultDSLContext
+import org.jooq.impl.DefaultExecuteListenerProvider
+import org.jooq.tools.StopWatchListener
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.autoconfigure.flyway.FlywayDataSource
-import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.*
+import org.springframework.context.annotation.AdviceMode
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -22,6 +27,7 @@ import java.sql.SQLException
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import javax.inject.Inject
 import javax.sql.DataSource
 
 /**
@@ -41,6 +47,16 @@ open class PersistenceConfiguration {
     }
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java)
+
+    @Qualifier(QUALIFIER)
+    @Configuration
+    @ConfigurationProperties(prefix = "persistence.central")
+    open class Settings {
+        var debug: Boolean = false
+    }
+
+    @Inject
+    private lateinit var settings: Settings
 
     @get:Bean
     @get:Qualifier(QUALIFIER)
@@ -86,7 +102,24 @@ open class PersistenceConfiguration {
     @get:Qualifier(QUALIFIER)
     open val centralDslContext: DefaultDSLContext
         get() {
-            return DefaultDSLContext(this.jooqCentralConnectionProvider, SQLDialect.MYSQL)
+            return DefaultDSLContext(
+                    DefaultConfiguration().also {
+                        it.setConnectionProvider(this.jooqCentralConnectionProvider)
+                        it.setSQLDialect(SQLDialect.MYSQL)
+
+                        it.setSettings(it.settings()
+                                .withExecuteLogging(this.settings.debug)
+                        )
+
+                        if (this.settings.debug) {
+                            it.setExecuteListenerProvider(
+                                    DefaultExecuteListenerProvider(
+                                            StopWatchListener()
+                                    )
+                            )
+                        }
+                    }
+            )
         }
 
     @PostConstruct
@@ -128,22 +161,5 @@ open class PersistenceConfiguration {
             log.error(e.message, e)
         }
     }
-
-    // TODO: example: aspect/DAOInterceptor
-    //    @Aspect
-    //    public class DAOInterceptor {
-    //        private Logger log = Logger.getLog(DAOInterceptor.class.getName());
-    //
-    //        @Around("execution(* com.webforefront.jpa.service..*.*(..))")
-    //        public Object logQueryTimes(ProceedingJoinPoint pjp) throws Throwable {
-    //            StopWatch stopWatch = new StopWatch();
-    //            stopWatch.start();
-    //            Object retVal = pjp.proceed();
-    //            stopWatch.stop();
-    //            String str = pjp.getTarget().toString();
-    //            log.info(str.substring(str.lastIndexOf(".")+1, str.lastIndexOf("@")) + " - " + pjp.getSignature().getName() + ": " + stopWatch.getTime() + "ms");
-    //            return retVal;
-    //        }
-    //    }
 }
 
