@@ -5,9 +5,6 @@ import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
-import org.deku.leoz.smartlane.model.Body5
-import org.deku.leoz.smartlane.model.Error
-import org.deku.leoz.smartlane.model.InlineResponse2004
 import javax.validation.Valid
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
@@ -25,7 +22,6 @@ interface AuthApi {
 
     data class Response(
             @ApiModelProperty(value = "Access token")
-            @JsonProperty("access_token")
             var accessToken: String = ""
     )
 

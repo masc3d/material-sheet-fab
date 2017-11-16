@@ -1,5 +1,8 @@
 package org.deku.leoz.smartlane
 
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
 import org.junit.Test
@@ -18,7 +21,10 @@ class AuthorizationApiTest {
 
     private val restClient by lazy {
         RestEasyClient(
-                baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/")
+                baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/"),
+                objectMapper = ObjectMapper().also {
+                    it.propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
+                }
         )
     }
 
