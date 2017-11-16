@@ -21,6 +21,8 @@ import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
+import javax.ws.rs.client.ClientRequestContext
+import javax.ws.rs.client.ClientRequestFilter
 
 /**
  * Ignoring X509 trust manager, typically used when disabling SSL certificate checks
@@ -95,6 +97,9 @@ class RestEasyClient(
 ) :
         RestClient(baseUri, ignoreSslCertificate) {
 
+    /** JWT token to include in header */
+    var jwtToken: String? = null
+
     private val client by lazy {
         ResteasyClientBuilder()
                 // TODO: add support for connection pools.
@@ -111,6 +116,12 @@ class RestEasyClient(
                 // ,asc20171116. it's mandatory to derive from ResteasyJackson2Provider so it's recognized as an override
                 .register(object : ResteasyJackson2Provider() {}.also {
                     it.setMapper(objectMapper)
+                })
+                .register(object : ClientRequestFilter {
+                    override fun filter(requestContext: ClientRequestContext) {
+                        requestContext.headers.add("Authorization", "JWT ${this@RestEasyClient.jwtToken}" )
+                    }
+
                 })
                 .build()
     }
