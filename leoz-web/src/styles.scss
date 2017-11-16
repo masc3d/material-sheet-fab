@@ -195,7 +195,33 @@ input.ng-valid, select.ng-valid, p-dropdown.ng-valid > div > label {
   padding-left: 5px;
 }
 
+.bgYellow {
+  background-color: #FFFFC6;
+}
+/*** Importscan **/
+.row-importscan {
+  font-size: 14px;
+  padding: 5px;
+  border-bottom: 1px solid #D5D5D5;
+}
+
+.row-importscan > div {
+  padding: 0;
+  height: 30px;
+}
 /*** overwriting styles from primeng **/
+/* Input, Textarea */
+input, textarea, .inputField {
+  border:1px solid darkgrey;
+  padding-left: 4px;
+}
+/* Input */
+input {
+  height:29px;
+}
+.inputField {
+  height: auto;
+}
 /* PanelMenu */
 .ui-panelmenu .ui-panelmenu-header.ui-state-active,
 .ui-panelmenu .ui-panelmenu-header.ui-state-active a {
@@ -285,6 +311,10 @@ p-tabpanel > div {
 .ui-datatable th.ui-state-active {
   background-color: $color-sortable-th !important;
   color: #ffffff;
+}
+
+.ui-state-default {
+  border: 1px solid darkgrey;
 }
 
 .ui-state-default a {
@@ -417,14 +447,14 @@ p-tabpanel > div {
   }
 }
 
-.bagscanfields {
-  background-color: red;
-  height: 69px;
-  margin-bottom:5px;
-  border:1px solid darkgrey;
-  width:98%; font-size:
-  40px;
-}
+//.bagscanfields {
+//  background-color: red;
+//  height: 69px;
+//  margin-bottom:5px;
+//  border:1px solid darkgrey;
+//  width:98%; font-size:
+//  40px;
+//}
 
 *::-webkit-input-placeholder { /* WebKit browsers */
   color:    #c3c1c1;

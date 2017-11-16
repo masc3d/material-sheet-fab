@@ -14,8 +14,8 @@
             </div>
             <div class="ui-g-12 ui-lg-4 ui-g-nopad">
               {{'payload' | translate}}:
-              <input pInputText formControlName="payload" (change)="changePayload()"
-                     style="border:1px solid darkgrey; width:98%; background-color: #FFFFC6">
+              <input pInputText formControlName="payload" (change)="changePayload()" class="bgYellow"
+                     style="width:98%;">
             </div>
           </div>
           <div class="ui-g-12 ui-g-nopad">
@@ -66,8 +66,8 @@
 
       <div class="ui-g-12 ui-lg-4" style="padding:0;">
         <p-fieldset legend="{{'scanmsgfield' | translate}}">
-          <div class="ui-g-12 ui-g-nopad"
-               style="height: 69px; padding-top: 15px; margin-bottom:5px; border:1px solid darkgrey; text-align: center; font-size: 30px">
+          <div class="ui-g-12 ui-g-nopad inputField"
+               style="height: 69px; padding-top: 15px; margin-bottom:5px; text-align: center; font-size: 30px">
             {{shortScanMsg | translate}}
           </div>
         </p-fieldset>
@@ -75,15 +75,15 @@
 
       <div class="ui-g-12 ui-lg-8" style="padding: 0;">
         <p-fieldset legend="{{'scanfield' | translate}}">
-          <input #scanfield pInputText formControlName="scanfield" (change)="scanPackSingle()"
-                 style="font-size: 40px; margin-bottom:5px; background-color: #FFFFC6; border:1px solid darkgrey">
+          <input #scanfield pInputText formControlName="scanfield" (change)="scanPackSingle()" class="bgYellow"
+                 style="font-size: 40px; margin-bottom:5px; height: 100%">
         </p-fieldset>
       </div>
 
       <div class="ui-g-12 ui-lg-4" style="padding:0; border: 1px solid transparent !important;">
         <p-fieldset legend="{{'information' | translate}}">
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad inputField bgYellow">
               {{'loadlistnumber' | translate}}:
             </div>
             <div class="ui-g-12 ui-lg-6 ui-g-nopad">
@@ -104,7 +104,7 @@
           </div>
 
           <div class="ui-g-12 ui-g-nopad">
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="background-color: #FFFFC6; border:1px solid darkgrey">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad inputField bgYellow">
               {{'stillopen' | translate}}:
             </div>
             <div class="ui-g-12 ui-lg-6 ui-g-nopad"></div>
@@ -123,14 +123,14 @@
               {{openWeight}}
             </div>
           </div>
-          <div class="ui-g-12 ui-g-nopad"
-               style="padding: 5px; border:1px solid darkgrey; height:120px; background-color:#FFFFC6; overflow-y: scroll">
+          <div class="ui-g-12 ui-g-nopad inputField bgYellow"
+               style="padding: 5px; height:120px; overflow-y: scroll">
             <span *ngFor="let actionMsg of actionMsgList$ | async">
               {{actionMsg | translate}}<br>
             </span>
           </div>
-          <div class="ui-g-12 ui-g-nopad" [ngStyle]="styleScanMsgListBG"
-               style="margin-top: 2px; padding: 5px; border:1px solid darkgrey; height:120px; overflow-y: scroll">
+          <div class="ui-g-12 ui-g-nopad inputField" [ngStyle]="styleScanMsgListBG"
+               style="margin-top: 2px; padding: 5px; height:120px; overflow-y: scroll">
             <div *ngFor="let scanMsg of scanMsgs$ | async" style="padding-bottom:10px;">
               <span *ngIf="scanMsg.packageId.length > 0 && scanMsg.msgText.length > 0">
                 {{scanMsg.packageId}}:
