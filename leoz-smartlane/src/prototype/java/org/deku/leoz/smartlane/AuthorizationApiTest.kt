@@ -16,7 +16,7 @@ class AuthorizationApiTest {
 
     private val restClient by lazy {
         RestEasyClient(
-            baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/api/")
+            baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/")
         )
     }
 
