@@ -790,9 +790,8 @@ class DeliveryStopProcessScreen :
                         // Parcel does not belong to this delivery stop, ask for stop merge
                         feedback.warning()
 
-                        val animationDown = AnimationUtils.loadAnimation(this.context, R.anim.slide_down_half_outfading_mergedialog)
-                        val animationUp = AnimationUtils.loadAnimation(this.context, R.anim.slide_up_half_reverting)
-
+                        var runnable: Runnable? = null
+                        var reverseRunnable: Runnable? = null
                         val animationHandler = Handler()
 
                         val dialog = MaterialDialog.Builder(context)
@@ -826,55 +825,41 @@ class DeliveryStopProcessScreen :
                         val sourceView = customView?.findViewById<View>(R.id.uxSourceStop)
                         val targetView = customView?.findViewById<View>(R.id.uxTargetStop)
 
-                        val runnable = object : Runnable {
-                            override fun run() {
-                                //sourceContainer?.startAnimation(animationDown)
-                                if (sourceContainer != null && targetContainer != null) {
-                                    sourceContainer.animate()
-                                            .alpha(0f)
-                                            .setListener(object: Animator.AnimatorListener {
-                                                override fun onAnimationRepeat(p0: Animator?) {
+                        runnable = Runnable {
+                            if (sourceContainer != null && targetContainer != null) {
+                                sourceContainer.animate()
+                                        .alpha(0f)
+                                        .translationY(100f)
+                                        .setDuration(1500)
+                                        .setStartDelay(2000)
+                                        .withEndAction(reverseRunnable)
+                                        .start()
 
-                                                }
+                                targetContainer.animate()
+                                        .translationY(-100f)
+                                        .setDuration(1500)
+                                        .setStartDelay(2000)
+                                        .withEndAction(reverseRunnable)
+                                        .start()
+                            }
+                        }
 
-                                                override fun onAnimationCancel(p0: Animator?) {
+                        reverseRunnable = Runnable {
+                            if (sourceContainer != null && targetContainer != null) {
+                                sourceContainer.animate()
+                                        .alpha(1f)
+                                        .translationY(0f)
+                                        .setDuration(500)
+                                        .setStartDelay(1000)
+                                        .withEndAction(runnable)
+                                        .start()
 
-                                                }
-
-                                                override fun onAnimationStart(p0: Animator?) {
-
-                                                }
-
-                                                override fun onAnimationEnd(p0: Animator?) {
-                                                    sourceContainer.animate().alpha(1f).setStartDelay(1000).start()
-                                                }
-                                            })
-                                            .start()
-
-                                    targetContainer.animate()
-                                            .translationY(-50f)
-                                            .setListener(object: Animator.AnimatorListener {
-                                                override fun onAnimationRepeat(p0: Animator?) {
-
-                                                }
-
-                                                override fun onAnimationCancel(p0: Animator?) {
-
-                                                }
-
-                                                override fun onAnimationStart(p0: Animator?) {
-
-                                                }
-
-                                                override fun onAnimationEnd(p0: Animator?) {
-                                                    targetContainer.animate().translationY(50f).setStartDelay(1000).start()
-                                                }
-                                            })
-                                            .start()
-                                }
-
-                                //targetContainer?.startAnimation(animationUp)
-                                animationHandler.postDelayed(this, 5000)
+                                targetContainer.animate()
+                                        .translationY(0f)
+                                        .setDuration(500)
+                                        .setStartDelay(1000)
+                                        .withEndAction(runnable)
+                                        .start()
                             }
                         }
 
@@ -892,7 +877,7 @@ class DeliveryStopProcessScreen :
 
                         dialog.show()
 
-                        animationHandler.postDelayed(runnable, 1000)
+                        animationHandler.postDelayed(runnable, 0)
 
                         return
                     }
