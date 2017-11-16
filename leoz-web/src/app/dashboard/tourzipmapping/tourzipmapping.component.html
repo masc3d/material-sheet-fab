@@ -1,51 +1,40 @@
 <div class="ui-fluid" style="padding-top: 10px;">
 
-    <p-dataTable resizableColumns="false" responsive="true"
-                 [emptyMessage]="'noDataAvailable' | translate"
-                 [style]="{'min-height': '465px', 'height': 'calc(100vh - 296px)'}">
-      <p-header>
-        {{ 'tourzipmapping' | translate }}
-      </p-header>
-      <p-column field="tour" header="{{'tour' | translate}}" [sortable]="true"></p-column>
-      <p-column field="driverNo" header="{{'driverNo' | translate}}" [sortable]="true"></p-column>
-      <p-column field="drivername" header="{{'drivername' | translate}}" [sortable]="true"></p-column>
-      <p-column field="fromZip" header="{{'fromZip' | translate}}" [sortable]="true"></p-column>
-      <p-column field="toZip" header="{{'toZip' | translate}}" [sortable]="true"></p-column>
-    </p-dataTable>
+  <p-dataTable resizableColumns="false" responsive="true"
+               [emptyMessage]="'noDataAvailable' | translate"
+               [style]="{'min-height': '465px', 'height': 'calc(100vh - 296px)'}">
+    <p-header>
+      {{ 'tourzipmapping' | translate }}
+    </p-header>
+    <p-column field="tour" header="{{'tour' | translate}}" [sortable]="true"></p-column>
+    <p-column field="driverNo" header="{{'driverNo' | translate}}" [sortable]="true"></p-column>
+    <p-column field="drivername" header="{{'drivername' | translate}}" [sortable]="true"></p-column>
+    <p-column field="fromZip" header="{{'fromZip' | translate}}" [sortable]="true"></p-column>
+    <p-column field="toZip" header="{{'toZip' | translate}}" [sortable]="true"></p-column>
+  </p-dataTable>
 
   <div class="ui-g" style="padding-top: 50px;">
     <div class="ui-g-12 ui-lg-12 no-pad">
       <hr/>
-      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-        <div style="width: 98%;">
-          <button pButton type="button" label="{{'setnewArea' | translate}}"></button>
-        </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
+        <button pButton type="button" label="{{'setnewArea' | translate}}"></button>
       </div>
-      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-        <div style="padding-left: 10px; width: 98%;">
-          <input pInputText placeholder="{{'fromZip' | translate}}"
-                 style="height: 26px; width: 150px; border:1px solid darkgrey">
-        </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
+        <input pInputText placeholder="{{'fromZip' | translate}}"
+               style="width: 150px;">
       </div>
-      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-        <div style="padding-left: 10px; width: 98%;">
-          <input pInputText placeholder="{{'toZip' | translate}}"
-                 style="height: 26px; width: 150px; border:1px solid darkgrey">
-        </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
+        <input pInputText placeholder="{{'toZip' | translate}}"
+               style="width: 150px;">
       </div>
-      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-        <div style="padding-left: 10px; width: 98%;">
-          <input pInputText placeholder="{{'tourNo' | translate}}"
-                 style="height: 26px; width: 150px; border:1px solid darkgrey">
-        </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
+        <input pInputText placeholder="{{'tourNo' | translate}}"
+               style="width: 150px;">
       </div>
-      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-        <div style="padding-left: 10px; width: 98%;">
-          <input pInputText placeholder="{{'driverNo' | translate}}"
-                 style="height: 26px; width: 150px; border:1px solid darkgrey">
-        </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
+        <input pInputText placeholder="{{'driverNo' | translate}}"
+               style="width: 150px;">
       </div>
     </div>
   </div>
-
 </div>

@@ -21,7 +21,7 @@
           </div>
           <div class="ui-g-12 ui-lg-5 ui-g-nopad">
             <input #bagId pInputText formControlName="bagId" (change)="bagIdChanged()"
-                   style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+                   style="height: 69px; margin-bottom:5px; width:calc(98% - 2px); font-size: 40px">
           </div>
 
         </div>
@@ -31,7 +31,7 @@
           </div>
           <div class="ui-g-12 ui-lg-5 ui-g-nopad">
             <input #backLabel pInputText formControlName="backLabel" (change)="backLabelChanged()"
-                   style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+                   style="height: 69px; margin-bottom:5px; width:calc(98% - 2px); font-size: 40px">
           </div>
         </div>
         <div class="ui-g-12 ui-g-nopad">
@@ -40,7 +40,7 @@
           </div>
           <div class="ui-g-12 ui-lg-5 ui-g-nopad">
             <input #backSeal pInputText formControlName="backSeal" (change)="backSealChanged()"
-                   style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+                   style="height: 69px; margin-bottom:5px; width:calc(98% - 2px); font-size: 40px">
           </div>
         </div>
         <div class="ui-g-12 ui-g-nopad">
@@ -49,7 +49,7 @@
           </div>
           <div class="ui-g-12 ui-lg-5 ui-g-nopad">
             <input #packageNo pInputText formControlName="packageNo"
-                   style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+                   style="height: 69px; margin-bottom:5px; width:calc(98% - 2px); font-size: 40px">
           </div>
         </div>
       </div>
@@ -58,16 +58,19 @@
              style="width: calc(100% - 2px); padding: 2px 0 1px 5px; margin-left: 5px; background-color: #184b7d; color: #ffffff">
           {{'messages' | translate}}:
         </div>
-        <div class="ui-g-12 ui-g-nopad" [ngStyle]="styleShortScanMsg"
-             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0px 0px 5px; margin-left: 5px; height: 130px; margin-bottom:5px; border:1px solid darkgrey; overflow-y: scroll">
+        <div class="ui-g-12 ui-g-nopad inputField" [ngStyle]="styleShortScanMsg"
+             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0 0 5px; margin-left: 5px;
+              height: 130px; margin-bottom:5px; overflow-y: scroll">
           {{shortScanMsg | translate}}
         </div>
-        <div class="ui-g-12 ui-g-nopad"
-             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0px 0px 5px; margin-left: 5px; height: 87px; margin-bottom:5px; border:1px solid darkgrey; overflow-y: scroll"
+        <div class="ui-g-12 ui-g-nopad inputField"
+             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0 0 5px; margin-left: 5px;
+             height: 87px; margin-bottom:5px; overflow-y: scroll"
              [innerHTML]="translate.instant( 'infoMsgfield' )">
         </div>
-        <div class="ui-g-12 ui-g-nopad"
-             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0px 0px 5px; margin-left: 5px; height: 80px; margin-bottom:5px; border:1px solid darkgrey;  color: red; overflow-y: scroll"
+        <div class="ui-g-12 ui-g-nopad inputField"
+             style="background-color: #ffffff; width: calc(100% - 2px); padding: 5px 0 0 5px; margin-left: 5px;
+             height: 80px; margin-bottom:5px; color: red; overflow-y: scroll"
              [innerHTML]="translate.instant( 'bagCountMsgfield' )">
         </div>
       </div>
@@ -161,7 +164,7 @@
             <button pButton type="button" (click)="toggleVisibilitySeal()" label="{{'swapSealF10' | translate}}"></button>
           </div>
           <div class="ui-g-12 ui-g-nopad" [ngClass]="chargingLevelStyle"
-               style="width: 125px;  margin-top: 2px; margin-left: 6px; padding: 5px; border:1px solid darkgrey; text-align: center">
+               style="width: 125px;  margin-top: 2px; margin-left: 6px; padding: 5px; text-align: center">
             {{chargingLevel}}%
           </div>
           <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
@@ -186,7 +189,7 @@
             </div>
             <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
               <input #blueSealNo pInputText formControlName="blueSealNo"
-                     style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px); font-size: 40px">
+                     style="height: 69px; margin-bottom:5px; width:calc(98% - 2px); font-size: 40px">
             </div>
           </div>
 
@@ -203,7 +206,7 @@
             </div>
             <div class="ui-g-12 ui-lg-6 no-pad" style="margin-top: 2px; padding: 5px">
               <textarea #reasonDetails pInputTextarea formControlName="reasonDetails"
-                    style="padding-left: 5px; height: 69px; margin-bottom:5px; border:1px solid darkgrey; width:calc(98% - 2px)">
+                    style="height: 69px; margin-bottom:5px; width:calc(98% - 2px)">
               </textarea>
             </div>
           </div>

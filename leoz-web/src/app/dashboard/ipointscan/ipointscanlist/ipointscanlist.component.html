@@ -4,26 +4,14 @@
       <div class="ui-g-12 ui-lg-3 ui-g-nopad">
         <p-dropdown [options]="scanOptions" placeholder="{{ 'packNumber' | translate }}"></p-dropdown>
       </div>
-      <div class="ui-g-12 ui-lg-3 ui-g-nopad">
-        <div style="padding-left: 10px; width: 98%;">
+      <div class="ui-g-12 ui-lg-3 ui-g-nopad" style="padding-left: 10px;">
           <p-checkbox name="printlabel" value="printlabel" label="{{'printlabel' | translate}}"></p-checkbox>
-        </div>
       </div>
-      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-        <div style="padding-left: 10px; width: 98%;">
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="padding-left: 10px;">
           <p-checkbox name="novalidation" value="novalidation" label="{{'scan_without_validating' | translate}}"></p-checkbox>
-        </div>
       </div>
 
     </div>
-    <style>
-      .row-importscan {
-        font-size:14px;padding:5px;border-bottom:1px solid #D5D5D5;
-      }
-      .row-importscan > div {
-        padding: 0; height:30px;
-      }
-    </style>
     <p-dataScroller [value]="parcels" [rows]="10" [inline]="true" scrollHeight="calc(100vh - 296px)"
                     [style]="{'min-height': '465px', 'height': 'calc(100vh - 296px)'}">
       <p-header>
