@@ -1,9 +1,11 @@
 package org.deku.leoz.smartlane
 
+import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.*
 import sx.rs.client.RestEasyClient
 import java.net.URI
 
@@ -16,7 +18,7 @@ class AuthorizationApiTest {
 
     private val restClient by lazy {
         RestEasyClient(
-            baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/")
+                baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/")
         )
     }
 
@@ -24,6 +26,18 @@ class AuthorizationApiTest {
     fun testRefreshToken() {
         restClient.proxy(AuthorizationApi::class.java).also {
             log.trace("Token refreshed ${it.refreshToken}")
+        }
+    }
+
+    @Test
+    fun testAuth() {
+        restClient.proxy(AuthApi::class.java).also {
+            log.trace(
+                    it.auth(AuthApi.Request(
+                            email = "juergen.toepper@derkurier.de",
+                            password = "PanicLane"
+                    ))
+            )
         }
     }
 }
