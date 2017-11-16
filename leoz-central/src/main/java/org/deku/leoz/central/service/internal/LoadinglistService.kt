@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response
 
 @Named
 @Path("internal/v1/loadinglist")
-class LoadinglistService:org.deku.leoz.service.internal.LoadinglistService {
+class LoadinglistService : org.deku.leoz.service.internal.LoadinglistService {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
@@ -25,30 +25,30 @@ class LoadinglistService:org.deku.leoz.service.internal.LoadinglistService {
     private lateinit var userService: UserService
 
     @Inject
-    private lateinit var parcelService:ParcelServiceV1
+    private lateinit var parcelService: ParcelServiceV1
 
     @Inject
-    private lateinit var bagService:BagService
+    private lateinit var bagService: BagService
 
-    override fun getNewLoadinglistNo(): Long {
+    override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
         val user = userService.get()
         return parcelService.getNewLoadinglistNo()
     }
 
-    override fun getNewBagLoadinglistNo(): Long {
-        val user=userService.get()
+    override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
+        val user = userService.get()
         return bagService.getNewBagLoadinglistNo()
     }
 
     override fun getParcels2ExportByLoadingList(loadinglistNo: Long): LoadinglistService.Loadinglist? {
         val user = userService.get()
-        val orders= parcelService.getParcels2ExportByLoadingList(loadinglistNo)
-        if(orders.count()==0)
+        val orders = parcelService.getParcels2ExportByLoadingList(loadinglistNo)
+        if (orders.count() == 0)
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
                     title = "No orders found"
             )
-        val loadinglist=LoadinglistService.Loadinglist(loadinglistNo=loadinglistNo,orders=orders)
+        val loadinglist = LoadinglistService.Loadinglist(loadinglistNo = loadinglistNo, orders = orders)
 
         return loadinglist
     }

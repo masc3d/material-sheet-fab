@@ -2,7 +2,6 @@ package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.querydsl.core.group.GroupBy.groupBy
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
@@ -10,7 +9,6 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.ParcelProcessing
 import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.node.Storage
 import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.ParcelServiceV1
@@ -37,13 +35,13 @@ import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.service.internal.LoadinglistService
 import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.time.toShortTime
 import org.deku.leoz.time.toString_ddMMyyyy_PointSeparated
 import sx.io.serialization.Serializable
-import sx.time.toLocalDate
 
 
 /**
@@ -477,10 +475,10 @@ open class ParcelServiceV1 :
 
     }
 
-    override fun getNewLoadinglistNo(): Long {
+    override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
         val user = userService.get()
 
-        return Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 300000
+        return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 300000)
 
     }
 
@@ -556,7 +554,7 @@ open class ParcelServiceV1 :
 
         //check stationNo in user-stationsAllowed
 
-        val un = UnitNumber.parseLabel(scanCode)
+        val un = DekuUnitNumber.parseLabel(scanCode)
         var dekuNo: Long? = null
         when {
             un.hasError -> {

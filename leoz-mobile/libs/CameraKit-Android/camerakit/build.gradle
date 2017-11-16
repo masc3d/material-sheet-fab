@@ -15,6 +15,10 @@ ext {
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
+repositories {
+    google()
+}
+
 android {
     compileSdkVersion 27
     buildToolsVersion '27.0.1'

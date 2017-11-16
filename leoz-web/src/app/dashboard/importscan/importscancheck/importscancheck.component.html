@@ -2,19 +2,9 @@
   <div class="ui-fluid">
     <div class="ui-g" style="margin-bottom: 30px;">
       <div class="ui-g-12 ui-lg-12 ui-g-nopad">
-        <input #scanfield formControlName="scanfield"
-               style="height: 26px; font-size: 20px;
-                          background-color: #FFFFC6; border:1px solid darkgrey">
+        <input #scanfield formControlName="scanfield" class="bgYellow" style="font-size: 20px;">
       </div>
     </div>
-    <style>
-      .row-importscan {
-        font-size:14px;padding:5px;border-bottom:1px solid #D5D5D5;
-      }
-      .row-importscan > div {
-        padding: 0; height:30px;
-      }
-    </style>
     <p-dataScroller [value]="shipments" [rows]="10" [inline]="true" scrollHeight="calc(100vh - 296px)"
                     [style]="{'min-height': '465px', 'height': 'calc(100vh - 296px)'}">
       <p-header>
@@ -40,32 +30,22 @@
     <div class="ui-g" style="padding-top: 50px;">
       <div class="ui-g-12 ui-lg-12 no-pad">
         <hr/>
-        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-          <div style="padding-left: 10px; width: 98%;">
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
             <button pButton type="button" label="{{'newShipment' | translate}}"></button>
-          </div>
         </div>
-        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-          <div style="padding-left: 10px; width: 98%;">
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
             <button pButton type="button" label="{{'quickscan' | translate}}"
                     (click)="router.navigate( [ 'dashboard/importscan/importscanquick' ] )"></button>
-          </div>
         </div>
-        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-          <div style="padding-left: 10px; width: 98%;">
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
             <button pButton type="button" label="{{'allShipments' | translate}}"
                     (click)="router.navigate( [ 'dashboard/importscan/importscanlist' ] )"></button>
-          </div>
         </div>
-        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-          <div style="padding-left: 10px; width: 98%;">
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
             <button pButton type="button" label="{{'listprinting' | translate}}"></button>
-          </div>
         </div>
-        <div class="ui-g-12 ui-lg-2 ui-g-nopad">
-          <div style="padding-left: 10px; width: 98%;">
+        <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding-left: 10px;">
             <button pButton type="button" label="{{'refresh' | translate}}"></button>
-          </div>
         </div>
       </div>
     </div>

@@ -8,9 +8,7 @@ import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.internal.BagService.ErrorCode
 import org.jooq.DSLContext
 import org.jooq.types.UInteger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.rs.auth.ApiKey
 import sx.time.toDate
 import sx.time.toSqlDate
 import sx.time.toTimestamp
@@ -24,20 +22,18 @@ import javax.ws.rs.Path
 import org.deku.leoz.central.data.repository.DepotJooqRepository
 import org.deku.leoz.central.data.repository.ParcelJooqRepository
 import org.deku.leoz.central.data.repository.toBag
+import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.counter
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.BagService
+import org.deku.leoz.service.internal.LoadinglistService
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
-import org.deku.leoz.service.internal.entity.BagNumberRange
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 import org.deku.leoz.service.pub.RoutingService
-import org.deku.leoz.time.toShortTime
-import org.deku.leoz.ws.gls.shipment.Service
-import sx.rs.DefaultProblem
 import sx.time.toLocalDate
 import sx.time.workDate
 
@@ -98,7 +94,7 @@ class BagService : BagService {
     }
 
     override fun get(id: Long): BagService.Bag {
-        val un = UnitNumber.parseLabel(id.toString())
+        val un = DekuUnitNumber.parseLabel(id.toString())
         when {
             un.hasError -> {
                 throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
@@ -107,16 +103,16 @@ class BagService : BagService {
         if (un.value.type != UnitNumber.Type.BagId)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
 
-        val bag=depotRepository.getBag(un.value.value.toLong())?.toBag()
-        bag  ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
-        val oid=bag.orderhub2depot
-        if(oid!=null) {
+        val bag = depotRepository.getBag(un.value.value.toLong())?.toBag()
+        bag ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
+        val oid = bag.orderhub2depot
+        if (oid != null) {
             bag.unitNo = depotRepository.getUnitNo(oid)
         }
-        val oidBack=bag.orderdepot2hub
-        if(oidBack!=null) {
+        val oidBack = bag.orderdepot2hub
+        if (oidBack != null) {
             bag.unitNoBack = depotRepository.getUnitNo(oidBack)
-            bag.orders2export=parcelService.getParcelsFilledInBagByBagID(oidBack)
+            bag.orders2export = parcelService.getParcelsFilledInBagByBagID(oidBack)
         }
         return bag
     }
@@ -714,10 +710,10 @@ class BagService : BagService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getNewBagLoadinglistNo(): Long {
+    override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
         val user = userService.get()
 
-        return Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000
+        return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000)
     }
 
 

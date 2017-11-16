@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.config.ParcelServiceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
@@ -373,7 +372,7 @@ open class ParcelProcessing {
 
                         if (from != null) {
                             if (from.equals("956") || from.equals("935"))
-                                if (UnitNumber.parse(parcelScan).value.type == UnitNumber.Type.Bag) {
+                                if (DekuUnitNumber.parse(parcelScan).value.type == UnitNumber.Type.Bag) {
                                     //if (parcelScan.startsWith("10071")) {
                                     val unitInBagUnitRecords = parcelRepository.findUnitsInBagByBagUnitNumber(parcelNo)
                                     if (unitInBagUnitRecords != null) {

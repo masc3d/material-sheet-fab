@@ -9,6 +9,8 @@ schemes:
 basePath: /api
 produces:
   - application/json
+consumes:
+  - application/json
 securityDefinitions:
   jwt:
     type: apiKey
@@ -16,6 +18,14 @@ securityDefinitions:
     in: header
 security:
   - jwt: []
+
+x-samples-languages:
+  - 'curl'
+  - 'node'
+  - 'javascript'
+  - 'python'
+  - 'java'
+
 paths:
   /company:
     get:
@@ -104,12 +114,12 @@ paths:
       summary: Adds an additional dispatcher to the system
       description: |
         Adds an additional dispatcher to the system after an initial one already exists.
-      operationId: addDispatcher
+      operationId: postAddDispatcher
       tags:
         - Company
       parameters:
         - in: body
-          name: driver
+          name: body
           required: true
           schema:
             $ref: "#/definitions/AddDispatcher"
@@ -121,8 +131,8 @@ paths:
         422:
           $ref: "#/responses/InvalidInput"
         default:
-          $ref: "#/responses/UnexpectedError"  
-  
+          $ref: "#/responses/UnexpectedError"
+
   /driver:
     get:
       summary: Drivers
@@ -140,9 +150,9 @@ paths:
           description: |
             "Returns an additional field available (which is not stored in the database) for the referring driver if the query parameter 'includeavail' is set to 'true'. Defaults to false if parameter is not supplied.
 
-            The result for 'available' is true if these two conditions are fullfilled for a driver:
+            The result for 'available' is true if these two conditions are fulfilled for a driver:
 
-            There is at least one timeframe in the driveravailability table.
+            There is at least one time frame in the driveravailability table.
 
             The current time is within one of the driveravailability time frames for this driver"
         - in: query
@@ -192,29 +202,6 @@ paths:
         default:
           $ref: "#/responses/UnexpectedError"
   /driver/{driver_id}:
-    delete:
-      summary: Driver
-      description: "Deletes a driver from the system. Any driver connected to the system will not be able to log in anymore with the app or via the API and needs to be re-entered again."
-      operationId: deleteDriverById
-      tags:
-        - Driver
-      parameters:
-        - in: path
-          name: driver_id
-          required: true
-          type: integer
-          format: int32
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/Driver"
-        403:
-          $ref: "#/responses/MissingAuthorization"
-        422:
-          $ref: "#/responses/InvalidInput"
-        default:
-          $ref: "#/responses/UnexpectedError"
     patch:
       summary: Driver
       description: |
@@ -285,7 +272,7 @@ paths:
           $ref: "#/responses/UnexpectedError"
     patch:
       summary: Driver availability
-      description: Edits an exisiting driver availability time window
+      description: Edits an existing driver availability time window
       operationId: patchDriveravailability
       tags:
         - Driver
@@ -330,7 +317,7 @@ paths:
           $ref: "#/responses/UnexpectedError"
     delete:
       summary: Driver availability (id)
-      description: Deletes an exisiting driver availability time window
+      description: Deletes an existing driver availability time window
       operationId: deleteDriverAvailabilityById
       tags:
         - Driver
@@ -352,7 +339,7 @@ paths:
   /mergedriveravailability:
     post:
       summary: "Merge driver availability"
-      description: "Adds or merges a new driver availability time window after checking if another overlapping availity already exists. If there is one (at the beginning or the end of this on) ore two (at the beginning and the end of this one) already existing driver availabilities, it will be merged with the existing one(s) into one. If there is no overlapping availability, it will be added as a new one."
+      description: "Adds or merges a new driver availability time window after checking if another overlapping availability already exists. If there is one (at the beginning or the end of this on) ore two (at the beginning and the end of this one) already existing driver availabilities, it will be merged with the existing one(s) into one. If there is no overlapping availability, it will be added as a new one."
       operationId: postMergedriveravailability
       tags:
         - Driver
@@ -593,6 +580,23 @@ paths:
         default:
           $ref: "#/responses/UnexpectedError"
   /address:
+    get:
+      summary: Address
+      description: Get all addresses.
+      operationId: getAddress
+      tags:
+        - Address
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Driverstati"
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
     post:
       summary: Address
       description: |
@@ -618,6 +622,29 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
+    patch:
+      summary: Address
+      description: Edits an existing address.
+      operationId: patchAddress
+      tags:
+        - Address
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/Address'
+      responses:
+        200:
+          description: OK
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
   /addressforlocation:
     get:
       summary: Address for location
@@ -675,7 +702,7 @@ paths:
           type: string
         - in: query
           name: limit
-          description: An Integer number definining the maximum number of search results to be shown.
+          description: An Integer number defining the maximum number of search results to be shown.
           required: false
           type: integer
           format: int32
@@ -698,7 +725,7 @@ paths:
   /geocode:
     post:
       summary: Geocode
-      description: Returns a geocode from address infromation, including a freetext search
+      description: Returns a geocode from address information, including a free text search
       operationId: postGeocode
       tags:
         - Address
@@ -744,7 +771,7 @@ paths:
       summary: Delivery
       description: |
         Add a new delivery consisting of two addresses - A pickup location (depot) depot and delivery location (destination).
-        Time window information pdt_from (erliest planned delivery time) and pdt_to (latest planned delivery time) must be provided for time window routing.
+        Time window information pdt_from (earliest planned delivery time) and pdt_to (latest planned delivery time) must be provided for time window routing.
       operationId: postDelivery
       tags:
         - Delivery
@@ -812,6 +839,77 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+  /deliverymetadata:
+    get:
+      summary: Delivery metadata
+      description: |
+        Get meta data for all deliveries. Similar to [get delivery](reference#getdelivery), but with only the most relevant data to save bandwidth.
+      operationId: getDeliverymetadata
+      tags:
+        - Delivery
+      parameters:
+        - in: query
+          name: day
+          type: string
+          description: Day for which the deliveries should be filtered, e.g. "2020-01-01".
+        - in: query
+          name: status
+          type: integer
+          format: int32
+          description: Status ids for which deliveries should be filtered. Use multiple times to filter for more than one type.
+        - in: query
+          name: deliverytype_id
+          type: integer
+          description: Delivery type ids for which deliveries should be filtered. Use multiple times to filter for more than one type.
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Deliverymetadatas'
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
+  /deliverynumber:
+    get:
+      summary: Delivery metadata
+      description: |
+        Gets number of deliveries according to filters. (Compare filter parameters to [get delivery](reference#getDeliverymetadata)).
+      operationId: getNrOfDeliveries
+      tags:
+        - Delivery
+      parameters:
+        - in: query
+          name: day
+          type: string
+          description: Day for which the deliveries should be filtered, e.g. "2020-01-01".
+        - in: query
+          name: status
+          type: integer
+          format: int32
+          description: Status ids for which deliveries should be filtered. Use multiple times to filter for more than one type.
+        - in: query
+          name: deliverytype_id
+          type: integer
+          description: Delivery type ids for which deliveries should be filtered. Use multiple times to filter for more than one type.
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              nr_of_deliveries:
+                type: integer
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
   /multidelivery/{multi_delivery_id}:
     get:
       summary: Multidelivery (id)
@@ -832,6 +930,77 @@ paths:
           schema:
 # Not exactly a delivery!
             $ref: '#/definitions/Deliveries'
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
+  /deliverytype:
+    get:
+      summary: Delivery type
+      description: |
+        Get all entries of delivery types from the database.
+      operationId: getDeliverytype
+      tags:
+        - Delivery
+      parameters:
+        - $ref: "#/parameters/filterQuery"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Deliverytype'
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+    post:
+      summary: Delivery type
+      description: |
+        Add a new delivery type
+
+        Delivery types allow users to classify deliveries, e.g. a "pickup" or "construction job", whatever required by the users business. An important property of the delivery type is the estimated length of stay.
+
+      operationId: postDeliverytype
+      tags:
+        - Delivery
+      parameters:
+        - in: body
+          name: body
+          description: Deliverytype object
+          required: true
+          schema:
+            $ref: '#/definitions/Deliverytype'
+      responses:
+        201:
+          description: OK
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+    patch:
+      summary: Delivery type
+      description: |
+        Edit any field of the delivery type information.
+      operationId: patchDeliverytype
+      tags:
+        - Delivery
+      parameters:
+        - in: body
+          name: q
+          description: Deliverytype object
+          required: false
+          schema:
+            $ref: '#/definitions/Deliverytype'
+      responses:
+        200:
+          description: OK
         403:
           $ref: "#/responses/MissingAuthorization"
         422:
@@ -878,7 +1047,7 @@ paths:
   /orderup/{delivery_id}:
     get:
       summary: Order up (id)
-      description: "Allows manual re-ordering of deliveries via id by increasing the order index of this delivery by one (it will be handeled later). The delivery which had the order index plus one before will switch the order index with this one."
+      description: "Allows manual re-ordering of deliveries via id by increasing the order index of this delivery by one (it will be handled later). The delivery which had the order index plus one before will switch the order index with this one."
       operationId: getOrderupById
       tags:
         - Delivery
@@ -901,7 +1070,7 @@ paths:
   /orderdown/{delivery_id}:
     get:
       summary: Order down (id)
-      description: "Allows manual re-ordering of deliveries via id by decreasing the order index of this delivery by one (it will be handeled earlier). The delivery which had the order index minus one before will switch the order index with this one"
+      description: "Allows manual re-ordering of deliveries via id by decreasing the order index of this delivery by one (it will be handled earlier). The delivery which had the order index minus one before will switch the order index with this one"
       operationId: getOrderdownById
       tags:
         - Delivery
@@ -968,7 +1137,7 @@ paths:
           type: string
           format: binary
           description: Local path of the signature file(s) to be uploaded.
-          
+
       responses:
         200:
           description: OK
@@ -1006,13 +1175,13 @@ paths:
           type: string
         - in: query
           name: code
-          description: "code for delivery status details (e.g. delivered to neighbor or recipient not at home). Available codes are available via GET /deliverycode. Defaults to 1 (deliverd to recipient) if status is delivered, else to 4 (recipient not present)"
+          description: "code for delivery status details (e.g. delivered to neighbor or recipient not at home). Available codes are available via GET /deliverycode. Defaults to 1 (delivered to recipient) if status is delivered, else to 4 (recipient not present)"
           required: false
           type: integer
           format: int32
         - in: query
           name: allundelivered
-          description: "indicates if date and time filter are ignored for undelivered deliveries. Often, all deliveries that are still undelivered should be displayed regardless of when the delivery attempt failed and regardless of the date fiolter for the successfully delivered deliveries. Defaults to true (all undelivered deliveries are returned)"
+          description: "indicates if date and time filter are ignored for undelivered deliveries. Often, all deliveries that are still undelivered should be displayed regardless of when the delivery attempt failed and regardless of the date filter for the successfully delivered deliveries. Defaults to true (all undelivered deliveries are returned)"
           required: false
           default: true
           type: boolean
@@ -1097,7 +1266,7 @@ paths:
         403:
           $ref: "#/responses/MissingAuthorization"
         409:
-          description: "A conflict with current data in the database has been deltected (e.g. delivery does not exist or is not assignet to a route)"
+          description: "A conflict with current data in the database has been detected (e.g. delivery does not exist or is not assigned to a route)"
           schema:
             type: string
         422:
@@ -1183,6 +1352,41 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
+  /setroutestatus/{route_id}:
+    post:
+      summary: Set status (id)
+      description: |
+        Sets the status of the route with ID route_id and is a simpler alternative to PATCHing the status of the route.
+        "Note: this is supposed to be a PATCH. But is set to be POST for an issue with cordova"
+      operationId: postRouteStatusById
+      tags:
+        - Route
+      parameters:
+        - in: path
+          name: route_id
+          description: Identifier of the Route
+          required: true
+          type: integer
+          format: int32
+        - in: body
+          name: status
+          schema:
+            type: integer
+
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
+
   /routemetadata:
     get:
       # Get data of all routes with reduced information and without route geometry
@@ -1294,47 +1498,6 @@ paths:
               type: integer
         default:
           $ref: "#/responses/UnexpectedError"
-  /traveltimematrix:
-    post:
-      summary: Traveltime matrix
-      description:  Returns a calculated traveltime matrix between a set of different locations.
-      operationId: postTraveltimematrix
-      tags:
-        - Route
-      parameters:
-        - in: body
-          name: body
-          description: Delivery IDs
-          required: true
-          schema:
-            type: object
-            properties:
-              deliveryids:
-                type: array
-                items:
-                  type: integer
-                  format: int32
-      responses:
-        200:
-          description: Here Maps distance matrix.
-          schema:
-            type: object
-        403:
-          $ref: "#/responses/MissingAuthorization"
-        409:
-          description: "Deliveries don't have a common starting point and thus cannot be optimized."
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              status:
-                type: integer
-                format: int32
-        422:
-          $ref: "#/responses/InvalidInput"
-        default:
-          $ref: "#/responses/UnexpectedError"
   /routedeliverydistances/{route_id}:
     get:
       summary: Route delivery distances (id)
@@ -1360,17 +1523,19 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
+
   /updateetas/timewindow/{route_id}:
     get:
       summary: Update etas timewindow (id)
       description: |
-        "Calculates the estimated time of arrival for all active deliveries on one route with a gven ID
+        "Calculates the estimated time of arrival for all active deliveries on one route with a given ID
 
         This is an API call for calculating all estimated arrival times for all deliveries on a given route (which must be in the status 'ontheway'). The values are stored as 'eta_from' and 'eta_to' in the delivery tables of the database an can be retrieved via GET /delivery for each delivery.
-        Calculation is done between the current position of a driver on the delivery's route and all deliveries each which must not be unassigned, (already) delivered or cancelled.
+        Calculation is done between the current position of a driver on the delivery's route and all deliveries each which must not be unassigned, (already) delivered or canceled.
         The current and predicted traffic situation are considered in this call.
         The relevant route and the referring driver are automatically derived from the given route.
-        All already delivered or cancelled assignments must have set a correct status. Otherwise they will be falsely considered in this calculation."
+        All already delivered or canceled deliveries must have set a correct status. Otherwise they will be falsely considered in this calculation."
       operationId: getUpdateetasTimewindowById
       tags:
         - Route
@@ -1397,10 +1562,10 @@ paths:
         "Calculates the estimated time of arrival for all active deliveries on all active routes
 
         This is an API call for calculating all estimated arrival times for all deliveries on all routes which are in the status 'ontheway'. The values are stored as 'eta_from' and 'eta_to' in the delivery tables of the database an can be retrieved via GET /delivery for each delivery.
-        Calculation is done between the current position of a driver on each delivery's route and all deliveries each which must not be unassigned, (already) delivered or cancelled.
+        Calculation is done between the current position of a driver on each delivery's route and all deliveries each which must not be unassigned, (already) delivered or canceled.
         The current and predicted traffic situation are considered in this call.
         The relevant route and the referring driver are automatically derived from the given route.
-        All already delivered or cancelled assignments must have set a correct status. Otherwise they will be falsely considered in this calculation."
+        All already delivered or canceled assignments must have set a correct status. Otherwise they will be falsely considered in this calculation."
       operationId: getUpdateetasTimewindow
       tags:
         - Route
@@ -1436,9 +1601,16 @@ paths:
     post:
       summary: Calc route optimized timewindow
       description: |
-        Calculates the shortest route for deliveries with time windows and a common starting point. This is an asynchroneous process. Results can be polled via GET /api/process/status/
+        Calculates the optimal route(s) for deliveries with (optional) time windows and a common starting point. The deliveries will be distributed to a number of tours according to the available time and vehicle capacities.
+        It calls an intelligent algorithm which fits all delivery times into their respective time windows but also results in the shortest possible overall driving time.
+        The number of tours will be minimized considering the given time and load volume constraints. if the url parameter "assign_drivers" is set to true, available drivers will automatically assigned to each tour.
+        However, it is not necessary to define any drivers beforehand.
 
-        Calculates one continuous route for all given deliveries. It calls an intelligent algorithm which fits all delivery times into their respective time windows but also results in the shortest possible overall driving time.
+        This is per default an asynchroneous process which only returns a Process ID. Results can then be polled (e.g. every second) via "GET /api/process/status/<process_id>/final".
+        There is also a possibility to get the results of a finished routing process immediately via Websockets. Please discuss our sample Websocket client implementations with us: support@smartlane.de.
+        The routing process can also be called synchroneously by setting the "async" parameter explicitely to false. In this case, no polling is required and results will be returned directly.
+        Pleas note that in this synchroneous case, the call might take a while and block the API server while waiting for the response.
+
       operationId: postCalcrouteOptimizedTimewindow
       tags:
         - Route
@@ -1448,143 +1620,98 @@ paths:
           description: Routing Parameters
           required: true
           schema:
-            type: object
-            properties:
-              deliveryids:
-                description: a list of delivery ids which will be combined to the resulting tour. This parameter is required
-                type: array
-                items:
-                  type: integer
-                  format: int32
-              truck:
-                description: "indicates if a special route for trucks shall be calculated. In this case, truck restrictions on the respective roads will be respected. The resulting tour will not lead through truck restricted road sections. Default: false"
-                default: false
-                type: boolean
-              timewindows:
-                description: "indicates if timewindows shall be considerd in calculation. If 'timewindow' is not passed in the request, default is 'true' and all supplied time windows will always be considered. Default: true"
-                default: true
-                type: boolean
-              strict:
-                description: "indicates if all time windows of all deliveries should be strictly enforced. In this case, a tour cannot be calculated if the combination of time windows and travel times makes it impossible to calculate a tour fitting all time constraints. If this parameter is set to 'false' (which is the default value), time windows will be extended (relaxed) step by step from one to three hours. Bigger time windows increase the likelyhood of a possible routing solution but some deliveries will be made outside the planned time window. Default: false"
-                default: false
-                type: boolean
-
+            $ref: "#/definitions/Routinginput"
+        - in: query
+          name: truck
+          description: "indicates if a special route for trucks shall be calculated. In this case, truck restrictions on the respective roads will be respected. The resulting tour will not lead through truck restricted road sections. Default: false"
+          default: false
+          required: false
+          type: boolean
+        - in: query
+          name: roundtrip
+          description: "indicates if tours should be planned as round trip returning to the depot after finishing the tour"
+          default: settings parameter for ROUNDTRIP_TOUR (which defaults to false)
+          required: false
+          type: boolean
+        - in: query
+          name: traffic
+          description: "flag indicating if traffic situation prediction should be used for route calculation"
+          default: true
+          required: false
+          type: boolean
+        - in: query
+          name: cancelroutes
+          description: "flag indicating if all existing routes should be cancelled before new routing process starts"
+          default: false
+          required: false
+          type: boolean
+        - in: query
+          name: vehicle
+          description: "Vehicle type for resulting routes. Must be one of 'car', 'truck' or 'bicycle'. This parameter has an effect on the road types that will be used and on the average speed on each road"
+          default: car
+          required: false
+          type: string
+          enum: [
+            'car',
+            'truck',
+            'bicycle'
+          ]
+        - in: query
+          name: numvehicles
+          description: "fix maximum number of tours that can be planned. If this parameter is set to a specific value, the actual number of drivers in the system will be ignored. No route will be calculated if this value is not enough for the necessary number of tours."
+          default: 0
+          type: integer
+          format: int32
+          required: false
+        - in: query
+          name: assign_drivers
+          description: "indicates if drivers should be assigned automatically after routing"
+          default: false
+          required: false
+          type: boolean
+        - in: query
+          name: strict
+          description: "indicates if all time windows of all deliveries should be strictly enforced. In this case, a tour cannot be calculated if the combination of time windows and travel times makes it impossible to calculate a tour fitting all time constraints. If this parameter is set to 'false' (which is the default value), time windows will be extended (relaxed) step by step from one to three hours. Bigger time windows increase the likelyhood of a possible routing solution but some deliveries will be made outside the planned time window. Default: false"
+          default: false
+          required: false
+          type: boolean
+        - in: query
+          name: async
+          description: "indicates if the routing process shall be asynchronous or not. If set to true, routing will be processed concurrently in the background and the server is free to receive other requests. A process ID will be returned immediately after calling the request which can then be polled (e.g. every second) via 'GET /api/process/status/<process_id>/final'. If set to false, server will be blocked and complete results will be returned immediately after they are processed."
+          default: true
+          required: false
+          type: boolean
+        - in: query
+          name: response_data
+          description: "Indicates if payload data (i.e. route and location/delivery details of routing result) should be provided in response. Only relevant when parameter 'async' is explicitely set to 'false'. Asynchroneous routing will not return any payload data immediately (see 'GET /api/process/status/<process_id>/final' instead)"
+          default: false
+          required: false
+          type: string
+          enum: [
+            'none',
+            'base',
+            'all'
+          ]
       responses:
         200:
-          description: process_id (can be used for async status polling)
-        403:
-          $ref: "#/responses/MissingAuthorization"
-        422:
-          $ref: "#/responses/InvalidInput"
-        default:
-          $ref: "#/responses/UnexpectedError"
-  /calcroute/single:
-    post:
-      summary: Calc route single
-      description: |
-        "Calculates one single route with more than one starting point. One pick-up and delivery after another.
-
-         Calculates one continouus route for all deliveries without taking care of multiple stops at one location. Follows the simple scheme: starting point of first delivery → destination point of first delivery → starting point of second delivery → destination point of the second delivery → and so on..."
-      operationId: postCalcrouteSingle
-      tags:
-      - Route
-      parameters:
-        - in: body
-          name: body
-          description: Delivery IDs
-          required: true
+          description: resulting route ids and (if reponse_data is set to 'base' or 'all'), also route payload data. 'all' also includes geo routestring of tour. Only relevant for synchroneous routing (else, see response status 202)
           schema:
-            type: object
-            properties:
-              deliveryids:
-                type: array
-                items:
-                  type: integer
-                  format: int32
-      responses:
-        200:
-          description: OK
+            $ref: "#/definitions/Routemetadatas"
+        202:
+          description: process_id for started asynchroneous process. Can be used for async status polling via "GET /api/process/status/<process_id>/final"
         403:
           $ref: "#/responses/MissingAuthorization"
         422:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
-  /calcroute/single/grouped/startpoint:
-    post:
-      summary: Calc route single grouped startpoint
-      description: |
-        "Calculates one single route of pick-ups and deliveries, grouped by pick-up points.
-
-        Calculates one continouus route for all deliveries.
-        Checks first if multiple deliveries have the same starting (pick-up) location each. The calculated route covers the starting (pick-up)  point of each group of delivereies before all of the referring delivery destinations."
-      operationId: postCalcrouteSingleGroupedStartpoint
-      tags:
-      - Route
-      parameters:
-        - in: body
-          name: body
-          description: Delivery IDs
-          required: true
-          schema:
-            type: object
-            properties:
-              deliveryids:
-                type: array
-                items:
-                  type: integer
-                  format: int32
-      responses:
-        200:
-          description: OK
-        403:
-          $ref: "#/responses/MissingAuthorization"
-        422:
-          $ref: "#/responses/InvalidInput"
-        default:
-          $ref: "#/responses/UnexpectedError"
-  /calcroute/multi/grouped/startpoint:
-    post:
-      summary: Calc route multi grouped startpoint
-      description: |
-        "Calculates multiple routes of pick-ups and deliveries: One route per pick-up point
-
-        Groups all given deliveries by their starting (pick-up) location and calculates one route per pick-up location containing all assigned deliveries.
-        The order of deliveries in each route is taken from the database field orderindex for every delivery."
-      operationId: postCalcrouteMultiGroupedStartpoint
-      tags:
-        - Route
-      parameters:
-        - in: body
-          name: body
-          description: Delivery IDs
-          required: true
-          schema:
-            type: object
-            properties:
-              deliveryids:
-                type: array
-                items:
-                  type: integer
-                  format: int32
-      responses:
-        200:
-          description: OK
-        403:
-          $ref: "#/responses/MissingAuthorization"
-        422:
-          $ref: "#/responses/InvalidInput"
-        default:
-          $ref: "#/responses/UnexpectedError"
-
   /calcroute/update/timewindow/{route_id}:
     patch:
       summary: Calc route update timewindow (id)
       description: |
-        "Adds a new delivery from a depot to an existing time window optimized route
-
-        Calculates a new route based on existing unfinished (not yet delivered or cancelled) deliveries of route with given ID. Additionally, it consumes a list of new deliveries as body parameter and calculates a route containing "old" and "new" deliveries combined.
-        It also sets the status of the "old" route to 14 ("route_replaced") and sets the field "replaced_by" to the ID of the new calculated route. Notice: The new delivery must start from the same location (depot) than all others on the updated route. Pick-up deliveries with different pick-up locations are not supported"
+        Re-calculates times and delivery orders of an existing time window optimized route based on current delays and traffic conditions.
+        It generates a new route based on existing unfinished (not yet delivered or canceled) deliveries of the route with the given ID. Additionally, it may consume one or both optional ID lists of new deliveries and/or deleted deliveries as body parameter and calculates a route containing "old" and "new" deliveries combined minus the newly deleted deliveries.
+        It also sets the status of the "old" route to "route_replaced" and sets the field "replaced_by" to the ID of the new calculated route. Already delivered or canceled delivery objects will not be re-calculated or re-ordered. Notice: All new deliveries must start from the same location (depot) than all already existing ones on the updated route.
       operationId: patchCalcRouteUpdateTimewindowById
       tags:
         - Route
@@ -1597,11 +1724,16 @@ paths:
           format: int32
         - in: body
           name: body
-          description: Delivery IDs to be added to existing route.
+          description: Delivery IDs to be added and/or deleted to the existing route. Both lists are optional and can be combined.
           schema:
             type: object
             properties:
-              deliveryids:
+              add_deliveryids:
+                type: array
+                items:
+                  type: integer
+                  format: int32
+              del_deliveryids:
                 type: array
                 items:
                   type: integer
@@ -1615,6 +1747,7 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
   /upload/onestep:
     post:
       summary: Upload onestep
@@ -1668,7 +1801,7 @@ paths:
           type: boolean
         - in: query
           name: numvehicles
-          description: "Number of available vehicles/drivers for the routing. If not enough vehicles are supplied for the number of deliveries in the request/excel file, the result might be more clustered tours than available vehicles. If the resulting clustered tours are too extensive to be handeled by one driver each, the routing will fail for single tour clusters. As a rough estimation, there should be max. 30-40 deliveries/addresses per vehicle in the request/excel files. If this parameter is not supplied, it defaults to the number of previously created drivers in the system"
+          description: "Number of available vehicles/drivers for the routing. If not enough vehicles are supplied for the number of deliveries in the request/excel file, the result might be more clustered tours than available vehicles. If the resulting clustered tours are too extensive to be handled by one driver each, the routing will fail for single tour clusters. As a rough estimation, there should be max. 30-40 deliveries/addresses per vehicle in the request/excel files. If this parameter is not supplied, it defaults to the number of previously created drivers in the system"
           required: false
           type: integer
           format: int32
@@ -1685,7 +1818,7 @@ paths:
 #     post:
 #       summary: Upload twostep
 #       description: "Uploads an excel file and prepares address correction for later tour calculation.
-# 
+#
 #       Uploads an excel file containing addresses, planned time windows and tour IDs. It only uploads the excel file and creates delivery entities. It then returns a routing process id as well as inaccurate or wrong addresses so that they can be corrected before the actual routing process is started via POST /batchrouting/{process_id}."
 #       operationId: postUploadTwostep
 #       tags:
@@ -1717,7 +1850,7 @@ paths:
     post:
       summary: Upload delivery only
       description: "Uploads an excel file and creates delivery objects.
-      Uploads an excel file containing addresses and planned time windows and creates referring delivery objects. These delviery objects can later be used for manual routing processes, e.g. via /calcroute/optimized."
+      Uploads an excel file containing addresses and planned time windows and creates referring delivery objects. These delivery objects can later be used for manual routing processes, e.g. via /calcroute/optimized."
       operationId: postUploadDeliveryonly
       tags:
         - Route
@@ -1738,6 +1871,7 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
   /batchrouting/{process_id}:
     post:
       summary: Batch routing (id)
@@ -1760,6 +1894,7 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
   /process/status/{process_id}/{action_id}:
     get:
       summary: Process status (id,id)
@@ -1781,12 +1916,26 @@ paths:
           type: string
           enum: [
             read_excel,
-            routing,
-            update_excel
+            final
+          ]
+        - in: query
+          name: response_data
+          description: Indicates if payload data (i.e. route and location/delivery details of routing result) should be provided in response
+          default: false
+          required: false
+          type: string
+          enum: [
+            'none',
+            'base',
+            'all'
           ]
       responses:
         200:
-          description: current status of the requested action within the requestedrouting process
+          description: "If URL parameter 'response_data' is set to 'all' or 'base': current status of the requested action and also payload data of all calculated routes"
+          schema:
+            $ref: '#/definitions/Routemetadatas'
+        202:
+          description: "If URL parameter 'response_data' is set to a value which is NOT 'all' or 'base': current status of the requested action within the requested routing process"
           schema:
             $ref: '#/definitions/Processstatus'
         403:
@@ -1795,10 +1944,12 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
+
   /cancelroute/{route_id}:
     post:
       summary: Cancel route (id)
-      description: "Cancels an unfinished route because of an unplanned event (e.g. driver is no more available). The route will be moved to the route archive and all unfinished (not yet delivered an not yet cancelled) deliveries will be retuned to the active deliveries list (delivery status is set to 'none'). These deliveries are then available for re-routing in a new tour"
+      description: "Cancels an unfinished route because of an unplanned event (e.g. driver is no more available). The route will be moved to the route archive and all unfinished (not yet delivered an not yet canceled) deliveries will be returned to the active deliveries list (delivery status is set to 'none'). These deliveries are then available for re-routing in a new tour"
       operationId: postCancelrouteById
       tags:
         - Route
@@ -1837,13 +1988,15 @@ paths:
         default: 20
       responses:
         200:
-          description: Accouting information
+          description: Accounting information
           schema:
             $ref: '#/definitions/Dispatchlogs'
         403:
           $ref: "#/responses/MissingAuthorization"
         default:
           $ref: "#/responses/UnexpectedError"
+
+
   /dispatchlogs/action:
     get:
       summary: Dispatchlogs action
@@ -1861,13 +2014,15 @@ paths:
         default: 20
       responses:
         200:
-          description: Accouting information
+          description: Accounting information
           schema:
             $ref: '#/definitions/Dispatchlogactions'
         403:
           $ref: "#/responses/MissingAuthorization"
         default:
           $ref: "#/responses/UnexpectedError"
+
+
   /dispatchlogs/action/{dispatchlogs_id}:
     patch:
       summary: Dispatch logs action (id)
@@ -1889,6 +2044,8 @@ paths:
           $ref: "#/responses/MissingAuthorization"
         default:
           $ref: "#/responses/UnexpectedError"
+
+
   /analyze:
     get:
       summary: Analyze
@@ -1911,6 +2068,8 @@ paths:
           $ref: "#/responses/MissingAuthorization"
         default:
           $ref: "#/responses/UnexpectedError"
+
+
   /plzarea:
     get:
       summary: Plz area
@@ -1937,7 +2096,7 @@ paths:
       description: "Gets all tour areas as GeoJSON Multipolygons from the database. Tour areas are usually aggregated from one one or more postal code (PLZ) areas but can also be any other arbitrary geographical (Multi)Polygon. Tour areas can be assigned to one driver each so that the referring driver for a tour area can automatically be assigned to the tour which is created from deliveries/addresses located in this area."
       operationId: getTourarea
       tags:
-        - Route
+        - Address
       parameters:
         - $ref: "#/parameters/filterQuery"
       responses:
@@ -1952,13 +2111,36 @@ paths:
         default:
           $ref: "#/responses/UnexpectedError"
   /tourarea/{tourarea_id}:
+    get:
+      summary: Tour area (id)
+      description: |
+        Get tour area information of a single tourarea by ID.
+      tags:
+        - Address
+      parameters:
+      - in: path
+        name: tourarea_id
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Tourarea"
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
     patch:
       summary: Tour area (id)
       description: |
         Edits/patches tour area information.
       operationId: patchTourareaById
       tags:
-        - Route
+        - Address
       parameters:
         - in: body
           name: tourarea
@@ -1979,6 +2161,30 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+  /deletetourarea/{tourarea_id}:
+    delete:
+      summary: Delete area (id)
+      description: |
+        Deletes tour area information of a single tourarea by ID.
+      tags:
+        - Address
+      parameters:
+      - in: path
+        name: tourarea_id
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Tourarea"
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
   /areafromplz:
     post:
       summary: Area from plz
@@ -1990,7 +2196,6 @@ paths:
       parameters:
         - in: body
           name: body
-          description: postal code list
           required: true
           schema:
             type: object
@@ -2000,7 +2205,8 @@ paths:
                 type: array
                 items:
                   type: string
-              items:
+              areaname:
+                description: Name of the newly created tour area
                 type: string
       responses:
         201:
@@ -2021,6 +2227,50 @@ paths:
       responses:
         200:
           description: OK
+  /areaforpoint:
+    get:
+      summary: Area from PLZ
+      description: Get tour areas for a point on the map.
+      operationId: getAreaForPoint
+      tags:
+        - Address
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              lat:
+                description: Latitude of requested point
+                type: string
+              lon:
+                description: Longitude of requested point
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              plzarea_id:
+                description: gid of containing Plzarea
+                type: integer
+              plz:
+                description: Postalcode of containg Plzarea
+                type: string
+              geom:
+                $ref: "#/definitions/Polygon"
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
+
   /task:
     get:
       summary: Task
@@ -2052,7 +2302,7 @@ paths:
       parameters:
         - in: query
           name: type
-          description: "A string for the task type to group by (e.g. read or update). Default: all types (read, update, create, delete). At the moment, only create taks are collected in the database."
+          description: "A string for the task type to group by (e.g. read or update). Default: all types (read, update, create, delete). At the moment, only created tasks are collected in the database."
           required: false
           type: string
         - in: query
@@ -2069,14 +2319,14 @@ paths:
         - in: query
           name: startdate
           description: |
-            Earliest start date of first interval. Format ISO 8601 (YYYY-MM-DDThh mm ss+tzh tzm) (Default 10 days back from now). timezone (+tzh tzm) is optional. Default ist local timezone
+            Earliest start date of first interval. Format ISO 8601 (YYYY-MM-DDThh mm ss+tzh tzm) (Default 10 days back from now). timezone (+tzh tzm) is optional. Default is local timezone
           required: false
           type: string
           format: dateTime
         - in: query
           name: enddate
           description: |
-            latest end date of last interval. Format ISO 8601 (YYYY-MM-DDThh:mm:ss+tzh:tzm) (Default now). timezone ("+tzh:tzm") is optional. Default ist local timezone.
+            latest end date of last interval. Format ISO 8601 (YYYY-MM-DDThh:mm:ss+tzh:tzm) (Default now). timezone ("+tzh:tzm") is optional. Default is local timezone.
           required: false
           type: string
           format: dateTime
@@ -2111,13 +2361,45 @@ paths:
         - $ref: "#/parameters/filterQuery"
       responses:
         200:
-          description: Accouting information
+          description: Accounting information
           schema:
             $ref: '#/definitions/Accountings'
         403:
           $ref: "#/responses/MissingAuthorization"
         default:
           $ref: "#/responses/UnexpectedError"
+  /currentuser:
+    get:
+      summary: Current user
+      description: Gets information about the current logged in user.
+      operationId: getCurrentuser
+      tags:
+      - Authorization
+      responses:
+        200:
+          description: Current user information
+          schema:
+            type: object
+            properties:
+              firstname:
+                type: string
+              lastname:
+                type: string
+              email:
+                type: string
+              expires:
+                type: string
+                format: dateTime
+                description: Date the user account expires.
+              success:
+                type: boolean
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
   /resetpwd:
     post:
       summary: Reset pwd
@@ -2228,31 +2510,32 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
-
-  /activatedriver:
+  /driver/resendcode:
     post:
-      summary: Activate driver
-      description: |
-        "Activates a driver from a driver's device after he/she has received an activation code which was generated upon driver object creation by a dispatcher. Please note that there can be a delay of up to a couple of hours between driver creation in the dispatcher application and the SMS being sent to the driver because of internal user validations"
-      operationId: postActivatedriver
+      summary: Resend Code
+      description: Regenerates and sends the 6 character activation driver activation code via email or SMS. (SMS is currently deactivated. Please contact support@smartlane.de if it is needed).
+      operationId: postDriverResendcode
       tags:
       - Authorization
-      deprecated: true
       parameters:
         - in: body
-          name: driver activation data
-          description: activation code and device number (IMEI) of the drivers device.
+          name: body
+          description: Parameters with mandatory email address for identification.
           required: true
           schema:
             type: object
             properties:
-              code:
-                description: "The activation code which was sent to the driver via SMS after a dispatcher has added him/her to the application."
+              email:
                 type: string
-              imei:
-                description: "The [IMEI](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity) (device number) of the driver's device. A driver can later always automatically login if the devices IMEI is read by the login application. This is e.g. always done by the SmartlaneDISPATCH! driver smartphone app."
-                type: string
-
+                description: The drivers emails address
+              sendemail:
+                type: boolean
+                description: Whether the code should be send via email
+                default: true
+              sendsms:
+                type: boolean
+                description: Whether the code should be send via SMS
+                default: false
       responses:
         200:
           description: OK
@@ -2262,25 +2545,28 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
-      security: []
-  /driverauth:
+
+  /driverauth/password:
     post:
       summary: Driver auth
       description: |
-        "Retrieves a fresh JWT authorization token for the driver user with a given IMEI (device number)"
-      operationId: postDriverauth
+        "Returns a fresh JWT authorization token for the driver user, given an email and password"
+      operationId: postDriverauthPassword
       tags:
       - Authorization
       parameters:
         - in: body
-          name: driver login data
-          description: device number (IMEI) of the drivers device.
+          name: body
+          description: Driver
           required: true
           schema:
             type: object
             properties:
-              IMEI:
-                description: "The IMEI (device number. http://www.imei.info/) of the driver's device. A driver can automatically be logged in if the devices IMEI is read by the login application. This is e.g. always done by the SmartlaneDISPATCH! driver smartphone app."
+              email:
+                description: "The drivers email address"
+                type: string
+              password:
+                description: The drivers password
                 type: string
 
       responses:
@@ -2290,10 +2576,10 @@ paths:
             type: object
             properties:
               token:
-                description: "The JWT token of the drive which can be used for maing calls on the SmartlaneDISPATCH! API."
+                description: "The JWT token of the drive which can be used for making calls on the Smartlane API."
                 type: string
               driver_id:
-                description: "The id of the driver which is logged in."
+                description: "The drivers ID"
                 type: integer
                 format: int32
         403:
@@ -2307,7 +2593,7 @@ paths:
     post:
       summary: Token expiry
       description: |
-        "Gets the expiry time of the current user's token. It is automatically read out of the Auuthorization header."
+        "Gets the expiry time of the current user's token. It is automatically read out of the Authorization header."
       operationId: postTokenexpiry
       tags:
       - Authorization
@@ -2345,6 +2631,134 @@ paths:
           $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
+  /excelfile/headerkeys:
+    get:
+      summary: Headerkeys
+      description: A list of all possible (internal) keys, the Excel headers can be mapped to. Including a description in German.
+      operationId: getExcelfileHeaderkeys
+      tags:
+        - Admin
+      responses:
+        200:
+          description: "List of possible Excel header keys"
+          schema:
+            type: object
+            properties:
+              headerkeys:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                      description: Internal representation
+                    fixlabel:
+                      type: string
+                      description: Description of key in German translation
+
+  /excelfile/readheaders:
+    post:
+      summary: Read Excel headers
+      description: "Reads the headers (first row) of an Excel file and returns a first guess for a mapping to our internal representation. This is useful for [configuration](reference#postexcelfilewriteheaders) of Excel uploads."
+      operationId: postExcelfileReadheaders
+      tags:
+        - Admin
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: query
+          name: persistent
+          description: Whether the suggested mapping should be used immediately (not recommended)
+          type: boolean
+
+        - in: formData
+          name: file[]
+          description: local path of the file to be uploaded
+          required: true
+          type: string
+      responses:
+        200:
+          description: "List of suggested keys for corresponding headers"
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              headers:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    file_header:
+                      type: string
+                      description: Original name in file
+                    suggested_key:
+                      type: string
+                      description: Internal representation
+                    label:
+                      type: string
+                      description: Name
+        401:
+          description: A failure message caused by missing authentication
+          schema:
+            type: object
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
+  /excelfile/writeheaders:
+    post:
+      summary: Write headers
+      description: "Writes the configuration of the Excel headers, used for uploading. Takes any array of json objects of the form {\"key\": \"excelheader\"}, where \"key\" is one of the keys as returned by /excelfile/headerkeys and excelheader the string value of the expected Excel header/columnname."
+      operationId: postExcelfileWriteheaders
+      tags:
+        - Admin
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              headernames:
+                type: array
+                items:
+                  type: object
+      responses:
+        201:
+          description: Ok
+        401:
+          description: A failure message caused by missing authentication
+          schema:
+            type: object
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
+  /importheader:
+    get:
+      summary: Importheader
+      description: Gets the current Excel header configuration.
+      operationId: getImportheader
+      tags:
+        - Admin
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Importheader'
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          $ref: "#/responses/InvalidInput"
+        default:
+          $ref: "#/responses/UnexpectedError"
+
   /connectioncheck:
     get:
       summary: Connection check
@@ -2359,57 +2773,33 @@ paths:
             type: string
         default:
           $ref: "#/responses/UnexpectedError"
-  /dumps:
+  /analysis/{data_id}:
     get:
-      summary: Dumps
-      description: "Returns a database dump."
-      operationId: getDumps
+      summary: Analysis
+      description: |
+        Returns data accumulated by the Smartlane BigData backend.
+        The actual data_ids, will follow. Individual data analysis can be requested via info@smartlane.de
+      operationId: getAnalysisById
       tags:
-        - Admin
-      responses:
-        200:
-          description: "List of current database dumps or 'nothing found'."
-          schema:
-            type: string
-        default:
-          $ref: "#/responses/UnexpectedError"
-  /dumps/create:
-    get:
-      summary: Dumps create
-      description: "Creates a database dump."
-      operationId: getDumpsCreate
-      tags:
-        - Admin
-      responses:
-        200:
-          description: "DB dump successfully created."
-        default:
-          $ref: "#/responses/UnexpectedError"
-  /dumps/restore:
-    post:
-      summary: Dumps restore
-      description: "Restores a database dump"
-      operationId: postDumpsRestore
-      tags:
-        - Admin
+      - Dispatch
       parameters:
-        - in: body
-          name: body
-          description: Address information, body either contains a freesearchtext field or address information
+        - in: path
+          name: data_id
+          description: Identifier for the requested data
           required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        403:
+          $ref: "#/responses/MissingAuthorization"
+        422:
+          description: There is no data for your data_id
           schema:
             type: object
-            properties:
-              dumpfile:
-                type: string
-                description: "Name of dumpfile"
-      responses:
-        201:
-          description: DB dump successfully restored
-        422:
-          $ref: "#/responses/InvalidInput"
         default:
           $ref: "#/responses/UnexpectedError"
+
 definitions:
   Companies:
     type: object
@@ -2569,7 +2959,7 @@ definitions:
       usertype:
         type: string
       vehicle:
-        description: referce to Vehicletype
+        description: reference to Vehicletype
         type: integer
         format: int32
       mobilenr:
@@ -2775,6 +3165,44 @@ definitions:
       total_pages:
         type: integer
         format: int32
+  Deliverymetadatas:
+    type: object
+    properties:
+      num_results:
+        type: integer
+        format: int32
+      objects:
+        type: array
+        items:
+          $ref: '#/definitions/Deliverymetadata'
+  Deliverymetadata:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      contactcompany:
+        type: string
+      contactfirstname:
+        type: string
+      contactlastname:
+        type: string
+      street:
+        type: string
+      housenumber:
+        type: string
+      postalcode:
+        type: string
+      city:
+        type: string
+      customernr:
+        type: string
+      deliverytype_id:
+        type: integer
+        format: int32
+      location:
+        $ref: "#/definitions/Location"
+
   Delivery:
     type: object
     properties:
@@ -2891,6 +3319,125 @@ definitions:
       distances:
         description: Deprecated. JSON object containing distances to other deliveries on the same route
         type: string
+      deliverytype_id:
+        description: reference to Deliverytype
+        type: integer
+        format: int32
+
+
+
+  Routinginput:
+    type: object
+    properties:
+      deliverydata:
+        description: "a list of delivery/address objects (either in the Delivery format with city, street, ... or geo positions lat and lng) which will be combined to the resulting tour(s). Time windows (pdt_from and pdt_to) are optional. It is required to provide either 'deliverydata' or 'deliveriyids'. If both are provided, only deliveryids is used."
+        type: array
+        items:
+          $ref: '#/definitions/Routedeliveryinputs'
+      deliveryids:
+        description: "a list of delivery ids (if delivery objects are already defined) which will be combined to the resulting tour(s). It is required to provide either 'deliverydata' or 'deliveriyids'. If both are provided, only 'deliveryids' is used."
+        type: array
+        items:
+          type: integer
+          format: int32
+      startaddress_id:
+        description: "Use either startaddress_id OR startaddress (or none of both). startaddress_id is the ID of the Address object (if such an address object already exists) which should be used as starting point/depot of all tours. Default is the standard company / depot address. If both, 'startaddress' (see below) AND 'startaddress_id' are provided, only startaddress is used."
+        default: company depot location
+        type: integer
+        format: int32
+      startaddress:
+        description: "Address object. Either complete Address data (city, street, ...) or geo positions lat and lng (see 'Inputaddress'). It defines the starting point of the tour. Default is the standard company / depot address. Either 'startaddress_id' (see above) or 'startaddress' or none of both can be given. If both are provided, only startaddress is used."
+        $ref: '#/definitions/Inputaddress'
+      vehcapacities:
+        description: "List of vehicle capacity numbers (e.g. kg or nr of parcels, same unit as delivery.load) which is the maximum load per vehicle/tour. It is recommended to have at least the same number of capacities as number of vehicles in one call."
+        default: settings parameter for VARIYING_VEHICLE_CAPACITIES (which defaults to [500] if not set explicitely)
+        type: array
+        items:
+          type: integer
+          format: int32
+
+  Routedeliveryinputs:
+    type: object
+    properties:
+      deliverydata:
+        type: array
+        items:
+          $ref: '#/definitions/Routedeliveryinput'
+
+  Routedeliveryinput:
+    type: object
+    properties:
+      custom_id:
+        description: an arbitrary custom ID/name for this delivery. Can be used to re-identify a delivery object in the routing response
+        type: string
+      lat:
+        description: Latitude of the geo position of this delivery. Either geo postions (lat & lng) or city or postalcode must be provided
+        type: string
+      lng:
+        description: Longitude of the geo position of this delivery. Either geo postions (lat & lng) or city or postalcode must be provided
+        type: string
+      city:
+        description: city of the delivery. Either city or postalcode or geo postions (lat & lng) must be provided
+        type: string
+      postalcode:
+        description: city of the delivery. Either city or postalcode or geo postions (lat & lng) must be provided
+        type: string
+      street:
+        description: street of the delivery.
+        type: string
+      housenumber:
+        description: housen number of the delivery.
+        type: string
+      customernr:
+        description: customer number for this delivery. Can be used to uniquely identify and re-use an already existing addreess
+        type: string
+      contactcompany:
+        description: companyname to be displayed for this delivery
+        type: string
+      contactfirstname:
+        description: first name to be displayed for this delivery
+        type: string
+      contactlastname:
+        description: last name to be displayed for this delivery
+        type: string
+      country:
+        description: country of this delivery
+        type: string
+        default: DE
+      email:
+        description: email of the recipient. Can be used for automatic arrival time notifications
+        type: string
+      phonenr:
+        description: phone nr of the recipient. Can be used for automatic arrival time notifications
+        type: string
+      pdt_from:
+        type: string
+        format: date-time
+        description: planned start of arrival time window at delivery location
+      pdt_to:
+        type: string
+        format: date-time
+        description: planned end of arrival time window at delivery location
+      els:
+        description: Estimated length of stay / delivery duration at recipient address.
+        type: integer
+        format: int32
+        default : 5
+      load:
+        description: load of deliverd goods (e.g. nr or kg). deliveies can be loaded up to the defined vehicle capacity.
+        type: integer
+        format: int32
+        default : 1
+      notes:
+        description: delivery notes which can be displayed to the driver
+        type: string
+      final:
+        description: if set to true, this delivery will be fixed as last delivery of the tour. Only one delivery can be final
+        type: boolean
+        default: false
+      notify_customer:
+        type: boolean
+        default: false
 
   Deliverystatus:
     type: object
@@ -2947,7 +3494,7 @@ definitions:
         format: int32
 
   Livedelivery:
-    description: "Address, eta and the current postion of the driver serving the delivery. If no driver postion can be found, driverinfo is set to the message 'No driver tracking found on this route'"
+    description: "Address, eta and the current position of the driver serving the delivery. If no driver position can be found, driverinfo is set to the message 'No driver tracking found on this route'"
     type: object
     properties:
       id:
@@ -3041,6 +3588,25 @@ definitions:
         type: string
       street:
         type: string
+  Inputaddress:
+    type: object
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      housenumber:
+        type: string
+      postalcode:
+        type: string
+      street:
+        type: string
+      lat:
+        type: number
+        format: double
+      lng:
+        type: number
+        format: double
   GeocodeRequest:
     type: object
     properties:
@@ -3183,77 +3749,7 @@ definitions:
       areatext:
         type: string
         description: Autogenerated summary of the routes region
-  Routemetadatas:
-    type: object
-    properties:
-      num_results:
-        type: integer
-        format: int32
-      objects:
-        type: array
-        items:
-          $ref: '#/definitions/Routemetadata'
-      page:
-        type: integer
-        format: int32
-      total_pages:
-        type: integer
-        format: int32
-  Routemetadata:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int32
-      ast:
-        type: string
-        format: date-time
-      creationtime:
-        type: string
-        format: date-time
-      deliveries:
-        type: array
-        items:
-          type: integer
-          format: int32
-      distance:
-        type: integer
-        format: int32
-      driver_id:
-        description: reference to Driver
-        type: integer
-        format: int32
-      gross_duration:
-        type: integer
-        format: int32
-      htmlcolor:
-        type: string
-      net_duration:
-        type: integer
-        format: int32
-      pst:
-        type: string
-        format: date-time
-      routebase_address_id:
-        description: reference to Address
-        type: integer
-        format: int32
-      status:
-        type: integer
-        format: int32
-  Processstatus:
-    type: object
-    properties:
-      status:
-        type: string
-      link:
-        type: string
-      vague_addresses:
-       type: array
-       items:
-        type: string
-      meta:
-        type: string
+
   Routedeliverydistances:
     type: object
     properties:
@@ -3302,6 +3798,105 @@ definitions:
         format: int32
       street:
         type: string
+
+  Processstatus:
+    type: object
+    properties:
+      status:
+        type: string
+      link:
+        type: string
+      vague_addresses:
+       type: array
+       items:
+        type: string
+      meta:
+        type: string
+
+  Routemetadatas:
+    description: route ids and (if reponse_data is set to 'base' or 'all'), also route payload data
+    type: object
+    properties:
+      num_results:
+        type: integer
+        format: int32
+      objects:
+        type: array
+        items:
+          $ref: '#/definitions/Routemetadata'
+      page:
+        type: integer
+        format: int32
+      total_pages:
+        type: integer
+        format: int32
+  Routemetadata:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int32
+      custom_id:
+        description: an arbitrary custom tour id/name
+        type: integer
+        format: string
+      ast:
+        description: actual start time. Will be set, when tour status is set to 'ontheway'
+        type: string
+        format: date-time
+      creationtime:
+        type: string
+        format: date-time
+      deliveries:
+        description: "if routing parameter response_date is set to any OTHER value than 'base' or 'all', only delivery IDs will be returned. Otherwise, see 'delivery_items' below"
+        type: array
+        items:
+          $ref: '#/definitions/Delivery'
+      delivery_items:
+        description: "if routing parameter response_date is set to 'base' or 'all', delivery objects will be returned. Otherwise, see 'deliveries' above"
+        type: array
+        items:
+          type: integer
+          format: int32
+      distance:
+        description: driving distance of whole route in meters
+        type: integer
+        format: int32
+      driver_id:
+        description: reference to Driver
+        type: integer
+        format: int32
+      gross_duration:
+        description: net duration (including stop times at each location) of whole route in seconds
+        type: integer
+        format: int32
+      htmlcolor:
+        description: color of the route for displaying it on a map
+        type: string
+      net_duration:
+        description: net duration (only driving time without stops) of whole route in seconds
+        type: integer
+        format: int32
+      tst_from:
+        description: ealiest tour target start time for driver
+        type: string
+        format: date-time
+      tst_to:
+        description: latest tour target start time for driver
+        type: string
+        format: date-time
+      routebase_address_id:
+        description: reference to start address object
+        type: integer
+        format: int32
+      routestring:
+        description: a GeoJSON Linestring object containing lat/lon waypoints of the whole tour. Will ohnly be returned if the request parameter 'routestring' is set to true
+        type: string
+      status:
+        description: see 'Routestatus'
+        type: integer
+        format: int32
+
   Plzareas:
     type: object
     properties:
@@ -3356,10 +3951,17 @@ definitions:
       id:
         type: integer
         format: int32
-      driver_id:
-        type: string
       geom:
         $ref: "#/definitions/Multipolygon"
+      plzareas:
+        $ref: "#/definitions/Plzareas"
+      driver_id:
+        description: Reference to driver ID
+        type: integer
+        format: int32
+      areaname:
+        type: integer
+        format: int32
   Dispatchlogs:
     type: object
     properties:
@@ -3389,9 +3991,9 @@ definitions:
         format: int32
       level:
         type: string
-        description: criticalitiy level of this log message (info, warn or critical)
+        description: critically level of this log message (info, warn or critical)
       message_de:
-        description: message text in german language
+        description: message text in German language
         type: string
         format: date-time
   Dispatchlogactions:
@@ -3537,6 +4139,55 @@ definitions:
       punctual:
         description: Only for 'punctual'
         type: integer
+
+  Importheaders:
+    type: object
+    properties:
+      num_results:
+        type: integer
+        format: int32
+      objects:
+        type: array
+        items:
+          $ref: '#/definitions/Importheader'
+      page:
+        type: integer
+        format: int32
+      total_pages:
+        type: integer
+        format: int32
+  Importheader:
+    type: object
+    properties:
+      id:
+        type: integer
+      key:
+        type: string
+        description: Internal representation of fields for Excel import.
+      fixlabel:
+        type: string
+        description: Short description of key in German.
+      headername:
+        type: string
+        description: Name of the column (first row) in the Excel file to upload.
+
+  Deliverytype:
+    type: object
+    properties:
+      typename:
+        description: Name of the delivery type (max. 80 characters)
+        type: string
+      default_els:
+        description: Default estimated length of stay.
+        type: integer
+        default: 60
+      notes:
+        description: Notes for delivery type (max. 255 characters)
+        type: string
+      htmlcolor:
+        description: RGB color string of 6 hex digits, e.g. '00AABB'.
+        type: string
+        default: '000000'
   Error:
     type: object
     properties:
@@ -3555,7 +4206,7 @@ parameters:
     name: q
     type: string
     description: |
-      Filter query string. Can be used to filter results. [Detailed desciption](/page/api-handling-extras#section-filter-queries)
+      Filter query string. Can be used to filter results. [Detailed description](/page/api-handling-extras#section-filter-queries)
 
 responses:
   MissingAuthorization:

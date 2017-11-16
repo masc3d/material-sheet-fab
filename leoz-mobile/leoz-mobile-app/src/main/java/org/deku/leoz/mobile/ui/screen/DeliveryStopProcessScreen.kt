@@ -678,7 +678,7 @@ class DeliveryStopProcessScreen :
                                     name = "Stop Parcels",
                                     entries = it.map
                                     {
-                                        val unitNumber = UnitNumber.parse(it.number).value
+                                        val unitNumber = DekuUnitNumber.parse(it.number).value
                                         SyntheticInput.Entry(
                                                 symbologyType = SymbologyType.Interleaved25,
                                                 data = unitNumber.label
@@ -692,7 +692,7 @@ class DeliveryStopProcessScreen :
                                     name = "Parcels",
                                     entries = it.map
                                     {
-                                        val unitNumber = UnitNumber.parse(it.number).value
+                                        val unitNumber = DekuUnitNumber.parse(it.number).value
                                         SyntheticInput.Entry(
                                                 symbologyType = SymbologyType.Interleaved25,
                                                 data = unitNumber.label
@@ -750,7 +750,7 @@ class DeliveryStopProcessScreen :
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result: Result<Parcel> = Parcel.parseLabel(event.data)
+        val result: Result<Parcel> = UnitNumber.parseLabel(event.data)
 
         when {
             result.hasError -> {

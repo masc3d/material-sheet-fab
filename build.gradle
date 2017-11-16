@@ -77,21 +77,22 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        google()
         maven {
             url 'leoz-build/repo'
         }
     }
 
     dependencies {
-        classpath "sx:sx-ssh:0.1"
-        classpath "sx:sx-common:0.1"
-        classpath "sx:sx-packager-gradle:0.1"
-        classpath "sx:sx-serialization:0.1"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-
         classpath(
-                'com.github.ben-manes:gradle-versions-plugin:0.15.0',
-                'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
+                "com.github.ben-manes:gradle-versions-plugin:0.15.0",
+                "org.kordamp.gradle:stats-gradle-plugin:0.2.0",
+                "com.android.tools.build:gradle:$v_android_gradle",
+                "sx:sx-ssh:0.1",
+                "sx:sx-common:0.1",
+                "sx:sx-packager-gradle:0.1",
+                "sx:sx-serialization:0.1"
         )
     }
 }

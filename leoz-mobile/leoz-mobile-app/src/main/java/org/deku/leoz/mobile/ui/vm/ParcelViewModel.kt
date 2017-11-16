@@ -5,7 +5,7 @@ import android.support.annotation.DrawableRes
 import android.view.View
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Parcel
-import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.model.DekuUnitNumber
 import sx.format.format
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,7 +23,7 @@ class ParcelViewModel(
 
     private fun Double.toDimensionFormat(): String = this.format(1)
 
-    private val unitNumber by lazy { UnitNumber.parse(this.parcel.number).value }
+    private val unitNumber by lazy { DekuUnitNumber.parse(this.parcel.number).value }
 
     val length: String
         get() = this.parcel.length.toDimensionFormat()

@@ -41,10 +41,7 @@ import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
-import org.deku.leoz.model.GlsUnitNumber
-import org.deku.leoz.model.Parcel
-import org.deku.leoz.model.UnitNumber
-import org.deku.leoz.model.toUnitNumber
+import org.deku.leoz.model.*
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
@@ -137,7 +134,7 @@ class DeliveryStopListScreen
                 SyntheticInput(
                         name = "Parcels",
                         entries = this.parcelRepository.entities.map {
-                            val unitNumber = UnitNumber.parse(it.number).value
+                            val unitNumber = DekuUnitNumber.parse(it.number).value
                             SyntheticInput.Entry(
                                     symbologyType = SymbologyType.Interleaved25,
                                     data = unitNumber.label
@@ -597,7 +594,7 @@ class DeliveryStopListScreen
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result: Result<Parcel> = Parcel.parseLabel(event.data)
+        val result: Result<Parcel> = UnitNumber.parseLabel(event.data)
 
         when {
             result.hasError -> {
