@@ -153,16 +153,16 @@ class UnitNumberTests {
     @Test
     fun testUnitNumbers() {
         DEKU_VARIOUS.forEach {
-            val un = UnitNumber.parseLabel(it).value
+            val un = DekuUnitNumber.parseLabel(it).value
         }
     }
 
     @Test
     fun testDekuGlsUnitNumbers() {
         DEKU_GLS_UNIT_LABELS.forEach {
-            val un = UnitNumber.parseLabel(it).value
+            val un = DekuUnitNumber.parseLabel(it).value
 
-            Assert.assertEquals(UnitNumber.Type.Parcel, un.type)
+            Assert.assertEquals(DekuUnitNumber.Type.Parcel, un.type)
             Assert.assertEquals(true, un.isGlsParcel)
         }
     }
@@ -171,24 +171,24 @@ class UnitNumberTests {
     fun testSealUnitNumbers() {
         // Test main seals
         MAINSEAL_LABELS.forEach {
-            val un = UnitNumber.parseLabel(it).value
+            val un = DekuUnitNumber.parseLabel(it).value
 
-            Assert.assertEquals(UnitNumber.Type.MainSeal, un.type)
+            Assert.assertEquals(DekuUnitNumber.Type.MainSeal, un.type)
         }
 
         BACKSEAL_LABELS.forEach {
-            val un = UnitNumber.parseLabel(it).value
+            val un = DekuUnitNumber.parseLabel(it).value
 
-            Assert.assertEquals(UnitNumber.Type.BackSeal, un.type)
+            Assert.assertEquals(DekuUnitNumber.Type.BackSeal, un.type)
         }
     }
 
     @Test
     fun testUnitNumberTypeFilter() {
         DEKU_VARIOUS.forEach {
-            val un = UnitNumber.parseLabel(it)
-            if (!un.assertAny(UnitNumber.Type.Parcel).hasError) {
-                Assert.assertEquals(un.value.type, UnitNumber.Type.Parcel)
+            val un = DekuUnitNumber.parseLabel(it)
+            if (!un.assertAny(DekuUnitNumber.Type.Parcel).hasError) {
+                Assert.assertEquals(un.value.type, DekuUnitNumber.Type.Parcel)
             }
         }
     }

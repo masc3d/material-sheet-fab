@@ -119,7 +119,7 @@ class VehicleLoadingScreen :
     private var currentDamagedParcel: ParcelEntity? = null
 
     private var acceptForgeinOrdersWithoutConsent: Boolean = false
-    private var forgeinOrderCounter: Int = 0
+    private var foreignOrderCounter: Int = 0
 
     // region Sections
     val loadedSection by lazy {
@@ -424,7 +424,7 @@ class VehicleLoadingScreen :
                         SyntheticInput(
                                 name = "Parcels",
                                 entries = it.value.map {
-                                    val unitNumber = UnitNumber.parse(it.number).value
+                                    val unitNumber = DekuUnitNumber.parse(it.number).value
                                     SyntheticInput.Entry(
                                             symbologyType = SymbologyType.Interleaved25,
                                             data = unitNumber.label
@@ -486,7 +486,7 @@ class VehicleLoadingScreen :
 
         val result = Observable.concat(
                 Observable.fromCallable {
-                    UnitNumber
+                    DekuUnitNumber
                             .parseLabel(event.data)
                             .assertAny(
                                     UnitNumber.Type.Parcel,
@@ -605,11 +605,11 @@ class VehicleLoadingScreen :
                                                 .positiveText(android.R.string.yes)
                                                 .negativeText(android.R.string.no)
                                                 .onPositive { _, _ ->
-                                                    forgeinOrderCounter++
+                                                    foreignOrderCounter++
                                                     mergeOrder()
                                                 }
 
-                                        if (forgeinOrderCounter >= 3) {
+                                        if (foreignOrderCounter >= 3) {
                                             dialog.checkBoxPrompt(
                                                     getString(R.string.accept_always),
                                                     false,

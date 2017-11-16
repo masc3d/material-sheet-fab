@@ -394,7 +394,7 @@ class VehicleUnloadingScreen :
                         SyntheticInput(
                                 name = "Parcels",
                                 entries = it.value.map {
-                                    val unitNumber = UnitNumber.parse(it.number).value
+                                    val unitNumber = DekuUnitNumber.parse(it.number).value
                                     SyntheticInput.Entry(
                                             symbologyType = SymbologyType.Interleaved25,
                                             data = unitNumber.label
@@ -416,7 +416,7 @@ class VehicleUnloadingScreen :
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result: Result<org.deku.leoz.model.Parcel> = org.deku.leoz.model.Parcel.parseLabel(event.data)
+        val result: Result<org.deku.leoz.model.Parcel> = UnitNumber.parseLabel(event.data)
 
         when {
             result.hasError -> {

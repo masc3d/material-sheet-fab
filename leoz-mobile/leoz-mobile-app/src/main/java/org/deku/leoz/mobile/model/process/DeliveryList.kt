@@ -17,6 +17,7 @@ import org.deku.leoz.mobile.model.service.toOrder
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
+import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
