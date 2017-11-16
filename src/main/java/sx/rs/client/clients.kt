@@ -1,5 +1,6 @@
 package sx.rs.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import feign.Client
 import feign.Feign
 import feign.Request
@@ -11,6 +12,7 @@ import org.glassfish.jersey.client.JerseyClientBuilder
 import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget
+import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider
 import org.threeten.bp.Duration
 import sx.net.TrustingSSLSocketFactory
 import java.io.OutputStream
@@ -88,19 +90,29 @@ class JerseyClient(
  */
 class RestEasyClient(
         baseUri: URI,
-        ignoreSslCertificate: Boolean = false) : RestClient(baseUri, ignoreSslCertificate) {
+        ignoreSslCertificate: Boolean = false,
+        objectMapper: ObjectMapper = ObjectMapper()
+) :
+        RestClient(baseUri, ignoreSslCertificate) {
 
     private val client by lazy {
-        var clientBuilder = ResteasyClientBuilder()
+        ResteasyClientBuilder()
+                // TODO: add support for connection pools.
+                // .connectionPoolSize()
                 .establishConnectionTimeout(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)
                 .socketTimeout(socketTimeout.toMillis(), TimeUnit.MILLISECONDS)
-
-        if (ignoreSslCertificate) {
-            clientBuilder = clientBuilder
-                    .sslContext(ignoringCertificateSslContext)
-                    .hostnameVerifier { _, _ -> true }
-        }
-        clientBuilder.build()
+                .also {
+                    if (ignoreSslCertificate) {
+                        it
+                                .sslContext(ignoringCertificateSslContext)
+                                .hostnameVerifier { _, _ -> true }
+                    }
+                }
+                // ,asc20171116. it's mandatory to derive from ResteasyJackson2Provider so it's recognized as an override
+                .register(object : ResteasyJackson2Provider() {}.also {
+                    it.setMapper(objectMapper)
+                })
+                .build()
     }
 
     override fun <T> proxy(serviceClass: Class<T>): T {
