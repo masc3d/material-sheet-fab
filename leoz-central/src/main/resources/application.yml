@@ -31,6 +31,8 @@ persistence:
             url: jdbc:mysql://10.0.10.10:3306/dekuclient?useSSL=false
             username: root
             password: root
+        # Enables debug logging for this persistence context
+        debug: false
 
 # leoz-central is final destination, doesn't have a peer
 remote:

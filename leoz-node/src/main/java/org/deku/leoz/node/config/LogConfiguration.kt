@@ -9,6 +9,7 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
+import sx.log.slf4j.installJulBridge
 import sx.mq.MqBroker
 import sx.mq.jms.channel
 import java.util.logging.Level
@@ -96,10 +97,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
         super.initialize()
 
         // Setup jul to slf4j bridge
-        LogManager.getLogManager().reset();
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-        Logger.getLogger("global").setLevel(Level.FINEST);
+        log.installJulBridge()
 
         // Setup log file and jms appender
         val storageConfiguration: Storage = Kodein.global.instance()
