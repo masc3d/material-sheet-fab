@@ -5,6 +5,8 @@ import feign.Client
 import feign.Feign
 import feign.Request
 import feign.Retryer
+import feign.jackson.JacksonDecoder
+import feign.jackson.JacksonEncoder
 import feign.jaxrs.JAXRSContract
 import feign.okhttp.OkHttpClient
 import org.glassfish.jersey.client.ClientProperties
@@ -89,11 +91,15 @@ class JerseyClient(
 
 /**
  * RESTEasy client proxy implementation
+ *
+ * @param baseUri The base uri for all targets
+ * @param objectMapper Jackson object mapper
+ * @param ignoreSslCertificate Ignore ssl certificate (useful for test)
  */
 class RestEasyClient(
         baseUri: URI,
-        ignoreSslCertificate: Boolean = false,
-        objectMapper: ObjectMapper = ObjectMapper()
+        objectMapper: ObjectMapper = ObjectMapper(),
+        ignoreSslCertificate: Boolean = false
 ) :
         RestClient(baseUri, ignoreSslCertificate) {
 
@@ -113,7 +119,7 @@ class RestEasyClient(
                                 .hostnameVerifier { _, _ -> true }
                     }
                 }
-                // ,asc20171116. it's mandatory to derive from ResteasyJackson2Provider so it's recognized as an override
+                // masc20171116. it's mandatory to derive from ResteasyJackson2Provider so it's recognized as an override
                 .register(object : ResteasyJackson2Provider() {}.also {
                     it.setMapper(objectMapper)
                 })
@@ -141,13 +147,19 @@ class RestEasyClient(
 
 /**
  * Feign client proxy implementation
+ *
+ * @param baseUri The base uri for all targets
+ * @param ignoreSslCertificate Ignore ssl certificate (useful for test)
+ * @param headers Custom headers
+ * @param encoder Encoder to use
+ * @param decoder Decoder to use
  */
 class FeignClient(
         baseUri: URI,
         ignoreSslCertificate: Boolean = false,
         val headers: Map<String, String>? = null,
-        val encoder: feign.codec.Encoder,
-        val decoder: feign.codec.Decoder)
+        val encoder: feign.codec.Encoder = JacksonEncoder(),
+        val decoder: feign.codec.Decoder = JacksonDecoder())
     : RestClient(baseUri, ignoreSslCertificate) {
 
     /**
