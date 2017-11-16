@@ -17,7 +17,8 @@ const routes: Routes = [
         path: 'bagscan', data: [ 'bagscan' ],
         canActivate: [
           AuthenticationGuard,
-          BagscanGuard ],
+          BagscanGuard
+        ],
         loadChildren: 'app/dashboard/stationloading/bagscan/bagscan.module#BagscanModule'
       }
     ]
