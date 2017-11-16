@@ -49,4 +49,36 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
     override fun getParcels2ExportInBagByStationNo(stationNo: Int): List<ParcelServiceV1.Order2Export> {
         return parcelService.getParcels2ExportInBagByStationNo(stationNo)
     }
+
+    override fun getCount2SendBackByStation(stationNo: Int): Int {
+        return bagService.getCount2SendBackByStation(stationNo)
+    }
+
+    override fun getParcels2ExportByLoadingList(loadinglistNo: Long): List<ParcelServiceV1.Order2Export> {
+        return parcelService.getParcels2ExportByLoadingList(loadinglistNo)
+    }
+
+    override fun getParcelsFilledInBagByBagID(bagId: Long): List<ParcelServiceV1.Order2Export> {
+        return parcelService.getParcelsFilledInBagByBagID(bagId)
+    }
+
+    override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
+        return bagService.getNewBagLoadinglistNo()
+    }
+
+    override fun setBagStationExportRedSeal(bagID: Long, stationNo: Int, redSeal: Long, text: String) {
+        return bagService.setBagStationExportRedSeal(bagID, stationNo, redSeal, text)
+    }
+
+    override fun reopenBagStationExport(bagID: Long, stationNo: Int) {
+        return bagService.reopenBagStationExport(bagID, stationNo)
+    }
+
+    override fun fillBagStationExport(bagID: Long, stationNo: Int, unitNo: String?) {
+        return bagService.fillBagStationExport(bagID, stationNo, unitNo)
+    }
+
+    override fun closeBagStationExport(bagID: Long, stationNo: Int) {
+        return bagService.closeBagStationExport(bagID, stationNo)
+    }
 }

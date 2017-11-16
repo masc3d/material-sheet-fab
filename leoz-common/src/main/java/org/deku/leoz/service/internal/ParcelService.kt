@@ -95,14 +95,14 @@ interface ParcelServiceV1 {
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
-    @Path("/export/bag/station/{$STATION_NO}")
+    @Path("/export/station/{$STATION_NO}/bag")
     @ApiOperation(value = "Get parcels to export in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportInBagByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): List<ParcelServiceV1.Order2Export>
 
     @GET
-    @Path("/export/loaded/station/{$STATION_NO}")
+    @Path("/export/station/{$STATION_NO}/loaded")
     @ApiOperation(value = "Get loaded parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getLoadedParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
