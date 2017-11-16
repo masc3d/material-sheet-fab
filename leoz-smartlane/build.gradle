@@ -1,5 +1,6 @@
 import io.swagger.codegen.config.CodegenConfigurator
 import io.swagger.codegen.DefaultGenerator
+import io.swagger.codegen.languages.features.CXFServerFeatures
 
 group 'org.deku.leoz'
 version '0.1'
@@ -45,6 +46,8 @@ dependencies {
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
             "io.swagger:swagger-jaxrs:$v_swagger",
+
+            "io.swagger:swagger-codegen:$v_swagger_codegen",
 
             // Socket.IO
             "io.socket:socket.io-client:$v_socketio",
@@ -105,6 +108,7 @@ task smartlaneGenerateSwaggerApi {
         config.setOutputDir(swaggerOutputDir.path)
         config.apiPackage = "org.deku.leoz.smartlane.api"
         config.modelPackage = "org.deku.leoz.smartlane.model"
+        config.addAdditionalProperty(CXFServerFeatures.USE_ANNOTATED_BASE_PATH, 'true')
         config.setLang('jaxrs-cxf')
         new DefaultGenerator().opts(config.toClientOptInput()).generate()
     }
