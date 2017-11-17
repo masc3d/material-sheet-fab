@@ -21,6 +21,8 @@ import { TranslateService } from '../../../core/translate/translate.service';
 export class OrderformComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
 
   orderformForm: FormGroup;
+  pickupAddresses = [];
+  deliveryAddresses = [];
 
   constructor( private fb: FormBuilder,
                public translate: TranslateService,

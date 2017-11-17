@@ -1,0 +1,130 @@
+<div class="ui-fluid ui-g">
+  <div class="ui-g-12 ui-g-nopad">
+    <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding: 0;">
+      <span *ngIf="isPickup; else noPickup">
+        {{'pickupdate' | translate}}:
+      </span>
+      <ng-template #noPickup>
+        {{'deliverydate' | translate}}:
+      </ng-template>
+    </div>
+    <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding: 0;">
+      <input pInputText style="width: 100%;">
+    </div>
+    <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding: 0 0 0 10px;">
+      <input *ngIf="isPickup" pInputText placeholder="{{ 'vehicle' | translate }}">
+    </div>
+  </div>
+
+  <div class="ui-g-12 ui-g-nopad">
+    <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0;">
+        {{'from' | translate}}:
+    </div>
+    <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0;">
+      <input pInputText>
+    </div>
+    <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0;">
+      {{'until' | translate}}:
+    </div>
+    <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0;">
+      <input pInputText style="width: 100%;">
+    </div>
+    <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-left: 10px">
+      <span *ngIf="isPickup; else fixDelivery">
+        <p-checkbox name="fixPickup" value="fixPickup" label="{{ 'fixPickup' | translate }}"></p-checkbox>
+      </span>
+      <ng-template #fixDelivery>
+        <p-checkbox name="fixDelivery" value="fixDelivery" label="{{ 'fixDelivery' | translate }}"></p-checkbox>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="ui-g-12 ui-g-nopad">
+      <div class="ui-g-12 ui-lg-8 ui-g-nopad" style="margin-top: 10px; border: 1px solid darkgrey;
+                                            min-height: 192px; padding: 10px 10px 10px 10px;">
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          ND
+        </div>
+        <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+          09:00-17:00
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          <p-checkbox name="selectedRange" value="selectedRange"></p-checkbox>
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          T12
+        </div>
+        <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+          09:00-12:00
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          <p-checkbox name="selectedRange" value="selectedRange"></p-checkbox>
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          T12
+        </div>
+        <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+          08:00-12:00
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          <p-checkbox name="selectedRange" value="selectedRange"></p-checkbox>
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          T10
+        </div>
+        <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+          08:00-10:00
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          <p-checkbox name="selectedRange" value="selectedRange"></p-checkbox>
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          T9
+        </div>
+        <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+          08:00-09:00
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          <p-checkbox name="selectedRange" value="selectedRange"></p-checkbox>
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          T8
+        </div>
+        <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+          07:30-08:00
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          <p-checkbox name="selectedRange" value="selectedRange"></p-checkbox>
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          Frei
+        </div>
+        <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+          &nbsp;
+        </div>
+        <div class="ui-g-12 ui-lg-3 ui-g-nopad">
+          <p-checkbox name="selectedRange" value="selectedRange"></p-checkbox>
+        </div>
+      </div>
+
+    <div *ngIf="isPickup" class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-top: 10px; padding-left: 10px">
+      <div class="ui-g-12 ui-g-nopad" style="padding: 0;">
+        {{'packcount' | translate}}:
+        <input pInputText>
+      </div>
+      <div class="ui-g-12 ui-g-nopad" style="padding: 0;">
+        {{'realweight' | translate}}:
+        <input pInputText>
+      </div>
+      <div class="ui-g-12 ui-g-nopad" style="padding: 0;">
+        {{'volweight' | translate}}:
+        <input pInputText>
+      </div>
+      <div class="ui-g-12 ui-g-nopad" style="padding: 0;">
+        {{'payweight' | translate}}:
+        <input pInputText>
+      </div>
+    </div>
+
+  </div>
+</div>

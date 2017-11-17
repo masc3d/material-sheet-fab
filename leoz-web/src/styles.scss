@@ -211,6 +211,9 @@ input.ng-valid, select.ng-valid, p-dropdown.ng-valid > div > label {
 }
 
 /*** overwriting styles from primeng **/
+.ui-helper-reset {
+  line-height: 0.8;
+}
 /* Input, Textarea */
 input, textarea, .inputField {
   border:1px solid darkgrey;

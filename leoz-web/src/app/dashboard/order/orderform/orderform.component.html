@@ -1,3 +1,92 @@
 <form [formGroup]="orderformForm" style="padding-top: 10px">
-  orderform
+  <div class="ui-fluid ui-g">
+    <div class="ui-g-12 ui-lg-5 no-pad" style="padding: 0;">
+      <p-fieldset legend="{{'consignor' | translate}}">
+        <p-fieldset legend="{{'client' | translate}}" [style]="{'minHeight': '90px'}">
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText placeholder="{{ 'consignorClientNos' | translate }}">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText placeholder="{{ 'consignorClientReNos' | translate }}">
+            </div>
+          </div>
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText placeholder="{{ 'customer' | translate }}">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText placeholder="{{ 'reference' | translate }}">
+            </div>
+          </div>
+        </p-fieldset>
+
+        <p-fieldset legend="{{'pickup' | translate}}">
+          <app-address [addresses]="pickupAddresses" [placeholderLine1]="'senderLine1'"
+                       [placeholderLine2]="'senderLine2'" [placeholderLine3]="'senderLine3'"></app-address>
+          <div class="ui-g-12 ui-g-nopad">
+            <p-tabView [style]="{'minHeight': '350px'}">
+              <p-tabPanel header="{{'pickupTimeWindow' | translate}}">
+                <app-timewindows [isPickup]="true"></app-timewindows>
+              </p-tabPanel>
+              <p-tabPanel header="{{'serviceF7' | translate}}">
+                <app-services></app-services>
+              </p-tabPanel>
+              <p-tabPanel header="{{'pickupInfo' | translate}}">
+                Content 3
+              </p-tabPanel>
+              <p-tabPanel header="{{'pickupContact' | translate}}">
+                <app-contact></app-contact>
+              </p-tabPanel>
+              <p-tabPanel header="{{'clientInvoice' | translate}}">
+                Content 3
+              </p-tabPanel>
+            </p-tabView>
+          </div>
+        </p-fieldset>
+        <p-fieldset legend="{{'shipmentF3' | translate}}" [style]="{'minHeight': '90px'}">
+          shipmentF3
+        </p-fieldset>
+      </p-fieldset>
+    </div>
+    <div class="ui-g-12 ui-lg-5 no-pad" style="padding: 0;">
+      <p-fieldset legend="{{'consignee' | translate}}">
+        <p-fieldset legend="{{'client' | translate}}" [style]="{'minHeight': '90px'}">
+          <div class="ui-g-12 ui-g-nopad">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText placeholder="{{ 'consigneeClientNos' | translate }}">
+            </div>
+          </div>
+        </p-fieldset>
+
+        <p-fieldset legend="{{'delivery' | translate}}">
+          <app-address [addresses]="deliveryAddresses" [placeholderLine1]="'deliveryLine1'"
+                       [placeholderLine2]="'deliveryLine2'" [placeholderLine3]="'deliveryLine3'"></app-address>
+          <div class="ui-g-12 ui-g-nopad">
+            <p-tabView [style]="{'minHeight': '350px'}">
+              <p-tabPanel header="{{'deliveryTimeWindow' | translate}}">
+                <app-timewindows [isPickup]="false"></app-timewindows>
+              </p-tabPanel>
+              <p-tabPanel header="{{'serviceF8' | translate}}">
+                <app-services></app-services>
+              </p-tabPanel>
+              <p-tabPanel header="{{'deliveryInfo' | translate}}">
+                Content 3
+              </p-tabPanel>
+              <p-tabPanel header="{{'deliveryContact' | translate}}">
+                <app-contact></app-contact>
+              </p-tabPanel>
+            </p-tabView>
+          </div>
+        </p-fieldset>
+        <p-fieldset legend="{{'productSpecification' | translate}}" [style]="{'minHeight': '90px'}">
+          productSpecification
+        </p-fieldset>
+      </p-fieldset>
+    </div>
+    <div class="ui-g-12 ui-lg-2 no-pad" style="padding: 0;">
+      <p-fieldset legend="{{'system' | translate}}">
+      </p-fieldset>
+    </div>
+  </div>
 </form>
