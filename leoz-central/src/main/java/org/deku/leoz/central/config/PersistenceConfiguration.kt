@@ -114,7 +114,7 @@ open class PersistenceConfiguration {
 
                         if (this.settings.debug) {
                             // Check and amend log level
-                            (LoggerFactory.getLogger("org.jooq") as ch.qos.logback.classic.Logger).also {
+                            (LoggerFactory.getLogger(org.jooq.DSLContext::class.java.`package`.name) as ch.qos.logback.classic.Logger).also {
                                 // Don't override finer log levels
                                 if (it.level == null || it.level.levelInt > Level.DEBUG_INT)
                                     it.level = Level.DEBUG
