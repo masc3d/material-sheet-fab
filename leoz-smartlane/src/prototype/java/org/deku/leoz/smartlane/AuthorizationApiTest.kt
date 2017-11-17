@@ -1,15 +1,17 @@
 package org.deku.leoz.smartlane
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationConfig
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import org.deku.leoz.smartlane.api.AddressApi
 import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
+import org.deku.leoz.smartlane.api.RouteApi
+import org.deku.leoz.smartlane.api.RouteApiGeneric
 import org.deku.leoz.smartlane.model.Address
+import org.deku.leoz.smartlane.model.Addresses
+import org.deku.leoz.smartlane.model.Routinginput
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
@@ -36,18 +38,8 @@ class AuthorizationApiTest {
         )
     }
 
-    private fun auth() {
+    private fun authorize() {
         this.restClient.jwtToken = restClient
-                .proxy(AuthApi::class.java)
-                .auth(AuthApi.Request(
-                        email = "juergen.toepper@derkurier.de",
-                        password = "PanicLane"
-                ))
-                .accessToken
-    }
-
-    private val jwtToken by lazy {
-        restClient
                 .proxy(AuthApi::class.java)
                 .auth(AuthApi.Request(
                         email = "juergen.toepper@derkurier.de",
@@ -77,7 +69,7 @@ class AuthorizationApiTest {
 
     @Test
     fun testAddressPost() {
-        this.auth()
+        this.authorize()
 
         restClient.proxy(AddressApi::class.java).also {
             log.trace(
@@ -96,11 +88,36 @@ class AuthorizationApiTest {
 
     @Test
     fun testAddressGet() {
-        this.auth()
+        this.authorize()
 
         restClient.proxy(AddressApi::class.java).also {
             log.trace(
                     it.address
+            )
+        }
+    }
+
+    @Test
+    fun calcRoute() {
+        this.authorize()
+
+        restClient.proxy(RouteApiGeneric::class.java).also {
+            log.trace(
+                    it.postCalcrouteOptimizedTimewindow(
+                            Routinginput().also {
+                                it.deliveryids = listOf(2, 3)
+                            },
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                    ).readEntity(String::class.java)
             )
         }
     }
