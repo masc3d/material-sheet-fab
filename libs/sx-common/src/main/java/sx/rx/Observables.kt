@@ -127,7 +127,11 @@ fun <T> Observable<T>.retryWith(
             val retryCount = p.second
 
             if (retryCount <= count) {
-                return@flatMap action(retryCount, error)
+                try {
+                    return@flatMap action(retryCount, error)
+                } catch(e: Throwable) {
+                    return@flatMap Observable.error<Throwable>(error)
+                }
             } else {
                 return@flatMap Observable.error<Throwable>(error)
             }
@@ -149,24 +153,17 @@ fun <T : Disposable> T.bind(supplier: CompositeDisposableSupplier): T {
  * @param action Callback invoked for every retry/error, returning a (timer) Observable
  */
 fun Completable.retryWith(
-        count: Int,
-        action: (retry: Long, error: Throwable) -> Flowable<Long> = { _, _ -> Flowable.just(0) })
+        count: Short,
+        action: (retry: Long, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
         : Completable {
 
-    return this.retryWhen { attempts ->
-        attempts.zipWith(Flowable.rangeLong(1, count.toLong() + 1), BiFunction { n: Throwable, i: Long ->
-            Pair(n, i)
-        }).flatMap { p ->
-            val error = p.first
-            val retryCount = p.second
-
-            if (retryCount <= count) {
-                return@flatMap action(retryCount, error)
-            } else {
-                return@flatMap Flowable.error<Throwable>(error)
-            }
-        }
-    }
+    return this
+            .toObservable<Any>()
+            .retryWith(
+                    count = count,
+                    action = action
+            )
+            .ignoreElements()
 }
 
 /**
@@ -178,7 +175,7 @@ fun Completable.retryWith(
  * @param action Action on retry
  */
 fun Completable.retryWithExponentialBackoff(
-        count: Int = Int.MAX_VALUE,
+        count: Short = Short.MAX_VALUE,
         initialDelay: Duration,
         maximumDelay: Duration,
         exponentialBackoff: Double = 2.0,
@@ -205,7 +202,7 @@ fun Completable.retryWithExponentialBackoff(
 
                 action(retry, delay, error)
 
-                Flowable.timer(delay.toMillis(), TimeUnit.MILLISECONDS)
+                Observable.timer(delay.toMillis(), TimeUnit.MILLISECONDS)
             }
     )
 }
