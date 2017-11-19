@@ -97,6 +97,7 @@ distributions {
         }
     }
 }
+tasks.distTar.enabled = false
 
 packager {
     title = "Leoz Boot"

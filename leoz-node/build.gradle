@@ -327,6 +327,7 @@ distributions {
         }
     }
 }
+tasks.distTar.enabled = false
 
 wsdl2javaExt {
     cxfVersion = v_apache_cxf

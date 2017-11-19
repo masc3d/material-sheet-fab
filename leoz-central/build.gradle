@@ -316,6 +316,7 @@ distributions {
         }
     }
 }
+tasks.distTar.enabled = false
 
 // Packager task
 packager {
