@@ -24,7 +24,6 @@ buildscript {
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
         classpath "mysql:mysql-connector-java:$v_mysql"
-
     }
 }
 
@@ -44,7 +43,7 @@ def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
 def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'//&noAccessToProcedureBodies=true'
 
 // Flyway constants
-def FLYWAY_TARGET = 54
+def FLYWAY_TARGET = 58
 def FLYWAY_MIGRATION_DIR = new File(project.rootDir, 'leoz-central-schema/db/migration')
 def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration')
 
@@ -52,6 +51,14 @@ def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
 def JOOQ_GENERATED_DIR = file("$projectDir/src/generated/jooq")
+
+sourceSets {
+    main {
+        java {
+            srcDirs += JOOQ_GENERATED_DIR
+        }
+    }
+}
 
 //region Prototype test setup
 test {
@@ -198,7 +205,7 @@ flyway {
     url = DB_MYSQL_JDBC_URL
     user = 'root'
     password = 'root'
-    schemas = ['dekuclient', 'dekutmp']
+    schemas = ['dekuclient', 'dekutmp', 'mobile']
     ignoreFutureMigrations = true
     target = FLYWAY_TARGET
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]

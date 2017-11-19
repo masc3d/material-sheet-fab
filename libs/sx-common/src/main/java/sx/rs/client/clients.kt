@@ -1,9 +1,12 @@
 package sx.rs.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import feign.Client
 import feign.Feign
 import feign.Request
 import feign.Retryer
+import feign.jackson.JacksonDecoder
+import feign.jackson.JacksonEncoder
 import feign.jaxrs.JAXRSContract
 import feign.okhttp.OkHttpClient
 import org.glassfish.jersey.client.ClientProperties
@@ -11,6 +14,7 @@ import org.glassfish.jersey.client.JerseyClientBuilder
 import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget
+import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider
 import org.threeten.bp.Duration
 import sx.net.TrustingSSLSocketFactory
 import java.io.OutputStream
@@ -19,6 +23,8 @@ import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
+import javax.ws.rs.client.ClientRequestContext
+import javax.ws.rs.client.ClientRequestFilter
 
 /**
  * Ignoring X509 trust manager, typically used when disabling SSL certificate checks
@@ -85,22 +91,45 @@ class JerseyClient(
 
 /**
  * RESTEasy client proxy implementation
+ *
+ * @param baseUri The base uri for all targets
+ * @param objectMapper Jackson object mapper
+ * @param ignoreSslCertificate Ignore ssl certificate (useful for test)
  */
 class RestEasyClient(
         baseUri: URI,
-        ignoreSslCertificate: Boolean = false) : RestClient(baseUri, ignoreSslCertificate) {
+        objectMapper: ObjectMapper = ObjectMapper(),
+        ignoreSslCertificate: Boolean = false
+) :
+        RestClient(baseUri, ignoreSslCertificate) {
+
+    /** JWT token to include in header */
+    var jwtToken: String? = null
 
     private val client by lazy {
-        var clientBuilder = ResteasyClientBuilder()
+        ResteasyClientBuilder()
+                // TODO: add support for connection pools.
+                // .connectionPoolSize()
                 .establishConnectionTimeout(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)
                 .socketTimeout(socketTimeout.toMillis(), TimeUnit.MILLISECONDS)
+                .also {
+                    if (ignoreSslCertificate) {
+                        it
+                                .sslContext(ignoringCertificateSslContext)
+                                .hostnameVerifier { _, _ -> true }
+                    }
+                }
+                // masc20171116. it's mandatory to derive from ResteasyJackson2Provider so it's recognized as an override
+                .register(object : ResteasyJackson2Provider() {}.also {
+                    it.setMapper(objectMapper)
+                })
+                .register(object : ClientRequestFilter {
+                    override fun filter(requestContext: ClientRequestContext) {
+                        requestContext.headers.add("Authorization", "JWT ${this@RestEasyClient.jwtToken}" )
+                    }
 
-        if (ignoreSslCertificate) {
-            clientBuilder = clientBuilder
-                    .sslContext(ignoringCertificateSslContext)
-                    .hostnameVerifier { _, _ -> true }
-        }
-        clientBuilder.build()
+                })
+                .build()
     }
 
     override fun <T> proxy(serviceClass: Class<T>): T {
@@ -118,13 +147,19 @@ class RestEasyClient(
 
 /**
  * Feign client proxy implementation
+ *
+ * @param baseUri The base uri for all targets
+ * @param ignoreSslCertificate Ignore ssl certificate (useful for test)
+ * @param headers Custom headers
+ * @param encoder Encoder to use
+ * @param decoder Decoder to use
  */
 class FeignClient(
         baseUri: URI,
         ignoreSslCertificate: Boolean = false,
         val headers: Map<String, String>? = null,
-        val encoder: feign.codec.Encoder,
-        val decoder: feign.codec.Decoder)
+        val encoder: feign.codec.Encoder = JacksonEncoder(),
+        val decoder: feign.codec.Decoder = JacksonDecoder())
     : RestClient(baseUri, ignoreSslCertificate) {
 
     /**

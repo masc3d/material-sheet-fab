@@ -78,6 +78,7 @@ dependencies {
 
             // RESTeasy client
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
 
             // Feign REST
             "io.github.openfeign:feign-jackson:$v_feign",

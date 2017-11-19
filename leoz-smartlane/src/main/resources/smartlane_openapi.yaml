@@ -590,7 +590,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Driverstati"
+            $ref: "#/definitions/Addresses"
         403:
           $ref: "#/responses/MissingAuthorization"
         422:
@@ -615,7 +615,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/Addresses'
+            $ref: '#/definitions/Address'
         403:
           $ref: "#/responses/MissingAuthorization"
         422:

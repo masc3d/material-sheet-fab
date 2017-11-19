@@ -1,5 +1,6 @@
 package org.deku.leoz.central.config
 
+import ch.qos.logback.classic.Level
 import com.mysql.jdbc.AbandonedConnectionCleanupThread
 import org.apache.commons.dbcp2.BasicDataSource
 import org.flywaydb.core.Flyway
@@ -112,6 +113,13 @@ open class PersistenceConfiguration {
                         )
 
                         if (this.settings.debug) {
+                            // Check and amend log level
+                            (LoggerFactory.getLogger(org.jooq.DSLContext::class.java.`package`.name) as ch.qos.logback.classic.Logger).also {
+                                // Don't override finer log levels
+                                if (it.level == null || it.level.levelInt > Level.DEBUG_INT)
+                                    it.level = Level.DEBUG
+                            }
+
                             it.setExecuteListenerProvider(
                                     DefaultExecuteListenerProvider(
                                             StopWatchListener()

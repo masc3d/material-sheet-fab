@@ -80,20 +80,16 @@ clean {
     }
 }
 
-idea {
-    module {
-        // Add KAPT generated sources to intellij
-        sourceDirs += file("$projectDir/build/generated/source/kapt/main")
-    }
-}
-
 sourceSets {
     main {
         java {
             srcDirs += WS_CXF_GENERATED_DIR
         }
     }
+}
 
+//region Prototype test setup
+sourceSets {
     test {
         java {
             srcDirs += PROTOTYPE_TEST_DIR
@@ -106,6 +102,7 @@ test {
         includeCategories 'sx.junit.StandardTest'
     }
 }
+//endregion
 
 configurations {
     driver

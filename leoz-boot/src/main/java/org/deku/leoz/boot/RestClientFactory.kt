@@ -15,6 +15,9 @@ class RestClientFactory : RestClientFactory() {
             ignoreSsl: Boolean,
             apiKey: String?): RestClient {
 
-        return RestEasyClient(baseUri, ignoreSsl)
+        return RestEasyClient(
+                baseUri = baseUri,
+                ignoreSslCertificate = ignoreSsl
+        )
     }
 }
