@@ -78,20 +78,26 @@ CREATE DATABASE IF NOT EXISTS mobile;
 USE mobile;
 
 CREATE TABLE tad_stop_list (
-  id            INT(11) NOT NULL AUTO_INCREMENT,
-  `user_id`     INT(11)          DEFAULT NULL,
-  `node_id`     INT(11)          DEFAULT NULL,
-  `consumer_id` INT(11)          DEFAULT NULL,
+  id             INT(11)   NOT NULL AUTO_INCREMENT,
+  user_id        INT(11)            DEFAULT NULL,
+  node_id        INT(11)            DEFAULT NULL,
+  consumer_id    INT(11)            DEFAULT NULL,
+  timestamp      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  stop_list_date DATETIME           DEFAULT NULL,
+  PRIMARY KEY (ID)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = latin1;
 
 CREATE TABLE tad_stop_list_details (
-  id            INT(11) NOT NULL AUTO_INCREMENT,
-  stop_list_id  INT(11)          DEFAULT NULL,
-  stop_position DOUBLE  NOT NULL DEFAULT 0,
-  order_id     BIGINT(20)       DEFAULT NULL,
-  is_removed  Int(11) NOT NULL DEFAULT 0
+  id            INT(11)   NOT NULL AUTO_INCREMENT,
+  stop_list_id  INT(11)            DEFAULT NULL,
+  system_id     INT(11)            DEFAULT NULL,
+  stop_position DOUBLE    NOT NULL DEFAULT 0,
+  order_id      BIGINT(20)         DEFAULT NULL,
+  is_removed    INT(11)   NOT NULL DEFAULT 0,
+  timestamp     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (ID)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = latin1;
@@ -120,4 +126,4 @@ CREATE TABLE `tad_parcel_messages` (
   KEY `tad_parcel_messages_is_proccessed_index` (`is_proccessed`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
+  DEFAULT CHARSET = latin1;
