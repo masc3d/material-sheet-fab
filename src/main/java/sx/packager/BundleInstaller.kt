@@ -232,7 +232,7 @@ class BundleInstaller(
                 // On some (windows) system the bundle path seems to sporadically remain locked temporarily after stopping the service
                 // This could happen due to antivirus programs or the service stop command not acting fully synchronously
                 // Implementing retry scheme
-                val retryCount = 3
+                val retryCount: Short = 3
                 var error: Throwable? = null
                 Observable.fromCallable {
                     Files.move(bundlePath.toPath(), oldBundlePath.toPath())
