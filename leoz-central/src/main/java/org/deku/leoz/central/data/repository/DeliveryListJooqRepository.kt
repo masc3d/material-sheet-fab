@@ -24,6 +24,7 @@ open class DeliveryListJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
+    //falsch debitor fehlt
     fun findById(id: Long): TadVDeliverylistRecord? {
         return dslContext.fetchOne(
                 Tables.TAD_V_DELIVERYLIST,

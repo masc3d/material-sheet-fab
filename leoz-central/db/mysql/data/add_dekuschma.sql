@@ -1,2 +1,3 @@
-CREATE SCHEMA `dekuclient` ;
-CREATE SCHEMA `dekutmp` ;
+CREATE SCHEMA `dekuclient`;
+CREATE SCHEMA `dekutmp`;
+CREATE SCHEMA 'mobile' ;
