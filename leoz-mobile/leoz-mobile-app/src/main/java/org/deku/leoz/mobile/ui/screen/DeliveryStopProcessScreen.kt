@@ -1,15 +1,19 @@
 package org.deku.leoz.mobile.ui.screen
 
+import android.animation.Animator
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.FragmentManager
+import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.LinearLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
@@ -30,6 +34,7 @@ import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
+import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding
 import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
@@ -785,11 +790,16 @@ class DeliveryStopProcessScreen :
                         // Parcel does not belong to this delivery stop, ask for stop merge
                         feedback.warning()
 
-                        MaterialDialog.Builder(context)
+                        var runnable: Runnable? = null
+                        var reverseRunnable: Runnable? = null
+                        val animationHandler = Handler()
+
+                        val dialog = MaterialDialog.Builder(context)
                                 .title(R.string.title_stop_merge)
+                                .iconRes(R.drawable.ic_merge)
                                 .cancelable(true)
-                                .content(R.string.dialog_content_stop_merge)
-                                .positiveText(android.R.string.yes)
+                                .customView(R.layout.dialog_stop_merge, true)
+                                .positiveText(R.string.proceed)
                                 .onPositive { _, _ ->
                                     db.store.withTransaction {
                                         stopRepository.mergeInto(
@@ -808,7 +818,66 @@ class DeliveryStopProcessScreen :
                                 }
                                 .negativeText(android.R.string.no)
                                 .build()
-                                .show()
+
+                        val customView = dialog.customView
+                        val sourceContainer = customView?.findViewById<LinearLayout>(R.id.uxSourceStopContainer)
+                        val targetContainer = customView?.findViewById<LinearLayout>(R.id.uxtargetStopContainer)
+                        val sourceView = customView?.findViewById<View>(R.id.uxSourceStop)
+                        val targetView = customView?.findViewById<View>(R.id.uxTargetStop)
+
+                        runnable = Runnable {
+                            if (sourceContainer != null && targetContainer != null) {
+                                sourceContainer.animate()
+                                        .alpha(0f)
+                                        .translationY(100f)
+                                        .setDuration(1500)
+                                        .setStartDelay(2000)
+                                        .withEndAction(reverseRunnable)
+                                        .start()
+
+                                targetContainer.animate()
+                                        .translationY(-100f)
+                                        .setDuration(1500)
+                                        .setStartDelay(2000)
+                                        .withEndAction(reverseRunnable)
+                                        .start()
+                            }
+                        }
+
+                        reverseRunnable = Runnable {
+                            if (sourceContainer != null && targetContainer != null) {
+                                sourceContainer.animate()
+                                        .alpha(1f)
+                                        .translationY(0f)
+                                        .setDuration(500)
+                                        .setStartDelay(1000)
+                                        .withEndAction(runnable)
+                                        .start()
+
+                                targetContainer.animate()
+                                        .translationY(0f)
+                                        .setDuration(500)
+                                        .setStartDelay(1000)
+                                        .withEndAction(runnable)
+                                        .start()
+                            }
+                        }
+
+                        val bindingSourceStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(sourceView)
+                        bindingSourceStop.stop = StopViewModel(
+                                stop = sourceStop,
+                                timerEvent = Observable.empty()
+                        )
+
+                        val bindingTargetStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(targetView)
+                        bindingTargetStop.stop = StopViewModel(
+                                stop = this.deliveryStop.entity,
+                                timerEvent = Observable.empty()
+                        )
+
+                        dialog.show()
+
+                        animationHandler.postDelayed(runnable, 0)
 
                         return
                     }
