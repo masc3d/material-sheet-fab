@@ -9,6 +9,8 @@ import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
 import org.deku.leoz.smartlane.api.RouteApi
 import org.deku.leoz.smartlane.api.RouteApiGeneric
+import org.deku.leoz.smartlane.api.calcrouteOptimizedTimewindow
+import org.deku.leoz.smartlane.api.postCalcrouteOptimizedTimewindowAsync
 import org.deku.leoz.smartlane.model.Address
 import org.deku.leoz.smartlane.model.Addresses
 import org.deku.leoz.smartlane.model.Routinginput
@@ -18,12 +20,14 @@ import org.slf4j.LoggerFactory
 import sx.log.slf4j.*
 import sx.rs.client.RestEasyClient
 import java.net.URI
+import javax.ws.rs.WebApplicationException
+import javax.ws.rs.core.Response
 
 /**
  * Created by masc on 15.11.17.
  */
 @Category(sx.junit.PrototypeTest::class)
-class AuthorizationApiTest {
+class RestApiTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val restClient by lazy {
@@ -39,6 +43,7 @@ class AuthorizationApiTest {
     }
 
     private fun authorize() {
+        log.trace("Authorizing")
         this.restClient.jwtToken = restClient
                 .proxy(AuthApi::class.java)
                 .auth(AuthApi.Request(
@@ -46,6 +51,9 @@ class AuthorizationApiTest {
                         password = "PanicLane"
                 ))
                 .accessToken
+                .also {
+                    log.trace("Authorized")
+                }
     }
 
     @Test
@@ -101,24 +109,23 @@ class AuthorizationApiTest {
     fun calcRoute() {
         this.authorize()
 
-        restClient.proxy(RouteApiGeneric::class.java).also {
-            log.trace(
-                    it.postCalcrouteOptimizedTimewindow(
-                            Routinginput().also {
-                                it.deliveryids = listOf(2, 3)
-                            },
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null
-                    ).readEntity(String::class.java)
+        restClient.proxy(RouteApiGeneric::class.java).also { it ->
+            it.calcrouteOptimizedTimewindow(
+                    body = Routinginput().also {
+                        it.deliveryids = listOf(2, 3)
+                    }
             )
+                    .blockingSubscribe(
+                            {
+                                log.trace("${it}")
+                            },
+                            {
+                                log.error(it.message, it)
+                            }
+                    )
+                    .also {
+                        log.trace(it)
+                    }
         }
     }
 }
