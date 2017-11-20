@@ -47,7 +47,7 @@ private class IgnoringX509TrustManager : X509TrustManager {
  * Created by masc on 06/11/2016.
  */
 abstract class RestClient(
-        val baseUri: URI,
+        var baseUri: URI,
         val ignoreSslCertificate: Boolean = false) {
 
     protected val connectTimeout = Duration.ofSeconds(5)
@@ -99,6 +99,7 @@ class JerseyClient(
 class RestEasyClient(
         baseUri: URI,
         objectMapper: ObjectMapper = ObjectMapper(),
+        connectionPoolSize: Int = 0,
         ignoreSslCertificate: Boolean = false
 ) :
         RestClient(baseUri, ignoreSslCertificate) {
@@ -108,8 +109,7 @@ class RestEasyClient(
 
     private val client by lazy {
         ResteasyClientBuilder()
-                // TODO: add support for connection pools.
-                // .connectionPoolSize()
+                .connectionPoolSize(connectionPoolSize)
                 .establishConnectionTimeout(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)
                 .socketTimeout(socketTimeout.toMillis(), TimeUnit.MILLISECONDS)
                 .also {
