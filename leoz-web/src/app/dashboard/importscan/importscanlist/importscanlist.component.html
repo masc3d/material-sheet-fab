@@ -2,7 +2,7 @@
   <div class="ui-fluid">
     <div class="ui-g" style="margin-bottom: 30px;">
       <div class="ui-g-12 ui-lg-4 ui-g-nopad">
-        <input #scanfield formControlName="scanfield" class="bgYellow" style="font-size: 20px;">
+        <input #scanfield formControlName="scanfield" class="bgYellow" style="font-size: 20px; max-width: 150px">
       </div>
       <div class="ui-g-12 ui-lg-8 ui-g-nopad">
         <p-dropdown [options]="scanOptions" placeholder="{{ 'sortorder' | translate }}"></p-dropdown>
