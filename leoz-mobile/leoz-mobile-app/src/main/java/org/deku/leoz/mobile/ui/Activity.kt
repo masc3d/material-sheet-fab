@@ -1,11 +1,8 @@
 package org.deku.leoz.mobile.ui
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
-import android.databinding.OnRebindCallback
-import android.databinding.ViewDataBinding
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
@@ -30,16 +27,17 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.gojuno.koptional.rxjava2.filterSome
 import com.gojuno.koptional.toOptional
 import com.patloew.rxlocation.RxLocation
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import io.reactivex.Observable
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
@@ -807,7 +805,7 @@ abstract class Activity : BaseActivity(),
                                 .switchMap {
                                     when (it) {
                                         false -> Observable.just(item)
-                                        // Suppress update notification if there's still relevant orders
+                                    // Suppress update notification if there's still relevant orders
                                         true -> Observable.empty()
                                     }
                                 }
@@ -915,29 +913,26 @@ abstract class Activity : BaseActivity(),
         Observable
                 .interval(5, TimeUnit.MINUTES)
                 .map { this.ntpTime.deviation.toOptional() }
+                .filterSome()
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { deviation ->
-                    deviation.toNullable().also {
-                        log.trace("TrueTime observable emit value [$it]")
-                        if (it != null) {
-                            if (it.abs() > Duration.ofSeconds(150)) {
-                                MaterialDialog.Builder(this)
-                                        .title(getString(R.string.dialog_title_time_misconfigured))
-                                        .content(R.string.dialog_content_time_misconfigured, it.toString())
-                                        .positiveText(R.string.action_settings)
-                                        .negativeText(R.string.close)
-                                        .cancelable(false)
-                                        .onPositive { dialog, which ->
-                                            val intent = Intent(android.provider.Settings.ACTION_DATE_SETTINGS)
-                                            startActivity(intent)
-                                        }
-                                        .onNegative { dialog, which ->
-                                            this.app.terminate()
-                                        }
-                                        .build().show()
-                            }
-                        }
+                    log.trace("TrueTime observable emit value [$deviation]")
+                    if (deviation.abs() > Duration.ofSeconds(150)) {
+                        MaterialDialog.Builder(this)
+                                .title(getString(R.string.dialog_title_time_misconfigured))
+                                .content(R.string.dialog_content_time_misconfigured, deviation.toString())
+                                .positiveText(R.string.action_settings)
+                                .negativeText(R.string.close)
+                                .cancelable(false)
+                                .onPositive { dialog, which ->
+                                    val intent = Intent(android.provider.Settings.ACTION_DATE_SETTINGS)
+                                    startActivity(intent)
+                                }
+                                .onNegative { dialog, which ->
+                                    this.app.terminate()
+                                }
+                                .build().show()
                     }
                 }
 
