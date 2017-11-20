@@ -1,22 +1,17 @@
 package org.deku.leoz.smartlane.api
 
-import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.reactivex.Observable
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
+import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.model.Error
 import org.deku.leoz.smartlane.model.Processstatus
 import org.deku.leoz.smartlane.model.Routemetadatas
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
-import sx.log.slf4j.trace
-import sx.rx.retryWith
-import java.util.concurrent.TimeUnit
 import javax.validation.Valid
 import javax.ws.rs.Consumes
 import javax.ws.rs.DefaultValue
@@ -53,9 +48,10 @@ interface RouteApiGeneric {
 
     @ApiModel
     data class SuccessMeta(
-            var success_files: String? = null,
+            var successFiles: String? = null,
             var message: String = "",
-            var success: Boolean = false
+            var success: Boolean = false,
+            var routeIds: List<Int> = listOf()
     )
 
     companion object {
@@ -98,7 +94,12 @@ interface RouteApiGeneric {
 
 private val log = LoggerFactory.getLogger(RouteApiGeneric::class.java)
 
-/** Convenience extension for async operation */
+/** Exception thrown when process is pending */
+class PendingException : Exception()
+
+/**
+ * Calc route optimized timewindow asynchronously
+ */
 fun RouteApiGeneric.postCalcrouteOptimizedTimewindowAsync(
         body: Routinginput,
         truck: Boolean = false,
@@ -136,65 +137,43 @@ fun RouteApiGeneric.postCalcrouteOptimizedTimewindowAsync(
     }
 }
 
-fun RouteApiGeneric.calcrouteOptimizedTimewindow(body: Routinginput): Observable<Routemetadatas> {
-    /** Exception thrown when process is pending */
-    class PendingException : Exception()
+fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.SuccessMeta {
+    return this.getProcessStatusByIdById(
+            processId = processId,
+            actionId = RouteApiGeneric.ACTION_FINAL,
+            responseData = null
+    )
+            .let { rsp ->
+                // Generic http errors
+                if (rsp.statusInfo.family != Response.Status.Family.SUCCESSFUL)
+                    throw WebApplicationException(rsp)
 
-    return Observable.fromCallable {
-        // Start async route calculation
-        this.postCalcrouteOptimizedTimewindowAsync(body = body)
-    }
-            .flatMap { status ->
-                Observable.fromCallable<Routemetadatas> {
-                    // Poll status
-                    this.getProcessStatusByIdById(
-                            processId = status.processId,
-                            actionId = RouteApiGeneric.ACTION_FINAL,
-                            responseData = null
-                    )
-                            .let { rsp ->
-                                // Generic http errors
-                                if (rsp.statusInfo.family != Response.Status.Family.SUCCESSFUL)
-                                    throw WebApplicationException(rsp)
-
-                                when (rsp.status) {
-                                    Response.Status.OK.statusCode ->
-                                        rsp.readEntity(Routemetadatas::class.java)
-
-                                    Response.Status.ACCEPTED.statusCode -> {
-                                        val ps = rsp.readEntity(RouteApiGeneric.ProcessStatus::class.java)
-                                        when (ps.status) {
-                                            RouteApiGeneric.STATUS_PENDING -> {
-                                                throw PendingException()
-                                            }
-                                            else -> {
-                                                // Deserialize success meta
-                                                throw ObjectMapper().treeToValue(
-                                                        ps.meta,
-                                                        RouteApiGeneric.SuccessMeta::class.java).let {
-                                                    IllegalStateException(it.message)
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    else ->
-                                        throw IllegalStateException("Unexpected status code ${status}")
+                when (rsp.status) {
+                    Response.Status.ACCEPTED.statusCode -> {
+                        val ps = rsp.readEntity(RouteApiGeneric.ProcessStatus::class.java)
+                        when (ps.status) {
+                            RouteApiGeneric.STATUS_PENDING -> {
+                                throw PendingException()
+                            }
+                            RouteApiGeneric.STATUS_SUCCESS -> {
+                                // Deserialize success meta
+                                SmartlaneApi.mapper.treeToValue(
+                                        ps.meta,
+                                        RouteApiGeneric.SuccessMeta::class.java
+                                ).also {
+                                    if (it.success == false)
+                                        throw IllegalStateException(it.message)
                                 }
                             }
-                }
-                        .retryWith(
-                                count = 100,
-                                action = { _, e ->
-                                    when (e) {
-                                        // Retry when pending
-                                        is PendingException -> Observable.timer(1, TimeUnit.SECONDS)
-                                        else -> throw e
-                                    }
-                                }
-                        )
-            }
-            .map { it as Routemetadatas }
-}
+                            else -> {
+                                throw IllegalStateException("Unexpected process status ${ps.status}")
+                            }
+                        }
+                    }
 
+                    else ->
+                        throw IllegalStateException("Unexpected status code ${rsp.status}")
+                }
+            }
+}
 

@@ -4,24 +4,17 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import org.deku.leoz.smartlane.api.AddressApi
 import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
-import org.deku.leoz.smartlane.api.RouteApi
-import org.deku.leoz.smartlane.api.RouteApiGeneric
-import org.deku.leoz.smartlane.api.calcrouteOptimizedTimewindow
-import org.deku.leoz.smartlane.api.postCalcrouteOptimizedTimewindowAsync
 import org.deku.leoz.smartlane.model.Address
-import org.deku.leoz.smartlane.model.Addresses
-import org.deku.leoz.smartlane.model.Routinginput
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
-import sx.log.slf4j.*
+import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
 import java.net.URI
-import javax.ws.rs.WebApplicationException
-import javax.ws.rs.core.Response
 
 /**
  * Created by masc on 15.11.17.
@@ -33,12 +26,7 @@ class RestApiTest {
     private val restClient by lazy {
         RestEasyClient(
                 baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/"),
-                objectMapper = ObjectMapper().also {
-                    // Don't epxlicitly serialize nulls with json (breaks swagger-ui too when having all those nulls in swagger.json)
-                    it.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                    it.propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
-                    it.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                }
+                objectMapper = SmartlaneApi.mapper
         )
     }
 
@@ -55,6 +43,25 @@ class RestApiTest {
                     log.trace("Authorized")
                 }
     }
+
+    private val addresses = listOf(
+            Address().also {
+                it.contactfirstname = "Jürgen"
+                it.contactlastname = "Töpper"
+                it.contactcompany = "Test"
+                it.street = "Waldhof"
+                it.housenumber = "1"
+                it.city = "Schaafheim"
+                it.postalcode = "64850"
+            },
+            Address().also {
+                it.contactcompany = "DERKURIER"
+                it.street = "Dörrwiese"
+                it.housenumber = "2"
+                it.city = "Neuenstein"
+                it.postalcode = "36286"
+            }
+    )
 
     @Test
     fun testRefreshToken() {
@@ -102,30 +109,6 @@ class RestApiTest {
             log.trace(
                     it.address
             )
-        }
-    }
-
-    @Test
-    fun calcRoute() {
-        this.authorize()
-
-        restClient.proxy(RouteApiGeneric::class.java).also { it ->
-            it.calcrouteOptimizedTimewindow(
-                    body = Routinginput().also {
-                        it.deliveryids = listOf(2, 3)
-                    }
-            )
-                    .blockingSubscribe(
-                            {
-                                log.trace("${it}")
-                            },
-                            {
-                                log.error(it.message, it)
-                            }
-                    )
-                    .also {
-                        log.trace(it)
-                    }
         }
     }
 }
