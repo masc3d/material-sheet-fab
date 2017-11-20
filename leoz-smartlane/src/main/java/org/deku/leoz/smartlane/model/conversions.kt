@@ -1,6 +1,7 @@
 package org.deku.leoz.smartlane.model
 
 /**
+ * Convert smartlane address to route delivery input
  * Created by masc on 20.11.17.
  */
 fun Address.toRouteDeliveryInput(customId: String): Routedeliveryinput =

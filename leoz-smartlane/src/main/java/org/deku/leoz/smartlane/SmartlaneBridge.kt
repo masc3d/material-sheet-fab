@@ -29,7 +29,7 @@ class SmartlaneBridge {
         )
     }
 
-    private fun authorize() {
+    fun authorize() {
         log.trace("Authorizing")
         this.restClient.jwtToken = restClient
                 .proxy(AuthApi::class.java)
@@ -44,8 +44,6 @@ class SmartlaneBridge {
     }
 
     fun calculateRoute(routingInput: Routinginput): Observable<Route> {
-        this.authorize()
-
         val routeApi = this.restClient.proxy(RouteApiGeneric::class.java)
 
         return Observable.fromCallable {
@@ -53,7 +51,7 @@ class SmartlaneBridge {
             routeApi.postCalcrouteOptimizedTimewindowAsync(body = routingInput)
         }
                 .flatMap { status ->
-                    Observable.fromCallable<RouteApiGeneric.SuccessMeta> {
+                    Observable.fromCallable<RouteApiGeneric.RouteProcessStatus> {
                         // Poll status
                         routeApi.getProcessStatusById(
                                 processId = status.processId
@@ -64,7 +62,9 @@ class SmartlaneBridge {
                                     action = { _, e ->
                                         when (e) {
                                         // Retry when pending
-                                            is PendingException -> Observable.timer(1, TimeUnit.SECONDS)
+                                            is PendingException -> {
+                                                Observable.timer(1, TimeUnit.SECONDS)
+                                            }
                                             else -> throw e
                                         }
                                     }

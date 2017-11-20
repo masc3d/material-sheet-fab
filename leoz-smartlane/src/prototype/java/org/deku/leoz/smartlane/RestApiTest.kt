@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import org.deku.leoz.smartlane.api.AddressApi
 import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
+import org.deku.leoz.smartlane.api.DeliveryApi
+import org.deku.leoz.smartlane.api.RouteApi
 import org.deku.leoz.smartlane.model.Address
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -108,6 +110,47 @@ class RestApiTest {
         restClient.proxy(AddressApi::class.java).also {
             log.trace(
                     it.address
+            )
+        }
+    }
+
+    @Test
+    fun testDeliveryStatus() {
+        this.authorize()
+
+        restClient.proxy(DeliveryApi::class.java).also { service ->
+            val status = service.deliverystatus
+
+            log.trace(
+                    status
+            )
+
+            status.objects.forEach {
+                log.trace(
+                        service.getDeliveryById(it.id)
+                )
+            }
+        }
+    }
+
+    @Test
+    fun testDeliveryGet() {
+        this.authorize()
+
+        restClient.proxy(DeliveryApi::class.java).also {
+            log.trace(
+                    it.getDelivery("{}")
+            )
+        }
+    }
+
+    @Test
+    fun testRouteStatus() {
+        this.authorize()
+
+        restClient.proxy(RouteApi::class.java).also { service ->
+            log.trace(
+                    service.routestatus
             )
         }
     }

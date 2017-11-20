@@ -11,6 +11,9 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat
  */
 class SmartlaneApi {
     companion object {
+        /**
+         * Jackson object mapper, tailored for smartlane rest api
+         */
         val mapper = ObjectMapper().also {
             it.setSerializationInclusion(JsonInclude.Include.NON_NULL)
             it.propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE

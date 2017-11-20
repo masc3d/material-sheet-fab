@@ -47,10 +47,10 @@ interface RouteApiGeneric {
     )
 
     @ApiModel
-    data class SuccessMeta(
-            var successFiles: String? = null,
+    data class RouteProcessStatus(
             var message: String = "",
             var success: Boolean = false,
+            var successFiles: String? = null,
             var routeIds: List<Int> = listOf()
     )
 
@@ -137,7 +137,7 @@ fun RouteApiGeneric.postCalcrouteOptimizedTimewindowAsync(
     }
 }
 
-fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.SuccessMeta {
+fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.RouteProcessStatus {
     return this.getProcessStatusByIdById(
             processId = processId,
             actionId = RouteApiGeneric.ACTION_FINAL,
@@ -150,23 +150,27 @@ fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.Suc
 
                 when (rsp.status) {
                     Response.Status.ACCEPTED.statusCode -> {
-                        val ps = rsp.readEntity(RouteApiGeneric.ProcessStatus::class.java)
-                        when (ps.status) {
+                        val processStatus = rsp.readEntity(RouteApiGeneric.ProcessStatus::class.java)
+
+                        when (processStatus.status) {
+                        // Operation still pending
                             RouteApiGeneric.STATUS_PENDING -> {
                                 throw PendingException()
                             }
+
+                        // Operation completed
                             RouteApiGeneric.STATUS_SUCCESS -> {
-                                // Deserialize success meta
+                                // Parse route process status
                                 SmartlaneApi.mapper.treeToValue(
-                                        ps.meta,
-                                        RouteApiGeneric.SuccessMeta::class.java
+                                        processStatus.meta,
+                                        RouteApiGeneric.RouteProcessStatus::class.java
                                 ).also {
                                     if (it.success == false)
                                         throw IllegalStateException(it.message)
                                 }
                             }
                             else -> {
-                                throw IllegalStateException("Unexpected process status ${ps.status}")
+                                throw IllegalStateException("Unexpected process status ${processStatus.status}")
                             }
                         }
                     }

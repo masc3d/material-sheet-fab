@@ -5,6 +5,7 @@ import org.deku.leoz.smartlane.model.Routinginput
 import org.deku.leoz.smartlane.model.toRouteDeliveryInput
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.Stopwatch
 import sx.log.slf4j.trace
 
 /**
@@ -39,21 +40,21 @@ class SmartlaneBridgeTest {
 
     @Test
     fun testRoute() {
+        bridge.authorize()
 
-        bridge.calculateRoute(
-                routingInput = Routinginput().also {
-                    it.deliverydata = this.addresses.mapIndexed { index, address ->  address.toRouteDeliveryInput(
-                            customId = "DEKU_ADDRESS ${index}") }
-                }
-        )
-                .blockingSubscribe({
-                    log.trace("${it}")
-                }, {
-                    log.error(it.message, it)
-                }
-                )
-                .also {
-                    log.trace(it)
-                }
+        Stopwatch.createStarted(this, "calculateRoute", { _, _ ->
+            bridge.calculateRoute(
+                    routingInput = Routinginput().also {
+                        it.deliverydata = this.addresses.mapIndexed { index, address ->
+                            address.toRouteDeliveryInput(
+                                    customId = "DEKU_ADDRESS ${index}")
+                        }
+                    }
+            )
+                    .blockingFirst()
+                    .also {
+                        log.trace(it)
+                    }
+        })
     }
 }
