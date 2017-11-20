@@ -40,10 +40,8 @@ class SmartlaneBridgeTest {
 
     @Test
     fun testRoute() {
-        bridge.authorize()
-
         Stopwatch.createStarted(this, "calculateRoute", { _, _ ->
-            bridge.calculateRoute(
+            bridge.optimizeRoute(
                     routingInput = Routinginput().also {
                         it.deliverydata = this.addresses.mapIndexed { index, address ->
                             address.toRouteDeliveryInput(

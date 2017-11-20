@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import sx.rs.client.RestEasyClient
 import sx.rx.retryWith
 import java.net.URI
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
@@ -22,38 +23,74 @@ import java.util.concurrent.TimeUnit
 class SmartlaneBridge {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    private val baseUri = URI.create("https://dispatch.smartlane.io/")
+
+    private val customerId = "der-kurier-test"
+
     private val restClient by lazy {
         RestEasyClient(
-                baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/"),
+                baseUri = baseUri,
                 objectMapper = SmartlaneApi.mapper
         )
     }
 
-    fun authorize() {
-        log.trace("Authorizing")
-        this.restClient.jwtToken = restClient
-                .proxy(AuthApi::class.java)
-                .auth(AuthApi.Request(
-                        email = "juergen.toepper@derkurier.de",
-                        password = "PanicLane"
-                ))
-                .accessToken
-                .also {
-                    log.trace("Authorized")
-                }
+    /** Map of customer ids to authorization tokens */
+    private val tokens = ConcurrentHashMap<String, String>()
+
+    /**
+     * Authorize smartlane customer
+     * @param customerId Smartlane customer id
+     */
+    fun jwtToken(customerId: String): Observable<String> {
+        return Observable.fromCallable {
+            this.tokens.getOrPut(
+                    customerId,
+                    {
+                        log.trace("Authorizing [${customerId}]")
+
+                        this.restClient
+                                .proxy(AuthApi::class.java,
+                                        path = customerId)
+                                .auth(AuthApi.Request(
+                                        email = "juergen.toepper@derkurier.de",
+                                        password = "PanicLane"
+                                ))
+                                .accessToken
+                    }
+            )
+        }
     }
 
-    fun calculateRoute(routingInput: Routinginput): Observable<Route> {
-        val routeApi = this.restClient.proxy(RouteApiGeneric::class.java)
+    /**
+     * Get rest client proxy for specific customer.
+     * This method will authenticate synchronously if necessary.
+     * @param serviceClass Service class
+     * @param customerId Smartlane customer id
+     */
+    private fun <T> proxy(serviceClass: Class<T>, customerId: String): T {
+        return this.restClient.proxy(
+                serviceClass,
+                path = customerId,
+                jwtToken = this.jwtToken(customerId).blockingFirst())
+    }
+
+    /**
+     * Optimize route
+     */
+    fun optimizeRoute(routingInput: Routinginput): Observable<Route> {
+        val routeApiGeneric by lazy { this.proxy(RouteApiGeneric::class.java, customerId = customerId) }
+        val routeApi by lazy { this.proxy(RouteApi::class.java, customerId = customerId) }
 
         return Observable.fromCallable {
             // Start async route calculation
-            routeApi.postCalcrouteOptimizedTimewindowAsync(body = routingInput)
+            routeApiGeneric.postCalcrouteOptimizedTimewindowAsync(
+                    body = routingInput
+            )
         }
                 .flatMap { status ->
                     Observable.fromCallable<RouteApiGeneric.RouteProcessStatus> {
                         // Poll status
-                        routeApi.getProcessStatusById(
+                        routeApiGeneric.getProcessStatusById(
                                 processId = status.processId
                         )
                     }
@@ -70,7 +107,7 @@ class SmartlaneBridge {
                                     }
                             )
                             .map {
-                                this.restClient.proxy(RouteApi::class.java)
+                                routeApi
                                         .getRouteById(it.routeIds.first())
                             }
                 }
