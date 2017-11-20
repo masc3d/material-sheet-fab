@@ -7,10 +7,10 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
-import org.deku.leoz.time.toDateOnlyTime
+import org.deku.leoz.time.toTimeWithoutDate
 import org.deku.leoz.time.toDateWithoutTime
 import org.deku.leoz.time.toShortTime
-import org.deku.leoz.time.toString_ddMMyyyy_PointSeparated
+import org.deku.leoz.time.toGregorianLongDateString
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
@@ -331,10 +331,10 @@ open class ParcelProcessing {
                         if (orderRecord.dtauslieferdatum == null) {
                             oldDeliveryDate = ""
                         } else {
-                            oldDeliveryDate = orderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
+                            oldDeliveryDate = orderRecord.dtauslieferdatum.toGregorianLongDateString()
                         }
                         val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
-                        val deliveryTime = it.scanned.toDateOnlyTime()
+                        val deliveryTime = it.scanned.toTimeWithoutDate()
                         val deliveryDate = it.scanned.toDateWithoutTime()
 
                         orderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
@@ -353,7 +353,7 @@ open class ParcelProcessing {
                                 )
 
                             }
-                            if (oldDeliveryDate != it.scanned.toString_ddMMyyyy_PointSeparated()) {
+                            if (oldDeliveryDate != it.scanned.toGregorianLongDateString()) {
 
 
                                 fieldHistoryRepository.addEntry(
@@ -361,7 +361,7 @@ open class ParcelProcessing {
                                         unitNo = parcelRecord.colliebelegnr.toLong(),
                                         fieldName = "dtauslieferdatum",
                                         oldValue = oldDeliveryDate,
-                                        newValue = it.scanned.toString_ddMMyyyy_PointSeparated(),
+                                        newValue = it.scanned.toGregorianLongDateString(),
                                         changer = "I",
                                         point = "IM"
                                 )
@@ -446,7 +446,7 @@ open class ParcelProcessing {
                                                 if (unitInBagOrderRecord.dtauslieferdatum == null) {
                                                     unitInBagOldDeliveryDate = ""
                                                 } else {
-                                                    unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toString_ddMMyyyy_PointSeparated()
+                                                    unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toGregorianLongDateString()
                                                 }
                                                 val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
 
@@ -467,7 +467,7 @@ open class ParcelProcessing {
                                                                 point = "IM"
                                                         )
                                                     }
-                                                    if (unitInBagOldDeliveryDate != deliveryDate.toString_ddMMyyyy_PointSeparated()) {
+                                                    if (unitInBagOldDeliveryDate != deliveryDate.toGregorianLongDateString()) {
 
 
                                                         fieldHistoryRepository.addEntry(
@@ -475,7 +475,7 @@ open class ParcelProcessing {
                                                                 unitNo = it.colliebelegnr.toLong(),
                                                                 fieldName = "dtauslieferdatum",
                                                                 oldValue = unitInBagOldDeliveryDate,
-                                                                newValue = deliveryDate.toString_ddMMyyyy_PointSeparated(),
+                                                                newValue = deliveryDate.toGregorianLongDateString(),
                                                                 changer = "I",
                                                                 point = "IM"
                                                         )
@@ -574,19 +574,19 @@ open class ParcelProcessing {
                         if (parcelRecord.dteingangdepot2 == null) {
                             oldValue = ""
                         } else {
-                            oldValue = parcelRecord.dteingangdepot2.toString_ddMMyyyy_PointSeparated()
+                            oldValue = parcelRecord.dteingangdepot2.toGregorianLongDateString()
                         }
                         val importDate = it.scanned.toDateWithoutTime()
                         parcelRecord.dteingangdepot2 = importDate.toTimestamp()// it.time.toTimestamp()
                         if (parcelRecord.store() > 0) {
-                            if (oldValue != it.scanned.toString_ddMMyyyy_PointSeparated()) {
+                            if (oldValue != it.scanned.toGregorianLongDateString()) {
 
                                 fieldHistoryRepository.addEntry(
                                         orderId = parcelRecord.orderid.toLong(),
                                         unitNo = parcelRecord.colliebelegnr.toLong(),
                                         fieldName = "dteingangdepot2",
                                         oldValue = oldValue,
-                                        newValue = it.scanned.toString_ddMMyyyy_PointSeparated(),
+                                        newValue = it.scanned.toGregorianLongDateString(),
                                         changer = "SP",
                                         point = "IM"
                                 )

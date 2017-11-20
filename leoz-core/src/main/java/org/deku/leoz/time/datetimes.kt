@@ -1,31 +1,36 @@
 package org.deku.leoz.time
 
 import org.deku.leoz.service.entity.ShortTime
+import sx.time.toCalendar
 import sx.time.toLocalDate
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * Short date/time conversion methods
- * Created by masc on 06/12/2016.
- */
-
-fun java.sql.Time.toShortTime(): ShortTime {
-    return ShortTime(this.toString())
+object DateFormats {
+    val gregorianLongDate by lazy { SimpleDateFormat("dd.MM.yyyy") }
 }
 
 fun Date.toShortTime(): ShortTime {
     return ShortTime(this)
 }
 
-fun Date.toString_ddMMyyyy_PointSeparated(): String {
-    return SimpleDateFormat("dd.MM.yyyy").format(this)
+fun Date.toGregorianLongDateString(): String {
+    return DateFormats.gregorianLongDate.format(this)
 }
 
-fun Date.toDateWithoutTime(): Date {
-    return SimpleDateFormat("yyyy-MM-dd HH:mm").parse(this.toLocalDate().toString() + (" 00:00"))
-}
+fun Date.toDateWithoutTime(): Date =
+        this.toCalendar().let {
+            it.set(Calendar.HOUR_OF_DAY, 0)
+            it.set(Calendar.MINUTE, 0)
+            it.set(Calendar.SECOND, 0)
+            it.set(Calendar.MILLISECOND, 0)
+            it.time
+        }
 
-fun Date.toDateOnlyTime(): Date {
-    return SimpleDateFormat("yyyy-MM-dd HH:mm").parse("1899-12-30 " + (this.toShortTime().toString()))
-}
+fun Date.toTimeWithoutDate(): Date =
+        this.toCalendar().let {
+            it.set(Calendar.YEAR, 1899)
+            it.set(Calendar.MONTH, 12)
+            it.set(Calendar.DAY_OF_MONTH, 30)
+            it.time
+        }

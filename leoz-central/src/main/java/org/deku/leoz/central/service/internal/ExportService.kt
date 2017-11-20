@@ -6,17 +6,15 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
-import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.BagService
 import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.LoadinglistService
-import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.time.toShortTime
-import org.deku.leoz.time.toString_ddMMyyyy_PointSeparated
+import org.deku.leoz.time.toGregorianLongDateString
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -213,7 +211,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         )
                         val routing = routingService.request(routingRequest)
                         if (orderRecord.verladedatum.toTimestamp() != routing.sendDate!!.date.toTimestamp()) {
-                            val oldSendDate = orderRecord.verladedatum?.toString_ddMMyyyy_PointSeparated() ?: ""
+                            val oldSendDate = orderRecord.verladedatum?.toGregorianLongDateString() ?: ""
 
                             orderRecord.verladedatum = routing.sendDate!!.date.toTimestamp()
                             if (orderRecord.store() > 0) {
@@ -222,14 +220,14 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                                         unitNo = unitRecord.colliebelegnr.toLong(),
                                         fieldName = "verladedatum",
                                         oldValue = oldSendDate,
-                                        newValue = routing.sendDate!!.date.toTimestamp().toString_ddMMyyyy_PointSeparated(),
+                                        newValue = routing.sendDate!!.date.toTimestamp().toGregorianLongDateString(),
                                         changer = "WEB",
                                         point = "EX"
                                 )
                             }
                         }
                         if (orderRecord.dtauslieferung == null || orderRecord.dtauslieferung.toTimestamp() != routing.deliveryDate!!.date.toTimestamp()) {
-                            val oldDeliveryDate = orderRecord.dtauslieferung?.toString_ddMMyyyy_PointSeparated() ?: ""
+                            val oldDeliveryDate = orderRecord.dtauslieferung?.toGregorianLongDateString() ?: ""
                             orderRecord.dtauslieferung = routing.deliveryDate!!.date.toTimestamp()
                             if (orderRecord.store() > 0) {
                                 fieldHistoryRepository.addEntry(
@@ -237,7 +235,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                                         unitNo = unitRecord.colliebelegnr.toLong(),
                                         fieldName = "dtauslieferung",
                                         oldValue = oldDeliveryDate,
-                                        newValue = routing.deliveryDate!!.date.toTimestamp().toString_ddMMyyyy_PointSeparated(),
+                                        newValue = routing.deliveryDate!!.date.toTimestamp().toGregorianLongDateString(),
                                         changer = "WEB",
                                         point = "EX"
                                 )
@@ -390,7 +388,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             )
         }
         if (unitRecord.dtausgangdepot2 == null || unitRecord.dtausgangdepot2 != workDate.toTimestamp()) {
-            val oldDtAusgangDepot2 = unitRecord.dtausgangdepot2?.toString_ddMMyyyy_PointSeparated() ?: ""
+            val oldDtAusgangDepot2 = unitRecord.dtausgangdepot2?.toGregorianLongDateString() ?: ""
             unitRecord.dtausgangdepot2 = workDate.toTimestamp()
             if (unitRecord.store() > 0) {
                 fieldHistoryRepository.addEntry(
@@ -398,7 +396,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         unitNo = unitRecord.colliebelegnr.toLong(),
                         fieldName = "dtausgangdepot2",
                         oldValue = oldDtAusgangDepot2,
-                        newValue = workDate.toTimestamp().toString_ddMMyyyy_PointSeparated(),
+                        newValue = workDate.toTimestamp().toGregorianLongDateString(),
                         changer = "WEB",
                         point = "EX"
                 )

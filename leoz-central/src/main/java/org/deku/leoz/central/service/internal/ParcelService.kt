@@ -7,7 +7,6 @@ import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.ParcelProcessing
-import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.node.Storage
 import sx.rs.DefaultProblem
@@ -32,15 +31,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
-import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.internal.LoadinglistService
-import org.deku.leoz.service.internal.StationService
-import org.deku.leoz.service.internal.UserService
-import org.deku.leoz.service.pub.RoutingService
-import org.deku.leoz.time.toShortTime
-import org.deku.leoz.time.toString_ddMMyyyy_PointSeparated
 import sx.io.serialization.Serializable
 
 

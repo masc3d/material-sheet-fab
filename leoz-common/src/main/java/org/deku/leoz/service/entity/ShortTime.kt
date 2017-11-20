@@ -11,14 +11,16 @@ import java.util.*
  */
 @JsonSerialize(using = ToStringSerializer::class)
 class ShortTime {
-    val localTime: Date
-
-    val format by lazy {
-        SimpleDateFormat("HH:mm")
+    companion object {
+        val format by lazy {
+            SimpleDateFormat("HH:mm")
+        }
     }
 
+    val localTime: Date
+
     constructor(localTime: String) {
-        this.localTime = this.format.parse(localTime)
+        this.localTime = format.parse(localTime)
     }
 
     @JvmOverloads constructor(localTime: Date = Date()) {
@@ -26,6 +28,6 @@ class ShortTime {
     }
 
     override fun toString(): String {
-        return this.format.format(this.localTime)
+        return format.format(this.localTime)
     }
 }

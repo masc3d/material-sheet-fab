@@ -11,14 +11,16 @@ import java.util.*
  */
 @JsonSerialize(using = ToStringSerializer::class)
 class ShortDate {
-    private val format by lazy {
-        SimpleDateFormat("yyyy-MM-dd")
+    companion object {
+        private val format by lazy {
+            SimpleDateFormat("yyyy-MM-dd")
+        }
     }
 
     val date: Date
 
     constructor(localDate: String) {
-        this.date = this.format.parse(localDate)
+        this.date = format.parse(localDate)
     }
 
     @JvmOverloads constructor(localDate: Date = Date()) {
@@ -26,6 +28,6 @@ class ShortDate {
     }
 
     override fun toString(): String {
-        return this.format.format(this.date)
+        return format.format(this.date)
     }
 }
