@@ -2,7 +2,7 @@
   <div class="ui-fluid">
     <div class="ui-g" style="margin-bottom: 30px;">
       <div class="ui-g-12 ui-lg-12 ui-g-nopad">
-        <input #scanfield formControlName="scanfield" class="bgYellow" style="font-size: 20px;">
+        <input #scanfield formControlName="scanfield" class="bgYellow" style="font-size: 20px; max-width: 150px">
       </div>
     </div>
     <p-dataScroller [value]="shipments" [rows]="10" [inline]="true" scrollHeight="calc(100vh - 296px)"

@@ -227,6 +227,11 @@ input {
 .inputField {
   height: auto;
 }
+.inputFieldMW150 {
+  border:1px solid darkgrey;
+  padding-left: 4px;
+  max-width: 150px;
+}
 /* Dropdown */
 .ui-dropdown.ui-widget {
   width: calc(100% - 4px);
