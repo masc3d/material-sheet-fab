@@ -12,7 +12,7 @@ apply from: '../common.gradle'
 
 buildscript {
     ext {
-        v_android_gradle = '3.0.0'
+        v_android_gradle = '3.0.1'
     }
 
     repositories {
