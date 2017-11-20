@@ -3,7 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Routines
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.repository.HistoryJooqRepository
+import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.internal.BagService.ErrorCode
 import org.jooq.DSLContext
@@ -19,9 +19,6 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
-import org.deku.leoz.central.data.repository.DepotJooqRepository
-import org.deku.leoz.central.data.repository.ParcelJooqRepository
-import org.deku.leoz.central.data.repository.toBag
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.model.counter
@@ -59,14 +56,6 @@ class BagService : BagService {
     @Inject
     private lateinit var routingService: org.deku.leoz.node.service.pub.RoutingService
 
-    @Inject
-    private lateinit var parcelRepository: ParcelJooqRepository
-
-    @Inject
-    private lateinit var userService: UserService
-
-    @Inject
-    private lateinit var parcelService: ParcelServiceV1
 
     fun getNextDeliveryDate(sendDate: Date, stationDest: String, countryDest: String, zipDest: String): java.time.LocalDate {
         //return java.time.LocalDate.now().plusDays(1)
@@ -103,7 +92,7 @@ class BagService : BagService {
         if (un.value.type != UnitNumber.Type.BagId)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
 
-        val bag = depotRepository.getBag(un.value.value.toLong())?.toBag()
+        val bag = depotRepository.getBag(un.value.value.toLong())?.toGeneralBag()
         bag ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
         val oid = bag.orderhub2depot
         if (oid != null) {
@@ -112,7 +101,7 @@ class BagService : BagService {
         val oidBack = bag.orderdepot2hub
         if (oidBack != null) {
             bag.unitNoBack = depotRepository.getUnitNo(oidBack)
-            bag.orders2export = parcelService.getParcelsFilledInBagByBagID(oidBack)
+
         }
         return bag
     }
@@ -690,30 +679,6 @@ class BagService : BagService {
 
     override fun getCount2SendBackByStation(stationNo: Int): Int {
         return depotRepository.getCountBags2SendBagByStation(stationNo)
-    }
-
-
-    override fun reopenBagStationExport(bagID: Long, stationNo: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun fillBagStationExport(bagID: Long, stationNo: Int, unitNo: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun closeBagStationExport(bagID: Long, stationNo: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-
-    override fun setBagStationExportRedSeal(bagID: Long, stationNo: Int, redSeal: Long, text: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
-        val user = userService.get()
-
-        return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000)
     }
 
 

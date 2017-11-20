@@ -60,7 +60,7 @@ interface BagService {
     ) {
         var unitNo: Long? = null
         var unitNoBack: Long? = null
-        var orders2export: List<ParcelServiceV1.Order2Export> = listOf()
+
     }
 
 
@@ -171,60 +171,6 @@ interface BagService {
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
 
     ): Int
-
-
-    @PATCH
-    @Path("/{$ID}/setRedSeal")
-    @ApiOperation(value = "Set red seal", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
-    )
-    fun setBagStationExportRedSeal(
-            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
-            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @QueryParam(REDSEAL) @ApiParam(value = "Red seal number", example = "900200000001", required = true) redSeal: Long,
-            @QueryParam(TEXT) @ApiParam(value = "Text", required = true) text: String
-    )
-
-    @PATCH
-    @Path("/{$ID}/reopen")
-    @ApiOperation(value = "Reopen bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
-    )
-    fun reopenBagStationExport(
-            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
-            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-
-    )
-
-    @PATCH
-    @Path("/{$ID}/fill")
-    @ApiOperation(value = "Fill bag in station-export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
-    )
-    fun fillBagStationExport(
-            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
-            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @QueryParam(UNIT) @ApiParam(value = "unit", example = "123456789877", required = true) unitNo: String?
-    )
-
-    @PATCH
-    @Path("/{$ID}/close")
-    @ApiOperation(value = "Close bag in station-export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
-    )
-    fun closeBagStationExport(
-            @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(ID) bagID: Long,
-            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    )
-
-    @POST
-    @Path("/loadinglist")
-    @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist
 
 
 }

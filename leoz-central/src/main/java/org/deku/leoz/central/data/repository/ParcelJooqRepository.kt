@@ -14,6 +14,7 @@ import org.deku.leoz.central.data.toUByte
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.Address
+import org.deku.leoz.service.internal.ExportService
 import org.jooq.types.UInteger
 import sx.time.toSqlDate
 import sx.time.toTimestamp
@@ -94,8 +95,8 @@ class ParcelJooqRepository {
         )
     }
 
-    fun getParcels2ExportByLoadingList(loadinglistNo: Long, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<ParcelServiceV1.Order2Export> {
-        val result = listOf<ParcelServiceV1.Order2Export>()
+    fun getParcels2ExportByLoadingList(loadinglistNo: Long, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<ExportService.Order> {
+        val result = listOf<ExportService.Order>()
         val records = dslContext.fetch(
                 Tables.TBLAUFTRAGCOLLIES
                         .join(Tables.TBLAUFTRAG)
@@ -252,8 +253,8 @@ class ParcelJooqRepository {
     }
 }
 
-fun TblauftragRecord.toOrder2Export(): ParcelServiceV1.Order2Export {
-    val order = ParcelServiceV1.Order2Export(
+fun TblauftragRecord.toOrder2Export(): ExportService.Order {
+    val order = ExportService.Order(
             orderId = this.orderid.toLong(),
             deliveryAddress = Address(
                     line1 = this.firmad,
@@ -270,8 +271,8 @@ fun TblauftragRecord.toOrder2Export(): ParcelServiceV1.Order2Export {
     return order
 }
 
-fun TblauftragcolliesRecord.toParcel2Export(): ParcelServiceV1.Parcel2Export {
-    val parcel = ParcelServiceV1.Parcel2Export(
+fun TblauftragcolliesRecord.toParcel2Export(): ExportService.Parcel {
+    val parcel = ExportService.Parcel(
             orderId = this.orderid.toLong(),
             parcelNo = this.colliebelegnr.toLong(),
             parcelPosition = this.orderpos.toInt(),

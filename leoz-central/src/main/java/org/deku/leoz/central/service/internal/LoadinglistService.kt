@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.model.LoadinglistType
 import org.deku.leoz.service.internal.BagService
+import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.LoadinglistService
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.UserService
@@ -25,24 +26,21 @@ class LoadinglistService : org.deku.leoz.service.internal.LoadinglistService {
     private lateinit var userService: UserService
 
     @Inject
-    private lateinit var parcelService: ParcelServiceV1
-
-    @Inject
-    private lateinit var bagService: BagService
+    private lateinit var exportService: ExportService
 
     override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
         val user = userService.get()
-        return parcelService.getNewLoadinglistNo()
+        return exportService.getNewLoadinglistNo()
     }
 
     override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
         val user = userService.get()
-        return bagService.getNewBagLoadinglistNo()
+        return exportService.getNewBagLoadinglistNo()
     }
 
     override fun getParcels2ExportByLoadingList(loadinglistNo: Long): LoadinglistService.Loadinglist? {
         val user = userService.get()
-        val orders = parcelService.getParcels2ExportByLoadingList(loadinglistNo)
+        val orders = exportService.getParcels2ExportByLoadingList(loadinglistNo)
         if (orders.count() == 0)
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,

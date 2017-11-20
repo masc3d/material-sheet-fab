@@ -24,7 +24,7 @@ interface LoadinglistService {
     }
 
     @Serializable(0x2e5b98b7a7694f)
-    data class Loadinglist(val loadinglistNo: Long, val orders: List<ParcelServiceV1.Order2Export> = listOf()) {
+    data class Loadinglist(val loadinglistNo: Long, val orders: List<ExportService.Order> = listOf()) {
         val loadinglistType by lazy {
             if (this.loadinglistNo < 100000)
                 LoadinglistType.BAG

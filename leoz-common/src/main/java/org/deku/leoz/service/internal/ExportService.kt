@@ -6,6 +6,7 @@ import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.service.entity.ServiceError
+import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
 import sx.rs.PATCH
 import sx.rs.auth.ApiKey
@@ -29,40 +30,86 @@ interface ExportService {
         const val TEXT = "text"
     }
 
+    @Serializable(0x5abfa519181a30)
+    data class Order(
+            var orderId: Long = 0,
+            var deliveryAddress: Address = Address(),
+            var deliveryStation: Int = 0,
+            var shipmentDate: java.sql.Date? = null,
+            var parcels: List<Parcel> = listOf()
+
+    )
+
+    @Serializable(0xbb30fca9069776)
+    data class Parcel(
+            var orderId: Long = 0,
+            var parcelNo: Long = 0,
+            var parcelPosition: Int = 0,
+            var loadinglistNo: Long? = null,
+            var typeOfPackaging: Int = 0,
+            var realWeight: Double = 0.0,
+            var dateOfStationOut: java.sql.Date? = null,
+            var cReference: String? = null
+    )
+
+    @ApiModel(description = "Bag Model")
+    @Serializable(0x32028b91dda15f)
+    data class Bag(
+            val bagNumber: Long? = null,
+            val sealNumberGreen: Long? = null,
+            //var status: Int? = null,
+            val status: org.deku.leoz.model.BagStatus? = null,
+            val statusTimestamp: Date? = null,
+            val lastStation: Long? = null,
+            val sealNumberYellow: Long? = null,
+            val sealNumberRed: Long? = null,
+            val orderhub2depot: Long? = null,
+            val orderdepot2hub: Long? = null,
+            val initStatus: Int = 0,
+            val workdate: Date? = null,
+            val printed: Int? = null,
+            val multibag: Int = 0,
+            val movepool: String? = null
+    ) {
+        var unitNo: Long? = null
+        var unitNoBack: Long? = null
+        var orders2export: List<Order> = listOf()
+    }
+
     @GET
     @Path("/station/{$STATION_NO}")
     @ApiOperation(value = "Get parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): List<ParcelServiceV1.Order2Export>
+    ): List<Order>
 
     @GET
     @Path("/station/{$STATION_NO}/bag")
     @ApiOperation(value = "Get parcels to export in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportInBagByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): List<ParcelServiceV1.Order2Export>
+    ): List<Order>
+
+    @GET
+    @Path("/bag/{$BAG_ID}")
+    @ApiOperation(value = "Get bag by bagId")
+    fun getBag(
+            @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagID: Long
+    ): Bag
 
     @GET
     @Path("/station/{$STATION_NO}/loaded")
     @ApiOperation(value = "Get loaded parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getLoadedParcels2ExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): List<ParcelServiceV1.Order2Export>
-
-    @GET
-    @Path("/bag/{$BAG_ID}")
-    @ApiOperation(value = "Get parcels in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcelsFilledInBagByBagID(
-            @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
-    ):List<ParcelServiceV1.Order2Export>
+    ): List<Order>
 
     @GET
     @Path("/loadinglist/{$LOADINGLIST_NO}")
     @ApiOperation(value = "Get parcels by loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportByLoadingList(
             @PathParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
-    ): List<ParcelServiceV1.Order2Export>
+    ): List<Order>
 
     @POST
     @Path("/loadinglist")

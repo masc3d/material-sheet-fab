@@ -17,6 +17,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 import org.deku.leoz.service.internal.BagService
+import org.deku.leoz.service.internal.ExportService
 
 /**
  * Created by masc on 07.05.15.
@@ -113,8 +114,8 @@ open class DepotJooqRepository {
     }
 }
 
-fun SsoSMovepoolRecord.toBag(): BagService.Bag {
-    val status = BagService.Bag(
+fun SsoSMovepoolRecord.toBag(): ExportService.Bag {
+    val bag = ExportService.Bag(
             this.bagNumber.toLong(),
             this.sealNumberGreen?.toLong(),
             //this.status?.toInt(),
@@ -131,7 +132,27 @@ fun SsoSMovepoolRecord.toBag(): BagService.Bag {
             this.multibag.toInt(),
             this.movepool
     )
-    return status
+    return bag
+}
+fun SsoSMovepoolRecord.toGeneralBag(): BagService.Bag {
+    val bag = BagService.Bag(
+            this.bagNumber.toLong(),
+            this.sealNumberGreen?.toLong(),
+            //this.status?.toInt(),
+            BagStatus.values().find { it.value == this.status?.toInt() },
+            this.statusTime,
+            this.lastdepot?.toLong(),
+            this.sealNumberYellow?.toLong(),
+            this.sealNumberRed?.toLong(),
+            this.orderhub2depot?.toLong(),
+            this.orderdepot2hub?.toLong(),
+            this.initStatus,
+            this.workDate,
+            this.printed?.toInt(),
+            this.multibag.toInt(),
+            this.movepool
+    )
+    return bag
 }
 //fun SsoSMovepoolRecord.toBag(): BagService.Bag{
 //    val bag=BagService.Bag(

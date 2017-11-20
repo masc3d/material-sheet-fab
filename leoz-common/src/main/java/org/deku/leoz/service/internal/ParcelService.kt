@@ -87,69 +87,6 @@ interface ParcelServiceV1 {
         )
     }
 
-    @GET
-    @Path("/export/station/{$STATION_NO}")
-    @ApiOperation(value = "Get parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcels2ExportByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): List<ParcelServiceV1.Order2Export>
-
-    @GET
-    @Path("/export/station/{$STATION_NO}/bag")
-    @ApiOperation(value = "Get parcels to export in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcels2ExportInBagByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): List<ParcelServiceV1.Order2Export>
-
-    @GET
-    @Path("/export/station/{$STATION_NO}/loaded")
-    @ApiOperation(value = "Get loaded parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getLoadedParcels2ExportByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): List<ParcelServiceV1.Order2Export>
-
-    @POST
-    @Path("/loadinglist")
-    @ApiOperation(value = "Create new loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getNewLoadinglistNo(): LoadinglistService.Loadinglist
-
-    @GET
-    @Path("/export/loadinglist/{$LOADINGLIST_NO}")
-    @ApiOperation(value = "Get parcels by loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcels2ExportByLoadingList(
-            @PathParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
-    ): List<ParcelServiceV1.Order2Export>
-
-    @PATCH
-    @Path("/export")
-    @ApiOperation(value = "Export parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun export(
-            @QueryParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = "",
-            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", required = true) loadingListNo: Long,
-            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): Boolean
-
-    @Serializable(0x5abfa519181a30)
-    data class Order2Export(
-            var orderId: Long = 0,
-            var deliveryAddress: Address = Address(),
-            var deliveryStation: Int = 0,
-            var shipmentDate: java.sql.Date? = null,
-            var parcels: List<Parcel2Export> = listOf()
-
-    )
-
-    @Serializable(0xbb30fca9069776)
-    data class Parcel2Export(
-            var orderId: Long = 0,
-            var parcelNo: Long = 0,
-            var parcelPosition: Int = 0,
-            var loadinglistNo: Long? = null,
-            var typeOfPackaging: Int = 0,
-            var realWeight: Double = 0.0,
-            var dateOfStationOut: java.sql.Date? = null,
-            var cReference: String? = null
-    )
 
     @Serializable(0xd035c452897ee3)
     data class ParcelStatus(
@@ -166,13 +103,6 @@ interface ParcelServiceV1 {
     fun getStatus(
             @PathParam(SCANCODE) @ApiParam(value = "Scancode") scanCode: String
     ): List<ParcelStatus>
-
-    @GET
-    @Path("/export/bag/{$BAG_ID}")
-    @ApiOperation(value = "Get parcels in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcelsFilledInBagByBagID(
-            @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagId: Long
-    ):List<ParcelServiceV1.Order2Export>
 
 
 }
