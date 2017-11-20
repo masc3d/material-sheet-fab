@@ -20,12 +20,16 @@
 
     <string name="barcode_label">Barcode label</string>
 
+    <string name="bike">Bike</string>
+
     <string name="call">Call</string>
 
     <string name="cancel">Cancel</string>
     <string name="cancel_process">Cancel process</string>
 
     <string name="capture_image">Capture image</string>
+
+    <string name="car">Car</string>
 
     <string name="cash_not_sufficient">Cash amount not sufficient</string>
     <string name="cash_service">Cash-Service</string>
@@ -61,7 +65,7 @@
     <string name="dialog_content_outdated_orders">Orders are outdated. All data must be erased in order to proceed. Continue?</string>
     <string name="dialog_content_stop_merge">Do you want to merge this stop?</string>
     <string name="dialog_content_stop_reopen">Re-open this stop?</string>
-    <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s</string>
+    <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s seconds</string>
     <string name="dialog_text_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
     <string name="dialog_text_gps_disabled">The GPS location on your device is disabled. To continue, you must enable GPS location!</string>
     <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
@@ -226,6 +230,8 @@ Kontaktmöglichkeit
 Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder über ein Kontaktformular in Verbindung zu treten. In diesem Fall werden die vom Nutzer gemachten Angaben zum Zwecke der Bearbeitung seiner Kontaktaufnahme gespeichert. Eine Weitergabe an Dritte erfolgt nicht. Ein Abgleich der so erhobenen Daten mit Daten, die möglicherweise durch andere Komponenten unserer Seite erhoben werden, erfolgt ebenfalls nicht.
     </string>
 
+    <string name="proceed">Proceed</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
     <string name="prompt_password">Password (optional)</string>
@@ -310,6 +316,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="tour">Tour</string>
 
+    <string name="truck">Truck</string>
+
     <string name="unknown">Unknown</string>
 
     <string name="unloaded">Unloaded</string>
@@ -317,6 +325,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="update">Update</string>
 
     <string name="user">User</string>
+
+    <string name="van">Van</string>
 
     <string name="vehicle_loading">Loading</string>
     <string name="vehicle_loading_finalize_dialog">All pending parcels will be marked missing.</string>

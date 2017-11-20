@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <data>
+
+        <import type="org.deku.leoz.mobile.R"/>
+
+        <import type="android.graphics.drawable.ColorDrawable"/>
+
+        <import type="android.databinding.adapters.Converters"/>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="stop"
+            type="org.deku.leoz.mobile.ui.vm.StopViewModel"/>
+
+        <variable
+            name="color"
+            type="Integer"/>
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/uxStopItem"
+        style="@style/AppTheme.CardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                >
+
+                <!-- Background without margins -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorWhiteSmoke"
+                    >
+
+                    <!-- Content area with margins -->
+                    <FrameLayout
+                        style="@style/AppTheme.Layout.List"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        >
+
+                        <!-- Icon bar -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:orientation="horizontal"
+                            >
+
+                            <ImageView
+                                android:layout_width="@dimen/icon_size_large"
+                                android:layout_height="@dimen/icon_size_large"
+                                android:layout_gravity="center_vertical"
+                                android:contentDescription="TODO"
+                                android:src="@drawable/ic_delivery"
+                                android:tint="@color/colorGrey"/>
+
+                            <!-- Order count -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:visibility="gone"
+                                >
+
+                                <ImageView
+                                    android:layout_width="@dimen/icon_size"
+                                    android:layout_height="@dimen/icon_size"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginEnd="@dimen/margin"
+                                    android:contentDescription="TODO"
+                                    android:src="@drawable/ic_order"
+                                    android:tint="@color/colorGrey"/>
+
+                                <TextView
+                                    android:id="@+id/uxOrderCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginEnd="@dimen/margin"
+                                    android:text="@{stop.orderAmount, default = `1`}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    />
+
+                            </LinearLayout>
+
+                            <!-- Parcel count -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top|end"
+                                android:orientation="horizontal"
+                                android:visibility="gone"
+                                >
+
+                                <ImageView
+                                    android:layout_width="@dimen/icon_size"
+                                    android:layout_height="@dimen/icon_size"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginEnd="@dimen/margin"
+                                    android:contentDescription="TODO"
+                                    android:src="@drawable/ic_package_variant_closed"
+                                    android:tint="@color/colorGrey"/>
+
+                                <TextView
+                                    android:id="@+id/uxParcelCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="@{stop.parcelAmount, default = `1`}"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <!-- Appointment -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center_vertical"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:id="@+id/uxAppointmentTo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:text="@{stop.appointmentFrom, default = `08:00`}"
+                                android:textAppearance="@{stop.isFixedAppointment ? R.style.AppTheme_TextAppearance_AppointmentLarge : R.style.AppTheme_TextAppearance_AppointmentSmall}"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:text="-"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+                            <TextView
+                                android:id="@+id/uxAppointmentFrom"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:text="@{stop.appointmentTo, default = `10:00`}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                </FrameLayout>
+
+
+                <!-- address -->
+                <FrameLayout
+                    style="@style/AppTheme.Layout.List"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Address layout -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="top"
+                            android:orientation="horizontal"
+                            >
+
+                            <TextView
+                                android:id="@+id/uxRecipient"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:layout_weight="1"
+                                android:text="@{stop.address.line1, default = `Recipient Recipient Recipient Recipient Recipient`}"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                                />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/uxAddressLine2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{stop.address.line2, default = `Address Line 2`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                            android:visibility="@{safeUnbox(stop.addressLine2Visible) ? View.VISIBLE : View.GONE}"
+                            />
+
+                        <TextView
+                            android:id="@+id/uxAddressLine3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/medium_margin"
+                            android:text="@{stop.address.line3, default = `Address Line 3`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                            android:visibility="@{safeUnbox(stop.addressLine3Visible) ? View.VISIBLE : View.GONE}"/>
+
+                        <TextView
+                            android:id="@+id/uxStreet"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{stop.address.street, default = `Street`}"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                            />
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/uxHandle"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
+                android:background="@color/colorWhiteSmoke"
+                android:visibility="@{safeUnbox(stop.editModeField) ? View.VISIBLE : View.GONE, default = gone}"
+                >
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="1dp"
+                    android:background="@android:color/white"/>
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
+                    android:layout_gravity="center"
+                    android:contentDescription="TODO"
+                    android:src="@drawable/ic_handle"
+                    android:tint="@color/colorLightGrey"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+</layout>

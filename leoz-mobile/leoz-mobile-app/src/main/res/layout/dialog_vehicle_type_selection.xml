@@ -1,7 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:id="@+id/dialog_whatsnew"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/deku_background_selector"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        style="@style/AppTheme.Layout.Content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Vehicle selection"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/AppTheme.Layout.Screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/uxVehicleTypeList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:dividerHeight="0dp"
+            android:longClickable="false"
+            android:scrollbars="vertical"
+            android:focusable="true"/>
+
+    </LinearLayout>
+
 
 </LinearLayout>
