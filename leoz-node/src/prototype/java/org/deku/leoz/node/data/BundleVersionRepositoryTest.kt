@@ -2,9 +2,7 @@ package org.deku.leoz.node.data
 
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.data.jpa.MstBundleVersion
-import org.deku.leoz.node.data.jpa.QMstCountry
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
-import org.deku.leoz.node.data.repository.master.CountryRepository
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -13,13 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 import sx.junit.PrototypeTest
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import javax.inject.Inject
-import javax.persistence.EntityManager
-import javax.persistence.EntityManagerFactory
-import javax.persistence.PersistenceContext
-import sx.logging.slf4j.*
 
 /**
  * Created by masc on 05.10.15.

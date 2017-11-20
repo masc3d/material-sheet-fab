@@ -67,7 +67,7 @@ open class QueryPerformanceTest {
 
     private val executorService = Executors.newCachedThreadPool()
 
-    fun run(prepare: () -> Unit = {}, block: () -> Unit, threads: Int = 1, repeat: Int = 1) {
+    fun run(block: () -> Unit, threads: Int = 1, repeat: Int = 1) {
         val sw = Stopwatch.createStarted()
         val threadlist = mutableListOf<Future<*>>()
         for (i in 0..threads) {
@@ -84,7 +84,7 @@ open class QueryPerformanceTest {
                     avg /= times.count()
 
                     log.info("Medium execution time ${avg}µs")
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     log.error(e.message, e)
                 }
             })
@@ -105,7 +105,7 @@ open class QueryPerformanceTest {
         for (i in 0..1000)
             run(
                     block = {
-                        val result = q.singleResult
+                        q.singleResult
                     },
                     threads = 4,
                     repeat = 1000
@@ -124,7 +124,7 @@ open class QueryPerformanceTest {
                                 .select(qRoute.syncId.max())
                                 .createQuery()
 
-                        val result = q.singleResult
+                        q.singleResult
                     },
                     threads = 4,
                     repeat = 1000
@@ -135,7 +135,6 @@ open class QueryPerformanceTest {
     @Test
     open fun testSelectMaxQueryDslCached() {
         val qRoute = QMstRoute.mstRoute
-        val pSyncId = Param(Long::class.java)
 
         val QUERY_NAME = "MstRoute.MaxSyncId"
 
@@ -146,7 +145,7 @@ open class QueryPerformanceTest {
 
         val query = qdslQuery.createQuery()
 
-        val sql = query.toString()
+        query.toString()
         query.setHint(QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE)
         query.setHint(QueryHints.QUERY_RESULTS_CACHE_SIZE, (500).toString())
         this.entityManager.entityManagerFactory.addNamedQuery(QUERY_NAME, query)
@@ -158,7 +157,7 @@ open class QueryPerformanceTest {
                                 .createNamedQuery(QUERY_NAME)
 
 //                        nq.setParameter(1, 100)
-                        val result = nq.resultList
+                        nq.resultList
 //                        log.info("${result}")
                     },
                     threads = 4,
@@ -171,12 +170,10 @@ open class QueryPerformanceTest {
     open fun testSelectEntityQueryDsl() {
         val qRoute = QMstRoute.mstRoute
 
-        val date = Date().toTimestamp()
         for (i in 0..1000)
             run(
                     block = {
                         val sw = Stopwatch.createStarted()
-                        val t = System.currentTimeMillis()
                         val ts = Timestamp(Date().time)
                         val result = JPAQuery<MstRoute>(this.entityManager)
                                 .from(qRoute)
@@ -211,7 +208,7 @@ open class QueryPerformanceTest {
             run(
                     block = {
                         //                        val sw = Stopwatch.createStarted()
-                        val result = this.routeRepository.findAll(qRoute.syncId.eq(r.nextInt(100).toLong()))
+                        this.routeRepository.findAll(qRoute.syncId.eq(r.nextInt(100).toLong()))
 //                        log.info("${result}")
                     },
                     threads = 4,
@@ -236,7 +233,7 @@ open class QueryPerformanceTest {
             run(
                     block = {
                         //                        val sw = Stopwatch.createStarted()
-                        val result = q
+                        q
                                 .set(pSyncId, 100)
                                 .createQuery()
                                 .singleResult
@@ -262,11 +259,9 @@ open class QueryPerformanceTest {
                 .orderBy(qRoute.syncId.desc())
                 .set(pSyncId, 0)
 
-        val qdslQueryName = qdslQuery.toString()
-
         val query = qdslQuery.createQuery()
 
-        val sql = query.toString()
+        query.toString()
         query.setHint(QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE)
         query.setHint(QueryHints.QUERY_RESULTS_CACHE_SIZE, (500).toString())
         this.entityManager.entityManagerFactory.addNamedQuery(QUERY_NAME, query)
@@ -280,7 +275,7 @@ open class QueryPerformanceTest {
                                 .createNamedQuery(QUERY_NAME)
 
                         nq.setParameter(1, r.nextInt(100).toLong())
-                        val result = nq.resultList
+                        nq.resultList
 //                        log.info("${result}")
                     },
                     threads = 4,
@@ -362,14 +357,11 @@ open class QueryPerformanceTest {
             run(
                     block = {
                         val pstmt = p.get()
-                        val sw = Stopwatch.createStarted()
 
                         val result = pstmt.executeQuery()
                         result.next()
 
-                        val maxSyncId = result.getLong(1)
-
-//                        log.info("${maxSyncId} ${sw}")
+                        result.getLong(1)
                     },
                     threads = 4,
                     repeat = 1000
@@ -394,7 +386,7 @@ open class QueryPerformanceTest {
             run(
                     block = {
 
-                        val r = p.get().fetchOne().get(field)
+                        p.get().fetchOne().get(field)
 //                        log.info(r)
                     },
                     threads = 4,
@@ -411,10 +403,9 @@ open class QueryPerformanceTest {
             run(
                     block = {
 
-                        val r = this.dsl
+                        this.dsl
                                 .select(field)
                                 .from(Tables.MST_ROUTE)
-//                        log.info(r)
                     },
                     threads = 4,
                     repeat = 1000)
@@ -440,10 +431,9 @@ open class QueryPerformanceTest {
         for (i in 0..500)
             run(
                     block = {
-                        val q = p.get()
+                        p.get()
                                 .bind(pSyncId.name, r.nextInt(100).toLong())
                                 .fetchInto(MstRoute::class.java)
-//                        log.info(r)
                     },
                     threads = 1,
                     repeat = 1000)
@@ -460,12 +450,11 @@ open class QueryPerformanceTest {
         for (i in 0..1000)
             run(
                     block = {
-                        val r = this.dsl
+                        this.dsl
                                 .select()
                                 .from(tRoute)
                                 .where(tRoute.SYNC_ID.eq(r.nextInt(100).toLong()))
                                 .fetchInto(MstRoute::class.java)
-//                        log.info(r)
                     },
                     threads = 4,
                     repeat = 1000)
@@ -478,7 +467,7 @@ open class QueryPerformanceTest {
         for (i in 0..1000)
             run(
                     block = {
-                        val f = this.entityManager.find(MstRoute::class.java, 46182L)
+                        this.entityManager.find(MstRoute::class.java, 46182L)
                     },
                     threads = 4,
                     repeat = 1000

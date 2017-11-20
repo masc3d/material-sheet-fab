@@ -41,9 +41,9 @@ class ParcelServiceTest {
 
         val img = File("/Users/helke/Documents/outOfMemory.jpg").readBytes()
         val encoder = Base64.getEncoder()
-        val img64: String = encoder.encodeToString(img)
+        encoder.encodeToString(img)
         val signature = File("/Users/helke/Documents/logo.svg").readBytes()
-        val sig64 = encoder.encodeToString(signature)
+        encoder.encodeToString(signature)
         //val svgDirect = File("/Users/helke/Documents/logo.svg").readText()
         //val svgDirect = File("/Users/helke/Documents/test.svg").readText()
         val svgDirect = File("/Users/helke/Documents/drei.svg").readText()

@@ -53,7 +53,7 @@ class LogTest {
         val logAppender = LogMqAppender(
                 channelSupplier = { JmsEndpoints.central.transient.kryo.channel() },
                 identitySupplier = {
-                    DesktopIdentityFactory(BundleType.LeozNode.value, SystemInformation.Companion.create()).create()
+                    DesktopIdentityFactory(BundleType.LEOZ_NODE.value, SystemInformation.Companion.create()).create()
                 })
         logAppender.start()
 

@@ -56,7 +56,7 @@ open class JpaNamedQueryTest {
             val sw = Stopwatch.createStarted()
 
             nq.setParameter(1, 22060)
-            val result = nq.resultList
+            nq.resultList
 
             log.info("${sw}")
         }
