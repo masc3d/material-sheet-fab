@@ -40,9 +40,14 @@ interface RouteApiGeneric {
             var processId: String = ""
     )
 
+    enum class ProcessStatusType(val value: String) {
+        PENDING("PENDING"),
+        SUCCESS("SUCCESS")
+    }
+
     @ApiModel
     data class ProcessStatus(
-            var status: String = "",
+            var status: ProcessStatusType? = null,
             var meta: JsonNode? = null
     )
 
@@ -56,8 +61,6 @@ interface RouteApiGeneric {
 
     companion object {
         val ACTION_FINAL = "final"
-        val STATUS_PENDING = "PENDING"
-        val STATUS_SUCCESS = "SUCCESS"
     }
 
     @POST
@@ -75,7 +78,8 @@ interface RouteApiGeneric {
             @QueryParam("vehicle") @DefaultValue("car") vehicle: String?,
             @QueryParam("numvehicles") @DefaultValue("0") numvehicles: Int?,
             @QueryParam("assign_drivers") @DefaultValue("false") assignDrivers: Boolean?,
-            @QueryParam("strict") @DefaultValue("false") strict: Boolean?, @QueryParam("async") @DefaultValue("true") async: Boolean?,
+            @QueryParam("strict") @DefaultValue("false") strict: Boolean?,
+            @QueryParam("async") @DefaultValue("true") async: Boolean?,
             @QueryParam("response_data") @DefaultValue("false") responseData: String?)
             : Response
 
@@ -154,12 +158,12 @@ fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.Rou
 
                         when (processStatus.status) {
                         // Operation still pending
-                            RouteApiGeneric.STATUS_PENDING -> {
+                            RouteApiGeneric.ProcessStatusType.PENDING -> {
                                 throw PendingException()
                             }
 
                         // Operation completed
-                            RouteApiGeneric.STATUS_SUCCESS -> {
+                            RouteApiGeneric.ProcessStatusType.SUCCESS -> {
                                 // Parse route process status
                                 SmartlaneApi.mapper.treeToValue(
                                         processStatus.meta,

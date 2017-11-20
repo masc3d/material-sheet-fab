@@ -1,10 +1,5 @@
 package org.deku.leoz.smartlane
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import org.deku.leoz.smartlane.api.AddressApi
 import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
@@ -124,12 +119,6 @@ class RestApiTest {
             log.trace(
                     status
             )
-
-            status.objects.forEach {
-                log.trace(
-                        service.getDeliveryById(it.id)
-                )
-            }
         }
     }
 
@@ -145,6 +134,22 @@ class RestApiTest {
     }
 
     @Test
+    fun testDeliveryCancelAll() {
+        this.authorize()
+
+        restClient.proxy(DeliveryApi::class.java).also { deliveryApi ->
+            deliveryApi.getDelivery("{}").objects.forEach { delivery ->
+                log.trace("Cancelling delivery ${delivery.id}")
+                try {
+                    deliveryApi.postCanceldeliveryById(delivery.id)
+                } catch (e: Exception) {
+                    log.error(e.message)
+                }
+            }
+        }
+    }
+
+    @Test
     fun testRouteStatus() {
         this.authorize()
 
@@ -152,6 +157,33 @@ class RestApiTest {
             log.trace(
                     service.routestatus
             )
+        }
+    }
+
+    @Test
+    fun testRouteGet() {
+        this.authorize()
+
+        restClient.proxy(RouteApi::class.java).also { routeApi ->
+            log.trace(
+                    routeApi.getRoute("{}")
+            )
+        }
+    }
+
+    @Test
+    fun testRouteCancelAll() {
+        this.authorize()
+
+        restClient.proxy(RouteApi::class.java).also { routeApi ->
+            routeApi.getRoute("{}").objects.forEach {
+                log.trace("Cancelling route ${it.id}")
+                try {
+                    routeApi.postCancelrouteById(it.id)
+                } catch (e: Exception) {
+                    log.error(e.message)
+                }
+            }
         }
     }
 }
