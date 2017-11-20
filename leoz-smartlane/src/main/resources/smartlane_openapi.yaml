@@ -3300,6 +3300,8 @@ definitions:
         description: reference to Address
         type: integer
         format: int32
+      address:
+        $ref: "#/definitions/Address"
       delivery_address:
         $ref: "#/definitions/Location"
       supplier_address:
@@ -3575,6 +3577,8 @@ definitions:
       contactlastname:
         type: string
       country:
+        type: string
+      district:
         type: string
       email:
         type: string
