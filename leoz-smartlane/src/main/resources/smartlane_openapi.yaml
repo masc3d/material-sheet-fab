@@ -3333,7 +3333,7 @@ definitions:
         description: "a list of delivery/address objects (either in the Delivery format with city, street, ... or geo positions lat and lng) which will be combined to the resulting tour(s). Time windows (pdt_from and pdt_to) are optional. It is required to provide either 'deliverydata' or 'deliveriyids'. If both are provided, only deliveryids is used."
         type: array
         items:
-          $ref: '#/definitions/Routedeliveryinputs'
+          $ref: '#/definitions/Routedeliveryinput'
       deliveryids:
         description: "a list of delivery ids (if delivery objects are already defined) which will be combined to the resulting tour(s). It is required to provide either 'deliverydata' or 'deliveriyids'. If both are provided, only 'deliveryids' is used."
         type: array
@@ -3712,8 +3712,7 @@ definitions:
         items:
           $ref: "#/definitions/Delivery"
       custom_id:
-        type: integer
-        format: int32
+        type: string
       previous_deliveries:
         description: When deliveries are removed or changed, they are saved here
         type: array
@@ -3838,8 +3837,7 @@ definitions:
         format: int32
       custom_id:
         description: an arbitrary custom tour id/name
-        type: integer
-        format: string
+        type: string
       ast:
         description: actual start time. Will be set, when tour status is set to 'ontheway'
         type: string
