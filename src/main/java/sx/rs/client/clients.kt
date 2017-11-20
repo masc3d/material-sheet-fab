@@ -125,7 +125,8 @@ class RestEasyClient(
                 })
                 .register(object : ClientRequestFilter {
                     override fun filter(requestContext: ClientRequestContext) {
-                        requestContext.headers.add("Authorization", "JWT ${this@RestEasyClient.jwtToken}" )
+                        if (this@RestEasyClient.jwtToken != null)
+                            requestContext.headers.add("Authorization", "JWT ${this@RestEasyClient.jwtToken}")
                     }
 
                 })
@@ -133,12 +134,29 @@ class RestEasyClient(
     }
 
     override fun <T> proxy(serviceClass: Class<T>): T {
+        return this.proxy(serviceClass, null, null)
+    }
+
+    fun <T> proxy(serviceClass: Class<T>, path: String? = null, jwtToken: String? = null): T {
+        val baseUri = this.baseUri.let {
+            if (path != null)
+                this.baseUri.resolve(path)
+            else
+                this.baseUri
+        }
+
         val webTarget: ClientWebTarget = this.client.target(baseUri) as ClientWebTarget
 
         // return webTarget.proxy(serviceClass)
         // masc20170329. for compatibility with spring-boot-devtools restart, need to use the serviceclass' classloader
         // to avoid `IllegalArgumentException` `is not visible from class loader`
         return webTarget
+                .register(object : ClientRequestFilter {
+                    override fun filter(requestContext: ClientRequestContext) {
+                        if (jwtToken != null)
+                            requestContext.headers.add("Authorization", "JWT ${jwtToken}")
+                    }
+                })
                 .proxyBuilder(serviceClass)
                 .classloader(serviceClass.classLoader)
                 .build()
