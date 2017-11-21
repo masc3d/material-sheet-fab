@@ -1,6 +1,10 @@
 package org.deku.leoz.smartlane
 
+import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.internal.schedulers.SchedulerWhen
+import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.PendingException
 import org.deku.leoz.smartlane.api.RouteApi
@@ -10,11 +14,16 @@ import org.deku.leoz.smartlane.api.postCalcrouteOptimizedTimewindowAsync
 import org.deku.leoz.smartlane.model.Route
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
+import sx.LazyInstance
 import sx.rs.client.RestEasyClient
 import sx.rx.retryWith
+import sx.text.toHexString
 import java.net.URI
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Bridge operations between leoz and smartlane
@@ -27,38 +36,66 @@ class SmartlaneBridge {
 
     private val customerId = "der-kurier-test"
 
+    private val scheduler = Schedulers.from(Executors.newFixedThreadPool(2))
+
     private val restClient by lazy {
         RestEasyClient(
                 baseUri = baseUri,
+                connectionPoolSize = 40,
                 objectMapper = SmartlaneApi.mapper
         )
     }
 
-    /** Map of customer ids to authorization tokens */
-    private val tokens = ConcurrentHashMap<String, String>()
-
     /**
-     * Authorize smartlane customer
-     * @param customerId Smartlane customer id
+     * Smartlane customer domain.
+     * Each domain has it's own scheduler and authorization token.
+     * @param customerId Smartlane customer id / domain path
      */
-    fun jwtToken(customerId: String): Observable<String> {
-        return Observable.fromCallable {
-            this.tokens.getOrPut(
-                    customerId,
-                    {
-                        log.trace("Authorizing [${customerId}]")
+    inner class Domain(
+            val customerId: String
+    ) {
+        private val log = LoggerFactory.getLogger(this.javaClass)
 
-                        this.restClient
-                                .proxy(AuthApi::class.java,
-                                        path = customerId)
-                                .auth(AuthApi.Request(
-                                        email = "juergen.toepper@derkurier.de",
-                                        password = "PanicLane"
-                                ))
-                                .accessToken
-                    }
-            )
+        /**
+         * RX scheduler specific to this domain/customer, for fine-grained customer based concurrency control
+         */
+        val scheduler by lazy {
+            SchedulerWhen({
+                workers -> Completable.merge(Flowable.merge(workers, 2))
+            }, Schedulers.io())
         }
+
+        private val authorizationLock = ReentrantLock()
+
+        private val jwtTokenInstance = LazyInstance({
+            Observable.fromCallable {
+                // Authorize smartlane customer
+                log.trace("Authorizing [${customerId}]")
+
+                this@SmartlaneBridge.restClient
+                        .proxy(AuthApi::class.java,
+                                path = customerId)
+                        .auth(AuthApi.Request(
+                                email = "juergen.toepper@derkurier.de",
+                                password = "PanicLane"
+                        ))
+                        .accessToken
+            }
+                    .subscribeOn(Schedulers.io())
+                    .blockingFirst()
+        })
+
+        val jwtToken
+            get() = authorizationLock.withLock { this.jwtTokenInstance.get() }
+    }
+
+    /** Map of customer specific smartlane domains */
+    private val domains = ConcurrentHashMap<String, Domain>()
+
+    private fun domain(customerId: String): Domain {
+        return this.domains.getOrPut(customerId, {
+            Domain(this.customerId)
+        })
     }
 
     /**
@@ -71,7 +108,7 @@ class SmartlaneBridge {
         return this.restClient.proxy(
                 serviceClass,
                 path = customerId,
-                jwtToken = this.jwtToken(customerId).blockingFirst())
+                jwtToken = this.domain(customerId).jwtToken)
     }
 
     /**
@@ -81,7 +118,10 @@ class SmartlaneBridge {
         val routeApiGeneric by lazy { this.proxy(RouteApiGeneric::class.java, customerId = customerId) }
         val routeApi by lazy { this.proxy(RouteApi::class.java, customerId = customerId) }
 
+        val id = routingInput.hashCode().toHexString()
+
         return Observable.fromCallable {
+            log.trace("[${id}] Requesting route")
             // Start async route calculation
             routeApiGeneric.postCalcrouteOptimizedTimewindowAsync(
                     body = routingInput
@@ -90,6 +130,7 @@ class SmartlaneBridge {
                 .flatMap { status ->
                     Observable.fromCallable<RouteApiGeneric.RouteProcessStatus> {
                         // Poll status
+                        log.trace("[${id}] Requesting status")
                         routeApiGeneric.getProcessStatusById(
                                 processId = status.processId
                         )
@@ -100,6 +141,7 @@ class SmartlaneBridge {
                                         when (e) {
                                         // Retry when pending
                                             is PendingException -> {
+                                                log.trace("[${id}] Pending")
                                                 Observable.timer(1, TimeUnit.SECONDS)
                                             }
                                             else -> throw e
@@ -111,5 +153,6 @@ class SmartlaneBridge {
                                         .getRouteById(it.routeIds.first())
                             }
                 }
+                .subscribeOn(domain(customerId).scheduler)
     }
 }

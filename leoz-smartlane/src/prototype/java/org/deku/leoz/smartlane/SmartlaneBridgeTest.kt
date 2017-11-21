@@ -1,5 +1,6 @@
 package org.deku.leoz.smartlane
 
+import io.reactivex.Observable
 import org.deku.leoz.smartlane.model.Address
 import org.deku.leoz.smartlane.model.Routinginput
 import org.deku.leoz.smartlane.model.toRouteDeliveryInput
@@ -7,6 +8,7 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.log.slf4j.trace
+import javax.swing.plaf.ListUI
 
 /**
  * Created by masc on 20.11.17.
@@ -52,6 +54,27 @@ class SmartlaneBridgeTest {
                     .blockingFirst()
                     .also {
                         log.trace(it)
+                    }
+        })
+    }
+
+    @Test
+    fun testRouteParallel() {
+        Stopwatch.createStarted(this, "calculateRoute", { _, _ ->
+            Observable.merge(
+                    (0..30).map {
+                        bridge.optimizeRoute(
+                                routingInput = Routinginput().also {
+                                    it.deliverydata = this.addresses.mapIndexed { index, address ->
+                                        address.toRouteDeliveryInput(
+                                                customId = "DEKU_ADDRESS ${index}")
+                                    }
+                                }
+                        )
+                    }
+            )
+                    .blockingSubscribe {
+                        log.trace("Processed ${it.id}")
                     }
         })
     }
