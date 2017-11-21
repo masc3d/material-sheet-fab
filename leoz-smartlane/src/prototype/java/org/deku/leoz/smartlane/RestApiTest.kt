@@ -1,5 +1,7 @@
 package org.deku.leoz.smartlane
 
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.smartlane.api.AddressApi
 import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
@@ -13,6 +15,7 @@ import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
+import sx.rx.limit
 import java.net.URI
 
 /**
@@ -143,14 +146,23 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(DeliveryApi::class.java).also { deliveryApi ->
-            deliveryApi.getDelivery("{}", 10, 1).objects.forEach { delivery ->
-                log.trace("Cancelling delivery ${delivery.id}")
-                try {
-                    deliveryApi.postCanceldeliveryById(delivery.id)
-                } catch (e: Exception) {
-                    log.error(e.message)
-                }
-            }
+            deliveryApi.getDelivery("{}")
+                    .doOnNext {
+                        log.trace("fetched ${it.id}")
+                    }
+                    .toList()
+                    .flatMapObservable {
+                        Observable.fromIterable(it)
+                    }
+                    .subscribeOn(Schedulers.io().limit(4))
+                    .blockingSubscribe{
+                        log.trace("Cancelling delivery ${it.id}")
+                        try {
+                            deliveryApi.postCanceldeliveryById(it.id)
+                        } catch (e: Exception) {
+                            log.error(e.message)
+                        }
+                    }
         }
     }
 
@@ -184,14 +196,23 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(RouteApi::class.java).also { routeApi ->
-            routeApi.getRoute("{}").subscribe {
-                log.trace("Cancelling route ${it.id}")
-                try {
-                    routeApi.postCancelrouteById(it.id)
-                } catch (e: Exception) {
-                    log.error(e.message)
-                }
-            }
+            routeApi.getRoute("{}")
+                    .doOnNext {
+                        log.trace("fetched ${it.id}")
+                    }
+                    .toList()
+                    .flatMapObservable {
+                        Observable.fromIterable(it)
+                    }
+                    .subscribeOn(Schedulers.io().limit(4))
+                    .blockingSubscribe {
+                        log.trace("Cancelling route ${it.id}")
+                        try {
+                            routeApi.postCancelrouteById(it.id)
+                        } catch (e: Exception) {
+                            log.error(e.message)
+                        }
+                    }
         }
     }
 }

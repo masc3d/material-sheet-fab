@@ -36,13 +36,19 @@ fun RouteApi.getRoute(q: String): Observable<Route> {
 
     return Observable.create<Route> { emitter ->
         this.getRoute(q, pagesize, 1).let { result ->
-            result.objects.forEach { emitter.onNext(it) }
+            try {
+                result.objects.forEach { emitter.onNext(it) }
 
-            if (result.totalPages > 1) {
-                (2..result.totalPages).map { page ->
-                    this.getRoute(q, pagesize, page)
-                            .objects.forEach { emitter.onNext(it) }
+                if (result.totalPages > 1) {
+                    (2..result.totalPages).map { page ->
+                        this.getRoute(q, pagesize, page)
+                                .objects.forEach { emitter.onNext(it) }
+                    }
                 }
+
+                emitter.onComplete()
+            } catch(e: Exception) {
+                emitter.onError(e)
             }
         }
     }

@@ -13,15 +13,20 @@ fun DeliveryApi.getDelivery(q: String): Observable<Delivery> {
     val pagesize = 20
 
     return Observable.create<Delivery> { emitter ->
-        this.getDelivery(q, pagesize, 1).let { result ->
-            result.objects.forEach { emitter.onNext(it) }
+        try {
+            this.getDelivery(q, pagesize, 1).let { result ->
+                result.objects.forEach { emitter.onNext(it) }
 
-            if (result.totalPages > 1) {
-                (2..result.totalPages).map { page ->
-                    this.getDelivery(q, pagesize, page)
-                            .objects.forEach { emitter.onNext(it) }
+                if (result.totalPages > 1) {
+                    (2..result.totalPages).map { page ->
+                        this.getDelivery(q, pagesize, page)
+                                .objects.forEach { emitter.onNext(it) }
+                    }
                 }
             }
+            emitter.onComplete()
+        } catch(e: Exception) {
+            emitter.onError(e)
         }
     }
 }
