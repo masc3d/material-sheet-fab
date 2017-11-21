@@ -1,14 +1,17 @@
 package org.deku.leoz.smartlane.api
 
 import com.fasterxml.jackson.databind.JsonNode
+import io.reactivex.Observable
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import org.deku.leoz.smartlane.SmartlaneApi
+import org.deku.leoz.smartlane.model.Delivery
 import org.deku.leoz.smartlane.model.Error
 import org.deku.leoz.smartlane.model.Processstatus
+import org.deku.leoz.smartlane.model.Route
 import org.deku.leoz.smartlane.model.Routemetadatas
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
@@ -23,6 +26,27 @@ import javax.ws.rs.Produces
 import javax.ws.rs.QueryParam
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
+
+/**
+ * Extension for fetching routes. Uses paging to prevent timeouts on large results.
+ * Created by masc on 21.11.17.
+ */
+fun RouteApi.getRoute(q: String): Observable<Route> {
+    val pagesize = 20
+
+    return Observable.create<Route> { emitter ->
+        this.getRoute(q, pagesize, 1).let { result ->
+            result.objects.forEach { emitter.onNext(it) }
+
+            if (result.totalPages > 1) {
+                (2..result.totalPages).map { page ->
+                    this.getRoute(q, pagesize, page)
+                            .objects.forEach { emitter.onNext(it) }
+                }
+            }
+        }
+    }
+}
 
 /**
  * Manually maintained entry points delivering a generic response

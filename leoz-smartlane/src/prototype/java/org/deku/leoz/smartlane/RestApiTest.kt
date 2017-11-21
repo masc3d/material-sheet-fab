@@ -5,6 +5,8 @@ import org.deku.leoz.smartlane.api.AuthApi
 import org.deku.leoz.smartlane.api.AuthorizationApi
 import org.deku.leoz.smartlane.api.DeliveryApi
 import org.deku.leoz.smartlane.api.RouteApi
+import org.deku.leoz.smartlane.api.getDelivery
+import org.deku.leoz.smartlane.api.getRoute
 import org.deku.leoz.smartlane.model.Address
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -129,6 +131,9 @@ class RestApiTest {
         restClient.proxy(DeliveryApi::class.java).also {
             log.trace(
                     it.getDelivery("{}")
+                            .subscribe {
+                                log.trace("Delivery ${it.id}")
+                            }
             )
         }
     }
@@ -138,7 +143,7 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(DeliveryApi::class.java).also { deliveryApi ->
-            deliveryApi.getDelivery("{}").objects.forEach { delivery ->
+            deliveryApi.getDelivery("{}", 10, 1).objects.forEach { delivery ->
                 log.trace("Cancelling delivery ${delivery.id}")
                 try {
                     deliveryApi.postCanceldeliveryById(delivery.id)
@@ -167,6 +172,9 @@ class RestApiTest {
         restClient.proxy(RouteApi::class.java).also { routeApi ->
             log.trace(
                     routeApi.getRoute("{}")
+                            .subscribe {
+                                log.trace("Route ${it.id}")
+                            }
             )
         }
     }
@@ -176,7 +184,7 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(RouteApi::class.java).also { routeApi ->
-            routeApi.getRoute("{}").objects.forEach {
+            routeApi.getRoute("{}").subscribe {
                 log.trace("Cancelling route ${it.id}")
                 try {
                     routeApi.postCancelrouteById(it.id)

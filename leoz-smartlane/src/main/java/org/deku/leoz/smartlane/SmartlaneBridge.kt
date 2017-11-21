@@ -32,16 +32,19 @@ import kotlin.concurrent.withLock
 class SmartlaneBridge {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    /** Smartlane base URI */
     private val baseUri = URI.create("https://dispatch.smartlane.io/")
 
+    /** Default customer id */
     private val customerId = "der-kurier-test"
 
-    private val scheduler = Schedulers.from(Executors.newFixedThreadPool(2))
-
+    /**
+     * Rest client with connection pool for efficient use across all smartlane domains
+     */
     private val restClient by lazy {
         RestEasyClient(
                 baseUri = baseUri,
-                connectionPoolSize = 40,
+                connectionPoolSize = 20,
                 objectMapper = SmartlaneApi.mapper
         )
     }
@@ -110,6 +113,8 @@ class SmartlaneBridge {
                 path = customerId,
                 jwtToken = this.domain(customerId).jwtToken)
     }
+
+    // TODO: transparently handle authentication failures/refresh token
 
     /**
      * Optimize route

@@ -756,6 +756,8 @@ paths:
         - Delivery
       parameters:
         - $ref: "#/parameters/filterQuery"
+        - $ref: "#/parameters/resultsPerPage"
+        - $ref: "#/parameters/page"
       responses:
         200:
           description: OK
@@ -1284,6 +1286,9 @@ paths:
         - Route
       parameters:
         - $ref: "#/parameters/filterQuery"
+        - $ref: "#/parameters/resultsPerPage"
+        - $ref: "#/parameters/page"
+
       responses:
         200:
           description: List of route objects
@@ -4209,6 +4214,16 @@ parameters:
     type: string
     description: |
       Filter query string. Can be used to filter results. [Detailed description](/page/api-handling-extras#section-filter-queries)
+
+  resultsPerPage:
+    in: query
+    name: results_per_page
+    type: integer
+
+  page:
+    in: query
+    name: page
+    type: integer
 
 responses:
   MissingAuthorization:
