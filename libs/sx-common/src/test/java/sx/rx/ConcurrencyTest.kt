@@ -1,6 +1,12 @@
 package sx.rx
 
+import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.functions.BiFunction
+import io.reactivex.internal.schedulers.SchedulerWhen
+import io.reactivex.rxkotlin.merge
 import io.reactivex.schedulers.Schedulers
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -16,7 +22,7 @@ class ConcurrencyTest {
      * Distributes tasks across thread with concurrency limit
      */
     @Test
-    fun testConcurrencyLimit() {
+    fun testConcurrencyLimitWithFlatMap() {
         Observable.fromIterable(0..100)
                 .flatMap({ i ->
                     Observable.create<Int> {
@@ -27,6 +33,28 @@ class ConcurrencyTest {
                             .subscribeOn(Schedulers.io())
                     // Process maximum 4 simultaneously
                 }, 4)
+                .blockingSubscribe {
+                    log.trace(it)
+                }
+    }
+
+    @Test
+    fun testConcurrencyLimitWithScheduleWhen() {
+        // A "sub" scheduler with limited concurrency
+        val limitedScheduler = SchedulerWhen({ workers ->
+            Completable.merge(Flowable.merge(workers, 4))
+        }, Schedulers.io())
+
+        (0..100).map { i ->
+            Observable.create<Int> {
+                log.trace("processing ${i}")
+                Thread.sleep(200)
+                it.onNext(i)
+                it.onComplete()
+            }
+                    .subscribeOn(limitedScheduler)
+        }
+                .merge()
                 .blockingSubscribe {
                     log.trace(it)
                 }
