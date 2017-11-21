@@ -10,6 +10,7 @@ import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
 import org.eclipse.jgit.util.FS
+import org.apache.commons.lang3.SystemUtils
 import java.time.Duration
 import org.gradle.api.invocation.Gradle
 import sx.ProcessExecutor
@@ -152,7 +153,7 @@ subprojects {
     tasks.withType(JavaCompile) {
         options.bootstrapClasspath = files(
                 ManagementFactory.getRuntimeMXBean().bootClassPath
-                        .split(":")
+                        .split(SystemUtils.IS_OS_WINDOWS ? ";" : ":")
                         .collect { new File(it) }
         )
     }
