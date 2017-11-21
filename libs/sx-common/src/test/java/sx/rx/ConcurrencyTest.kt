@@ -40,11 +40,6 @@ class ConcurrencyTest {
 
     @Test
     fun testConcurrencyLimitWithScheduleWhen() {
-        // A "sub" scheduler with limited concurrency
-        val limitedScheduler = SchedulerWhen({ workers ->
-            Completable.merge(Flowable.merge(workers, 4))
-        }, Schedulers.io())
-
         (0..100).map { i ->
             Observable.create<Int> {
                 log.trace("processing ${i}")
@@ -52,7 +47,7 @@ class ConcurrencyTest {
                 it.onNext(i)
                 it.onComplete()
             }
-                    .subscribeOn(limitedScheduler)
+                    .subscribeOn(Schedulers.io().limit(4))
         }
                 .merge()
                 .blockingSubscribe {
