@@ -134,6 +134,7 @@ fun SsoSMovepoolRecord.toBag(): ExportService.Bag {
     )
     return bag
 }
+
 fun SsoSMovepoolRecord.toGeneralBag(): BagService.Bag {
     val bag = BagService.Bag(
             this.bagNumber.toLong(),

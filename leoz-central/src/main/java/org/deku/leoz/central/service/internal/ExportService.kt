@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
 import sx.rs.DefaultProblem
+import sx.time.toLocalDate
 import sx.time.toTimestamp
+import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -491,30 +493,29 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         return true
     }
 
-    override fun getLoadedParcels2ExportByStationNo(stationNo: Int): List<ExportService.Order> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//        val orders = parcelRepository.getOrders2ExportByStation(stationNo)
-//        orders ?: throw DefaultProblem(
-//                status = Response.Status.NOT_FOUND,
-//                title = "No orders found"
-//        )
-//        val orders2export = orders.map { it.toOrder2Export() }
-//        loop@ for (it in orders2export) {
-//            val parcels = parcelRepository.getLoadedParcels2ExportByOrderid(it.orderId)
-//            parcels ?: continue@loop
-//            if (parcels.count() == 0) {
-//                it.parcels = null
-//                continue@loop
-//            }
-//            it.parcels = parcels.map { f -> f.toParcel2Export() }
-//        }
-//        val ordersFiltered = orders2export.filter { it.parcels != null }
-//        if (ordersFiltered.count() == 0)
-//            throw DefaultProblem(
-//                    status = Response.Status.NOT_FOUND,
-//                    title = "No parcels found"
-//            )
-//        return ordersFiltered
+    override fun getLoadedParcels2ExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
+        val orders = if (sendDate != null) parcelRepository.getOrders2ExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrders2ExportByStation(station = stationNo)
+        if (orders.count() == 0)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No orders found"
+            )
+        var allParcels = parcelRepository.getLoadedParcels2ExportByOrderids(orders.map { it.orderid.toLong() }.toList())?.groupBy { it.orderid }
+        if (allParcels.count() == 0)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No parcels found"
+            )
+
+
+        return orders.map {
+            it.toOrder2Export().also { order ->
+                order.parcels = allParcels
+                        .getOrDefault(order.orderId.toDouble(), listOf())
+                        ?.map { it.toParcel2Export() }
+            }
+        }.filter { it.parcels.count() > 0 }
+
     }
 
     override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
@@ -523,8 +524,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 300000)
     }
 
-    override fun getParcels2ExportByStationNo(stationNo: Int): List<ExportService.Order> {
-        val orders = parcelRepository.getOrders2ExportByStation(stationNo)
+    override fun getParcels2ExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
+        val orders = if (sendDate != null) parcelRepository.getOrders2ExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrders2ExportByStation(station = stationNo)
         if (orders.count() == 0)
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
@@ -549,34 +550,15 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }.filter { it.parcels.count() > 0 }
     }
 
-    override fun getParcels2ExportInBagByStationNo(stationNo: Int): List<ExportService.Order> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//        val parcels = parcelRepository.getParcels2ExportInBagByStation(stationNo)
-//        parcels ?: throw DefaultProblem(
-//                status = Response.Status.NOT_FOUND,
-//                title = "No parcels found for this station"
-//        )
-//        if (parcels.count() == 0)
-//            throw DefaultProblem(
-//                    status = Response.Status.NOT_FOUND,
-//                    title = "No parcels found for this station"
-//            )
-//        val orderIdList = parcels.map { it.orderid }.distinct()
-//        val orderList: MutableList<ParcelServiceV1.Order2Export> = mutableListOf<ParcelServiceV1.Order2Export>()
-//        loop@ for (it in orderIdList) {
-//            val orderRecord = parcelRepository.getOrder2ExportById(it.toLong())
-//            if (orderRecord != null) {
-//                if (orderRecord.bagidnra != null)
-//                    continue@loop
-//                val order = orderRecord.toOrder2Export()
-//                val pp = parcels.filter { f -> f.orderid == it }
-//                if (pp.count() > 0) {
-//                    order.parcels = pp.map { it.toParcel2Export() }
-//                    orderList.add(order)
-//                }
-//            }
-//        }
-//        return orderList
+    override fun getParcels2ExportInBagByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
+        val parcels = if (sendDate != null) parcelRepository.getParcels2ExportInBagByStation(stationNo, sendDate = sendDate.toLocalDate()) else parcelRepository.getParcels2ExportInBagByStation(station = stationNo)
+        if (parcels.count() == 0)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No parcels found for this station"
+            )
+        return parcels
+
     }
 
     override fun getCount2SendBackByStation(stationNo: Int): Int {
@@ -607,7 +589,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun fillBagStationExport(bagID: Long, stationNo: Int, unitNo: String?) {
+    override fun fillBagStationExport(bagID: Long, stationNo: Int, unitNo: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -645,12 +627,33 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val oidBack = bag.orderdepot2hub
         if (oidBack != null) {
             bag.unitNoBack = depotRepository.getUnitNo(oidBack)
-            bag.orders2export = getParcelsFilledInBagByBagOrderID(oidBack)
+            bag.orders2export = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
         }
         return bag
     }
 
-    fun getParcelsFilledInBagByBagOrderID(bagId:Long): List<ExportService.Order>{
-        TODO("not implemented")
+    fun getParcelsFilledInBagBackByBagBackUnitNo(bagBackUnitNo: Long?): List<ExportService.Order> {
+        bagBackUnitNo ?: return listOf()
+        val parcels = parcelRepository.findUnitsInBagBackByBagBackUnitNumber(bagBackUnitNo).groupBy { it.orderid }
+        if (parcels.count() == 0) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No parcels found"
+            )
+        }
+        val orders = parcelRepository.getOrdersByIds(parcels.keys.map { it.toLong() }.toList().distinct())//?.groupBy { it.orderid }
+        if (orders.count() == 0) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No parcels found"
+            )
+        }
+        return orders.map {
+            it.toOrder2Export().also { order ->
+                order.parcels = parcels
+                        .getOrDefault(order.orderId.toDouble(), listOf())
+                        .map { it.toParcel2Export() }
+            }
+        }.filter { it.parcels.count() > 0 }
     }
 }

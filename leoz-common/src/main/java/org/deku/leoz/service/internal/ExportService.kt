@@ -28,6 +28,7 @@ interface ExportService {
         const val BAG_ID = "bag-id"
         const val REDSEAL = "redseal"
         const val TEXT = "text"
+        const val SEND_DATE = "send-date"
     }
 
     @Serializable(0x5abfa519181a30)
@@ -80,14 +81,16 @@ interface ExportService {
     @Path("/station/{$STATION_NO}")
     @ApiOperation(value = "Get parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null
     ): List<Order>
 
     @GET
     @Path("/station/{$STATION_NO}/bag")
     @ApiOperation(value = "Get parcels to export in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportInBagByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null
     ): List<Order>
 
     @GET
@@ -101,7 +104,8 @@ interface ExportService {
     @Path("/station/{$STATION_NO}/loaded")
     @ApiOperation(value = "Get loaded parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getLoadedParcels2ExportByStationNo(
-            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null
     ): List<Order>
 
     @GET
@@ -170,7 +174,7 @@ interface ExportService {
     fun fillBagStationExport(
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(BAG_ID) bagID: Long,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @QueryParam(SCANCODE) @ApiParam(value = "unit", example = "123456789877", required = true) unitNo: String?
+            @QueryParam(SCANCODE) @ApiParam(value = "unit", example = "123456789877", required = true) unitNo: String
     )
 
     @PATCH
