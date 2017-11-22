@@ -121,7 +121,7 @@ fun SsoSMovepoolRecord.toBag(): ExportService.Bag {
             //this.status?.toInt(),
             BagStatus.values().find { it.value == this.status?.toInt() },
             this.statusTime,
-            this.lastdepot?.toLong(),
+            this.lastdepot?.toInt(),
             this.sealNumberYellow?.toLong(),
             this.sealNumberRed?.toLong(),
             this.orderhub2depot?.toLong(),

@@ -510,3 +510,4 @@ enum class LoadinglistType{
     BAG
 }
 
+const val maxWeightForParcelBag=2.0

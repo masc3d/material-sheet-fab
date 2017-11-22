@@ -12,6 +12,7 @@ import org.deku.leoz.central.data.jooq.tables.Tblauftrag
 import org.deku.leoz.central.data.jooq.tables.records.TblauftragRecord
 import org.deku.leoz.central.data.toUByte
 import org.deku.leoz.central.data.toUInteger
+import org.deku.leoz.model.maxWeightForParcelBag
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.ExportService
@@ -159,7 +160,7 @@ class ParcelJooqRepository {
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
                         .and(Tables.TBLAUFTRAGCOLLIES.VERPACKUNGSART.eq(91)//Valore
-                                .or(Tables.TBLAUFTRAGCOLLIES.GEWICHTEFFEKTIV.lessOrEqual(2.0)))
+                                .or(Tables.TBLAUFTRAGCOLLIES.GEWICHTEFFEKTIV.lessOrEqual(maxWeightForParcelBag)))
                         .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.isNull)
                         .and(Tables.TBLAUFTRAG.VERLADEDATUM.eq(sendDate.toTimestamp()))
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
