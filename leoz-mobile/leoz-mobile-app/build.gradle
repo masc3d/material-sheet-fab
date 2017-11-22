@@ -22,7 +22,7 @@ buildscript {
         v_material_dialogs = '0.9.5.0'
         v_parceler = '1.1.9'
         v_roboelectric = '3.5.1'
-        v_rxlifecycle = '2.2.0'
+        v_rxlifecycle = '2.2.1'
         v_stetho = '1.5.0'
         v_truetime = '3.3'
     }
@@ -299,7 +299,7 @@ dependencies {
             "com.github.lzyzsd:circleprogress:1.2.1",
 
             //RX Location
-            "com.patloew.rxlocation:rxlocation:1.0.3",
+            "com.patloew.rxlocation:rxlocation:1.0.4",
             "com.google.android.gms:play-services-location:$v_android_gms",
 
             // Volley
