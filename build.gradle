@@ -47,8 +47,11 @@ dependencies {
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.apache.commons:commons-lang3:3.7",
+
             // Ini/conf file support
-            'org.ini4j:ini4j:0.5.4'
+            "org.ini4j:ini4j:0.5.4",
+
+            "com.github.jnr:jnr-posix:3.0.42"
     )
 
     testCompile(
