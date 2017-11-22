@@ -9,7 +9,7 @@ buildscript {
         v_android_buildtools = '27.0.1'
         v_android_support = '27.0.1'
         v_android_test = '1.0.1'
-        v_rxlifecycle = '2.2.0'
+        v_rxlifecycle = '2.2.1'
     }
 
     dependencies {
