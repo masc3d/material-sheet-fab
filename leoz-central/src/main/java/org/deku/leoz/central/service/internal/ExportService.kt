@@ -585,11 +585,50 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun reopenBagStationExport(bagID: Long, stationNo: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun reopenBagStationExport(bagID: Long, stationNo: Int): Boolean {
+        val user = userService.get()
+
+        val bag = getAndCheckBag(stationNo, bagID)
+        val backUnit = bag.unitNoBack
+        backUnit ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "BagId found - no bagback-unit found"
+        )
+
+        if (bag.lastStation == 2) {
+
+            if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already exported"
+                )
+            } else {
+                //update movepool
+                try {
+                    dslContext.update(Tables.SSO_S_MOVEPOOL)
+                            .set(Tables.SSO_S_MOVEPOOL.STATUS, 5.toDouble())
+                            .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, stationNo.toDouble())
+                            .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagID.toDouble())
+                                    .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")))
+                            .execute()
+                } catch (e: Exception) {
+                    log.error(e.toString())
+                    return false
+                }
+            }
+        } else {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "BagId found - not possible to reopen"
+            )
+        }
+
+
+
+        return true
     }
 
-    override fun fillBagStationExport(bagID: Long, stationNo: Int, unitNo: String) {
+    override fun fillBagStationExport(bagID: Long, stationNo: Int, unitNo: String,loadingListNo: Long) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -597,7 +636,37 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getBag(bagID: Long): ExportService.Bag {
+    override fun getBag(stationNo: Int, bagID: Long): ExportService.Bag {
+        val user = userService.get()
+
+        val bag = getAndCheckBag(stationNo, bagID)
+        val backUnit = bag.unitNoBack
+        backUnit ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "BagId found - no bagback-unit found"
+        )
+
+        if (bag.lastStation == 2) {
+
+            if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already exported"
+                )
+            } else {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already closed - try to reopen"
+                )
+            }
+        }
+
+        bag.orders2export = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
+
+        return bag
+    }
+
+    fun getAndCheckBag(stationNo: Int, bagID: Long): ExportService.Bag {
         val un = DekuUnitNumber.parseLabel(bagID.toString())
         when {
             un.hasError -> {
@@ -620,14 +689,69 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         status = Response.Status.NOT_FOUND,
                         title = "BagId not found"
                 )
+        //check bag
+        if (bag.lastStation == null) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "BagId without lastStation"
+            )
+        }
+        if (!bag.movepool.equals("m")) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "BagId not found in move-state"
+            )
+        }
+        if ((bag.lastStation != stationNo) && (bag.lastStation != 2)) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "BagId found - station mismatch"
+            )
+        }
+
+
         val oid = bag.orderhub2depot
         if (oid != null) {
             bag.unitNo = depotRepository.getUnitNo(oid)
         }
         val oidBack = bag.orderdepot2hub
-        if (oidBack != null) {
-            bag.unitNoBack = depotRepository.getUnitNo(oidBack)
-            bag.orders2export = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
+        oidBack ?:
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - no bagback-order found"
+                )
+
+
+        val backUnit = depotRepository.getUnitNo(oidBack)
+        bag.unitNoBack = backUnit
+        if (backUnit == null) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "BagId found - no bagback-unit found"
+            )
+        }
+
+        if (bag.lastStation == 2) {
+            val bagBackOrder = parcelRepository.getOrderById(oidBack)
+            bagBackOrder ?:
+                    throw DefaultProblem(
+                            status = Response.Status.NOT_FOUND,
+                            title = "BagId found - bagback-order not found"
+                    )
+
+            if (bagBackOrder.depotnrabd == null) {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bagback-order without depotnrabd"
+                )
+            }
+            if (bagBackOrder.depotnrabd.toInt() != stationNo) {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bagback-order station mismatch depotnrabd"
+                )
+            }
+
         }
         return bag
     }
@@ -645,7 +769,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (orders.count() == 0) {
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
-                    title = "No parcels found"
+                    title = "No orders found"
             )
         }
         return orders.map {
@@ -655,5 +779,32 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         .map { it.toParcel2Export() }
             }
         }.filter { it.parcels.count() > 0 }
+    }
+
+    override fun getScan(scanCode: String): UnitNumber {
+        val user = userService.get()
+        val un = DekuUnitNumber.parseLabel(scanCode)
+        var dekuNo: Long? = null
+        when {
+            un.hasError -> {
+                val gun = GlsUnitNumber.parseLabel(scanCode)
+                when {
+                    gun.hasError -> {
+                        throw DefaultProblem(
+                                status = Response.Status.NOT_FOUND,
+                                title = "Nothing found - wrong or no checkdigit"
+                        )
+
+                    }
+                    else -> {
+                        return gun.value
+                    }
+                }
+            }
+            else -> {
+                return un.value
+            }
+        }
+
     }
 }

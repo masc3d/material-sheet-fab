@@ -5,6 +5,7 @@ import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
+import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.service.entity.ServiceError
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
@@ -61,7 +62,7 @@ interface ExportService {
             //var status: Int? = null,
             val status: org.deku.leoz.model.BagStatus? = null,
             val statusTimestamp: Date? = null,
-            val lastStation: Long? = null,
+            val lastStation: Int? = null,
             val sealNumberYellow: Long? = null,
             val sealNumberRed: Long? = null,
             val orderhub2depot: Long? = null,
@@ -94,9 +95,10 @@ interface ExportService {
     ): List<Order>
 
     @GET
-    @Path("/bag/{$BAG_ID}")
-    @ApiOperation(value = "Get bag by bagId")
+    @Path("/station/{$STATION_NO}/bag/{$BAG_ID}")
+    @ApiOperation(value = "Get bag by bagId", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getBag(
+            @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @PathParam(BAG_ID) @ApiParam(value = "Bag ID", example = "700100000008", required = true) bagID: Long
     ): Bag
 
@@ -163,7 +165,7 @@ interface ExportService {
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(BAG_ID) bagID: Long,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
 
-    )
+    ):Boolean
 
     @PATCH
     @Path("/bag/{$BAG_ID}/fill")
@@ -174,7 +176,8 @@ interface ExportService {
     fun fillBagStationExport(
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(BAG_ID) bagID: Long,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @QueryParam(SCANCODE) @ApiParam(value = "unit", example = "123456789877", required = true) unitNo: String
+            @QueryParam(SCANCODE) @ApiParam(value = "unit", example = "123456789877", required = true) unitNo: String,
+            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Bag loadinglist number", required = true) loadingListNo: Long
     )
 
     @PATCH
@@ -192,5 +195,12 @@ interface ExportService {
     @Path("/bag/loadinglist")
     @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist
+
+    @GET
+    @Path("/scan/{$SCANCODE}")
+    @ApiOperation(value = "Get scan", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getScan(
+            @PathParam(SCANCODE) @ApiParam(value = "unit", example = "123456789877", required = true) scanCode: String
+    ):UnitNumber
 
 }
