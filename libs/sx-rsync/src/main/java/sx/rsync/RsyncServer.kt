@@ -1,5 +1,7 @@
 package sx.rsync
 
+import jnr.posix.POSIXFactory
+import org.apache.commons.lang3.SystemUtils
 import org.ini4j.Ini
 import org.slf4j.LoggerFactory
 import sx.Disposable
@@ -107,13 +109,22 @@ class RsyncServer(
 
             for (module in this.modules) {
                 val section = ini.add(module.name)
+
                 section.add("path", Rsync.URI(module.path, asDirectory = false))
+
                 if (module.secretsFile != null)
                     section.add("secrets file", Rsync.URI(module.secretsFile!!, asDirectory = false))
+
                 section.add("auth users", module.permissions
                         .asSequence()
                         .map { entry -> "${entry.key}:${entry.value}" }
                         .joinToString(" ") as Any)
+
+                if (SystemUtils.IS_OS_UNIX) {
+                    POSIXFactory.getJavaPOSIX().also { posix ->
+                        section.add("uid", posix.getuid())
+                    }
+                }
             }
 
             ini.store(os)
