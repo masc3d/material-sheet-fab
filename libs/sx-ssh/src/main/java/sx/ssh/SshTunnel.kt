@@ -26,7 +26,7 @@ class SshTunnel(
         val sshHost: SshHost,
         val remotePort: Int,
         val localPort: Int,
-        val connectionTimeout: Duration = Duration.ofSeconds(6),
+        val connectionTimeout: Duration = Duration.ofSeconds(10),
         val idleTimeout: Duration = Duration.ofSeconds(30),
         val onClosed: (sshTunnel: SshTunnel) -> Unit = { },
         val onCreated: (sshTunnel: SshTunnel) -> Unit = { })
