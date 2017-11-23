@@ -36,8 +36,8 @@ apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.trello.victor'
 apply plugin: 'sx-packager-android'
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 def GENERATED_DIR = project.projectDir.toPath()
         .resolve('src')
@@ -62,8 +62,8 @@ android {
         vectorDrawables.useSupportLibrary true
 
         compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_7
-            targetCompatibility JavaVersion.VERSION_1_7
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
         }
     }
 
