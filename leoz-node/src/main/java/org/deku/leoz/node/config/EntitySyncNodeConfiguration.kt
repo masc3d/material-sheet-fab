@@ -82,7 +82,6 @@ open class EntitySyncNodeConfiguration {
             MstRoutingLayer::class.java,
             MstSector::class.java,
             MstBundleVersion::class.java,
-            TadNodeGeoposition::class.java,
             MstDebitor::class.java,
             MstDebitorStation::class.java
     )
