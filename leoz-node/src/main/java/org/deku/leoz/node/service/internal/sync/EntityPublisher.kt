@@ -1,5 +1,6 @@
 package org.deku.leoz.node.service.internal.sync
 
+import org.deku.leoz.node.data.jpa.TadNodeGeoposition
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -46,6 +47,11 @@ class EntityPublisher(
         var em: javax.persistence.EntityManager? = null
         try {
             val sw = com.google.common.base.Stopwatch.createStarted()
+
+            if (message.entityType == TadNodeGeoposition::class.java) {
+                log.warn("Entity sync of TadNodeGeoposition is currently not supported")
+                return
+            }
 
             // Entity state message
             val esMessage = message
