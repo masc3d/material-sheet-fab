@@ -3,16 +3,15 @@ package sx.android.aidc
 import android.content.Context
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
-import com.journeyapps.barcodescanner.BarcodeCallback
-import com.journeyapps.barcodescanner.BarcodeResult
-import com.journeyapps.barcodescanner.DecoratedBarcodeView
-import com.journeyapps.barcodescanner.DefaultDecoderFactory
+import com.journeyapps.barcodescanner.*
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
 import sx.rx.ObservableRxProperty
+import java.lang.Exception
 
 /**
  * Barcode reader implementation using the internal camera
@@ -108,11 +107,32 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     val torchProperty = ObservableRxProperty(false)
     var torch: Boolean by torchProperty
 
+    /** Tracks camera state */
+    private val isCameraInUseSubject = BehaviorSubject.createDefault(false)
+    /** Camera state observable */
+    val isCameraInUse = this.isCameraInUseSubject.hide()
+
     /**
      * View finder
      */
     val view by lazy {
-        View(this.context)
+        View(this.context).also {
+            it.barcodeView.addStateListener(object : CameraPreview.StateListener {
+                override fun previewStarted() {
+                    log.trace("CAMERA OPEN")
+                    isCameraInUseSubject.onNext(true)
+                }
+
+                override fun cameraClosed() {
+                    log.trace("CAMERA CLOSED")
+                    isCameraInUseSubject.onNext(false)
+                }
+
+                override fun cameraError(error: Exception?) {}
+                override fun previewStopped() {}
+                override fun previewSized() {}
+            })
+        }
     }
 
     //region Zxing barcode callback
