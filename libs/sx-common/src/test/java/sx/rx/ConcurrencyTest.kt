@@ -27,6 +27,7 @@ class ConcurrencyTest {
                 .flatMap({ i ->
                     Observable.create<Int> {
                         log.trace("processing ${i}")
+                        Thread.sleep(200)
                         it.onNext(i)
                         it.onComplete()
                     }
@@ -40,6 +41,8 @@ class ConcurrencyTest {
 
     @Test
     fun testConcurrencyLimitWithScheduleWhen() {
+        val scheduler = Schedulers.io().limit(4)
+
         (0..100).map { i ->
             Observable.create<Int> {
                 log.trace("processing ${i}")
@@ -47,7 +50,7 @@ class ConcurrencyTest {
                 it.onNext(i)
                 it.onComplete()
             }
-                    .subscribeOn(Schedulers.io().limit(4))
+                    .subscribeOn(scheduler)
         }
                 .merge()
                 .blockingSubscribe {
