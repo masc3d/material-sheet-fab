@@ -14,6 +14,7 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_camera.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Sounds
@@ -22,6 +23,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.jetbrains.anko.imageBitmap
 import org.slf4j.LoggerFactory
 import sx.android.Device
+import sx.android.aidc.CameraAidcReader
 import sx.android.rx.observeOnMainThread
 import sx.rx.ObservableRxProperty
 import sx.rx.subscribeOn
@@ -41,6 +43,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
     private val executorService: ExecutorService by Kodein.global.lazy.instance()
     private val sounds: Sounds by Kodein.global.lazy.instance()
     private val device: Device by Kodein.global.lazy.instance()
+    private val cameraAidcReader: CameraAidcReader by Kodein.global.lazy.instance()
 
     private var pictureJpeg: ByteArray? = null
 
@@ -248,7 +251,14 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                     }
                 }
 
-        this.uxCameraView.start()
+        // Synchronize camera usage with aidc reader
+        this.cameraAidcReader
+                .isCameraInUse
+                .takeUntil { it == false  }
+                .observeOnMainThread()
+                .subscribeBy(onComplete ={
+                    this.uxCameraView.start()
+                })
     }
 
     private fun showCaptureActions() {

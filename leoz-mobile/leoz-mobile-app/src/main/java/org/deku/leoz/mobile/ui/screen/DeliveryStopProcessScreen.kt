@@ -1111,7 +1111,6 @@ class DeliveryStopProcessScreen :
         this.finalizeStop()
     }
 
-
     override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
         this.deliveryStop.deliverWithSignatureOnPaper(signatureJpeg)
         this.finalizeStop()
