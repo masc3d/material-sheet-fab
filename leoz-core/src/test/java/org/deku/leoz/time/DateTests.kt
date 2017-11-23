@@ -1,5 +1,7 @@
 package org.deku.leoz.time
 
+import org.deku.leoz.time.toDateWithoutTime
+import org.deku.leoz.time.toTimeWithoutDate
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.util.*
