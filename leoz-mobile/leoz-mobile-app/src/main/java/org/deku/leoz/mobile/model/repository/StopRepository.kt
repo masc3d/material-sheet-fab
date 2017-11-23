@@ -58,6 +58,29 @@ class StopRepository(
     }
 
     /**
+     * Updates stop states from parcel states
+     * @param stops List of stops to update
+     */
+    fun updateStopStateFromParcels(stops: List<Stop>): Completable {
+        return Completable.fromCallable {
+            stops
+                    .filter { it.state == Stop.State.NONE }
+                    .forEach { stop ->
+                        val parcels = stop.tasks.flatMap { it.order.parcels }
+
+                        if (parcels.any { it.state == Parcel.State.LOADED }) {
+                            stop.state = Stop.State.PENDING
+                            this.update(stop as StopEntity)
+                                    .blockingGet()
+                        }
+                    }
+        }
+    }
+
+    fun updateStopStateFromParcels(stop: Stop): Completable =
+            this.updateStopStateFromParcels(listOf(stop))
+
+    /**
      * Merge a batch of stops into the database and initialize positions appropriately
      * Stops which reference the same order tasks will be removed in order to avoid duplicates.
      */
@@ -91,6 +114,9 @@ class StopRepository(
                     .forEach {
                         store.delete(it)
                     }
+
+            this.updateStopStateFromParcels(stops)
+                    .blockingGet()
         }
     }
 

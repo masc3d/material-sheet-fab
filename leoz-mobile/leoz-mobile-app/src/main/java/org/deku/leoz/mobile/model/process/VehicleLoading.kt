@@ -41,6 +41,7 @@ class VehicleLoading : CompositeDisposableSupplier {
 
     //region Repositories
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
+    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     //endregion
 
     private val identity: Identity by Kodein.global.lazy.instance()
@@ -104,17 +105,10 @@ class VehicleLoading : CompositeDisposableSupplier {
                             .update(parcel)
                             .blockingGet()
 
-                    // Set all stops which contain LOADED parcels to PENDING
-                    val stopsWithLoadedParcels = parcelRepository.entities
-                            .filter { it.state == Parcel.State.LOADED }
-                            .flatMap { it.order.tasks.mapNotNull { it.stop } }
-                            .filter { it.state != Stop.State.CLOSED }
-                            .distinct()
-
-                    stopsWithLoadedParcels.forEach {
-                        it.state = Stop.State.PENDING
-                        update(it)
-                    }
+                    stopRepository.updateStopStateFromParcels(
+                        stop = parcel.order.tasks.map { it.stop }.filterNotNull().first()
+                    )
+                            .blockingGet()
 
                     // Send compound parcel message with loading states
                     mqttChannels.central.main.channel().send(
