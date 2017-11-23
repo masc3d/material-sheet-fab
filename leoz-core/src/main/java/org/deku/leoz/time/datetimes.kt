@@ -8,6 +8,7 @@ import java.util.*
 
 object DateFormats {
     val gregorianLongDate by lazy { SimpleDateFormat("dd.MM.yyyy") }
+    val gregorianLongDateTime by lazy { SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS") }
 }
 
 fun Date.toShortTime(): ShortTime {
@@ -16,6 +17,10 @@ fun Date.toShortTime(): ShortTime {
 
 fun Date.toGregorianLongDateString(): String {
     return DateFormats.gregorianLongDate.format(this)
+}
+
+fun Date.toGregorianLongDateTimeString(): String {
+    return DateFormats.gregorianLongDateTime.format(this)
 }
 
 fun Date.toDateWithoutTime(): Date =
