@@ -16,7 +16,7 @@ abstract class SshConfiguration {
          */
         @JvmStatic val tunnelProvider by lazy {
             SshTunnelProvider(
-                    localPortRange = IntRange(13300, 13350),
+                    localPortRange = IntRange(13300, 13400),
 
                     sshHosts = SshHost(
                             hostname = "",
