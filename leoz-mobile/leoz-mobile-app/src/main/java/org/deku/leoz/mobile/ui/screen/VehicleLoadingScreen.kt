@@ -514,7 +514,7 @@ class VehicleLoadingScreen :
                 val resultValue = result.value
 
                 when (resultValue) {
-                    is UnitNumber -> {
+                    is DekuUnitNumber -> {
                         this.onInput(resultValue)
                     }
                     is GlsUnitNumber -> {
