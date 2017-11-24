@@ -422,6 +422,8 @@ class DeliveryStopProcessScreen :
                 .subscribe {
                     when (it.itemId) {
                         R.id.action_reset -> {
+                            log.info("Resetting all delivery states / data")
+
                             this.deliveryStop
                                     .reset()
                                     .subscribe()
