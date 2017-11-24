@@ -12,6 +12,7 @@ import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
 import sx.rx.ObservableRxProperty
 import java.lang.Exception
+import java.util.*
 
 /**
  * Barcode reader implementation using the internal camera
@@ -143,8 +144,13 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
             .hide()
             .distinctUntilChanged { previous, current ->
                 if (previous.data == current.data) {
+                    // Reset timestamp on first distinct check
+                    if (distinctTimestamp == 0L)
+                        distinctTimestamp = current.timestamp.time
+
                     val diff = Duration.ofMillis(current.timestamp.time - distinctTimestamp)
 
+                    // Reset timestamp when threshold was reached
                     if (diff >= distinctThreshold)
                         distinctTimestamp = current.timestamp.time
 
