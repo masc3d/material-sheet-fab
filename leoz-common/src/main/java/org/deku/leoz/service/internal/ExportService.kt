@@ -22,7 +22,7 @@ import java.util.*
 interface ExportService {
 
     companion object {
-        const val EVENT = 1
+        const val BAG_BACK_NO="bagback-no"
         const val STATION_NO = "station-no"
         const val LOADINGLIST_NO = "loadinglist-no"
         const val SCANCODE = "parcel-no"
@@ -129,7 +129,7 @@ interface ExportService {
             @QueryParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = "",
             @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", required = true) loadingListNo: Long,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
-    ): Boolean
+    ): String
 
     @GET
     @Path("/station/{$STATION_NO}/send-back")
@@ -150,6 +150,7 @@ interface ExportService {
     )
     fun setBagStationExportRedSeal(
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(BAG_ID) bagID: Long,
+            @QueryParam(BAG_BACK_NO) @ApiParam(value = "BagBackunit number", example="100720000004",required = true) bagBackUnitNo:Long,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @QueryParam(REDSEAL) @ApiParam(value = "Red seal number", example = "900200000001", required = true) redSeal: Long,
             @QueryParam(TEXT) @ApiParam(value = "Text", required = true) text: String
@@ -165,7 +166,7 @@ interface ExportService {
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(BAG_ID) bagID: Long,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
 
-    ):Boolean
+    )
 
     @PATCH
     @Path("/bag/{$BAG_ID}/fill")
@@ -175,10 +176,11 @@ interface ExportService {
     )
     fun fillBagStationExport(
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(BAG_ID) bagID: Long,
+            @QueryParam(BAG_BACK_NO) @ApiParam(value = "BagBackunit number", example="100720000004",required = true) bagBackUnitNo:Long,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @QueryParam(SCANCODE) @ApiParam(value = "unit", example = "123456789877", required = true) unitNo: String,
             @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Bag loadinglist number", required = true) loadingListNo: Long
-    )
+    ):String
 
     @PATCH
     @Path("/bag/{$BAG_ID}/close")
@@ -188,7 +190,9 @@ interface ExportService {
     )
     fun closeBagStationExport(
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(BAG_ID) bagID: Long,
-            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+            @QueryParam(BAG_BACK_NO) @ApiParam(value = "BagBackunit number", example="100720000004",required = true) bagBackUnitNo:Long,
+            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
+            @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Bag loadinglist number", required = true) loadingListNo: Long
     )
 
     @POST
