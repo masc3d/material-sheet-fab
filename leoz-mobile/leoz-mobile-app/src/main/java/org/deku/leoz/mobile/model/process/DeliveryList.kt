@@ -244,10 +244,6 @@ class DeliveryList : CompositeDisposableSupplier {
                     .merge(listOf(order))
                     .blockingGet()
 
-            // If this order existed already, we're done
-            if (createdOrderCount == 0)
-                return@withTransaction
-
             val task = order.deliveryTask
             var stop = stopRepository
                     .findStopForTask(task)

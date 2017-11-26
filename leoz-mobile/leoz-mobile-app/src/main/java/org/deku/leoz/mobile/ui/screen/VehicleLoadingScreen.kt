@@ -285,7 +285,7 @@ class VehicleLoadingScreen :
 
         aidcReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .subscribe {
                     this.onAidcRead(it)
                 }
@@ -581,7 +581,10 @@ class VehicleLoadingScreen :
                                         this.deliveryList
                                                 .mergeOrder(order)
                                                 .andThen(
-                                                        this.parcelRepository.findByNumber(unitNumber.value))
+                                                        this.parcelRepository
+                                                                .findByNumber(unitNumber.value)
+                                                                .subscribeOn(db.scheduler)
+                                                )
                                                 .bindToLifecycle(this)
                                                 .observeOnMainThread()
                                                 .subscribeBy(

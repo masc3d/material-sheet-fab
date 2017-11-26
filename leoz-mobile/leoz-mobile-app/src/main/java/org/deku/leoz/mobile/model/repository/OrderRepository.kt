@@ -67,10 +67,8 @@ class OrderRepository(
      * Merge a batch of orders into the database.
      * Existing orders will have their parcel lists merged accordingly.
      */
-    fun merge(orders: List<Order>): Single<Int> {
-        return Single.fromCallable {
-            var created = 0
-
+    fun merge(orders: List<Order>): Completable {
+        return Completable.fromCallable {
             val store = this.store.toBlocking()
 
             // Store orders
@@ -109,11 +107,8 @@ class OrderRepository(
                     store.insert(order)
                 } else {
                     store.insert(order)
-                    created++
                 }
             }
-
-            created
         }
     }
 
