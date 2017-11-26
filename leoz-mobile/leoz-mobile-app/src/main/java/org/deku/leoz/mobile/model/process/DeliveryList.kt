@@ -240,9 +240,9 @@ class DeliveryList : CompositeDisposableSupplier {
      */
     fun mergeOrder(order: Order): Completable {
         return db.store.withTransaction {
-            val createdOrderCount = orderRepository
+            orderRepository
                     .merge(listOf(order))
-                    .blockingGet()
+                    .blockingAwait()
 
             val task = order.deliveryTask
             var stop = stopRepository

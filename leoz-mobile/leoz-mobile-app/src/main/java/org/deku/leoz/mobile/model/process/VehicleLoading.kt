@@ -108,7 +108,7 @@ class VehicleLoading : CompositeDisposableSupplier {
                     stopRepository.updateStopStateFromParcels(
                         stop = parcel.order.tasks.map { it.stop }.filterNotNull().first()
                     )
-                            .blockingGet()
+                            .blockingAwait()
 
                     // Send compound parcel message with loading states
                     mqttChannels.central.main.channel().send(

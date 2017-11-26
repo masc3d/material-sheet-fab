@@ -476,6 +476,17 @@ class VehicleLoadingScreen :
         //endregion
     }
 
+
+    /**
+     * Helper for showing/hiding finish button
+     */
+    private fun finishButtonVisibility(value: Boolean) {
+        this.actionItems = this.actionItems.apply {
+            first { it.id == R.id.action_vehicle_loading_finished }
+                    .visible = value
+        }
+    }
+
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
@@ -528,6 +539,9 @@ class VehicleLoadingScreen :
      */
     fun onInput(deliveryListNumber: DekuDeliveryListNumber) {
         var loaded = false
+
+        this.finishButtonVisibility(false)
+
         deliveryList.load(deliveryListNumber)
                 .bindToLifecycle(this)
                 .composeAsRest(this.activity, R.string.error_invalid_delivery_list)
@@ -537,12 +551,16 @@ class VehicleLoadingScreen :
                             log.info("Current delivery lists [${this.deliveryList.ids.joinToString(", ")}")
                         },
                         onComplete = {
+                            this.finishButtonVisibility(true)
+
                             // Can't rely on complete alone due to rxlifecycle
                             if (loaded) {
                                 feedback.acknowledge()
                             }
                         },
                         onError = {
+                            this.finishButtonVisibility(true)
+
                             log.error(it.message, it)
                             feedback.error()
                         }
@@ -569,10 +587,10 @@ class VehicleLoadingScreen :
                         .composeAsRest(this.activity, R.string.error_no_corresponding_order)
                         .subscribeBy(
                                 onNext = { order ->
-                                    log.trace("RETRIEVED ORDER")
                                     feedback.acknowledge()
 
                                     fun mergeOrder() {
+                                        this.finishButtonVisibility(false)
                                         this.deliveryList
                                                 .mergeOrder(order)
                                                 .andThen(
@@ -584,10 +602,11 @@ class VehicleLoadingScreen :
                                                 .observeOnMainThread()
                                                 .subscribeBy(
                                                         onSuccess = {
-                                                            log.trace("MERGED ORDER")
+                                                            this.finishButtonVisibility(true)
                                                             this.onParcel(it)
                                                         },
                                                         onError = {
+                                                            this.finishButtonVisibility(true)
                                                             log.error("Merging order failed. ${it.message}", it)
                                                             feedback.error()
                                                         }
