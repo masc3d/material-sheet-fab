@@ -190,11 +190,6 @@ class VehicleLoadingScreen :
                 vmItemProvider = { it.toFlexibleItem() }
         )
 
-//        adapter.addSection(
-//                sectionVmItemProvider = { this.missingSection.toFlexibleItem() },
-//                vmItemProvider = { it.toFlexibleItem() }
-//        )
-
         adapter
     })
     private val parcelListAdapter get() = parcelListAdapterInstance.get()
