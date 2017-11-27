@@ -34,9 +34,9 @@ class BundleRepositoryTest {
     @Test
     fun testConcurrentDownloads() {
         val BUNDLE_NAME = BundleType.LEOZ_BOOT.value
-        val HOST = "10.211.55.7"
-        val DOWNLOADS = 100
-        val DOWNLOADS_CONCURRENCY = 8
+        val HOST = "leoz-t1.derkurier.de"
+        val DOWNLOADS = 16
+        val DOWNLOADS_CONCURRENCY = 4
 
         val repository = BundleConfiguration.createRepository(HOST)
 
@@ -51,7 +51,7 @@ class BundleRepositoryTest {
                     val path = rootPath.resolve("${BUNDLE_NAME}-${i}")
 
                     try {
-                        log.trace("Start ${path}")
+                        log.trace("START ${path}")
                         path.mkdirs()
 
                         repository.download(
