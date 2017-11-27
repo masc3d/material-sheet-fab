@@ -55,7 +55,7 @@ buildscript {
         v_spring_data_jpa = '2.0.1.RELEASE'
         v_spring_data_commons = '2.0.1.RELEASE'
         v_springboot = '2.0.0.M6'
-        v_sshd = '1.6.0'
+        v_sshd = '1.2.0'
         v_swagger = '1.5.17'
         v_swagger_codegen = '2.2.3'
         v_threeten = '1.3.6'

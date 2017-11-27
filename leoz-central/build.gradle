@@ -35,7 +35,7 @@ apply plugin: 'org.flywaydb.flyway'
 apply plugin: 'sx-packager'
 
 sourceCompatibility = 1.8
-version = '0.143-SNAPSHOT'
+version = '0.144-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
