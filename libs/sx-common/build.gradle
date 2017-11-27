@@ -10,7 +10,7 @@ buildscript {
         v_jgit = '4.8.0.201706111038-r'
         v_jsch = '0.0.9'
         v_querydsl = '4.1.4'
-        v_kotlin = '1.1.60'
+        v_kotlin = '1.1.61'
         v_koptional = '1.2.0'
         v_requery = '1.4.1'
         v_resteasy = '3.1.4.Final'
@@ -49,7 +49,7 @@ dependencies {
             "org.slf4j:jul-to-slf4j:$v_slf4j",
 
             // RX
-            "io.reactivex.rxjava2:rxjava:2.1.6",
+            "io.reactivex.rxjava2:rxjava:2.1.7",
             "io.reactivex:rxkotlin:2.0.0-RC1",
 
             "com.gojuno.koptional:koptional:1.2.0",
