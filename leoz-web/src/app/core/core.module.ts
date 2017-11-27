@@ -16,6 +16,7 @@ import { BagscanReportingService } from './reporting/bagscan-reporting.service';
 import { ApiKeyHeaderInterceptor } from './api-key-header.interceptor';
 import { MockHttpInterceptor } from './mock-http.interceptor';
 import { BagscanGuard } from './auth/bagscan.guard';
+import { InetConnectionService } from './inet-connection.service';
 
 @NgModule( {
   imports: [
@@ -42,6 +43,7 @@ export class CoreModule {
         BagscanGuard,
         Translation,
         TranslateService,
+        InetConnectionService,
         BrowserCheck]
     };
   }
