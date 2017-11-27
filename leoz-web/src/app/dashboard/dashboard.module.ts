@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { DropdownModule, PanelMenuModule } from 'primeng/primeng';
+
 import { SharedModule } from '../shared/shared.module';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 
 import { DashboardComponent } from './dashboard.component';
 import { LeftMenuComponent } from './left-menu/left-menu.component';
-import { DropdownModule, PanelMenuModule } from 'primeng/primeng';
-import { FormsModule } from '@angular/forms';
+import { StatusbarComponent } from './statusbar/statusbar.component';
 
-@NgModule({
+@NgModule( {
   imports: [
     SharedModule,
     PanelMenuModule,
@@ -15,7 +17,12 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
     DashboardRoutingModule
   ],
-  declarations: [DashboardComponent, LeftMenuComponent],
-  exports: [DashboardComponent]
-})
-export class DashboardModule { }
+  declarations: [
+    DashboardComponent,
+    LeftMenuComponent,
+    StatusbarComponent
+  ],
+  exports: [ DashboardComponent ]
+} )
+export class DashboardModule {
+}

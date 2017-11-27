@@ -17,7 +17,7 @@ import { sumAndRound } from '../../../core/math/sumAndRound';
 @Injectable()
 export class LoadinglistService {
 
-  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/station/`;
+  protected packageUrl = `${environment.apiUrl}/internal/v1/export/station/`;
   protected scanUrl = `${environment.apiUrl}/internal/v1/parcel/export`;
   protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/parcel/loadinglist/new`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/loadinglist/report/header`;
