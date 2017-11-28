@@ -6,11 +6,11 @@ buildscript {
         v_activemq = '5.15.2'
         v_artemis = '1.5.4'
         v_kodein = '4.1.0'
-        v_kotlin = '1.1.61'
+        v_kotlin = '1.2.0'
         v_kryo = '4.0.1'
         v_kryo_serializers = '0.42'
         v_protostuff = '1.5.3'
-        v_spring = '5.0.1.RELEASE'
+        v_spring = '5.0.2.RELEASE'
     }
 
     dependencies {
