@@ -3,6 +3,7 @@ package org.deku.leoz.node.config
 //import org.apache.sshd.common.io.nio2.Nio2Acceptor2
 import org.apache.sshd.common.NamedFactory
 import org.apache.sshd.common.channel.Channel
+import org.apache.sshd.common.io.mina.MinaServiceFactoryFactory
 import org.apache.sshd.common.io.nio2.Nio2ServiceFactoryFactory
 import org.apache.sshd.server.SshServer
 import org.apache.sshd.server.auth.password.PasswordAuthenticator
@@ -49,7 +50,7 @@ open class SshServerConfiguration {
 
         sshd.port = SshServerConfiguration.DEFAULT_PORT
 
-        sshd.ioServiceFactoryFactory = Nio2ServiceFactoryFactory()
+        sshd.ioServiceFactoryFactory = MinaServiceFactoryFactory()
 
         sshd.keyPairProvider = SimpleGeneratorHostKeyProvider(
                 File(storage.sshDataDirectory, "hostkey.ser"))
