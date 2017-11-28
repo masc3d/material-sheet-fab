@@ -10,6 +10,7 @@ include ':sx-ssh'
 include ':sx-serialization'
 include ':sx-packager'
 include ':barbarywatchservice'
+include ':mina-sshd-core'
 
 include ':leoz-common'
 include ':leoz-core'
@@ -30,6 +31,7 @@ project(':sx-ssh').projectDir = file('libs/sx-ssh')
 project(':sx-serialization').projectDir = file('libs/sx-serialization')
 project(':sx-packager').projectDir = file('libs/sx-packager')
 project(':barbarywatchservice').projectDir = file('libs/barbarywatchservice')
+project(':mina-sshd-core').projectDir = file('libs/mina-sshd/sshd-core')
 
 // Android
 //include ':sx-android'

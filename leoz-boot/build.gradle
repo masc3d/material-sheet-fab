@@ -58,7 +58,7 @@ dependencies {
             "org.ini4j:ini4j:$v_ini4j",
 
             // ssh support
-            "org.apache.sshd:sshd-core:$v_sshd",
+            project(':mina-sshd-core'),
 
             "com.dooapp.fxform2:core:$v_fxform2",
             "org.jfxtras:jfxtras-all:8.0-r5",

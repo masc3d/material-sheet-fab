@@ -210,7 +210,7 @@ dependencies {
             "com.thoughtworks.xstream:xstream:$v_xstream",
 
             // ssh support
-            "org.apache.sshd:sshd-core:$v_sshd",
+            project(':mina-sshd-core'),
 
             // spring
             "org.springframework:spring-aop:$v_spring",

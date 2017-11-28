@@ -3,6 +3,7 @@ package org.deku.leoz.node.config
 //import org.apache.sshd.common.io.nio2.Nio2Acceptor2
 import org.apache.sshd.common.NamedFactory
 import org.apache.sshd.common.channel.Channel
+import org.apache.sshd.common.io.nio2.Nio2ServiceFactoryFactory
 import org.apache.sshd.server.SshServer
 import org.apache.sshd.server.auth.password.PasswordAuthenticator
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter
@@ -48,10 +49,12 @@ open class SshServerConfiguration {
 
         sshd.port = SshServerConfiguration.DEFAULT_PORT
 
+        sshd.ioServiceFactoryFactory = Nio2ServiceFactoryFactory()
+
         sshd.keyPairProvider = SimpleGeneratorHostKeyProvider(
                 File(storage.sshDataDirectory, "hostkey.ser"))
 
-        sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
+        sshd.forwardingFilter = AcceptAllForwardingFilter()
 
         sshd.passwordAuthenticator = object : PasswordAuthenticator {
             override fun authenticate(username: String?, password: String?, session: ServerSession?): Boolean {
