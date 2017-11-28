@@ -102,15 +102,8 @@ dependencies {
             // JDBC connection pooling
             "org.apache.commons:commons-dbcp2:2.1.1",
 
-            // FOR TESTING
-
-            // Kalium
-            "org.abstractj.kalium:kalium:0.7.0",
-
-            //group: 'org.apache.xmlgraphics', name: 'batik-rasterizer', version: '1.9.1'
-            group: 'org.apache.xmlgraphics', name: 'batik-all', version: '1.9.1'
-            //"org.apache.xmlgraphics:batik:1.9.1"
-    )
+            // For SVG image conversions
+            "org.apache.xmlgraphics:batik-transcoder:$v_batik")
 
     testCompile(
             project(':sx-common'),
