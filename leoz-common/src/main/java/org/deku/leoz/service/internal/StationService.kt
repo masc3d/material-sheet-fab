@@ -29,9 +29,7 @@ interface StationService {
     @GET
     @Path("/find")
     @ApiOperation(value = "Query stations by simple substring match applied to relevant fields")
-    @ApiResponses(value = *arrayOf(
-            ApiResponse(code = 404, message = "No stations found")
-    ))
+    @ApiResponses(value = [(ApiResponse(code = 404, message = "No stations found"))])
     fun find(
             @ApiParam(value = "Query string") @QueryParam("q") query: String): Array<Station>
 

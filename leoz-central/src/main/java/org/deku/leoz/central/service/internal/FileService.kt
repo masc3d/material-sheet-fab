@@ -57,7 +57,7 @@ class FileServiceV1 :
 
         // Extract and verify message parameters
 
-        val nodeUid = message.nodeUid ?:
+        message.nodeUid ?:
                 throw IllegalArgumentException("Node UID must not be null")
 
         val fileUid = message.fileUid ?:

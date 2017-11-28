@@ -51,10 +51,10 @@ class PingService(
                     .on(Socket.EVENT_ERROR, { args ->
                         it.onError(IOException("Error: ${args.joinToString(", ")}"))
                     })
-                    .on(Socket.EVENT_CONNECT, { args ->
+                    .on(Socket.EVENT_CONNECT, { _ ->
                         socket.emit("ping_it")
                     })
-                    .on(Socket.EVENT_PONG, { args ->
+                    .on(Socket.EVENT_PONG, { _ ->
                         it.onComplete()
                     })
 

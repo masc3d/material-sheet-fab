@@ -326,7 +326,6 @@ class MainController : Controller(), Initializable {
             SidebarController.ItemType.Home -> m = this.homeController
             SidebarController.ItemType.Depots -> m = this.depotMaintenanceController
             SidebarController.ItemType.Debug -> m = this.debugController
-            else -> throw RuntimeException(String.format("Unknown sidebar item [%s]", itemType))
         }
 
         this.showModule(m)

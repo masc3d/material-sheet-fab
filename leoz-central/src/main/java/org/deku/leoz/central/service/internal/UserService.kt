@@ -189,7 +189,6 @@ class UserService : UserService {
         }
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        val stations = mapper.writeValueAsString(allowsStations)
 
         var isNew = false
         var rec = userRepository.findByMail(email)

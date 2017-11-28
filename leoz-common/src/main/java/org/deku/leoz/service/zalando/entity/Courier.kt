@@ -5,7 +5,7 @@ import javax.annotation.Generated
 import com.fasterxml.jackson.annotation.*
 
 @ApiModel(description = "Defines the driver who will pick up a tour and deliver all orders related to the tour.")
-@Generated(value = "io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-03-10T11:34:55.297Z")
+@Generated(value = ["io.swagger.codegen.languages.JavaResteasyServerCodegen"], date = "2017-03-10T11:34:55.297Z")
 class Courier {
 
     /**

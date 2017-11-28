@@ -9,7 +9,7 @@ import java.util.*
 import javax.annotation.Generated
 
 @ApiModel(description = "Delivery option for a package. Basic information regarding delivery window, cut off and pic up points.")
-@Generated(value = "io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-03-10T11:34:55.297Z")
+@Generated(value = ["io.swagger.codegen.languages.JavaResteasyServerCodegen"], date = "2017-03-10T11:34:55.297Z")
 data class DeliveryOption(
         /**
          * Delivery option identifier

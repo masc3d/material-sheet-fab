@@ -175,11 +175,10 @@ open class Main {
             try {
                 val springApplication = SpringApplicationBuilder()
                         .beanNameGenerator(object : AnnotationBeanNameGenerator() {
-                            override fun buildDefaultBeanName(definition: BeanDefinition): String {
+                            override fun buildDefaultBeanName(definition: BeanDefinition): String? {
                                 // Override the bean name to be fully qualified.
                                 // The default behaviour causes issues with classes having the same name in different packages
-                                val beanName = definition.beanClassName
-                                return beanName
+                                return definition.beanClassName
                             }
                         })
                         .bannerMode(Banner.Mode.OFF)

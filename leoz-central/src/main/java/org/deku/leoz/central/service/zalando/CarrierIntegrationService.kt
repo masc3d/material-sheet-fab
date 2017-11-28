@@ -44,7 +44,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
     override fun postDeliveryOrder(deliveryOrder: DeliveryOrder): NotifiedDeliveryOrder {
 
         try {
-            val deliveryOptionId: Int = deliveryOrder.deliveryOption.id!!.split(delimiters = "-", ignoreCase = true, limit = 0)[0].toInt()
+            val deliveryOptionId: Int = deliveryOrder.deliveryOption.id!!.split(delimiters = *arrayOf("-"), ignoreCase = true, limit = 0)[0].toInt()
 
             val result = dslContext.select()
                     .from(Tables.SDD_CUSTOMER
@@ -63,7 +63,6 @@ class CarrierIntegrationService : CarrierIntegrationService {
 
             val delOptionZip = result.getValue(0, Tables.SDD_CONTZIP.ZIP)
             val targetAddrZip = deliveryOrder.targetAddress.zipCode
-            val glsDepot = result.getValue(0, Tables.SDD_CONTACT.ADMINDEPOTNO)
 
             // Ensure that there is only one record (may be not necessary due to unique/primary key "ID" in table "SDD_ContZip")
             if (result.size != 1) {

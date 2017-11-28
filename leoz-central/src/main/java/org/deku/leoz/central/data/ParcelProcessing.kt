@@ -164,17 +164,12 @@ open class ParcelProcessing {
                     pasCleared = (4096.and(pasClearingartmaster.toInt())) == 4096
                 } else
                     pasCleared = false
-                var pasReset = false
-
 
                 val checkDamaged = parcelAddInfo.damagedFileUIDs != null
 
                 if (checkDamaged) {
                     val uids = parcelAddInfo.damagedFileUIDs
                     if (uids != null) {
-                        for (i in 0..uids.size - 1) {
-                            val damagedFileUID = uids[i]
-                        }
                         val rDamaged = dslContext.newRecord(Tables.TBLSTATUS)
 
                         rDamaged.packstuecknummer = r.packstuecknummer
@@ -264,7 +259,6 @@ open class ParcelProcessing {
 
                 when (event) {
                     Event.DELIVERED -> {
-                        pasReset = true
                         val recipientInfo = StringBuilder()
                         val check = parcelAddInfo.recipient != null
                         if (check) {
@@ -375,118 +369,115 @@ open class ParcelProcessing {
                                 if (DekuUnitNumber.parse(parcelScan).value.type == UnitNumber.Type.Bag) {
                                     //if (parcelScan.startsWith("10071")) {
                                     val unitInBagUnitRecords = parcelRepository.findUnitsInBagByBagUnitNumber(parcelNo)
-                                    if (unitInBagUnitRecords != null) {
-                                        unitInBagUnitRecords.forEach {
-                                            val unitInBagStatusRecord = dslContext.newRecord(Tables.TBLSTATUS)
-                                            unitInBagStatusRecord.packstuecknummer = it.colliebelegnr
-                                            unitInBagStatusRecord.datum = r.datum
-                                            unitInBagStatusRecord.zeit = r.zeit
-                                            unitInBagStatusRecord.poslat = r.poslat
-                                            unitInBagStatusRecord.poslong = r.poslong
-                                            unitInBagStatusRecord.kzStatuserzeuger = r.kzStatuserzeuger
-                                            unitInBagStatusRecord.kzStatus = r.kzStatus
-                                            unitInBagStatusRecord.erzeugerstation = r.erzeugerstation
-                                            unitInBagStatusRecord.fehlercode = r.fehlercode
-                                            //unitInBagStatusRecord.text = r.text
-                                            unitInBagStatusRecord.text = textForStatus
-                                            unitInBagStatusRecord.infotext = r.infotext
-                                            r.store()
+                                    unitInBagUnitRecords.forEach {
+                                        val unitInBagStatusRecord = dslContext.newRecord(Tables.TBLSTATUS)
+                                        unitInBagStatusRecord.packstuecknummer = it.colliebelegnr
+                                        unitInBagStatusRecord.datum = r.datum
+                                        unitInBagStatusRecord.zeit = r.zeit
+                                        unitInBagStatusRecord.poslat = r.poslat
+                                        unitInBagStatusRecord.poslong = r.poslong
+                                        unitInBagStatusRecord.kzStatuserzeuger = r.kzStatuserzeuger
+                                        unitInBagStatusRecord.kzStatus = r.kzStatus
+                                        unitInBagStatusRecord.erzeugerstation = r.erzeugerstation
+                                        unitInBagStatusRecord.fehlercode = r.fehlercode
+                                        //unitInBagStatusRecord.text = r.text
+                                        unitInBagStatusRecord.text = textForStatus
+                                        unitInBagStatusRecord.infotext = r.infotext
+                                        r.store()
 
-                                            val unitInBagOrderRecord = orderRepository.findOrderByOrderNumber(it.orderid.toLong())
-                                            if (unitInBagOrderRecord != null) {
-                                                val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
-                                                val unitInBagPasCleared: Boolean
-                                                if (unitInBagPasClearingartmaster != null) {
-                                                    unitInBagPasCleared = (4096.and(unitInBagPasClearingartmaster.toInt())) == 4096
-                                                } else
-                                                    unitInBagPasCleared = false
-                                                if (unitInBagPasCleared) {
-                                                    //TODO WLtransfer Auslieferdaten nach Abrechnung
-                                                }
-                                                it.bmpfilename = parcelRecord.bmpfilename
-                                                val unitInBagOldValue = it.lieferstatus
-                                                it.lieferstatus = r.kzStatus.toShort() //4
-                                                if (it.store() > 0) {
+                                        val unitInBagOrderRecord = orderRepository.findOrderByOrderNumber(it.orderid.toLong())
+                                        if (unitInBagOrderRecord != null) {
+                                            val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
+                                            val unitInBagPasCleared: Boolean
+                                            if (unitInBagPasClearingartmaster != null) {
+                                                unitInBagPasCleared = (4096.and(unitInBagPasClearingartmaster.toInt())) == 4096
+                                            } else
+                                                unitInBagPasCleared = false
+                                            if (unitInBagPasCleared) {
+                                                //TODO WLtransfer Auslieferdaten nach Abrechnung
+                                            }
+                                            it.bmpfilename = parcelRecord.bmpfilename
+                                            val unitInBagOldValue = it.lieferstatus
+                                            it.lieferstatus = r.kzStatus.toShort() //4
+                                            if (it.store() > 0) {
+
+
+                                                fieldHistoryRepository.addEntry(
+                                                        orderId = it.orderid.toLong(),
+                                                        unitNo = it.colliebelegnr.toLong(),
+                                                        fieldName = "lieferstatus",
+                                                        oldValue = unitInBagOldValue?.toString() ?: "",
+                                                        newValue = r.kzStatus.toString(),
+                                                        changer = "SP",
+                                                        point = "IM"
+                                                )
+                                            }
+
+                                            val unitInBagOldRecipient = unitInBagOrderRecord.empfaenger ?: ""
+                                            //unitInBagOrderRecord.empfaenger = r.text
+                                            unitInBagOrderRecord.empfaenger = textForOrder
+                                            //if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(r.text)) {
+                                            if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(textForOrder)) {
+
+                                                fieldHistoryRepository.addEntry(
+                                                        orderId = it.orderid.toLong(),
+                                                        unitNo = it.colliebelegnr.toLong(),
+                                                        fieldName = "empfaenger",
+                                                        oldValue = unitInBagOldRecipient,
+                                                        //newValue = r.text,
+                                                        newValue = textForOrder,
+                                                        changer = "I",
+                                                        point = "IM"
+                                                )
+                                            }
+                                            //if (!unitInBagOrderRecord.empfaenger.equals(r.text)) {
+                                            if (!unitInBagOrderRecord.empfaenger.equals(textForOrder)) {
+                                                //TODO WLtransfer ASD D in Auftrag gescheitert
+                                            }
+
+                                            val unitInBagOldDeliveryDate: String
+                                            if (unitInBagOrderRecord.dtauslieferdatum == null) {
+                                                unitInBagOldDeliveryDate = ""
+                                            } else {
+                                                unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toGregorianLongDateString()
+                                            }
+                                            val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
+
+
+                                            unitInBagOrderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
+                                            unitInBagOrderRecord.dtauslieferzeit = deliveryTime.toTimestamp()
+                                            if (unitInBagOrderRecord.store() > 0) {
+                                                if (unitInBagOldDeliveryTime != deliveryTime.toTimestamp().toShortTime().toString()) {
 
 
                                                     fieldHistoryRepository.addEntry(
                                                             orderId = it.orderid.toLong(),
                                                             unitNo = it.colliebelegnr.toLong(),
-                                                            fieldName = "lieferstatus",
-                                                            oldValue = unitInBagOldValue?.toString() ?: "",
-                                                            newValue = r.kzStatus.toString(),
-                                                            changer = "SP",
-                                                            point = "IM"
-                                                    )
-                                                }
-
-                                                val unitInBagOldRecipient = unitInBagOrderRecord.empfaenger ?: ""
-                                                //unitInBagOrderRecord.empfaenger = r.text
-                                                unitInBagOrderRecord.empfaenger = textForOrder
-                                                //if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(r.text)) {
-                                                if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(textForOrder)) {
-
-                                                    fieldHistoryRepository.addEntry(
-                                                            orderId = it.orderid.toLong(),
-                                                            unitNo = it.colliebelegnr.toLong(),
-                                                            fieldName = "empfaenger",
-                                                            oldValue = unitInBagOldRecipient,
-                                                            //newValue = r.text,
-                                                            newValue = textForOrder,
+                                                            fieldName = "dtauslieferzeit",
+                                                            oldValue = unitInBagOldDeliveryTime,
+                                                            newValue = deliveryTime.toTimestamp().toShortTime().toString(),
                                                             changer = "I",
                                                             point = "IM"
                                                     )
                                                 }
-                                                //if (!unitInBagOrderRecord.empfaenger.equals(r.text)) {
-                                                if (!unitInBagOrderRecord.empfaenger.equals(textForOrder)) {
-                                                    //TODO WLtransfer ASD D in Auftrag gescheitert
-                                                }
-
-                                                val unitInBagOldDeliveryDate: String
-                                                if (unitInBagOrderRecord.dtauslieferdatum == null) {
-                                                    unitInBagOldDeliveryDate = ""
-                                                } else {
-                                                    unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toGregorianLongDateString()
-                                                }
-                                                val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
+                                                if (unitInBagOldDeliveryDate != deliveryDate.toGregorianLongDateString()) {
 
 
-                                                unitInBagOrderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
-                                                unitInBagOrderRecord.dtauslieferzeit = deliveryTime.toTimestamp()
-                                                if (unitInBagOrderRecord.store() > 0) {
-                                                    if (unitInBagOldDeliveryTime != deliveryTime.toTimestamp().toShortTime().toString()) {
-
-
-                                                        fieldHistoryRepository.addEntry(
-                                                                orderId = it.orderid.toLong(),
-                                                                unitNo = it.colliebelegnr.toLong(),
-                                                                fieldName = "dtauslieferzeit",
-                                                                oldValue = unitInBagOldDeliveryTime,
-                                                                newValue = deliveryTime.toTimestamp().toShortTime().toString(),
-                                                                changer = "I",
-                                                                point = "IM"
-                                                        )
-                                                    }
-                                                    if (unitInBagOldDeliveryDate != deliveryDate.toGregorianLongDateString()) {
-
-
-                                                        fieldHistoryRepository.addEntry(
-                                                                orderId = it.orderid.toLong(),
-                                                                unitNo = it.colliebelegnr.toLong(),
-                                                                fieldName = "dtauslieferdatum",
-                                                                oldValue = unitInBagOldDeliveryDate,
-                                                                newValue = deliveryDate.toGregorianLongDateString(),
-                                                                changer = "I",
-                                                                point = "IM"
-                                                        )
-                                                    }
-
+                                                    fieldHistoryRepository.addEntry(
+                                                            orderId = it.orderid.toLong(),
+                                                            unitNo = it.colliebelegnr.toLong(),
+                                                            fieldName = "dtauslieferdatum",
+                                                            oldValue = unitInBagOldDeliveryDate,
+                                                            newValue = deliveryDate.toGregorianLongDateString(),
+                                                            changer = "I",
+                                                            point = "IM"
+                                                    )
                                                 }
 
                                             }
+
                                         }
                                     }
-
                                 }
                         }
                     }
@@ -495,7 +486,6 @@ open class ParcelProcessing {
 
                         val firstDeliveryStatus = parcelRecord.erstlieferstatus ?: 0
                         if (firstDeliveryStatus.toInt() != (4)) {
-                            pasReset = true
                             if (pasCleared) {
                                 //TODO WLtransfer Auslieferung nach Abrechnung
                             }

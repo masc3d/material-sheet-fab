@@ -98,10 +98,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
     /** */
     override fun getByStationNo(stationNo: Int): StationV2 {
-
-
-        val user=userService.get()
-
+        userService.get()
 
         val station = stationRepository
                 .findByStation(stationNo)
@@ -112,7 +109,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
     /** */
     override fun getByDebitorId(debitorId: Int): Array<StationV2> {
-        val user=userService.get()
+        userService.get()
 
         val stationIds = debitorStationRepository
                 .findStationIdsByDebitorid(debitorId)

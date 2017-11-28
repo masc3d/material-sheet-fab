@@ -18,11 +18,11 @@ abstract class SshConfiguration {
             SshTunnelProvider(
                     localPortRange = IntRange(13300, 13400),
 
-                    sshHosts = SshHost(
+                    sshHosts = *arrayOf(SshHost(
                             hostname = "",
                             port = 13003,
                             username = USERNAME,
-                            password = PASSWORD)
+                            password = PASSWORD))
             )
         }
     }

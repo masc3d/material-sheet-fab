@@ -73,7 +73,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun export(scanCode: String, loadingListNo: Long, stationNo: Int): String {
-        val user = userService.get()
+        userService.get()
 
         //check stationNo in user-stationsAllowed
 
@@ -123,7 +123,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                     status = Response.Status.NOT_FOUND,
                     title = "No orders found"
             )
-        var allParcels = parcelRepository.getLoadedParcels2ExportByOrderids(orders.map { it.orderid.toLong() }.toList())?.groupBy { it.orderid }
+        var allParcels = parcelRepository.getLoadedParcels2ExportByOrderids(orders.map { it.orderid.toLong() }.toList()).groupBy { it.orderid }
         if (allParcels.count() == 0)
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
@@ -135,14 +135,14 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             it.toOrder2Export().also { order ->
                 order.parcels = allParcels
                         .getOrDefault(order.orderId.toDouble(), listOf())
-                        ?.map { it.toParcel2Export() }
+                        .map { it.toParcel2Export() }
             }
         }.filter { it.parcels.count() > 0 }
 
     }
 
     override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
-        val user = userService.get()
+        userService.get()
 
         return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 300000)
     }
@@ -156,7 +156,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             )
 
 
-        var allParcels = parcelRepository.getParcels2ExportByOrderids(orders.map { it.orderid.toLong() }.toList())?.groupBy { it.orderid }
+        val allParcels = parcelRepository.getParcels2ExportByOrderids(orders
+                .map { it.orderid.toLong() }
+                .toList()
+        )
+                .groupBy { it.orderid }
+
         if (allParcels.count() == 0)
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
@@ -168,7 +173,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             it.toOrder2Export().also { order ->
                 order.parcels = allParcels
                         .getOrDefault(order.orderId.toDouble(), listOf())
-                        ?.map { it.toParcel2Export() }
+                        .map { it.toParcel2Export() }
             }
         }.filter { it.parcels.count() > 0 }
     }
@@ -199,17 +204,17 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
-        val user = userService.get()
+        userService.get()
 
         return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000)
     }
 
-    override fun setBagStationExportRedSeal(bagID: Long,bagBackUnitNo: Long, stationNo: Int, redSeal: Long, text: String) {
+    override fun setBagStationExportRedSeal(bagID: Long, bagBackUnitNo: Long, stationNo: Int, redSeal: Long, text: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun reopenBagStationExport(bagID: Long, stationNo: Int) {
-        val user = userService.get()
+        userService.get()
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -252,16 +257,16 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     }
 
-    override fun fillBagStationExport(bagID: Long,bagBackUnitNo: Long, stationNo: Int, unitNo: String, loadingListNo: Long): String {
+    override fun fillBagStationExport(bagID: Long, bagBackUnitNo: Long, stationNo: Int, unitNo: String, loadingListNo: Long): String {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun closeBagStationExport(bagID: Long,bagBackUnitNo: Long, stationNo: Int,loadingListNo: Long) {
+    override fun closeBagStationExport(bagID: Long, bagBackUnitNo: Long, stationNo: Int, loadingListNo: Long) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun getBag(stationNo: Int, bagID: Long): ExportService.Bag {
-        val user = userService.get()
+        userService.get()
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -406,9 +411,9 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getScan(scanCode: String): UnitNumber {
-        val user = userService.get()
+        userService.get()
         val un = DekuUnitNumber.parseLabel(scanCode)
-        var dekuNo: Long? = null
+
         when {
             un.hasError -> {
                 val gun = GlsUnitNumber.parseLabel(scanCode)
@@ -435,7 +440,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun getAndCheckUnit(scanCode: String, stationNo: Int): ExportUnitAndOrder {
         val un = DekuUnitNumber.parseLabel(scanCode)
-        var dekuNo: Long? = null
+        var dekuNo: Long?
         when {
             un.hasError -> {
                 val gun = GlsUnitNumber.parseLabel(scanCode)

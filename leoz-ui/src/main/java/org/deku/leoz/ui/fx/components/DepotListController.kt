@@ -131,7 +131,7 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
     }
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        fxSearchText.textProperty().addListener { _, _, newValue -> onSearchTextChanged() }
+        fxSearchText.textProperty().addListener { _, _, _ -> onSearchTextChanged() }
 
         fxDepotTableView.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             this.ovItemSelected.onNext(newValue)

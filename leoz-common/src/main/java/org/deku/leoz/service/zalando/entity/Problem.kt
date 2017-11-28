@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.*
 import javax.annotation.Generated
 
 @ApiModel(description = "Problem details description (see https://tools.ietf.org/html/rfc7807)")
-@Generated(value = "io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-03-10T11:34:55.297Z")
+@Generated(value = ["io.swagger.codegen.languages.JavaResteasyServerCodegen"], date = "2017-03-10T11:34:55.297Z")
 class Problem(
         type: String = "",
         instance: String = "",

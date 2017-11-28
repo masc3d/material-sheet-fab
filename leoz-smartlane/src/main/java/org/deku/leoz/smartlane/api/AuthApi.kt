@@ -33,9 +33,6 @@ interface AuthApi {
     @Consumes("application/json")
     @Produces("application/json")
     @ApiOperation(value = "Auth", tags = arrayOf("Authorization"))
-    @ApiResponses(value = *arrayOf(
-            ApiResponse(code = 200, message = "OK", response = Response::class),
-            ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class),
-            ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class)))
+    @ApiResponses(value = [(ApiResponse(code = 200, message = "OK", response = Response::class)), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class))])
     fun auth(@Valid body: Request): Response
 }

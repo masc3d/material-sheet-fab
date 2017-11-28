@@ -29,17 +29,20 @@ class LoadinglistService : org.deku.leoz.service.internal.LoadinglistService {
     private lateinit var exportService: ExportService
 
     override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
-        val user = userService.get()
+        userService.get()
+
         return exportService.getNewLoadinglistNo()
     }
 
     override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
-        val user = userService.get()
+        userService.get()
+
         return exportService.getNewBagLoadinglistNo()
     }
 
     override fun getParcels2ExportByLoadingList(loadinglistNo: Long): LoadinglistService.Loadinglist? {
-        val user = userService.get()
+        userService.get()
+
         val orders = exportService.getParcels2ExportByLoadingList(loadinglistNo)
         if (orders.count() == 0)
             throw DefaultProblem(

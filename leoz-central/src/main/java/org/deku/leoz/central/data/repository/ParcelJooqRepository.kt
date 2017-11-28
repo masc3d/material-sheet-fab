@@ -142,7 +142,7 @@ class ParcelJooqRepository {
             it.toOrder2Export().also { order ->
                 order.parcels = parcels
                         .getOrDefault(order.orderId.toDouble(), listOf())
-                        ?.map { it.toParcel2Export() }
+                        .map { it.toParcel2Export() }
             }
         }.filter { it.parcels.count() > 0 }
 
@@ -182,7 +182,7 @@ class ParcelJooqRepository {
             it.toOrder2Export().also { order ->
                 order.parcels = parcels
                         .getOrDefault(order.orderId.toDouble(), listOf())
-                        ?.map { it.toParcel2Export() }
+                        .map { it.toParcel2Export() }
             }
         }.filter { it.parcels.count() > 0 }
     }

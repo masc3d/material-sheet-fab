@@ -636,13 +636,6 @@ class BagService : BagService {
 //            }
 //        }
         bagUnitNo = bagUnitNo.substring(0, 11)
-        var bagSealNo = sealNo
-        if (bagSealNo.length > 12) {
-            bagSealNo = bagSealNo.substring(0, 12)
-        }
-        if (bagSealNo.length < 12) {
-            bagSealNo = bagSealNo.padStart(12, '0')
-        }
 
         // TODO: remove support for check digit place holder, apply UnitNumber class which include checkdigit verification
 //        if (!bagSealNo.endsWith(',')) {

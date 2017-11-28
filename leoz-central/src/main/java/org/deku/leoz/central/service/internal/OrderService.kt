@@ -52,12 +52,10 @@ class OrderService : OrderService {
                         ?: throw DefaultProblem(
                         title = "Order not found",
                         status = Response.Status.NOT_FOUND)
+
 //to be removed if mobile supports apikeys
                 if (apiKey != null) {
 //--<
-                    apiKey ?:
-                            throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-
                     val authorizedUserRecord = userRepository.findByKey(apiKey)
                     authorizedUserRecord ?:
                             throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
@@ -100,9 +98,6 @@ class OrderService : OrderService {
 //todo to be removed if mobile supports apikeys
         if (apiKey != null) {
 //--<
-            apiKey ?:
-                    throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-
             val authorizedUserRecord = userRepository.findByKey(apiKey)
             authorizedUserRecord ?:
                     throw DefaultProblem(status = Response.Status.UNAUTHORIZED)

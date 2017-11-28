@@ -21,6 +21,7 @@ import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCust
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory
 import org.springframework.boot.web.servlet.ServletContextInitializer
 import org.springframework.context.annotation.Bean
+import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.context.support.WebApplicationContextUtils
 import sx.mq.jms.activemq.HttpExternalTunnelServlet
 import java.io.IOException
@@ -59,7 +60,7 @@ class WebContextInitializer : ServletContextInitializer {
         log.info("Leoz webcontext startup")
 
         // Inject web application context
-        this.application.setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext))
+        this.application.setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext) as WebApplicationContext)
 
         //region Setup servlets
 
