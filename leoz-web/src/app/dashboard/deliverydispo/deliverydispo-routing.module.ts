@@ -8,7 +8,7 @@ const routes: Routes = [
     path: '', component: DeliverydispoComponent,
     children: [
       {
-        path: 'deliverydispo', data: [ 'deliverydispo' ],
+        path: 'deliverydispo',
         loadChildren: 'app/dashboard/deliverydispo/deliverydispo.module#DeliverydispoModule'
       }
     ]

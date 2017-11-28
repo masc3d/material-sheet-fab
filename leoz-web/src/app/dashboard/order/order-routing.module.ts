@@ -8,19 +8,22 @@ const routes: Routes = [
     path: '', component: OrderComponent,
     children: [
       {
-        path: 'orderform', data: [ 'orderform' ],
+        path: 'orderform',
+        data: { preload: true },
         canActivate: [
           AuthenticationGuard ],
         loadChildren: 'app/dashboard/order/orderform/orderform.module#OrderformModule'
       },
       {
-        path: 'orderlist', data: [ 'orderlist' ],
+        path: 'orderlist',
+        data: { preload: true },
         canActivate: [
           AuthenticationGuard ],
         loadChildren: 'app/dashboard/order/orderlist/orderlist.module#OrderlistModule'
       },
       {
-        path: 'orderprofile', data: [ 'orderprofile' ],
+        path: 'orderprofile',
+        data: { preload: true },
         canActivate: [
           AuthenticationGuard ],
         loadChildren: 'app/dashboard/order/orderprofile/orderprofile.module#OrderprofileModule'

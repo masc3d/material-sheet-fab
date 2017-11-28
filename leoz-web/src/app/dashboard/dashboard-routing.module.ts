@@ -9,66 +9,75 @@ export const routes = [
     path: '', component: DashboardComponent, canActivate: [ AuthenticationGuard ],
     children: [
       {
-        path: 'home', data: [ 'Home' ],
+        path: 'home',
+        data: { preload: true },
         canActivate: [ AuthenticationGuard ],
         loadChildren: 'app/dashboard/home/home.module#HomeModule'
       },
       {
-        path: 'user', data: [ 'Users' ],
+        path: 'user',
         canActivate: [ AuthenticationGuard,
-                       RoleGuard ],
+          RoleGuard ],
         loadChildren: 'app/dashboard/user/user.module#UserModule'
       },
       {
-        path: 'tour', data: [ 'Tour' ],
+        path: 'tour',
         canActivate: [ AuthenticationGuard,
-                       RoleGuard ],
+          RoleGuard ],
         loadChildren: 'app/dashboard/tour/tour.module#TourModule'
       },
       {
-        path: 'export', data: [ 'Stationloading' ],
+        path: 'export',
+        data: { preload: true },
         canActivate: [ AuthenticationGuard,
-                       RoleGuard ],
+          RoleGuard ],
         loadChildren: 'app/dashboard/export/export.module#ExportModule'
       },
       {
-        path: 'importscan', data: [ 'importscan' ],
-        canActivate: [ AuthenticationGuard,
-                       RoleGuard ],
-        loadChildren: 'app/dashboard/importscan/importscan.module#ImportscanModule'
-      },
-      {
-        path: 'importscancheck', data: [ 'importscancheck' ],
+        path: 'importscan',
+        data: { preload: true },
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/importscan/importscan.module#ImportscanModule'
       },
       {
-        path: 'deliveryscan', data: [ 'deliveryscan' ],
+        path: 'importscancheck',
+        data: { preload: true },
         canActivate: [ AuthenticationGuard,
-                       RoleGuard ],
+          RoleGuard ],
+        loadChildren: 'app/dashboard/importscan/importscan.module#ImportscanModule'
+      },
+      {
+        path: 'deliveryscan',
+        data: { preload: true },
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
         loadChildren: 'app/dashboard/deliveryscan/deliveryscan.module#DeliveryscanModule'
       },
       {
-        path: 'ipointscan', data: [ 'ipointscan' ],
+        path: 'ipointscan',
+        data: { preload: true },
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/ipointscan/ipointscan.module#IpointscanModule'
       },
       {
-        path: 'deliverydispo', data: [ 'deliverydispo' ],
+        path: 'deliverydispo',
+        data: { preload: true },
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/deliverydispo/deliverydispo.module#DeliverydispoModule'
       },
       {
-        path: 'tourzipmapping', data: [ 'tourzipmapping' ],
+        path: 'tourzipmapping',
+        data: { preload: true },
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/tourzipmapping/tourzipmapping.module#TourzipmappingModule'
       },
       {
-        path: 'order', data: [ 'order' ],
+        path: 'order',
+        data: { preload: true },
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/order/order.module#OrderModule'
@@ -76,6 +85,7 @@ export const routes = [
     ]
   }
 ];
+
 @NgModule( {
   imports: [ RouterModule.forChild( routes ) ],
   exports: [ RouterModule ]

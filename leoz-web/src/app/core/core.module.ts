@@ -17,6 +17,7 @@ import { ApiKeyHeaderInterceptor } from './api-key-header.interceptor';
 import { MockHttpInterceptor } from './mock-http.interceptor';
 import { BagscanGuard } from './auth/bagscan.guard';
 import { InetConnectionService } from './inet-connection.service';
+import { PreloadSelectedModules } from './PreloadSelectedModules';
 
 @NgModule( {
   imports: [
@@ -34,6 +35,7 @@ export class CoreModule {
         { provide: HTTP_INTERCEPTORS, useClass: MockHttpInterceptor, multi: true },
         AuthenticationService,
         AuthenticationGuard,
+        PreloadSelectedModules,
         KeyUpEventService,
         PrintingService,
         LoadinglistReportingService,

@@ -8,15 +8,15 @@ const routes: Routes = [
     path: '', component: ImportscanComponent,
     children: [
       {
-        path: 'importscanquick', data: [ 'importscanquick' ],
+        path: 'importscanquick',
         loadChildren: 'app/dashboard/importscan/importscanquick/importscanquick.module#ImportscanquickModule'
       },
       {
-        path: 'importscanlist', data: [ 'importscanlist' ],
+        path: 'importscanlist',
         loadChildren: 'app/dashboard/importscan/importscanlist/importscanlist.module#ImportscanlistModule'
       },
       {
-        path: 'importscancheck', data: [ 'importscancheck' ],
+        path: 'importscancheck',
         loadChildren: 'app/dashboard/importscan/importscancheck/importscancheck.module#ImportscancheckModule'
       }
     ]

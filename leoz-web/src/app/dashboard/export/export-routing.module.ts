@@ -10,11 +10,13 @@ const routes: Routes = [
     path: '', component: ExportComponent,
     children: [
       {
-        path: 'loadinglistscan', data: [ 'loadinglistscan' ],
+        path: 'loadinglistscan',
+        data: { preload: true },
         loadChildren: 'app/dashboard/export/loadinglistscan/loadinglistscan.module#LoadinglistscanModule'
       },
       {
-        path: 'bagscan', data: [ 'bagscan' ],
+        path: 'bagscan',
+        data: { preload: true },
         canActivate: [
           AuthenticationGuard,
           BagscanGuard
