@@ -37,7 +37,7 @@ class SshTunnel(
     /**
      * SSH tunnel authentication exception
      */
-    class AuthenticationException : Exception()
+    class AuthenticationException : Exception("Authentication failed")
 
     /** Logger */
     private val log = LoggerFactory.getLogger(this.javaClass)
