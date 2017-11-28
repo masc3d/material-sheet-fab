@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import java.io.File
 import java.util.*
+import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
@@ -43,13 +44,19 @@ open class SshServerConfiguration {
     @Inject
     private lateinit var storage: Storage
 
+    @Inject
+    private lateinit var executorService: ExecutorService
+
     @PostConstruct
     fun onInitialize() {
         val sshd = this.sshServer
 
         sshd.port = SshServerConfiguration.DEFAULT_PORT
 
-        sshd.ioServiceFactoryFactory = Nio2ServiceFactoryFactory()
+        sshd.ioServiceFactoryFactory = Nio2ServiceFactoryFactory(
+                executorService,
+                false
+        )
 
         sshd.keyPairProvider = SimpleGeneratorHostKeyProvider(
                 File(storage.sshDataDirectory, "hostkey.ser"))
