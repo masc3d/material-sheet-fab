@@ -17,6 +17,7 @@ import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rx.limit
+import sx.text.toHexString
 import java.io.File
 
 /**
@@ -35,8 +36,8 @@ class BundleRepositoryTest {
     fun testConcurrentDownloads() {
         val BUNDLE_NAME = BundleType.LEOZ_BOOT.value
         val HOST = "leoz-t1.derkurier.de"
-        val DOWNLOADS = 16
-        val DOWNLOADS_CONCURRENCY = 4
+        val DOWNLOADS = 2
+        val DOWNLOADS_CONCURRENCY = 2
 
         val repository = BundleConfiguration.createRepository(HOST)
 
@@ -45,10 +46,11 @@ class BundleRepositoryTest {
 
         val scheduler = Schedulers.io().limit(DOWNLOADS_CONCURRENCY)
 
+        val startIndex = 0
         try {
-            (0..DOWNLOADS).map { i ->
+            (0..DOWNLOADS-1).map {
                 Observable.fromCallable {
-                    val path = rootPath.resolve("${BUNDLE_NAME}-${i}")
+                    val path = rootPath.resolve("${BUNDLE_NAME}-${Thread.currentThread().id.toHexString()}")
 
                     try {
                         log.trace("START ${path}")
