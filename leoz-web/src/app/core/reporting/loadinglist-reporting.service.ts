@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import * as moment from 'moment';
 import * as jsPDF from 'jspdf';
 
-import { Loadinglist } from '../../dashboard/stationloading/loadinglistscan/loadinglist.model';
-import { LoadinglistReportHeader } from '../../dashboard/stationloading/loadinglistscan/loadinglist-report-header.model';
+import { Exportlist } from '../../dashboard/export/exportlist.model';
+import { LoadinglistReportHeader } from '../../dashboard/export/loadinglistscan/loadinglist-report-header.model';
 import { Package } from '../models/package.model';
 import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
@@ -16,11 +16,11 @@ export class LoadinglistReportingService extends ReportingService {
   startPageNo: number;
   doc: jsPDF;
 
-  generateReports( listsToPrint: Loadinglist[], llReportHeader: LoadinglistReportHeader ): jsPDF {
+  generateReports( listsToPrint: Exportlist[], llReportHeader: LoadinglistReportHeader ): jsPDF {
     const reports: Report[] = [];
     this.doc = new jsPDF();
     this.startPageNo = 1;
-    listsToPrint.forEach( ( listToPrint: Loadinglist ) => {
+    listsToPrint.forEach( ( listToPrint: Exportlist ) => {
       const reportHeaderRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
           doc.addImage( Report.logoImgData, Report.logoImgType, offsetX + 140, offsetY, 53, 19 );
           doc.setFontSize( 16 );
@@ -133,7 +133,7 @@ export class LoadinglistReportingService extends ReportingService {
     this.startPageNo += report.totalPages;
   }
 
-  private buildPageContent( loadinglist: Loadinglist ): ReportPart[] {
+  private buildPageContent( loadinglist: Exportlist ): ReportPart[] {
     const pageContents: ReportPart[] = [];
     const groupedPackages = {};
     for (const p of loadinglist.packages) {

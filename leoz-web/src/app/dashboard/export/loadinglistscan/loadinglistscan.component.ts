@@ -7,11 +7,11 @@ import 'rxjs/add/operator/filter';
 
 import { SelectItem } from 'primeng/primeng';
 
-import { Loadinglist } from './loadinglist.model';
+import { Exportlist } from '../exportlist.model';
 import { Package } from '../../../core/models/package.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
-import { LoadinglistService } from './loadinglist.service';
+import { AbstractExportService } from '../abstract-export.service';
 import { KeyUpEventService } from '../../../core/key-up-event.service';
 import { SoundService } from '../../../core/sound.service';
 import { PrintingService } from '../../../core/printing/printing.service';
@@ -19,6 +19,7 @@ import { LoadinglistReportingService } from '../../../core/reporting/loadinglist
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { LoadinglistReportHeader } from './loadinglist-report-header.model';
 import { BrowserCheck } from '../../../core/auth/browser-check';
+import { LoadinglistscanService } from './loadinglistscan.service';
 
 interface ScanMsg {
   packageId: string;
@@ -55,8 +56,8 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   public scanMsgs$ = this.scanMsgsSubject.asObservable().distinctUntilChanged();
   public shortScanMsg = '';
 
-  activeLoadinglist: Loadinglist;
-  allLoadlists: Loadinglist[];
+  activeLoadinglist: Exportlist;
+  allLoadlists: Exportlist[];
   totalWeight: number;
   freeWeight: number;
   openPackcount: number;
@@ -64,7 +65,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   openWeight: number;
   selectedPackages: Package[];
 
-  stationloadingForm: FormGroup;
+  loadinglistscanForm: FormGroup;
   public openPackages$: Observable<Package[]>;
   public loadedPackages$: Observable<Package[]>;
   private openPackagesArr: Package[];
@@ -81,7 +82,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   notMicrodoof: boolean;
 
   constructor( private fb: FormBuilder,
-               private loadinglistService: LoadinglistService,
+               private loadinglistService: LoadinglistscanService,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                private datePipe: DatePipe,
@@ -164,7 +165,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
       } );
 
 
-    this.stationloadingForm = this.fb.group( {
+    this.loadinglistscanForm = this.fb.group( {
       payload: [ null ],
       selectloadlist: [ null ],
       scanfield: [ null ],
@@ -175,7 +176,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
 
     this.loadinglistService.activeLoadinglist$
       .takeUntil( this.ngUnsubscribe )
-      .subscribe( ( activeLoadinglist: Loadinglist ) => {
+      .subscribe( ( activeLoadinglist: Exportlist ) => {
         this.activeLoadinglist = activeLoadinglist;
 
         this.calculateWeights();
@@ -184,7 +185,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
 
     this.loadinglistService.allLoadlists$
       .takeUntil( this.ngUnsubscribe )
-      .subscribe( ( allLoadlists: Loadinglist[] ) => {
+      .subscribe( ( allLoadlists: Exportlist[] ) => {
         this.allLoadlists = allLoadlists;
       } );
 
@@ -293,7 +294,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   public newLoadlist() {
     this.loadinglistService.newLoadlist();
     this.resetPayloadField();
-    this.stationloadingForm.get( 'selectloadlist' ).patchValue( null );
+    this.loadinglistscanForm.get( 'selectloadlist' ).patchValue( null );
     this.actionMsgListSubject.next( [ 'actionNewLoadlist' ] );
   }
 
@@ -314,21 +315,21 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
         this.resetScanMsgs();
         this.actualScanMsgs = [];
         scanFunction();
-        this.stationloadingForm.get( 'scanfield' ).patchValue( '' );
-        this.stationloadingForm.get( 'scanfield' ).disable();
+        this.loadinglistscanForm.get( 'scanfield' ).patchValue( '' );
+        this.loadinglistscanForm.get( 'scanfield' ).disable();
       }
     } else {
       this.resetScanMsgs();
       this.actualScanMsgs = [];
       this.handleError( '', 'no activeLoadinglist' );
       this.displayScanMsgs();
-      this.stationloadingForm.get( 'scanfield' ).patchValue( '' );
+      this.loadinglistscanForm.get( 'scanfield' ).patchValue( '' );
     }
   }
 
   public scanPackSingle() {
     this.scan( 1,
-      () => this.scanPackNo( this.stationloadingForm.get( 'scanfield' ).value )
+      () => this.scanPackNo( this.loadinglistscanForm.get( 'scanfield' ).value )
     );
   }
 
@@ -456,7 +457,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
       // all responses received
       this.displayScanMsgs();
       this.scanInProgress = false;
-      this.stationloadingForm.get( 'scanfield' ).enable();
+      this.loadinglistscanForm.get( 'scanfield' ).enable();
       this.scanfield.nativeElement.focus();
     }
   }
@@ -464,8 +465,8 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   private calculateWeights() {
     this.loadedPackcount = this.activeLoadinglist.packages.length;
     this.totalWeight = this.loadinglistService.sumWeights( this.activeLoadinglist.packages );
-    this.freeWeight = this.stationloadingForm.get( 'payload' ).value
-      ? Math.round( (this.stationloadingForm.get( 'payload' ).value - this.totalWeight) * 10 ) / 10
+    this.freeWeight = this.loadinglistscanForm.get( 'payload' ).value
+      ? Math.round( (this.loadinglistscanForm.get( 'payload' ).value - this.totalWeight) * 10 ) / 10
       : null;
     this.styleWeightExceeded = (this.freeWeight && this.freeWeight < 0) ? { 'color': 'red' } : {};
   }
@@ -497,7 +498,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   }
 
   private resetPayloadField() {
-    this.stationloadingForm.get( 'payload' ).patchValue( null );
+    this.loadinglistscanForm.get( 'payload' ).patchValue( null );
   }
 
   preview() {
@@ -513,13 +514,13 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   }
 
   reporting( saving: boolean ) {
-    const listsToPrint = this.stationloadingForm.get( 'basedon' ).value === 'alllists'
+    const listsToPrint = this.loadinglistscanForm.get( 'basedon' ).value === 'alllists'
       ? this.allLoadlists : [ this.activeLoadinglist ];
     this.loadinglistService.reportHeaderData( String( this.activeLoadinglist.loadlistNo ) )
       .subscribe( ( response: HttpResponse<any> ) => {
           switch (response.status) {
             case 200:
-              const filename = 'll_' + listsToPrint.map((loadlist: Loadinglist) => loadlist.loadlistNo).join('_');
+              const filename = 'll_' + listsToPrint.map((loadlist: Exportlist) => loadlist.loadlistNo).join('_');
               this.printingService.printReports( this.reportingService
                   .generateReports( listsToPrint, <LoadinglistReportHeader> response.body ),
                 filename, saving );

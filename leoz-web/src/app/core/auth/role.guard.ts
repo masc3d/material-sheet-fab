@@ -13,7 +13,7 @@ export class RoleGuard implements CanActivate {
     'USER': [
       'user',
       'tour',
-      'stationloading',
+      'export',
       'importscan',
       'deliverydispo',
       'deliveryscan',
@@ -23,7 +23,7 @@ export class RoleGuard implements CanActivate {
     'POWERUSER': [
       'user',
       'tour',
-      'stationloading',
+      'export',
       'importscan',
       'deliverydispo',
       'deliveryscan',

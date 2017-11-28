@@ -6,7 +6,7 @@ import { TranslateService } from '../../core/translate/translate.service';
 import { Station } from '../../core/auth/station.model';
 
 @Component( {
-  selector: 'app-stationloading',
+  selector: 'app-export',
   template: `
     <p-tabMenu [model]="items"></p-tabMenu>
     <div style="border: 1px solid gray; padding: 5px">
@@ -16,7 +16,7 @@ import { Station } from '../../core/auth/station.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 
-export class StationloadingComponent extends AbstractTranslateComponent implements OnInit {
+export class ExportComponent extends AbstractTranslateComponent implements OnInit {
   items: MenuItem[];
 
   constructor( protected translate: TranslateService,

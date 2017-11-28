@@ -13,7 +13,7 @@ import 'rxjs/add/operator/filter';
 
 import { LazyLoadEvent, SelectItem } from 'primeng/primeng';
 
-import { Loadinglist } from '../loadinglistscan/loadinglist.model';
+import { Exportlist } from '../exportlist.model';
 import { Package } from '../../../core/models/package.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
@@ -59,7 +59,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   public openPackages$: Observable<Package[]>;
   lazyOpenPackages: Package[];
   openPackagesArr: Package[];
-  activeBaglist: Loadinglist;
+  activeBaglist: Exportlist;
   activeBagData: BagData;
 
   openPackcount: number;
@@ -158,7 +158,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
 
     this.bagscanService.activeLoadinglist$
       .takeUntil( this.ngUnsubscribe )
-      .subscribe( ( activeLoadinglist: Loadinglist ) => {
+      .subscribe( ( activeLoadinglist: Exportlist ) => {
         this.activeBaglist = activeLoadinglist;
         this.calcStats();
       } );

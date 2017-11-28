@@ -4,13 +4,13 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { environment } from '../../../../environments/environment';
-import { LoadinglistService } from '../loadinglistscan/loadinglist.service';
+import { AbstractExportService } from '../abstract-export.service';
 import { BagData } from './bagdata.model';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
 import { Station } from '../../../core/auth/station.model';
 
 @Injectable()
-export class BagscanService extends LoadinglistService {
+export class BagscanService extends AbstractExportService {
 
   public activeBagDataSubject = new BehaviorSubject<BagData>( <BagData> {} );
   public activeBagData$ = this.activeBagDataSubject.asObservable().distinctUntilChanged();

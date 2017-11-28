@@ -12,9 +12,8 @@ import {
   TabViewModule
 } from 'primeng/primeng';
 import { BagscanService } from './bagscan.service';
-import { LoadinglistService } from '../loadinglistscan/loadinglist.service';
 
-@NgModule({
+@NgModule( {
   imports: [
     SharedModule,
     BagscanRoutingModule,
@@ -25,15 +24,9 @@ import { LoadinglistService } from '../loadinglistscan/loadinglist.service';
     CheckboxModule,
     RadioButtonModule
   ],
-  declarations: [BagscanComponent],
-  exports: [BagscanComponent],
-  providers: [
-    LoadinglistService,
-    BagscanService,
-    // use fake backend
-    // fakeBackendProvider,
-    // MockBackend,
-    // BaseRequestOptions
-  ]
-})
-export class BagscanModule { }
+  declarations: [ BagscanComponent ],
+  exports: [ BagscanComponent ],
+  providers: [ BagscanService ]
+} )
+export class BagscanModule {
+}

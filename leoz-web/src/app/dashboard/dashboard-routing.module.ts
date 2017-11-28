@@ -26,10 +26,10 @@ export const routes = [
         loadChildren: 'app/dashboard/tour/tour.module#TourModule'
       },
       {
-        path: 'stationloading', data: [ 'Stationloading' ],
+        path: 'export', data: [ 'Stationloading' ],
         canActivate: [ AuthenticationGuard,
                        RoleGuard ],
-        loadChildren: 'app/dashboard/stationloading/stationloading.module#StationloadingModule'
+        loadChildren: 'app/dashboard/export/export.module#ExportModule'
       },
       {
         path: 'importscan', data: [ 'importscan' ],

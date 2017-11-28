@@ -17,8 +17,8 @@ import {
 import { SharedModule } from '../../../shared/shared.module';
 import { LoadinglistscanRoutingModule } from './loadinglistscan-routing.module';
 import { LoadinglistscanComponent } from './loadinglistscan.component';
-import { LoadinglistService } from './loadinglist.service';
 import { DatePipe } from '@angular/common';
+import { LoadinglistscanService } from './loadinglistscan.service';
 
 @NgModule( {
   imports: [
@@ -38,8 +38,8 @@ import { DatePipe } from '@angular/common';
   ],
   declarations: [ LoadinglistscanComponent ],
   providers: [
-    LoadinglistService,
     DatePipe,
+    LoadinglistscanService
     // use fake backend
     // fakeBackendProvider,
     // MockBackend,

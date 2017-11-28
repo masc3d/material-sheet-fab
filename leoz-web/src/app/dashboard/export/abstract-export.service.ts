@@ -5,22 +5,23 @@ import { Observable } from 'rxjs/Observable';
 
 import { SelectItem } from 'primeng/primeng';
 
-import { Package } from '../../../core/models/package.model';
-import { Loadinglist } from './loadinglist.model';
-import { NewLoadinglistNoResponse } from './new-loadinglist-no-response.model';
-import { environment } from '../../../../environments/environment';
-import { AuthenticationService } from '../../../core/auth/authentication.service';
-import { Station } from '../../../core/auth/station.model';
-import { Shipment } from '../../../core/models/shipment.model';
-import { sumAndRound } from '../../../core/math/sumAndRound';
+import { Package } from '../../core/models/package.model';
+import { Exportlist } from './exportlist.model';
+import { NewLoadinglistNoResponse } from './loadinglistscan/new-loadinglist-no-response.model';
+import { environment } from '../../../environments/environment';
+import { AuthenticationService } from '../../core/auth/authentication.service';
+import { Station } from '../../core/auth/station.model';
+import { Shipment } from '../../core/models/shipment.model';
+import { sumAndRound } from '../../core/math/sumAndRound';
 
 @Injectable()
-export class LoadinglistService {
+export abstract class AbstractExportService {
 
   protected packageUrl: string;
   protected scanUrl = `${environment.apiUrl}/internal/v1/parcel/export`;
-  protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/export/loadinglist`;
-  protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/loadinglist/report/header`;
+
+  protected abstract newLoadlistNoUrl: string;
+  protected abstract reportHeaderUrl: string;
 
   private allPackagesSubject = new BehaviorSubject<Package[]>( [] );
   public allPackages$ = this.allPackagesSubject.asObservable();
@@ -34,16 +35,16 @@ export class LoadinglistService {
   private loadlistsSubject = new BehaviorSubject<SelectItem[]>( [] );
   public loadlists$ = this.loadlistsSubject.asObservable();
 
-  public activeLoadinglistSubject = new BehaviorSubject<Loadinglist>( <Loadinglist> {
+  public activeLoadinglistSubject = new BehaviorSubject<Exportlist>( <Exportlist> {
     loadlistNo: null,
     packages: []
   } );
   public activeLoadinglist$ = this.activeLoadinglistSubject.asObservable().distinctUntilChanged();
 
-  public allLoadlistsSubject = new BehaviorSubject<Loadinglist[]>( [] );
+  public allLoadlistsSubject = new BehaviorSubject<Exportlist[]>( [] );
   public allLoadlists$ = this.allLoadlistsSubject.asObservable().distinctUntilChanged();
 
-  public activeLoadinglistTmp: Loadinglist;
+  public activeLoadinglistTmp: Exportlist;
 
   protected activeStation: Station;
 
@@ -56,7 +57,7 @@ export class LoadinglistService {
   constructor( protected http: HttpClient,
                private auth: AuthenticationService ) {
     this.subscribeActiveStation( auth );
-    this.activeLoadinglist$.subscribe( ( activeLl: Loadinglist ) => this.activeLoadinglistTmp = activeLl );
+    this.activeLoadinglist$.subscribe( ( activeLl: Exportlist ) => this.activeLoadinglistTmp = activeLl );
 
     this.allPackages$.subscribe( ( packages: Package[] ) => {
 
@@ -86,12 +87,7 @@ export class LoadinglistService {
     } );
   }
 
-  protected subscribeActiveStation( auth: AuthenticationService ) {
-    auth.activeStation$.subscribe( ( activeStation: Station ) => {
-      this.activeStation = activeStation;
-      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${this.activeStation.stationNo.toString()}`;
-    } );
-  }
+  protected abstract subscribeActiveStation( auth: AuthenticationService );
 
   getAllPackages(): void {
     this.http.get<Shipment[]>( this.packageUrl )
@@ -147,11 +143,11 @@ export class LoadinglistService {
 
   sumWeights( packages: Package[] ) {
     return sumAndRound( packages
-      .map( ( parcel: Package ) => parcel.realWeight ));
+      .map( ( parcel: Package ) => parcel.realWeight ) );
   }
 
   private createLoadinglist( loadlistNo: number, allPackages: Package[] ) {
     const currentPackages = allPackages.filter( ( pack: Package ) => loadlistNo !== null && pack.loadinglistNo === loadlistNo );
-    return <Loadinglist> { loadlistNo: loadlistNo, packages: currentPackages };
+    return <Exportlist> { loadlistNo: loadlistNo, packages: currentPackages };
   }
 }
