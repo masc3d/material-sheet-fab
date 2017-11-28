@@ -5,7 +5,7 @@ buildscript {
     }
 
     ext {
-        v_kotlin = '1.1.61'
+        v_kotlin = '1.2.0'
         v_android_buildtools = '27.0.1'
         v_android_support = '27.0.1'
         v_android_test = '1.0.1'
