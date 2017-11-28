@@ -14,7 +14,6 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
@@ -54,6 +53,7 @@ import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
+import sx.rx.ObservableRxProperty
 
 /**
  * Vehicle loading screen
@@ -118,8 +118,16 @@ class VehicleLoadingScreen :
     /** The current/most recently selected damaged parcel */
     private var currentDamagedParcel: ParcelEntity? = null
 
-    private var acceptForgeinOrdersWithoutConsent: Boolean = false
-    private var foreignOrderCounter: Int = 0
+    /**
+     * Amounf of detached orders loaded, mainly for disabling the confirmation dialog for
+     * users which work mainly with detached orders.
+     */
+    private var detachedOrderCounter: Int = 0
+    private var acceptDetachedOrdersWithoutConfirmation: Boolean = false
+
+    /** Indicates that process is currently busy, controls finish button visibility */
+    private val isBusyProperty = ObservableRxProperty(false)
+    private var isBusy by isBusyProperty
 
     // region Sections
     val loadedSection by lazy {
@@ -370,16 +378,25 @@ class VehicleLoadingScreen :
                     }
                 }
 
-        this.deliveryList.loadedParcels
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .subscribe {
-                    val loadedParcelCount = it.value.count()
+        //region Finish button visibility
 
+        Observable.combineLatest(
+                // Show finish button when parcels are loaded
+                this.deliveryList.loadedParcels
+                        .map { it.value.count() > 0 },
+                // and process is not busy
+                this.isBusyProperty.map { it.value == false },
+
+                BiFunction { t1: Boolean, t2: Boolean -> t1 && t2 }
+        )
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe { visible ->
                     this.actionItems = this.actionItems.apply {
                         first { it.id == R.id.action_vehicle_loading_finished }
-                                .visible = loadedParcelCount > 0
+                                .visible = visible
                     }
                 }
+        //endregion
 
         // Damaged parcels
         Observable.combineLatest(
@@ -476,17 +493,6 @@ class VehicleLoadingScreen :
         //endregion
     }
 
-
-    /**
-     * Helper for showing/hiding finish button
-     */
-    private fun finishButtonVisibility(value: Boolean) {
-        this.actionItems = this.actionItems.apply {
-            first { it.id == R.id.action_vehicle_loading_finished }
-                    .visible = value
-        }
-    }
-
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
@@ -540,7 +546,7 @@ class VehicleLoadingScreen :
     fun onInput(deliveryListNumber: DekuDeliveryListNumber) {
         var loaded = false
 
-        this.finishButtonVisibility(false)
+        this.isBusy = true
 
         deliveryList.load(deliveryListNumber)
                 .bindToLifecycle(this)
@@ -551,7 +557,7 @@ class VehicleLoadingScreen :
                             log.info("Current delivery lists [${this.deliveryList.ids.joinToString(", ")}")
                         },
                         onComplete = {
-                            this.finishButtonVisibility(true)
+                            this.isBusy = false
 
                             // Can't rely on complete alone due to rxlifecycle
                             if (loaded) {
@@ -559,7 +565,7 @@ class VehicleLoadingScreen :
                             }
                         },
                         onError = {
-                            this.finishButtonVisibility(true)
+                            this.isBusy = false
 
                             log.error(it.message, it)
                             feedback.error()
@@ -590,7 +596,8 @@ class VehicleLoadingScreen :
                                     feedback.acknowledge()
 
                                     fun mergeOrder() {
-                                        this.finishButtonVisibility(false)
+                                        this.isBusy = true
+
                                         this.deliveryList
                                                 .mergeOrder(order)
                                                 .andThen(
@@ -602,18 +609,18 @@ class VehicleLoadingScreen :
                                                 .observeOnMainThread()
                                                 .subscribeBy(
                                                         onSuccess = {
-                                                            this.finishButtonVisibility(true)
+                                                            this.isBusy = false
                                                             this.onParcel(it)
                                                         },
                                                         onError = {
-                                                            this.finishButtonVisibility(true)
+                                                            this.isBusy = false
                                                             log.error("Merging order failed. ${it.message}", it)
                                                             feedback.error()
                                                         }
                                                 )
                                     }
 
-                                    if (this.deliveryList.ids.get().isEmpty() || acceptForgeinOrdersWithoutConsent) {
+                                    if (this.deliveryList.ids.get().isEmpty() || acceptDetachedOrdersWithoutConfirmation) {
                                         mergeOrder()
                                     } else {
                                         val dialog = MaterialDialog.Builder(this.activity)
@@ -622,16 +629,16 @@ class VehicleLoadingScreen :
                                                 .positiveText(android.R.string.yes)
                                                 .negativeText(android.R.string.no)
                                                 .onPositive { _, _ ->
-                                                    foreignOrderCounter++
+                                                    detachedOrderCounter++
                                                     mergeOrder()
                                                 }
 
-                                        if (foreignOrderCounter >= 3) {
+                                        if (detachedOrderCounter >= 3) {
                                             dialog.checkBoxPrompt(
                                                     getString(R.string.accept_always),
                                                     false,
                                                     { _, isChecked ->
-                                                        this.acceptForgeinOrdersWithoutConsent = isChecked
+                                                        this.acceptDetachedOrdersWithoutConfirmation = isChecked
                                                     }
                                             )
                                         }
