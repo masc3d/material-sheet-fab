@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Response } from '@angular/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
 import { SelectItem } from 'primeng/primeng';
 
 import { Package } from '../../../core/models/package.model';
-import { Loadinglist } from 'app/dashboard/stationloading/loadinglistscan/loadinglist.model';
+import { Loadinglist } from './loadinglist.model';
+import { NewLoadinglistNoResponse } from './new-loadinglist-no-response.model';
 import { environment } from '../../../../environments/environment';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
 import { Station } from '../../../core/auth/station.model';
 import { Shipment } from '../../../core/models/shipment.model';
@@ -17,9 +17,9 @@ import { sumAndRound } from '../../../core/math/sumAndRound';
 @Injectable()
 export class LoadinglistService {
 
-  protected packageUrl = `${environment.apiUrl}/internal/v1/export/station/`;
+  protected packageUrl: string;
   protected scanUrl = `${environment.apiUrl}/internal/v1/parcel/export`;
-  protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/parcel/loadinglist/new`;
+  protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/export/loadinglist`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/loadinglist/report/header`;
 
   private allPackagesSubject = new BehaviorSubject<Package[]>( [] );
@@ -45,18 +45,17 @@ export class LoadinglistService {
 
   public activeLoadinglistTmp: Loadinglist;
 
-  private activeStation: Station;
+  protected activeStation: Station;
 
   private unique: Function = ( arrArg ) => {
     return arrArg.filter( ( elem, pos, arr ) => {
       return arr.indexOf( elem ) === pos;
     } );
   };
-  protected loadinglistNoPredicate: Function = ( loadinglistNo ) => loadinglistNo > 99999;
 
   constructor( protected http: HttpClient,
                private auth: AuthenticationService ) {
-    auth.activeStation$.subscribe( ( activeStation: Station ) => this.activeStation = activeStation );
+    this.subscribeActiveStation( auth );
     this.activeLoadinglist$.subscribe( ( activeLl: Loadinglist ) => this.activeLoadinglistTmp = activeLl );
 
     this.allPackages$.subscribe( ( packages: Package[] ) => {
@@ -67,13 +66,12 @@ export class LoadinglistService {
         this.activeLoadinglistTmp.loadlistNo !== null && pack.loadinglistNo === this.activeLoadinglistTmp.loadlistNo
       ) );
 
-      const loadinglistNosSorted = packages.filter( ( pack: Package ) => pack.loadinglistNo !== null )
+      const loadinglistNosSorted = packages.filter( ( pack: Package ) => pack.loadinglistNo )
         .map( ( pack: Package ) => pack.loadinglistNo )
         .sort();
-      const loadinglistNosUnique = this.unique( loadinglistNosSorted );
 
+      const loadinglistNosUnique = this.unique( loadinglistNosSorted );
       const selectItemsArray = loadinglistNosUnique
-        .filter( ( loadinglistNo: number ) => this.loadinglistNoPredicate( loadinglistNo ) )
         .map( ( loadinglistNo: number ) => <SelectItem> {
           label: String( loadinglistNo ),
           value: loadinglistNo
@@ -81,7 +79,6 @@ export class LoadinglistService {
       this.loadlistsSubject.next( selectItemsArray );
 
       const allLoadlistArray = loadinglistNosUnique
-        .filter( ( loadinglistNo: number ) => this.loadinglistNoPredicate( loadinglistNo ) )
         .map( ( loadinglistNo: number ) => this.createLoadinglist( loadinglistNo, packages ) );
       this.allLoadlistsSubject.next( allLoadlistArray );
 
@@ -89,8 +86,15 @@ export class LoadinglistService {
     } );
   }
 
+  protected subscribeActiveStation( auth: AuthenticationService ) {
+    auth.activeStation$.subscribe( ( activeStation: Station ) => {
+      this.activeStation = activeStation;
+      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${this.activeStation.stationNo.toString()}`;
+    } );
+  }
+
   getAllPackages(): void {
-    this.http.get<Shipment[]>( this.packageUrl + this.activeStation.stationNo.toString() )
+    this.http.get<Shipment[]>( this.packageUrl )
       .subscribe( ( shipments ) => {
           let packages = [];
           shipments.forEach( ( shipment: Shipment ) => {
@@ -105,7 +109,7 @@ export class LoadinglistService {
           } );
           this.allPackagesSubject.next( packages );
         },
-        ( error: Response ) => {
+        ( error ) => {
           console.log( error );
           this.allPackagesSubject.next( [] );
         } );
@@ -117,9 +121,9 @@ export class LoadinglistService {
    * and actualize dataset
    */
   newLoadlist(): void {
-    this.http.get<number>( this.newLoadlistNoUrl )
-      .subscribe( ( data ) => this.setActiveLoadinglist( data ),
-        ( error: Response ) => {
+    this.http.post<NewLoadinglistNoResponse>( this.newLoadlistNoUrl, null )
+      .subscribe( ( data ) => this.setActiveLoadinglist( data.loadinglistNo ),
+        ( error ) => {
           console.log( error );
         } );
   }

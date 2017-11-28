@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 import { environment } from '../../../../environments/environment';
 import { LoadinglistService } from '../loadinglistscan/loadinglist.service';
-import { Response } from '@angular/http';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { BagData } from './bagdata.model';
-import { Observable } from 'rxjs/Observable';
-import { HttpResponse } from '@angular/common/http';
+import { AuthenticationService } from '../../../core/auth/authentication.service';
+import { Station } from '../../../core/auth/station.model';
 
 @Injectable()
 export class BagscanService extends LoadinglistService {
@@ -17,12 +19,16 @@ export class BagscanService extends LoadinglistService {
   protected validateBagIdUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/bagid`;
   protected validateBackLabelUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/backlabel`;
   protected validateBackSealUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/backseal`;
-/*  protected packageUrl = `${environment.apiUrl}/internal/v1/bagscan/packages/`;*/
-  protected packageUrl = `${environment.apiUrl}/internal/v1/parcel/export/bag/station/`;
+
   protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/bagscan/new`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/bagscan/report/header`;
 
-  protected loadinglistNoPredicate: Function = ( loadinglistNo ) => loadinglistNo < 100000;
+  protected subscribeActiveStation( auth: AuthenticationService ) {
+    auth.activeStation$.subscribe( ( activeStation: Station ) => {
+      this.activeStation = activeStation;
+      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${this.activeStation.stationNo.toString()}/bag`;
+    } );
+  }
 
   setActiveLoadinglist( selected: number ) {
     // REST fetch corresponding bagId, sealNo, backlabelNo
@@ -39,7 +45,7 @@ export class BagscanService extends LoadinglistService {
     this.http.post<BagData>( this.bagDataUrl,
       { 'baglistNo': baglistNo } )
       .subscribe( ( bagData ) => this.activeBagDataSubject.next( bagData ),
-        ( error: Response ) => {
+        ( error ) => {
           console.log( error );
           this.activeBagDataSubject.next( <BagData> {} );
         } );
