@@ -464,6 +464,12 @@ def subtrees = [
                 ref : 'master'
         ],
         [
+                name: 'MinsSshd',
+                path: 'libs/mina-sshd',
+                repo: 'ssh://git@github.com/masc3d/mina-sshd.git',
+                ref : 'master'
+        ],
+        [
                 name: 'MaterialSheetFab',
                 path: 'leoz-mobile/libs/material-sheet-fab',
                 repo: 'ssh://git@github.com/masc3d/material-sheet-fab.git',
