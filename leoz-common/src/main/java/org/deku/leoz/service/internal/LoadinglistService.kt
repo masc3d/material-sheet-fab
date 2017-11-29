@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AdditionalInfo
+import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.LoadinglistType
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
@@ -29,6 +30,9 @@ interface LoadinglistService {
             if (this.loadinglistNo < 100000)
                 LoadinglistType.BAG
             else LoadinglistType.NORMAL
+        }
+        val label by lazy {
+             DekuUnitNumber.parse(this.loadinglistNo.toString().padStart(11,'0')).value.label
         }
     }
 

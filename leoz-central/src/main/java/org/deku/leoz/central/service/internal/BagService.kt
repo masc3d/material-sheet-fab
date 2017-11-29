@@ -31,8 +31,10 @@ import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 import org.deku.leoz.service.pub.RoutingService
+import sx.rs.DefaultProblem
 import sx.time.toLocalDate
 import sx.time.workDate
+import javax.ws.rs.core.Response
 
 /**
  * Bundle service (leoz-central)
@@ -144,18 +146,34 @@ class BagService : BagService {
             throw ServiceException(ErrorCode.DEPOT_NR_NOT_VALID)
         }
 
-        // TODO: apply UnitNumber class which include checkdigit verification
+        val un = DekuUnitNumber.parseLabel(bagId.toString())
+        when {
+            un.hasError -> {
+                throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
+            }
+        }
+        if (un.value.type != UnitNumber.Type.BagId)
+            throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
 
-//        if (!checkCheckDigit(bagId)) {
-//            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
-//        }
-//
-//        if (!checkCheckDigit(whiteSeal)) {
-//            throw ServiceException(ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
-//        }
-//        if (!checkCheckDigit(yellowSeal)) {
-//            throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
-//        }
+        val unWhiteSeal=DekuUnitNumber.parseLabel(whiteSeal)
+        when{
+            unWhiteSeal.hasError ->{
+                throw ServiceException(ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
+            }
+        }
+        if(unWhiteSeal.value.type!=UnitNumber.Type.MainSeal)
+            throw ServiceException(ErrorCode.WHITE_SEAL_NOT_VALID)
+
+        val unYellowSeal=DekuUnitNumber.parseLabel(yellowSeal)
+        when{
+            unYellowSeal.hasError ->{
+                throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
+            }
+        }
+        if(unYellowSeal.value.type!=UnitNumber.Type.BackSeal)
+            throw ServiceException(ErrorCode.YELLOW_SEAL_NOT_VALID)
+
+
 
         // TODO
         // TODO: define constants for repetitive strings (eg. "initBag", "isBagFree")
@@ -192,14 +210,14 @@ class BagService : BagService {
 
             val now = Date()
 
-            val bagID_double = bagId.substring(0, 11).toDouble()
-            val whiteSeal_double = whiteSeal.substring(0, 11).toDouble()
-            val yellowSeal_double = yellowSeal.substring(0, 11).toDouble()
+            val bagID_double = un.value.value.toDouble()
+            val whiteSeal_double = unWhiteSeal.value.value.toDouble()
+            val yellowSeal_double = unYellowSeal.value.value.toDouble()
             val null_double: Double? = null
 
-            val bagID_string = bagId.substring(0, 11)
-            val yellowSeal_string = yellowSeal.substring(0, 11)
-            val whiteSeal_string = whiteSeal.substring(0, 11)
+            val bagID_string = un.value.value
+            val yellowSeal_string = unYellowSeal.value.value
+            val whiteSeal_string = unWhiteSeal.value.value
 
 
             val movePool = dslContext.fetchOne(Tables.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagID_double))
@@ -466,21 +484,23 @@ class BagService : BagService {
         if (scanId == null || scanId.isEmpty()) {
             throw ServiceException(ErrorCode.SCAN_ID_MISSING)
         }
-        var lineScanId = scanId
-        if (lineScanId.length > 12) {
-            lineScanId = lineScanId.substring(0, 12)
+        val un= DekuUnitNumber.parseLabel(scanId.padStart(12,'0'))
+        when {
+            un.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Wrong check digit"
+                )
+            }
         }
-        if (lineScanId.length < 12) {
-            lineScanId = lineScanId.padStart(12, '0')
-        }
+        if (un.value.type != UnitNumber.Type.Parcel)
 
-        // TODO: remove support for check digit place holder, apply UnitNumber class which include checkdigit verification
-//        if (!lineScanId.endsWith(',')) {
-//            if (!checkCheckDigit(lineScanId)) {
-//                throw ServiceException(ErrorCode.SCAN_ID_WRONG_CHECK_DIGIT)
-//            }
-//        }
-        lineScanId = lineScanId.substring(0, 11)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "ScanId not valid"
+            )
+
+        val lineScanId = un.value.value
         var ok = false
         var info: String?
         val logLineArrival = "LineArriva"//"LineArrival" schneidet nicht ab!! 10 zeichen
@@ -623,26 +643,27 @@ class BagService : BagService {
         if (sealNo == null || sealNo.isEmpty()) {
             throw ServiceException(ErrorCode.YELLOW_SEAL_MISSING)
         }
-        var bagUnitNo = unitNo
-        if (bagUnitNo.length > 12) {
-            bagUnitNo = bagUnitNo.substring(0, 12)
+        val un = DekuUnitNumber.parseLabel(unitNo)
+        when {
+            un.hasError -> {
+                throw ServiceException(ErrorCode.BAG_UNITNO_WRONG_CHECK_DIGIT)
+            }
         }
-        if (bagUnitNo.length < 12) {
-            bagUnitNo = bagUnitNo.padStart(12, '0')
-        }
-//        if (!bagUnitNo.endsWith(',')) {
-//            if (!checkCheckDigit(bagUnitNo)) {
-//                throw ServiceException(ErrorCode.BAG_UNITNO_WRONG_CHECK_DIGIT)
-//            }
-//        }
-        bagUnitNo = bagUnitNo.substring(0, 11)
+        if (un.value.type != UnitNumber.Type.BagBack)
 
-        // TODO: remove support for check digit place holder, apply UnitNumber class which include checkdigit verification
-//        if (!bagSealNo.endsWith(',')) {
-//            if (!checkCheckDigit(bagSealNo)) {
-//                throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
-//            }
-//        }
+            throw ServiceException(ErrorCode.BAG_UNITNO_NOT_VALID)
+        val bagUnitNo = un.value.value
+
+
+
+        val unSeal=DekuUnitNumber.parseLabel(sealNo)
+        when{
+            unSeal.hasError ->{
+                throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
+            }
+        }
+        if (unSeal.value.type!=UnitNumber.Type.BackSeal)
+            throw ServiceException(ErrorCode.YELLOW_SEAL_NOT_VALID)
 
         //bagSealNo = bagSealNo.substring(0, 11)
         var ok = false
@@ -651,10 +672,7 @@ class BagService : BagService {
         val logInLocation = "BagIn"
         var color = "red"
         try {
-            if (bagUnitNo.toLong() >= 10071000000 && bagUnitNo.toLong() < 10072000000) {
-                info = "Rück-Label scannen"
-                return BagResponse(ok, info, color)
-            }
+
             //ToDO unload...
             return BagResponse(ok, info, color)
         } catch (e: ServiceException) {

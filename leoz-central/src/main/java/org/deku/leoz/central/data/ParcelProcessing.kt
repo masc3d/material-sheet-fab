@@ -164,12 +164,17 @@ open class ParcelProcessing {
                     pasCleared = (4096.and(pasClearingartmaster.toInt())) == 4096
                 } else
                     pasCleared = false
-
+                //TODO
+                // var pasReset = false
                 val checkDamaged = parcelAddInfo.damagedFileUIDs != null
 
                 if (checkDamaged) {
                     val uids = parcelAddInfo.damagedFileUIDs
                     if (uids != null) {
+                        //TODO
+//                        for (i in 0..uids.size - 1) {
+//                            val damagedFileUID = uids[i]
+//                        }
                         val rDamaged = dslContext.newRecord(Tables.TBLSTATUS)
 
                         rDamaged.packstuecknummer = r.packstuecknummer
@@ -259,6 +264,8 @@ open class ParcelProcessing {
 
                 when (event) {
                     Event.DELIVERED -> {
+                        //TODO
+                        //pasReset=true
                         val recipientInfo = StringBuilder()
                         val check = parcelAddInfo.recipient != null
                         if (check) {
@@ -486,6 +493,8 @@ open class ParcelProcessing {
 
                         val firstDeliveryStatus = parcelRecord.erstlieferstatus ?: 0
                         if (firstDeliveryStatus.toInt() != (4)) {
+                            //TODO
+                            //pasReset = true
                             if (pasCleared) {
                                 //TODO WLtransfer Auslieferung nach Abrechnung
                             }
