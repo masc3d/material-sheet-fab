@@ -185,6 +185,7 @@ subprojects {
         sourceSets.main.java.outputDir = classesDir
         sourceSets.main.output.resourcesDir = classesDir
         sourceSets.test.java.outputDir = testClassesDir
+        sourceSets.test.output.resourcesDir = testClassesDir
 
         project.idea {
             module {
