@@ -7,8 +7,9 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -17,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -44,7 +44,8 @@ public class Camera1 extends CameraImpl {
     private CameraProperties mCameraProperties;
     private Camera.CameraInfo mCameraInfo;
     private Size mPreviewSize;
-    private Size mCaptureSize;
+    private Size mPictureCaptureSize;
+    private Size mVideoCaptureSize;
     private MediaRecorder mMediaRecorder;
     private File mVideoFile;
     private Camera.AutoFocusCallback mAutofocusCallback;
@@ -321,24 +322,49 @@ public class Camera1 extends CameraImpl {
         return result;
     }
 
+    private String sizeListToString(List<Size> sizes) {
+        if (sizes == null)
+            return "";
+
+        ArrayList<String> sizeTexts = new ArrayList<String>();
+        for (Size size : sizes) {
+            sizeTexts.add(size.toString());
+        }
+
+        return TextUtils.join(", ", sizeTexts);
+    }
+
     // Code from SandriosCamera library
     // https://github.com/sandrios/sandriosCamera/blob/master/sandriosCamera/src/main/java/com/sandrios/sandriosCamera/internal/manager/impl/Camera1Manager.java#L212
     void initResolutions() {
         List<Size> previewSizes = sizesFromList(mCameraParameters.getSupportedPreviewSizes());
+        List<Size> pictureSizes = (Build.VERSION.SDK_INT > 10) ? sizesFromList(mCameraParameters.getSupportedPictureSizes()) : previewSizes;
         List<Size> videoSizes = (Build.VERSION.SDK_INT > 10) ? sizesFromList(mCameraParameters.getSupportedVideoSizes()) : previewSizes;
 
         CamcorderProfile camcorderProfile = getCamcorderProfile(mVideoQuality);
 
-        mCaptureSize = getSizeWithClosestRatio(
+        Log.v(TAG, String.format("PREVIEW SIZES %s", sizeListToString(previewSizes)));
+        Log.v(TAG, String.format("PICTURE SIZES %s", sizeListToString(pictureSizes)));
+        Log.v(TAG, String.format("VIDEO SIZES %s", sizeListToString(videoSizes)));
+
+        mVideoCaptureSize = getSizeWithClosestRatio(
                 (videoSizes == null || videoSizes.isEmpty()) ? previewSizes : videoSizes,
                 camcorderProfile.videoFrameWidth, camcorderProfile.videoFrameHeight);
 
-        mPreviewSize = getSizeWithClosestRatio(previewSizes, mCaptureSize.getWidth(), mCaptureSize.getHeight());
+        mPictureCaptureSize = getSizeWithClosestRatio(
+                (pictureSizes == null || pictureSizes.isEmpty()) ? previewSizes : pictureSizes,
+                camcorderProfile.videoFrameWidth, camcorderProfile.videoFrameHeight);
+
+        mPreviewSize = getSizeWithClosestRatio(previewSizes, mPictureCaptureSize.getWidth(), mPictureCaptureSize.getHeight());
+
+        Log.v(TAG, String.format("CLOSEST VIDEO SIZE %s", mVideoCaptureSize));
+        Log.v(TAG, String.format("CLOSEST PICTURE SIZE %s", mPictureCaptureSize));
+        Log.v(TAG, String.format("CLOSEST PREVIEW SIZE %s", mPreviewSize));
     }
 
     @Override
     Size getCaptureResolution() {
-        return mCaptureSize;
+        return mPictureCaptureSize;
     }
 
     @Override
@@ -369,7 +395,10 @@ public class Camera1 extends CameraImpl {
 
         collectCameraProperties();
         adjustCameraParameters();
-        mCamera.setDisplayOrientation(calculatePreviewRotation());
+
+        int previewRotation = calculatePreviewRotation();
+        Log.v(TAG, String.format("PREVIEW ROTATION %d", previewRotation));
+        mCamera.setDisplayOrientation(previewRotation);
 
         mCameraListener.onCameraOpened();
     }
@@ -392,7 +421,8 @@ public class Camera1 extends CameraImpl {
             mCamera = null;
             mCameraParameters = null;
             mPreviewSize = null;
-            mCaptureSize = null;
+            mPictureCaptureSize = null;
+            mVideoCaptureSize = null;
             mCameraListener.onCameraClosed();
         }
     }
@@ -430,10 +460,12 @@ public class Camera1 extends CameraImpl {
         );
 
         mCameraParameters.setPictureSize(
-                getCaptureResolution().getWidth(),
-                getCaptureResolution().getHeight()
+                mPictureCaptureSize.getWidth(),
+                mPictureCaptureSize.getHeight()
         );
         int rotation = calculateCaptureRotation();
+
+        Log.v(TAG, String.format("SETTING ROTATION %d", rotation));
         mCameraParameters.setRotation(rotation);
 
         setFocus(mFocus);
@@ -484,7 +516,7 @@ public class Camera1 extends CameraImpl {
         mVideoFile = new File(mPreview.getView().getContext().getExternalFilesDir(null), "video.mp4");
         mMediaRecorder.setOutputFile(mVideoFile.getAbsolutePath());
         mMediaRecorder.setOrientationHint(calculatePreviewRotation());
-        mMediaRecorder.setVideoSize(mCaptureSize.getWidth(), mCaptureSize.getHeight());
+        mMediaRecorder.setVideoSize(mVideoCaptureSize.getWidth(), mVideoCaptureSize.getHeight());
     }
 
     private void prepareMediaRecorder() {
@@ -683,5 +715,4 @@ public class Camera1 extends CameraImpl {
             return normalized;
         }
     }
-
 }
