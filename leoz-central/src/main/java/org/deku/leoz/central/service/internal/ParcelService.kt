@@ -33,6 +33,9 @@ import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
 import sx.io.serialization.Serializable
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 
 /**
@@ -121,9 +124,9 @@ open class ParcelServiceV1 :
             if (!messagesRepository.saveMsg(recordMessages)) {
                 log.error("Problem saving parcel-messages")
             }
-            var parcelAddInfo = ParcelDeliveryAdditionalinfo()
+            val parcelAddInfo = ParcelDeliveryAdditionalinfo()
 
-            var damagedInfo = it.damagedInfo
+            val damagedInfo = it.damagedInfo
             if (damagedInfo != null) {
                 //if (damagedInfo.pictureFileUids != null) {
                 parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
@@ -296,7 +299,7 @@ open class ParcelServiceV1 :
             val mobileWorkFilename = FileName(number, date, location, path, addInfo)
             val relPath = mobileWorkFilename.getPath()
 
-            var fileExtension: String
+            val fileExtension: String
             when (mimetype) {
                 MediaType.APPLICATION_SVG_XML -> fileExtension = "svg"
                 else -> fileExtension = "jpg"
@@ -305,13 +308,24 @@ open class ParcelServiceV1 :
             val pathFile = relPath.resolve(file).toFile().toPath()
             val pathFileMobile = relPathMobile.resolve(file).toFile().toPath()
 
-
-
             try {
                 var imgPath = pathFile
                 if (fileExtension.equals("svg")) {
-                    Files.write(pathFile, image.toByteArray(), java.nio.file.StandardOpenOption.CREATE_NEW).toString()
-                    imgPath = transSvg2Jpg(pathFile)
+                    // Write image data to svg file (TODO: is it necessary?)
+                    Files.write(imgPath,
+                            image.toByteArray(),
+                            java.nio.file.StandardOpenOption.CREATE_NEW)
+
+                    val inFile = imgPath.toFile()
+                    val outFile = inFile.replaceExtension("jpg")
+
+                    FileInputStream(inFile).use { input ->
+                        FileOutputStream(outFile).use { output ->
+                            this.transcodeSvg2Jpg(input, output)
+                        }
+                    }
+
+                    imgPath = outFile.toPath()
                 } else {
                     val img = Base64.getDecoder().decode(image)
                     Files.write(pathFile, img, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
@@ -324,14 +338,13 @@ open class ParcelServiceV1 :
                     Files.copy(pathFile, pathFileMobileOriginal)
                 }
 
-
                 val bmpFile = imgPath.toFile().parentFile.toPath()
                         .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
                 val bmpFileMobile = pathFileMobile.toFile().parentFile.toPath()
                         .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
 
 
-                var ret: String
+                val ret: String
                 if (fileExtension.equals("svg")) {
                     if (writeAsBMP(imgPath, bmpFile.toPath())) {
                         Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
@@ -383,8 +396,6 @@ open class ParcelServiceV1 :
             log.error("convert to bmp :" + e.toString())
             return false
         }
-
-
     }
 
     fun writePhotoAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path): Boolean {
@@ -399,35 +410,30 @@ open class ParcelServiceV1 :
             log.error("convert to bmp :" + e.toString())
             return false
         }
-
-
     }
 
-    fun transSvg2Jpg(pathFile: java.nio.file.Path): java.nio.file.Path {
-
-        val inputTranscoder = TranscoderInput(File(pathFile.toString()).toURI().toURL().toString())
-        val imgFile = File(pathFile.toString())
-
-        val jpgFile = imgFile.parentFile.toPath().resolve(imgFile.nameWithoutExtension + ".jpg").toFile()
+    fun File.replaceExtension(extension: String): File =
+        File(this.parentFile, this.nameWithoutExtension + "." + extension)
 
 
-        FileOutputStream(jpgFile).use {
-            val outputTranscoder = TranscoderOutput(it)
-            val converter = JPEGTranscoder()
-            converter.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, 0.9.toFloat())
-            converter.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE)
-            converter.transcode(inputTranscoder, outputTranscoder)
+    /**
+     * Transcode svg to jpeg
+     * @param input Input stream
+     * @param output Output stream
+     */
+    open fun transcodeSvg2Jpg(input: InputStream, output: OutputStream) {
+        val inputTranscoder = TranscoderInput(input)
+        val outputTranscoder = TranscoderOutput(output)
 
+        JPEGTranscoder().also {
+            it.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, 0.9.toFloat())
+            it.addTranscodingHint(JPEGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE)
+            it.transcode(inputTranscoder, outputTranscoder)
         }
-        return jpgFile.toPath()
-
     }
-
 
     override fun getStatus(scanCode: String): List<ParcelServiceV1.ParcelStatus> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-
 }
 
