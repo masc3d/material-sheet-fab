@@ -17,6 +17,9 @@ import { AddressComponent } from './address/address.component';
 import { TimewindowsComponent } from './timewindows/timewindows.component';
 import { ServicesComponent } from './services/services.component';
 import { ContactComponent } from './contact/contact.component';
+import { ClientComponent } from './client/client.component';
+import { InfoComponent } from './info/info.component';
+import { ProductspecComponent } from './productspec/productspec.component';
 
 @NgModule( {
   imports: [
@@ -36,7 +39,10 @@ import { ContactComponent } from './contact/contact.component';
     AddressComponent,
     TimewindowsComponent,
     ServicesComponent,
-    ContactComponent
+    ContactComponent,
+    InfoComponent,
+    ClientComponent,
+    ProductspecComponent
   ],
   exports: [ OrderformComponent ],
   providers: []

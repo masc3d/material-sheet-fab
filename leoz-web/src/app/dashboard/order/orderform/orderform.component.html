@@ -30,16 +30,16 @@
                 <app-timewindows [isPickup]="true"></app-timewindows>
               </p-tabPanel>
               <p-tabPanel header="{{'serviceF7' | translate}}">
-                <app-services></app-services>
+                <app-services [isPickup]="true"></app-services>
               </p-tabPanel>
               <p-tabPanel header="{{'pickupInfo' | translate}}">
-                Content 3
+                <app-info [isPickup]="true"></app-info>
               </p-tabPanel>
               <p-tabPanel header="{{'pickupContact' | translate}}">
                 <app-contact></app-contact>
               </p-tabPanel>
               <p-tabPanel header="{{'clientInvoice' | translate}}">
-                Content 3
+                <app-client></app-client>
               </p-tabPanel>
             </p-tabView>
           </div>
@@ -68,10 +68,10 @@
                 <app-timewindows [isPickup]="false"></app-timewindows>
               </p-tabPanel>
               <p-tabPanel header="{{'serviceF8' | translate}}">
-                <app-services></app-services>
+                <app-services [isPickup]="false"></app-services>
               </p-tabPanel>
               <p-tabPanel header="{{'deliveryInfo' | translate}}">
-                Content 3
+                <app-info [isPickup]="false"></app-info>
               </p-tabPanel>
               <p-tabPanel header="{{'deliveryContact' | translate}}">
                 <app-contact></app-contact>
@@ -80,7 +80,7 @@
           </div>
         </p-fieldset>
         <p-fieldset legend="{{'productSpecification' | translate}}" [style]="{'minHeight': '90px'}">
-          productSpecification
+          <app-productspec></app-productspec>
         </p-fieldset>
       </p-fieldset>
     </div>

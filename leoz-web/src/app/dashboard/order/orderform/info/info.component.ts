@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { AbstractTranslateComponent } from '../../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../../core/translate/translate.service';
+import { AbstractTranslateComponent } from '../../../../core/translate/abstract-translate.component';
 
 @Component({
-  selector: 'app-contact',
-  templateUrl: './contact.component.html',
+  selector: 'app-info',
+  templateUrl: './info.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ContactComponent  extends AbstractTranslateComponent {
+export class InfoComponent extends AbstractTranslateComponent {
 
   @Input() isPickup: boolean
 

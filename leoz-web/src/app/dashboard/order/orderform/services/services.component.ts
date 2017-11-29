@@ -1,15 +1,19 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { TranslateService } from '../../../../core/translate/translate.service';
+import { AbstractTranslateComponent } from '../../../../core/translate/abstract-translate.component';
 
 @Component({
   selector: 'app-services',
   templateUrl: './services.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ServicesComponent implements OnInit {
+export class ServicesComponent extends AbstractTranslateComponent {
 
-  constructor() { }
+  @Input() isPickup: boolean
 
-  ngOnInit() {
+  constructor(public translate: TranslateService ,
+              protected cd: ChangeDetectorRef ) {
+    super( translate, cd, () => {
+    } );
   }
-
 }
