@@ -103,7 +103,9 @@ dependencies {
             "org.apache.commons:commons-dbcp2:2.1.1",
 
             // For SVG image conversions
-            "org.apache.xmlgraphics:batik-transcoder:$v_batik")
+            "org.apache.xmlgraphics:batik-transcoder:$v_batik",
+            "org.apache.xmlgraphics:batik-codec:$v_batik"
+    )
 
     testCompile(
             project(':sx-common'),
@@ -112,12 +114,12 @@ dependencies {
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             "org.springframework:spring-test:$v_spring",
-            "org.springframework.boot:spring-boot-starter-test:$v_springboot",
+            "org.springframework.boot:spring-boot-starter-test:$v_springboot"
     )
 
     jooqRuntime(
             "mysql:mysql-connector-java:$v_mysql",
-            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:slf4j-api:$v_slf4j"
     )
 }
 
