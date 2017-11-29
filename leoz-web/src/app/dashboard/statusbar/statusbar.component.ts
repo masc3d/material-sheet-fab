@@ -22,11 +22,12 @@ import { Subject } from 'rxjs/Subject';
       height: 18px;
       padding: 4px;
       width: 100%;
-      background-color: #e0e0e0;
+      /*background-color: #e0e0e0;*/
+      background-color: transparent;
       color: #555555;
       z-index: 1001;
       border: 0;
-      border-top: 1px solid #9a9797;
+      /*border-top: 1px solid #9a9797;*/
     }
   ` ],
   changeDetection: ChangeDetectionStrategy.OnPush
