@@ -165,8 +165,7 @@ dependencies {
             project(':sx-android'),
             project(':sx-android-honeywell'),
             project(':material-sheet-fab'),
-            project(':camerakit'),
-            'android.arch.lifecycle:runtime:1.0.3',
+            "com.wonderkiln:camerakit:0.12.1",
 
             project(':leoz-common'),
             project(':sx-common'),
@@ -185,6 +184,7 @@ dependencies {
             "com.android.support:cardview-v7:$v_android_support",
             "com.android.support:recyclerview-v7:$v_android_support",
             'com.android.support:multidex:1.0.2',
+            "android.arch.lifecycle:runtime:1.0.3",
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",

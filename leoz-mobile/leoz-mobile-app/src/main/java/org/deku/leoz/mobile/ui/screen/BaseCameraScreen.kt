@@ -5,14 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.flurgle.camerakit.CameraKit
-import com.flurgle.camerakit.CameraListener
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import com.wonderkiln.camerakit.*
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_camera.*
@@ -85,6 +84,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
         this.uxProgressContainer.visibility = View.VISIBLE
 
+        this.uxCameraView.setMethod(CameraKit.Constants.METHOD_STILL)
         this.uxCameraView.setJpegQuality(90)
 
         // Currently only set higher resolutions for honeywell devices
@@ -95,13 +95,31 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         this.uxCameraView.setPermissions(CameraKit.Constants.PERMISSIONS_PICTURE)
         this.uxCameraView.flash = CameraKit.Constants.FLASH_OFF
 
-        this.uxCameraView.setCameraListener(object : CameraListener() {
-            override fun onPictureTaken(picture: ByteArray) {
-                log.trace("PICTURE TAKEN WITH SIZE [${picture.size}]")
+        this.uxCameraView.addCameraKitListener(object : CameraKitEventListenerAdapter() {
+            override fun onEvent(event: CameraKitEvent) {
+                when (event.type) {
+                    CameraKitEvent.TYPE_CAMERA_OPEN -> {
+                        log.trace("CAMERA OPENED")
+                        this@BaseCameraScreen.uxProgressContainer.post {
+                            this@BaseCameraScreen.uxProgressContainer.visibility = View.INVISIBLE
+                        }
+                    }
+                    CameraKitEvent.TYPE_CAMERA_CLOSE -> {
+                        log.trace("CAMERA CLOSED")
+                    }
+                }
+            }
+
+            override fun onError(error: CameraKitError) {
+                log.error(error.message, error.exception)
+            }
+
+            override fun onImage(image: CameraKitImage) {
+                log.trace("PICTURE TAKEN WITH SIZE [${image.bitmap.width}x${image.bitmap.height}]")
 
                 this@BaseCameraScreen.view?.post {
                     // Temporarily store image
-                    this@BaseCameraScreen.pictureJpeg = picture
+                    this@BaseCameraScreen.pictureJpeg = image.jpeg
 
                     // Hide progress
                     this@BaseCameraScreen.uxProgressContainer.visibility = View.INVISIBLE
@@ -109,20 +127,10 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                     this@BaseCameraScreen.torchEnabled = false
 
                     // Create a bitmap
-                    this@BaseCameraScreen.uxPreviewImage.imageBitmap = BitmapFactory.decodeByteArray(picture, 0, picture.size)
+                    this@BaseCameraScreen.uxPreviewImage.imageBitmap = image.bitmap
                     this@BaseCameraScreen.showImageActions()
                 }
-            }
 
-            override fun onCameraOpened() {
-                log.trace("CAMERA OPENED")
-                this@BaseCameraScreen.uxProgressContainer.post {
-                    this@BaseCameraScreen.uxProgressContainer.visibility = View.INVISIBLE
-                }
-            }
-
-            override fun onCameraClosed() {
-                log.trace("CAMERA CLOSED")
             }
         })
 
@@ -174,7 +182,6 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
     override fun onDestroyView() {
         this.uxCameraView.stop()
-        this.uxCameraView.setCameraListener(null)
         super.onDestroyView()
     }
 
