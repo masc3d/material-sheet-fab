@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 @Component( {
   selector: 'app-ipointscan',
   template: `
-    <div style="padding: 5px">
+    <div style="padding: 5px" class="mbDashboardContent">
         <router-outlet></router-outlet>
     </div>
   `,

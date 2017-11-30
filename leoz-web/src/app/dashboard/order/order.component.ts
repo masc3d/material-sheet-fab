@@ -8,7 +8,7 @@ import { TranslateService } from '../../core/translate/translate.service';
   selector: 'app-order',
   template: `
     <p-tabMenu [model]="items"></p-tabMenu>
-    <div style="border: 1px solid gray; padding: 5px">
+    <div style="border: 1px solid gray; padding: 5px" class="mbDashboardContent">
         <router-outlet></router-outlet>
     </div>
   `,
