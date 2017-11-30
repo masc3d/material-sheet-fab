@@ -114,7 +114,10 @@ dependencies {
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             "org.springframework:spring-test:$v_spring",
-            "org.springframework.boot:spring-boot-starter-test:$v_springboot"
+
+            dependencies.create("org.springframework.boot:spring-boot-starter-test:$v_springboot") {
+                exclude group: 'com.vaadin.external.google', module: 'android-json'
+            }
     )
 
     jooqRuntime(
