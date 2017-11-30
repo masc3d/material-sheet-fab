@@ -18,6 +18,7 @@ import { MockHttpInterceptor } from './mock-http.interceptor';
 import { BagscanGuard } from './auth/bagscan.guard';
 import { InetConnectionService } from './inet-connection.service';
 import { PreloadSelectedModules } from './PreloadSelectedModules';
+import { WorkingdateService } from './workingdate.service';
 
 @NgModule( {
   imports: [
@@ -46,6 +47,7 @@ export class CoreModule {
         Translation,
         TranslateService,
         InetConnectionService,
+        WorkingdateService,
         BrowserCheck]
     };
   }

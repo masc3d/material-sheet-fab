@@ -13,6 +13,7 @@ import { AuthenticationService } from '../../core/auth/authentication.service';
 import { Station } from '../../core/auth/station.model';
 import { Shipment } from '../../core/models/shipment.model';
 import { sumAndRound } from '../../core/math/sumAndRound';
+import { WorkingdateService } from '../../core/workingdate.service';
 
 @Injectable()
 export abstract class AbstractExportService {
@@ -55,7 +56,8 @@ export abstract class AbstractExportService {
   };
 
   constructor( protected http: HttpClient,
-               private auth: AuthenticationService ) {
+               private auth: AuthenticationService,
+               protected wds: WorkingdateService) {
     this.subscribeActiveStation( auth );
     this.activeLoadinglist$.subscribe( ( activeLl: Exportlist ) => this.activeLoadinglistTmp = activeLl );
 

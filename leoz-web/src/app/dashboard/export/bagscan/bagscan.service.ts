@@ -26,7 +26,8 @@ export class BagscanService extends AbstractExportService {
   protected subscribeActiveStation( auth: AuthenticationService ) {
     auth.activeStation$.subscribe( ( activeStation: Station ) => {
       this.activeStation = activeStation;
-      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${this.activeStation.stationNo.toString()}/bag`;
+      const stationNo = this.activeStation.stationNo.toString();
+      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${stationNo}/bag?send-date=${this.wds.workingDate()}`;
     } );
   }
 
