@@ -4,8 +4,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'app-user',
   template: `
     <h2>{{'co-worker' | translate}}</h2>
-    <app-user-form></app-user-form>
-    <app-user-list></app-user-list>
+    <div class="mbDashboardContent">
+      <app-user-form></app-user-form>
+      <app-user-list></app-user-list>
+    </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })

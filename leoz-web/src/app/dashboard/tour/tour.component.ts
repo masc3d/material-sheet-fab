@@ -7,9 +7,11 @@ import { Message } from 'primeng/primeng';
   selector: 'app-tour',
   template: `
     <h2>{{'tour' | translate}}</h2>
-    <app-msg-box [msgs]="msgs$ | async"></app-msg-box>
-    <app-tour-driver-list></app-tour-driver-list>
-    <app-tour-map></app-tour-map>
+    <div class="mbDashboardContent">
+      <app-msg-box [msgs]="msgs$ | async"></app-msg-box>
+      <app-tour-driver-list></app-tour-driver-list>
+      <app-tour-map></app-tour-map>
+    </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 } )

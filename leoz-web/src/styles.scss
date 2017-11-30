@@ -243,7 +243,10 @@ input {
   background: #989a9c;
   color: #FFFFFF;
 }
-
+/* margin-bottom for dashboard contents */
+.mbDashboardContent {
+  margin-bottom: 30px;
+}
 a {
   text-decoration: none !important;
   &:hover,
