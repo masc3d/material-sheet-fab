@@ -98,7 +98,11 @@ class VehicleLoading : CompositeDisposableSupplier {
             val lastLocation = this@VehicleLoading.locationCache.lastLocation
 
             db.store.withTransaction {
-                parcels.forEach { parcel ->
+                parcels.forEach {
+                    val parcel = parcelRepository
+                            .findByNumber(it.number)
+                            .blockingGet()
+
                     parcel.state = Parcel.State.LOADED
 
                     parcelRepository
