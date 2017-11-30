@@ -109,10 +109,6 @@ open class Application : MultiDexApplication() {
         }
     }
 
-//    override fun attachBaseContext(base: Context?) {
-//        super.attachBaseContext(LocaleContextWrapper.wrap(context = base!!, language = null))
-//    }
-
     override fun onTerminate() {
         log.debug("ONTERMINATE")
 //        this.unregisterBroadcastReceiver()
