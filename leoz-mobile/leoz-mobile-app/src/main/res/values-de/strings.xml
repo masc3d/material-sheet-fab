@@ -297,4 +297,6 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
+    <string name="active_stop">Aktiver Stop</string>
+    <string name="stop_to_be_added">Hinzuzufügen</string>
 </resources>

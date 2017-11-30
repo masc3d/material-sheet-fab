@@ -25,7 +25,7 @@
                 style="@style/TextAppearance.AppCompat.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Stop to be added"/>
+                android:text="@string/stop_to_be_added"/>
 
             <include android:id="@+id/uxSourceStop" layout="@layout/item_stop_merge_dialog" />
 
@@ -46,7 +46,7 @@
                 style="@style/TextAppearance.AppCompat.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Active stop"/>
+                android:text="@string/active_stop"/>
 
             <include android:id="@+id/uxTargetStop" layout="@layout/item_stop_merge_dialog" />
 

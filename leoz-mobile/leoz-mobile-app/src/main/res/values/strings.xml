@@ -343,4 +343,6 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
+    <string name="stop_to_be_added">Stop to be added</string>
+    <string name="active_stop">Active stop</string>
 </resources>
