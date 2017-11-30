@@ -2,13 +2,16 @@ package org.deku.leoz.node.config
 
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
+import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
+import javax.annotation.PostConstruct
 
 /**
  * Created by masc on 28/11/2016.
@@ -16,6 +19,8 @@ import org.springframework.context.annotation.Profile
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
 open class ApplicationConfiguration {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     companion object {
         val module = Kodein.Module {
             bind<Application>() with eagerSingleton {
@@ -44,4 +49,14 @@ open class ApplicationConfiguration {
 
     @get:Bean
     open val systemInformation: SystemInformation by lazy { Kodein.global.instance<SystemInformation>() }
+
+    @PostConstruct
+    fun onInitialize() {
+        // Disable ipv6 on windows as it breaks mina-sshd
+        // https://issues.apache.org/jira/browse/SSHD-786
+        if (SystemUtils.IS_OS_WINDOWS) {
+            log.warn("Disabling ipv6 on windows in order to mitigate https://issues.apache.org/jira/browse/SSHD-786")
+            System.setProperty("java.net.preferIPv4Stack", "true")
+        }
+    }
 }
