@@ -75,6 +75,22 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     override fun export(scanCode: String, loadingListNo: Long, stationNo: Int): String {
         userService.get()
 
+        val un = DekuUnitNumber.parseLabel(loadingListNo.toString().padStart(12, '0'))
+        when {
+            un.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Loadinglist - wrong check digit"
+                )
+            }
+        }
+        if (un.value.type != UnitNumber.Type.Parcel)
+
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Loadinglist not valid"
+            )
+
         //check stationNo in user-stationsAllowed
 
         val exportUnitAndOrder = getAndCheckUnit(scanCode, stationNo)
@@ -99,7 +115,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
         var title = "Ok"
         if (unitRecord.ladelistennummerd == null) {
-        } else if (unitRecord.ladelistennummerd.toLong() == loadingListNo) {
+        } else if (unitRecord.ladelistennummerd.toLong() == un.value.value.toLong()) {
             //doppelt gescannt
             throw DefaultProblem(
                     status = Response.Status.OK,
@@ -111,7 +127,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
         }
 
-        exportUnit(ExportUnitAndOrder(unitRecord, orderRecord), loadingListNo, stationNo)
+        exportUnit(ExportUnitAndOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
 
         return title
     }
@@ -194,7 +210,23 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getParcels2ExportByLoadingList(loadinglistNo: Long): List<ExportService.Order> {
-        val parcels = parcelRepository.getParcels2ExportByLoadingList(loadinglistNo)
+        userService.get()
+        val un = DekuUnitNumber.parseLabel(loadinglistNo.toString().padStart(12, '0'))
+        when {
+            un.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Wrong check digit"
+                )
+            }
+        }
+        if (un.value.type != UnitNumber.Type.Parcel)
+
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Loadinglist not valid"
+            )
+        val parcels = parcelRepository.getParcels2ExportByLoadingList(un.value.value.toLong())
         if (parcels.count() == 0)
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
@@ -258,7 +290,54 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun fillBagStationExport(bagID: Long, bagBackUnitNo: Long, stationNo: Int, unitNo: String, loadingListNo: Long): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        userService.get()
+        var title: String = ""
+
+        val bag = getAndCheckBag(stationNo, bagID)
+        val backUnit = bag.unitNoBack
+        backUnit ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "BagId found - no bagback-unit found"
+        )
+
+        if (bag.lastStation == 2) {
+
+            if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already exported"
+                )
+            } else {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already closed - try to reopen"
+                )
+            }
+        }
+        val unBack = DekuUnitNumber.parseLabel(bagBackUnitNo.toString().padStart(12, '0'))
+        when {
+            unBack.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Bag-UnitNo wrong check digit"
+                )
+            }
+        }
+        if (unBack.value.type != UnitNumber.Type.BagBack)
+
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Bag-UnitNo not valid"
+            )
+
+        if (unBack.value.value.toLong() != backUnit) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Bag-BackUnitNo dismatch"
+            )
+        }
+
+        return title
     }
 
     override fun closeBagStationExport(bagID: Long, bagBackUnitNo: Long, stationNo: Int, loadingListNo: Long) {
@@ -295,8 +374,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         return bag
     }
 
-    fun getAndCheckBag(stationNo: Int, bagID: Long): ExportService.Bag {
-        val un = DekuUnitNumber.parseLabel(bagID.toString())
+    open fun getAndCheckBag(stationNo: Int, bagID: Long): ExportService.Bag {
+        val un = DekuUnitNumber.parseLabel(bagID.toString().padStart(12, '0'))
         when {
             un.hasError -> {
                 throw DefaultProblem(
@@ -338,10 +417,20 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             )
         }
 
+        bag.bagNumberLabel = un.value.label
+
 
         val oid = bag.orderhub2depot
         if (oid != null) {
-            bag.unitNo = depotRepository.getUnitNo(oid)
+            val b = depotRepository.getUnitNo(oid)
+            bag.unitNo = b
+            if (b != null) {
+                val unUn = DekuUnitNumber.parse(b.toString())
+                if (!unUn.hasError) {
+                    bag.unitNoLabel = unUn.value.label
+                }
+            }
+
         }
         val oidBack = bag.orderdepot2hub
         oidBack ?:
@@ -358,6 +447,10 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                     status = Response.Status.NOT_FOUND,
                     title = "BagId found - no bagback-unit found"
             )
+        }
+        val unUnBack = DekuUnitNumber.parse(backUnit.toString())
+        if (!unUnBack.hasError) {
+            bag.unitBackLabel = unUnBack.value.label
         }
 
         if (bag.lastStation == 2) {
@@ -382,10 +475,28 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             }
 
         }
+        if (bag.sealNumberGreen != null) {
+            val unGreen = DekuUnitNumber.parse(bag.sealNumberGreen.toString())
+            if (!unGreen.hasError) {
+                bag.sealGreenLabel = unGreen.value.label
+            }
+        }
+        if (bag.sealNumberYellow != null) {
+            val unYellow = DekuUnitNumber.parse(bag.sealNumberYellow.toString())
+            if (!unYellow.hasError) {
+                bag.sealYellowLabel = unYellow.value.label
+            }
+        }
+        if (bag.sealNumberRed != null) {
+            val unRed = DekuUnitNumber.parse(bag.sealNumberRed.toString())
+            if (!unRed.hasError) {
+                bag.sealRedLabel = unRed.value.label
+            }
+        }
         return bag
     }
 
-    fun getParcelsFilledInBagBackByBagBackUnitNo(bagBackUnitNo: Long?): List<ExportService.Order> {
+    open fun getParcelsFilledInBagBackByBagBackUnitNo(bagBackUnitNo: Long?): List<ExportService.Order> {
         bagBackUnitNo ?: return listOf()
         val parcels = parcelRepository.findUnitsInBagBackByBagBackUnitNumber(bagBackUnitNo).groupBy { it.orderid }
         if (parcels.count() == 0) {
@@ -412,7 +523,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     override fun getScan(scanCode: String): UnitNumber {
         userService.get()
-        val un = DekuUnitNumber.parseLabel(scanCode)
+        val un = DekuUnitNumber.parseLabel(scanCode.padStart(12, '0'))
 
         when {
             un.hasError -> {
@@ -439,7 +550,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun getAndCheckUnit(scanCode: String, stationNo: Int): ExportUnitAndOrder {
-        val un = DekuUnitNumber.parseLabel(scanCode)
+        val un = DekuUnitNumber.parseLabel(scanCode.padStart(12,'0'))
         var dekuNo: Long?
         when {
             un.hasError -> {

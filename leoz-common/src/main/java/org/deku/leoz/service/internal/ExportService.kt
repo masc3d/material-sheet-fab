@@ -76,6 +76,12 @@ interface ExportService {
         var unitNo: Long? = null
         var unitNoBack: Long? = null
         var orders2export: List<Order> = listOf()
+        var bagNumberLabel: String?=null
+        var unitNoLabel:String?=null
+        var unitBackLabel:String?=null
+        var sealYellowLabel:String?=null
+        var sealRedLabel:String?=null
+        var sealGreenLabel:String?=null
     }
 
     @GET

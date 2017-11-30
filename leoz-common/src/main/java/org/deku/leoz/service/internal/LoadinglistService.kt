@@ -26,6 +26,7 @@ interface LoadinglistService {
 
     @Serializable(0x2e5b98b7a7694f)
     data class Loadinglist(val loadinglistNo: Long, val orders: List<ExportService.Order> = listOf()) {
+        constructor(loadinglistlabel:String,orders: List<ExportService.Order>): this(DekuUnitNumber.parseLabel(loadinglistlabel).value.value.toLong(),orders){}
         val loadinglistType by lazy {
             if (this.loadinglistNo < 100000)
                 LoadinglistType.BAG

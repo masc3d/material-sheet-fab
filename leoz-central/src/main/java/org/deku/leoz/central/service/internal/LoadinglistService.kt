@@ -31,45 +31,27 @@ class LoadinglistService : org.deku.leoz.service.internal.LoadinglistService {
     private lateinit var exportService: ExportService
 
     override fun getNewLoadinglistNo(): LoadinglistService.Loadinglist {
-        userService.get()
 
         return exportService.getNewLoadinglistNo()
     }
 
     override fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist {
-        userService.get()
 
         return exportService.getNewBagLoadinglistNo()
     }
 
     override fun getParcels2ExportByLoadingList(loadinglistNo: Long): LoadinglistService.Loadinglist? {
-        userService.get()
 
 
-        val un= DekuUnitNumber.parseLabel(loadinglistNo.toString())
-        when {
-            un.hasError -> {
-                throw DefaultProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "Wrong check digit"
-                )
-            }
-        }
-        if (un.value.type != UnitNumber.Type.Parcel)
-
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "Loadinglist not valid"
-            )
-
-        val orders = exportService.getParcels2ExportByLoadingList(un.value.value.toLong())
+        //val orders = exportService.getParcels2ExportByLoadingList(un.value.value.toLong())
+        val orders = exportService.getParcels2ExportByLoadingList(loadinglistNo)
         if (orders.count() == 0)
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
                     title = "No orders found"
             )
-        val loadinglist = LoadinglistService.Loadinglist(loadinglistNo = un.value.value.toLong(), orders = orders)
-
+        //val loadinglist = LoadinglistService.Loadinglist(loadinglistNo = un.value.value.toLong(), orders = orders)
+        val loadinglist = LoadinglistService.Loadinglist(loadinglistlabel = loadinglistNo.toString().padStart(12,'0'), orders = orders)
         return loadinglist
     }
 
