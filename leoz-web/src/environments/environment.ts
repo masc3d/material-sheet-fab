@@ -5,10 +5,10 @@
 
 export const environment = {
   production: false,
-  version: '20171107',
-  apiUrl: 'https://leoz-t1.derkurier.de:13000/rs/api',          // testing system   for leoz.it-cobra.es
-  // apiUrl: 'https://leoz-demo.derkurier.de:13000/rs/api',     // live system      for dev.derkurier.de
-  // apiUrl: 'https://leoz.derkurier.de:13000/rs/api',          // live system      for command.derkurier.de
+  version: '20171126',
+  apiUrl: 'https://leoz-t1.derkurier.de:13000/rs/api',          // testing system       for leoz.it-cobra.es
+  // apiUrl: 'https://leoz-demo.derkurier.de:13000/rs/api',     // testing system       for leoz.it-cobra.es
+  // apiUrl: 'https://leoz.derkurier.de:13000/rs/api',          // live system          for command.derkurier.de
   // apiUrl: 'http://localhost:13000/rs/api',                   // local system
   defLang: 'de',
   // use "leoz" for produktive environment.
@@ -17,5 +17,6 @@ export const environment = {
   defMenu: 'leo-old',
   devUser: 'dev@leoz',
   devPass: 'password',
-  autologin: 'yes'
+  autologin: 'yes',
+  pingURL: 'https://leoz-t1.derkurier.de:13000/rs/api/internal/v1/application/version'
 };
