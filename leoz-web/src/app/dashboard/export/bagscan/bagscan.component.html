@@ -89,10 +89,10 @@
             <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}" [sortable]="false"></p-column>
             <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="false">
               <ng-template let-package="rowData" pTemplate="body">
-                    <span *ngIf="package.typeOfPackaging === 91; else noValoreLoaded">
+                    <span *ngIf="isValuable(package); else noValuable">
                       {{ 'yes' | translate }}
                     </span>
-                <ng-template #noValoreLoaded>
+                <ng-template #noValuable>
                   {{ 'no' | translate }}
                 </ng-template>
               </ng-template>

@@ -160,10 +160,10 @@
                 <p-column field="loadinglistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
                 <p-column field="typeOfPackaging" header="{{'valore' | translate}}" [sortable]="true">
                   <ng-template let-package="rowData" pTemplate="body">
-                    <span *ngIf="package.typeOfPackaging === 91; else noValoreOpen">
+                    <span *ngIf="isValuable(package); else noValuable">
                       {{ 'yes' | translate }}
                     </span>
-                    <ng-template #noValoreOpen>
+                    <ng-template #noValuable>
                       {{ 'no' | translate }}
                     </ng-template>
                   </ng-template>
@@ -182,10 +182,10 @@
                 <p-column field="loadinglistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
                 <p-column field="typeOfPackaging" header="{{'valore' | translate}}" [sortable]="true">
                   <ng-template let-package="rowData" pTemplate="body">
-                    <span *ngIf="package.typeOfPackaging === 91; else noValoreLoaded">
+                    <span *ngIf="isValuable(package); else noValuable">
                       {{ 'yes' | translate }}
                     </span>
-                    <ng-template #noValoreLoaded>
+                    <ng-template #noValuable>
                       {{ 'no' | translate }}
                     </ng-template>
                   </ng-template>

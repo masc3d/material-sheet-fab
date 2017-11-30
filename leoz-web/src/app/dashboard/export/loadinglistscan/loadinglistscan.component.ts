@@ -11,7 +11,6 @@ import { Exportlist } from '../exportlist.model';
 import { Package } from '../../../core/models/package.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
-import { AbstractExportService } from '../abstract-export.service';
 import { KeyUpEventService } from '../../../core/key-up-event.service';
 import { SoundService } from '../../../core/sound.service';
 import { PrintingService } from '../../../core/printing/printing.service';
@@ -20,6 +19,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { LoadinglistReportHeader } from './loadinglist-report-header.model';
 import { BrowserCheck } from '../../../core/auth/browser-check';
 import { LoadinglistscanService } from './loadinglistscan.service';
+import { TYPE_VALUABLE } from '../../../core/constants';
 
 interface ScanMsg {
   packageId: string;
@@ -202,6 +202,10 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     this.openWeight = null;
 
     this.loadinglistService.getAllPackages();
+  }
+
+  isValuable(pack: Package) {
+    return pack.typeOfPackaging === TYPE_VALUABLE;
   }
 
   private resetScanMsgs() {

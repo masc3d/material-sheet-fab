@@ -24,6 +24,7 @@ import { BagData } from './bagdata.model';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { BagscanReportingService } from '../../../core/reporting/bagscan-reporting.service';
+import { TYPE_VALUABLE } from '../../../core/constants';
 
 @Component( {
   selector: 'app-bagscan',
@@ -193,6 +194,10 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.registerKeyboardEvents();
   }
 
+  isValuable( pack: Package ) {
+    return pack.typeOfPackaging === TYPE_VALUABLE;
+  }
+
   loadOpenPackagesLazy( event: LazyLoadEvent ) {
     console.log('LazyLoadEvent: ', event);
     this.loading = true;
@@ -240,7 +245,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     // rot 0-50 gelb 51-75 grün 76-100
     this.openPackcount = this.openPackagesArr.length;
     this.loadedDiamondcount = this.activeBaglist.packages
-      .filter( ( p: Package ) => p.typeOfPackaging === 91 ).length;
+      .filter( ( p: Package ) => p.typeOfPackaging === TYPE_VALUABLE ).length;
     this.loadedPackcount = this.activeBaglist.packages.length;
     this.bagWeight = this.bagscanService.sumWeights( this.activeBaglist.packages );
   }
