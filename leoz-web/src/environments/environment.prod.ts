@@ -18,5 +18,5 @@ export const environment = {
   devUser: '',
   devPass: '',
   autologin: 'no',
-  pingURL: 'https://leoz-t1.derkurier.de:13000/rs/api/internal/v1/application/version'
+  pingURL: 'https://leoz.derkurier.de:13000/rs/api/internal/v1/application/version'
 };
