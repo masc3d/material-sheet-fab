@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
 import java.io.ByteArrayOutputStream
-import java.io.OutputStream
 import javax.inject.Inject
 
 /**
@@ -34,7 +33,7 @@ class ParcelServiceV1Test {
         val output = ByteArrayOutputStream()
 
         this.parcelService.transcodeSvg2Jpg(
-                input = this.javaClass.getResourceAsStream("/test.svg"),
+                input = this.javaClass.getResourceAsStream("/svg/test.svg"),
                 output = output
         )
     }

@@ -47,7 +47,7 @@ class ParcelServiceTest {
         //val svgDirect = File("/Users/helke/Documents/logo.svg").readText()
         //val svgDirect = File("/Users/helke/Documents/test.svg").readText()
         //val svgDirect = File("/Users/helke/Documents/drei.svg").readText()
-        val svgDirect=this.javaClass.getResourceAsStream("/drei.svg").bufferedReader().use { it.readText() }
+        val svgDirect=this.javaClass.getResourceAsStream("/svg/drei.svg").bufferedReader().use { it.readText() }
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = sig64))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 2173653856606, parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = sig64))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 1173471944806, parcelScancode = "2041019147", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = svgDirect))
