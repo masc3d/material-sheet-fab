@@ -1,16 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { InetConnectionService } from '../../core/inet-connection.service';
-import { Subject } from 'rxjs/Subject';
+import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
+import { TranslateService } from '../../core/translate/translate.service';
 
 @Component( {
   selector: 'app-statusbar',
   template: `
     <div id="statusbar">
       <span *ngIf="isOnline">
-        <i class="fa fa-wifi" style="color: #00a200;"></i> online
+        <i class="fa fa-wifi" style="color: #00a200;"></i> {{'connected_to_leoz' | translate }}
       </span>
       <span *ngIf="!isOnline">
-        <i class="fa fa-ban" style="color: red;"></i> offline
+        <i class="fa fa-ban" style="color: red;"></i> {{'not_connected_to_leoz' | translate }}
       </span>
     </div>
   `,
@@ -31,17 +32,18 @@ import { Subject } from 'rxjs/Subject';
   ` ],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
-export class StatusbarComponent implements OnInit, OnDestroy {
-
-  private ngUnsubscribe: Subject<void> = new Subject<void>();
+export class StatusbarComponent extends AbstractTranslateComponent implements OnInit {
 
   isOnline = true;
 
-  constructor( private cd: ChangeDetectorRef,
+  constructor( protected translate: TranslateService,
+               protected cd: ChangeDetectorRef,
                private ics: InetConnectionService ) {
+    super( translate, cd );
   }
 
   ngOnInit() {
+    super.ngOnInit();
     this.ics.isOnline$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( (isOnline: boolean) => {
@@ -50,8 +52,4 @@ export class StatusbarComponent implements OnInit, OnDestroy {
       } );
   }
 
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
-  }
 }

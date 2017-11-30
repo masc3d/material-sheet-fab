@@ -6,6 +6,7 @@ import { User } from './user.model';
 import { environment } from '../../../environments/environment';
 import { MsgService } from '../../shared/msg/msg.service';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
+import { InetConnectionService } from "app/core/inet-connection.service";
 
 @Injectable()
 export class UserService {
@@ -19,7 +20,8 @@ export class UserService {
   public activeUser$ = this.activeUserSubject.asObservable().distinctUntilChanged();
 
   constructor( private http: HttpClient,
-               private msgService: MsgService ) {
+               private msgService: MsgService,
+               private ics: InetConnectionService ) {
   }
 
   insert( userData: any ): Observable<HttpResponse<any>> {
@@ -39,6 +41,7 @@ export class UserService {
     this.http.get<User[]>( this.userListUrl )
       .subscribe( ( users ) => this.usersSubject.next( users ),
         ( error: HttpErrorResponse ) => {
+          this.ics.isOffline();
           this.msgService.handleResponse( error );
           this.usersSubject.next( <User[]> [] );
         } );

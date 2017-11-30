@@ -353,5 +353,8 @@ export const LANG_DE_TRANS = {
   'orderprofile': 'Auftragsprofile',
   'CC': 'LKZ',
   'No': 'Nr',
+  // statusbar
+  'not_connected_to_leoz': 'nicht mit leoz verbunden',
+  'connected_to_leoz': 'mit leoz verbunden',
 };
 

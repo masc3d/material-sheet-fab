@@ -353,6 +353,9 @@ export const LANG_EN_TRANS = {
   'orderprofile': 'Orderprofile',
   'CC': 'CC',
   'No': 'No',
+  // statusbar
+  'not_connected_to_leoz': 'not connected to leoz',
+  'connected_to_leoz': 'connected to leoz',
 };
 
 

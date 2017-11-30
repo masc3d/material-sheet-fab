@@ -14,6 +14,7 @@ import { Station } from '../../core/auth/station.model';
 import { Shipment } from '../../core/models/shipment.model';
 import { sumAndRound } from '../../core/math/sumAndRound';
 import { WorkingdateService } from '../../core/workingdate.service';
+import { InetConnectionService } from '../../core/inet-connection.service';
 
 @Injectable()
 export abstract class AbstractExportService {
@@ -57,7 +58,8 @@ export abstract class AbstractExportService {
 
   constructor( protected http: HttpClient,
                private auth: AuthenticationService,
-               protected wds: WorkingdateService) {
+               protected wds: WorkingdateService,
+               protected ics: InetConnectionService ) {
     this.subscribeActiveStation( auth );
     this.activeLoadinglist$.subscribe( ( activeLl: Exportlist ) => this.activeLoadinglistTmp = activeLl );
 
@@ -107,8 +109,8 @@ export abstract class AbstractExportService {
           } );
           this.allPackagesSubject.next( packages );
         },
-        ( error ) => {
-          console.log( error );
+        ( _ ) => {
+          this.ics.isOffline();
           this.allPackagesSubject.next( [] );
         } );
   }
@@ -121,8 +123,8 @@ export abstract class AbstractExportService {
   newLoadlist(): void {
     this.http.post<NewLoadinglistNoResponse>( this.newLoadlistNoUrl, null )
       .subscribe( ( data ) => this.setActiveLoadinglist( data.loadinglistNo ),
-        ( error ) => {
-          console.log( error );
+        ( _ ) => {
+          this.ics.isOffline();
         } );
   }
 

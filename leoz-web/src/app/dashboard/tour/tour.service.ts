@@ -11,6 +11,7 @@ import { DriverService } from './driver.service';
 import * as moment from 'moment';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import RoleEnum = Driver.RoleEnum;
+import { InetConnectionService } from '../../core/inet-connection.service';
 
 @Injectable()
 export class TourService {
@@ -47,7 +48,8 @@ export class TourService {
   constructor( private http: HttpClient,
                private msgService: MsgService,
                private translate: TranslateService,
-               private driverService: DriverService ) {
+               private driverService: DriverService,
+               private ics: InetConnectionService ) {
     driverService.drivers$.subscribe( ( drivers: Driver[] ) => this.drivers = drivers );
     this.duration = 0;
     this.selectedDate = null;
@@ -161,7 +163,10 @@ export class TourService {
             this.locationError();
           }
         },
-        ( error: HttpErrorResponse ) => this.msgService.handleResponse( error ) );
+        ( error: HttpErrorResponse ) => {
+          this.ics.isOffline();
+          this.msgService.handleResponse( error );
+      } );
   }
 
   changeActiveRoute( selectedDriver: Driver, duration: number, selectedDate: Date ) {
@@ -187,7 +192,10 @@ export class TourService {
             this.routeError();
           }
         },
-        ( error: HttpErrorResponse ) => this.msgService.handleResponse( error ) );
+        ( error: HttpErrorResponse ) => {
+          this.ics.isOffline();
+          this.msgService.handleResponse( error );
+      } );
   }
 
   locationError(): void {
@@ -230,6 +238,9 @@ export class TourService {
           }
           this.allMarkersSubject.next( allMarkers );
         },
-        ( error: HttpErrorResponse ) => this.msgService.handleResponse( error ) );
+        ( error: HttpErrorResponse ) => {
+          this.ics.isOffline();
+          this.msgService.handleResponse( error );
+      } );
   }
 }

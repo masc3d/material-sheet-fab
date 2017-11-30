@@ -14,6 +14,7 @@ import { TranslateService } from 'app/core/translate/translate.service';
 import { AbstractTranslateComponent } from 'app/core/translate/abstract-translate.component';
 import { PermissionCheck } from '../../../core/auth/permission-check';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { InetConnectionService } from '../../../core/inet-connection.service';
 
 @Component( {
   selector: 'app-user-form',
@@ -52,7 +53,8 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
                private msgService: MsgService,
                private roleGuard: RoleGuard,
                protected cd: ChangeDetectorRef,
-               protected translate: TranslateService ) {
+               protected translate: TranslateService,
+               private ics: InetConnectionService ) {
     super( translate, cd, () => {
       this.roleOptions = this.createRoleOptions();
       this.stateOptions = this.createStateOptions();
@@ -181,6 +183,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
           }
         },
         ( error: HttpErrorResponse ) => {
+          this.ics.isOffline();
           this.loading = false;
           this.msgService.handleResponse( error );
         } );
@@ -201,6 +204,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
           }
         },
         ( error: HttpErrorResponse ) => {
+          this.ics.isOffline();
           this.loading = false;
           this.msgService.handleResponse( error );
         } );

@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  version: '20171126',
+  version: '20171130',
   apiUrl: 'https://leoz-t1.derkurier.de:13000/rs/api',          // testing system       for leoz.it-cobra.es
   // apiUrl: 'https://leoz-demo.derkurier.de:13000/rs/api',     // testing system       for leoz.it-cobra.es
   // apiUrl: 'https://leoz.derkurier.de:13000/rs/api',          // live system          for command.derkurier.de

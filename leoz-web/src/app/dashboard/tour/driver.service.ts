@@ -8,6 +8,7 @@ import 'rxjs/add/observable/of';
 import { environment } from '../../../environments/environment';
 import { Driver } from './driver.model';
 import { MsgService } from '../../shared/msg/msg.service';
+import { InetConnectionService } from '../../core/inet-connection.service';
 
 @Injectable()
 export class DriverService {
@@ -21,7 +22,8 @@ export class DriverService {
   public currentDriver$ = this.currentDriversSubject.asObservable().distinctUntilChanged();
 
   constructor( private http: HttpClient,
-               private msgService: MsgService ) {
+               private msgService: MsgService,
+               private ics: InetConnectionService ) {
   }
 
   getDrivers(): void {
@@ -35,6 +37,7 @@ export class DriverService {
           this.currentDriversSubject.next( currDriver );
         },
         ( error: HttpErrorResponse ) => {
+          this.ics.isOffline();
           this.driversSubject.next( <Driver[]> [] );
           this.currentDriversSubject.next( <Driver> {} );
           this.msgService.handleResponse( error );

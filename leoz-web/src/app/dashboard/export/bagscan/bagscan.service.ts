@@ -46,8 +46,8 @@ export class BagscanService extends AbstractExportService {
     this.http.post<BagData>( this.bagDataUrl,
       { 'baglistNo': baglistNo } )
       .subscribe( ( bagData ) => this.activeBagDataSubject.next( bagData ),
-        ( error ) => {
-          console.log( error );
+        ( _ ) => {
+          this.ics.isOffline();
           this.activeBagDataSubject.next( <BagData> {} );
         } );
   }
