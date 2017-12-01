@@ -422,7 +422,7 @@ afterEvaluate {
 
 def removeSqliteLibs() {
     fileTree("${buildDir}/intermediates") {
-        include '**/arm64-v8a/libsqlite3x.so'
+        // include '**/arm64-v8a/libsqlite3x.so'
         include '**/x86/libsqlite3x.so'
         include '**/x86_64/libsqlite3x.so'
     }.each {
