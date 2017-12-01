@@ -35,7 +35,8 @@ fun Date.toDateWithoutTime(): Date =
 fun Date.toTimeWithoutDate(): Date =
         this.toCalendar().let {
             it.set(Calendar.YEAR, 1899)
-            it.set(Calendar.MONTH, 12)
+            //it.set(Calendar.MONTH, 12)
+            it.set(Calendar.MONTH, 11)
             it.set(Calendar.DAY_OF_MONTH, 30)
             it.time
         }

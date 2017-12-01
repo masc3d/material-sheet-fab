@@ -39,11 +39,11 @@ class ParcelServiceTest {
     @Test
     fun testOnMessage() {
 
-        val img = File("/Users/helke/Documents/outOfMemory.jpg").readBytes()
-        val encoder = Base64.getEncoder()
-        encoder.encodeToString(img)
-        val signature = File("/Users/helke/Documents/logo.svg").readBytes()
-        encoder.encodeToString(signature)
+//        val img = File("/Users/helke/Documents/outOfMemory.jpg").readBytes()
+//        val encoder = Base64.getEncoder()
+//        encoder.encodeToString(img)
+//        val signature = File("/Users/helke/Documents/logo.svg").readBytes()
+//        encoder.encodeToString(signature)
         //val svgDirect = File("/Users/helke/Documents/logo.svg").readText()
         //val svgDirect = File("/Users/helke/Documents/test.svg").readText()
         //val svgDirect = File("/Users/helke/Documents/drei.svg").readText()
@@ -52,7 +52,7 @@ class ParcelServiceTest {
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 2173653856606, parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = sig64))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 1173471944806, parcelScancode = "2041019147", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = svgDirect))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.POSTBOX.id, time = Date().toTimestamp(), parcelId = 15001093,  additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "Tschuh", signature = svgDirect))
-        val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15001093, additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "Tschiller", signature = svgDirect))
+        val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15000000, additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "Tschiller", signature = svgDirect))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 1163467893501, parcelScancode = "86853136142", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidtMeier", signature = img64, mimetype = "jpg"))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 2173652369401, parcelScancode = "10071321554",from="956", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerMeier", signature = "abc"))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NEIGHBOUR.id, time = Date().toTimestamp(), parcelScancode = "7280464561",from="956", additionalInfo = AdditionalInfo.DeliveredAtNeighborInfo(name = "schulz", signature = "abc",address = "str nr 6"))
