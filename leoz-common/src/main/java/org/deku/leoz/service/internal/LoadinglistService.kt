@@ -26,14 +26,15 @@ interface LoadinglistService {
 
     @Serializable(0x2e5b98b7a7694f)
     data class Loadinglist(val loadinglistNo: Long, val orders: List<ExportService.Order> = listOf()) {
-        constructor(loadinglistlabel:String,orders: List<ExportService.Order>): this(DekuUnitNumber.parseLabel(loadinglistlabel).value.value.toLong(),orders){}
+        constructor(loadinglistlabel: String, orders: List<ExportService.Order>) : this(DekuUnitNumber.parseLabel(loadinglistlabel).value.value.toLong(), orders) {}
+
         val loadinglistType by lazy {
             if (this.loadinglistNo < 100000)
                 LoadinglistType.BAG
             else LoadinglistType.NORMAL
         }
         val label by lazy {
-             DekuUnitNumber.parse(this.loadinglistNo.toString().padStart(11,'0')).value.label
+            DekuUnitNumber.parse(this.loadinglistNo.toString().padStart(11, '0')).value.label
         }
     }
 
@@ -52,6 +53,6 @@ interface LoadinglistService {
     @Path("/{$ID}")
     @ApiOperation(value = "Get loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcels2ExportByLoadingList(
-            @PathParam(ID) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: Long
+            @PathParam(ID) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: String
     ): Loadinglist?
 }

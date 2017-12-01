@@ -84,8 +84,8 @@ class BagService : BagService {
         return n.workDate()
     }
 
-    override fun get(id: Long): BagService.Bag {
-        val un = DekuUnitNumber.parseLabel(id.toString())
+    override fun get(id: String): BagService.Bag {
+        val un = DekuUnitNumber.parseLabel(id)
         when {
             un.hasError -> {
                 throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
@@ -155,24 +155,23 @@ class BagService : BagService {
         if (un.value.type != UnitNumber.Type.BagId)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
 
-        val unWhiteSeal=DekuUnitNumber.parseLabel(whiteSeal)
-        when{
-            unWhiteSeal.hasError ->{
+        val unWhiteSeal = DekuUnitNumber.parseLabel(whiteSeal)
+        when {
+            unWhiteSeal.hasError -> {
                 throw ServiceException(ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
             }
         }
-        if(unWhiteSeal.value.type!=UnitNumber.Type.MainSeal)
+        if (unWhiteSeal.value.type != UnitNumber.Type.MainSeal)
             throw ServiceException(ErrorCode.WHITE_SEAL_NOT_VALID)
 
-        val unYellowSeal=DekuUnitNumber.parseLabel(yellowSeal)
-        when{
-            unYellowSeal.hasError ->{
+        val unYellowSeal = DekuUnitNumber.parseLabel(yellowSeal)
+        when {
+            unYellowSeal.hasError -> {
                 throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
             }
         }
-        if(unYellowSeal.value.type!=UnitNumber.Type.BackSeal)
+        if (unYellowSeal.value.type != UnitNumber.Type.BackSeal)
             throw ServiceException(ErrorCode.YELLOW_SEAL_NOT_VALID)
-
 
 
         // TODO
@@ -484,7 +483,7 @@ class BagService : BagService {
         if (scanId == null || scanId.isEmpty()) {
             throw ServiceException(ErrorCode.SCAN_ID_MISSING)
         }
-        val un= DekuUnitNumber.parseLabel(scanId.padStart(12,'0'))
+        val un = DekuUnitNumber.parseLabel(scanId)
         when {
             un.hasError -> {
                 throw DefaultProblem(
@@ -655,14 +654,13 @@ class BagService : BagService {
         val bagUnitNo = un.value.value
 
 
-
-        val unSeal=DekuUnitNumber.parseLabel(sealNo)
-        when{
-            unSeal.hasError ->{
+        val unSeal = DekuUnitNumber.parseLabel(sealNo)
+        when {
+            unSeal.hasError -> {
                 throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
             }
         }
-        if (unSeal.value.type!=UnitNumber.Type.BackSeal)
+        if (unSeal.value.type != UnitNumber.Type.BackSeal)
             throw ServiceException(ErrorCode.YELLOW_SEAL_NOT_VALID)
 
         //bagSealNo = bagSealNo.substring(0, 11)

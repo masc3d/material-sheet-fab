@@ -40,7 +40,7 @@ class LoadinglistService : org.deku.leoz.service.internal.LoadinglistService {
         return exportService.getNewBagLoadinglistNo()
     }
 
-    override fun getParcels2ExportByLoadingList(loadinglistNo: Long): LoadinglistService.Loadinglist? {
+    override fun getParcels2ExportByLoadingList(loadinglistNo: String): LoadinglistService.Loadinglist? {
 
 
         //val orders = exportService.getParcels2ExportByLoadingList(un.value.value.toLong())
@@ -51,7 +51,7 @@ class LoadinglistService : org.deku.leoz.service.internal.LoadinglistService {
                     title = "No orders found"
             )
         //val loadinglist = LoadinglistService.Loadinglist(loadinglistNo = un.value.value.toLong(), orders = orders)
-        val loadinglist = LoadinglistService.Loadinglist(loadinglistlabel = loadinglistNo.toString().padStart(12,'0'), orders = orders)
+        val loadinglist = LoadinglistService.Loadinglist(loadinglistlabel = loadinglistNo, orders = orders)
         return loadinglist
     }
 

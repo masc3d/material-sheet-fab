@@ -72,10 +72,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     data class ExportUnitAndOrder(val unit: TblauftragcolliesRecord, val order: TblauftragRecord)
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    override fun export(scanCode: String, loadingListNo: Long, stationNo: Int): String {
+    override fun export(scanCode: String, loadingListNo: String, stationNo: Int): String {
         userService.get()
 
-        val un = DekuUnitNumber.parseLabel(loadingListNo.toString().padStart(12, '0'))
+        //check stationNo in user-stationsAllowed
+
+        val un = DekuUnitNumber.parseLabel(loadingListNo)
         when {
             un.hasError -> {
                 throw DefaultProblem(
@@ -91,7 +93,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                     title = "Loadinglist not valid"
             )
 
-        //check stationNo in user-stationsAllowed
 
         val exportUnitAndOrder = getAndCheckUnit(scanCode, stationNo)
 
@@ -209,9 +210,9 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         return bagService.getCount2SendBackByStation(stationNo)
     }
 
-    override fun getParcels2ExportByLoadingList(loadinglistNo: Long): List<ExportService.Order> {
+    override fun getParcels2ExportByLoadingList(loadinglistNo: String): List<ExportService.Order> {
         userService.get()
-        val un = DekuUnitNumber.parseLabel(loadinglistNo.toString().padStart(12, '0'))
+        val un = DekuUnitNumber.parseLabel(loadinglistNo)
         when {
             un.hasError -> {
                 throw DefaultProblem(
@@ -241,11 +242,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         return LoadinglistService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000)
     }
 
-    override fun setBagStationExportRedSeal(bagID: Long, bagBackUnitNo: Long, stationNo: Int, redSeal: Long, text: String) {
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    override fun setBagStationExportRedSeal(bagID: String, bagBackUnitNo: String, stationNo: Int, redSeal: String, text: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun reopenBagStationExport(bagID: Long, stationNo: Int) {
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    override fun reopenBagStationExport(bagID: String, stationNo: Int) {
         userService.get()
 
         val bag = getAndCheckBag(stationNo, bagID)
@@ -255,7 +258,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 title = "BagId found - no bagback-unit found"
         )
 
-        if (bag.lastStation == 2) {
+        if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
 
             if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
                 throw DefaultProblem(
@@ -289,9 +292,10 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     }
 
-    override fun fillBagStationExport(bagID: Long, bagBackUnitNo: Long, stationNo: Int, unitNo: String, loadingListNo: Long): String {
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    override fun fillBagStationExport(bagID: String, bagBackUnitNo: String, stationNo: Int, unitNo: String, loadingListNo: String, yellowSealNo: String): String {
         userService.get()
-        var title: String = ""
+
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -300,7 +304,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 title = "BagId found - no bagback-unit found"
         )
 
-        if (bag.lastStation == 2) {
+        if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
 
             if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
                 throw DefaultProblem(
@@ -314,7 +318,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 )
             }
         }
-        val unBack = DekuUnitNumber.parseLabel(bagBackUnitNo.toString().padStart(12, '0'))
+        val unBack = DekuUnitNumber.parseLabel(bagBackUnitNo)
         when {
             unBack.hasError -> {
                 throw DefaultProblem(
@@ -337,14 +341,156 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             )
         }
 
+        val un = DekuUnitNumber.parseLabel(loadingListNo)
+        when {
+            un.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Loadinglist - wrong check digit"
+                )
+            }
+        }
+        if (un.value.type != UnitNumber.Type.Parcel)
+
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Loadinglist not valid"
+            )
+
+        val unSeal = DekuUnitNumber.parseLabel(yellowSealNo)
+        when {
+            unSeal.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Yellow seal number - wrong check digit"
+                )
+            }
+        }
+        if (unSeal.value.type != UnitNumber.Type.BackSeal && unSeal.value.type != UnitNumber.Type.ReserveSeal)
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Yellow seal number not valid, scanned type: ${unSeal.value.type}"
+            )
+
+        if (bag.sealNumberYellow != null) {
+            if (bag.sealNumberYellow.toString().toLong() != unSeal.value.value.toLong()) {
+                if (bag.sealNumberRed != null) {
+                    if (bag.sealNumberRed.toString().toLong() != unSeal.value.value.toLong()) {
+                        throw DefaultProblem(
+                                status = Response.Status.NOT_FOUND,
+                                title = "Seal number mismatch"
+                        )
+                    }
+                } else {
+                    throw DefaultProblem(
+                            status = Response.Status.NOT_FOUND,
+                            title = "Seal number mismatch"
+                    )
+                }
+            }
+        } else {
+            if (bag.sealNumberRed != null) {
+                if (bag.sealNumberRed.toString().toLong() != unSeal.value.value.toLong()) {
+                    throw DefaultProblem(
+                            status = Response.Status.NOT_FOUND,
+                            title = "Seal number mismatch"
+                    )
+                }
+            }
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "No seal number in bag"
+            )
+        }
+
+        val exportUnitAndOrder = getAndCheckUnit(unitNo, stationNo)
+
+        val unitRecord = exportUnitAndOrder.unit
+        val orderRecord = exportUnitAndOrder.order
+
+        if (unitRecord.verpackungsart == 91) {//verpackungsart=Valore
+            val station = stationService.getByStationNo(stationNo)
+            if (!station.exportValuablesAllowed) {
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "Valuables not allowed"
+                )
+            }
+
+        } else {
+            if (unitRecord.gewichteffektiv > maxWeightForParcelBag) {
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "Weight > $maxWeightForParcelBag kg"
+                )
+            }
+        }
+
+        var title = "Ok"
+        if (unitRecord.ladelistennummerd == null) {
+        } else if (unitRecord.ladelistennummerd.toLong() == un.value.value.toLong()) {
+            //doppelt gescannt
+            throw DefaultProblem(
+                    status = Response.Status.OK,
+                    title = "Parcel already scanned"
+            )
+        } else {
+            //umbuchen auf andere ladeliste
+            title = "Loadinglist changed"
+
+        }
+
+        exportUnit(ExportUnitAndOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
+
+
+        val oldBagUnitNo = unitRecord.bagbelegnrc?.toLong()?.toString() ?: ""
+        unitRecord.bagbelegnrc = unBack.value.value.toDouble()
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "bagbelegnrc",
+                    oldValue = oldBagUnitNo,
+                    newValue = unBack.value.value.toString(),
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
+        val oldBagNo = unitRecord.bagidnrc?.toLong()?.toString() ?: ""
+        unitRecord.bagidnrc = bag.bagNumber!!.toDouble()
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "bagidnrc",
+                    oldValue = oldBagNo,
+                    newValue = bag.bagNumber.toString(),
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
+        val oldSealNo = unitRecord.plombennrc?.toLong()?.toString() ?: ""
+        unitRecord.plombennrc = unSeal.value.value.toDouble()
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "plombennrc",
+                    oldValue = oldSealNo,
+                    newValue = unSeal.value.value.toString(),
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
+
         return title
     }
 
-    override fun closeBagStationExport(bagID: Long, bagBackUnitNo: Long, stationNo: Int, loadingListNo: Long) {
+    override fun closeBagStationExport(bagID: String, bagBackUnitNo: String, stationNo: Int, loadingListNo: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getBag(stationNo: Int, bagID: Long): ExportService.Bag {
+    override fun getBag(stationNo: Int, bagID: String): ExportService.Bag {
         userService.get()
 
         val bag = getAndCheckBag(stationNo, bagID)
@@ -374,8 +520,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         return bag
     }
 
-    open fun getAndCheckBag(stationNo: Int, bagID: Long): ExportService.Bag {
-        val un = DekuUnitNumber.parseLabel(bagID.toString().padStart(12, '0'))
+    open fun getAndCheckBag(stationNo: Int, bagID: String): ExportService.Bag {
+        val un = DekuUnitNumber.parseLabel(bagID)
         when {
             un.hasError -> {
                 throw DefaultProblem(
@@ -523,7 +669,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     override fun getScan(scanCode: String): UnitNumber {
         userService.get()
-        val un = DekuUnitNumber.parseLabel(scanCode.padStart(12, '0'))
+        val un = DekuUnitNumber.parseLabel(scanCode)
 
         when {
             un.hasError -> {
@@ -550,7 +696,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun getAndCheckUnit(scanCode: String, stationNo: Int): ExportUnitAndOrder {
-        val un = DekuUnitNumber.parseLabel(scanCode.padStart(12,'0'))
+        val un = DekuUnitNumber.parseLabel(scanCode)
         var dekuNo: Long?
         when {
             un.hasError -> {
