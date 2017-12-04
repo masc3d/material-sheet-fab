@@ -66,9 +66,7 @@ open class ParcelProcessing {
             log.trace("Reset after Receive")
             return result
         }
-
         try {
-
             val events = messagesRepository.findUnprocessedMsg()
             events ?: return true
 
@@ -95,7 +93,6 @@ open class ParcelProcessing {
                         continue@loop
                     }
                     else -> {
-
                     }
                 }
 
@@ -128,7 +125,6 @@ open class ParcelProcessing {
                 if (infotext.length > 60)
                     infotext = infotext.substring(0, 60)
 
-
                 r.packstuecknummer = parcelNo.toDouble()
                 r.setDate(it.scanned)
                 r.setTime(it.scanned)
@@ -146,7 +142,6 @@ open class ParcelProcessing {
                 r.fehlercode = reason.oldValue.toUInteger()
 
                 r.erzeugerstation = "002"
-
 
                 val userId = it.userId
                 //if (userId != null) {
@@ -301,8 +296,8 @@ open class ParcelProcessing {
                                     fieldName = "lieferstatus",
                                     oldValue = oldValue?.toString() ?: "",
                                     newValue = r.kzStatus.toString(),
-                                    changer = "SP",
-                                    point = "IM"
+                                    changer = "Z",
+                                    point = "PP"
                             )
                         }
 
@@ -319,8 +314,8 @@ open class ParcelProcessing {
                                     oldValue = oldRecipient,
                                     //newValue = r.text,
                                     newValue = textForOrder,
-                                    changer = "I",
-                                    point = "IM"
+                                    changer = "Z",
+                                    point = "PP"
                             )
                         }
                         //if (!orderRecord.empfaenger.equals(r.text)) {
@@ -349,8 +344,8 @@ open class ParcelProcessing {
                                         fieldName = "dtauslieferzeit",
                                         oldValue = oldDeliveryTime,
                                         newValue = it.scanned.toTimestamp().toShortTime().toString(),
-                                        changer = "I",
-                                        point = "IM"
+                                        changer = "Z",
+                                        point = "PP"
                                 )
 
                             }
@@ -363,8 +358,8 @@ open class ParcelProcessing {
                                         fieldName = "dtauslieferdatum",
                                         oldValue = oldDeliveryDate,
                                         newValue = it.scanned.toGregorianLongDateString(),
-                                        changer = "I",
-                                        point = "IM"
+                                        changer = "Z",
+                                        point = "PP"
                                 )
                             }
 
@@ -415,8 +410,8 @@ open class ParcelProcessing {
                                                         fieldName = "lieferstatus",
                                                         oldValue = unitInBagOldValue?.toString() ?: "",
                                                         newValue = r.kzStatus.toString(),
-                                                        changer = "SP",
-                                                        point = "IM"
+                                                        changer = "Z",
+                                                        point = "PP"
                                                 )
                                             }
 
@@ -433,8 +428,8 @@ open class ParcelProcessing {
                                                         oldValue = unitInBagOldRecipient,
                                                         //newValue = r.text,
                                                         newValue = textForOrder,
-                                                        changer = "I",
-                                                        point = "IM"
+                                                        changer = "Z",
+                                                        point = "PP"
                                                 )
                                             }
                                             //if (!unitInBagOrderRecord.empfaenger.equals(r.text)) {
@@ -463,8 +458,8 @@ open class ParcelProcessing {
                                                             fieldName = "dtauslieferzeit",
                                                             oldValue = unitInBagOldDeliveryTime,
                                                             newValue = deliveryTime.toTimestamp().toShortTime().toString(),
-                                                            changer = "I",
-                                                            point = "IM"
+                                                            changer = "Z",
+                                                            point = "PP"
                                                     )
                                                 }
                                                 if (unitInBagOldDeliveryDate != deliveryDate.toGregorianLongDateString()) {
@@ -476,8 +471,8 @@ open class ParcelProcessing {
                                                             fieldName = "dtauslieferdatum",
                                                             oldValue = unitInBagOldDeliveryDate,
                                                             newValue = deliveryDate.toGregorianLongDateString(),
-                                                            changer = "I",
-                                                            point = "IM"
+                                                            changer = "Z",
+                                                            point = "PP"
                                                     )
                                                 }
 
@@ -511,8 +506,8 @@ open class ParcelProcessing {
                                                 fieldName = "lieferstatus",
                                                 oldValue = oldDeliveryStatus,
                                                 newValue = parcelRecord.lieferstatus.toString(),
-                                                changer = "SP",
-                                                point = "IM"
+                                                changer = "Z",
+                                                point = "PP"
                                         )
                                     }
                                     if (!oldDeliveryError.equals(parcelRecord.lieferfehler.toString())) {
@@ -522,8 +517,8 @@ open class ParcelProcessing {
                                                 fieldName = "lieferfehler",
                                                 oldValue = oldDeliveryError,
                                                 newValue = parcelRecord.lieferfehler.toString(),
-                                                changer = "SP",
-                                                point = "IM"
+                                                changer = "Z",
+                                                point = "PP"
                                         )
                                     }
                                 }
@@ -586,8 +581,8 @@ open class ParcelProcessing {
                                         fieldName = "dteingangdepot2",
                                         oldValue = oldValue,
                                         newValue = it.scanned.toGregorianLongDateString(),
-                                        changer = "SP",
-                                        point = "IM"
+                                        changer = "Z",
+                                        point = "PP"
                                 )
                             }
                         }

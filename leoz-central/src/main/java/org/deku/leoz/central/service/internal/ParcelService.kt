@@ -83,215 +83,215 @@ open class ParcelServiceV1 :
      */
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
-        log.debug(message.toString())
 
+        try {
+            log.debug(message.toString())
 
-//        throw ParcelProcessingException(
-//                detail = "test",
-//                status = Response.Status.BAD_REQUEST)
+            val events = message.events?.toList()
+                    ?: throw ParcelProcessingException("Missing data")
 
-        val events = message.events?.toList()
-                ?: throw ParcelProcessingException(
-                detail = "Missing data",
-                status = Response.Status.BAD_REQUEST)
+            log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
+            val nodeKey = message.nodeId
+            var nodeId: Int? = null
+            if (nodeKey != null) {
+                nodeId = nodeRepository.findByKey(nodeKey)?.nodeId
+            }
 
-        log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
-        val nodeKey = message.nodeId
-        var nodeId: Int? = null
-        if (nodeKey != null) {
-            nodeId = nodeRepository.findByKey(nodeKey)?.nodeId
-        }
+            //val parcelIds = events.map { it.parcelId }.toList()
+            //val mapParcels = orderRepository.getUnitNumbers(parcelIds)
 
-        //val parcelIds = events.map { it.parcelId }.toList()
-        //val mapParcels = orderRepository.getUnitNumbers(parcelIds)
+            events.forEach {
 
-        events.forEach {
+                val scannedDate = it.time.toTimestamp()
 
-            val scannedDate = it.time.toTimestamp()
-
-            //var parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
+                //var parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
 
 //            if (parcelNo == null) {
 //                parcelNo = 0
 //                log.info("Deleted Parcel. Id= [${it.parcelId}]")
 //            }
-            //dodo  events[].parcelScancode shuld be filled to handle deleted or moved parcel in mysql between deliverylist and delivered event
+                //dodo  events[].parcelScancode shuld be filled to handle deleted or moved parcel in mysql between deliverylist and delivered event
 
-            //val parcelScan = parcelNo.toString()
-            val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
-            recordMessages.userId = message.userId
-            //recordMessages.nodeId = message.nodeId
-            recordMessages.nodeIdX = nodeId
-            recordMessages.parcelId = it.parcelId
-            //recordMessages.parcelNo = parcelScan
-            recordMessages.scanned = scannedDate
-            recordMessages.eventValue = it.event
-            recordMessages.reasonId = it.reason
-            recordMessages.latitude = it.latitude
-            recordMessages.longitude = it.longitude
-            recordMessages.isProccessed = 0
-            if (!messagesRepository.saveMsg(recordMessages)) {
-                log.error("Problem saving parcel-messages")
-                throw ParcelProcessingException(
-                        detail = "saving parcel-messages fail",
-                        status = Response.Status.CONFLICT)
-            }
-            val parcelAddInfo = ParcelDeliveryAdditionalinfo()
+                //val parcelScan = parcelNo.toString()
+                val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
+                recordMessages.userId = message.userId
+                //recordMessages.nodeId = message.nodeId
+                recordMessages.nodeIdX = nodeId
+                recordMessages.parcelId = it.parcelId
+                //recordMessages.parcelNo = parcelScan
+                recordMessages.scanned = scannedDate
+                recordMessages.eventValue = it.event
+                recordMessages.reasonId = it.reason
+                recordMessages.latitude = it.latitude
+                recordMessages.longitude = it.longitude
+                recordMessages.isProccessed = 0
+                try {
+                    if (!messagesRepository.saveMsg(recordMessages)) {
+                        log.error("Problem saving parcel-messages")
+                        throw ParcelProcessingException("saving parcel-messages fail")
+                    }
+                } catch (e: Exception) {
+                    log.error("MySql fail " + e.toString())
+                    throw ParcelProcessingException("MySql saving parcel-messages fail " + e.toString())
+                }
+                val parcelAddInfo = ParcelDeliveryAdditionalinfo()
 
-            val damagedInfo = it.damagedInfo
-            if (damagedInfo != null) {
-                parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
-            }
+                val damagedInfo = it.damagedInfo
+                if (damagedInfo != null) {
+                    parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
+                }
 
-            val eventId = it.event
-            val event = Event.values().find { it.value == eventId }!!
-            val reasonId = it.reason
-            val reason = Reason.values().find { it.id == reasonId }!!
+                val eventId = it.event
+                val event = Event.values().find { it.value == eventId }!!
+                val reasonId = it.reason
+                val reason = Reason.values().find { it.id == reasonId }!!
 
 
-            when (event) {
-                Event.DELIVERED -> {
+                when (event) {
+                    Event.DELIVERED -> {
 
-                    var signature: String? = null
-                    var mimetype = "svg"
-                    when (reason) {
-                        Reason.POSTBOX -> {
-                            when (message.postboxDeliveryInfo) {
-                                null -> {
-                                }
-                                else -> {
-                                    val addInfo = message.postboxDeliveryInfo
-                                    if (addInfo != null) {
-                                        if (addInfo.pictureFileUid != null) {
-                                            parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
-                                        }
+                        var signature: String? = null
+                        var mimetype = "svg"
+                        when (reason) {
+                            Reason.POSTBOX -> {
+                                when (message.postboxDeliveryInfo) {
+                                    null -> {
                                     }
-                                }
-                            }
-                        }
-                        Reason.NORMAL -> {
-                            when (message.deliveredInfo) {
-                                null -> {
-                                    when (message.signatureOnPaperInfo) {
-                                        null -> {
-                                            // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
-                                        }
-                                        else -> {
-                                            val addInfo = message.signatureOnPaperInfo
-                                            if (addInfo != null) {
-                                                if (addInfo.recipient != null) {
-                                                    parcelAddInfo.recipient = addInfo.recipient
-                                                }
-                                                if (addInfo.pictureFileUid != null) {
-                                                    parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
-                                                }
+                                    else -> {
+                                        val addInfo = message.postboxDeliveryInfo
+                                        if (addInfo != null) {
+                                            if (addInfo.pictureFileUid != null) {
+                                                parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
                                             }
                                         }
                                     }
                                 }
-                                else -> {
-                                    val addInfo = message.deliveredInfo
-                                    if (addInfo != null) {
-                                        if (addInfo.recipient != null) {
-                                            parcelAddInfo.recipient = addInfo.recipient
-                                        }
-                                        if (addInfo.signature != null) {
-                                            signature = addInfo.signature
-                                        }
-                                        //if (addInfo.mimetype != null) {
-                                        mimetype = addInfo.mimetype
-                                        //}
-                                    }
-                                }
                             }
-                        }
-                        Reason.NEIGHBOUR -> {
-                            when (message.deliveredInfo) {
-                                null -> {
-                                    when (message.signatureOnPaperInfo) {
-                                        null -> {
-                                            // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
-                                        }
-                                        else -> {
-                                            val addInfo = message.signatureOnPaperInfo
-
-                                            if (addInfo != null) {
-                                                if (addInfo.recipient != null) {
-                                                    parcelAddInfo.recipient = addInfo.recipient
-                                                }
-                                                if (addInfo.pictureFileUid != null) {
-                                                    parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
+                            Reason.NORMAL -> {
+                                when (message.deliveredInfo) {
+                                    null -> {
+                                        when (message.signatureOnPaperInfo) {
+                                            null -> {
+                                                // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                            }
+                                            else -> {
+                                                val addInfo = message.signatureOnPaperInfo
+                                                if (addInfo != null) {
+                                                    if (addInfo.recipient != null) {
+                                                        parcelAddInfo.recipient = addInfo.recipient
+                                                    }
+                                                    if (addInfo.pictureFileUid != null) {
+                                                        parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                else -> {
-                                    val addInfo = message.deliveredInfo
-
-                                    if (addInfo != null) {
-                                        if (addInfo.recipient != null) {
-                                            parcelAddInfo.recipient = addInfo.recipient
+                                    else -> {
+                                        val addInfo = message.deliveredInfo
+                                        if (addInfo != null) {
+                                            if (addInfo.recipient != null) {
+                                                parcelAddInfo.recipient = addInfo.recipient
+                                            }
+                                            if (addInfo.signature != null) {
+                                                signature = addInfo.signature
+                                            }
+                                            //if (addInfo.mimetype != null) {
+                                            mimetype = addInfo.mimetype
+                                            //}
                                         }
-                                        if (addInfo.signature != null) {
-                                            signature = addInfo.signature
-                                        }
-                                        //if (addInfo.mimetype != null) {
-                                        mimetype = addInfo.mimetype
-                                        //}
                                     }
                                 }
                             }
+                            Reason.NEIGHBOUR -> {
+                                when (message.deliveredInfo) {
+                                    null -> {
+                                        when (message.signatureOnPaperInfo) {
+                                            null -> {
+                                                // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                            }
+                                            else -> {
+                                                val addInfo = message.signatureOnPaperInfo
+
+                                                if (addInfo != null) {
+                                                    if (addInfo.recipient != null) {
+                                                        parcelAddInfo.recipient = addInfo.recipient
+                                                    }
+                                                    if (addInfo.pictureFileUid != null) {
+                                                        parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else -> {
+                                        val addInfo = message.deliveredInfo
+
+                                        if (addInfo != null) {
+                                            if (addInfo.recipient != null) {
+                                                parcelAddInfo.recipient = addInfo.recipient
+                                            }
+                                            if (addInfo.signature != null) {
+                                                signature = addInfo.signature
+                                            }
+                                            //if (addInfo.mimetype != null) {
+                                            mimetype = addInfo.mimetype
+                                            //}
+                                        }
+                                    }
+                                }
+                            }
+                            else -> {
+                            }
                         }
-                        else -> {
+
+                        if (signature != null) {
+                            val sigFilename = saveImage(scannedDate, Location.SB, signature, UUID.randomUUID().toString(), message.userId, mimetype, Location.SB_Original)
+                            if (sigFilename != "") {
+                                //parcelRepository.setSignaturePath(parcelScan, sigPath)
+                                parcelAddInfo.pictureLocation = Location.SB.toString()
+                                parcelAddInfo.pictureFileName = sigFilename
+                            }
                         }
                     }
 
-                    if (signature != null) {
-                        val sigFilename = saveImage(scannedDate, Location.SB, signature, UUID.randomUUID().toString(), message.userId, mimetype, Location.SB_Original)
-                        if (sigFilename != "") {
-                            //parcelRepository.setSignaturePath(parcelScan, sigPath)
-                            parcelAddInfo.pictureLocation = Location.SB.toString()
-                            parcelAddInfo.pictureFileName = sigFilename
+                    Event.DELIVERY_FAIL -> {
+
+                    }
+                    Event.IMPORT_RECEIVE -> {
+
+                    }
+                    Event.IN_DELIVERY -> {
+
+
+                    }
+                    Event.NOT_IN_DELIVERY -> {
+
+                    }
+                    Event.EXPORT_LOADED -> {
+                        val addInfo = it.additionalInfo
+                        when (addInfo) {
+                            is AdditionalInfo.LoadingListInfo -> {
+                                //r.text = addInfo.loadingListNo.toString()
+                                //recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"
+                                //messagesRepository.saveMsg(recordMessages)
+
+                            }
                         }
                     }
-                }
-
-                Event.DELIVERY_FAIL -> {
-
-                }
-                Event.IMPORT_RECEIVE -> {
-
-                }
-                Event.IN_DELIVERY -> {
-
-
-                }
-                Event.NOT_IN_DELIVERY -> {
-
-                }
-                Event.EXPORT_LOADED -> {
-                    val addInfo = it.additionalInfo
-                    when (addInfo) {
-                        is AdditionalInfo.LoadingListInfo -> {
-                            //r.text = addInfo.loadingListNo.toString()
-                            //recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"
-                            //messagesRepository.saveMsg(recordMessages)
-
-                        }
+                    else -> {
                     }
                 }
-                else -> {
-                }
+                val mapper = ObjectMapper()
+                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                recordMessages.additionalInfo = mapper.writeValueAsString(parcelAddInfo)
+                messagesRepository.saveMsg(recordMessages)
             }
-            val mapper = ObjectMapper()
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            recordMessages.additionalInfo = mapper.writeValueAsString(parcelAddInfo)
-            messagesRepository.saveMsg(recordMessages)
-
-        }
-        if (!parcelProcessing.processMessages()) {
-            log.error("Problem processing parcel-messages")
+            if (!parcelProcessing.processMessages()) {
+                log.error("Problem processing parcel-messages")
+            }
+        } catch (e: Exception) {
+            throw ParcelProcessingException("ParcelMessage processing failed  " + e.toString())
         }
     }
 
@@ -379,10 +379,7 @@ open class ParcelServiceV1 :
                 Files.delete(bmpFile.toPath())
                 return ret
             } catch (e: Exception) {
-                log.error("Write img-File " + e.toString())
-                throw ParcelProcessingException(
-                        detail = "Write img-File fail",
-                        status = Response.Status.CONFLICT)
+                throw ParcelProcessingException("Write img-File fail")
                 return ""
             }
         } else
@@ -406,10 +403,7 @@ open class ParcelServiceV1 :
 
 
         } catch (e: Exception) {
-            log.error("convert to bmp :" + e.toString())
-            throw ParcelProcessingException(
-                    detail = "convert to bmp fail",
-                    status = Response.Status.CONFLICT)
+            throw ParcelProcessingException("convert to bmp fail")
             return false
         }
     }
@@ -423,10 +417,7 @@ open class ParcelServiceV1 :
 
 
         } catch (e: Exception) {
-            log.error("convert to photo bmp :" + e.toString())
-            throw ParcelProcessingException(
-                    detail = "convert to photo bmp fail",
-                    status = Response.Status.CONFLICT)
+            throw ParcelProcessingException("convert to photo bmp fail")
             return false
         }
     }
@@ -455,52 +446,6 @@ open class ParcelServiceV1 :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    class ParcelProcessingException(
-            type: URI = URI.create("about:blank"),
-            title: String? = null,
-            status: Status = Status.BAD_REQUEST,
-            detail: String? = null,
-            instance: URI? = null,
-            cause: ThrowableProblem? = null,
-            parameters: Map<String, Any>? = null
-    ) :
-            org.zalando.problem.AbstractThrowableProblem(
-                    type,
-                    title,
-                    status,
-                    detail,
-                    instance,
-                    cause,
-                    parameters
-            ) {
-        /**
-         * Constructor for use with JAX-RS (Response.Status)
-         */
-        constructor(
-                type: URI = URI.create("about:blank"),
-                title: String? = null,
-                status: Response.StatusType,
-                detail: String? = null,
-                instance: URI? = null,
-                cause: ThrowableProblem? = null,
-                parameters: Map<String, Any>? = null
-        ) :
-                this(
-                        type = type,
-                        title = title,
-                        status = Status.values().first { it.statusCode == status.statusCode },
-                        detail = detail,
-                        instance = instance,
-                        cause = cause,
-                        parameters = parameters
-                )
-
-        override fun getCause(): Exceptional? {
-            return super.cause
-        }
-
-    }
-
-
+    class ParcelProcessingException(message: String) : Exception(message)
 }
 
