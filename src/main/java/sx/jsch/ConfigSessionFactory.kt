@@ -11,20 +11,22 @@ import org.eclipse.jgit.util.FS
  * Common JSCH config session factory which uses public key as preferred authentication and disables strict host key checking
  */
 class ConfigSessionFactory : org.eclipse.jgit.transport.JschConfigSessionFactory() {
-    override fun configure(hc: OpenSshConfig.Host, session: Session) {
+    val connector by lazy {
+        ConnectorFactory.getDefault().createConnector() ?: throw IllegalStateException("No jsch agent proxy connector available")
+    }
+
+    override fun configure(host: OpenSshConfig.Host, session: Session) {
         session.setConfig("StrictHostKeyChecking", "false")
     }
 
-    override fun createDefaultJSch(fs: FS): JSch {
-        val con = ConnectorFactory.getDefault().createConnector()
+    override fun getJSch(hc: OpenSshConfig.Host?, fs: FS?): JSch {
+        return super.getJSch(hc, fs).also {
+            // Wire jsch agent proxy with session factory
+            it.identityRepository = RemoteIdentityRepository(this.connector)
 
-        if (con == null)
-            throw IllegalStateException("No jsch agent proxy connector available")
-
-        JSch.setConfig("PreferredAuthentications", "publickey")
-        val jsch = JSch()
-        val irepo = RemoteIdentityRepository(con)
-        jsch.identityRepository = irepo
-        return jsch
+            // Since jgit-4.9, the config repository will be set to OpenSshConfig, which will make USERAUTH fail since identity repository will be tried last
+            // {@see UserAuthPublicKey.start}
+            it.configRepository = null
+        }
     }
 }
