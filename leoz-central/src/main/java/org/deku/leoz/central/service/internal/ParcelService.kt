@@ -32,10 +32,14 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
+import org.zalando.problem.Exceptional
+import org.zalando.problem.Status
+import org.zalando.problem.ThrowableProblem
 import sx.io.serialization.Serializable
 import java.io.FileInputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.net.URI
 
 
 /**
@@ -81,8 +85,13 @@ open class ParcelServiceV1 :
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
         log.debug(message.toString())
 
+
+//        throw ParcelProcessingException(
+//                detail = "test",
+//                status = Response.Status.BAD_REQUEST)
+
         val events = message.events?.toList()
-                ?: throw DefaultProblem(
+                ?: throw ParcelProcessingException(
                 detail = "Missing data",
                 status = Response.Status.BAD_REQUEST)
 
@@ -123,14 +132,15 @@ open class ParcelServiceV1 :
             recordMessages.isProccessed = 0
             if (!messagesRepository.saveMsg(recordMessages)) {
                 log.error("Problem saving parcel-messages")
+                throw ParcelProcessingException(
+                        detail = "saving parcel-messages fail",
+                        status = Response.Status.CONFLICT)
             }
             val parcelAddInfo = ParcelDeliveryAdditionalinfo()
 
             val damagedInfo = it.damagedInfo
             if (damagedInfo != null) {
-                //if (damagedInfo.pictureFileUids != null) {
                 parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
-                //}
             }
 
             val eventId = it.event
@@ -369,7 +379,10 @@ open class ParcelServiceV1 :
                 Files.delete(bmpFile.toPath())
                 return ret
             } catch (e: Exception) {
-                log.error("Write File " + e.toString())
+                log.error("Write img-File " + e.toString())
+                throw ParcelProcessingException(
+                        detail = "Write img-File fail",
+                        status = Response.Status.CONFLICT)
                 return ""
             }
         } else
@@ -394,6 +407,9 @@ open class ParcelServiceV1 :
 
         } catch (e: Exception) {
             log.error("convert to bmp :" + e.toString())
+            throw ParcelProcessingException(
+                    detail = "convert to bmp fail",
+                    status = Response.Status.CONFLICT)
             return false
         }
     }
@@ -407,13 +423,16 @@ open class ParcelServiceV1 :
 
 
         } catch (e: Exception) {
-            log.error("convert to bmp :" + e.toString())
+            log.error("convert to photo bmp :" + e.toString())
+            throw ParcelProcessingException(
+                    detail = "convert to photo bmp fail",
+                    status = Response.Status.CONFLICT)
             return false
         }
     }
 
     fun File.replaceExtension(extension: String): File =
-        File(this.parentFile, this.nameWithoutExtension + "." + extension)
+            File(this.parentFile, this.nameWithoutExtension + "." + extension)
 
 
     /**
@@ -435,5 +454,53 @@ open class ParcelServiceV1 :
     override fun getStatus(scanCode: String): List<ParcelServiceV1.ParcelStatus> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    class ParcelProcessingException(
+            type: URI = URI.create("about:blank"),
+            title: String? = null,
+            status: Status = Status.BAD_REQUEST,
+            detail: String? = null,
+            instance: URI? = null,
+            cause: ThrowableProblem? = null,
+            parameters: Map<String, Any>? = null
+    ) :
+            org.zalando.problem.AbstractThrowableProblem(
+                    type,
+                    title,
+                    status,
+                    detail,
+                    instance,
+                    cause,
+                    parameters
+            ) {
+        /**
+         * Constructor for use with JAX-RS (Response.Status)
+         */
+        constructor(
+                type: URI = URI.create("about:blank"),
+                title: String? = null,
+                status: Response.StatusType,
+                detail: String? = null,
+                instance: URI? = null,
+                cause: ThrowableProblem? = null,
+                parameters: Map<String, Any>? = null
+        ) :
+                this(
+                        type = type,
+                        title = title,
+                        status = Status.values().first { it.statusCode == status.statusCode },
+                        detail = detail,
+                        instance = instance,
+                        cause = cause,
+                        parameters = parameters
+                )
+
+        override fun getCause(): Exceptional? {
+            return super.cause
+        }
+
+    }
+
+
 }
 
