@@ -21,13 +21,13 @@
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib</artifactId>
-      <version>1.1.50</version>
+      <version>1.2.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.sshd</groupId>
-      <artifactId>sshd-core</artifactId>
-      <version>1.6.0</version>
+      <artifactId>mina-sshd-core</artifactId>
+      <version>1.7.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

@@ -34,7 +34,7 @@ subprojects.findAll {
 }
 
 configure(
-        allprojects.findAll { it.name.startsWith('sx') }
+        allprojects.findAll { it.name.startsWith('sx') || it.name.startsWith('mina-sshd') }
 ) {
     apply plugin: 'java'
     apply plugin: 'maven-publish'

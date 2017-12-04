@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.apache.sshd</groupId>
+  <artifactId>mina-sshd-core</artifactId>
+  <version>1.7.0-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20171204.124852</timestamp>
+      <buildNumber>2</buildNumber>
+    </snapshot>
+    <lastUpdated>20171204124852</lastUpdated>
+  </versioning>
+</metadata>
