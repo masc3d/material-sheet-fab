@@ -24,6 +24,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
+import sx.jsch.ConfigSessionFactory
 import sx.junit.StandardTest
 
 import java.io.File
@@ -35,7 +36,7 @@ import java.io.File
 class JgitTest {
 
     val vcsPath by lazy {
-        val path = File("").absoluteFile.parentFile.parentFile
+        val path = File("").absoluteFile.parentFile
         println("Repository path [${path}]")
         path
     }
@@ -46,26 +47,8 @@ class JgitTest {
 
     @Before
     fun setup() {
-        // Wire jsch agent proxy with session factory
-        val sessionFactory = object : JschConfigSessionFactory() {
-            override fun configure(host: OpenSshConfig.Host, session: Session) {
-                session.setConfig("StrictHostKeyChecking", "false")
-            }
-
-            @Throws(JSchException::class)
-            override fun createDefaultJSch(fs: FS): JSch {
-                val con = ConnectorFactory.getDefault().createConnector() ?: throw IllegalStateException("No jsch agent proxy connector available")
-
-                JSch.setConfig("PreferredAuthentications", "publickey")
-                val jsch = JSch()
-                val irepo = RemoteIdentityRepository(con)
-                jsch.identityRepository = irepo
-                return jsch
-            }
-
-        }
         // Provide session factory to jgit
-        SshSessionFactory.setInstance(sessionFactory)
+        SshSessionFactory.setInstance(ConfigSessionFactory())
     }
 
     @Test
@@ -109,7 +92,7 @@ class JgitTest {
             println("${tagNameToFind}")
             // Walk revs and map to RevTag
             val tag = tagRefs.stream()
-                    .map { tr -> walk.parseTag(tr.objectId ) }
+                    .map { tr -> walk.parseTag(tr.objectId) }
                     .filter { t -> t.tagName == tagNameToFind }
                     .findFirst().orElse(null)
 
