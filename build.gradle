@@ -71,7 +71,7 @@ buildscript {
 
     ext {
         // TODO 4.9.0.201710071750-r breaks user auth
-        v_jgit = '4.8.0.201706111038-r'
+        v_jgit = '4.9.1.201712030800-r'
         v_jsch = '0.0.9'
     }
 

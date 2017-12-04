@@ -4,6 +4,7 @@ include ':sx-packager-gradle'
 include ':sx-rsync'
 include ':sx-ssh'
 include ':sx-serialization'
+include ':mina-sshd-core'
 
 // Mangle project paths
 project(':sx-common').projectDir = file('../libs/sx-common')
@@ -12,3 +13,5 @@ project(':sx-packager-gradle').projectDir = file('../libs/sx-packager-gradle')
 project(':sx-rsync').projectDir = file('../libs/sx-rsync')
 project(':sx-ssh').projectDir = file('../libs/sx-ssh')
 project(':sx-serialization').projectDir = file('../libs/sx-serialization')
+
+project(':mina-sshd-core').projectDir = file('../libs/mina-sshd/sshd-core')

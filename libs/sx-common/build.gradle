@@ -7,8 +7,9 @@ buildscript {
         v_jackson = '2.9.2'
         v_javax_persistence = '2.1.1'
         v_jersey = '2.26'
-        v_jgit = '4.8.0.201706111038-r'
-        v_jsch = '0.0.9'
+        v_jgit = '4.9.1.201712030800-r'
+        v_jsch = '0.1.54'
+        v_jsch_proxy = '0.0.9'
         v_querydsl = '4.1.4'
         v_kotlin = '1.2.0'
         v_koptional = '1.2.0'
@@ -97,10 +98,11 @@ dependencies {
             // JGit
             "org.eclipse.jgit:org.eclipse.jgit:$v_jgit",
             // For authenticating ssh/jgit against key agent
-            "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch",
-            "com.jcraft:jsch.agentproxy.jsch:$v_jsch",
-            "com.jcraft:jsch.agentproxy.sshagent:$v_jsch",
-            "com.jcraft:jsch.agentproxy.pageant:$v_jsch",
+            "com.jcraft:jsch:$v_jsch",
+            "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch_proxy",
+            "com.jcraft:jsch.agentproxy.jsch:$v_jsch_proxy",
+            "com.jcraft:jsch.agentproxy.sshagent:$v_jsch_proxy",
+            "com.jcraft:jsch.agentproxy.pageant:$v_jsch_proxy",
 
             // QueryDSL
             "com.querydsl:querydsl-core:$v_querydsl",

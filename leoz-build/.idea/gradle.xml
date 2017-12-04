@@ -9,6 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/../libs/mina-sshd/sshd-core" />
             <option value="$PROJECT_DIR$/../libs/sx-common" />
             <option value="$PROJECT_DIR$/../libs/sx-packager" />
             <option value="$PROJECT_DIR$/../libs/sx-packager-gradle" />
@@ -17,7 +18,6 @@
             <option value="$PROJECT_DIR$/../libs/sx-ssh" />
           </set>
         </option>
-        <option name="useAutoImport" value="true" />
       </GradleProjectSettings>
     </option>
   </component>
