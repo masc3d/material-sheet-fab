@@ -39,7 +39,7 @@ export class MsgService {
       if (resp instanceof HttpResponse) {
         json = JSON.parse(resp.body);
       } else {
-        json = JSON.parse(resp.error);
+        json = resp.error;
       }
       if (json.title) {
         msg = json.title
