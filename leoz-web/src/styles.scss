@@ -232,6 +232,10 @@ input {
   padding-left: 4px;
   max-width: 150px;
 }
+/* Buttons */
+.ui-button-text-only .ui-button-text {
+  padding: .25em 0.6em;
+}
 /* Dropdown */
 .ui-dropdown.ui-widget {
   width: calc(100% - 4px);
