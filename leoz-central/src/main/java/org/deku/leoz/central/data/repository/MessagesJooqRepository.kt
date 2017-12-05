@@ -15,10 +15,7 @@ class MessagesJooqRepository {
 
     lateinit var dslContext: DSLContext
 
-    fun saveMsg(tadParcelMessagesRecord: TadParcelMessagesRecord): Boolean {
-        return (tadParcelMessagesRecord.store() > 0)
-    }
-    fun findUnprocessedMsg(): List<TadParcelMessagesRecord>?{
+    fun findUnprocessedMsg(): List<TadParcelMessagesRecord>{
         return dslContext.select()
                 .from(Tables.TAD_PARCEL_MESSAGES)
                 .where(Tables.TAD_PARCEL_MESSAGES.IS_PROCCESSED.isFalse)

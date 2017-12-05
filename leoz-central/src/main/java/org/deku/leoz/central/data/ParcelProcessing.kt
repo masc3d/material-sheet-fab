@@ -20,6 +20,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -27,6 +28,8 @@ import java.nio.file.StandardCopyOption
 
 @Named
 open class ParcelProcessing {
+
+    class ParcelProcessingException(message: String, inner: Throwable? = null) : Exception(message, inner)
 
     @Inject
     private lateinit var storage: Storage
@@ -59,19 +62,18 @@ open class ParcelProcessing {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun processMessages(): Boolean {
-        var result = true
-
+    open fun processMessages() {
         if (parcelServiceSettings.skipParcelProcessing) {
-            log.trace("Reset after Receive")
-            return result
+            log.trace("Parcel processing is disabled")
+            return
         }
-        try {
-            val events = messagesRepository.findUnprocessedMsg()
-            events ?: return true
 
-            //events.forEach {
-            loop@ for (it in events) {
+        val events = messagesRepository.findUnprocessedMsg()
+
+        //events.forEach {
+        loop@ for (it in events) {
+            try {
+                //region Processing
                 var pathToDelete: Path? = null
 
                 val addInfo = it.additionalInfo?.toString() ?: "{}"
@@ -79,7 +81,6 @@ open class ParcelProcessing {
                 val mapper = ObjectMapper()
                 val parcelAddInfo: ParcelDeliveryAdditionalinfo = mapper.readValue(addInfo, ParcelDeliveryAdditionalinfo::class.java)
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
-
 
                 val parcel = it.parcelId ?: 0.toLong()
                 val parcelRecord = parcelRepository.getParcelByParcelId(parcel)
@@ -187,9 +188,10 @@ open class ParcelProcessing {
                         rDamaged.fehlercode = damaged_reason.oldValue.toUInteger()
 
                         rDamaged.erzeugerstation = r.erzeugerstation
-                        var damaged_existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 8, 31)
-                        if (!damaged_existStatus) {
-                            statusRepository.saveEvent(rDamaged)
+
+                        statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 8, 31).also {
+                            if (it == false)
+                                rDamaged.store()
                         }
                     }
                 }
@@ -525,35 +527,35 @@ open class ParcelProcessing {
                             }
                         }
                         /*val addInfo = it.additionalInfo
-                        if (addInfo != null) {
-                            when (addInfo) {
-                                is AdditionalInfo.NotDeliveredInfo -> {
-                                    r.text = addInfo.text ?: ""
-                                }
+                    if (addInfo != null) {
+                        when (addInfo) {
+                            is AdditionalInfo.NotDeliveredInfo -> {
+                                r.text = addInfo.text ?: ""
                             }
-                        }*/
+                        }
+                    }*/
                         when (reason) {
                             Reason.CUSTOMER_REFUSED -> {
 
                                 /*when (addInfo) {
-                                    is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
-                                            title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
-                                    )
-                                    is AdditionalInfo.NotDeliveredRefusedInfo -> {
-                                        r.text = addInfo.cause ?: ""
-                                    }
+                                is AdditionalInfo.EmptyInfo -> throw DefaultProblem(
+                                        title = "Missing structure [DeliveredInfo] for event [$event].[$reason]"
+                                )
+                                is AdditionalInfo.NotDeliveredRefusedInfo -> {
+                                    r.text = addInfo.cause ?: ""
+                                }
 
-                                }*/
+                            }*/
                             }
                             Reason.PARCEL_DAMAGED -> {
                                 /*when (addInfo) {
-                                    is AdditionalInfo.DamagedInfo -> {
-                                        r.text = addInfo.description ?: ""
-                                        if (addInfo.photo != null) {
+                                is AdditionalInfo.DamagedInfo -> {
+                                    r.text = addInfo.description ?: ""
+                                    if (addInfo.photo != null) {
 
-                                        }
                                     }
-                                }*/
+                                }
+                            }*/
                             }
                             else -> {
                             }
@@ -686,26 +688,24 @@ open class ParcelProcessing {
                 }
 
                 if (insertStatus) {
-                    if (!statusRepository.saveEvent(r))
-                        result = false
-                    else {
+                    try {
+                        r.store()
+                    } catch (e: Throwable) {
                         if (pathToDelete != null) {
                             Files.delete(pathToDelete)
                         }
+
+                        throw e
                     }
                 }
+                //endregion
 
-                if (result) {
-                    it.isProccessed = 1
-                    it.store()
-                }
+                it.isProccessed = 1
+                it.store()
+
+            } catch (e: Throwable) {
+                log.error("Parcel processing failed for [${it.id}]: ${e.message}", e)
             }
-
-        } catch (e: Exception) {
-            log.error(e.toString())
-            result = false
         }
-
-        return result
     }
 }

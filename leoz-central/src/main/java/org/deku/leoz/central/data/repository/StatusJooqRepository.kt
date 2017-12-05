@@ -21,16 +21,6 @@ class StatusJooqRepository {
     lateinit var dslContext: DSLContext
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    fun saveEvent(eventRecord: TblstatusRecord): Boolean {
-        try {
-            return (eventRecord.store() > 0)
-        } catch (e: Exception) {
-            log.error(e.toString())
-            return false
-        }
-    }
-
-
     fun statusExist(unitNo: Long, creator: String, status: Int, reason: Int): Boolean {
         val exist = dslContext.selectCount().from(Tblstatus.TBLSTATUS)
                 .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo.toDouble()))

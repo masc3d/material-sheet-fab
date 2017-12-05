@@ -1093,7 +1093,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             r.fehlercode = 0.toUInteger()
 
             r.erzeugerstation = stationNo.toString()
-            if (!statusRepository.saveEvent(r))
+
+            if (r.store() == 0)
                 log.error("Insert status failed")
         }
         existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), "A", 4, 0)
@@ -1110,7 +1111,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             r.fehlercode = 0.toUInteger()
 
             r.erzeugerstation = stationNo.toString()
-            if (!statusRepository.saveEvent(r))
+            if (r.store() == 0)
                 log.error("Insert status failed")
         }
 

@@ -20,8 +20,6 @@ import sx.mq.MqHandler
 import sx.time.toTimestamp
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileOutputStream
 import java.nio.file.Files
 import java.util.*
 import javax.imageio.ImageIO
@@ -36,9 +34,7 @@ import org.zalando.problem.Exceptional
 import org.zalando.problem.Status
 import org.zalando.problem.ThrowableProblem
 import sx.io.serialization.Serializable
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.net.URI
 
 
@@ -84,347 +80,309 @@ open class ParcelServiceV1 :
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
 
-        try {
-            log.debug(message.toString())
+        log.debug(message.toString())
 
-            val events = message.events?.toList()
-                    ?: throw ParcelProcessingException("Missing data")
+        val events = message.events?.toList()
+                ?: throw IllegalArgumentException("Missing data")
 
-            log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
-            val nodeKey = message.nodeId
-            var nodeId: Int? = null
-            if (nodeKey != null) {
-                nodeId = nodeRepository.findByKey(nodeKey)?.nodeId
-            }
+        log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
+        val nodeKey = message.nodeId
+        var nodeId: Int? = null
+        if (nodeKey != null) {
+            nodeId = nodeRepository.findByKey(nodeKey)?.nodeId
+        }
 
-            //val parcelIds = events.map { it.parcelId }.toList()
-            //val mapParcels = orderRepository.getUnitNumbers(parcelIds)
+        //val parcelIds = events.map { it.parcelId }.toList()
+        //val mapParcels = orderRepository.getUnitNumbers(parcelIds)
 
-            events.forEach {
+        events.forEach {
+            val scannedDate = it.time.toTimestamp()
 
-                val scannedDate = it.time.toTimestamp()
-
-                //var parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
+            //var parcelNo = mapParcels[it.parcelId.toInt()]?.toLong()
 
 //            if (parcelNo == null) {
 //                parcelNo = 0
 //                log.info("Deleted Parcel. Id= [${it.parcelId}]")
 //            }
-                //dodo  events[].parcelScancode shuld be filled to handle deleted or moved parcel in mysql between deliverylist and delivered event
+            //dodo  events[].parcelScancode shuld be filled to handle deleted or moved parcel in mysql between deliverylist and delivered event
 
-                //val parcelScan = parcelNo.toString()
-                val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
-                recordMessages.userId = message.userId
-                //recordMessages.nodeId = message.nodeId
-                recordMessages.nodeIdX = nodeId
-                recordMessages.parcelId = it.parcelId
-                //recordMessages.parcelNo = parcelScan
-                recordMessages.scanned = scannedDate
-                recordMessages.eventValue = it.event
-                recordMessages.reasonId = it.reason
-                recordMessages.latitude = it.latitude
-                recordMessages.longitude = it.longitude
-                recordMessages.isProccessed = 0
-                try {
-                    if (!messagesRepository.saveMsg(recordMessages)) {
-                        log.error("Problem saving parcel-messages")
-                        throw ParcelProcessingException("saving parcel-messages fail")
-                    }
-                } catch (e: Exception) {
-                    log.error("MySql fail " + e.toString())
-                    throw ParcelProcessingException("MySql saving parcel-messages fail " + e.toString())
-                }
-                val parcelAddInfo = ParcelDeliveryAdditionalinfo()
+            //val parcelScan = parcelNo.toString()
+            val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
+            recordMessages.userId = message.userId
+            //recordMessages.nodeId = message.nodeId
+            recordMessages.nodeIdX = nodeId
+            recordMessages.parcelId = it.parcelId
+            //recordMessages.parcelNo = parcelScan
+            recordMessages.scanned = scannedDate
+            recordMessages.eventValue = it.event
+            recordMessages.reasonId = it.reason
+            recordMessages.latitude = it.latitude
+            recordMessages.longitude = it.longitude
+            recordMessages.isProccessed = 0
 
-                val damagedInfo = it.damagedInfo
-                if (damagedInfo != null) {
-                    parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
-                }
+            recordMessages.store()
 
-                val eventId = it.event
-                val event = Event.values().find { it.value == eventId }!!
-                val reasonId = it.reason
-                val reason = Reason.values().find { it.id == reasonId }!!
+            val parcelAddInfo = ParcelDeliveryAdditionalinfo()
 
+            val damagedInfo = it.damagedInfo
+            if (damagedInfo != null) {
+                parcelAddInfo.damagedFileUIDs = damagedInfo.pictureFileUids.map { j -> j.toString() }.toList()
+            }
 
-                when (event) {
-                    Event.DELIVERED -> {
+            val eventId = it.event
+            val event = Event.values().find { it.value == eventId }!!
+            val reasonId = it.reason
+            val reason = Reason.values().find { it.id == reasonId }!!
 
-                        var signature: String? = null
-                        var mimetype = "svg"
-                        when (reason) {
-                            Reason.POSTBOX -> {
-                                when (message.postboxDeliveryInfo) {
-                                    null -> {
-                                    }
-                                    else -> {
-                                        val addInfo = message.postboxDeliveryInfo
-                                        if (addInfo != null) {
-                                            if (addInfo.pictureFileUid != null) {
-                                                parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
-                                            }
+            when (event) {
+                Event.DELIVERED -> {
+
+                    var signature: String? = null
+                    var mimetype = "svg"
+                    when (reason) {
+                        Reason.POSTBOX -> {
+                            when (message.postboxDeliveryInfo) {
+                                null -> {
+                                }
+                                else -> {
+                                    val addInfo = message.postboxDeliveryInfo
+                                    if (addInfo != null) {
+                                        if (addInfo.pictureFileUid != null) {
+                                            parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
                                         }
                                     }
                                 }
                             }
-                            Reason.NORMAL -> {
-                                when (message.deliveredInfo) {
-                                    null -> {
-                                        when (message.signatureOnPaperInfo) {
-                                            null -> {
-                                                // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
-                                            }
-                                            else -> {
-                                                val addInfo = message.signatureOnPaperInfo
-                                                if (addInfo != null) {
-                                                    if (addInfo.recipient != null) {
-                                                        parcelAddInfo.recipient = addInfo.recipient
-                                                    }
-                                                    if (addInfo.pictureFileUid != null) {
-                                                        parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
-                                                    }
+                        }
+                        Reason.NORMAL -> {
+                            when (message.deliveredInfo) {
+                                null -> {
+                                    when (message.signatureOnPaperInfo) {
+                                        null -> {
+                                            // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                        }
+                                        else -> {
+                                            val addInfo = message.signatureOnPaperInfo
+                                            if (addInfo != null) {
+                                                if (addInfo.recipient != null) {
+                                                    parcelAddInfo.recipient = addInfo.recipient
+                                                }
+                                                if (addInfo.pictureFileUid != null) {
+                                                    parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
                                                 }
                                             }
                                         }
                                     }
-                                    else -> {
-                                        val addInfo = message.deliveredInfo
-                                        if (addInfo != null) {
-                                            if (addInfo.recipient != null) {
-                                                parcelAddInfo.recipient = addInfo.recipient
-                                            }
-                                            if (addInfo.signature != null) {
-                                                signature = addInfo.signature
-                                            }
-                                            //if (addInfo.mimetype != null) {
-                                            mimetype = addInfo.mimetype
-                                            //}
+                                }
+                                else -> {
+                                    val addInfo = message.deliveredInfo
+                                    if (addInfo != null) {
+                                        if (addInfo.recipient != null) {
+                                            parcelAddInfo.recipient = addInfo.recipient
                                         }
+                                        if (addInfo.signature != null) {
+                                            signature = addInfo.signature
+                                        }
+                                        //if (addInfo.mimetype != null) {
+                                        mimetype = addInfo.mimetype
+                                        //}
                                     }
                                 }
                             }
-                            Reason.NEIGHBOUR -> {
-                                when (message.deliveredInfo) {
-                                    null -> {
-                                        when (message.signatureOnPaperInfo) {
-                                            null -> {
-                                                // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
-                                            }
-                                            else -> {
-                                                val addInfo = message.signatureOnPaperInfo
+                        }
+                        Reason.NEIGHBOUR -> {
+                            when (message.deliveredInfo) {
+                                null -> {
+                                    when (message.signatureOnPaperInfo) {
+                                        null -> {
+                                            // throw DefaultProblem(title = "Missing structure [signatureOnPaperInfo] for event [$event].[$reason]")
+                                        }
+                                        else -> {
+                                            val addInfo = message.signatureOnPaperInfo
 
-                                                if (addInfo != null) {
-                                                    if (addInfo.recipient != null) {
-                                                        parcelAddInfo.recipient = addInfo.recipient
-                                                    }
-                                                    if (addInfo.pictureFileUid != null) {
-                                                        parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
-                                                    }
+                                            if (addInfo != null) {
+                                                if (addInfo.recipient != null) {
+                                                    parcelAddInfo.recipient = addInfo.recipient
+                                                }
+                                                if (addInfo.pictureFileUid != null) {
+                                                    parcelAddInfo.pictureFileUID = addInfo.pictureFileUid.toString()
                                                 }
                                             }
                                         }
                                     }
-                                    else -> {
-                                        val addInfo = message.deliveredInfo
+                                }
+                                else -> {
+                                    val addInfo = message.deliveredInfo
 
-                                        if (addInfo != null) {
-                                            if (addInfo.recipient != null) {
-                                                parcelAddInfo.recipient = addInfo.recipient
-                                            }
-                                            if (addInfo.signature != null) {
-                                                signature = addInfo.signature
-                                            }
-                                            //if (addInfo.mimetype != null) {
-                                            mimetype = addInfo.mimetype
-                                            //}
+                                    if (addInfo != null) {
+                                        if (addInfo.recipient != null) {
+                                            parcelAddInfo.recipient = addInfo.recipient
                                         }
+                                        if (addInfo.signature != null) {
+                                            signature = addInfo.signature
+                                        }
+                                        //if (addInfo.mimetype != null) {
+                                        mimetype = addInfo.mimetype
+                                        //}
                                     }
                                 }
                             }
-                            else -> {
-                            }
                         }
-
-                        if (signature != null) {
-                            val sigFilename = saveImage(scannedDate, Location.SB, signature, UUID.randomUUID().toString(), message.userId, mimetype, Location.SB_Original)
-                            if (sigFilename != "") {
-                                //parcelRepository.setSignaturePath(parcelScan, sigPath)
-                                parcelAddInfo.pictureLocation = Location.SB.toString()
-                                parcelAddInfo.pictureFileName = sigFilename
-                            }
+                        else -> {
                         }
                     }
 
-                    Event.DELIVERY_FAIL -> {
+                    if (signature != null) {
+                        val sigFilename = saveImage(
+                                date = scannedDate,
+                                location = Location.SB,
+                                image = signature,
+                                number = UUID.randomUUID().toString(),
+                                userId = message.userId,
+                                mimetype = mimetype,
+                                locationOriginal = Location.SB_Original)
 
-                    }
-                    Event.IMPORT_RECEIVE -> {
+                        if (sigFilename.isBlank())
+                            throw IllegalStateException("saveImage returned empty filename")
 
-                    }
-                    Event.IN_DELIVERY -> {
-
-
-                    }
-                    Event.NOT_IN_DELIVERY -> {
-
-                    }
-                    Event.EXPORT_LOADED -> {
-                        val addInfo = it.additionalInfo
-                        when (addInfo) {
-                            is AdditionalInfo.LoadingListInfo -> {
-                                //r.text = addInfo.loadingListNo.toString()
-                                //recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"
-                                //messagesRepository.saveMsg(recordMessages)
-
-                            }
-                        }
-                    }
-                    else -> {
+                        parcelAddInfo.pictureLocation = Location.SB.toString()
+                        parcelAddInfo.pictureFileName = sigFilename
                     }
                 }
-                val mapper = ObjectMapper()
-                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                recordMessages.additionalInfo = mapper.writeValueAsString(parcelAddInfo)
-                messagesRepository.saveMsg(recordMessages)
+
+                Event.DELIVERY_FAIL -> {
+
+                }
+                Event.IMPORT_RECEIVE -> {
+
+                }
+                Event.IN_DELIVERY -> {
+
+
+                }
+                Event.NOT_IN_DELIVERY -> {
+
+                }
+                Event.EXPORT_LOADED -> {
+                    val addInfo = it.additionalInfo
+                    when (addInfo) {
+                        is AdditionalInfo.LoadingListInfo -> {
+                            //r.text = addInfo.loadingListNo.toString()
+                            //recordMessages.additionalInfo = "{\"text\":\"" + addInfo.loadingListNo.toString() + "\"}"
+                            //messagesRepository.saveMsg(recordMessages)
+
+                        }
+                    }
+                }
+                else -> {
+                }
             }
-            if (!parcelProcessing.processMessages()) {
-                log.error("Problem processing parcel-messages")
-            }
-        } catch (e: Exception) {
-            throw ParcelProcessingException("ParcelMessage processing failed  " + e.toString())
+            val mapper = ObjectMapper()
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            recordMessages.additionalInfo = mapper.writeValueAsString(parcelAddInfo)
+
+            recordMessages.store()
+        }
+
+        try {
+            parcelProcessing.processMessages()
+        } catch (e: Throwable) {
+            log.error(e.message, e)
         }
     }
 
-    fun saveImage(date: Date, location: Location, image: String?, number: String, userId: Int?, mimetype: String, locationOriginal: Location?): String {
-        if (image != null) {
-            val keepOriginal = (locationOriginal != null) //true else false
-            val pathMobile = storage.mobileDataDirectory.toPath()
+    /**
+     * Save SVG primary image. Convert to BMP via JPG to be moved in Parcelprocessing
+     * @return Destination path
+     */
+    fun saveImage(date: Date, location: Location, image: String, number: String, userId: Int?, mimetype: String, locationOriginal: Location?): String {
+        val keepOriginal = (locationOriginal != null) //true else false
+        val pathMobile = storage.mobileDataDirectory.toPath()
 
-            val addInfo = userId.toString()//.substringBefore("-")
-            val mobileFilename = FileName(number, date, location, pathMobile, addInfo)
-            val relPathMobile = mobileFilename.getPath()
+        val addInfo = userId.toString()//.substringBefore("-")
+        val mobileFilename = FileName(number, date, location, pathMobile, addInfo)
+        val relPathMobile = mobileFilename.getPath()
 
-            val path = storage.workTmpDataDirectory.toPath()
+        val path = storage.workTmpDataDirectory.toPath()
 
-            val mobileWorkFilename = FileName(number, date, location, path, addInfo)
-            val relPath = mobileWorkFilename.getPath()
+        val mobileWorkFilename = FileName(number, date, location, path, addInfo)
+        val relPath = mobileWorkFilename.getPath()
 
-            val fileExtension: String
-            when (mimetype) {
-                MediaType.APPLICATION_SVG_XML -> fileExtension = "svg"
-                else -> fileExtension = "jpg"
-            }
-            val file = mobileFilename.getFilenameWithoutExtension() + "." + fileExtension
-            val pathFile = relPath.resolve(file).toFile().toPath()
-            val pathFileMobile = relPathMobile.resolve(file).toFile().toPath()
-
-            try {
-                var imgPath = pathFile
-                if (fileExtension.equals("svg")) {
-                    // Write image data to svg file (TODO: is it necessary?)
-                    Files.write(imgPath,
-                            image.toByteArray(),
-                            java.nio.file.StandardOpenOption.CREATE_NEW)
-
-                    val inFile = imgPath.toFile()
-                    val outFile = inFile.replaceExtension("jpg")
-
-                    FileInputStream(inFile).use { input ->
-                        FileOutputStream(outFile).use { output ->
-                            this.transcodeSvg2Jpg(input, output)
-                        }
-                    }
-
-                    imgPath = outFile.toPath()
-                } else {
-                    val img = Base64.getDecoder().decode(image)
-                    Files.write(pathFile, img, java.nio.file.StandardOpenOption.CREATE_NEW).toString()
-                }
-
-                if (keepOriginal) {
-                    val mobileOriginalFilename = FileName(number, date, locationOriginal!!, pathMobile, addInfo)
-                    val relPathMobileOriginal = mobileOriginalFilename.getPath()
-                    val pathFileMobileOriginal = relPathMobileOriginal.resolve(file).toFile().toPath()
-                    Files.copy(pathFile, pathFileMobileOriginal)
-                }
-
-                val bmpFile = imgPath.toFile().parentFile.toPath()
-                        .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
-                val bmpFileMobile = pathFileMobile.toFile().parentFile.toPath()
-                        .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
-
-
-                val ret: String
-                if (fileExtension.equals("svg")) {
-                    if (writeAsBMP(imgPath, bmpFile.toPath())) {
-                        Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
-                        //ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
-                        ret = bmpFileMobile.absoluteFile.name
-                    } else
-                    //ret = pathFile.toString().substringAfter(path.toString()).substring(1)
-                        ret = pathFile.toFile().absoluteFile.name
-                } else {
-                    if (writePhotoAsBMP(imgPath, bmpFile.toPath())) {
-                        Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
-                        //ret = bmpFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
-                        ret = bmpFileMobile.absoluteFile.name
-                    } else
-                    //ret = pathFile.toString().substringAfter(path.toString()).substring(1)
-                        ret = pathFile.toFile().absoluteFile.name
-                }
-                if (!imgPath.equals(pathFile)) {
-                    Files.delete(imgPath)
-                }
-                Files.delete(pathFile)
-                Files.delete(bmpFile.toPath())
-                return ret
-            } catch (e: Exception) {
-                throw ParcelProcessingException("Write img-File fail")
-                return ""
-            }
-        } else
-            return ""
-    }
-
-    fun writeAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path): Boolean {
-        try {
-            val bufferedImageLoad = ImageIO.read(File(pathFile.toUri())) //ImageIO.read(ByteArrayInputStream(img))
-            val fileObj = File(pathBmpFile.toUri())
-
-            val bufferedImage = BufferedImage(bufferedImageLoad.width, bufferedImageLoad.height, BufferedImage.TYPE_BYTE_BINARY)
-
-            for (y in 0..bufferedImageLoad.height - 1) {
-                for (x in 0..bufferedImageLoad.width - 1) {
-                    bufferedImage.setRGB(x, y, bufferedImageLoad.getRGB(x, y))
-                }
-            }
-
-            return ImageIO.write(bufferedImage, "bmp", fileObj)
-
-
-        } catch (e: Exception) {
-            throw ParcelProcessingException("convert to bmp fail")
-            return false
+        val fileExtension: String
+        when (mimetype) {
+            MediaType.APPLICATION_SVG_XML -> fileExtension = "svg"
+            else -> throw UnsupportedOperationException("Mime type ${mimetype}] not supported")
         }
+
+        val file = mobileFilename.getFilenameWithoutExtension() + "." + fileExtension
+        val pathFile = relPath.resolve(file).toFile().toPath()
+        val pathFileMobile = relPathMobile.resolve(file).toFile().toPath()
+
+        var imgPath = pathFile
+
+        Files.write(imgPath,
+                image.toByteArray(),
+                java.nio.file.StandardOpenOption.CREATE_NEW)
+
+        val inFile = imgPath.toFile()
+        val outFile = inFile.replaceExtension("jpg")
+
+        FileInputStream(inFile).use { input ->
+            FileOutputStream(outFile).use { output ->
+                this.transcodeSvg2Jpg(input, output)
+            }
+        }
+
+        imgPath = outFile.toPath()
+
+        if (keepOriginal) {
+            val mobileOriginalFilename = FileName(number, date, locationOriginal!!, pathMobile, addInfo)
+            val relPathMobileOriginal = mobileOriginalFilename.getPath()
+            val pathFileMobileOriginal = relPathMobileOriginal.resolve(file).toFile().toPath()
+            Files.copy(pathFile, pathFileMobileOriginal)
+        }
+
+        val bmpFile = imgPath.toFile().parentFile.toPath()
+                .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
+        val bmpFileMobile = pathFileMobile.toFile().parentFile.toPath()
+                .resolve(imgPath.toFile().nameWithoutExtension + ".bmp").toFile()
+
+
+        writeAsBMP(imgPath, bmpFile.toPath())
+
+        val ret: String = bmpFileMobile.absoluteFile.name
+
+        Files.copy(bmpFile.toPath(), bmpFileMobile.toPath())
+
+        if (!imgPath.equals(pathFile)) {
+            Files.delete(imgPath)
+        }
+        Files.delete(pathFile)
+        Files.delete(bmpFile.toPath())
+
+        return ret
     }
 
-    fun writePhotoAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path): Boolean {
-        try {
-            val bufferedImage = ImageIO.read(File(pathFile.toUri()))
-            val fileObj = File(pathBmpFile.toUri())
+    fun writeAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path) {
+        val bufferedImageLoad = ImageIO.read(File(pathFile.toUri())) //ImageIO.read(ByteArrayInputStream(img))
+        val fileObj = File(pathBmpFile.toUri())
 
-            return ImageIO.write(bufferedImage, "bmp", fileObj)
+        val bufferedImage = BufferedImage(bufferedImageLoad.width, bufferedImageLoad.height, BufferedImage.TYPE_BYTE_BINARY)
 
+        for (y in 0..bufferedImageLoad.height - 1) {
+            for (x in 0..bufferedImageLoad.width - 1) {
+                bufferedImage.setRGB(x, y, bufferedImageLoad.getRGB(x, y))
+            }
+        }
 
-        } catch (e: Exception) {
-            throw ParcelProcessingException("convert to photo bmp fail")
-            return false
+        ImageIO.write(bufferedImage, "bmp", fileObj).also {
+            if (it == false)
+                throw IOException("No appropriate writer found")
         }
     }
 
     fun File.replaceExtension(extension: String): File =
             File(this.parentFile, this.nameWithoutExtension + "." + extension)
-
 
     /**
      * Transcode svg to jpeg
@@ -445,7 +403,5 @@ open class ParcelServiceV1 :
     override fun getStatus(scanCode: String): List<ParcelServiceV1.ParcelStatus> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-    class ParcelProcessingException(message: String) : Exception(message)
 }
 
