@@ -15,6 +15,7 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import io.reactivex.functions.BiPredicate
 import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
@@ -400,7 +401,10 @@ class VehicleLoadingScreen :
 
         // Damaged parcels
         Observable.combineLatest(
-                this.deliveryList.damagedParcels,
+                // Fire when damaged parcels change
+                this.deliveryList.damagedParcels
+                        .map { it.value }
+                        .distinctUntilChanged(),
                 // Also fire when selected section changes */
                 this.parcelListAdapter.selectedSectionProperty.filter {
                     it.value != this.damagedSection
