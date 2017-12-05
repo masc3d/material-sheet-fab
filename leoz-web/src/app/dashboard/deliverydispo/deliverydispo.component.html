@@ -26,17 +26,17 @@
             <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
               <p-radioButton name="dispo" value="dispo" label="{{'withStock' | translate}}"></p-radioButton>
             </div>
-            <div class="ui-g-12 ui-g-nopad" style="padding: 10px 0 10px 0;">
+            <div class="ui-g-12 ui-g-nopad" style="padding: 10px 0 10px 0; max-width: 110px">
               <p-calendar [showIcon]="true" [readonlyInput]="true" [dateFormat]="dateFormatPrimeng" [locale]="locale"
                           [(ngModel)]="deliveryDate" [selectOtherMonths]="true">
               </p-calendar>
             </div>
         </p-fieldset>
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
-            <button pButton type="button" label="{{'select' | translate}}"></button>
+            <button pButton type="button" label="{{'select' | translate}}" style="width : 100%"></button>
           </div>
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
-            <button pButton type="button" label="{{'hidePU' | translate}}"></button>
+            <button pButton type="button" label="{{'hidePU' | translate}}" style="width : 100%"></button>
           </div>
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
             <p-tabView>
@@ -77,7 +77,7 @@
         </p-fieldset>
 
           <div class="ui-g-12 ui-g-nopad" style="padding-top: 10px">
-            <button pButton type="button" label="{{'help' | translate}}"></button>
+            <button pButton type="button" label="{{'help' | translate}}" style="width : 100%"></button>
           </div>
       </div>
 
