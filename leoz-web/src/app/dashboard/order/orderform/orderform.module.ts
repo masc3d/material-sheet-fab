@@ -20,6 +20,8 @@ import { ContactComponent } from './contact/contact.component';
 import { ClientComponent } from './client/client.component';
 import { InfoComponent } from './info/info.component';
 import { ProductspecComponent } from './productspec/productspec.component';
+import { PackagesComponent } from './packages/packages.component';
+import { SystemComponent } from '../system/system.component';
 
 @NgModule( {
   imports: [
@@ -42,7 +44,9 @@ import { ProductspecComponent } from './productspec/productspec.component';
     ContactComponent,
     InfoComponent,
     ClientComponent,
-    ProductspecComponent
+    ProductspecComponent,
+    PackagesComponent,
+    SystemComponent
   ],
   exports: [ OrderformComponent ],
   providers: []
