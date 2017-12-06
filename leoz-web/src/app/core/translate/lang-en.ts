@@ -391,6 +391,10 @@ export const LANG_EN_TRANS = {
   'label': 'Label',
   'waybill': 'Waybill',
   'PickUp': 'Pick Up',
+  // orderlist
+  'senddate': 'Senddate',
+  'avisnumber': 'Avisnumber',
+  'shipmentoverview_max_10_days': 'Shipmentoverview (max. 10 days)',
   // statusbar
   'not_connected_to_leoz': 'not connected to leoz',
   'connected_to_leoz': 'connected to leoz',

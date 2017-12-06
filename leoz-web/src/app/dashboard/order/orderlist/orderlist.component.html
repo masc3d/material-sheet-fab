@@ -1,3 +1,21 @@
-<form [formGroup]="orderlistForm" style="padding-top: 10px">
-  orderlist
-</form>
+<div class="ui-fluid" style="padding-top: 10px;">
+  <div class="ui-g">
+    <p-dataTable resizableColumns="false" responsive="true"
+                 [emptyMessage]="'noDataAvailable' | translate"
+                 [style]="{'min-height': '600px'}">
+      <p-header>
+        {{ 'shipmentoverview_max_10_days' | translate }}
+      </p-header>
+      <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
+      <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
+      <p-column field="package-No" header="{{'package-No' | translate}}" [sortable]="true"></p-column>
+      <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
+      <p-column field="weight" header="{{'weight' | translate}}" [sortable]="true"></p-column>
+      <p-column field="senddate" header="{{'senddate' | translate}}" [sortable]="true"></p-column>
+      <p-column field="deliverydate" header="{{'deliverydate' | translate}}" [sortable]="true"></p-column>
+      <p-column field="deadline" header="{{'deadline' | translate}}" [sortable]="true"></p-column>
+      <p-column field="avisnumber" header="{{'avisnumber' | translate}}" [sortable]="true"></p-column>
+    </p-dataTable>
+  </div>
+</div>
+
