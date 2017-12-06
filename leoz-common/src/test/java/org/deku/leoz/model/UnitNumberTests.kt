@@ -1,15 +1,20 @@
 package org.deku.leoz.model
 
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.experimental.categories.Category
+import org.slf4j.LoggerFactory
 import sx.junit.StandardTest
+import sx.log.slf4j.*
 
 /**
  * Created by masc on 05.07.17.
  */
 @Category(StandardTest::class)
 class UnitNumberTests {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     val BACKSEAL_LABELS = listOf(
             "900202741551",
             "900202816839",
@@ -191,5 +196,13 @@ class UnitNumberTests {
                 Assert.assertEquals(un.value.type, UnitNumber.Type.Parcel)
             }
         }
+    }
+
+    @Ignore
+    @Test
+    fun testCustomUnitNumber() {
+        log.trace(
+                DekuUnitNumber.parse("83554720722").value.label
+        )
     }
 }
