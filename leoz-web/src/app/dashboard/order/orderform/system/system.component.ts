@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
-import { TranslateService } from '../../../core/translate/translate.service';
+import { AbstractTranslateComponent } from '../../../../core/translate/abstract-translate.component';
+import { TranslateService } from '../../../../core/translate/translate.service';
 
 @Component({
   selector: 'app-system',
