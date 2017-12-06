@@ -690,12 +690,13 @@ open class ParcelProcessing {
                 if (insertStatus) {
                     try {
                         r.store()
+
                     } catch (e: Throwable) {
-                        if (pathToDelete != null) {
-                            Files.delete(pathToDelete)
-                        }
 
                         throw e
+                    }
+                    if (pathToDelete != null) {
+                        Files.delete(pathToDelete)
                     }
                 }
                 //endregion
