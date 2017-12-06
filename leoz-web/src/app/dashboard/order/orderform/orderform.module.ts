@@ -21,7 +21,7 @@ import { ClientComponent } from './client/client.component';
 import { InfoComponent } from './info/info.component';
 import { ProductspecComponent } from './productspec/productspec.component';
 import { PackagesComponent } from './packages/packages.component';
-import { SystemComponent } from '../system/system.component';
+import { SystemComponent } from './system/system.component';
 
 @NgModule( {
   imports: [
