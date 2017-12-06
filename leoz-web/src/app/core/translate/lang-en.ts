@@ -395,6 +395,11 @@ export const LANG_EN_TRANS = {
   'senddate': 'Senddate',
   'avisnumber': 'Avisnumber',
   'shipmentoverview_max_10_days': 'Shipmentoverview (max. 10 days)',
+  // orderprofiles
+  'list_of_profiles': 'List of profiles',
+  'list_of_active_controls': 'List of active controls',
+  'list_of_deactivated_controls': 'List of non-active controls',
+  'profilename': 'Profilename',
   // statusbar
   'not_connected_to_leoz': 'not connected to leoz',
   'connected_to_leoz': 'connected to leoz',

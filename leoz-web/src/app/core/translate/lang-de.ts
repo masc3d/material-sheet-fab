@@ -395,6 +395,11 @@ export const LANG_DE_TRANS = {
   'senddate': 'Verladedatum',
   'avisnumber': 'Avisnummer',
   'shipmentoverview_max_10_days': 'Sendungsübersicht (max. 10 Tage)',
+  // orderprofiles
+  'list_of_profiles': 'Liste der Profile',
+  'list_of_active_controls': 'Liste der aktiven Steuerelemente',
+  'list_of_deactivated_controls': 'Liste der deaktiven Steuerelemente',
+  'profilename': 'Profilname',
   // statusbar
   'not_connected_to_leoz': 'nicht mit leoz verbunden',
   'connected_to_leoz': 'mit leoz verbunden',
