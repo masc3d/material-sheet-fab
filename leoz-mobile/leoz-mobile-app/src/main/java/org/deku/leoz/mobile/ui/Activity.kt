@@ -1175,9 +1175,6 @@ abstract class Activity : BaseActivity(),
                     .bindToLifecycle(this)
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
-                            onComplete = {
-                                log.trace("LocationSettings satisfied")
-                            },
                             onError = {
                                 log.warn("LocationSettings not satisfied!", it)
                             }
