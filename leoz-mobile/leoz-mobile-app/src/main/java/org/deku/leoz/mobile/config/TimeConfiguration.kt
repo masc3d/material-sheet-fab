@@ -19,7 +19,7 @@ class TimeConfiguration {
                         context = instance(),
                         ntpHost = remoteSettings.ntp.host,
                         maxRetryCount = 5,
-                        trueTimeInternalLoggingEnabled = true
+                        trueTimeInternalLoggingEnabled = false
                 )
             }
         }
