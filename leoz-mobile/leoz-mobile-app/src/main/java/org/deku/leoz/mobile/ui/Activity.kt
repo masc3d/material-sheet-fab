@@ -751,7 +751,6 @@ abstract class Activity : BaseActivity(),
         this.actionItemsProperty
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
-                    log.info("ACTION ITEMS CAHNGED")
                     val items = mutableListOf(*it.value.toTypedArray())
 
                     // TODO Do not generally expect Motorola devices as a professional scanner, as there are Moto android consumer devices too.
@@ -874,7 +873,7 @@ abstract class Activity : BaseActivity(),
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { enabled ->
-                    log.info("AIDC reader ${if (enabled.value) "enabled" else "disabled"}")
+                    log.debug("AIDC reader ${if (enabled.value) "enabled" else "disabled"}")
                     val aidcActionItem = this.uxActionOverlay.items
                             .filter {
                                 (it.id == R.id.action_aidc_camera || it.id == R.id.action_aidc_keyboard)

@@ -613,7 +613,6 @@ class DeliveryStopProcessScreen :
         this.processAdapter.itemClickEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe { item ->
-                    log.debug("ONITEMCLICK")
 
                     ((item as? SimpleVmItem<*>)
                             ?.viewModel as? OrderTaskViewModel)

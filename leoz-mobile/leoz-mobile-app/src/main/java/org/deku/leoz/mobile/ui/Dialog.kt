@@ -23,36 +23,6 @@ abstract class Dialog(@LayoutRes val dialogLayoutId: Int) : RxAppCompatDialogFra
         this.activity!!.layoutInflater.inflate(dialogLayoutId, null)
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        log.debug("ONATTACH")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        log.debug("ONDETACH")
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        log.debug("ONCREATE")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        log.debug("ONDESTROY")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        log.debug("ONPAUSE")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        log.debug("ONRESUME")
-    }
-
     override fun getContext(): Context =
             super.getContext() ?: throw IllegalStateException("Context not available")
 }

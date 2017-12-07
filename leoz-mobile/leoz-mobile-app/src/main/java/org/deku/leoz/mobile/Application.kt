@@ -110,7 +110,7 @@ open class Application : MultiDexApplication() {
     }
 
     override fun onTerminate() {
-        log.debug("ONTERMINATE")
+        log.trace("ONTERMINATE")
 //        this.unregisterBroadcastReceiver()
         stopLocationServices()
         super.onTerminate()

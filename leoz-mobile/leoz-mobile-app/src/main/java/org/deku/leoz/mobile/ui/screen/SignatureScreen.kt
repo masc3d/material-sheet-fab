@@ -156,17 +156,14 @@ class SignatureScreen
 
     // SignaturePad listeners
     override fun onStartSigning() {
-        log.debug("ONSTARTSIGNING")
         this.update()
     }
 
     override fun onClear() {
-        log.debug("ONCLEAR")
         this.update()
     }
 
     override fun onSigned() {
-        log.debug("ONSIGNED")
         this.update()
     }
 

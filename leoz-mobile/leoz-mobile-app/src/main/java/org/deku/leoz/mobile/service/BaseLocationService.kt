@@ -112,7 +112,7 @@ abstract class BaseLocationService: Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        log.debug("ONSTARTCOMMAND")
+        log.trace("ONSTARTCOMMAND")
 
         if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -130,12 +130,12 @@ abstract class BaseLocationService: Service() {
 
     override fun onCreate() {
         super.onCreate()
-        log.debug("ONCREATE")
+        log.trace("ONCREATE")
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             gnssStatusCallback = object : GnssStatus.Callback() {
                 override fun onSatelliteStatusChanged(status: GnssStatus?) {
-                    log.debug("ONSATELLITESTATUSCHANGED")
+                    log.trace("ONSATELLITESTATUSCHANGED")
                     locationServices.locationSettingsChangedEventProperty.onNext(Unit)
                 }
             }
@@ -150,7 +150,7 @@ abstract class BaseLocationService: Service() {
     }
 
     override fun onDestroy() {
-        log.debug("ONDESTROY")
+        log.trace("ONDESTROY")
         this.unregisterBroadcastReceiver()
         stopForeground(true)
 
