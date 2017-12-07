@@ -17,6 +17,7 @@ import org.deku.leoz.mobile.Storage
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
+import sx.ConfigurationMap
 import sx.mq.mqtt.channel
 
 /**
@@ -29,12 +30,23 @@ class LogConfiguration {
         LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
     }
 
+    @sx.ConfigurationMapPath("logging")
+    class LogSettings(private val map: sx.ConfigurationMap) {
+        val level: Map<String, String> by map.value(mapOf())
+    }
+
     companion object {
+        private val log by lazy { LoggerFactory.getLogger(LogConfiguration::class.java) }
+
         private val loggerContext by lazy {
             LoggerFactory.getILoggerFactory() as LoggerContext
         }
 
         val module = Kodein.Module {
+            bind<LogSettings>() with eagerSingleton {
+                LogSettings(instance<ConfigurationMap>())
+            }
+
             bind<LogMqAppender>() with singleton {
                 val mqttChannels = instance<MqttEndpoints>()
 
@@ -100,6 +112,8 @@ class LogConfiguration {
             }
 
             bind<LogConfiguration>() with eagerSingleton {
+                val settings = instance<LogSettings>()
+
                 loggerContext.reset()
 
                 val config = LogConfiguration()
@@ -109,6 +123,15 @@ class LogConfiguration {
                 config.rootLogger.addAppender(instance<RollingFileAppender<ILoggingEvent>>())
                 config.rootLogger.addAppender(instance<LogcatAppender>())
                 config.rootLogger.addAppender(instance<LogMqAppender>())
+
+                settings.level.forEach {
+                    val loggerName = when (it.key) {
+                        "root" -> Logger.ROOT_LOGGER_NAME
+                        else -> it.key
+                    }
+                    log.info("Setting log level ${loggerName} -> ${it.value}")
+                    loggerContext.getLogger(loggerName).level = Level.toLevel(it.value)
+                }
 
                 config
             }
