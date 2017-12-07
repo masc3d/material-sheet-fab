@@ -21,6 +21,8 @@ import java.util.*
 @SuppressLint("HardwareIds")
 open class Device(private val context: Context) {
 
+    val log = LoggerFactory.getLogger(this.javaClass)
+
     companion object {
         val SHAREDPREFS_TAG = "sx.androi.device"
         val SHAREDPREFS_KEY_EMUSERIAL = "emu.serial"
@@ -168,17 +170,18 @@ open class Device(private val context: Context) {
         }
     }
 
-    val googleApiSupported: Boolean
-        get() {
-            val apiAvailability = GoogleApiAvailability.getInstance()
-            val status = apiAvailability.isGooglePlayServicesAvailable(this.context)
+    val googleApiSupported: Boolean by lazy {
+        var ret: Boolean = true
+        val apiAvailability = GoogleApiAvailability.getInstance()
+        val status = apiAvailability.isGooglePlayServicesAvailable(this.context)
 
-            if(status != ConnectionResult.SUCCESS) {
-                return false
-            }
-
-            return true
+        if(status != ConnectionResult.SUCCESS) {
+            log.warn("GooglePlay-Services are not supported by this device")
+            ret = false
         }
+
+        ret
+    }
 
     override fun toString(): String =
             "Device(imei=${imei}, androidId=${androidId}) androidVersion=${androidVersion} serial=${serial} manufacturer=${manufacturer} model=${model} vmHeapSize=${vmHeapSize}"
