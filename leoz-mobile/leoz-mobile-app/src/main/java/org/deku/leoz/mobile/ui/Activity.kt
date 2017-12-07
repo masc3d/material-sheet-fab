@@ -1168,7 +1168,6 @@ abstract class Activity : BaseActivity(),
     }
 
     private fun checkLocationSettings() {
-        log.trace("Check location settings")
         val googleSupport = device.googleApiSupported
 
         if (locationServices.locationSettings.useGoogleLocationService && googleSupport) {
@@ -1186,6 +1185,7 @@ abstract class Activity : BaseActivity(),
         } else {
             val provider = locationServices.locationManager
             if (!provider.isProviderEnabled(LocationManager.GPS_PROVIDER) || !provider.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                log.warn("Location settings not satisfied")
                 MaterialDialog.Builder(this)
                         .title("Location settings not satisfied")
                         .content("You disabled either GPS or Network locations. Both must be enabled to continue.")
@@ -1199,6 +1199,7 @@ abstract class Activity : BaseActivity(),
                             )
                         }
                         .onNegative { _, _ ->
+                            log.warn("LocationSettings resolution aborted.")
                             this.app.terminate()
                         }
                         .show()
