@@ -44,12 +44,6 @@ export class OrderComponent extends AbstractTranslateComponent implements OnInit
       routerLink: 'orderlist'
     } );
 
-    items.push( {
-      label: this.translate.instant( 'orderprofile' ),
-      icon: '',
-      routerLink: 'orderprofile'
-    } );
-
     return items;
   }
 }

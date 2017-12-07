@@ -20,13 +20,6 @@ const routes: Routes = [
         canActivate: [
           AuthenticationGuard ],
         loadChildren: 'app/dashboard/order/orderlist/orderlist.module#OrderlistModule'
-      },
-      {
-        path: 'orderprofile',
-        data: { preload: true },
-        canActivate: [
-          AuthenticationGuard ],
-        loadChildren: 'app/dashboard/order/orderprofile/orderprofile.module#OrderprofileModule'
       }
     ]
   }
