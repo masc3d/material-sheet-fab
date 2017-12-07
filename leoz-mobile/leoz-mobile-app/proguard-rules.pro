@@ -24,6 +24,12 @@
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
 
+# Keep class names in general, so logging rules can be applied
+-keepnames class **
+
+# Keep class and method names for leoz classes, for more readable stack traces
+-keepnames class org.deku.leoz.** { *; }
+
 # Required for JAX/RS, Feign
 -keep class com.fasterxml.** { *; }
 -keep class javax.ws.rs.** { *; }
