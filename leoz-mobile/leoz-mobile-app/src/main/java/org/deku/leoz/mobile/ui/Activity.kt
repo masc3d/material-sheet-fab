@@ -1168,7 +1168,7 @@ abstract class Activity : BaseActivity(),
     }
 
     private fun checkLocationSettings() {
-        log.debug("Check location settings")
+        log.trace("Check location settings")
         val googleSupport = device.googleApiSupported
 
         if (locationServices.locationSettings.useGoogleLocationService && googleSupport) {
@@ -1184,9 +1184,6 @@ abstract class Activity : BaseActivity(),
                             }
                     )
         } else {
-            if (!googleSupport)
-                log.warn("GooglePlay-Services are not supported by this device")
-
             val provider = locationServices.locationManager
             if (!provider.isProviderEnabled(LocationManager.GPS_PROVIDER) || !provider.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 MaterialDialog.Builder(this)
