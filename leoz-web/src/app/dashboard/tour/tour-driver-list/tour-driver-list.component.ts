@@ -25,7 +25,7 @@ interface CallbackArguments {
   template: `
     <div class="ui-fluid" style="margin-bottom: 10px">
       <div class="ui-g">
-        <div class="ui-g-12 no-pad">
+        <div class="ui-g-12">
           <button *ngIf="isPermitted" pButton type="button" (click)="allUsers()" label="{{'allusers' | translate}}"
                   style="width:190px"></button>
           <button *ngIf="isPermitted" pButton type="button" (click)="allDrivers()" label="{{'alldrivers' | translate}}"
@@ -34,29 +34,29 @@ interface CallbackArguments {
                   style="width:190px"></button>
         </div>
 
-        <div class="ui-g-12 ui-lg-5 no-pad">
+        <div class="ui-g-12 ui-lg-5">
           {{'refreshevery' | translate}}
           <p-dropdown [options]="refreshOptions" [(ngModel)]="selectedRefresh"
                       (onChange)="changeRefreshRate()"></p-dropdown>
           {{'mins' | translate}}
         </div>
-        <div class="ui-g-12 ui-lg-3 no-pad">
+        <div class="ui-g-12 ui-lg-3">
           {{'last' | translate}}
           <p-dropdown [options]="intervalOptions" [(ngModel)]="selectedInterval"
                       (onChange)="changeInterval()"></p-dropdown>
           {{'hs' | translate}}
         </div>
-        <div class="ui-g-12 ui-lg-4 no-pad">
+        <div class="ui-g-12 ui-lg-4">
           <div style="width:130px;" *ngIf="calendarIsVisible">
             <p-calendar [showIcon]="true" [readonlyInput]="true" [dateFormat]="dateFormatPrimeng" [locale]="locale"
                         [(ngModel)]="tourDate" (onSelect)="changeTourDate()" [maxDate]="maxDateValue"
                         [selectOtherMonths]="true"></p-calendar>
           </div>
         </div>
-        <div class="ui-g-12 ui-lg-5 no-pad">
+        <div class="ui-g-12 ui-lg-5">
           {{'latestRefresh' | translate}}: {{latestRefresh | dateMomentjs:dateFormatEvenLonger}}
         </div>
-        <div class="ui-g-12 ui-lg-7 no-pad">
+        <div class="ui-g-12 ui-lg-7">
           {{'selectedformap' | translate}}: {{displayedMapmode | translate}}
         </div>
       </div>
