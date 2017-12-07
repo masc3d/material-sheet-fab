@@ -2,7 +2,7 @@
   <div class="ui-fluid">
     <div class="ui-g">
 
-      <div class="ui-g-12 ui-lg-8 no-pad" style="padding: 0;">
+      <div class="ui-g-12 ui-lg-8" style="padding: 0;">
         <div class="ui-g-12 ui-g-nopad">
           <div class="ui-g-12 ui-lg-7 ui-g-nopad">
             <div>
@@ -53,7 +53,7 @@
           </div>
         </div>
       </div>
-      <div class="ui-g-12 ui-lg-4 no-pad" style="padding: 0px 8px 0px 0px">
+      <div class="ui-g-12 ui-lg-4" style="padding: 0px 8px 0px 0px">
         <div class="ui-g-12 ui-g-nopad"
              style="width: calc(100% - 2px); padding: 2px 0 1px 5px; margin-left: 5px; background-color: #184b7d; color: #ffffff">
           {{'messages' | translate}}:
@@ -75,7 +75,7 @@
         </div>
       </div>
 
-      <div class="ui-g-12 ui-lg-6 no-pad" style="padding: 0; border:1px solid darkgrey">
+      <div class="ui-g-12 ui-lg-6" style="padding: 0; border:1px solid darkgrey">
         <div class="ui-g-12 ui-g-nopad">
           <p style="text-align: center">{{'openOnBaglist' | translate}} {{openPackcount}}</p>
           <p-dataTable [value]="lazyOpenPackages" resizableColumns="true" responsive="true"
@@ -101,8 +101,8 @@
         </div>
       </div>
 
-      <div class="ui-g-12 ui-lg-6 no-pad" style="padding: 0;">
-        <div class="ui-g-12 ui-lg-8 no-pad" style="padding: 0;">
+      <div class="ui-g-12 ui-lg-6" style="padding: 0;">
+        <div class="ui-g-12 ui-lg-8" style="padding: 0;">
           <div class="ui-g-12 ui-g-nopad">
             <div class="ui-g-12 ui-lg-6 ui-g-nopad" style="margin-top: 2px; padding: 5px">
               <span>{{ 'llNo' | translate }}: {{ activeBaglist.loadlistNo }} </span>
@@ -156,7 +156,7 @@
           </div>
         </div>
 
-        <div class="ui-g-12 ui-lg-4 no-pad" style="padding: 0;">
+        <div class="ui-g-12 ui-lg-4" style="padding: 0;">
           <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
             <button pButton type="button" label="{{'completeProcessingF5' | translate}}"></button>
           </div>
@@ -177,7 +177,7 @@
           </div>
         </div>
 
-        <div *ngIf="displayEmergencySealBlock" class="ui-g-12 ui-lg-12 no-pad" style="padding: 0;">
+        <div *ngIf="displayEmergencySealBlock" class="ui-g-12 ui-lg-12" style="padding: 0;">
           <div class="ui-g-12 ui-g-nopad">
             <div class="ui-g-12 ui-lg-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
               <span>{{ 'activateBlueSeal' | translate }}. </span>
@@ -194,7 +194,7 @@
           </div>
 
           <div class="ui-g-12 ui-g-nopad">
-            <div class="ui-g-12 ui-lg-6 no-pad" style="padding: 0;">
+            <div class="ui-g-12 ui-lg-6" style="padding: 0;">
               <div class="ui-g-12 ui-lg-12 ui-g-nopad">
                 <div style="margin-top: 2px; padding: 5px">
                     <span>{{ 'reason' | translate }}:</span>
@@ -204,7 +204,7 @@
                 <button pButton type="button" label="{{'saveF7' | translate}}" (click) = "saveEmergencySeal()"></button>
               </div>
             </div>
-            <div class="ui-g-12 ui-lg-6 no-pad" style="margin-top: 2px; padding: 5px">
+            <div class="ui-g-12 ui-lg-6" style="margin-top: 2px; padding: 5px">
               <textarea #reasonDetails pInputTextarea formControlName="reasonDetails"
                     style="height: 69px; margin-bottom:5px; width:calc(98% - 2px)">
               </textarea>
