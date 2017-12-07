@@ -1,3 +1,9 @@
+# Log settings
+logging:
+   level:
+      ROOT: INFO
+      sx.mq: INFO
+
 # User settings
 user:
    idle-timeout-minutes: 240
