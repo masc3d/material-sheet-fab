@@ -6,7 +6,7 @@ buildscript {
         v_activemq = '5.15.2'
         v_android_gradle = '3.0.0'
         v_android_buildtools = '27.0.1'
-        v_android_support = '27.0.1'
+        v_android_support = '27.0.2'
         v_android_test = '1.0.1'
         v_artemis = '1.5.4'
         v_apache_cxf = '3.2.1'
