@@ -1,43 +1,46 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
+
     ext {
-        v_kotlin = '1.1.1'
-        v_android_buildtools = '25.0.2'
-        v_android_support = '25.2.0'
-        v_rxlifecycle = '2.0.1'
+        v_kotlin = '1.2.0'
+        v_android_buildtools = '27.0.1'
+        v_android_support = '27.0.2'
+        v_android_test = '1.0.1'
+        v_rxlifecycle = '2.2.1'
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
 repositories {
     mavenCentral()
+    google()
     maven { url "https://jitpack.io" }
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 27
     buildToolsVersion v_android_buildtools
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 25
+        minSdkVersion 18
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
-        abortOnError false
+        abortOnError true
     }
 
     buildTypes {
@@ -45,16 +48,19 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
 
-    productFlavors {
+        debug {
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
+        }
     }
 }
 
 dependencies {
-    compile(
-            project(":sx-android"),
-
+    implementation(
+            project(':sx-android'),
+            project(':sx-common'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
@@ -66,7 +72,7 @@ dependencies {
             "com.android.support:design:$v_android_support",
 
             // rx
-            "io.reactivex.rxjava2:rxjava:2.0.7",
+            "io.reactivex.rxjava2:rxjava:2.1.7",
             "io.reactivex.rxjava2:rxandroid:2.0.1",
 
             // rxlifecycle
@@ -75,10 +81,10 @@ dependencies {
             "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle"
     )
 
-    androidTestCompile(
+    androidTestImplementation(
             "junit:junit:4.12",
             "com.android.support:support-annotations:$v_android_support",
-            "com.android.support.test:runner:0.5",
-            "com.android.support.test:rules:0.5"
+            "com.android.support.test:runner:$v_android_test",
+            "com.android.support.test:rules:$v_android_test"
     )
 }
