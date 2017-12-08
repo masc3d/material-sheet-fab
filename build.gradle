@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.1.1'
+        v_kotlin = '1.2.0'
         v_slf4j = '1.7.25'
     }
 
@@ -30,7 +30,12 @@ dependencies {
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
-            "ch.qos.logback:logback-classic:1.2.2"
+            "ch.qos.logback:logback-classic:1.2.3"
+    )
+
+    compileOnly(
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6"
     )
 
     testCompile(
