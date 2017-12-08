@@ -10,10 +10,12 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
 import com.esotericsoftware.kryo.serializers.EnumNameSerializer
 import com.esotericsoftware.kryo.util.*
 import com.esotericsoftware.minlog.Log
+import de.javakaffee.kryoserializers.UUIDSerializer
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.reflect.Array
+import java.util.*
 
 /**
  * Kryo serializer with support for @Serializable annotations and lookup by UID
@@ -21,6 +23,9 @@ import java.lang.reflect.Array
  * Created by masc on 30/08/16
  */
 class KryoSerializer(
+        /**
+         * Kryo pool to use
+         */
         private val kryoPool: KryoPool = KryoSerializer.defaultPool)
 :
         Serializer() {
@@ -33,16 +38,13 @@ class KryoSerializer(
      * @param obj Object to serialize
      */
     override fun serialize(output: OutputStream, obj: Any) {
-        var k: Kryo? = null
-        var out: Output? = null
-        try {
-            k = kryoPool.borrow()
-            out = Output(output)
-            k.writeClassAndObject(out, obj)
+        val k = kryoPool.borrow()
+        return try {
+            Output(output).use {
+                k.writeClassAndObject(it, obj)
+            }
         } finally {
-            out?.close()
-            if (k != null)
-                kryoPool.release(k)
+            kryoPool.release(k)
         }
     }
 
@@ -52,16 +54,13 @@ class KryoSerializer(
      * @return Deserialized object
      */
     override fun deserialize(input: InputStream): Any {
-        var k: Kryo? = null
-        var i: Input? = null
-        try {
-            k = kryoPool.borrow()
-            i = Input(input)
-            return k!!.readClassAndObject(i)
+        val k = kryoPool.borrow()
+        return try {
+            Input(input).use {
+                k.readClassAndObject(it)
+            }
         } finally {
-            i?.close()
-            if (k != null)
-                kryoPool.release(k)
+            kryoPool.release(k)
         }
     }
 
@@ -69,8 +68,6 @@ class KryoSerializer(
      * Customized kryo class resolver with support for @Serializable annotations
      */
     class ClassResolver : DefaultClassResolver() {
-        private val log = LoggerFactory.getLogger(this.javaClass)
-
         private class SerializableType(
                 val uid: Long,
                 val isArray: Boolean
@@ -89,26 +86,24 @@ class KryoSerializer(
             }
         }
 
-        private var _lastSerializableType: SerializableType? = null
-
-        override fun writeName(output: Output?, type: Class<*>?, registration: Registration?) {
+        override fun writeName(output: Output, type: Class<*>, registration: Registration) {
             // The following code is mostly a replica of the base class logic plus support for writing @Serializable info
-            output!!.writeVarInt(NAME + 2, true)
+            output.writeVarInt(NAME + 2, true)
             if (classToNameId != null) {
                 val nameId = classToNameId.get(type, -1)
                 if (nameId != -1) {
-                    if (Log.TRACE) Log.trace("kryo", "Write class name reference " + nameId + ": " + type!!.name)
+                    if (Log.TRACE) Log.trace("kryo", "Write class name reference " + nameId + ": " + type.name)
                     output.writeVarInt(nameId, true)
                     return
                 }
             }
             // Only write the class name the first time encountered in object graph.
-            if (Log.TRACE) Log.trace("kryo", "Write class name: " + type!!.name)
+            if (Log.TRACE) Log.trace("kryo", "Write class name: " + type.name)
             val nameId = nextNameId++
             if (classToNameId == null) classToNameId = IdentityObjectIntMap()
             classToNameId.put(type, nameId)
             output.writeVarInt(nameId, true)
-            output.writeString(type!!.getName())
+            output.writeString(type.getName())
 
             //region ** Kryo protocol addition, write @Serializable metainfo **
             // Determine type to register. In case of arrays using componentType
@@ -117,8 +112,8 @@ class KryoSerializer(
             else
                 type
 
-            val uid = if (!typeToRegister.equals(Any::class.java))
-                Serializer.types.register(typeToRegister)
+            val uid = if (typeToRegister != Any::class.java)
+                Serializer.types.register(typeToRegister).uid
             else
                 0L
 
@@ -127,9 +122,9 @@ class KryoSerializer(
             //endregion
         }
 
-        override fun readName(input: Input?): Registration {
+        override fun readName(input: Input): Registration {
             // The following code is mostly a replica of the base class logic plus support for writing @Serializable info
-            val nameId = input!!.readVarInt(true)
+            val nameId = input.readVarInt(true)
             if (nameIdToClass == null) nameIdToClass = IntMap()
             var type: Class<*>? = nameIdToClass.get(nameId)
             if (type == null) {
@@ -139,7 +134,7 @@ class KryoSerializer(
                 //region ** Kryo protocol addition, read @Serializable metainfo **
                 val serializableType = SerializableType.read(input)
                 if (serializableType.uid != 0L) {
-                    type = Serializer.types.lookup(serializableType.uid)
+                    type = Serializer.types.lookup(serializableType.uid)?.javaClass
                     if (type != null && serializableType.isArray) {
                         type = Array.newInstance(type, 0).javaClass
                     }
@@ -179,10 +174,10 @@ class KryoSerializer(
      */
     class EnumNameSerializer<T>(kryo: Kryo, type: Class<T>) : com.esotericsoftware.kryo.serializers.EnumNameSerializer(kryo, type) where T : Enum<*> {
         override fun read(kryo: Kryo?, input: Input?, type: Class<Enum<*>>?): Enum<out Enum<*>>? {
-            try {
-                return super.read(kryo, input, type)
+            return try {
+                super.read(kryo, input, type)
             } catch(e: Exception) {
-                return null
+                null
             }
         }
     }
@@ -194,6 +189,7 @@ class KryoSerializer(
         private fun newKryo(): Kryo {
             // Create kryo with custom ClassResolver
             val k = Kryo(ClassResolver(), MapReferenceResolver())
+
             // Setting the default serializer to CompatibleFieldSerializer is crucial here
             // as the default FiedldSerializer relies solely in order and may cause breakage as classes evolve
             k.setDefaultSerializer(CompatibleFieldSerializer::class.java)
@@ -202,6 +198,8 @@ class KryoSerializer(
 
             // Register custom serializers
             k.addDefaultSerializer(Enum::class.java, EnumNameSerializer::class.java)
+            k.addDefaultSerializer(UUID::class.java, UUIDSerializer::class.java)
+
             return k
         }
 
