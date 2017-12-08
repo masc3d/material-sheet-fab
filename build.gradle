@@ -171,9 +171,16 @@ subprojects {
     }
 
     plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper).whenPluginAdded {
-        kotlin.copyClassesToJavaOutput = true
         sourceSets.main.kotlin.outputDir = classesDir
         sourceSets.test.kotlin.outputDir = testClassesDir
+
+        // Copy kotlin classes to java classes output directory
+        kotlin.copyClassesToJavaOutput = true
+
+        // Prevent duplicate classes for gradle test runs when `kotlin.copyClassesToJavaOutput == true`
+        tasks.testClasses.doLast {
+            new File(buildDir, 'kotlin-classes').deleteDir()
+        }
     }
 
     plugins.withType(JavaPlugin).whenPluginAdded {
