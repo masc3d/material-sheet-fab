@@ -20,13 +20,13 @@ ext {
                     url     : 'jdbc:mysql://leoz-demo.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 52
+                    target  : 61
             ],
             leozT1  : [
                     url     : 'jdbc:mysql://leoz-t1.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 52
+                    target  : 61
             ],
             // Production/live
             live  : [
@@ -34,7 +34,7 @@ ext {
                     user    : 'migration',
                     password: 'dekudb',
                     baseline: 2,
-                    target  : 52
+                    target  : 61
             ],
             // Test 61
             test61: [
@@ -85,7 +85,7 @@ tasks.remove(tasks.flywayValidate)
 def createFlywayExtension(properties) {
     def extension = new FlywayExtension()
     extension.driver = ext.DB_MYSQL_JDBC_DRIVER
-    extension.schemas = ['dekuclient', 'dekutmp']
+    extension.schemas = ['dekuclient', 'dekutmp', 'mobile']
     extension.locations = ["filesystem:${ext.FLYWAY_MIGRATION_DIR}"]
     extension.url = properties['url']
     extension.user = properties['user']
