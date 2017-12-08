@@ -4,6 +4,7 @@ import org.apache.sshd.client.ClientBuilder
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.config.hosts.HostConfigEntryResolver
 import org.apache.sshd.client.session.ClientSession
+import org.apache.sshd.common.io.nio2.Nio2ServiceFactoryFactory
 import org.apache.sshd.common.session.Session
 import org.apache.sshd.common.session.SessionListener
 import org.apache.sshd.common.util.net.SshdSocketAddress
@@ -26,7 +27,7 @@ class SshTunnel(
         val sshHost: SshHost,
         val remotePort: Int,
         val localPort: Int,
-        val connectionTimeout: Duration = Duration.ofSeconds(6),
+        val connectionTimeout: Duration = Duration.ofSeconds(10),
         val idleTimeout: Duration = Duration.ofSeconds(30),
         val onClosed: (sshTunnel: SshTunnel) -> Unit = { },
         val onCreated: (sshTunnel: SshTunnel) -> Unit = { })
@@ -36,7 +37,7 @@ class SshTunnel(
     /**
      * SSH tunnel authentication exception
      */
-    class AuthenticationException : Exception()
+    class AuthenticationException : Exception("Authentication failed")
 
     /** Logger */
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -87,6 +88,8 @@ class SshTunnel(
                         // Apart from that we don't want any user specific keys or configuration
                         .hostConfigEntryResolver(HostConfigEntryResolver.EMPTY)
                         .build()
+
+                ssh.ioServiceFactoryFactory = Nio2ServiceFactoryFactory()
 
                 // Set properties
                 ssh.properties.set(SshClient.IDLE_TIMEOUT, idleTimeout.toMillis())
