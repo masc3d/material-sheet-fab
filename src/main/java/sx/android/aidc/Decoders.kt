@@ -1,5 +1,6 @@
 package sx.android.aidc
 
+import sx.aidc.SymbologyType
 
 /**
  * Generic decoder
@@ -15,34 +16,17 @@ abstract class Decoder(
 }
 
 /**
- * Barcode type
- * Created by masc on 28/02/2017.
- */
-enum class BarcodeType {
-    Unknown,
-
-    Code128,
-    Code39,
-    Datamatrix,
-    Ean8,
-    Ean13,
-    Interleaved25,
-    Pdf417,
-    QrCode,
-}
-
-/**
  * Barcode reader decoder
  */
 abstract class BarcodeDecoder(
         enabled: Boolean,
-        val barcodeType: BarcodeType,
+        val symbologyType: SymbologyType,
         val minimumLength: Int? = null,
         val maximumLength: Int? = null
 ) : Decoder(enabled = enabled) {
 
     override val key: String
-        get() = this.barcodeType.name
+        get() = this.symbologyType.name
 }
 
 class Code128Decoder(enabled: Boolean,
@@ -50,7 +34,7 @@ class Code128Decoder(enabled: Boolean,
                      maximumLength: Int? = null)
     : BarcodeDecoder(
         enabled = enabled,
-        barcodeType = BarcodeType.Code128,
+        symbologyType = SymbologyType.Code128,
         minimumLength = minimumLength,
         maximumLength = maximumLength)
 
@@ -59,7 +43,7 @@ class Code39Decoder(enabled: Boolean,
                     maximumLength: Int? = null)
     : BarcodeDecoder(
         enabled = enabled,
-        barcodeType = BarcodeType.Code39,
+        symbologyType = SymbologyType.Code39,
         minimumLength = minimumLength,
         maximumLength = maximumLength)
 
@@ -68,7 +52,7 @@ class Ean8Decoder(enabled: Boolean,
                   maximumLength: Int? = null)
     : BarcodeDecoder(
         enabled = enabled,
-        barcodeType = BarcodeType.Ean8,
+        symbologyType = SymbologyType.Ean8,
         minimumLength = minimumLength,
         maximumLength = maximumLength)
 
@@ -77,7 +61,7 @@ class Ean13Decoder(enabled: Boolean,
                    maximumLength: Int? = null)
     : BarcodeDecoder(
         enabled = enabled,
-        barcodeType = BarcodeType.Ean13,
+        symbologyType = SymbologyType.Ean13,
         minimumLength = minimumLength,
         maximumLength = maximumLength)
 
@@ -86,7 +70,7 @@ class DatamatrixDecoder(enabled: Boolean,
                         maximumLength: Int? = null)
     : BarcodeDecoder(
         enabled = enabled,
-        barcodeType = BarcodeType.Datamatrix,
+        symbologyType = SymbologyType.Datamatrix,
         minimumLength = minimumLength,
         maximumLength = maximumLength)
 
@@ -95,7 +79,7 @@ class QrCodeDecoder(enabled: Boolean,
                     maximumLength: Int? = null)
     : BarcodeDecoder(
         enabled = enabled,
-        barcodeType = BarcodeType.QrCode,
+        symbologyType = SymbologyType.QrCode,
         minimumLength = minimumLength,
         maximumLength = maximumLength)
 
@@ -104,7 +88,7 @@ class Interleaved25Decoder(enabled: Boolean,
                            maximumLength: Int? = null)
     : BarcodeDecoder(
         enabled = enabled,
-        barcodeType = BarcodeType.Interleaved25,
+        symbologyType = SymbologyType.Interleaved25,
         minimumLength = minimumLength,
         maximumLength = maximumLength)
 
@@ -113,6 +97,6 @@ class Pdf417Decoder(enabled: Boolean,
                            maximumLength: Int? = null)
     : BarcodeDecoder(
         enabled = enabled,
-        barcodeType = BarcodeType.Pdf417,
+        symbologyType = SymbologyType.Pdf417,
         minimumLength = minimumLength,
         maximumLength = maximumLength)

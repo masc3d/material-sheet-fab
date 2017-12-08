@@ -7,14 +7,16 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import sx.rx.observableRx
+import sx.rx.ObservableRxProperty
+import sx.aidc.SymbologyType
+import java.util.*
 
 /**
  * Abstract barcode reader
  * Created by masc on 28/02/2017.
  */
 abstract class AidcReader {
-    private val log = LoggerFactory.getLogger(this.javaClass)
+    protected val log = LoggerFactory.getLogger(this.javaClass)
 
     inner class Decoders : Iterable<Decoder> {
         /**
@@ -37,13 +39,20 @@ abstract class AidcReader {
         }
     }
 
-    data class ReadEvent(val data: String, val barcodeType: BarcodeType)
+    /**
+     * AIDC read event
+     */
+    data class ReadEvent(
+            val data: String,
+            val symbologyType: SymbologyType) {
+        val timestamp: Date = Date()
+    }
 
-    protected val enabledSubject = BehaviorSubject.create<Boolean>()
+    val enabledProperty = ObservableRxProperty(false)
     /**
      * Enable or disable barcode reader
      */
-    var enabled: Boolean by observableRx(true, enabledSubject)
+    var enabled: Boolean by enabledProperty
 
     protected val decodersUpdatedSubject = BehaviorSubject.create<Array<out Decoder>>()
     /**
@@ -54,14 +63,20 @@ abstract class AidcReader {
     /**
      * On subscription of reader events
      */
-    protected open fun onBind() { }
-    internal fun onBindInternal() { this.onBind() }
+    protected open fun onBind() {}
+
+    internal fun onBindInternal() {
+        this.onBind()
+    }
 
     /**
      * On unsubscription of reader eventrs
      */
-    protected open fun onUnbind() { }
-    internal fun onUnbindInternal() { this.onUnbind() }
+    protected open fun onUnbind() {}
+
+    internal fun onUnbindInternal() {
+        this.onUnbind()
+    }
 
     private var bindRefCount = 0
 

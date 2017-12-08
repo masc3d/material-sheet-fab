@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <view
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="sx.android.view.AsyncImageView"
+        android:id="@+id/pictureImageView"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:weightSum="2"
+        android:layout_gravity="right"
+        android:paddingRight="@dimen/horizontal_margin">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <sx.android.view.CircleButton
+                android:id="@+id/okButton"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                custom:cb_color="@color/app_ok"
+                custom:cb_pressedRingWidth="10dp"
+                custom:cb_outerColor="@color/dark_gray"
+                custom:cb_outerRingMargin="0dp"
+                custom:cb_outerRingWidth="3dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_circle_ok"
+                android:padding="16dp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <sx.android.view.CircleButton
+                android:id="@+id/cancelButton"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                custom:cb_color="@color/app_cancel"
+                custom:cb_pressedRingWidth="10dp"
+                custom:cb_outerColor="@color/dark_gray"
+                custom:cb_outerRingMargin="0dp"
+                custom:cb_outerRingWidth="3dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_circle_cancel"
+                android:padding="16dp" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

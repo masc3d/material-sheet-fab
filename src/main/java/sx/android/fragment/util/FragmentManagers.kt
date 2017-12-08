@@ -16,14 +16,14 @@ fun android.support.v4.app.FragmentManager.dump() {
     this.dump("", null, java.io.PrintWriter(System.out, true), null)
 }
 
-fun android.support.v4.app.FragmentManager.withTransaction(block: (ft: android.support.v4.app.FragmentTransaction) -> Unit) {
+fun android.support.v4.app.FragmentManager.withTransaction(block: (ft: android.support.v4.app.FragmentTransaction) -> Unit): Int {
     val ft = this.beginTransaction()
     block(ft)
-    ft.commit()
+    return ft.commit()
 }
 
-fun FragmentManager.withTransaction(block: (ft: FragmentTransaction) -> Unit) {
+fun FragmentManager.withTransaction(block: (ft: FragmentTransaction) -> Unit): Int {
     val ft = this.beginTransaction()
     block(ft)
-    ft.commit()
+    return ft.commit()
 }

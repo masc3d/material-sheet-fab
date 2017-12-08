@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.support.v4.content.FileProvider
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -18,6 +20,10 @@ class ApplicationPackage(
 
     /**
      * Install APK file
+     *
+     * This method is compliant with the new FileProviders introduced in API level 24.
+     * https://developer.android.com/reference/android/support/v4/content/FileProvider.html
+     * Thus requires `provider` definition in manifest and referring provider paths resource.
      */
     @SuppressLint("SetWorldReadable")
     fun install(context: Context) {
@@ -28,8 +34,28 @@ class ApplicationPackage(
 
         val i = Intent()
         i.action = Intent.ACTION_VIEW
-        i.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive")
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        val apkUri: Uri
+        var intentFlags: Int = Intent.FLAG_ACTIVITY_NEW_TASK
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            // Use file provider based method
+            apkUri = FileProvider.getUriForFile(
+                    context,
+                    // Authority
+                    "${context.getApplicationContext().getPackageName()}.provider",
+                    // File URI
+                    file)
+
+            intentFlags = intentFlags or Intent.FLAG_GRANT_READ_URI_PERMISSION
+        } else {
+            // Older versions cannot handle content URIs apparently,
+            // thus falling back to passing regular file URI to intent
+            apkUri = Uri.fromFile(this.file)
+        }
+
+        i.setDataAndType(apkUri, "application/vnd.android.package-archive")
+        i.addFlags(intentFlags)
         context.startActivity(i)
     }
 }
