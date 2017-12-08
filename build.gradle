@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.1.1'
+        v_kotlin = '1.2.0'
     }
 
     repositories {
@@ -47,21 +47,24 @@ dependencies {
             project(':sx-common'),
             project(':sx-rsync'),
 
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
+
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
 
             // logging
-            "org.apache.commons:commons-lang3:3.5",
-            "ch.qos.logback:logback-classic:1.2.2",
+            "org.apache.commons:commons-lang3:3.7",
+            "ch.qos.logback:logback-classic:1.2.3",
             "org.slf4j:jcl-over-slf4j:1.7.25",
 
             // Guava.
             // IMPORTANT: updating guava may cause classpath issues with gradle android-tools
-            "com.google.guava:guava:19.0",
+            "com.google.guava:guava:23.5-jre",
     )
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.2.2")
+            "ch.qos.logback:logback-classic:1.2.3")
 }

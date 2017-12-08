@@ -1,12 +1,14 @@
 package sx.packager
 
-import org.apache.commons.lang3.SystemUtils
 import org.slf4j.LoggerFactory
-import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.File
 import java.nio.file.Files
 import java.util.*
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import sx.rx.retryWith
+import java.util.concurrent.TimeUnit
 
 /**
  * Bundle installer for installing and updating bundles locally
@@ -193,12 +195,14 @@ class BundleInstaller(
      * Installs previously downloaded bundle-
      * Performs native installation by calling into the bundle process' native entry points
      * @param bundleName Name of bundle to install
+     * @param productive Triggers invocation of prepare-production process entry point before installation
      * @param omitNativeInstallation Do not call into bundle process for native stop/start/install/uninstall. This is merely
      * an optimization for bundles which do not require those entry points (eg. leoz-boot)
      * @return If changes have been applied
      */
     fun install(
             bundleName: String,
+            productive: Boolean = false,
             omitNativeInstallation: Boolean = false) {
 
         log.info("Installing [${bundleName}]")
@@ -224,8 +228,25 @@ class BundleInstaller(
                 oldBundlePath.deleteRecursively()
             }
 
-            if (bundlePath.exists())
-                Files.move(bundlePath.toPath(), oldBundlePath.toPath())
+            if (bundlePath.exists()) {
+                // On some (windows) system the bundle path seems to sporadically remain locked temporarily after stopping the service
+                // This could happen due to antivirus programs or the service stop command not acting fully synchronously
+                // Implementing retry scheme
+                val retryCount: Short = 3
+                var error: Throwable? = null
+                Observable.fromCallable {
+                    Files.move(bundlePath.toPath(), oldBundlePath.toPath())
+                }
+                        .subscribeOn(Schedulers.io())
+                        .retryWith(retryCount, { attempt, e ->
+                            log.warn("Failed to move bundle into place [${e.javaClass.canonicalName}], bundle path [${bundlePath}] seems to be locked by another process. Retrying (${attempt}/${retryCount})")
+                            Observable.timer(1, TimeUnit.SECONDS)
+                        })
+                        .blockingSubscribe({}, {
+                            error = it
+                        })
+                if (error != null) throw error!!
+            }
 
             try {
                 Files.move(bundleReadyPath.toPath(), bundlePath.toPath())
@@ -243,6 +264,10 @@ class BundleInstaller(
                 bundle = Bundle.load(bundlePath)
 
             bundle.install()
+
+            if (productive)
+                bundle.prepareProduction()
+
             bundle.start()
         }
 
