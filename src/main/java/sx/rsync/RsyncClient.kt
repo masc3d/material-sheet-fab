@@ -4,7 +4,7 @@ import org.apache.commons.lang3.SystemUtils
 import org.slf4j.LoggerFactory
 import sx.ProcessExecutor
 import sx.io.PermissionUtil
-import sx.logging.slf4j.trace
+import sx.log.slf4j.trace
 import sx.ssh.SshTunnelProvider
 import java.io.File
 import java.net.URI
@@ -230,7 +230,7 @@ class RsyncClient() {
     fun list(uri: Rsync.URI): List<ListRecord> {
         val result = ArrayList<ListRecord>()
 
-        this.prepareTunnel(uri, { uri ->
+        this.prepareTunnel(uri, { uri_ ->
             val command = ArrayList<String>()
 
             command.add(Rsync.executable.file.toString())
@@ -238,7 +238,7 @@ class RsyncClient() {
 
             this.addCommonOptions(command)
 
-            command.add(uri.toString())
+            command.add(uri_.toString())
 
             log.debug(command.joinToString(" "))
 

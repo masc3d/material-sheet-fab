@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.1.1'
+        v_kotlin = '1.2.0'
     }
 
     repositories {
@@ -42,10 +42,16 @@ dependencies {
             project(':sx-common'),
             project(':sx-ssh'),
 
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
+
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-            "org.apache.commons:commons-lang3:3.5",
+            "org.apache.commons:commons-lang3:3.7",
+
             // Ini/conf file support
-            'org.ini4j:ini4j:0.5.4'
+            "org.ini4j:ini4j:0.5.4",
+
+            "com.github.jnr:jnr-posix:3.0.42"
     )
 
     testCompile(
