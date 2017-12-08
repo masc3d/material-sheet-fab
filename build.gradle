@@ -474,12 +474,6 @@ def subtrees = [
                 path: 'leoz-mobile/libs/material-sheet-fab',
                 repo: 'ssh://git@github.com/masc3d/material-sheet-fab.git',
                 ref : 'master'
-        ],
-        [
-                name: 'CameraKit-Android',
-                path: 'leoz-mobile/libs/CameraKit-Android',
-                repo: 'ssh://git@github.com/masc3d/CameraKit-Android.git',
-                ref : 'master'
         ]
 ]
 
