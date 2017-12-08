@@ -1,12 +1,12 @@
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
         classpath 'com.github.dcendents:android-maven-plugin:1.2'
     }
 
     repositories {
         jcenter()
+        google()
     }
 }
 
@@ -37,23 +37,30 @@ ext {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion v_android_buildtools
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 27
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
+        }
     }
 }
 
 dependencies {
-    compile 'com.github.asyl.animation:arcanimator:1.0.0'
+    implementation 'com.github.asyl.animation:arcanimator:1.0.0'
 }
 
 // TODO: needs fix
