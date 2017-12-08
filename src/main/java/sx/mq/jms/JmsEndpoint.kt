@@ -1,6 +1,6 @@
 package sx.mq.jms
 
-import sx.time.Duration
+import org.threeten.bp.Duration
 import javax.jms.Destination
 
 /**

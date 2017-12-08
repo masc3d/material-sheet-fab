@@ -25,7 +25,7 @@ abstract class MqListener
     /**
      * Message handling exception
      */
-    private inner class HandlingException(message: String) : RuntimeException(message)
+    protected class HandlingException(message: String, e: Throwable? = null) : RuntimeException(message, e)
 
     abstract fun start()
 

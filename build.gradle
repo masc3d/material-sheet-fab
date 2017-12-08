@@ -3,12 +3,14 @@ version '1.0'
 
 buildscript {
     ext {
-        v_activemq = '5.14.5'
+        v_activemq = '5.15.2'
         v_artemis = '1.5.4'
-        v_kodein = '4.0.0'
-        v_kotlin = '1.1.2-5'
+        v_kodein = '4.1.0'
+        v_kotlin = '1.2.0'
+        v_kryo = '4.0.1'
+        v_kryo_serializers = '0.42'
         v_protostuff = '1.5.3'
-        v_spring = '4.3.9.RELEASE'
+        v_spring = '5.0.2.RELEASE'
     }
 
     dependencies {
@@ -24,8 +26,8 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'project-report'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
 repositories {
     mavenCentral()
@@ -58,6 +60,9 @@ dependencies {
     )
 
     compileOnly(
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
+
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",
@@ -90,6 +95,7 @@ dependencies {
 
             // Spring
             "org.springframework:spring-jms:$v_spring",
+            "org.springframework:spring-context:$v_spring",
 
             // MQTT client
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
@@ -97,6 +103,9 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
+
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:1.3.6",
 
             // Logging
             "ch.qos.logback:logback-classic:1.2.3",
@@ -135,11 +144,13 @@ dependencies {
 
             // Spring
             "org.springframework:spring-jms:$v_spring",
+            "org.springframework:spring-context:$v_spring",
 
             // MQTT client
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
 
             // Kryo
-            "com.esotericsoftware:kryo:4.0.0"
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers"
     )
 }

@@ -12,6 +12,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.Channels
@@ -23,7 +24,6 @@ import sx.mq.jms.channel
 import sx.mq.jms.listeners.SpringJmsListener
 import sx.mq.jms.toJms
 import sx.mq.message.TestMessage
-import sx.time.Duration
 import java.net.URI
 import java.util.concurrent.Executors
 

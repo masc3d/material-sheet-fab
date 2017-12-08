@@ -29,6 +29,11 @@ interface IMqttPersistence {
      * Remove specific message
      */
     fun remove(message: MqttPersistentMessage)
+
+    /**
+     * Count messages, grouped by topic
+     */
+    fun count(): Map<String, Int>
 }
 
 /**
@@ -59,6 +64,15 @@ class MqttInMemoryPersistence : IMqttPersistence {
     override fun remove(message: MqttPersistentMessage) {
         this.messages.remove(message)
     }
+
+    override fun count(): Map<String, Int> =
+            messages
+                    .groupBy {
+                        it.topicName
+                    }
+                    .mapValues {
+                        it.value.count()
+                    }
 }
 
 /**

@@ -204,6 +204,13 @@ class MqttRxClient(
                             }
                         })
             } catch(e: Throwable) {
+                // Make sure the connection is closed thoroughly
+                try {
+                    this.parent.close()
+                } catch(e: Throwable) {
+                    // Errors during close are not relevant
+                }
+
                 it.onError(e)
             }
         }

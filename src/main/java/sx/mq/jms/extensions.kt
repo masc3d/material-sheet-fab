@@ -1,8 +1,8 @@
 package sx.mq.jms
 
+import org.threeten.bp.Duration
 import sx.mq.MqEndpoint
 import sx.mq.jms.converters.DefaultJmsConverter
-import sx.time.Duration
 
 /**
  * Create client for jms channel
