@@ -3,7 +3,6 @@ import org.flywaydb.core.api.MigrationType
 import org.flywaydb.core.api.MigrationVersion
 import org.flywaydb.gradle.task.FlywayInfoTask
 import org.flywaydb.gradle.task.FlywayValidateTask
-import org.omg.CORBA.Object
 import sx.platform.OperatingSystem
 
 import java.nio.file.Files
