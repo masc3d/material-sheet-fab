@@ -399,7 +399,7 @@ static List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
             def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue
 
             // Skip flyway schema table
-            if (tableName == "schema_version")
+            if (tableName == "flyway_schema_history")
                 return
 
             // Determine table uid
