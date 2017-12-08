@@ -9,31 +9,31 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.CancellationException
 import java.util.concurrent.atomic.AtomicInteger
 
-
-fun <T> concat(observables: List<Observable<T>>): Observable<T> {
-    if (observables.isEmpty())
-        return Observable.empty()
-
-    val o1 = observables[0]
-    if (observables.size == 1)
-        return o1
-
-    val o2 = observables[1]
-    val n = o1.concatWith(o2)
-
-    val nl = arrayListOf(n)
-    nl.addAll(observables.takeLast(observables.size - 2))
-
-    return concat(nl)
-}
-
 /**
  * Created by masc on 23/06/16.
  */
-class RxTest {
+class BlockingObservableTest {
+
+    private fun <T> concat(observables: List<Observable<T>>): Observable<T> {
+        if (observables.isEmpty())
+            return Observable.empty()
+
+        val o1 = observables[0]
+        if (observables.size == 1)
+            return o1
+
+        val o2 = observables[1]
+        val n = o1.concatWith(o2)
+
+        val nl = arrayListOf(n)
+        nl.addAll(observables.takeLast(observables.size - 2))
+
+        return concat(nl)
+    }
+
     val log = LoggerFactory.getLogger(this.javaClass)
-    final val DELAY = 150L
-    final val COUNT = 10
+    val DELAY = 150L
+    val COUNT = 10
 
     /**
      * Single observable emitting numbers with a sleep/delay
@@ -74,7 +74,7 @@ class RxTest {
     fun testRxReplaySingle() {
         val emitCount = AtomicInteger(0)
 
-        val ov = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        val ov = this.observableDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
 
         val cov = ov
                 .subscribeOn(Schedulers.newThread())
@@ -98,7 +98,7 @@ class RxTest {
     fun testRxReplayMerged() {
         val emitCount = AtomicInteger(0)
 
-        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
 
         val cov = ov
                 .subscribeOn(Schedulers.newThread())
@@ -128,7 +128,7 @@ class RxTest {
     fun testRxCacheSingle() {
         val emitCount = AtomicInteger(0)
 
-        val ov = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        val ov = this.observableDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
 
         val cov = ov
                 .subscribeOn(Schedulers.newThread())
@@ -162,7 +162,7 @@ class RxTest {
     fun testRxCacheMerged() {
         val emitCount = AtomicInteger(0)
 
-        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
 
         val cov = ov
                 .subscribeOn(Schedulers.newThread())
@@ -210,7 +210,7 @@ class RxTest {
     @Test
     fun testRxSubscribeAwaitable() {
         val emitCount = AtomicInteger(0)
-        val a = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+        this.observableDelayedNumbers(COUNT, DELAY, { _ -> emitCount.incrementAndGet() })
                 .subscribeOn(Schedulers.newThread())
                 .doOnNext {
                     log.info("Observed $it")

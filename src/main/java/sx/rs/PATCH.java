@@ -1,16 +1,13 @@
 package sx.rs;
 
+import javax.ws.rs.HttpMethod;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Api key annotation to be used on rest service methods
- * Created by masc on 25.06.15.
- */
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ApiKey {
-    boolean value() default true;
+@HttpMethod("PATCH")
+public @interface PATCH {
 }

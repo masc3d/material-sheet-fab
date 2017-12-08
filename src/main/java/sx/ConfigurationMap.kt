@@ -42,7 +42,7 @@ abstract class ConfigurationMap(vararg sources: InputStream) {
             val newKey = it.key.toLowerCase().replace("-", "")
 
             when (it.value) {
-                is Map<*,*> -> Pair(newKey, normalize(it.value as Map<String, Any>))
+                is Map<*, *> -> Pair(newKey, normalize(it.value as Map<String, Any>))
                 else -> Pair(newKey, it.value)
             }
         }.toTypedArray())
@@ -79,7 +79,7 @@ abstract class ConfigurationMap(vararg sources: InputStream) {
         }
     }
 
-    inline fun <reified T : Any> value(default: T) = MapValue<T>(default, T::class.java)
+    inline fun <reified T : Any?> value(default: T) = MapValue<T>(default, T::class.java)
 }
 
 /**
@@ -93,9 +93,43 @@ class YamlConfigurationMap(vararg sources: InputStream) : ConfigurationMap(*sour
         val yaml = Yaml()
         val treeMap = mutableMapOf<String, Any>()
 
+        /**
+         * Merge maps recursively
+         * @param target The target map to merge to. Items will be modified in place.
+         * @param source The source map to merge
+         */
+        fun merge(
+                target: MutableMap<String, Any>,
+                source: Map<String, Any>): MutableMap<String, Any> {
+
+            source.entries.forEach {
+                if (it.value is Map <*, *>) {
+                    val targetItem = target[it.key]
+                    // If both source and target item are map
+                    if (targetItem != null && targetItem is Map<*, *>) {
+                        // Transform to mutable map and do recursive merge
+                        val mutableTargetMap = targetItem.toMutableMap()
+                        target[it.key] = mutableTargetMap
+                        merge(
+                                target = mutableTargetMap as MutableMap<String, Any>,
+                                source = it.value as Map <String, Any>)
+
+                    } else {
+                        target[it.key] = it.value
+                    }
+                } else {
+                    target[it.key] = it.value
+                }
+            }
+
+            return target
+        }
+
         // Load overrides
         sources.forEach {
-            treeMap.putAll(yaml.load(it) as Map<String, Any>)
+            merge(
+                    target = treeMap,
+                    source = yaml.load(it) as Map<String, Any>)
         }
 
         return treeMap

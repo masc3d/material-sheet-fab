@@ -50,7 +50,6 @@ class LazyInstance<T>
         when (threadSafetyMode) {
             LazyInstance.ThreadSafetyMode.Synchronized -> this.lock = ReentrantLock()
             LazyInstance.ThreadSafetyMode.None -> this.lock = null
-            else -> throw UnsupportedOperationException(String.format("Unsupported thread safety mode [%s]", threadSafetyMode))
         }
     }
 
@@ -66,6 +65,10 @@ class LazyInstance<T>
      * @param supplier (Optional) supplier to (re)set to
      */
     fun resetIf(predicate: ((T) -> Boolean)? = null, supplier: (() -> T)? = null) {
+        // If supplier won't change and instance hasn't been initialized, avoid lock & return immediately
+        if (supplier == null && !isSet)
+            return
+
         this.withLock {
             if (predicate == null || predicate(this.get())) {
                 if (supplier != null) {

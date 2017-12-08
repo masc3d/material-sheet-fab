@@ -1,5 +1,7 @@
 package sx
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -180,6 +182,16 @@ class Stopwatch {
         return this
     }
 
+    /**
+     * Restart stopwatch
+     * @return this `Stopwatch`instance
+     */
+    fun restart(): Stopwatch {
+        this.reset()
+        this.start()
+        return this
+    }
+
     private fun elapsedNanos(): Long {
         return if (isRunning) ticker.read() - startTick + elapsedNanos else elapsedNanos
     }
@@ -247,16 +259,51 @@ class Stopwatch {
             return Stopwatch(ticker).start()
         }
 
+        private fun createLogMessage(stopwatch: Stopwatch, name: String): String {
+            return "${name} [${stopwatch}]"
+        }
+
         /**
          * Creates (and starts) a new stopwatch and executes a block with automatic logging
          * @param name Name of operation to measure
          * @param log Log action to perform
-         * @param block BLock to execute/measure
+         * @param block Block to execute/measure
          */
-        fun <T> createStarted(name: String, log: LogAction = {}, block:(Stopwatch, LogAction) -> T): T{
+        fun <T> createStarted(name: String, log: LogAction = {}, block: (Stopwatch, LogAction) -> T): T {
             val sw = Stopwatch.createStarted()
             try {
                 return block(sw, log)
+            } finally {
+                log.invoke(this.createLogMessage(sw, name))
+            }
+        }
+
+        /**
+         * Creates (and starts) a new stopwatch and executes a block with automatic logging via slf4j
+         * @param instance Instane using stopwatch( (used for logging)
+         * @param name Name of operation to measure
+         * @param block Block to execute/measure
+         */
+        fun <T> createStarted(instance: Any, name: String, block: (Stopwatch, Logger) -> T): T {
+            val log = LoggerFactory.getLogger(instance.javaClass)
+            val sw = Stopwatch.createStarted()
+            try {
+                return block(sw, log)
+            } finally {
+                log.info(this.createLogMessage(sw, name))
+            }
+        }
+
+        /**
+         * Creates (and starts) a new stopwatch and executes a block with automatic logging
+         * @param name Name of operation to measure
+         * @param log Log action to perform
+         * @param block Block to execute/measure
+         */
+        fun createStarted(name: String, log: LogAction = {}, block: (Stopwatch, LogAction) -> Unit) {
+            val sw = Stopwatch.createStarted()
+            try {
+                block(sw, log)
             } finally {
                 log.invoke("${name} [${sw}]")
             }

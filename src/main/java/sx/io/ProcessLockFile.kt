@@ -87,12 +87,15 @@ class ProcessLockFile(
 
     /**
      * Waits and acquires lock
+     * @param writeCurrentProcessPid Write current process pid to pid file after acquiring lock
      */
-    fun waitForLock() {
+    fun waitForLock(writeCurrentProcessPid: Boolean) {
         if (this.lock == null) {
             this.lock = this.lockFileChannel.lock()
-            this.pid = Process.currentProcess.pid
-            this.writePid()
+            if (writeCurrentProcessPid) {
+                this.pid = Process.currentProcess.pid
+                this.writePid()
+            }
         }
     }
 
