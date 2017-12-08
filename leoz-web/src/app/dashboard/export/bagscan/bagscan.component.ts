@@ -25,6 +25,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { BagscanReportingService } from '../../../core/reporting/bagscan-reporting.service';
 import { TYPE_VALUABLE } from '../../../core/constants';
+import { ElectronService } from '../../../core/electron/electron.service';
 
 @Component( {
   selector: 'app-bagscan',
@@ -88,7 +89,8 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
                private keyUpService: KeyUpEventService,
                private soundService: SoundService,
                private reportingService: BagscanReportingService,
-               private printingService: PrintingService ) {
+               private printingService: PrintingService,
+               private electronService: ElectronService) {
     super( translate, cd, () => {
       this.baglists = this.createBaglistItems( this.baglistItems );
     } );
@@ -501,10 +503,14 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   }
 
   generateLabel() {
-    console.log( 'generateLabel...' );
-    this.printingService.printReports(
-      this.reportingService.generateReports(),
-      'lbl.pdf', false );
+    if (this.electronService.isElectron()) {
+      const doc = this.reportingService.generateReports();
+      this.electronService.previewPDF(doc.output( 'datauristring' ))
+    } else {
+      this.printingService.printReports(
+        this.reportingService.generateReports(),
+        'lbl.pdf', false );
+    }
   }
 
 }

@@ -11,6 +11,7 @@ import { AuthenticationService } from '../../core/auth/authentication.service';
 import { Station } from '../../core/auth/station.model';
 import { Router } from '@angular/router';
 import { BagscanGuard } from '../../core/auth/bagscan.guard';
+import { ElectronService } from '../../core/electron/electron.service';
 
 @Component( {
   selector: 'app-left-menu',
@@ -50,7 +51,8 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
                private router: Router,
                private bagscanGuard: BagscanGuard,
                protected cd: ChangeDetectorRef,
-               protected translate: TranslateService ) {
+               protected translate: TranslateService,
+               private electronService: ElectronService ) {
     super( translate, cd, () => {
       // this.items = this.createItems();
       if (this.usedMenu === 'leoz') {
@@ -76,7 +78,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( debitorStations: Station[] ) => {
         this.debitorStations = [];
-        if(debitorStations) {
+        if (debitorStations) {
           debitorStations.forEach( ( station: Station ) => {
             this.debitorStations.push( { label: station.stationNo.toString(), value: station } );
           } );
@@ -321,28 +323,30 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
     } );
 
     if (this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
+      const officeManagementItems = [
+        {
+          label: this.translate.instant( 'co-worker' ),
+          icon: 'fa-smile-o',
+          routerLink: 'user',
+          command: closeMenu
+        } ];
+      if (this.electronService.isElectron()) {
+        officeManagementItems.push( {
+          label: this.translate.instant( 'printer-setup' ),
+          icon: '',
+          routerLink: 'printers',
+          command: closeMenu
+        } );
+      }
+      officeManagementItems.push( {
+        label: this.translate.instant( 'password-management' ),
+        icon: '',
+        routerLink: '',
+        command: closeMenu
+      } );
       items.push( {
         label: this.translate.instant( 'office-management' ),
-        items: [
-          {
-            label: this.translate.instant( 'co-worker' ),
-            icon: 'fa-smile-o',
-            routerLink: 'user',
-            command: closeMenu
-          },
-          {
-            label: this.translate.instant( 'printer-setup' ),
-            icon: '',
-            routerLink: '',
-            command: closeMenu
-          },
-          {
-            label: this.translate.instant( 'password-management' ),
-            icon: '',
-            routerLink: '',
-            command: closeMenu
-          }
-        ]
+        items: officeManagementItems
       } );
     }
 
