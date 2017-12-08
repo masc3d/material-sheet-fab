@@ -19,6 +19,7 @@ import { BagscanGuard } from './auth/bagscan.guard';
 import { InetConnectionService } from './inet-connection.service';
 import { PreloadSelectedModules } from './PreloadSelectedModules';
 import { WorkingdateService } from './workingdate.service';
+import { ElectronService } from './electron/electron.service';
 
 @NgModule( {
   imports: [
@@ -37,6 +38,7 @@ export class CoreModule {
         AuthenticationService,
         AuthenticationGuard,
         PreloadSelectedModules,
+        ElectronService,
         KeyUpEventService,
         PrintingService,
         LoadinglistReportingService,

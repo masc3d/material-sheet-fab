@@ -12,6 +12,7 @@ export class RoleGuard implements CanActivate {
     'DRIVER': [ 'tour' ],
     'USER': [
       'user',
+      'printers',
       'tour',
       'export',
       'importscan',
@@ -22,6 +23,7 @@ export class RoleGuard implements CanActivate {
       'order'],
     'POWERUSER': [
       'user',
+      'printers',
       'tour',
       'export',
       'importscan',

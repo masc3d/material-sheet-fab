@@ -81,6 +81,12 @@ export const routes = [
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/order/order.module#OrderModule'
+      },
+      {
+        path: 'printers',
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/settings/printer/printer.module#PrinterModule'
       }
     ]
   }

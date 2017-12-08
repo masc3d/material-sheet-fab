@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { TranslateService } from './core/translate/translate.service';
 import { environment } from '../environments/environment';
+import { ElectronService } from './core/electron/electron.service';
 
 @Component({
   // moduleId: module.id,
@@ -13,7 +14,8 @@ import { environment } from '../environments/environment';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private translate: TranslateService){}
+  constructor(private translate: TranslateService,
+              private electronService: ElectronService){}
 
   ngOnInit() {
     // set current language
