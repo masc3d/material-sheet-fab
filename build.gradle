@@ -493,7 +493,15 @@ task gitSubtreePushAll {
 task gitSubtreePullAll {
 }
 
-task gitSubtreeSplitAll {
+task gitSubtreeRejoinAll {
+}
+
+def runCommand(command) {
+    try {
+        ProcessExecutor.run(command)
+    } catch (ProcessRunException e) {
+        throw new IllegalStateException(e.result.error)
+    }
 }
 
 // Build tasks dynamically for each subtree
@@ -506,13 +514,11 @@ subtrees.each { subtree ->
             println "Pulling subtree ${subtree}"
 
             def sw = new Stopwatch().start()
-            try {
-                def result = ProcessExecutor.run([
-                        'git', 'subtree', 'pull', '--squash', '-P', subtree['path'], subtree['repo'], subtree['ref']])
 
-            } catch (ProcessRunException e) {
-                throw new IllegalStateException(e.result.error)
-            }
+            runCommand(
+                    ['git', 'subtree', 'pull', '--squash', '-P', subtree['path'], subtree['repo'], subtree['ref']]
+            )
+
             println "Completed in ${sw}"
         }
     }
@@ -526,43 +532,40 @@ subtrees.each { subtree ->
             println "Pushing subtree ${subtree}"
 
             def sw = new Stopwatch().start()
-            try {
-                def result = ProcessExecutor.run([
-                        'git', 'subtree', 'push', '-P', subtree['path'], subtree['repo'], subtree['ref']])
 
-            } catch (ProcessRunException e) {
-                throw new IllegalStateException(e.result.error)
-            }
+            runCommand(
+                    ['git', 'subtree', 'push', '-P', subtree['path'], subtree['repo'], subtree['ref']]
+            )
+
             println "Completed in ${sw}"
         }
     }
     tasks.gitSubtreePushAll.dependsOn "${taskNamePush}"
 
-    def taskNameSplit = "gitSubtreeSplit${subtree['name']}"
-    task "${taskNameSplit}" {
+    def taskNameRejoin = "gitSubtreeRejoin${subtree['name']}"
+    task "${taskNameRejoin}" {
         doLast {
-            println "Splitting subtree ${subtree}"
+            println "Rejoining subtree ${subtree}"
 
-            def branchName = "split/${subtree['path']}".toString()
+            def branchName = "rejoin/${subtree['path']}".toString()
 
             def sw = new Stopwatch().start()
-            try {
-                def result = ProcessExecutor.run([
-                        'git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', branchName, '--annotate', "[${subtree['path'].replace('/', '-')}] ".toString()
-                ])
-            } catch (ProcessRunException e) {
-                throw new IllegalStateException(e.result.error)
-            }
 
-            try {
-                def result = ProcessExecutor.run([
-                        'git', 'branch', '-d', branchName
-                ])
-            } catch (ProcessRunException e) {
-                throw new IllegalStateException(e.result.error)
-            }
+            runCommand(
+                    ['git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', branchName, '--annotate', "[${subtree['path'].replace('/', '-')}] ".toString()]
+            )
+
+            // Remove rejoin branch
+            runCommand(
+                    ['git', 'branch', '-d', branchName]
+            )
+
+            // Prune unreachable (rejoin) commits (of deleted rejoin branch)
+            runCommand(['git', 'reflog', 'expire', '--expire-unreachable=now', '--all'])
+            runCommand(['git', 'gc', '--prune=now'])
+
             println "Completed in ${sw}"
         }
     }
-    tasks.gitSubtreeSplitAll.dependsOn "${taskNameSplit}"
+    tasks.gitSubtreeRejoinAll.dependsOn "${taskNameRejoin}"
 }
