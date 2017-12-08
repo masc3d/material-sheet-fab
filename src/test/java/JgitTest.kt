@@ -10,27 +10,34 @@ import org.eclipse.jgit.api.FetchCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.Status
 import org.eclipse.jgit.api.StatusCommand
+import org.eclipse.jgit.lib.ObjectIdRef
 import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.submodule.SubmoduleWalk
 import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
 import org.eclipse.jgit.transport.TagOpt
 import org.eclipse.jgit.util.FS
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
+import sx.jsch.ConfigSessionFactory
+import sx.junit.StandardTest
 
 import java.io.File
 
 /**
  * Created by masc on 13-Sep-15.
  */
+@Category(StandardTest::class)
 class JgitTest {
 
     val vcsPath by lazy {
-        val path = File("").absoluteFile.parentFile.parentFile
-        println("${path}")
+        val path = File("").absoluteFile.parentFile
+        println("Repository path [${path}]")
         path
     }
 
@@ -40,26 +47,8 @@ class JgitTest {
 
     @Before
     fun setup() {
-        // Wire jsch agent proxy with session factory
-        val sessionFactory = object : JschConfigSessionFactory() {
-            override fun configure(host: OpenSshConfig.Host, session: Session) {
-                session.setConfig("StrictHostKeyChecking", "false")
-            }
-
-            @Throws(JSchException::class)
-            override fun createDefaultJSch(fs: FS): JSch {
-                val con = ConnectorFactory.getDefault().createConnector() ?: throw IllegalStateException("No jsch agent proxy connector available")
-
-                JSch.setConfig("PreferredAuthentications", "publickey")
-                val jsch = JSch()
-                val irepo = RemoteIdentityRepository(con)
-                jsch.identityRepository = irepo
-                return jsch
-            }
-
-        }
         // Provide session factory to jgit
-        SshSessionFactory.setInstance(sessionFactory)
+        SshSessionFactory.setInstance(ConfigSessionFactory())
     }
 
     @Test
@@ -86,6 +75,28 @@ class JgitTest {
         if (!status.isClean) {
             throw IllegalStateException("Repository has uncommitted changes. Cannot push release")
         }
+    }
 
+    @Test
+    fun testFindTag() {
+        val ltc = git.tagList()
+        val tagRefs = ltc.call()
+
+        val walk = RevWalk(git.repository)
+
+        // Check if find works for all tag refs
+        tagRefs.forEach {
+            val tagToFind = walk.parseTag(it.objectId)
+            val tagNameToFind = tagToFind.tagName
+
+            println("${tagNameToFind}")
+            // Walk revs and map to RevTag
+            val tag = tagRefs.stream()
+                    .map { tr -> walk.parseTag(tr.objectId) }
+                    .filter { t -> t.tagName == tagNameToFind }
+                    .findFirst().orElse(null)
+
+            Assert.assertEquals(tagToFind, tag)
+        }
     }
 }

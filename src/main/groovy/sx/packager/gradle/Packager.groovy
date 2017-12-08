@@ -216,7 +216,6 @@ class ReleasePushTask extends ReleaseTask {
 
             // Walk revs and map to RevTag
             def RevTag tag = tagRefs.stream()
-                    .filter { it instanceof ObjectIdRef.PeeledTag}
                     .map { tr -> walk.parseTag(tr.objectId) }
                     .filter { t -> t.tagName.equals(tagName) }
                     .findFirst().orElse(null)

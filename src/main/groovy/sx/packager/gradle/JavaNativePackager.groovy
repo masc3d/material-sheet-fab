@@ -132,6 +132,15 @@ class ReleaseNativeBundleTask extends ReleaseTask {
 
     @TaskAction
     packagerReleaseAll() {
+        def thisPlatform = PlatformId.current()
+
+        if (this.extension.operatingSystems != null &&
+                !this.extension.operatingSystems.contains(thisPlatform.operatingSystem)) {
+
+            println "Skipping native bundle release for [${project.name}] on [${thisPlatform.operatingSystem.name()}]"
+            return
+        }
+
         def releasePlatformPath = this.getReleasePlatformPath()
 
         def packagerPlatformDir = this.getPackagerPlatformDir()

@@ -13,8 +13,15 @@ class ReleaseNativeBundleAndroidTask extends ReleaseTask {
 
     @TaskAction
     releaseNativeAndroidBundle() {
-        // Android release variant
-        def applicationVariant = project.android.applicationVariants.find { it.name == 'release' }
+        def variantName = "${this.extension.androidExtension.productFlavor}${this.extension.androidExtension.buildType.capitalize()}".uncapitalize()
+
+        def applicationVariant = project.android.applicationVariants.find {
+            it.name == variantName
+        }
+
+        if (applicationVariant == null) {
+            throw new IllegalArgumentException("Could not find application variant [${variantName}]")
+        }
 
         // First output of variant
         def variantOutput = applicationVariant.outputs.first()
