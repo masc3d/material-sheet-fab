@@ -3,7 +3,9 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.1.1'
+        v_kotlin = '1.2.0'
+        v_kryo = '4.0.1'
+        v_kryo_serializers = '0.42'
     }
 
     repositories {
@@ -40,14 +42,23 @@ dependencies {
     compile(
             project(':sx-common'),
             project(':sx-serialization'),
+
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
             // Kryo
-            "com.esotericsoftware:kryo:4.0.0"
+            "com.esotericsoftware:kryo:$v_kryo",
+            "de.javakaffee:kryo-serializers:$v_kryo_serializers"
+    )
+
+    compileOnly(
+            // JSR-310 / java.time drop-in replacements
+            "org.threeten:threetenbp:1.3.6"
     )
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.2.2"
+            "ch.qos.logback:logback-classic:1.2.3",
+            "org.threeten:threetenbp:1.3.6"
     )
 }
