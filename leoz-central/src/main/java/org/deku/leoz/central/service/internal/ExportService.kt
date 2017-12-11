@@ -244,7 +244,148 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun setBagStationExportRedSeal(bagID: String, bagBackUnitNo: String, stationNo: Int, redSeal: String, text: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        userService.get()
+
+
+        val bag = getAndCheckBag(stationNo, bagID)
+        val backUnit = bag.unitNoBack
+        backUnit ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "BagId found - no bagback-unit found"
+        )
+
+        if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
+
+            if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already exported"
+                )
+            } else {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already closed - try to reopen"
+                )
+            }
+        }
+        val unBack = DekuUnitNumber.parseLabel(bagBackUnitNo)
+        when {
+            unBack.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Bag-UnitNo wrong check digit"
+                )
+            }
+        }
+        if (unBack.value.type != UnitNumber.Type.BagBack)
+
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Bag-UnitNo not valid"
+            )
+
+        if (unBack.value.value.toLong() != backUnit) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Bag-BackUnitNo dismatch"
+            )
+        }
+        val unRedSeal = DekuUnitNumber.parseLabel(redSeal)
+        when {
+            unRedSeal.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Wrong check digit"
+                )
+            }
+        }
+        if (unRedSeal.value.type != UnitNumber.Type.ReserveSeal)
+
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Redseal not valid"
+            )
+        val recSeal = depotRepository.getSeal(unRedSeal.value.value.toLong())
+        recSeal ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "RedSeal not found"
+        )
+        val lastDepot = recSeal.lastdepot
+        lastDepot ?: throw DefaultProblem(
+                status = Response.Status.CONFLICT,
+                title = "No station"
+        )
+        if (lastDepot.toInt() != stationNo) {
+            throw DefaultProblem(
+                    status = Response.Status.CONFLICT,
+                    title = "Stationmismatch"
+            )
+        }
+        val lastStatus = recSeal.status
+        lastStatus ?: throw DefaultProblem(
+                status = Response.Status.CONFLICT,
+                title = "Sealstatus-problem"
+        )
+        if (lastStatus.toInt() == 2) {
+            throw DefaultProblem(
+                    status = Response.Status.CONFLICT,
+                    title = "SealNo already in use"
+            )
+        }
+        if (lastStatus.toInt() != 1) {
+            throw DefaultProblem(
+                    status = Response.Status.CONFLICT,
+                    title = "Sealstatus problem"
+            )
+        }
+
+
+        val exportUnitAndOrder = getAndCheckUnit(bagBackUnitNo, stationNo)
+
+        val unitRecord = exportUnitAndOrder.unit
+        val orderRecord = exportUnitAndOrder.order
+
+        recSeal.status = 2.0
+        var t = text
+        if (t.length > 200)
+            t = t.substring(0, 200)
+        recSeal.bemerkung = t
+        recSeal.store()
+
+        dslContext.update(Tables.SSO_S_MOVEPOOL)
+                .set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_RED, unRedSeal.value.value.toDouble())
+                .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bag.bagNumber!!.toDouble())
+                        .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
+                        .and(Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(stationNo.toDouble()))
+                )
+                .execute()
+
+
+        val oldOrderSeal = orderRecord.plombennra?.toLong()?.toString() ?: ""
+        orderRecord.plombennra = unRedSeal.value.value.toDouble()
+        if (orderRecord.store() > 0)
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "plombennra",
+                    oldValue = oldOrderSeal,
+                    newValue = unRedSeal.value.value.toString(),
+                    changer = "WEB",
+                    point = "EX"
+            )
+
+        val oldUnitSeal = unitRecord.plombennrc?.toLong()?.toString() ?: ""
+        unitRecord.plombennrc = unRedSeal.value.value.toDouble()
+        if (unitRecord.store() > 0)
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "plombennrc",
+                    oldValue = oldUnitSeal,
+                    newValue = unRedSeal.value.value.toString(),
+                    changer = "WEB",
+                    point = "EX"
+            )
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
@@ -269,9 +410,9 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 //update movepool
                 try {
                     dslContext.update(Tables.SSO_S_MOVEPOOL)
-                            .set(Tables.SSO_S_MOVEPOOL.STATUS, 5.toDouble())
+                            .set(Tables.SSO_S_MOVEPOOL.STATUS, BagStatus.OPENED.value.toDouble())
                             .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, stationNo.toDouble())
-                            .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagID.toDouble())
+                            .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bag.bagNumber!!.toDouble())
                                     .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")))
                             .execute()
                 } catch (e: Exception) {
@@ -284,8 +425,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             }
         } else {
             throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "BagId found - not possible to reopen"
+                    status = Response.Status.OK,
+                    title = "BagId found - already open"
             )
         }
 
@@ -429,11 +570,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         var title = "Ok"
         if (unitRecord.ladelistennummerd == null) {
         } else if (unitRecord.ladelistennummerd.toLong() == un.value.value.toLong()) {
+            if (unitRecord.bagbelegnrc == unBack.value.value.toDouble())
             //doppelt gescannt
-            throw DefaultProblem(
-                    status = Response.Status.OK,
-                    title = "Parcel already scanned"
-            )
+                throw DefaultProblem(
+                        status = Response.Status.OK,
+                        title = "Parcel already scanned"
+                )
         } else {
             //umbuchen auf andere ladeliste
             title = "Loadinglist changed"
@@ -441,7 +583,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
 
         exportUnit(ExportUnitAndOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
-
 
         val oldBagUnitNo = unitRecord.bagbelegnrc?.toLong()?.toString() ?: ""
         unitRecord.bagbelegnrc = unBack.value.value.toDouble()
@@ -482,12 +623,237 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                     point = "EX"
             )
         }
+        val oldLoad = unitRecord.beladelinie?.toLong()?.toString() ?: ""
+        unitRecord.beladelinie = bag.bagNumber!!.toDouble()
+        if (unitRecord.store() > 0) {
+            fieldHistoryRepository.addEntry(
+                    orderId = unitRecord.orderid.toLong(),
+                    unitNo = unitRecord.colliebelegnr.toLong(),
+                    fieldName = "beladelinie",
+                    oldValue = oldLoad,
+                    newValue = bag.bagNumber.toString(),
+                    changer = "WEB",
+                    point = "EX"
+            )
+        }
 
         return title
     }
 
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun closeBagStationExport(bagID: String, bagBackUnitNo: String, stationNo: Int, loadingListNo: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        userService.get()
+
+
+        val bag = getAndCheckBag(stationNo, bagID)
+        val backUnit = bag.unitNoBack
+        backUnit ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "BagId found - no bagback-unit found"
+        )
+
+        if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
+
+            if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already exported"
+                )
+            } else {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - bag already closed - try to reopen"
+                )
+            }
+        }
+        val unBack = DekuUnitNumber.parseLabel(bagBackUnitNo)
+        when {
+            unBack.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Bag-UnitNo wrong check digit"
+                )
+            }
+        }
+        if (unBack.value.type != UnitNumber.Type.BagBack)
+
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Bag-UnitNo not valid"
+            )
+
+        if (unBack.value.value.toLong() != backUnit) {
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Bag-BackUnitNo dismatch"
+            )
+        }
+
+        val un = DekuUnitNumber.parseLabel(loadingListNo)
+        when {
+            un.hasError -> {
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "Loadinglist - wrong check digit"
+                )
+            }
+        }
+        if (un.value.type != UnitNumber.Type.Parcel)
+
+            throw DefaultProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "Loadinglist not valid"
+            )
+
+        var sendStatusRequired = false
+
+        val exportUnitAndOrder = getAndCheckUnit(bagBackUnitNo, stationNo)
+
+        val unitRecord = exportUnitAndOrder.unit
+        val orderRecord = exportUnitAndOrder.order
+
+        dslContext.update(Tables.SSO_S_MOVEPOOL)
+                .set(Tables.SSO_S_MOVEPOOL.STATUS, BagStatus.CLOSED_FROM_HUB.value.toDouble())
+                .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, 2.0)
+                .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bag.bagNumber!!.toDouble())
+                        .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
+                        .and(Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(stationNo.toDouble()))
+                )
+                .execute()
+
+        if (orderRecord.colliesgesamt != 1.toShort()) {
+            val oldCollies = orderRecord.colliesgesamt?.toString() ?: ""
+            orderRecord.colliesgesamt = 1
+            if (orderRecord.store() > 0) {
+                fieldHistoryRepository.addEntry(
+                        orderId = unitRecord.orderid.toLong(),
+                        unitNo = unitRecord.colliebelegnr.toLong(),
+                        fieldName = "colliesgesamt",
+                        oldValue = oldCollies,
+                        newValue = "1",
+                        changer = "WEB",
+                        point = "EX"
+                )
+            }
+        }
+
+        bag.orders2export = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
+        if (bag.orders2export.count() == 0) {//backsending empty bag -> weight=1
+            if (unitRecord.gewichteffektiv != 1.0) {
+                val oldWeightEff = unitRecord.gewichteffektiv.toString()
+                unitRecord.gewichteffektiv = 1.0
+                if (unitRecord.store() > 0) {
+                    fieldHistoryRepository.addEntry(
+                            orderId = unitRecord.orderid.toLong(),
+                            unitNo = unitRecord.colliebelegnr.toLong(),
+                            fieldName = "gewichteffektiv",
+                            oldValue = oldWeightEff,
+                            newValue = "1",
+                            changer = "WEB",
+                            point = "EX"
+                    )
+                }
+            }
+            if (unitRecord.gewichtreal != 1.0) {
+                val oldWeightReal = unitRecord.gewichtreal.toString()
+                unitRecord.gewichtreal = 1.0
+                if (unitRecord.store() > 0) {
+                    fieldHistoryRepository.addEntry(
+                            orderId = unitRecord.orderid.toLong(),
+                            unitNo = unitRecord.colliebelegnr.toLong(),
+                            fieldName = "gewichtreal",
+                            oldValue = oldWeightReal,
+                            newValue = "1",
+                            changer = "WEB",
+                            point = "EX"
+                    )
+                }
+
+            }
+
+            if (orderRecord.gewichtgesamt != 1.0) {
+                sendStatusRequired = true
+                val oldWeight = orderRecord.gewichtgesamt?.toString() ?: ""
+                orderRecord.gewichtgesamt = 1.0
+                if (orderRecord.store() > 0) {
+                    fieldHistoryRepository.addEntry(
+                            orderId = unitRecord.orderid.toLong(),
+                            unitNo = unitRecord.colliebelegnr.toLong(),
+                            fieldName = "gewichtgesamt",
+                            oldValue = oldWeight,
+                            newValue = "1",
+                            changer = "WEB",
+                            point = "EX"
+                    )
+                }
+            }
+
+        } else {//weight correction
+            val weightRealSum = bag.orders2export.sumByDouble { it.parcels.sumByDouble { it.realWeight } }
+            if (orderRecord.gewichtgesamt != weightRealSum) {
+                sendStatusRequired = true
+                val oldWeight = orderRecord.gewichtgesamt?.toString() ?: ""
+                orderRecord.gewichtgesamt = weightRealSum
+                if (orderRecord.store() > 0) {
+                    fieldHistoryRepository.addEntry(
+                            orderId = unitRecord.orderid.toLong(),
+                            unitNo = unitRecord.colliebelegnr.toLong(),
+                            fieldName = "gewichtgesamt",
+                            oldValue = oldWeight,
+                            newValue = weightRealSum.toString(),
+                            changer = "WEB",
+                            point = "EX"
+                    )
+                }
+            }
+            if (unitRecord.gewichtreal != weightRealSum) {
+                val oldWeightReal = unitRecord.gewichtreal.toString()
+                unitRecord.gewichtreal = weightRealSum
+                if (unitRecord.store() > 0) {
+                    fieldHistoryRepository.addEntry(
+                            orderId = unitRecord.orderid.toLong(),
+                            unitNo = unitRecord.colliebelegnr.toLong(),
+                            fieldName = "gewichtreal",
+                            oldValue = oldWeightReal,
+                            newValue = weightRealSum.toString(),
+                            changer = "WEB",
+                            point = "EX"
+                    )
+                }
+            }
+            if (unitRecord.gewichteffektiv != weightRealSum) {
+                val oldWeightEff = unitRecord.gewichteffektiv.toString()
+                unitRecord.gewichteffektiv = weightRealSum
+                if (unitRecord.store() > 0) {
+                    fieldHistoryRepository.addEntry(
+                            orderId = unitRecord.orderid.toLong(),
+                            unitNo = unitRecord.colliebelegnr.toLong(),
+                            fieldName = "gewichteffektiv",
+                            oldValue = oldWeightEff,
+                            newValue = weightRealSum.toString(),
+                            changer = "WEB",
+                            point = "EX"
+                    )
+                }
+            }
+        }
+        if (sendStatusRequired) {
+            if (orderRecord.sendstatus.toInt() != 0) {
+                val oldSendstate = orderRecord.sendstatus?.toString() ?: ""
+                orderRecord.sendstatus = 0
+                if (orderRecord.store() > 0) {
+                    fieldHistoryRepository.addEntry(
+                            orderId = unitRecord.orderid.toLong(),
+                            unitNo = unitRecord.colliebelegnr.toLong(),
+                            fieldName = "sendstatus",
+                            oldValue = oldSendstate,
+                            newValue = "0",
+                            changer = "WEB",
+                            point = "EX"
+                    )
+                }
+            }
+        }
     }
 
     override fun getBag(stationNo: Int, bagID: String): ExportService.Bag {
@@ -544,12 +910,16 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         title = "BagId not found"
                 )
         //check bag
-        if (bag.lastStation == null) {
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "BagId without lastStation"
-            )
-        }
+        bag.bagNumber ?: throw DefaultProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "Bagnumber null"
+        )
+        bag.lastStation ?:
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId without lastStation"
+                )
+
         if (!bag.movepool.equals("m")) {
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
@@ -588,12 +958,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
         val backUnit = depotRepository.getUnitNo(oidBack)
         bag.unitNoBack = backUnit
-        if (backUnit == null) {
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "BagId found - no bagback-unit found"
-            )
-        }
+        backUnit ?:
+                throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "BagId found - no bagback-unit found"
+                )
+
         val unUnBack = DekuUnitNumber.parse(backUnit.toString())
         if (!unUnBack.hasError) {
             bag.unitBackLabel = unUnBack.value.label
@@ -607,12 +977,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                             title = "BagId found - bagback-order not found"
                     )
 
-            if (bagBackOrder.depotnrabd == null) {
-                throw DefaultProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "BagId found - bagback-order without depotnrabd"
-                )
-            }
+            bagBackOrder.depotnrabd ?:
+                    throw DefaultProblem(
+                            status = Response.Status.NOT_FOUND,
+                            title = "BagId found - bagback-order without depotnrabd"
+                    )
+
             if (bagBackOrder.depotnrabd.toInt() != stationNo) {
                 throw DefaultProblem(
                         status = Response.Status.NOT_FOUND,
@@ -646,6 +1016,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         bagBackUnitNo ?: return listOf()
         val parcels = parcelRepository.findUnitsInBagBackByBagBackUnitNumber(bagBackUnitNo).groupBy { it.orderid }
         if (parcels.count() == 0) {
+            return listOf()
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
                     title = "No parcels found"
@@ -653,6 +1024,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
         val orders = parcelRepository.getOrdersByIds(parcels.keys.map { it.toLong() }.toList().distinct())//?.groupBy { it.orderid }
         if (orders.count() == 0) {
+            return listOf()
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
                     title = "No orders found"
