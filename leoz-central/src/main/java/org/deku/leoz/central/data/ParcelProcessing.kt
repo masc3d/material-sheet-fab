@@ -695,9 +695,8 @@ open class ParcelProcessing {
 
                         throw e
                     }
-                    if (pathToDelete != null) {
-                        Files.delete(pathToDelete)
-                    }
+                    pathToDelete?.also { Files.delete(it) }
+
                 }
                 //endregion
 

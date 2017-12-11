@@ -2,8 +2,10 @@ package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.SsoPMov
 import org.deku.leoz.central.data.jooq.tables.SsoSMov
 import org.deku.leoz.central.data.jooq.tables.SsoSMovepool
+import org.deku.leoz.central.data.jooq.tables.records.SsoPMovRecord
 import org.deku.leoz.central.data.jooq.tables.records.SsoSMovepoolRecord
 import org.deku.leoz.central.data.jooq.tables.records.TbldepotlisteRecord
 import org.deku.leoz.model.BagStatus
@@ -111,6 +113,10 @@ open class DepotJooqRepository {
         return dslContext.select(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(Tables.TBLAUFTRAGCOLLIES)
                 .where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble()))
                 .fetchOne(0, Long::class.java)
+    }
+
+    open fun getSeal(sealNo:Long):SsoPMovRecord?{
+        return dslContext.fetchOne(SsoPMov.SSO_P_MOV,Tables.SSO_P_MOV.PLOMBENNUMMER.eq(sealNo.toDouble()))
     }
 }
 
