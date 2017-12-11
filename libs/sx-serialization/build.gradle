@@ -52,7 +52,7 @@ dependencies {
             "io.protostuff:protostuff-core:$v_protostuff",
             "io.protostuff:protostuff-runtime:$v_protostuff",
             // Snappy
-            "org.xerial.snappy:snappy-java:1.1.7"
+            "org.xerial.snappy:snappy-java:1.1.7.1"
     )
 
     testCompile(
