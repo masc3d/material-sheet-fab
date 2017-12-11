@@ -57,7 +57,7 @@ open class DepotJooqRepository {
                 ).fetchOne(Tables.MST_DEBITOR_STATION.DEBITOR_ID)
     }
 
-    fun findStationsByDebitorId(debitorId: Int): List<String> {
+    open fun findStationsByDebitorId(debitorId: Int): List<String> {
         return dslContext
                 .select(Tables.TBLDEPOTLISTE.DEPOTNR)
                 .from(Tables.TBLDEPOTLISTE)

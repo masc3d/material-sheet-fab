@@ -146,7 +146,7 @@ constructor(
      * Generic updater for entites from jooq to jpa
      * @param deleteBeforeUpdate    Delete all records before updating
      */
-    fun update(preset: SimplePreset<Record, Any>,
+    open fun update(preset: SimplePreset<Record, Any>,
                syncIdMap: Map<String, Long>,
                deleteBeforeUpdate: Boolean
     ) {
@@ -249,7 +249,7 @@ constructor(
     /**
      * Sync interval
      */
-    var interval: Duration
+    open var interval: Duration
         get() = this.service.period ?: Duration.ZERO
         set(value) {
             this.service.period = value

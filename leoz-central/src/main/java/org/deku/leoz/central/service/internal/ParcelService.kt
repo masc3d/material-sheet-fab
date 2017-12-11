@@ -295,7 +295,7 @@ open class ParcelServiceV1 :
      * Save SVG primary image. Convert to BMP via JPG to be moved in Parcelprocessing
      * @return Destination path
      */
-    fun saveImage(date: Date, location: Location, image: String, number: String, userId: Int?, mimetype: String, locationOriginal: Location?): String {
+    open fun saveImage(date: Date, location: Location, image: String, number: String, userId: Int?, mimetype: String, locationOriginal: Location?): String {
         val keepOriginal = (locationOriginal != null) //true else false
         val pathMobile = storage.mobileDataDirectory.toPath()
 
@@ -363,7 +363,7 @@ open class ParcelServiceV1 :
         return ret
     }
 
-    fun writeAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path) {
+    open fun writeAsBMP(pathFile: java.nio.file.Path, pathBmpFile: java.nio.file.Path) {
         val bufferedImageLoad = ImageIO.read(File(pathFile.toUri())) //ImageIO.read(ByteArrayInputStream(img))
         val fileObj = File(pathBmpFile.toUri())
 
@@ -381,7 +381,7 @@ open class ParcelServiceV1 :
         }
     }
 
-    fun File.replaceExtension(extension: String): File =
+    open fun File.replaceExtension(extension: String): File =
             File(this.parentFile, this.nameWithoutExtension + "." + extension)
 
     /**
