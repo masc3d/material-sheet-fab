@@ -171,15 +171,22 @@ subprojects {
     }
 
     plugins.withType(org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper).whenPluginAdded {
+        // Unify kotlin classes output dir
         sourceSets.main.kotlin.outputDir = classesDir
         sourceSets.test.kotlin.outputDir = testClassesDir
+
+        // Unify resources output dir
+        sourceSets.main.output.resourcesDir = classesDir
+        sourceSets.test.output.resourcesDir = testClassesDir
 
         // Copy kotlin classes to java classes output directory
         kotlin.copyClassesToJavaOutput = true
 
-        // Prevent duplicate classes for gradle test runs when `kotlin.copyClassesToJavaOutput == true`
-        tasks.testClasses.doLast {
-            new File(buildDir, 'kotlin-classes').deleteDir()
+        if (kotlin.copyClassesToJavaOutput) {
+            // When using `copyClassesToJavaOutput` the (old) classesDirs has to be amended as well
+            // to prevent duplicate classpaths / test runs.
+            sourceSets.main.output.classesDirs.setFrom(classesDir)
+            sourceSets.test.output.classesDirs.setFrom(testClassesDir)
         }
     }
 
@@ -188,9 +195,12 @@ subprojects {
         // REMARK: possibly a better approach would be to synchronize gradle build output to IJ out directories
         project.apply plugin: 'idea'
 
+        // Unify java classes output dir
         sourceSets.main.java.outputDir = classesDir
-        sourceSets.main.output.resourcesDir = classesDir
         sourceSets.test.java.outputDir = testClassesDir
+
+        // Unify resources output dir
+        sourceSets.main.output.resourcesDir = classesDir
         sourceSets.test.output.resourcesDir = testClassesDir
 
         project.idea {
