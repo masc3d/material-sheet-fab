@@ -185,7 +185,7 @@ abstract class BaseLocationService: Service() {
 
         this@BaseLocationService.locationCache.lastLocation = location
 
-        log.info("Location changed. Provider [${location.provider}] Position [$currentPosition]")
+        log.debug("Location changed. Provider [${location.provider}] Position [$currentPosition]")
 
         // TODO: Store location data in database and send it as an set of multiple positions once.
 
