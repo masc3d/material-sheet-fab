@@ -10,3 +10,11 @@ enum class DayType private constructor(private var type: String) {
     Holiday("Holiday"),
     RegionalHoliday("RegionalHoliday")
 }
+
+enum class DayTypeKey(val value:Int){
+    WORKDAY(1),
+    SATURDAY(2),
+    SUNDAY(3),
+    HOLIDAY(4),
+    REGIONALHOLIDAY(4)
+}

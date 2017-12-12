@@ -8,6 +8,7 @@ import org.deku.leoz.central.data.jooq.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
+import org.deku.leoz.service.entity.DayTypeKey
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.BagService
@@ -26,6 +27,7 @@ import sx.rs.DefaultProblem
 import sx.time.toLocalDate
 import sx.time.toTimestamp
 import java.time.LocalDate
+import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -743,6 +745,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 val oldWeightEff = unitRecord.gewichteffektiv.toString()
                 unitRecord.gewichteffektiv = 1.0
                 if (unitRecord.store() > 0) {
+                    sendStatusRequired = true
                     fieldHistoryRepository.addEntry(
                             orderId = unitRecord.orderid.toLong(),
                             unitNo = unitRecord.colliebelegnr.toLong(),
@@ -758,6 +761,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 val oldWeightReal = unitRecord.gewichtreal.toString()
                 unitRecord.gewichtreal = 1.0
                 if (unitRecord.store() > 0) {
+                    sendStatusRequired = true
                     fieldHistoryRepository.addEntry(
                             orderId = unitRecord.orderid.toLong(),
                             unitNo = unitRecord.colliebelegnr.toLong(),
@@ -772,10 +776,10 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             }
 
             if (orderRecord.gewichtgesamt != 1.0) {
-                sendStatusRequired = true
                 val oldWeight = orderRecord.gewichtgesamt?.toString() ?: ""
                 orderRecord.gewichtgesamt = 1.0
                 if (orderRecord.store() > 0) {
+                    sendStatusRequired = true
                     fieldHistoryRepository.addEntry(
                             orderId = unitRecord.orderid.toLong(),
                             unitNo = unitRecord.colliebelegnr.toLong(),
@@ -791,10 +795,10 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         } else {//weight correction
             val weightRealSum = bag.orders2export.sumByDouble { it.parcels.sumByDouble { it.realWeight } }
             if (orderRecord.gewichtgesamt != weightRealSum) {
-                sendStatusRequired = true
                 val oldWeight = orderRecord.gewichtgesamt?.toString() ?: ""
                 orderRecord.gewichtgesamt = weightRealSum
                 if (orderRecord.store() > 0) {
+                    sendStatusRequired = true
                     fieldHistoryRepository.addEntry(
                             orderId = unitRecord.orderid.toLong(),
                             unitNo = unitRecord.colliebelegnr.toLong(),
@@ -810,6 +814,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 val oldWeightReal = unitRecord.gewichtreal.toString()
                 unitRecord.gewichtreal = weightRealSum
                 if (unitRecord.store() > 0) {
+                    sendStatusRequired = true
                     fieldHistoryRepository.addEntry(
                             orderId = unitRecord.orderid.toLong(),
                             unitNo = unitRecord.colliebelegnr.toLong(),
@@ -825,6 +830,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 val oldWeightEff = unitRecord.gewichteffektiv.toString()
                 unitRecord.gewichteffektiv = weightRealSum
                 if (unitRecord.store() > 0) {
+                    sendStatusRequired = true
                     fieldHistoryRepository.addEntry(
                             orderId = unitRecord.orderid.toLong(),
                             unitNo = unitRecord.colliebelegnr.toLong(),
@@ -1215,6 +1221,9 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                             val oldSendDate = orderRecord.verladedatum?.toGregorianLongDateString() ?: ""
 
                             orderRecord.verladedatum = routing.sendDate!!.date.toTimestamp()
+                            //orderRecord.feiertag_1 = routing.sendDate!!.date.toLocalDate().dayOfWeek.toString()
+                            orderRecord.feiertag_1 = routing.sendDate!!.date.toLocalDate().dayOfWeek.getDisplayName(TextStyle.FULL, Locale.GERMAN)
+                            orderRecord.feiertagshls = DayTypeKey.valueOf(routing.sender!!.dayType.toUpperCase()).value
                             if (orderRecord.store() > 0) {
                                 fieldHistoryRepository.addEntry(
                                         orderId = unitRecord.orderid.toLong(),
@@ -1234,6 +1243,9 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         if (doUpdateDelivery || orderRecord.dtauslieferung.toTimestamp() < routing.deliveryDate!!.date.toTimestamp()) {
                             val oldDeliveryDate = orderRecord.dtauslieferung?.toGregorianLongDateString() ?: ""
                             orderRecord.dtauslieferung = routing.deliveryDate!!.date.toTimestamp()
+                            //orderRecord.feiertag_2 = routing.deliveryDate!!.date.toLocalDate().dayOfWeek.toString()
+                            orderRecord.feiertag_2 = routing.deliveryDate!!.date.toLocalDate().dayOfWeek.getDisplayName(TextStyle.FULL, Locale.GERMAN)
+                            orderRecord.feiertagshld = DayTypeKey.valueOf(routing.consignee!!.dayType.toUpperCase()).value
                             if (orderRecord.store() > 0) {
                                 fieldHistoryRepository.addEntry(
                                         orderId = unitRecord.orderid.toLong(),
