@@ -7,11 +7,13 @@ import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener
 import org.eclipse.paho.client.mqttv3.IMqttToken
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
 import sx.rx.toHotCache
 import sx.rx.toHotReplay
 
@@ -52,6 +54,8 @@ interface IMqttRxClient {
 class MqttRxClient(
         private val parent: IMqttAsyncClient,
         private val connectOptions: MqttConnectOptions) : IMqttRxClient {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     abstract class Status {
         data class ConnectionComplete(val reconnect: Boolean, val serverURI: String) : MqttRxClient.Status()
@@ -120,7 +124,7 @@ class MqttRxClient(
                             }
                         }
                 )
-            } catch(e: Throwable) {
+            } catch (e: Throwable) {
                 it.onError(e)
             }
         }
@@ -153,7 +157,7 @@ class MqttRxClient(
                                 subscriber.onNext(message)
                             }
                         })
-            } catch(e: Throwable) {
+            } catch (e: Throwable) {
                 subscriber.onError(e)
             }
         }
@@ -177,7 +181,7 @@ class MqttRxClient(
                     }
 
                 })
-            } catch(e: Throwable) {
+            } catch (e: Throwable) {
                 it.onError(e)
             }
         }
@@ -203,12 +207,12 @@ class MqttRxClient(
                                 it.onError(exception ?: MqttException(null))
                             }
                         })
-            } catch(e: Throwable) {
-                // Make sure the connection is closed thoroughly
+            } catch (e: Throwable) {
+                // Make sure the connection is shutdown thoroughly
                 try {
-                    this.parent.close()
+                    this.shutdown()
                 } catch(e: Throwable) {
-                    // Errors during close are not relevant
+                    log.warn(e.message, e)
                 }
 
                 it.onError(e)
@@ -234,11 +238,26 @@ class MqttRxClient(
                                 it.onError(exception ?: MqttException(null))
                             }
                         })
-            } catch(e: Throwable) {
+            } catch (e: Throwable) {
                 it.onError(e)
             }
         }
                 .toHotCache()
+    }
+
+    /**
+     * Shutdown all parent client comms and socket immediately.
+     */
+    private fun shutdown() {
+        this.parent.also { client ->
+            val QUIESCE_TIMEOUT = Duration.ofSeconds(0)
+            val DISCONNECT_TIMEOUT = Duration.ofSeconds(0)
+
+            if (client is MqttAsyncClient)
+                client.disconnectForcibly(QUIESCE_TIMEOUT.toMillis(), DISCONNECT_TIMEOUT.toMillis(), false)
+            else
+                client.disconnectForcibly(QUIESCE_TIMEOUT.toMillis(), DISCONNECT_TIMEOUT.toMillis())
+        }
     }
 
     /**
