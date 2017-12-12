@@ -116,7 +116,7 @@ class MqttSqlitePersistence constructor(
         this.db.delete(
                 tableName = TABLE_NAME,
                 whereClause = "${COL_ID} = {${COL_ID}}",
-                args = COL_ID to message.persistentId
+                args = *arrayOf(COL_ID to message.persistentId)
         )
     }
 

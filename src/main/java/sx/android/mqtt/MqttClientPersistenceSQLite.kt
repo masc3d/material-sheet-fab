@@ -105,7 +105,7 @@ class MqttClientPersistenceSQLite constructor(
             this.db.delete(
                     tableName = TABLE_NAME,
                     whereClause = "${COL_KEY} = {key}",
-                    args = COL_KEY to key)
+                    args = *arrayOf(COL_KEY to key))
         }
     }
 
@@ -115,11 +115,11 @@ class MqttClientPersistenceSQLite constructor(
         return rethrow {
             val data = this.db.select(
                     tableName = TABLE_NAME,
-                    columns = COL_DATA
+                    columns = *arrayOf(COL_DATA)
             )
                     .whereSimple(
                             select = "${COL_KEY} = ?",
-                            args = key
+                            args = *arrayOf(key)
                     )
                     .parseOpt(BlobParser) ?: throw MqttPersistenceException()
 
@@ -131,9 +131,9 @@ class MqttClientPersistenceSQLite constructor(
         return rethrow {
             this.db.select(
                     tableName = TABLE_NAME,
-                    columns = COL_KEY
+                    columns = *arrayOf(COL_KEY)
             )
-                    .whereSimple(select = "${COL_KEY} = ?", args = key)
+                    .whereSimple(select = "${COL_KEY} = ?", args = *arrayOf(key))
                     .parseOpt(StringParser) != null
         }
     }
@@ -147,7 +147,7 @@ class MqttClientPersistenceSQLite constructor(
             Vector(
                     this.db.select(
                             tableName = TABLE_NAME,
-                            columns = COL_KEY)
+                            columns = *arrayOf(COL_KEY))
                             .parseList(StringParser)
             )
                     .elements()
