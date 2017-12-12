@@ -1,3 +1,5 @@
+import com.trello.victor.RasterizeTask
+
 buildscript {
     repositories {
         mavenCentral()
@@ -401,22 +403,19 @@ clean {
     }
 }
 
-// masc20170526.
-// Amend output paths of victor, as AndroidStudio designer cannot see
-// generated resources/drawables in build folder
+//region masc20170526. Victor customization
 
 afterEvaluate {
     GENERATED_DIR.mkdirs()
 
-    // Apply changes to all rasterize tasks
-    tasks.findAll {
-        it.name.startsWith("rasterize")
-    }.each {
-        project.task "${it.name}" {
-            outputDir GENERATED_SVG_DIR
-        }
+    // Amend output paths of victor, as AndroidStudio designer cannot see
+    // generated resources/drawables in build folder
+    tasks.withType(RasterizeTask).each {
+        it.outputDir = GENERATED_SVG_DIR
     }
 }
+
+//endregion
 
 // Exclude sqlite native libs for release builds only.
 // As android.packagingOptions can't be defined on build type level,
@@ -424,7 +423,6 @@ afterEvaluate {
 
 def removeSqliteLibs() {
     fileTree("${buildDir}/intermediates") {
-        // include '**/arm64-v8a/libsqlite3x.so'
         include '**/x86/libsqlite3x.so'
         include '**/x86_64/libsqlite3x.so'
     }.each {

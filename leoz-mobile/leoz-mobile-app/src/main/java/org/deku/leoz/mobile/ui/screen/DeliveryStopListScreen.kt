@@ -147,7 +147,7 @@ class DeliveryStopListScreen
         Observable.combineLatest(
                 this.stopTypeProperty,
                 this.editModeProperty,
-                BiFunction { x: Any, y: Any -> Unit }
+                BiFunction { _: Any, _: Any -> Unit }
         )
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
@@ -422,7 +422,7 @@ class DeliveryStopListScreen
                         .content(R.string.dialog_content_stop_reopen)
                         .positiveText(android.R.string.yes)
                         .negativeText(android.R.string.no)
-                        .onPositive { dialog, which ->
+                        .onPositive { dialog, _ ->
                             dialog.dismiss()
                             adapter.getItem(pos)
                                     ?.viewModel

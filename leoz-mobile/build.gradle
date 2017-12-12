@@ -2,6 +2,7 @@ import sx.packager.BundleRepository
 import sx.rsync.Rsync
 import sx.ssh.SshHost
 import sx.ssh.SshTunnelProvider
+import org.apache.commons.lang3.SystemUtils
 
 import java.lang.management.ManagementFactory
 
@@ -71,7 +72,7 @@ subprojects {
     tasks.withType(JavaCompile) {
         options.bootstrapClasspath = files(
                 ManagementFactory.getRuntimeMXBean().bootClassPath
-                        .split(":")
+                        .split(SystemUtils.IS_OS_WINDOWS ? ";" : ":")
                         .collect { new File(it) }
         )
     }

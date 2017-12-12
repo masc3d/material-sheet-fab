@@ -178,7 +178,7 @@ class CashScreen : ScreenFragment<Any>() {
 
         // Initiali focus
         this.uxCashGiven.requestFocus()
-        this.context?.inputMethodManager?.showSoftInput()
+        this.context.inputMethodManager.showSoftInput()
     }
 
     override fun onResume() {
@@ -217,7 +217,7 @@ class CashScreen : ScreenFragment<Any>() {
 
         ovEditorAction
                 .subscribe {
-                    this.context?.inputMethodManager.hideSoftInput()
+                    this.context.inputMethodManager.hideSoftInput()
 
                     when (this@CashScreen.cashAmountSufficient) {
                         true -> this.uxCashGiven.error = null

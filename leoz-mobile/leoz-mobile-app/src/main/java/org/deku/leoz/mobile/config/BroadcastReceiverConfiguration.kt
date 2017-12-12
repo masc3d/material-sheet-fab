@@ -9,11 +9,12 @@ import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.slf4j.LoggerFactory
 
 /**
+ * Broadcast receiver configuration
  * Created by 27694066 on 05.10.2017.
  */
 class BroadcastReceiverConfiguration {
     companion object {
-        private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+        private val log by lazy { LoggerFactory.getLogger(BroadcastReceiverConfiguration::class.java) }
 
         var module = Kodein.Module {
             Log.d(BroadcastReceiverConfiguration::class.java.simpleName, "Initialize BroadcastReceiverConfiguration")

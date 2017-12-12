@@ -332,7 +332,7 @@
                         android:layout_gravity="end"
                         android:layout_marginEnd="-4dp"
                         android:alpha="0.9"
-                        android:background="@{stop.tagColor}"
+                        android:background="@{safeUnbox(stop.tagColor)}"
                         android:text="@{stop.tagText, default = `Stop state`}"
                         android:textAllCaps="true"
                         />

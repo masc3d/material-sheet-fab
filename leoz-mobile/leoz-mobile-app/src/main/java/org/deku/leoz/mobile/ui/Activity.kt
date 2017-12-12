@@ -518,7 +518,7 @@ abstract class Activity : BaseActivity(),
                     .also {
                         when (syntheticInputs.multipleChoice) {
                             false -> it
-                                    .itemsCallback { _, _, position, charSequence ->
+                                    .itemsCallback { _, _, position, _ ->
                                         syntheticInputs.entries.get(position).also {
                                             simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
                                         }
@@ -529,7 +529,7 @@ abstract class Activity : BaseActivity(),
                                     .itemsCallbackMultiChoice(null, { _, _, _ ->
                                         true
                                     })
-                                    .onPositive { dialog, which ->
+                                    .onPositive { dialog, _ ->
                                         dialog.selectedIndices?.forEach { position ->
                                             syntheticInputs.entries.get(position).also {
                                                 simulatingAidcReader.emit(data = it.data, symbologyType = it.symbologyType)
@@ -538,7 +538,7 @@ abstract class Activity : BaseActivity(),
                                         dialog.dismiss()
                                     }
                                     .negativeText(android.R.string.selectAll)
-                                    .onNegative { dialog, which ->
+                                    .onNegative { dialog, _ ->
                                         if (dialog.selectedIndices?.isEmpty() ?: true) {
                                             dialog.selectAllIndices()
                                         } else {
@@ -925,11 +925,11 @@ abstract class Activity : BaseActivity(),
                                 .positiveText(R.string.action_settings)
                                 .negativeText(R.string.close)
                                 .cancelable(false)
-                                .onPositive { dialog, which ->
+                                .onPositive { _, _ ->
                                     val intent = Intent(android.provider.Settings.ACTION_DATE_SETTINGS)
                                     startActivity(intent)
                                 }
-                                .onNegative { dialog, which ->
+                                .onNegative { _, _ ->
                                     this.app.terminate()
                                 }
                                 .build().show()

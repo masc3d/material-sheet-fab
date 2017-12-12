@@ -34,7 +34,7 @@ class HardwareTones : Tones {
 
         val generatedSnd = ByteArray(2 * numSamples)
 
-        for (i in 0..numSamples - 1) {
+        for (i in 0 until numSamples) {
             sample[i] = Math.sin(2.0 * Math.PI * i.toDouble() / (SAMPLE_RATE / frequency))
         }
 

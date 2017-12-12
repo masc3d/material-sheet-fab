@@ -791,7 +791,7 @@ class DeliveryStopProcessScreen :
                         // Parcel does not belong to this delivery stop, ask for stop merge
                         feedback.warning()
 
-                        var runnable: Runnable? = null
+                        var runnable: Runnable?
                         var reverseRunnable: Runnable? = null
                         val animationHandler = Handler()
 

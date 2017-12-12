@@ -194,7 +194,7 @@ class StopViewModel(
                         .flatMap { it.parcels }
                         .toSingletonObservable(),
                 this.stop.stateProperty.map { it.value },
-                BiFunction { parcels: List<Parcel>, state: Stop.State ->
+                BiFunction { parcels: List<Parcel>, _: Stop.State ->
                     parcels
                 }
         )

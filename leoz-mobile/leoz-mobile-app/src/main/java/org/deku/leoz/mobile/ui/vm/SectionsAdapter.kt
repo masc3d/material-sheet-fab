@@ -142,39 +142,39 @@ class SectionsAdapter
                     this.collapseAll()
 
                     // Check if flexible item for this section exists
-                    var sectionItem = this.currentItems.firstOrNull {
+                    var currentSectionItem = this.currentItems.firstOrNull {
                         it.viewModel == sectionViewModel
                     }
 
-                    if (sectionItem != null) {
+                    if (currentSectionItem != null) {
                         if (!sectionViewModel.showIfEmpty && items.isEmpty()) {
-                            this.removeItem(this.getGlobalPositionOf(sectionItem))
-                            sectionItem = null
+                            this.removeItem(this.getGlobalPositionOf(currentSectionItem))
+                            currentSectionItem = null
                         }
                     } else {
                         if (sectionViewModel.showIfEmpty || !items.isEmpty()) {
                             // The section could have been removed prior to item change
                             if (this.sections.contains(sectionViewModel)) {
-                                sectionItem = createSectionItem()
-                                this.addItem(sectionItem)
+                                currentSectionItem = createSectionItem()
+                                this.addItem(currentSectionItem)
                             }
                         }
                     }
 
-                    if (sectionItem != null) {
-                        sectionItem.subItems = items.map {
+                    if (currentSectionItem != null) {
+                        currentSectionItem.subItems = items.map {
                             val item = vmItemProvider.invoke(it)
 
                             item.isEnabled = true
                             item.isDraggable = false
                             item.isSwipeable = false
                             item.isSelectable = false
-                            item.header = sectionItem
+                            item.header = currentSectionItem
 
                             item
                         }
 
-                        this.updateItem(sectionItem)
+                        this.updateItem(currentSectionItem)
                     }
                 }
                 .bind(this)
