@@ -71,6 +71,7 @@
 -dontwarn com.google.common.**
 -dontwarn com.sun.mail.**
 -dontwarn com.trello.rxlifecycle.**
+-dontwarn com.wonderkiln.camerakit.**
 -dontwarn de.javakaffee.kryoserializers.**
 -dontwarn feign.DefaultMethodHandler
 -dontwarn io.swagger.jaxrs.**
