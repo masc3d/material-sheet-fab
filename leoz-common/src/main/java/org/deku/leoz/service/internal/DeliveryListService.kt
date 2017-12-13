@@ -66,9 +66,12 @@ interface DeliveryListService {
     data class Task(
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "Order id")
             var orderId: Long = 0,
-            @ApiModelProperty(example = "Pickup", position = 20, required = true, value = "Stop type")
+            @Deprecated("Will be phased out with leoz-central > 0.147, leoz-mobile > 0.118")
+            @ApiModelProperty(example = "PICKUP", position = 20, required = true, value = "Stop type")
             var stopType: Type = Task.Type.DELIVERY,
-            @ApiModelProperty(example = "false", position = 30, required = true, value = "is removed from Deliverylist")
+            @ApiModelProperty(example = "PICKUP", position = 30, required = true, value = "Task type")
+            var taskType: Type? = null,
+            @ApiModelProperty(example = "false", position = 40, required = true, value = "is removed from Deliverylist")
             var isRemoved: Boolean = false
     ) {
         enum class Type {

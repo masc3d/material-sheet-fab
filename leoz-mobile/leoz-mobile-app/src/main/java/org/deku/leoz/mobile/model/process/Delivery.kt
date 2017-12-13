@@ -99,7 +99,7 @@ class Delivery : CompositeDisposableSupplier {
                                     tasks = stop.tasks.map {
                                         DeliveryListService.Task(
                                                 orderId = it.order.id,
-                                                stopType = when (it.type) {
+                                                taskType = when (it.type) {
                                                     OrderTask.TaskType.DELIVERY -> DeliveryListService.Task.Type.DELIVERY
                                                     OrderTask.TaskType.PICKUP -> DeliveryListService.Task.Type.PICKUP
                                                 }
