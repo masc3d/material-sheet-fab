@@ -59,10 +59,8 @@ idea {
         // Exclude dirs to prevent indexing
         excludeDirs += file('leoz-build')
         excludeDirs += file('leoz-mobile')
+        excludeDirs += file('leoz-web')
         excludeDirs += file('release')
-        excludeDirs += file('leoz-web').toPath()
-                .resolve('node_modules')
-                .toFile()
     }
 }
 
