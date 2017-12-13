@@ -393,7 +393,7 @@ class ActionOverlayView : RelativeLayout {
                 .toList()
 
         if (visibleSheetFabs.count() == 0) {
-            log.info("No visible sheets")
+            log.trace("No visible sheets")
             // No sheets visible, update immediately
             updateImpl.invoke()
         } else {
@@ -416,7 +416,7 @@ class ActionOverlayView : RelativeLayout {
                     .take(1)
                     .subscribeBy(
                             onComplete = {
-                                log.info("All sheets in hidden state")
+                                log.trace("All sheets in hidden state")
                                 // Update when all sheets went into HIDDEN state
                                 updateImpl.invoke()
                             })
