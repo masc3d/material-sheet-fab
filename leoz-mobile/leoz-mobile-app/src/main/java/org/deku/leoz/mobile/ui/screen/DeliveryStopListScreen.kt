@@ -277,7 +277,7 @@ class DeliveryStopListScreen
                                         .subscribe()
                             }
 
-                            this.delivery.sendStopOrderUpdate()
+                            this.delivery.sendUpdate()
                                     .subscribe()
 
                             this.editMode = false
@@ -569,7 +569,7 @@ class DeliveryStopListScreen
 
                                     // When not in edit mode, Send stop list order update on every move
                                     if (!this@DeliveryStopListScreen.editMode)
-                                        this.delivery.sendStopOrderUpdate()
+                                        this.delivery.sendUpdate()
                                                 .subscribe()
                                 }
                     }

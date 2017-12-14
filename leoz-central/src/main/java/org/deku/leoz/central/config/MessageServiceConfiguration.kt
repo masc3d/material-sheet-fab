@@ -8,12 +8,18 @@ import org.deku.leoz.central.service.internal.LocationServiceV2
 import org.deku.leoz.central.service.internal.LogService
 import org.deku.leoz.central.service.internal.ParcelServiceV1
 import org.deku.leoz.central.service.internal.NodeServiceV1
+import org.deku.leoz.central.service.internal.TourServiceV1
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 
 /**
+ * Message service configuration.
+ *
+ * Wires mq handlers to listeners.
+ * TODO: add spring support for annotation based auto-wiring
+ *
  * Created by masc on 15/03/16.
  */
 @Configuration
@@ -24,27 +30,22 @@ open class MessageServiceConfiguration {
 
     @Inject
     private lateinit var logService: LogService
-
     @Inject
     private lateinit var authorizationService: AuthorizationService
-
     @Inject
     private lateinit var parcelService: ParcelServiceV1
-
     @Inject
     private lateinit var locationServiceV1: LocationServiceV1
-
     @Inject
     private lateinit var locationServiceV2: LocationServiceV2
-
     @Inject
     private lateinit var fileService: FileServiceV1
-
     @Inject
     private lateinit var nodeService: NodeServiceV1
-
     @Inject
     private lateinit var deliveryListService: DeliveryListService
+    @Inject
+    private lateinit var tourService: TourServiceV1
 
     /**
      * Central queue message handlers
@@ -55,7 +56,8 @@ open class MessageServiceConfiguration {
                 deliveryListService,
                 fileService,
                 nodeService,
-                parcelService
+                parcelService,
+                tourService
         )
     }
 

@@ -11,10 +11,9 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.model.entity.OrderTask
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
-import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.service.internal.DeliveryListService
+import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
@@ -33,9 +32,6 @@ class Delivery : CompositeDisposableSupplier {
 
     private val db: Database by Kodein.global.lazy.instance()
 
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
-
-    private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
     private val login: Login by Kodein.global.lazy.instance()
@@ -88,20 +84,20 @@ class Delivery : CompositeDisposableSupplier {
     /**
      * Send the current delivery/tour stop order
      */
-    fun sendStopOrderUpdate(): Completable {
+    fun sendUpdate(): Completable {
         return Completable.fromAction {
             this.mqttEndpoints.central.main.channel().send(
-                    DeliveryListService.StopOrderUpdateMessage(
+                    TourServiceV1.TourUpdateMessage(
                             nodeUid = identity.uid.value,
                             userId = login.authenticatedUser?.id ?: 0,
                             stops = this.pendingStops.blockingFirst().value.map { stop ->
-                                DeliveryListService.Stop(
+                                TourServiceV1.Stop(
                                     tasks = stop.tasks.map {
-                                        DeliveryListService.Task(
+                                        TourServiceV1.Task(
                                                 orderId = it.order.id,
                                                 taskType = when (it.type) {
-                                                    OrderTask.TaskType.DELIVERY -> DeliveryListService.Task.Type.DELIVERY
-                                                    OrderTask.TaskType.PICKUP -> DeliveryListService.Task.Type.PICKUP
+                                                    OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                    OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
                                                 }
                                         )
                                     }

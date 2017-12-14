@@ -66,7 +66,7 @@ interface DeliveryListService {
     data class Task(
             @ApiModelProperty(example = "12345678", position = 10, required = true, value = "Order id")
             var orderId: Long = 0,
-            @Deprecated("Will be phased out with leoz-central > 0.147, leoz-mobile > 0.118")
+            @Deprecated("Required by leoz-central <= 0.147, leoz-mobile <= 0.118")
             @ApiModelProperty(example = "PICKUP", position = 20, required = true, value = "Stop type")
             var stopType: Type = Task.Type.DELIVERY,
             @ApiModelProperty(example = "PICKUP", position = 30, required = true, value = "Task type")
@@ -99,6 +99,7 @@ interface DeliveryListService {
     /**
      * Message sent when delivery list order is updated
      */
+    @Deprecated("Required for mobile <= 0.118")
     @Serializable(0x84361dd5ef5f84)
     data class StopOrderUpdateMessage(
             /** The node uid this message originates from */
