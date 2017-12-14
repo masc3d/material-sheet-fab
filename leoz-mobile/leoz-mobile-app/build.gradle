@@ -188,7 +188,7 @@ dependencies {
             "android.arch.lifecycle:runtime:1.0.3",
 
             // Camera
-            "com.wonderkiln:camerakit:0.13.0",
+            "com.wonderkiln:camerakit:0.13.1",
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
@@ -231,8 +231,7 @@ dependencies {
             "io.requery:requery:$v_requery",
             "io.requery:requery-kotlin:$v_requery",
             "io.requery:requery-android:$v_requery",
-            // TODO: sqlite-android-3.20.1 causes db error on startup with android-4.4
-            "io.requery:sqlite-android:3.20.0",
+            "io.requery:sqlite-android:3.21.0",
 
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
@@ -252,7 +251,6 @@ dependencies {
 
             // MQTT client
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
-            "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
             'com.github.pwittchen:reactivenetwork-rx2:0.12.2',
 
@@ -273,7 +271,7 @@ dependencies {
             "com.afollestad.material-dialogs:core:$v_material_dialogs",
             "com.afollestad.material-dialogs:commons:$v_material_dialogs",
 
-            "com.eightbitlab:blurview:1.3.3",
+            "com.eightbitlab:blurview:1.3.4",
             "com.github.andrewlord1990:snackbarbuilder:0.9.0",
 
             "com.github.BlacKCaT27:CurrencyEditText:2.0.2",
