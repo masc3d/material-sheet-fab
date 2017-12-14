@@ -189,7 +189,7 @@ class DeliveryList : CompositeDisposableSupplier {
 
                                 when {
                                     order != null -> {
-                                        when (it.stopType) {
+                                        when (it.taskType ?: it.stopType) {
                                             DeliveryListService.Task.Type.DELIVERY -> order.deliveryTask
                                             DeliveryListService.Task.Type.PICKUP -> order.pickupTask
                                         }

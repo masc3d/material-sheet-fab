@@ -85,12 +85,10 @@ class DeliveryListService
                                     DeliveryListService.Task(
                                             orderId = it.id,
                                             isRemoved = if (dlDetailsRecord.removedInDeliverylist != 0.0) true else false,
-                                            stopType = when (dlDetailsRecord.stoptype) {
-                                                "DELIVERY" -> DeliveryListService.Task.Type.DELIVERY
-                                                "PICKUP" -> DeliveryListService.Task.Type.PICKUP
-                                                else -> throw UnsupportedOperationException()
-                                            }
-                                    )
+                                            taskType = DeliveryListService.Task.Type.valueOf(dlDetailsRecord.stoptype)
+                                    ).also {
+                                        it.stopType = it.taskType!!
+                                    }
                             ))
                 }
 

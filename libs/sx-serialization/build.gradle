@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.2.0'
+        v_kotlin = '1.2.10'
         v_kryo = '4.0.1'
         v_kryo_serializers = '0.42'
         v_slf4j = '1.7.25'
