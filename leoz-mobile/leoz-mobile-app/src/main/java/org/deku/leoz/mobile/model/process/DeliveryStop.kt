@@ -430,7 +430,7 @@ class DeliveryStop(
             // In case the stop has been closed before, re-open on delivery
             open()
 
-            parcels.blockingFirst().forEach {
+            parcels.blockingFirst().filter { it.state != Parcel.State.PENDING }.forEach {
                 it.state = Parcel.State.LOADED
                 it.reason = reason
                 update(it)
