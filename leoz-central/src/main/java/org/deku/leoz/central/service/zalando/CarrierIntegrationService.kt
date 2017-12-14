@@ -1,9 +1,9 @@
 package org.deku.leoz.central.service.zalando
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.SddContzipRecord
-import org.deku.leoz.central.data.jooq.tables.records.SddFpcsOrderRecord
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SddContzipRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SddFpcsOrderRecord
 import sx.rs.DefaultProblem
 import org.deku.leoz.service.zalando.entity.DeliveryOption
 import org.deku.leoz.service.zalando.entity.DeliveryOrder

@@ -1,6 +1,6 @@
 package org.deku.leoz.central.service.internal
 
-import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.config.Rest

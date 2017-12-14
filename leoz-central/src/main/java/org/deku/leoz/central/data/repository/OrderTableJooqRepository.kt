@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.jooq.DSLContext
 import javax.inject.Inject
 import javax.inject.Named
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.Tblauftrag
-import org.deku.leoz.central.data.jooq.tables.records.TblauftragRecord
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.Tblauftrag
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecord
 
 
 @Named

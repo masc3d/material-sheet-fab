@@ -236,7 +236,15 @@ jooq {
         generator {
             database {
                 name = 'org.jooq.util.mysql.MySQLDatabase'
-                inputSchema = 'dekuclient'
+
+                schemata {
+                    schema {
+                        inputSchema = 'dekuclient'
+                    }
+                    schema {
+                        inputSchema = 'mobile'
+                    }
+                }
 
                 includes = [
                         // Sorted alphanumerically

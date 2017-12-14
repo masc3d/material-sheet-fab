@@ -2,12 +2,12 @@ package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.springframework.beans.factory.annotation.Qualifier
-import org.deku.leoz.central.data.jooq.tables.records.TblstatusRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblstatusRecord
 import org.jooq.DSLContext
 import javax.inject.Inject
 import javax.inject.Named
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.Tblstatus
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.Tblstatus
 import org.deku.leoz.central.data.toUInteger
 import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat

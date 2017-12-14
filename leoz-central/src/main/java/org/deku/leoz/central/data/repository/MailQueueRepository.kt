@@ -1,8 +1,8 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Routines
-import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.Routines
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier

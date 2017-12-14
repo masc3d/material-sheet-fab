@@ -1,12 +1,12 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.springframework.beans.factory.annotation.Qualifier
 import org.jooq.DSLContext
 import javax.inject.Inject
 import javax.inject.Named
-import org.deku.leoz.central.data.jooq.tables.records.TadParcelMessagesRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadParcelMessagesRecord
 
 @Named
 class MessagesJooqRepository {

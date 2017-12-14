@@ -1,8 +1,8 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.TadNodeGeopositionRecord
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadNodeGeopositionRecord
 import org.deku.leoz.central.data.repository.*
 import sx.rs.DefaultProblem
 import org.jooq.DSLContext

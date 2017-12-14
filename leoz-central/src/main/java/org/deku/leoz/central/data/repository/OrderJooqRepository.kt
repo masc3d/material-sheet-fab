@@ -1,9 +1,9 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
-import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderParcelRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier

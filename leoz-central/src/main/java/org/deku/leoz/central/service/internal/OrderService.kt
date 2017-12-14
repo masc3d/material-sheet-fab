@@ -1,7 +1,7 @@
 package org.deku.leoz.central.service.internal
 
-import org.deku.leoz.central.data.jooq.tables.records.TadVOrderParcelRecord
-import org.deku.leoz.central.data.jooq.tables.records.TadVOrderRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderParcelRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.*
 import sx.rs.DefaultProblem

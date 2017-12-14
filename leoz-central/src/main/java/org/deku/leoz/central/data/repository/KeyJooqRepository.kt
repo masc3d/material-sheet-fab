@@ -1,9 +1,9 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.tables.records.MstKeyRecord
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.MstKey
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstKeyRecord
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.MstKey
 import org.jooq.DSLContext
 import javax.inject.Inject
 import javax.inject.Named

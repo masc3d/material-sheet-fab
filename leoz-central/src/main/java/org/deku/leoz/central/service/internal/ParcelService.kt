@@ -7,19 +7,33 @@ import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.ParcelProcessing
-import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.repository.MessagesJooqRepository
+import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.model.AdditionalInfo
+import org.deku.leoz.model.Event
+import org.deku.leoz.model.FileName
+import org.deku.leoz.model.Location
+import org.deku.leoz.model.ParcelDeliveryAdditionalinfo
+import org.deku.leoz.model.Reason
 import org.deku.leoz.node.Storage
-import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
+import sx.io.serialization.Serializable
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.time.toTimestamp
 import java.awt.Color
 import java.awt.image.BufferedImage
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.nio.file.Files
 import java.util.*
 import javax.imageio.ImageIO
@@ -27,15 +41,6 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.model.*
-import org.zalando.problem.Exceptional
-import org.zalando.problem.Status
-import org.zalando.problem.ThrowableProblem
-import sx.io.serialization.Serializable
-import java.io.*
-import java.net.URI
 
 
 /**

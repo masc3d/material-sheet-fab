@@ -1,6 +1,6 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.deku.leoz.node.data.jpa.MstBundleVersion

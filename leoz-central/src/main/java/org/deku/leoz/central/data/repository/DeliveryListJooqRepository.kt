@@ -2,10 +2,10 @@ package org.deku.leoz.central.data.repository
 
 import com.thoughtworks.xstream.converters.extended.SqlDateConverter
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistDetailsRecord
-import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistRecord
-import org.deku.leoz.central.data.jooq.tables.records.TadVDeliverylistinfoRecord
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistDetailsRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistinfoRecord
 import org.deku.leoz.service.entity.ShortDate
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier

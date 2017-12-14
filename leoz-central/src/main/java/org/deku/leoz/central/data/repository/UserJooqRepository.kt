@@ -2,9 +2,9 @@ package org.deku.leoz.central.data.repository
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.MstUser
-import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.MstUser
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstUserRecord
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.model.AllowedStations
 import org.jooq.DSLContext
