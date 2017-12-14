@@ -1179,13 +1179,13 @@ abstract class Activity : BaseActivity(),
                             }
                     )
         } else {
-            val isProviderAvailable = arrayOf(
+            val isProvidersAvailable = arrayOf(
                     LocationManager.GPS_PROVIDER,
                     LocationManager.NETWORK_PROVIDER
             )
-                    .any { locationServices.locationManager.isProviderEnabled(it) }
+                    .all { locationServices.locationManager.isProviderEnabled(it) }
 
-            if (!isProviderAvailable) {
+            if (!this.device.isEmulator && !isProvidersAvailable) {
                 log.warn("Location settings not satisfied")
                 MaterialDialog.Builder(this)
                         .title("Location settings not satisfied")
