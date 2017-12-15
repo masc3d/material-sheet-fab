@@ -320,6 +320,14 @@ enum class OrderClassification(val value: Int) {
 }
 
 /**
+ * Order task type. Indicates which task (pickup/delivery) of an order to reference
+ */
+enum class OrderTaskType(val value: Int) {
+    PICKUP(0),
+    DELIVERY(1)
+}
+
+/**
  * Created by JT on 27.05.17.
  */
 enum class StopClassification(val value: Int) {
