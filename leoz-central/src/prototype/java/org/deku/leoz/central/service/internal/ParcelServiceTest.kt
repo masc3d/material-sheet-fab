@@ -102,5 +102,15 @@ class ParcelServiceTest {
         Files.copy(imgSignOnPaper.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgSignOnPaper.name).toFile().toPath())
         val msgSignOnPaper = ParcelServiceV1.ParcelMessage(events = arrayOf(event), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", signatureOnPaperInfo = ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(pictureFileUid = UUID.fromString("86f86b71-acac-45fd-b4f1-5b7d2440e501"), recipient = "MrBig1234565432413243567898uztdferste5rhuzt"))
         parcelService.onMessage(msgSignOnPaper, null)
+
+        //Damaged
+        val eventDamaged = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.PARCEL_DAMAGED.id, time = Date().toTimestamp(), parcelId = 15000000, additionalInfo = AdditionalInfo.DamagedInfo(description = "aufgerissen"))
+        val msgDamaged = ParcelServiceV1.ParcelMessage(events = arrayOf(eventDamaged), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
+        parcelService.onMessage(msgDamaged, null)
+
+        //ImportReceive
+        val eventImportReceive = ParcelServiceV1.Event(event = Event.IMPORT_RECEIVE.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15001093, additionalInfo = AdditionalInfo.EmptyInfo)
+        val msgImportReceive = ParcelServiceV1.ParcelMessage(events = arrayOf(eventImportReceive), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
+        parcelService.onMessage(msgImportReceive, null)
     }
 }

@@ -189,7 +189,7 @@ open class ParcelProcessing {
 
                         rDamaged.erzeugerstation = r.erzeugerstation
 
-                        statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 8, 31).also {
+                        statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.PARCEL_DAMAGED.oldValue).also {
                             if (it == false)
                                 rDamaged.store()
                         }
@@ -592,14 +592,14 @@ open class ParcelProcessing {
                     Event.IN_DELIVERY -> {
                         //ticket #260
 
-                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "H", 2, 0)
+                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.HUB_OFFLOADED.creator.toString(), Event.HUB_OFFLOADED.concatId, Reason.NORMAL.id)
                         if (!existStatus)
-                            existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "H", 4, 0)
+                            existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.HUB_LOADED.creator.toString(), Event.HUB_LOADED.concatId, Reason.NORMAL.id)
                         if (!existStatus)
-                            existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 1, 0)
+                            existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.IMPORT_RECEIVE.creator.toString(), Event.IMPORT_RECEIVE.concatId, Reason.NORMAL.id)
                         if (!existStatus)
                             insertStatus = false
-                        existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 7, 0)
+                        existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.IN_DELIVERY.creator.toString(), Event.IN_DELIVERY.concatId, Reason.NORMAL.id)
 
 
 
@@ -608,7 +608,7 @@ open class ParcelProcessing {
                     }
                     Event.NOT_IN_DELIVERY -> {
 
-                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), "E", 11, 0)
+                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.NOT_IN_DELIVERY.creator.toString(), Event.NOT_IN_DELIVERY.concatId, Reason.NORMAL.id)
 
 
                         if (existStatus)

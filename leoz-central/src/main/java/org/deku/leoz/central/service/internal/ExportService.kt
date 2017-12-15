@@ -500,6 +500,41 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                     title = "Loadinglist not valid"
             )
 
+        if (LoadinglistService.Loadinglist(un.value.value.toLong()).loadinglistType != LoadinglistType.BAG)
+            throw DefaultProblem(
+                    status = Response.Status.CONFLICT,
+                    title = "Loadinglist not of Bag-Type"
+            )
+
+        val checklistBagBackUnit = parcelRepository.getParcelsByLoadingList(un.value.value.toLong())
+        if (checklistBagBackUnit.count() > 0) {
+            val usedLoadinglistNoList = checklistBagBackUnit.map { it.bagbelegnrc.toLong() }.distinct()
+            if (usedLoadinglistNoList.count() > 1)
+                throw DefaultProblem(
+                        status = Response.Status.CONFLICT,
+                        title = "Loadinglist used for multiple bags"
+                )
+            if (usedLoadinglistNoList.count() == 1 && usedLoadinglistNoList.first() != unBack.value.value.toLong())
+                throw DefaultProblem(
+                        status = Response.Status.CONFLICT,
+                        title = "Loadinglist already used for another bag"
+                )
+        }
+        val checklistLoadinglistUnits = parcelRepository.findUnitsInBagBackByBagBackUnitNumber(unBack.value.value.toLong())
+        if (checklistLoadinglistUnits.count() > 0) {
+            val usedBagBackUnitNoList = checklistLoadinglistUnits.map { it.ladelistennummerd.toLong() }.distinct()
+            if (usedBagBackUnitNoList.count() > 1)
+                throw DefaultProblem(
+                        status = Response.Status.CONFLICT,
+                        title = "BagBackUnitNo used for multiple loadinglists"
+                )
+            if (usedBagBackUnitNoList.count() == 1 && usedBagBackUnitNoList.first() != un.value.value.toLong())
+                throw DefaultProblem(
+                        status = Response.Status.CONFLICT,
+                        title = "BagBackUnitNo already used for another loadinglist"
+                )
+        }
+
         val unSeal = DekuUnitNumber.parseLabel(yellowSealNo)
         when {
             unSeal.hasError -> {
@@ -549,7 +584,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val exportUnitAndOrder = getAndCheckUnit(unitNo, stationNo)
 
         val unitRecord = exportUnitAndOrder.unit
-        val orderRecord = exportUnitAndOrder.order
+        //val orderRecord = exportUnitAndOrder.order
 
         if (unitRecord.verpackungsart == 91) {//verpackungsart=Valore
             val station = stationService.getByStationNo(stationNo)
@@ -583,62 +618,83 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             title = "Loadinglist changed"
 
         }
-
-        exportUnit(ExportUnitAndOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
-
-        val oldBagUnitNo = unitRecord.bagbelegnrc?.toLong()?.toString() ?: ""
-        unitRecord.bagbelegnrc = unBack.value.value.toDouble()
+        val oldLoadinglist = unitRecord.ladelistennummerd?.toLong()?.toString() ?: ""
+        unitRecord.ladelistennummerd = un.value.value.toDouble()
         if (unitRecord.store() > 0) {
             fieldHistoryRepository.addEntry(
                     orderId = unitRecord.orderid.toLong(),
                     unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "bagbelegnrc",
-                    oldValue = oldBagUnitNo,
-                    newValue = unBack.value.value.toString(),
-                    changer = "WEB",
-                    point = "EX"
-            )
-        }
-        val oldBagNo = unitRecord.bagidnrc?.toLong()?.toString() ?: ""
-        unitRecord.bagidnrc = bag.bagNumber!!.toDouble()
-        if (unitRecord.store() > 0) {
-            fieldHistoryRepository.addEntry(
-                    orderId = unitRecord.orderid.toLong(),
-                    unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "bagidnrc",
-                    oldValue = oldBagNo,
-                    newValue = bag.bagNumber.toString(),
-                    changer = "WEB",
-                    point = "EX"
-            )
-        }
-        val oldSealNo = unitRecord.plombennrc?.toLong()?.toString() ?: ""
-        unitRecord.plombennrc = unSeal.value.value.toDouble()
-        if (unitRecord.store() > 0) {
-            fieldHistoryRepository.addEntry(
-                    orderId = unitRecord.orderid.toLong(),
-                    unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "plombennrc",
-                    oldValue = oldSealNo,
-                    newValue = unSeal.value.value.toString(),
-                    changer = "WEB",
-                    point = "EX"
-            )
-        }
-        val oldLoad = unitRecord.beladelinie?.toLong()?.toString() ?: ""
-        unitRecord.beladelinie = bag.bagNumber!!.toDouble()
-        if (unitRecord.store() > 0) {
-            fieldHistoryRepository.addEntry(
-                    orderId = unitRecord.orderid.toLong(),
-                    unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "beladelinie",
-                    oldValue = oldLoad,
-                    newValue = bag.bagNumber.toString(),
+                    fieldName = "ladelistennummerd",
+                    oldValue = oldLoadinglist,
+                    newValue = un.value.value,
                     changer = "WEB",
                     point = "EX"
             )
         }
 
+        //export erst beim schließen
+        //exportUnit(ExportUnitAndOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
+
+        if (unitRecord.bagbelegnrc == null || unitRecord.bagbelegnrc != unBack.value.value.toDouble()) {
+            val oldBagUnitNo = unitRecord.bagbelegnrc?.toLong()?.toString() ?: ""
+            unitRecord.bagbelegnrc = unBack.value.value.toDouble()
+            if (unitRecord.store() > 0) {
+                fieldHistoryRepository.addEntry(
+                        orderId = unitRecord.orderid.toLong(),
+                        unitNo = unitRecord.colliebelegnr.toLong(),
+                        fieldName = "bagbelegnrc",
+                        oldValue = oldBagUnitNo,
+                        newValue = unBack.value.value.toString(),
+                        changer = "WEB",
+                        point = "EX"
+                )
+            }
+        }
+        if (unitRecord.bagidnrc == null || unitRecord.bagidnrc != bag.bagNumber!!.toDouble()) {
+            val oldBagNo = unitRecord.bagidnrc?.toLong()?.toString() ?: ""
+            unitRecord.bagidnrc = bag.bagNumber!!.toDouble()
+            if (unitRecord.store() > 0) {
+                fieldHistoryRepository.addEntry(
+                        orderId = unitRecord.orderid.toLong(),
+                        unitNo = unitRecord.colliebelegnr.toLong(),
+                        fieldName = "bagidnrc",
+                        oldValue = oldBagNo,
+                        newValue = bag.bagNumber.toString(),
+                        changer = "WEB",
+                        point = "EX"
+                )
+            }
+        }
+        if (unitRecord.plombennrc == null || unitRecord.plombennrc != unSeal.value.value.toDouble()) {
+            val oldSealNo = unitRecord.plombennrc?.toLong()?.toString() ?: ""
+            unitRecord.plombennrc = unSeal.value.value.toDouble()
+            if (unitRecord.store() > 0) {
+                fieldHistoryRepository.addEntry(
+                        orderId = unitRecord.orderid.toLong(),
+                        unitNo = unitRecord.colliebelegnr.toLong(),
+                        fieldName = "plombennrc",
+                        oldValue = oldSealNo,
+                        newValue = unSeal.value.value.toString(),
+                        changer = "WEB",
+                        point = "EX"
+                )
+            }
+        }
+        if (unitRecord.beladelinie == null || unitRecord.beladelinie != bag.bagNumber!!.toDouble()) {
+            val oldLoad = unitRecord.beladelinie?.toLong()?.toString() ?: ""
+            unitRecord.beladelinie = bag.bagNumber!!.toDouble()
+            if (unitRecord.store() > 0) {
+                fieldHistoryRepository.addEntry(
+                        orderId = unitRecord.orderid.toLong(),
+                        unitNo = unitRecord.colliebelegnr.toLong(),
+                        fieldName = "beladelinie",
+                        oldValue = oldLoad,
+                        newValue = bag.bagNumber.toString(),
+                        changer = "WEB",
+                        point = "EX"
+                )
+            }
+        }
         return title
     }
 
@@ -705,6 +761,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
                     title = "Loadinglist not valid"
+            )
+
+        if (LoadinglistService.Loadinglist(un.value.value.toLong()).loadinglistType != LoadinglistType.BAG)
+            throw DefaultProblem(
+                    status = Response.Status.CONFLICT,
+                    title = "Loadinglist not of Bag-Type"
             )
 
         var sendStatusRequired = false
@@ -840,6 +902,15 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                             changer = "WEB",
                             point = "EX"
                     )
+                }
+            }
+            bag.orders2export.forEach { parcels ->
+                parcels.parcels.forEach {
+                    val inBagexportUnitAndOrder = getAndCheckUnit(DekuUnitNumber.parse(it.parcelNo.toString().padStart(11, '0')).value.label, stationNo)
+
+                    val inBagunitRecord = inBagexportUnitAndOrder.unit
+                    val inBagorderRecord = inBagexportUnitAndOrder.order
+                    exportUnit(ExportUnitAndOrder(inBagunitRecord, inBagorderRecord), un.value.value.toLong(), stationNo)
                 }
             }
         }
@@ -1023,18 +1094,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val parcels = parcelRepository.findUnitsInBagBackByBagBackUnitNumber(bagBackUnitNo).groupBy { it.orderid }
         if (parcels.count() == 0) {
             return listOf()
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "No parcels found"
-            )
+
         }
         val orders = parcelRepository.getOrdersByIds(parcels.keys.map { it.toLong() }.toList().distinct())//?.groupBy { it.orderid }
         if (orders.count() == 0) {
             return listOf()
-            throw DefaultProblem(
-                    status = Response.Status.NOT_FOUND,
-                    title = "No orders found"
-            )
+
         }
         return orders.map {
             it.toOrder2Export().also { order ->
@@ -1372,18 +1437,20 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val unitRecord = eu.unit
         val orderRecord = eu.order
 
-        val oldLoadinglist = unitRecord.ladelistennummerd?.toLong()?.toString() ?: ""
-        unitRecord.ladelistennummerd = loadingListNo.toDouble()
-        if (unitRecord.store() > 0) {
-            fieldHistoryRepository.addEntry(
-                    orderId = unitRecord.orderid.toLong(),
-                    unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "ladelistennummerd",
-                    oldValue = oldLoadinglist,
-                    newValue = loadingListNo.toString(),
-                    changer = "WEB",
-                    point = "EX"
-            )
+        if (unitRecord.ladelistennummerd.toLong() != loadingListNo) {
+            val oldLoadinglist = unitRecord.ladelistennummerd?.toLong()?.toString() ?: ""
+            unitRecord.ladelistennummerd = loadingListNo.toDouble()
+            if (unitRecord.store() > 0) {
+                fieldHistoryRepository.addEntry(
+                        orderId = unitRecord.orderid.toLong(),
+                        unitNo = unitRecord.colliebelegnr.toLong(),
+                        fieldName = "ladelistennummerd",
+                        oldValue = oldLoadinglist,
+                        newValue = loadingListNo.toString(),
+                        changer = "WEB",
+                        point = "EX"
+                )
+            }
         }
         val workDate = bagServiceCentral.getWorkingDate()
         if (unitRecord.dtausgangdepot2 == null || unitRecord.dtausgangdepot2 != workDate.toTimestamp()) {
@@ -1463,7 +1530,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
         val scanTs = Date()
         val infotext = "WebExport"
-        var existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), "A", 2, 0)
+        var existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), Event.EXPORT_RECEIVE.creator.toString(), Event.EXPORT_RECEIVE.concatId, Reason.NORMAL.id)
         if (!existStatus) {
             val r = dslContext.newRecord(Tables.TBLSTATUS)
             r.packstuecknummer = unitRecord.colliebelegnr
@@ -1471,17 +1538,17 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             r.setTime(scanTs)
             r.infotext = infotext
 
-            r.kzStatuserzeuger = "A"
-            r.kzStatus = 2.toUInteger()
+            r.kzStatuserzeuger = Event.EXPORT_RECEIVE.creator.toString()
+            r.kzStatus = Event.EXPORT_RECEIVE.concatId.toUInteger()
             r.timestamp2 = Date().toTimestamp()
-            r.fehlercode = 0.toUInteger()
+            r.fehlercode = Reason.NORMAL.id.toUInteger()
 
             r.erzeugerstation = stationNo.toString()
 
             if (r.store() == 0)
                 log.error("Insert status failed")
         }
-        existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), "A", 4, 0)
+        existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)
         if (!existStatus) {
             val r = dslContext.newRecord(Tables.TBLSTATUS)
             r.packstuecknummer = unitRecord.colliebelegnr
@@ -1489,10 +1556,10 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             r.setTime(scanTs)
             r.infotext = infotext
 
-            r.kzStatuserzeuger = "A"
-            r.kzStatus = 4.toUInteger()
+            r.kzStatuserzeuger = Event.EXPORT_LOADED.creator.toString()
+            r.kzStatus = Event.EXPORT_LOADED.concatId.toUInteger()
             r.timestamp2 = Date().toTimestamp()
-            r.fehlercode = 0.toUInteger()
+            r.fehlercode = Reason.NORMAL.id.toUInteger()
 
             r.erzeugerstation = stationNo.toString()
             if (r.store() == 0)
