@@ -4,6 +4,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.service.entity.ShortDate
 import sx.io.serialization.Serializable
+import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -26,7 +27,7 @@ interface TourServiceV1 {
     @ApiOperation(value = "Get tour by id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             @PathParam(ID) @ApiParam(value = "Tour id", required = true)
-            id: Long
+            id: Int
     ): Tour
 
     @GET
@@ -42,7 +43,7 @@ interface TourServiceV1 {
     @ApiModel(description = "Tour")
     data class Tour(
             @ApiModelProperty(position = 10, required = true, value = "Tour id")
-            var id: Long = 0,
+            var id: Int = 0,
             @ApiModelProperty(position = 20, required = true, value = "Node this tour belongs to")
             var nodeUid: String = "",
             @ApiModelProperty(position = 20, required = true, value = "User this tour belongs to")
@@ -82,6 +83,8 @@ interface TourServiceV1 {
             var nodeUid: String = "",
             /** User id */
             var userId: Int = 0,
+            /** Tour update timestamp */
+            var timestamp: Date = Date(),
             /** Stops in current tour order */
             var stops: List<Stop> = listOf()
     )
