@@ -651,7 +651,7 @@ class BagService : BagService {
         if (un.value.type != UnitNumber.Type.BagBack)
 
             throw ServiceException(ErrorCode.BAG_UNITNO_NOT_VALID)
-        val bagUnitNo = un.value.value
+        //val bagUnitNo = un.value.value
 
 
         val unSeal = DekuUnitNumber.parseLabel(sealNo)
