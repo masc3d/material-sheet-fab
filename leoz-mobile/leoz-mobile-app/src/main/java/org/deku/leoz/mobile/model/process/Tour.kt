@@ -25,7 +25,7 @@ import kotlin.properties.Delegates
  * Delivery process model
  * Created by 27694066 on 09.05.2017.
  */
-class Delivery : CompositeDisposableSupplier {
+class Tour : CompositeDisposableSupplier {
     override val compositeDisposable by lazy { CompositeDisposable() }
 
     private val log = LoggerFactory.getLogger(this.javaClass)

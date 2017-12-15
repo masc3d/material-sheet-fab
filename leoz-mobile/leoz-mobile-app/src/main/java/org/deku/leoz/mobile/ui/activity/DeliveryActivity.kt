@@ -17,14 +17,13 @@ import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.ChangelogItem
 import org.deku.leoz.mobile.ui.dialog.ChangelogDialog
 import org.deku.leoz.mobile.ui.screen.*
-import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
@@ -42,7 +41,7 @@ class DeliveryActivity : Activity(),
         DeliveryStopDetailScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
 
     private val feedback: Feedback by Kodein.global.lazy.instance()

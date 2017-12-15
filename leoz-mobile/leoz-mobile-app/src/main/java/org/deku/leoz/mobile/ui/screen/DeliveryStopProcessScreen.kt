@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui.screen
 
-import android.animation.Animator
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.graphics.Color
@@ -12,7 +11,6 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
@@ -43,7 +41,7 @@ import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.mobile
-import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -121,7 +119,7 @@ class DeliveryStopProcessScreen :
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
     private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
@@ -134,7 +132,7 @@ class DeliveryStopProcessScreen :
     }
 
     private val deliveryStop: DeliveryStop by lazy {
-        this.delivery.activeStop ?: throw IllegalArgumentException("Active stop not set")
+        this.tour.activeStop ?: throw IllegalArgumentException("Active stop not set")
     }
 
     /** The current/most recently selected damaged parcel */
@@ -313,7 +311,7 @@ class DeliveryStopProcessScreen :
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
 
         // Set models's active stop when screen is created
-        this.delivery.activeStop = DeliveryStop(stop)
+        this.tour.activeStop = DeliveryStop(stop)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -956,9 +954,9 @@ class DeliveryStopProcessScreen :
                 .observeOnMainThread()
                 .subscribeBy(
                         onComplete = {
-                            this.delivery.activeStop = null
+                            this.tour.activeStop = null
 
-                            val isLastPendingStop = this.delivery.pendingStops.blockingFirst().value.count() == 0
+                            val isLastPendingStop = this.tour.pendingStops.blockingFirst().value.count() == 0
 
                             this.activity.supportFragmentManager.popBackStack(
                                     DeliveryStopListScreen::class.java.canonicalName,

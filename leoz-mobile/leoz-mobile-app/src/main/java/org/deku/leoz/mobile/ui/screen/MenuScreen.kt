@@ -15,7 +15,7 @@ import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.item_delivery_menu_entry.view.*
 import kotlinx.android.synthetic.main.screen_menu.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -32,7 +32,7 @@ import sx.android.getLayoutInflater
 class MenuScreen : ScreenFragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
     private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -58,8 +58,8 @@ class MenuScreen : ScreenFragment<Any>() {
                     true
                 }
                 EntryType.DELIVERY -> {
-                    delivery.pendingStops.blockingFirst().value.count() > 0 ||
-                            delivery.closedStops.blockingFirst().value.count() > 0
+                    tour.pendingStops.blockingFirst().value.count() > 0 ||
+                            tour.closedStops.blockingFirst().value.count() > 0
                 }
                 EntryType.UNLOADING -> {
                     deliveryList.loadedParcels.get().count() > 0
@@ -132,7 +132,7 @@ class MenuScreen : ScreenFragment<Any>() {
                         Entry(
                                 entryTypeType = EntryType.DELIVERY,
                                 description = this.getText(R.string.tour).toString(),
-                                counter = delivery.pendingStops.blockingFirst().value.count(),
+                                counter = tour.pendingStops.blockingFirst().value.count(),
                                 icon = this.context.getDrawableCompat(R.drawable.ic_stop_list)
                         ),
                         Entry(

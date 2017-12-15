@@ -32,7 +32,7 @@ import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.entity.appointmentEnd
-import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.ui.Headers
@@ -76,7 +76,7 @@ class DeliveryStopListScreen
     // Model classes
     private val db: Database by Kodein.global.lazy.instance()
 
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
@@ -168,12 +168,12 @@ class DeliveryStopListScreen
                         first { it.id == R.id.action_delivery_list_show_pending }
                                 .visible = !editMode &&
                                 stopType == Stop.State.CLOSED &&
-                                delivery.pendingStops.blockingFirst().value.count() > 0
+                                tour.pendingStops.blockingFirst().value.count() > 0
 
                         first { it.id == R.id.action_delivery_list_show_closed }
                                 .visible = !editMode &&
                                 stopType == Stop.State.PENDING &&
-                                delivery.closedStops.blockingFirst().value.count() > 0
+                                tour.closedStops.blockingFirst().value.count() > 0
                     }
                 }
 
@@ -224,7 +224,7 @@ class DeliveryStopListScreen
 
                         R.id.action_sort_zip_asc -> {
                             this.updateAdapterPositions(
-                                    this.delivery.pendingStops
+                                    this.tour.pendingStops
                                             .blockingFirst().value
                                             .sortedBy { it.address.zipCode }
                                             .also {
@@ -237,7 +237,7 @@ class DeliveryStopListScreen
 
                         R.id.action_sort_zip_desc -> {
                             this.updateAdapterPositions(
-                                    this.delivery.pendingStops
+                                    this.tour.pendingStops
                                             .blockingFirst().value
                                             .sortedByDescending { it.address.zipCode }
                                             .also {
@@ -250,7 +250,7 @@ class DeliveryStopListScreen
 
                         R.id.action_sort_appointment_asc -> {
                             this.updateAdapterPositions(
-                                    this.delivery.pendingStops
+                                    this.tour.pendingStops
                                             .blockingFirst().value
                                             .sortedWith(
                                                     compareBy<StopEntity> { it.appointmentEnd }
@@ -277,7 +277,7 @@ class DeliveryStopListScreen
                                         .subscribe()
                             }
 
-                            this.delivery.sendUpdate()
+                            this.tour.sendUpdate()
                                     .subscribe()
 
                             this.editMode = false
@@ -296,7 +296,7 @@ class DeliveryStopListScreen
                                     .observeOnMainThread()
                                     .subscribe {
                                         this.updateAdapterPositions(
-                                                this.delivery.pendingStops
+                                                this.tour.pendingStops
                                                         .blockingFirst()
                                                         .value)
                                     }
@@ -471,8 +471,8 @@ class DeliveryStopListScreen
 
         })
 
-        val pendingStopCount = this.delivery.pendingStops.blockingFirst().value.count()
-        val closedStopCount = this.delivery.closedStops.blockingFirst().value.count()
+        val pendingStopCount = this.tour.pendingStops.blockingFirst().value.count()
+        val closedStopCount = this.tour.closedStops.blockingFirst().value.count()
 
         when (this.stopType) {
             Stop.State.PENDING -> {
@@ -493,8 +493,8 @@ class DeliveryStopListScreen
 
     fun updateStops() {
         val stops = when (this.stopType) {
-            Stop.State.CLOSED -> delivery.closedStops.blockingFirst().value
-            else -> delivery.pendingStops.blockingFirst().value
+            Stop.State.CLOSED -> tour.closedStops.blockingFirst().value
+            else -> tour.pendingStops.blockingFirst().value
         }
 
         adapter.clear()
@@ -569,7 +569,7 @@ class DeliveryStopListScreen
 
                                     // When not in edit mode, Send stop list order update on every move
                                     if (!this@DeliveryStopListScreen.editMode)
-                                        this.delivery.sendUpdate()
+                                        this.tour.sendUpdate()
                                                 .subscribe()
                                 }
                     }

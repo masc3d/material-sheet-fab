@@ -16,7 +16,7 @@ import io.reactivex.Observable
 import kotlinx.android.synthetic.main.screen_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.DeliveryStop
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
@@ -53,10 +53,10 @@ class CashScreen : ScreenFragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     // Model classes
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
 
     private val deliveryStop: DeliveryStop by lazy {
-        delivery.activeStop ?: throw IllegalStateException("Active delivery stop not set")
+        tour.activeStop ?: throw IllegalStateException("Active delivery stop not set")
     }
 
     /** Cash amount to collect */

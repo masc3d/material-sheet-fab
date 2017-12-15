@@ -18,10 +18,8 @@ import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
-import org.deku.leoz.mobile.model.process.Delivery
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.StopRepository
-import org.deku.leoz.mobile.resetLocale
-import org.deku.leoz.mobile.setLocale
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.model.EventDeliveredReason
@@ -58,12 +56,12 @@ class SignatureScreen
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val db: Database by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
-    private val delivery: Delivery by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
 
     private val descriptionText: String by lazy {
         this@SignatureScreen.getString(R.string.signature_conclusion,
-                delivery.activeStop?.orders?.blockingFirst()?.count().toString(),
-                delivery.activeStop?.deliveredParcelAmount?.blockingFirst().toString(),
+                tour.activeStop?.orders?.blockingFirst()?.count().toString(),
+                tour.activeStop?.deliveredParcelAmount?.blockingFirst().toString(),
                 stop.address.line1)
     }
 

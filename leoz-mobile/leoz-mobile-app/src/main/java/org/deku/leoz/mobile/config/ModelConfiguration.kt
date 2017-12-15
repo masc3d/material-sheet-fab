@@ -16,8 +16,8 @@ class ModelConfiguration {
                 Login()
             }
 
-            bind<Delivery>() with singleton {
-                Delivery()
+            bind<Tour>() with singleton {
+                Tour()
             }
 
             bind<DeliveryList>() with singleton {
