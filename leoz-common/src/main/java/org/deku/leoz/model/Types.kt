@@ -115,160 +115,141 @@ enum class SendData {
     GET_BAGS
 }
 
-//todo StopClassifizierung noch nicht volltändig
+/**
+ * Parcel service definitions
+ */
 enum class ParcelService(
         val serviceId: Long,
-        val parcelServiceRestriction: ParcelServiceRestriction,
-        val validForStop: StopClassification) {
+        val constraints: Constraints = Constraints()) {
+
     NO_ADDITIONAL_SERVICE(
-            serviceId = 0,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 0
+    ),
     APPOINTMENT(
-            serviceId = 1,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 1
+    ),
     SUITCASE_SHIPPING(
-            serviceId = 2,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 2
+    ),
     WEEKEND(
-            serviceId = 4,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 4
+    ),
     BANK_HOLIDAY_DELIVERY(
-            serviceId = 8,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 8
+    ),
     LATE_PICKUP(
-            serviceId = 16,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 16
+    ),
     RECEIPT_ACKNOWLEDGEMENT(
             serviceId = 32,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
                     paperReceiptNeeded = true,
                     alternateDeliveryAllowed = false
-            ),
-            validForStop = StopClassification.BOTH),
+            )
+    ),
     SELF_PICKUP(
-            serviceId = 64,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 64
+    ),
     CASH_ON_DELIVERY(
             serviceId = 128,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
                     cash = true,
-                    alternateDeliveryAllowed = false
-            ),
-            validForStop = StopClassification.BOTH),
+                    alternateDeliveryAllowed = false)
+    ),
     VALUED_PACKAGE(
-            serviceId = 256,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 256
+    ),
     PHARMACEUTICALS(
             serviceId = 512,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
                     personalDeliveryOnly = true,
                     alternateDeliveryAllowed = false
-            ),
-            validForStop = StopClassification.BOTH),
+            )
+    ),
     ADDRESS_CORRECTION(
-            serviceId = 1024,
-            parcelServiceRestriction = ParcelServiceRestriction(), validForStop = StopClassification.BOTH),
+            serviceId = 1024
+    ),
     WAITING_PERIOD_PICKUP(
-            serviceId = 2048,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 2048
+    ),
     WAITING_PERIOD_DELIVERY(
-            serviceId = 4096,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 4096
+    ),
     PICKUP(
-            serviceId = 8192,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 8192
+    ),
     IDENT_CONTRACT_SERVICE(
             serviceId = 16384,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
                     personalDeliveryOnly = true,
                     identityCheckRequired = true,
                     alternateDeliveryAllowed = false
-            ),
-            validForStop = StopClassification.BOTH),
+            )
+    ),
     SUBMISSION_PARTICIPATION(
-            serviceId = 32768,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 32768
+    ),
     SECURITY_RETURN(
             serviceId = 65536,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
                     imeiCheckRequired = true,
                     alternateDeliveryAllowed = false
-            ),
-            validForStop = StopClassification.BOTH),
+            )
+    ),
     LATE_DELIVERY(
-            serviceId = 131072,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 131072
+    ),
     XCHANGE(
             serviceId = 262144,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
+                    validForTasks = listOf(TaskType.DELIVERY),
                     summarizedDeliveryAllowed = false
-            ),
-            validForStop = StopClassification.DELIVERY),
+            )
+    ),
     PHONE_RECEIPT(
-            serviceId = 524288,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 524288
+    ),
     DOCUMENTED_PERSONAL_DELIVERY(
             serviceId = 1048576,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
                     identityCheckRequired = true,
                     alternateDeliveryAllowed = false,
                     paperReceiptNeeded = true
-            ),
-            validForStop = StopClassification.BOTH),
+            )
+    ),
     HIGHER_LIABILITY(
             serviceId = 2097152,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
                     alternateDeliveryAllowed = false
-            ),
-            validForStop = StopClassification.BOTH),
+            )
+    ),
     DEPARTMENT_DELIVERY(
-            serviceId = 4194304,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 4194304
+    ),
     FIXED_APPOINTMENT(
-            serviceId = 8388608,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 8388608
+    ),
     FAIR_SERVICE(
-            serviceId = 16777216,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 16777216
+    ),
     SELF_COMPLETION_OF_DUTY_PAYMENT_AND_DOCUMENTS(
-            serviceId = 33554432,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 33554432
+    ),
     PACKAGING_RECIRCULATION(
-            serviceId = 67108864,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 67108864
+    ),
     UNSUCCESSFUL_APPROACH(
-            serviceId = 134217728,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 134217728
+    ),
     POSTBOX_DELIVERY(
-            serviceId = 268435456,
-            parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
+            serviceId = 268435456
+    ),
     NO_ALTERNATIVE_DELIVERY(
             serviceId = 536870912,
-            parcelServiceRestriction = ParcelServiceRestriction(
+            constraints = Constraints(
                     alternateDeliveryAllowed = false
-            ),
-            validForStop = StopClassification.BOTH);
+            )
+    );
 
     companion object {
         val byServiceId by lazy {
@@ -277,6 +258,24 @@ enum class ParcelService(
             )
         }
     }
+
+    /**
+     * Created by 27694066 on 17.05.2017.
+     * Configure/Map delivery restrictions and particularities for the delivery/pickup process depending on service
+     * The defaults reflect a standard delivery job
+     */
+    data class Constraints(
+            val validForTasks: List<TaskType> = listOf(
+                    TaskType.DELIVERY,
+                    TaskType.PICKUP),
+            val alternateDeliveryAllowed: Boolean = true,
+            val personalDeliveryOnly: Boolean = false,
+            val paperReceiptNeeded: Boolean = false,
+            val identityCheckRequired: Boolean = false,
+            val imeiCheckRequired: Boolean = false,
+            val cash: Boolean = false,
+            val summarizedDeliveryAllowed: Boolean = true
+    )
 }
 
 /**
@@ -322,18 +321,9 @@ enum class OrderClassification(val value: Int) {
 /**
  * Order task type. Indicates which task (pickup/delivery) of an order to reference
  */
-enum class OrderTaskType(val value: Int) {
+enum class TaskType(val value: Int) {
     PICKUP(0),
     DELIVERY(1)
-}
-
-/**
- * Created by JT on 27.05.17.
- */
-enum class StopClassification(val value: Int) {
-    PICKUP(0),
-    DELIVERY(1),
-    BOTH(2)
 }
 
 enum class AdditionalInformationType(val value: Int) {
@@ -412,8 +402,8 @@ enum class Event(val value: Int, val creator: Char, val concatId: Int) {
     IMPORT_ADJUSTMENT(139, 'H', 139),
     IMPORT_RECEIVE(103, 'E', 1),
     IN_DELIVERY(120, 'E', 7),
-    NOT_IN_DELIVERY(174,'E',11),
-    TOUR_UNLOADED(175,'E',12),
+    NOT_IN_DELIVERY(174, 'E', 11),
+    TOUR_UNLOADED(175, 'E', 12),
     INFO(127, 'H', 127),
     LEADSEAL_DOES_NOT_MATCH(171, 'H', 171),
     LINE_DELAY(147, 'H', 147),
@@ -502,20 +492,20 @@ enum class Reason(val id: Int, val oldValue: Int = 0) {
 //  Fehlverladung(id = 511, oldValue = 43),
 }
 
-enum class counter(val value:Int){
+enum class counter(val value: Int) {
     FIELD_HISTORY(19),
     LOADING_LIST(4000)
 }
 
-enum class BagStatus(val value:Int){
+enum class BagStatus(val value: Int) {
     CLOSED_FROM_STATION(value = 2),
     CLOSED_FROM_HUB(value = 6),
-    OPENED(value=5)
+    OPENED(value = 5)
 }
 
-enum class LoadinglistType{
+enum class LoadinglistType {
     NORMAL,
     BAG
 }
 
-const val maxWeightForParcelBag=2.0
+const val maxWeightForParcelBag = 2.0
