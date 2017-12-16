@@ -25,18 +25,24 @@ interface TourServiceV1 {
     @GET
     @Path("/{${ID}}")
     @ApiOperation(value = "Get tour by id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun get(
+    fun getById(
             @PathParam(ID) @ApiParam(value = "Tour id", required = true)
             id: Int
     ): Tour
 
     @GET
-    @Path("/")
-    @ApiOperation(value = "Get tour", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun get(
-            @QueryParam(NODE_UID) @ApiParam(value = "Node uid", required = true)
-            nodeUid: String,
-            @QueryParam(USER_ID) @ApiParam(value = "User id", required = true)
+    @Path("/by-node/{${NODE_UID}}")
+    @ApiOperation(value = "Get tour by node uid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getByNode(
+            @PathParam(NODE_UID) @ApiParam(value = "Node uid", required = true)
+            nodeUid: String
+    ): Tour
+
+    @GET
+    @Path("/by-user/${USER_ID}")
+    @ApiOperation(value = "Get tour by user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getByUser(
+            @PathParam(USER_ID) @ApiParam(value = "User id")
             userId: Int
     ): Tour
 
@@ -45,9 +51,9 @@ interface TourServiceV1 {
             @ApiModelProperty(position = 10, required = true, value = "Tour id")
             var id: Int = 0,
             @ApiModelProperty(position = 20, required = true, value = "Node this tour belongs to")
-            var nodeUid: String = "",
+            var nodeUid: String? = null,
             @ApiModelProperty(position = 20, required = true, value = "User this tour belongs to")
-            var userId: Int = 0,
+            var userId: Int? = null,
             @ApiModelProperty(position = 40, required = true, value = "Orders referenced by this tour")
             var orders: List<OrderService.Order> = listOf(),
             @ApiModelProperty(position = 50, required = true, value = "Tour stop list")

@@ -71,6 +71,9 @@ class NodeJooqRepository {
     }
 }
 
+val MstNodeRecord.uid: String
+    get() = this.key
+
 fun SelectWhereStep<MstNodeRecord>.fetchById(id: Int): MstNodeRecord? {
     return this.where(MST_NODE.NODE_ID.eq(id)).fetchOne()
 }
