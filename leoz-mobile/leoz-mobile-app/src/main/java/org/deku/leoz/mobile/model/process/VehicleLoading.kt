@@ -113,39 +113,39 @@ class VehicleLoading : CompositeDisposableSupplier {
                         stop = parcel.order.tasks.map { it.stop }.filterNotNull().first()
                     )
                             .blockingAwait()
-
-                    // Send compound parcel message with loading states
-                    mqttChannels.central.main.channel().send(
-                            ParcelServiceV1.ParcelMessage(
-                                    userId = this@VehicleLoading.login.authenticatedUser?.id,
-                                    nodeId = this@VehicleLoading.identity.uid.value,
-                                    events = parcels.map {
-                                        ParcelServiceV1.Event(
-                                                event = Event.IN_DELIVERY.value,
-                                                reason = Reason.NORMAL.id,
-                                                parcelId = it.id,
-                                                latitude = lastLocation?.latitude,
-                                                longitude = lastLocation?.longitude,
-                                                damagedInfo = when {
-                                                    it.isDamaged -> {
-                                                        ParcelServiceV1.Event.DamagedInfo(
-                                                                pictureFileUids = it.meta
-                                                                        .filterValuesByType(Parcel.DamagedInfo::class.java)
-                                                                        .mapNotNull {
-                                                                            it.pictureFileUid
-                                                                        }
-                                                                        .toTypedArray()
-                                                        )
-                                                    }
-                                                    else -> null
-                                                }
-                                        )
-                                    }.toTypedArray()
-                            )
-                    )
                 }
             }
                     .blockingGet()
+
+            // Send compound parcel message with loading states
+            mqttChannels.central.main.channel().send(
+                    ParcelServiceV1.ParcelMessage(
+                            userId = this@VehicleLoading.login.authenticatedUser?.id,
+                            nodeId = this@VehicleLoading.identity.uid.value,
+                            events = parcels.map {
+                                ParcelServiceV1.Event(
+                                        event = Event.IN_DELIVERY.value,
+                                        reason = Reason.NORMAL.id,
+                                        parcelId = it.id,
+                                        latitude = lastLocation?.latitude,
+                                        longitude = lastLocation?.longitude,
+                                        damagedInfo = when {
+                                            it.isDamaged -> {
+                                                ParcelServiceV1.Event.DamagedInfo(
+                                                        pictureFileUids = it.meta
+                                                                .filterValuesByType(Parcel.DamagedInfo::class.java)
+                                                                .mapNotNull {
+                                                                    it.pictureFileUid
+                                                                }
+                                                                .toTypedArray()
+                                                )
+                                            }
+                                            else -> null
+                                        }
+                                )
+                            }.toTypedArray()
+                    )
+            )
         }
                 .subscribeOn(db.scheduler)
 

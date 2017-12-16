@@ -109,40 +109,39 @@ class VehicleUnloading : CompositeDisposableSupplier {
                                             .update(it as StopEntity)
                                             .blockingGet()
                                 }
-
-                        mqttChannels.central.main.channel().send(
-                                ParcelServiceV1.ParcelMessage(
-                                        userId = this@VehicleUnloading.login.authenticatedUser?.id,
-                                        nodeId = this@VehicleUnloading.identity.uid.value,
-                                        events = listOf(parcel).map {
-                                            ParcelServiceV1.Event(
-                                                    event = Event.TOUR_UNLOADED.value,
-                                                    reason = Reason.NORMAL.id,
-                                                    parcelId = it.id,
-                                                    latitude = lastLocation?.latitude,
-                                                    longitude = lastLocation?.longitude,
-                                                    damagedInfo = when {
-                                                        it.isDamaged -> {
-                                                            ParcelServiceV1.Event.DamagedInfo(
-                                                                    pictureFileUids = it.meta
-                                                                            .filterValuesByType(Parcel.DamagedInfo::class.java)
-                                                                            .mapNotNull {
-                                                                                it.pictureFileUid
-                                                                            }
-                                                                            .toTypedArray()
-                                                            )
-                                                        }
-                                                        else -> null
-                                                    }
-                                            )
-                                        }.toTypedArray()
-                                )
-                        )
                     }
                 }
             }
                     .blockingGet()
 
+            mqttChannels.central.main.channel().send(
+                    ParcelServiceV1.ParcelMessage(
+                            userId = this@VehicleUnloading.login.authenticatedUser?.id,
+                            nodeId = this@VehicleUnloading.identity.uid.value,
+                            events = parcels.map {
+                                ParcelServiceV1.Event(
+                                        event = Event.TOUR_UNLOADED.value,
+                                        reason = Reason.NORMAL.id,
+                                        parcelId = it.id,
+                                        latitude = lastLocation?.latitude,
+                                        longitude = lastLocation?.longitude,
+                                        damagedInfo = when {
+                                            it.isDamaged -> {
+                                                ParcelServiceV1.Event.DamagedInfo(
+                                                        pictureFileUids = it.meta
+                                                                .filterValuesByType(Parcel.DamagedInfo::class.java)
+                                                                .mapNotNull {
+                                                                    it.pictureFileUid
+                                                                }
+                                                                .toTypedArray()
+                                                )
+                                            }
+                                            else -> null
+                                        }
+                                )
+                            }.toTypedArray()
+                    )
+            )
         }
                 .subscribeOn(db.scheduler)
     }

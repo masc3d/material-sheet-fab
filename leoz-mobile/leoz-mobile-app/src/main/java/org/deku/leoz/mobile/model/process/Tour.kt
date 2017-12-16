@@ -63,6 +63,34 @@ class Tour : CompositeDisposableSupplier {
 
     val closedStops = this.closedStopsQuery.result
 
+    init {
+        // Send tour update when pending stops change
+        this.pendingStops.map { it.value }
+                .subscribe {
+                    log.trace("Sending tour update")
+                    this.mqttEndpoints.central.main.channel().send(
+                            TourServiceV1.TourUpdateMessage(
+                                    nodeUid = identity.uid.value,
+                                    userId = login.authenticatedUser?.id ?: 0,
+                                    stops = this.pendingStops.blockingFirst().value.map { stop ->
+                                        TourServiceV1.Stop(
+                                                tasks = stop.tasks.map {
+                                                    TourServiceV1.Task(
+                                                            orderId = it.order.id,
+                                                            taskType = when (it.type) {
+                                                                OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                                OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
+                                                            }
+                                                    )
+                                                }
+                                        )
+                                    }
+                            )
+                    )
+                }
+                .bind(this)
+    }
+
     /**
      * The currently active stop.
      * Setting a stop active will also set its state to PENDING if it has no state
@@ -80,33 +108,4 @@ class Tour : CompositeDisposableSupplier {
             }
         }
     })
-
-    /**
-     * Send the current delivery/tour stop order
-     */
-    fun sendUpdate(): Completable {
-        return Completable.fromAction {
-            this.mqttEndpoints.central.main.channel().send(
-                    TourServiceV1.TourUpdateMessage(
-                            nodeUid = identity.uid.value,
-                            userId = login.authenticatedUser?.id ?: 0,
-                            stops = this.pendingStops.blockingFirst().value.map { stop ->
-                                TourServiceV1.Stop(
-                                    tasks = stop.tasks.map {
-                                        TourServiceV1.Task(
-                                                orderId = it.order.id,
-                                                taskType = when (it.type) {
-                                                    OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
-                                                    OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
-                                                }
-                                        )
-                                    }
-                                )
-                            }
-                    )
-            )
-        }
-                .subscribeOn(db.scheduler)
-    }
-
 }
