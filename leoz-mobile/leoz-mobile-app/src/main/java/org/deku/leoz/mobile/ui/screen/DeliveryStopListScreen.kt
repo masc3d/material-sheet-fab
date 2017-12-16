@@ -41,7 +41,9 @@ import org.deku.leoz.mobile.ui.extension.inflateMenu
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
-import org.deku.leoz.model.*
+import org.deku.leoz.model.DekuUnitNumber
+import org.deku.leoz.model.Parcel
+import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
@@ -269,15 +271,10 @@ class DeliveryStopListScreen
                         }
 
                         R.id.action_done -> {
-                            this.stopRepository.entities.forEach {
-                                // Persist all positional changes
-                                this.stopRepository
-                                        .updateAll()
-                                        .subscribeOn(db.scheduler)
-                                        .subscribe()
-                            }
-
-                            this.tour.sendUpdate()
+                            // Persist all positional changes
+                            this.stopRepository
+                                    .updateAll()
+                                    .subscribeOn(db.scheduler)
                                     .subscribe()
 
                             this.editMode = false
@@ -566,11 +563,6 @@ class DeliveryStopListScreen
                                     }
                                             .subscribeOn(db.scheduler)
                                             .subscribe()
-
-                                    // When not in edit mode, Send stop list order update on every move
-                                    if (!this@DeliveryStopListScreen.editMode)
-                                        this.tour.sendUpdate()
-                                                .subscribe()
                                 }
                     }
 
