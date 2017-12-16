@@ -10,13 +10,6 @@ import sx.mq.mqtt.MqttChannel
 import java.util.*
 
 /**
- * Some mime types, as adding guava just for this is pretty heavy-weight
- */
-enum class MimeType(val value: String) {
-    JPEG("image/jpeg")
-}
-
-/**
  * Extensions for sending file messages
  * Created by masc on 26.08.17.
  */

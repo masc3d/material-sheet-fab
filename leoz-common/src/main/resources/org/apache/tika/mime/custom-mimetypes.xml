@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info>
+    <mime-type type="application/leoz-diagnostic-zip">
+        <_comment>Leoz diagonstic data archive</_comment>
+        <glob pattern="*.leoz-diag.zip"/>
+        <sub-class-of type="application/zip"/>
+    </mime-type>
+</mime-info>

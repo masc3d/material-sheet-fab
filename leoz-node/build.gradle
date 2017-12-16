@@ -232,7 +232,7 @@ dependencies {
             "org.apache.pdfbox:pdfbox:2.0.8",
 
             // Tika, content analysis framework
-            "org.apache.tika:tika-core:1.16",
+            "org.apache.tika:tika-core:$v_apache_tika",
 
             // hawt.io
             "io.hawt:hawtio-springboot:2.0.0",
