@@ -20,7 +20,7 @@ class TourServiceV1
 {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    override fun get(id: Long): TourServiceV1.Tour {
+    override fun get(id: Int): TourServiceV1.Tour {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
