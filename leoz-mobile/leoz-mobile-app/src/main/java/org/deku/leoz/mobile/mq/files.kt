@@ -22,7 +22,6 @@ enum class MimeType(val value: String) {
  */
 
 private val identity: Identity by Kodein.global.lazy.instance()
-private val mqttEndPoints: MqttEndpoints by Kodein.global.lazy.instance()
 
 /**
  * Send a file via mq

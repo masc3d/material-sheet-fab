@@ -66,13 +66,13 @@ class Tour : CompositeDisposableSupplier {
     init {
         // Send tour update when pending stops change
         this.pendingStops.map { it.value }
-                .subscribe {
+                .subscribe { parcels ->
                     log.trace("Sending tour update")
                     this.mqttEndpoints.central.main.channel().send(
                             TourServiceV1.TourUpdateMessage(
                                     nodeUid = identity.uid.value,
                                     userId = login.authenticatedUser?.id ?: 0,
-                                    stops = this.pendingStops.blockingFirst().value.map { stop ->
+                                    stops = parcels.map { stop ->
                                         TourServiceV1.Stop(
                                                 tasks = stop.tasks.map {
                                                     TourServiceV1.Task(
