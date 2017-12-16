@@ -301,11 +301,7 @@ enum class ParcelType(val value: Int) {
     VALUABLES(91);
 
     companion object {
-        val valueMap by lazy {
-            mapOf(
-                    *ParcelType.values().map { Pair(it.value, it) }.toTypedArray()
-            )
-        }
+        val valueMap by lazy { ParcelType.values().associateBy(ParcelType::value) }
     }
 }
 
@@ -319,11 +315,17 @@ enum class OrderClassification(val value: Int) {
 }
 
 /**
- * Order task type. Indicates which task (pickup/delivery) of an order to reference
+ * Order task type.
+ * Indicates which task (pickup/delivery) of an order to reference.
+ * Referenced in central database, eg. `tad_tour_entry`
  */
 enum class TaskType(val value: Int) {
     PICKUP(0),
-    DELIVERY(1)
+    DELIVERY(1);
+
+    companion object {
+        val valueMap by lazy { TaskType.values().associateBy(TaskType::value) }
+    }
 }
 
 enum class AdditionalInformationType(val value: Int) {
