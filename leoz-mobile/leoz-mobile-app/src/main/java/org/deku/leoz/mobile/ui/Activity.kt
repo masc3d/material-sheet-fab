@@ -44,6 +44,7 @@ import kotlinx.android.synthetic.main.main_nav_header.view.*
 import kotlinx.android.synthetic.main.view_update_indicator.view.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
@@ -53,7 +54,6 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.repository.OrderRepository
-import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
 import org.deku.leoz.mobile.service.UpdateService
