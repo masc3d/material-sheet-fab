@@ -56,6 +56,7 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
+import org.deku.leoz.mobile.service.LocationServices
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.settings.RemoteSettings

@@ -8,7 +8,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import org.deku.leoz.mobile.LocationServices
+import org.deku.leoz.mobile.service.LocationServices
 import org.slf4j.LoggerFactory
 
 /**

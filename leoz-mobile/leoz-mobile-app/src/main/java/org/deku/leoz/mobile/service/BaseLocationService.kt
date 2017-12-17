@@ -47,7 +47,7 @@ abstract class BaseLocationService: Service() {
     private val locationProviderChangedReceiver: LocationProviderChangedReceiver by Kodein.global.lazy.instance()
 
     private val notificationManager by lazy { getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
-    protected val locationServices: org.deku.leoz.mobile.LocationServices by Kodein.global.lazy.instance()
+    protected val locationServices: LocationServices by Kodein.global.lazy.instance()
 
     private var gnssStatusCallback: GnssStatus.Callback? = null
     @Suppress("DEPRECATION")
