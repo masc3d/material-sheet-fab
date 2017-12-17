@@ -188,7 +188,7 @@ dependencies {
             "android.arch.lifecycle:runtime:1.0.3",
 
             // Camera
-            "com.wonderkiln:camerakit:0.13.1",
+            "com.wonderkiln:camerakit:0.13.0",
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
