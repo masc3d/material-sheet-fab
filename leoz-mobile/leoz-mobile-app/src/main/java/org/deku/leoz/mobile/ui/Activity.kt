@@ -623,7 +623,7 @@ abstract class Activity : BaseActivity(),
                 updateService.trigger()
             }
 
-            R.id.nav_send -> {
+            R.id.nav_send_diagnostics -> {
             }
 
             R.id.nav_logout -> {
@@ -1136,9 +1136,9 @@ abstract class Activity : BaseActivity(),
         if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
             MaterialDialog.Builder(this)
                     .title(getString(R.string.dialog_title_developer_enabled))
-                    .content(getString(R.string.dialog_text_developer_enabled))
-                    .positiveText("Settings")
-                    .negativeText("Abort")
+                    .content(getString(R.string.dialog_content_developer_enabled))
+                    .positiveText(R.string.action_settings)
+                    .negativeText(R.string.cancel)
                     .onPositive { _, _ ->
                         val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                         this.startActivityForResult(intent, 0)
@@ -1153,8 +1153,8 @@ abstract class Activity : BaseActivity(),
          */
         if (!device.mobileDateEnabled) {
             MaterialDialog.Builder(this)
-                    .title("Mobile-Data disabled")
-                    .content("Mobile-Data are disabled! To continue you must enable Mobile-Data")
+                    .title(R.string.dialog_title_mobile_data_disabled)
+                    .content(R.string.dialog_content_mobile_data_disabled)
                     .neutralText(R.string.ok)
                     .cancelable(false)
                     .onNeutral { _, _ ->
@@ -1175,7 +1175,7 @@ abstract class Activity : BaseActivity(),
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onError = {
-                                log.warn("LocationSettings not satisfied!", it)
+                                log.warn("LocationSettings not satisfied", it)
                             }
                     )
         } else {
@@ -1188,8 +1188,8 @@ abstract class Activity : BaseActivity(),
             if (!this.device.isEmulator && !isProvidersAvailable) {
                 log.warn("Location settings not satisfied")
                 MaterialDialog.Builder(this)
-                        .title("Location settings not satisfied")
-                        .content("You disabled either GPS or Network locations. Both must be enabled to continue.")
+                        .title(R.string.dialog_title_gps_disabled)
+                        .content(R.string.dialog_content_gps_disabled)
                         .positiveText(R.string.action_settings)
                         .negativeText(R.string.cancel)
                         .onPositive { _, _ ->
@@ -1200,7 +1200,7 @@ abstract class Activity : BaseActivity(),
                             )
                         }
                         .onNegative { _, _ ->
-                            log.warn("LocationSettings resolution aborted.")
+                            log.warn("LocationSettings resolution aborted")
                             this.app.terminate()
                         }
                         .show()

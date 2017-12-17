@@ -7,6 +7,8 @@
     <string name="action_sign_in">Anmelden / Registrieren</string>
     <string name="action_sign_in_short">Anmelden</string>
 
+    <string name="active_stop">Aktiver Stop</string>
+
     <string name="authentication_failed">Authentifizierung fehlgeschglagen</string>
 
     <string name="authority">Behörde</string>
@@ -58,16 +60,18 @@
     <string name="device_check_instruction_to_continue">Es ist nicht gestattet mit den Auftrag fortzufahren, ohne die Prüfung abzuschließen.</string>
     <string name="device_check_instructions">Sie haben 3 versuche den korrekten Code einzugeben. Schlagen alle fehl, ist der Auftrag fehlgeschlagen.</string>
 
+    <string name="dialog_content_developer_enabled">Entwickleroptionen sind aktiviert. Um fortzufahren müssen diese deaktiviert werden.</string>
+    <string name="dialog_content_gps_disabled">Der GPS Standortdienst ist deaktiviert. Um fortzufahren, muss GPS aktiviert werden.</string>
+    <string name="dialog_content_missing_signature">Es wurde keine Unterschrift gegeben. Hat der Kunde auf Papier unterschrieben?</string>
+    <string name="dialog_content_mobile_data_disabled">Mobile Datenübertragung ist für die Nutzung der Anwendung erforderlich.</string>
     <string name="dialog_content_outdated_orders">Aufträge sind veraltet. Um fortzufahren müssen alle Daten gelöscht werden.</string>
     <string name="dialog_content_stop_merge">Möchten Sie diesen Stop zusammenführen?</string>
     <string name="dialog_content_stop_reopen">Stop erneut öffnen?</string>
     <string name="dialog_content_time_misconfigured">Die Zeit auf Ihrem Gerät scheint falsch konfiguriert zu sein. Bitte aktivieren Sie die automatische Konfiguration der Zeit(-Zone) für das beste Ergebnis, oder korrigieren Sie die Zeit manuell.\n\nDifferenz: %s</string>
-    <string name="dialog_text_developer_enabled">Entwickleroptionen sind aktiviert. Um fortzufahren müssen diese deaktiviert werden.</string>
-    <string name="dialog_text_gps_disabled">Der GPS Standortdienst ist deaktiviert. Um fortzufahren, muss GPS aktiviert werden.</string>
-    <string name="dialog_text_missing_signature">Es wurde keine Unterschrift gegeben. Hat der Kunde auf Papier unterschrieben?</string>
     <string name="dialog_title_developer_enabled">Entwickleroptionen aktiviert</string>
     <string name="dialog_title_event_selection">Event Auswahl</string>
     <string name="dialog_title_gps_disabled">GPS Standort ist deaktiviert</string>
+    <string name="dialog_title_mobile_data_disabled">Mobile Datenübertragung ist deaktiviert</string>
     <string name="dialog_title_stop_reopen">Stopaktivierung</string>
     <string name="dialog_title_time_misconfigured">Datum/Zeit falsch</string>
 
@@ -208,6 +212,8 @@
 
     <string name="running">läuft</string>
 
+    <string name="send_diagnostic_data">Diagnosedaten senden</string>
+
     <string name="service_cash_delivery">Nachnahme</string>
     <string name="service_department_delivery">Bereichszustellung</string>
     <string name="service_documented_personal">Per. Zustellung &amp; Doku</string>
@@ -245,6 +251,8 @@
     <string name="sort_zip">Nach PLZ</string>
 
     <string name="station_id">Station:</string>
+
+    <string name="stop_to_be_added">Hinzuzufügen</string>
 
     <string name="street" tools:ignore="Typos">Strasse</string>
 
@@ -297,6 +305,4 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="active_stop">Aktiver Stop</string>
-    <string name="stop_to_be_added">Hinzuzufügen</string>
 </resources>
