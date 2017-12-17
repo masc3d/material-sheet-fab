@@ -39,14 +39,14 @@ class Storage(val context: Context) {
         }
     }
 
-    val logDir: File by lazy {
-        this.dataDir.resolve("log").also {
+    val diagnosticsDir by lazy {
+        this.dataDir.resolve("diagnostics").also {
             it.mkdirs()
         }
     }
 
-    val imageDir: File by lazy {
-        this.dataDir.resolve("image").also {
+    val logDir: File by lazy {
+        this.dataDir.resolve("log").also {
             it.mkdirs()
         }
     }

@@ -153,36 +153,26 @@ abstract class Activity : BaseActivity(),
     /** Indicates the activity has been paused */
     private var isPaused = false
 
-    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
-    private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
-    private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
-    private val locationServices: LocationServices by Kodein.global.lazy.instance()
-
-    private val device: Device by Kodein.global.lazy.instance()
-    private val identity: Identity by Kodein.global.lazy.instance()
-
-
-    private val ntpTime: NtpTime by Kodein.global.lazy.instance()
-
-    // AIDC readers
+    // Dependencies
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
-    private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
-
-    private val feedback: Feedback by Kodein.global.lazy.instance()
-
-    // Services
-    private val updateService: UpdateService by Kodein.global.lazy.instance()
-
-    // Process models
-    private val login: Login by Kodein.global.lazy.instance()
-    private val db: Database by Kodein.global.lazy.instance()
-    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
-
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
-
+    private val db: Database by Kodein.global.lazy.instance()
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    private val device: Device by Kodein.global.lazy.instance()
+    private val diagnostics: Diagnostics by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
+    private val identity: Identity by Kodein.global.lazy.instance()
+    private val locationServices: LocationServices by Kodein.global.lazy.instance()
+    private val login: Login by Kodein.global.lazy.instance()
     private val mqttDispatcher: MqttDispatcher by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
+    private val ntpTime: NtpTime by Kodein.global.lazy.instance()
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
+    private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
+    private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
+    private val updateService: UpdateService by Kodein.global.lazy.instance()
 
     /** Action items */
     private val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
@@ -625,6 +615,7 @@ abstract class Activity : BaseActivity(),
             }
 
             R.id.nav_send_diagnostics -> {
+                this.diagnostics.send()
             }
 
             R.id.nav_logout -> {

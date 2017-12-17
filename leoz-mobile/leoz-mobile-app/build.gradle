@@ -294,6 +294,8 @@ dependencies {
                 exclude group: 'org.json', module: 'json'
             },
 
+            "org.zeroturnaround:zt-zip:1.12",
+
             //
             // FOR TESTING
             //

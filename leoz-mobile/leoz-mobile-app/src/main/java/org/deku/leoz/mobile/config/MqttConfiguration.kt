@@ -9,9 +9,9 @@ import com.github.salomonbrys.kodein.erased.singleton
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.config.MqConfiguration
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.mobile.settings.RemoteSettings
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.MqttListeners
+import org.deku.leoz.mobile.settings.RemoteSettings
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
@@ -84,12 +84,16 @@ class MqttConfiguration {
                 client
             }
 
+            bind<MqttSqlitePersistence>() with singleton {
+                MqttSqlitePersistence(
+                        databaseFile = instance<Context>().getDatabasePath("mqtt.db"))
+            }
+
             bind<MqttDispatcher>() with singleton {
                 val dispatcher = MqttDispatcher(
                         client = instance<MqttRxClient>(),
                         executorService = instance<ExecutorService>(),
-                        persistence = MqttSqlitePersistence(
-                                databaseFile = instance<Context>().getDatabasePath("mqtt.db"))
+                        persistence = instance<MqttSqlitePersistence>()
                 )
 
                 // Wire connectivity

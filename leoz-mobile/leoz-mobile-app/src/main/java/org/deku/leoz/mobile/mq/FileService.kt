@@ -22,9 +22,9 @@ private val DEFAULT_CHUNK_SIZE = 100 * 1024
 /**
  * Send in memory buffer as a file via mq
  */
-fun MqttChannel.sendFile(data: ByteArray, mimeType: String, chunkSize: Int = DEFAULT_CHUNK_SIZE): UUID {
+fun MqttChannel.sendFile(content: ByteArray, mimeType: String, chunkSize: Int = DEFAULT_CHUNK_SIZE): UUID {
     return UUID.randomUUID().also {
-        data.toFileFragmentMessages(
+        content.toFileFragmentMessages(
                 nodeUid = identity.uid.value,
                 fileUid = it,
                 mimeType = mimeType,
@@ -38,9 +38,9 @@ fun MqttChannel.sendFile(data: ByteArray, mimeType: String, chunkSize: Int = DEF
 /**
  * Send input stream as a file via mq
  */
-fun MqttChannel.sendFile(data: InputStream, mimeType: String, chunkSize: Int = DEFAULT_CHUNK_SIZE, totalSize: Int): UUID {
+fun MqttChannel.sendFile(content: InputStream, mimeType: String, chunkSize: Int = DEFAULT_CHUNK_SIZE, totalSize: Int): UUID {
     return UUID.randomUUID().also {
-        data.toFileFragmentMessages(
+        content.toFileFragmentMessages(
                 nodeUid = identity.uid.value,
                 fileUid = it,
                 mimeType = mimeType,

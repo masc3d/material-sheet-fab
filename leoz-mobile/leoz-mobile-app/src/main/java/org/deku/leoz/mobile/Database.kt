@@ -1,8 +1,12 @@
 package org.deku.leoz.mobile
 
 import android.content.Context
+import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.requery.Persistable
+import io.requery.TransactionIsolation
 import io.requery.android.database.sqlite.SQLiteDatabase
 import io.requery.android.sqlitex.SqlitexDatabaseSource
 import io.requery.cache.EntityCacheBuilder
@@ -13,15 +17,17 @@ import io.requery.sql.TableCreationMode
 import org.deku.leoz.mobile.model.entity.Models
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.Yaml
+import sx.android.requery.backupTo
 import sx.android.requery.sqliteVersion
 import sx.io.serialization.Serializable
+import java.io.File
 import java.io.InputStream
 
 /**
  * Database
  * Created by n3 on 17/02/2017.
  * @param context
- * @param name Database name
+ * @param name Database (file) name
  * @param clean Remove database prior to initialization
  * @param scheduler The scheduler to use for database operations
  */
@@ -92,6 +98,14 @@ class Database(
      */
     val path by lazy {
         this.file.parentFile
+    }
+
+    /**
+     * Backup the database
+     * @param destinationFile Destination file
+     */
+    fun backup(destinationFile: File) {
+        this.dataSource.writableDatabase.backupTo(destinationFile)
     }
 
     /**

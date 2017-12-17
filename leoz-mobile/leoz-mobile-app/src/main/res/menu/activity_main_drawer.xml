@@ -13,10 +13,9 @@
             android:title="@string/check_for_updates"/>
         <item
             android:id="@+id/nav_send_diagnostics"
-            android:enabled="false"
             android:icon="@drawable/ic_bug"
-            android:title="@string/report_bug"
-            android:visible="false"/>
+            android:title="@string/send_diagnostic_data"
+            android:visible="true"/>
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
