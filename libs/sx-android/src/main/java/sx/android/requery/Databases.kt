@@ -10,14 +10,6 @@ import java.io.File
 val SQLiteDatabase.sqliteVersion: String
     get() = this.stringForQuery("SELECT sqlite_version()", null)
 
-val android.database.sqlite.SQLiteDatabase.sqliteVersion: String
-    get() =
-        this.compileStatement("SELECT sqlite_version()").let {
-            it.use {
-                it.simpleQueryForString()
-            }
-        }
-
 /**
  * Backup database file
  * Created by masc on 17.12.17.
