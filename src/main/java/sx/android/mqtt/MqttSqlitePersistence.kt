@@ -9,6 +9,7 @@ import sx.android.anko.sqlite.getBoolean
 import sx.android.anko.sqlite.getByteArray
 import sx.android.anko.sqlite.getInt
 import sx.android.anko.sqlite.getString
+import sx.android.database.sqlite.backupTo
 import sx.mq.mqtt.IMqttPersistence
 import sx.mq.mqtt.MqttPersistentMessage
 import sx.mq.mqtt.toPersistentMessage
@@ -58,6 +59,14 @@ class MqttSqlitePersistence constructor(
                         Pair(COL_PAYLOAD, BLOB)))
 
         this.db.execSQL("CREATE INDEX IF NOT EXISTS ix_topic ON ${TABLE_NAME} ( ${COL_TOPIC} )")
+    }
+
+    /**
+     * Backup persistence database
+     * @param destinationFile Destination file
+     */
+    fun backup(destinationFile: File) {
+        this.db.backupTo(destinationFile)
     }
 
     override fun add(topicName: String, message: MqttMessage) {
