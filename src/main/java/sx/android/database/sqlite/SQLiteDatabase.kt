@@ -4,6 +4,18 @@ import android.database.sqlite.SQLiteDatabase
 import java.io.File
 
 /**
+ * Returns SQLite version
+ * Created by masc on 10.10.17.
+ */
+val SQLiteDatabase.sqliteVersion: String
+    get() =
+        this.compileStatement("SELECT sqlite_version()").let {
+            it.use {
+                it.simpleQueryForString()
+            }
+        }
+
+/**
  * Backup database file
  * Created by masc on 17.12.17.
  */
