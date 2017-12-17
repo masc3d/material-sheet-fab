@@ -2,7 +2,7 @@ package sx.io
 
 import java.io.InputStream
 import java.io.OutputStream
-import java.io.SequenceInputStream
+import java.util.*
 
 /**
  * Copies this stream to the given output stream, returning the number of bytes copied.
@@ -18,7 +18,7 @@ fun InputStream.copyTo(out: OutputStream,
     var bytesCopied: Long = 0
     val buffer = ByteArray(bufferSize)
     var bytes = read(buffer)
-    while (bytes >= 0) {
+    while (bytes > 0) {
         out.write(buffer, 0, bytes)
         bytesCopied += bytes
         if (progressCallback != null) {
@@ -39,11 +39,14 @@ fun InputStream.toSequence(chunkSize: Int): Sequence<ByteArray> {
     return generateSequence {
         val buffer = ByteArray(chunkSize)
 
-        this.read(buffer).let {
-            when {
-                it >= 0 -> buffer
-                else -> null
-            }
+        this.read(buffer).let { bytes ->
+            if (bytes <= 0)
+                return@let null
+
+            if (bytes == chunkSize)
+                buffer
+            else
+                Arrays.copyOf(buffer, bytes)
         }
     }
 }
