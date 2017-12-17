@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.internal.toFileFragmentMessages
 import sx.mq.mqtt.MqttChannel
+import java.io.InputStream
 import java.util.*
 
 /**
@@ -16,16 +17,35 @@ import java.util.*
 
 private val identity: Identity by Kodein.global.lazy.instance()
 
+private val DEFAULT_CHUNK_SIZE = 100 * 1024
+
 /**
- * Send a file via mq
+ * Send in memory buffer as a file via mq
  */
-fun MqttChannel.sendFile(data: ByteArray, mimeType: String): UUID {
+fun MqttChannel.sendFile(data: ByteArray, mimeType: String, chunkSize: Int = DEFAULT_CHUNK_SIZE): UUID {
     return UUID.randomUUID().also {
         data.toFileFragmentMessages(
                 nodeUid = identity.uid.value,
                 fileUid = it,
                 mimeType = mimeType,
-                maxChunkSize = 100 * 1024
+                maxChunkSize = chunkSize
+        ).forEach {
+            this.send(it)
+        }
+    }
+}
+
+/**
+ * Send input stream as a file via mq
+ */
+fun MqttChannel.sendFile(data: InputStream, mimeType: String, chunkSize: Int = DEFAULT_CHUNK_SIZE, totalSize: Int): UUID {
+    return UUID.randomUUID().also {
+        data.toFileFragmentMessages(
+                nodeUid = identity.uid.value,
+                fileUid = it,
+                mimeType = mimeType,
+                maxChunkSize = chunkSize,
+                totalSize = totalSize
         ).forEach {
             this.send(it)
         }
