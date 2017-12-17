@@ -33,7 +33,7 @@ class Diagnostics() {
      * Send diagnostics
      */
     fun send() {
-        val diagName = "${BundleType.LEOZ_MOBILE.value}-${identity.shortUid}-${dateFormat.format(Date())}"
+        val diagName = "${BundleType.LEOZ_MOBILE.value}-${identity.shortUid}-diag-${dateFormat.format(Date())}"
 
         val diagDir = this.storage.diagnosticsDir.resolve(diagName)
 
@@ -49,7 +49,8 @@ class Diagnostics() {
             try {
                 ZipUtil.pack(
                         diagDir,
-                        diagZipFile
+                        diagZipFile,
+                        true
                 )
 
                 diagZipFile.inputStream().buffered().use { diagZipStream ->
