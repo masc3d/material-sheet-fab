@@ -950,6 +950,7 @@ class DeliveryStopProcessScreen :
 
     private fun finalizeStop() {
         this.deliveryStop.finalize()
+                .bindToLifecycle(this)
                 .subscribeOn(db.scheduler)
                 .observeOnMainThread()
                 .subscribeBy(
