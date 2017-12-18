@@ -77,7 +77,7 @@ open class DepotJooqRepository {
                 .fetchOneInto(TbldepotlisteRecord::class.java)
     }
 
-    open fun getCountBags2SendBagByStation(stationNo: Int): Int {
+    open fun getCountBagsToSendBagByStation(stationNo: Int): Int {
         val countBagsUsedByStation: Int = dslContext.selectCount()
                 .from(Tables.SSO_S_MOVEPOOL)
                 .where(Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(stationNo.toDouble())

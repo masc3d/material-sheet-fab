@@ -5,6 +5,8 @@ import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
+import org.deku.leoz.model.DekuUnitNumber
+import org.deku.leoz.model.LoadinglistType
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.service.entity.ServiceError
 import org.deku.leoz.service.internal.entity.Address
@@ -25,12 +27,13 @@ interface ExportService {
         const val BAG_BACK_NO = "bagback-no"
         const val STATION_NO = "station-no"
         const val LOADINGLIST_NO = "loadinglist-no"
-        const val SCANCODE = "parcel-no"
+        const val SCANCODE = "parcel-no-or-reference"
         const val BAG_ID = "bag-id"
         const val REDSEAL = "redseal"
         const val TEXT = "text"
         const val SEND_DATE = "send-date"
         const val YELLOWSEAL = "yellowseal"
+        const val ID = "loading-list"
     }
 
     @Serializable(0x5abfa519181a30)
@@ -66,8 +69,8 @@ interface ExportService {
             val lastStation: Int? = null,
             val sealNumberYellow: Long? = null,
             val sealNumberRed: Long? = null,
-            val orderhub2depot: Long? = null,
-            val orderdepot2hub: Long? = null,
+            val orderhubTodepot: Long? = null,
+            val orderdepotTohub: Long? = null,
             val initStatus: Int = 0,
             val workdate: Date? = null,
             val printed: Int? = null,
@@ -76,7 +79,7 @@ interface ExportService {
     ) {
         var unitNo: Long? = null
         var unitNoBack: Long? = null
-        var orders2export: List<Order> = listOf()
+        var ordersToexport: List<Order> = listOf()
         var bagNumberLabel: String? = null
         var unitNoLabel: String? = null
         var unitBackLabel: String? = null
@@ -85,18 +88,32 @@ interface ExportService {
         var sealGreenLabel: String? = null
     }
 
+    @Serializable(0x2e5b98b7a7694f)
+    data class Loadinglist(val loadinglistNo: Long, val orders: List<ExportService.Order> = listOf()) {
+        constructor(loadinglistlabel: String, orders: List<ExportService.Order>) : this(DekuUnitNumber.parseLabel(loadinglistlabel).value.value.toLong(), orders) {}
+
+        val loadinglistType by lazy {
+            if (this.loadinglistNo < 100000)
+                LoadinglistType.BAG
+            else LoadinglistType.NORMAL
+        }
+        val label by lazy {
+            DekuUnitNumber.parse(this.loadinglistNo.toString().padStart(11, '0')).value.label
+        }
+    }
+
     @GET
-    @Path("/station/{$STATION_NO}")
+    @Path("/station/{$STATION_NO}/order")
     @ApiOperation(value = "Get parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcels2ExportByStationNo(
+    fun getParcelsToExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null
     ): List<Order>
 
     @GET
-    @Path("/station/{$STATION_NO}/bag")
+    @Path("/station/{$STATION_NO}/bag/order")
     @ApiOperation(value = "Get parcels to export in Bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcels2ExportInBagByStationNo(
+    fun getParcelsToExportInBagByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null
     ): List<Order>
@@ -110,24 +127,24 @@ interface ExportService {
     ): Bag
 
     @GET
-    @Path("/station/{$STATION_NO}/loaded")
+    @Path("/station/{$STATION_NO}/loaded/order")
     @ApiOperation(value = "Get loaded parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getLoadedParcels2ExportByStationNo(
+    fun getLoadedParcelsToExportByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
             @QueryParam(SEND_DATE) @ApiParam(value = "Send date", example = "08/09/2017", required = false) sendDate: Date? = null
     ): List<Order>
 
     @GET
-    @Path("/loadinglist/{$LOADINGLIST_NO}")
+    @Path("/loadinglist/{$LOADINGLIST_NO}/order")
     @ApiOperation(value = "Get parcels by loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getParcels2ExportByLoadingList(
+    fun getParcelsToExportByLoadingList(
             @PathParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", example = "300005", required = true) loadinglistNo: String
     ): List<Order>
 
     @POST
     @Path("/loadinglist")
     @ApiOperation(value = "Create new loadinglist", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getNewLoadinglistNo(): LoadinglistService.Loadinglist
+    fun getNewLoadinglistNo(): ExportService.Loadinglist
 
     @PATCH
     @Path("/")
@@ -139,12 +156,12 @@ interface ExportService {
     ): String
 
     @GET
-    @Path("/station/{$STATION_NO}/send-back")
+    @Path("/station/{$STATION_NO}/send-back-count")
     @ApiOperation("Count bags to send back", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
-    fun getCount2SendBackByStation(
+    fun getCountToSendBackByStation(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
 
     ): Int
@@ -185,7 +202,7 @@ interface ExportService {
             @ApiParam(value = "Bag-ID", example = "700100000008") @PathParam(BAG_ID) bagID: String,
             @QueryParam(BAG_BACK_NO) @ApiParam(value = "BagBackunit number", example = "100720000004", required = true) bagBackUnitNo: String,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int,
-            @QueryParam(SCANCODE) @ApiParam(value = "Unit number", example = "123456789877", required = true) unitNo: String,
+            @QueryParam(SCANCODE) @ApiParam(value = "Unit number or cReference", example = "123456789877", required = true) unitNo: String,
             @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Bag loadinglist number", required = true) loadingListNo: String,
             @QueryParam(YELLOWSEAL) @ApiParam(value = "Yellow seal", example = "900200000001", required = true) yellowSealNo: String
     ): String
@@ -206,13 +223,7 @@ interface ExportService {
     @POST
     @Path("/bag/loadinglist")
     @ApiOperation(value = "Create new loadinglist for bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getNewBagLoadinglistNo(): LoadinglistService.Loadinglist
+    fun getNewBagLoadinglistNo(): ExportService.Loadinglist
 
-    @GET
-    @Path("/scan/{$SCANCODE}")
-    @ApiOperation(value = "Get scan", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getScan(
-            @PathParam(SCANCODE) @ApiParam(value = "unit", example = "123456789877", required = true) scanCode: String
-    ): UnitNumber
 
 }
