@@ -263,8 +263,9 @@ dependencies {
             },
 
             // UI
-            "eu.davidea:flexible-adapter:5.0.0-rc3",
+            "eu.davidea:flexible-adapter:5.0.0-rc4",
             "eu.davidea:flexible-adapter-databinding:1.0.0-b2@aar",
+            "eu.davidea:flexible-adapter-ui:1.0.0-b1@aar",
             "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",
 
             // Dialog
