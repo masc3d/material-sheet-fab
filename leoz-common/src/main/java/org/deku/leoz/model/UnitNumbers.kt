@@ -115,6 +115,9 @@ class DekuUnitNumber private constructor(
             if (value.length != 11)
                 return Result(error = IllegalArgumentException("Unit number [${value}] must have 11 digits"))
 
+            if (!value.all { it.isDigit() })
+                return Result(error = IllegalArgumentException("Unit number [${value}] must be numeric"))
+
             return Result(DekuUnitNumber(value))
         }
 
@@ -167,15 +170,16 @@ class GlsUnitNumber private constructor(
         EXPRESS("85");
 
         companion object {
-            val valueMap = mapOf(
-                    *ServiceType.values().map { Pair(it.value, it) }.toTypedArray()
-            )
+            val valueMap by lazy { ServiceType.values().associateBy(ServiceType::value) }
         }
     }
 
+    private val serviceTypeToken by lazy {
+        this.value.substring(2, 4)
+    }
+
     val serviceType by lazy {
-        ServiceType.valueMap.getValue(
-                this.value.substring(2, 4))
+        ServiceType.valueMap.getValue(this.serviceTypeToken)
     }
 
     companion object {
@@ -183,10 +187,19 @@ class GlsUnitNumber private constructor(
             if (value.length != 11)
                 return Result(error = IllegalArgumentException("GLS unit number [${value}] must have 11 digits"))
 
+            if (!value.all { it.isDigit() })
+                return Result(error = IllegalArgumentException("GLS unit number [${value}] must be numeric"))
+
             val un = GlsUnitNumber(value)
 
+            try {
+                un.serviceType
+            } catch(e: Throwable) {
+                return Result(error = IllegalArgumentException("GLS unit number [${value}] has unsupported service token [${un.serviceTypeToken}]"))
+            }
+
             if (un.serviceType != ServiceType.EXPRESS)
-                return Result(error = IllegalArgumentException("GLS unit number [${value}] has invalid service type"))
+                    return Result(error = IllegalArgumentException("GLS unit number [${value}] has invalid service type [${un.serviceType}]"))
 
             return Result(GlsUnitNumber(value))
         }
