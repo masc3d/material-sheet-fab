@@ -12,11 +12,22 @@ class MqttListeners(
         /**
          * Listener for mobile topic channel
          */
-        val topic: MqttListener by lazy {
+        val broadcast: MqttListener by lazy {
             MqttListener(
-                    mqttEndpoint = endpoints.mobile.topic)
+                    mqttEndpoint = endpoints.mobile.broadcast
+            )
         }
     }
 
     val mobile = Mobile()
+
+    inner class Node {
+        val topic: MqttListener by lazy {
+            MqttListener(
+                    mqttEndpoint = endpoints.node.topic
+            )
+        }
+    }
+
+    val node = Node()
 }

@@ -76,7 +76,10 @@ class MqttConfiguration {
                     when {
                         it is MqttRxClient.Status.ConnectionComplete -> {
                             // Start listeners on connection
-                            instance<MqttListeners>().mobile.topic.start()
+                            instance<MqttListeners>().also {
+                                it.mobile.broadcast.start()
+                                it.node.topic.start()
+                            }
                         }
                     }
                 })
@@ -116,7 +119,8 @@ class MqttConfiguration {
 
             bind<MqttEndpoints>() with singleton {
                 MqttEndpoints(
-                        context = instance<MqttContext>()
+                        context = instance<MqttContext>(),
+                        identityUid = instance<Identity>().uid
                 )
             }
 

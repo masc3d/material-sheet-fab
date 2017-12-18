@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.mq
 
 import org.deku.leoz.config.MqEndpoints
+import org.deku.leoz.identity.Identity
 import sx.mq.mqtt.MqttContext
 import sx.mq.mqtt.toMqtt
 
@@ -9,7 +10,8 @@ import sx.mq.mqtt.toMqtt
  * Created by masc on 12.05.17.
  */
 class MqttEndpoints(
-        private val context: MqttContext) {
+        private val context: MqttContext,
+        private val identityUid: Identity.Uid) {
 
     inner class Central {
         val main by lazy {
@@ -30,8 +32,8 @@ class MqttEndpoints(
     val central = Central()
 
     inner class Mobile {
-        val topic by lazy {
-            MqEndpoints.mobile.topic.toMqtt(
+        val broadcast by lazy {
+            MqEndpoints.mobile.broadcast.toMqtt(
                     context = context,
                     qos = 1
             )
@@ -39,4 +41,15 @@ class MqttEndpoints(
     }
 
     val mobile = Mobile()
+
+    inner class Node {
+        val topic by lazy {
+            MqEndpoints.node.topic(identityUid).toMqtt(
+                    context = context,
+                    qos = 0
+            )
+        }
+    }
+
+    val node = Node()
 }

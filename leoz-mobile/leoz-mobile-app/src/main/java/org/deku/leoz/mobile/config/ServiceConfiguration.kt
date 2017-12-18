@@ -29,7 +29,7 @@ class ServiceConfiguration {
                 val service = NotificationService()
 
                 // Wire notification service with listener
-                instance<MqttListeners>().mobile.topic.addDelegate(service)
+                instance<MqttListeners>().mobile.broadcast.addDelegate(service)
 
                 service
             }
