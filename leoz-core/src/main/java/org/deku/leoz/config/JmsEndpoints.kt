@@ -55,16 +55,21 @@ object JmsEndpoints {
                     .toJms(context = context)
         }
 
-        val topic: JmsEndpoint by lazy {
-            MqEndpoints.node.topic.toJms(
+        fun topic(identityUid: Identity.Uid): JmsEndpoint {
+            return MqEndpoints.node.topic(identityUid)
+                    .toJms(context = context)
+        }
+
+        val broadcast: JmsEndpoint by lazy {
+            MqEndpoints.node.broadcast.toJms(
                     context = context
             )
         }
     }
 
     object mobile {
-        val topic by lazy {
-            MqEndpoints.mobile.topic.toJms(
+        val broadcast by lazy {
+            MqEndpoints.mobile.broadcast.toJms(
                     context = context
             )
         }

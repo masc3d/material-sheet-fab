@@ -3,7 +3,6 @@ package org.deku.leoz.node.service.internal
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.mq.jms.channel
-import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -39,7 +38,7 @@ class TestService : org.deku.leoz.service.internal.TestService {
     private var testCounter: Int = 0
 
     override fun testPublishUpdateInfoToMobile() {
-        JmsEndpoints.mobile.topic.channel().use {
+        JmsEndpoints.mobile.broadcast.channel().use {
             it.send(UpdateInfo(bundleName = "leoz-test-${++testCounter}"))
         }
     }

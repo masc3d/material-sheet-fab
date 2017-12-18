@@ -185,7 +185,7 @@ open class UpdateConfiguration {
 
         // Register for update notifications (as long as automatic updates are enabled)
         if (this@UpdateConfiguration.settings.automatic) {
-            this.mqListenerConfiguration.nodeTopicListener.addDelegate(
+            this.mqListenerConfiguration.nodeBroadcastListener.addDelegate(
                     this.bundleUpdateService)
         }
 

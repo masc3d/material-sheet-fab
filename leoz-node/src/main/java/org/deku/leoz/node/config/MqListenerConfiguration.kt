@@ -44,9 +44,9 @@ open class MqListenerConfiguration {
                 executorService)
     }
 
-    val nodeTopicListener by lazy {
+    val nodeBroadcastListener by lazy {
         SpringJmsListener(
-                JmsEndpoints.node.topic,
+                JmsEndpoints.node.broadcast,
                 executorService)
     }
 
@@ -84,7 +84,7 @@ open class MqListenerConfiguration {
 
         if (mqConfiguration.broker.isStarted) {
             this.nodeQueueListener.start()
-            this.nodeTopicListener.start()
+            this.nodeBroadcastListener.start()
         }
     }
 
@@ -93,7 +93,7 @@ open class MqListenerConfiguration {
      */
     @Synchronized private fun stop() {
         this.nodeQueueListener.stop()
-        this.nodeTopicListener.stop()
+        this.nodeBroadcastListener.stop()
     }
     //endregion
 }
