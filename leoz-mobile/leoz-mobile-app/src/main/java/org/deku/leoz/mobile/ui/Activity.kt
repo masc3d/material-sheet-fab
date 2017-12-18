@@ -898,7 +898,7 @@ abstract class Activity : BaseActivity(),
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    log.trace("LocationSettingsChangedEvent fired")
+                    log.trace("Location settings change detected")
                     checkLocationSettings()
                 }
 

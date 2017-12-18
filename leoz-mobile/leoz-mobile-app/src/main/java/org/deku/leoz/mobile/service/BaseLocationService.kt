@@ -88,11 +88,8 @@ abstract class BaseLocationService: Service() {
             this.notificationManager.createNotificationChannel(notificationChannel)
         }
 
-
-
         @Suppress("DEPRECATION")
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this)
-
 
         builder.setContentTitle(getString(R.string.app_name_long))
                 .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
@@ -130,12 +127,10 @@ abstract class BaseLocationService: Service() {
 
     override fun onCreate() {
         super.onCreate()
-        log.trace("ONCREATE")
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             gnssStatusCallback = object : GnssStatus.Callback() {
                 override fun onSatelliteStatusChanged(status: GnssStatus?) {
-                    log.trace("ONSATELLITESTATUSCHANGED")
                     locationServices.locationSettingsChangedEventProperty.onNext(Unit)
                 }
             }
@@ -150,7 +145,6 @@ abstract class BaseLocationService: Service() {
     }
 
     override fun onDestroy() {
-        log.trace("ONDESTROY")
         this.unregisterBroadcastReceiver()
         stopForeground(true)
 
