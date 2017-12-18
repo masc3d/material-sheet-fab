@@ -1167,7 +1167,7 @@ abstract class Activity : BaseActivity(),
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onError = {
-                                log.warn("LocationSettings not satisfied", it)
+                                log.warn("LocationSettings not satisfied")
                             }
                     )
         } else {
