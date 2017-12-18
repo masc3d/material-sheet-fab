@@ -26,7 +26,7 @@ import javax.inject.Inject
 @Lazy(false)
 open class MessageServiceConfiguration {
     @Inject
-    private lateinit var messageListenerConfiguration: MessageListenerConfiguration
+    private lateinit var messageListenerConfiguration: MqListenerConfiguration
 
     @Inject
     private lateinit var logService: LogService

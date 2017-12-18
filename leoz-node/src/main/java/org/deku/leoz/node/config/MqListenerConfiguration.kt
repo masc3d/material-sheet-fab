@@ -25,8 +25,8 @@ import javax.inject.Inject
 @Configuration
 @Service
 @Lazy(false)
-open class MessageListenerConfiguration {
-    private val log = LoggerFactory.getLogger(MessageListenerConfiguration::class.java)
+open class MqListenerConfiguration {
+    private val log = LoggerFactory.getLogger(MqListenerConfiguration::class.java)
 
     @Inject
     private lateinit var application: Application

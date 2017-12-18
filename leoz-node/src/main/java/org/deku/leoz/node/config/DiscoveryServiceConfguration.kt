@@ -24,7 +24,7 @@ open class DiscoveryServiceConfguration {
     @Inject
     private lateinit var rsyncSettings: RsyncConfiguration.Settings
     @Inject
-    private lateinit var brokerSettings: MessageBrokerConfiguration.Settings
+    private lateinit var brokerSettings: MqBrokerConfiguration.Settings
     @Inject
     private lateinit var serverSettings: ServerProperties
     @Inject

@@ -40,7 +40,7 @@ open class UpdateConfiguration {
     @Inject
     private lateinit var executorService: ScheduledExecutorService
     @Inject
-    private lateinit var messageListenerConfiguration: MessageListenerConfiguration
+    private lateinit var mqListenerConfiguration: MqListenerConfiguration
     @Inject
     private lateinit var sshTunnelProvider: SshTunnelProvider
     @Inject
@@ -185,7 +185,7 @@ open class UpdateConfiguration {
 
         // Register for update notifications (as long as automatic updates are enabled)
         if (this@UpdateConfiguration.settings.automatic) {
-            this.messageListenerConfiguration.nodeTopicListener.addDelegate(
+            this.mqListenerConfiguration.nodeTopicListener.addDelegate(
                     this.bundleUpdateService)
         }
 

@@ -21,8 +21,8 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class MessageBrokerConfiguration {
-    private val log = LoggerFactory.getLogger(MessageBrokerConfiguration::class.java)
+open class MqBrokerConfiguration {
+    private val log = LoggerFactory.getLogger(MqBrokerConfiguration::class.java)
 
     /**
      * Configuration properties
