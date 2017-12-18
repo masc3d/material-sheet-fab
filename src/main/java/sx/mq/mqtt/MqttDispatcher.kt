@@ -220,6 +220,7 @@ class MqttDispatcher(
             // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
             this.connectionSubscription = Completable
                     .defer {
+                        log.info("Attempting connection to ${this.client.uri}")
                         this.client.connect()
                     }
                     .onErrorComplete {
