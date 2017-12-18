@@ -297,10 +297,7 @@ dependencies {
 
             "org.zeroturnaround:zt-zip:1.12",
 
-            //
-            // FOR TESTING
-            //
-
+            //region EVALUATION
             "com.github.lzyzsd:circleprogress:1.2.1",
 
             //RX Location
@@ -353,6 +350,7 @@ dependencies {
 
             "com.fenchtose:tooltip:0.1.5",
             "net.cachapa.expandablelayout:expandablelayout:2.9.2"
+            //endregion
     )
 
     debugImplementation(

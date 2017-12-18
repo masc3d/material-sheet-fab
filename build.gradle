@@ -341,7 +341,7 @@ subprojects {
     tasks.copyRsyncPlatformDirToBuild.dependsOn(tasks.copyRsyncPlatformDirToProject)
 
     /**
-     * Task copying architecture specific global files to project dri
+     * Task copying architecture specific global files to project dir
      */
     task copyGlobalPlatformDirToProject(type: Copy) {
         from globalPlatformDir
