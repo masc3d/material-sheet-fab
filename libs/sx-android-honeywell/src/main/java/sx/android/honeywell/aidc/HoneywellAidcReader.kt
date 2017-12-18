@@ -138,8 +138,6 @@ class HoneywellAidcReader private constructor(
 
     private fun onDecodersUpdated(decoders: Array<out Decoder>) {
         decoders.forEach { decoder ->
-            log.info("Setting decoder [${decoder}]")
-
             when (decoder) {
                 is BarcodeDecoder -> {
                     when (decoder) {
