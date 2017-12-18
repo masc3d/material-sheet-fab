@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.rx.toHotCache
 import sx.rx.toHotReplay
+import java.net.URI
 
 /**
  * MQTT reactive client interface
@@ -130,6 +131,9 @@ class MqttRxClient(
         }
                 .toHotCache()
     }
+
+    val uri: String
+        get() = this.parent.serverURI
 
     /**
      * Subscribe to topic
