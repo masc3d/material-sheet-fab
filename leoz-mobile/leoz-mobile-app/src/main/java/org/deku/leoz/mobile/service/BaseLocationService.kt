@@ -25,7 +25,6 @@ import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.ui.activity.StartupActivity
-import org.deku.leoz.service.internal.LocationServiceV1
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
@@ -166,7 +165,7 @@ abstract class BaseLocationService: Service() {
             return
         }
 
-        val currentPosition = LocationServiceV1.GpsDataPoint(
+        val currentPosition = LocationServiceV2.GpsDataPoint(
                 latitude = location.latitude,
                 longitude = location.longitude,
                 time = Date(location.time),

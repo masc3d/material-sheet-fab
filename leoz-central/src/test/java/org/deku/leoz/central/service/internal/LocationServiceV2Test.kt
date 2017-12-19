@@ -5,7 +5,7 @@ import org.deku.leoz.model.VehicleType
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
-import org.deku.leoz.service.internal.LocationServiceV1
+import org.deku.leoz.service.internal.LocationServiceV2
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.test.context.junit4.SpringRunner
@@ -23,17 +23,17 @@ import javax.inject.Inject
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
-        org.deku.leoz.central.service.internal.LocationServiceV1::class
+        org.deku.leoz.central.service.internal.LocationServiceV2::class
 ))
-class LocationServiceV1Test {
+class LocationServiceV2Test {
 
     @Inject
-    lateinit var locationService: org.deku.leoz.central.service.internal.LocationServiceV1
+    lateinit var locationService: org.deku.leoz.central.service.internal.LocationServiceV2
 
     @Test
     fun testOnMessage() {
         // TODO: invoke on message with mock objects
-        val currentPosition = org.deku.leoz.service.internal.LocationServiceV1.GpsDataPoint(
+        val currentPosition = org.deku.leoz.service.internal.LocationServiceV2.GpsDataPoint(
                 latitude = 8.0,
                 longitude = 55.0,
                 time = Date().toTimestamp(),
@@ -44,7 +44,7 @@ class LocationServiceV1Test {
                 vehicleType = VehicleType.BIKE
         )
 
-        val gpsMessage = LocationServiceV1.GpsMessage(
+        val gpsMessage = LocationServiceV2.GpsMessage(
                 userId = 0,
                 dataPoints = arrayOf(currentPosition))
 

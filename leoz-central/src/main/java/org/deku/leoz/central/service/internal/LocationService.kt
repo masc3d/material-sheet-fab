@@ -11,7 +11,6 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
-import org.deku.leoz.service.internal.LocationServiceV1
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.model.VehicleType
 import org.deku.leoz.service.internal.LocationServiceV2
@@ -25,17 +24,31 @@ import sx.time.toLocalDate
 import java.text.SimpleDateFormat
 
 /**
- * Created by helke on 24.05.17.
+ * Location service v2
  */
 @Named
-@Path("internal/v1/location")
-open class LocationServiceV1
-    :
-        org.deku.leoz.service.internal.LocationServiceV1,
-        MqHandler<LocationServiceV1.GpsMessage> {
+@Path("internal/v2/location")
+class LocationServiceV2 :
+        org.deku.leoz.service.internal.LocationServiceV2,
+        MqHandler<LocationServiceV2.GpsMessage> {
 
-    fun TadNodeGeopositionRecord.toGpsData(): LocationServiceV1.GpsDataPoint {
-        val gpsPoint = LocationServiceV1.GpsDataPoint(
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    @Inject
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
+    private lateinit var dslContext: DSLContext
+
+    @Inject
+    private lateinit var userRepository: UserJooqRepository
+
+    @Inject
+    private lateinit var posRepository: PositionJooqRepository
+
+    @Inject
+    private lateinit var nodeRepository: NodeJooqRepository
+
+    fun TadNodeGeopositionRecord.toGpsData(): LocationServiceV2.GpsDataPoint {
+        val gpsPoint = LocationServiceV2.GpsDataPoint(
                 latitude = this.latitude,
                 longitude = this.longitude,
                 time = this.positionDatetime,
@@ -49,28 +62,26 @@ open class LocationServiceV1
         return gpsPoint
     }
 
-    private val log = LoggerFactory.getLogger(this.javaClass)
-
-    @Inject
-    @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
-    @Inject
-    private lateinit var userRepository: UserJooqRepository
-    @Inject
-    private lateinit var posRepository: PositionJooqRepository
-    @Inject
-    private lateinit var nodeRepository: NodeJooqRepository
-    @Inject
-    private lateinit var v2: org.deku.leoz.central.service.internal.LocationServiceV2
-
-    override fun get(email: String?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationServiceV1.GpsData> {
+    override fun get(userId: Int?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationServiceV2.GpsData> {
         var debitor_id = debitorId
+        val email = when {
+            debitorId != null -> null
+            else -> when {
+                    userId != null -> {
+                        val rUser = userRepository.findById(userId)
+                                ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
+
+                        rUser.email
+                    }
+                    else -> null
+                }
+        }
 
         val pos_from = from ?: SimpleDateFormat("yyyy-MM-dd").parse(Date().toLocalDate().toString())
         val pos_to = to ?: Date()
 
-        val gpsdataList = mutableListOf<LocationServiceV1.GpsData>()
-        var gpsList = mutableListOf<LocationServiceV1.GpsDataPoint>()
+        val gpsdataList = mutableListOf<LocationServiceV2.GpsData>()
+        var gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
 
         apiKey ?:
                 throw DefaultProblem(status = Response.Status.BAD_REQUEST)
@@ -112,7 +123,7 @@ open class LocationServiceV1
 
                         val posList = posRepository.findByUserId(it.id, pos_from, pos_to)
                         //gpsList.clear()
-                        var gpsListTmp = mutableListOf<LocationServiceV1.GpsDataPoint>()
+                        var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
                         if (posList != null) {
                             /*
                             posList.forEach {
@@ -121,9 +132,8 @@ open class LocationServiceV1
                             gpsListTmp = geoFilter(posList)
 
                         }
-                        gpsdataList.add(LocationServiceV1.GpsData(
+                        gpsdataList.add(LocationServiceV2.GpsData(
                                 userId = it.id,
-                                userEmail = it.email,
                                 gpsDataPoints = gpsListTmp))
                     }
                 }
@@ -150,9 +160,8 @@ open class LocationServiceV1
                         */
 
                     }
-                    gpsdataList.add(LocationServiceV1.GpsData(
+                    gpsdataList.add(LocationServiceV2.GpsData(
                             userId = userRecord.id,
-                            userEmail = userRecord.email,
                             gpsDataPoints = gpsList))
                 } else {
                     throw DefaultProblem(
@@ -175,11 +184,23 @@ open class LocationServiceV1
 
     }
 
-    override fun getRecent(email: String?, debitorId: Int?, duration: Int?, apiKey: String?): List<LocationServiceV1.GpsData> {
+    override fun getRecent(userId: Int?, debitorId: Int?, duration: Int?, apiKey: String?): List<LocationServiceV2.GpsData> {
         var debitor_id = debitorId
+        val email = when {
+            debitorId != null -> null
+            else -> when {
+                userId != null -> {
+                    val rUser = userRepository.findById(userId)
+                            ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
 
-        val gpsdataList = mutableListOf<LocationServiceV1.GpsData>()
-        var gpsList = mutableListOf<LocationServiceV1.GpsDataPoint>()
+                    rUser.email
+                }
+                else -> null
+            }
+        }
+
+        val gpsdataList = mutableListOf<LocationServiceV2.GpsData>()
+        var gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
 
         apiKey ?:
                 throw DefaultProblem(status = Response.Status.BAD_REQUEST)
@@ -229,7 +250,7 @@ open class LocationServiceV1
                             posList = posRepository.findRecentByUserId(it.id)
                         }
                         //gpsList.clear()
-                        var gpsListTmp = mutableListOf<LocationServiceV1.GpsDataPoint>()
+                        var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
                         if (posList != null) {
                             /*
                             posList.forEach {
@@ -238,9 +259,8 @@ open class LocationServiceV1
                             gpsListTmp = geoFilter(posList)
 
                         }
-                        gpsdataList.add(LocationServiceV1.GpsData(
+                        gpsdataList.add(LocationServiceV2.GpsData(
                                 userId = it.id,
-                                userEmail = it.email,
                                 gpsDataPoints = gpsListTmp))
                     }
                 }
@@ -275,9 +295,8 @@ open class LocationServiceV1
                         */
 
                     }
-                    gpsdataList.add(LocationServiceV1.GpsData(
+                    gpsdataList.add(LocationServiceV2.GpsData(
                             userId = userRecord.id,
-                            userEmail = userRecord.email,
                             gpsDataPoints = gpsList))
                 } else {
                     throw DefaultProblem(
@@ -298,21 +317,8 @@ open class LocationServiceV1
         }
     }
 
-    /**
-     * Location service message handler
-     */
-    override fun onMessage(message: LocationServiceV1.GpsMessage, replyChannel: MqChannel?) {
-        // TODO: from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
-
-        return v2.onMessage(message = LocationServiceV2.GpsMessage(
-                message.userId,
-                message.nodeId,
-                message.dataPoints
-        ), replyChannel = replyChannel)
-    }
-
-    fun geoFilter(posList: List<TadNodeGeopositionRecord>): MutableList<LocationServiceV1.GpsDataPoint> {
-        val gpsList = mutableListOf<LocationServiceV1.GpsDataPoint>()
+    fun geoFilter(posList: List<TadNodeGeopositionRecord>): MutableList<LocationServiceV2.GpsDataPoint> {
+        val gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
 
         var lastLon: Double = 0.0
         var lastLat: Double = 0.0
@@ -380,118 +386,6 @@ open class LocationServiceV1
         }
 
         return check
-    }
-}
-
-/**
- * Location service v2
- */
-@Named
-@Path("internal/v2/location")
-class LocationServiceV2 :
-        org.deku.leoz.service.internal.LocationServiceV2,
-        MqHandler<LocationServiceV2.GpsMessage> {
-
-    private val log = LoggerFactory.getLogger(this.javaClass)
-
-    @Inject
-    @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
-
-    @Inject
-    private lateinit var userRepository: UserJooqRepository
-
-    @Inject
-    private lateinit var posRepository: PositionJooqRepository
-
-    @Inject
-    private lateinit var nodeRepository: NodeJooqRepository
-
-    @Inject
-    private lateinit var v1: LocationServiceV1
-
-    override fun get(userId: Int?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationServiceV2.GpsData> {
-        // TODO: simply mapped to v1 for now. this should be properly migrated when v1 is phased out.
-        val v1Result: List<LocationServiceV1.GpsData>
-
-        when {
-            debitorId != null -> {
-                v1Result = v1.get(
-                        email = null,
-                        debitorId = debitorId,
-                        from = from,
-                        to = to,
-                        apiKey = apiKey
-                )
-            }
-
-            else -> {
-                val email = when {
-                    userId != null -> {
-                        val rUser = userRepository.findById(userId)
-                                ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
-
-                        rUser.email
-                    }
-                    else -> null
-                }
-
-                v1Result = v1.get(
-                        email = email,
-                        debitorId = debitorId,
-                        from = from,
-                        to = to,
-                        apiKey = apiKey)
-            }
-        }
-
-        return v1Result.map {
-            LocationServiceV2.GpsData(
-                    userId = it.userId,
-                    gpsDataPoints = it.gpsDataPoints
-            )
-        }
-    }
-
-    override fun getRecent(userId: Int?, debitorId: Int?, duration: Int?, apiKey: String?): List<LocationServiceV2.GpsData> {
-        // TODO: simply mapped to v1 for now. this should be properly migrated when v1 is phased out.
-        val v1Result: List<LocationServiceV1.GpsData>
-
-        when {
-            debitorId != null -> {
-                v1Result = v1.getRecent(
-                        email = null,
-                        debitorId = debitorId,
-                        duration = duration,
-                        apiKey = apiKey
-                )
-            }
-
-            else -> {
-                val email = when {
-                    userId != null -> {
-                        val rUser = userRepository.findById(userId)
-                                ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
-
-                        rUser.email
-                    }
-                    else -> null
-                }
-
-                v1Result = v1.getRecent(
-                        email = email,
-                        debitorId = debitorId,
-                        duration = duration,
-                        apiKey = apiKey)
-            }
-        }
-
-        return v1Result.map {
-            LocationServiceV2.GpsData(
-                    userId = it.userId,
-                    gpsDataPoints = it.gpsDataPoints
-            )
-        }
     }
 
     /**
