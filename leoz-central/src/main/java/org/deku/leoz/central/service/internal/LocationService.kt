@@ -19,6 +19,7 @@ import sx.mq.MqHandler
 import sx.time.toTimestamp
 import javax.ws.rs.core.Response
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.*
 import sx.time.plusMinutes
 import sx.time.toLocalDate
 import java.text.SimpleDateFormat
@@ -68,14 +69,14 @@ class LocationServiceV2 :
         val email = when {
             debitorId != null -> null
             else -> when {
-                    userId != null -> {
-                        val rUser = userRepository.findById(userId)
-                                ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
+                userId != null -> {
+                    val rUser = userRepository.findById(userId)
+                            ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
 
-                        rUser.email
-                    }
-                    else -> null
+                    rUser.email
                 }
+                else -> null
+            }
         }
 
         val pos_from = from ?: SimpleDateFormat("yyyy-MM-dd").parse(Date().toLocalDate().toString())
@@ -430,7 +431,7 @@ class LocationServiceV2 :
                 detail = "Missing data points",
                 status = Response.Status.BAD_REQUEST)
 
-        log.trace("Received ${dataPoints.count()} from [${message.nodeKey}] user [${message.userId}]")
+        log.trace { "Received ${dataPoints.count()} from [${message.nodeKey}] user [${message.userId}]" }
 
         dataPoints.forEach {
             val r = dslContext.newRecord(Tables.TAD_NODE_GEOPOSITION)

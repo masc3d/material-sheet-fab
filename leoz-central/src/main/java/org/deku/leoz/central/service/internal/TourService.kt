@@ -17,6 +17,7 @@ import org.jooq.SelectWhereStep
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.zalando.problem.Status
+import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.DefaultProblem
@@ -136,7 +137,7 @@ class TourServiceV1
      * Tour update message handler
      */
     override fun onMessage(message: TourServiceV1.TourUpdate, replyChannel: MqChannel?) {
-        log.trace("Tour message ${message}")
+        log.trace { "Tour message ${message}" }
 
         val tour = message.tour ?: run {
             return

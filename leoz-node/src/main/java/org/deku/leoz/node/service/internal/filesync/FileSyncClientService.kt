@@ -3,6 +3,7 @@ package org.deku.leoz.node.service.internal.filesync
 import org.deku.leoz.identity.Identity
 import org.threeten.bp.Duration
 import sx.concurrent.Service
+import sx.log.slf4j.debug
 import sx.mq.MqChannel
 import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.channel
@@ -156,7 +157,7 @@ class FileSyncClientService constructor(
                     Rsync.URI(this.outDirectory),
                     this.rsyncEndpointIn.moduleUri,
                     { r ->
-                        log.debug("out [${r.path}]")
+                        log.debug { "out [${r.path}]" }
                     })
 
             // Remove empty directories
@@ -182,7 +183,7 @@ class FileSyncClientService constructor(
                 this.rsyncEndpointOut.moduleUri,
                 Rsync.URI(this.inDirectory),
                 { r ->
-                    log.debug("in [${r.path}]")
+                    log.debug { "in [${r.path}]" }
                 })
         log.info("Download complete [${sw}]")
     }

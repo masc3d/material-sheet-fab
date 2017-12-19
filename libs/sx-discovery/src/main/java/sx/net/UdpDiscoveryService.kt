@@ -12,6 +12,8 @@ import sx.concurrent.Service
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.Serializable
 import sx.io.serialization.Serializer
+import sx.log.slf4j.debug
+import sx.log.slf4j.trace
 import java.net.*
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
@@ -250,7 +252,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         this.lock.withLock {
             val existing = this._directory[nodeId]
             if (existing == null) {
-                log.trace("No entry for node [${nodeId}]")
+                log.trace { "No entry for node [${nodeId}]" }
             }
 
             if (node.removed) {
@@ -312,7 +314,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                         packet.data.copyOf(packet.data.size)) as Node<TInfo>
 
                 if (host.uid != this@UdpDiscoveryService.uid) {
-                    log.debug("Received info from [${host.address}]")
+                    log.debug { "Received info from [${host.address}]" }
 
                     // Update directory from requesting host
                     this@UdpDiscoveryService.updateDirectory(host, this.log)
@@ -324,7 +326,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                                     passive = this@UdpDiscoveryService.passive,
                                     info = this@UdpDiscoveryService.info))
 
-                    log.debug("Answering to ${packet.address} size [${response.size}]")
+                    log.debug { "Answering to ${packet.address} size [${response.size}]" }
 
                     val responsePacket = DatagramPacket(response, response.size, packet.address, packet.port)
                     this.socket.send(responsePacket)

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.Disposable
 import sx.Lifecycle
+import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import java.util.*
 import java.util.concurrent.Executors
@@ -64,7 +65,7 @@ class LogMqAppender(
             }
 
             if (logMessageBuffer.size > 0) {
-                log.trace("Flushing [${logMessageBuffer.size}]")
+                log.trace { "Flushing [${logMessageBuffer.size}]" }
                 try {
                     val identity = this@LogMqAppender.identitySupplier()
                     this@LogMqAppender.channelSupplier().use {

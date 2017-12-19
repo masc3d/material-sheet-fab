@@ -9,6 +9,7 @@ import org.apache.commons.io.FilenameUtils
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMessage
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 
@@ -139,7 +140,7 @@ class LogService
     override fun onMessage(message: LogMessage, replyChannel: MqChannel?) {
         try {
             val identityUid = Identity.Uid(message.nodeUid)
-            log.trace("Received ${message.logEntries.count()} log messages from node [${identityUid}]")
+            log.trace { "Received ${message.logEntries.count()} log messages from node [${identityUid}]" }
 
             if (message.logEntries.count() == 0)
                 return

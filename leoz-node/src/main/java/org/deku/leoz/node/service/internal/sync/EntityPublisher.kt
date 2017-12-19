@@ -2,6 +2,7 @@ package org.deku.leoz.node.service.internal.sync
 
 import org.deku.leoz.node.data.jpa.TadNodeGeoposition
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
+import sx.log.slf4j.debug
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.*
@@ -72,7 +73,7 @@ class EntityPublisher(
 
             // Send entity update message
             val euMessage = EntityUpdateMessage(count)
-            log.debug(lfmt(euMessage.toString()))
+            log.debug { lfmt(euMessage.toString()) }
             replyChannel.send(euMessage)
 
             if (count > 0) {

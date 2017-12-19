@@ -3,6 +3,7 @@ package org.deku.leoz.node.service.internal.sync
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repository.EntityRepository
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
+import sx.log.slf4j.debug
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.*
@@ -107,7 +108,7 @@ class EntityConsumer
                     // Receive entity update message
                     val euMessage = replyClient.receive(EntityUpdateMessage::class.java)
 
-                    log.debug(lfmt(euMessage.toString()))
+                    log.debug { lfmt(euMessage.toString()) }
                     val count = AtomicLong()
 
                     var bytesReceived = 0L
@@ -115,7 +116,7 @@ class EntityConsumer
                         val emv = em!!
                         PersistenceUtil.transaction(em) {
                             if (!er.hasSyncIdAttribute()) {
-                                log.debug(lfmt("No timestamp attribute found -> removing all entities"))
+                                log.debug { lfmt("No timestamp attribute found -> removing all entities") }
                                 er.removeAll()
                             }
 

@@ -5,6 +5,7 @@ import org.deku.leoz.io.*
 import java.io.File
 import org.deku.leoz.node.service.internal.filesync.*
 import org.threeten.bp.Duration
+import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.channel
@@ -171,7 +172,7 @@ class FileSyncHostService(
     private fun notifyNode(identityUid: Identity.Uid) {
         val out = this.nodeOutDirectory(identityUid)
         if (out.exists() && out.listFiles().count() > 0) {
-            log.trace("Sending file sync notification to [${identityUid}]")
+            log.trace { "Sending file sync notification to [${identityUid}]" }
             this.nodeEndpointSupplier(identityUid).channel().use {
                 it.send(FileSyncMessage())
             }

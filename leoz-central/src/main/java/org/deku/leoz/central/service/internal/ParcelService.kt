@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
 import sx.io.serialization.Serializable
+import sx.log.slf4j.debug
+import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.time.toTimestamp
@@ -85,12 +87,12 @@ open class ParcelServiceV1 :
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun onMessage(message: ParcelServiceV1.ParcelMessage, replyChannel: MqChannel?) {
 
-        log.debug(message.toString())
+        log.debug { message }
 
         val events = message.events?.toList()
                 ?: throw IllegalArgumentException("Missing data")
 
-        log.trace("Received ${events.count()} from [${message.nodeId}] user [${message.userId}]")
+        log.trace { "Received ${events.count()} from [${message.nodeId}] user [${message.userId}]" }
         val nodeKey = message.nodeId
         var nodeId: Int? = null
         if (nodeKey != null) {

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import sx.io.serialization.JacksonSerializer
 import sx.io.serialization.Serializable
 import sx.io.serialization.Serializer
+import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.auth.ApiKey
@@ -53,7 +54,7 @@ class FileServiceV1 :
     private val objectMapper by lazy { ObjectMapper() }
 
     override fun onMessage(message: FileServiceV1.FileFragmentMessage, replyChannel: MqChannel?) {
-        log.trace("Received ${message}")
+        log.trace { "Received ${message}" }
 
         // Extract and verify message parameters
 
