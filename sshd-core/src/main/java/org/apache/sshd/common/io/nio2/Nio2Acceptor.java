@@ -58,16 +58,16 @@ public class Nio2Acceptor extends Nio2Service implements IoAcceptor {
                 log.debug("Binding Nio2Acceptor to address {}", address);
             }
 
-            AsynchronousServerSocketChannel socket =
-                    setSocketOptions(openAsynchronousServerSocketChannel(address, group));
+            AsynchronousServerSocketChannel asyncChannel = openAsynchronousServerSocketChannel(address, group);
+            AsynchronousServerSocketChannel socket = setSocketOptions(asyncChannel);
             socket.bind(address, backlog);
             SocketAddress local = socket.getLocalAddress();
             channels.put(local, socket);
 
             CompletionHandler<AsynchronousSocketChannel, ? super SocketAddress> handler =
-                    ValidateUtils.checkNotNull(createSocketCompletionHandler(channels, socket),
-                                               "No completion handler created for address=%s",
-                                               address);
+                ValidateUtils.checkNotNull(createSocketCompletionHandler(channels, socket),
+                    "No completion handler created for address=%s",
+                    address);
             socket.accept(local, handler);
         }
     }
@@ -89,8 +89,12 @@ public class Nio2Acceptor extends Nio2Service implements IoAcceptor {
 
     @Override
     public void unbind() {
-        log.debug("Unbinding");
-        unbind(getBoundAddresses());
+        Collection<SocketAddress> addresses = getBoundAddresses();
+        if (log.isDebugEnabled()) {
+            log.debug("Unbinding {}", addresses);
+        }
+
+        unbind(addresses);
     }
 
     @Override
@@ -105,14 +109,14 @@ public class Nio2Acceptor extends Nio2Service implements IoAcceptor {
                     channel.close();
                 } catch (IOException e) {
                     log.warn("unbind({}) {} while unbinding channel: {}",
-                             address, e.getClass().getSimpleName(), e.getMessage());
+                         address, e.getClass().getSimpleName(), e.getMessage());
                     if (log.isDebugEnabled()) {
                         log.debug("unbind(" + address + ") failure details", e);
                     }
                 }
             } else {
                 if (log.isTraceEnabled()) {
-                    log.trace("No active channel to unbind {}", address);
+                    log.trace("No active channel to unbind for {}", address);
                 }
             }
         }
@@ -136,14 +140,28 @@ public class Nio2Acceptor extends Nio2Service implements IoAcceptor {
 
     @Override
     public void doCloseImmediately() {
-        for (SocketAddress address : channels.keySet()) {
+        Collection<SocketAddress> boundAddresses = getBoundAddresses();
+        for (SocketAddress address : boundAddresses) {
+            AsynchronousServerSocketChannel asyncChannel = channels.remove(address);
+            if (asyncChannel == null) {
+                continue;   // debug breakpoint
+            }
+
             try {
-                channels.get(address).close();
+                asyncChannel.close();
+                if (log.isDebugEnabled()) {
+                    log.debug("doCloseImmediately({}) closed channel", address);
+                }
             } catch (IOException e) {
-                log.debug("Exception caught while closing channel", e);
+                log.debug("Exception caught while closing channel of " + address, e);
             }
         }
         super.doCloseImmediately();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[" + getBoundAddresses() + "]";
     }
 
     protected class AcceptCompletionHandler extends Nio2CompletionHandler<AsynchronousSocketChannel, SocketAddress> {
@@ -158,6 +176,9 @@ public class Nio2Acceptor extends Nio2Service implements IoAcceptor {
         protected void onCompleted(AsynchronousSocketChannel result, SocketAddress address) {
             // Verify that the address has not been unbound
             if (!channels.containsKey(address)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("onCompleted({}) unbound address", address);
+                }
                 return;
             }
 
@@ -178,7 +199,7 @@ public class Nio2Acceptor extends Nio2Service implements IoAcceptor {
                     try {
                         session.close();
                     } catch (Throwable t) {
-                        log.warn("Failed (" + t.getClass().getSimpleName() + ")"
+                        log.warn("onCompleted(" + address + ") Failed (" + t.getClass().getSimpleName() + ")"
                                + " to close accepted connection from " + address
                                + ": " + t.getMessage(),
                                  t);
@@ -204,12 +225,36 @@ public class Nio2Acceptor extends Nio2Service implements IoAcceptor {
 
         @Override
         @SuppressWarnings("synthetic-access")
-        protected void onFailed(final Throwable exc, final SocketAddress address) {
-            if (channels.containsKey(address) && !disposing.get()) {
-                log.warn("Caught " + exc.getClass().getSimpleName()
-                       + " while accepting incoming connection from " + address
-                       + ": " + exc.getMessage(),
-                        exc);
+        protected void onFailed(Throwable exc, SocketAddress address) {
+            AsynchronousServerSocketChannel channel = channels.get(address);
+            if (channel == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Caught {} for untracked channel of {}: {}",
+                        exc.getClass().getSimpleName(), address, exc.getMessage());
+                }
+                return;
+            }
+
+            if (disposing.get()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Caught {} for tracked channel of {} while disposing: {}",
+                        exc.getClass().getSimpleName(), address, exc.getMessage());
+                }
+                return;
+            }
+
+            log.warn("Caught " + exc.getClass().getSimpleName()
+                   + " while accepting incoming connection from " + address
+                   + ": " + exc.getMessage(), exc);
+
+            try {
+                // Accept new connections
+                socket.accept(address, this);
+            } catch (Throwable t) {
+                // Do not call failed(t, address) to avoid infinite recursion
+                log.error("Failed (" + t.getClass().getSimpleName()
+                    + " to re-accept new connections on " + address
+                    + ": " + t.getMessage(), t);
             }
         }
     }
