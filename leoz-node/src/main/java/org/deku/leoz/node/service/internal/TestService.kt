@@ -38,6 +38,7 @@ class TestService : org.deku.leoz.service.internal.TestService {
     private var testCounter: Int = 0
 
     override fun testPublishUpdateInfoToMobile() {
+        log.trace("Publishing (test) update info to mobile")
         JmsEndpoints.mobile.broadcast.channel().use {
             it.send(UpdateInfo(bundleName = "leoz-test-${++testCounter}"))
         }

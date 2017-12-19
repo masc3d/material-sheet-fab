@@ -46,7 +46,7 @@ class MqttEndpoints(
         val topic by lazy {
             MqEndpoints.node.topic(identityUid).toMqtt(
                     context = context,
-                    qos = 0
+                    qos = 1
             )
         }
     }

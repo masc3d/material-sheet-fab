@@ -75,10 +75,16 @@ class MqttConfiguration {
                 client.statusEvent.subscribeBy(onNext = {
                     when {
                         it is MqttRxClient.Status.ConnectionComplete -> {
-                            // Start listeners on connection
-                            instance<MqttListeners>().also {
-                                it.mobile.broadcast.start()
-                                it.node.topic.start()
+                            log.trace("Starting mq listeners")
+
+                            try {
+                                // Start listeners on connection
+                                instance<MqttListeners>().also {
+                                    it.mobile.broadcast.start()
+                                    it.node.topic.start()
+                                }
+                            } catch(e: Throwable) {
+                                log.error(e.message, e)
                             }
                         }
                     }
