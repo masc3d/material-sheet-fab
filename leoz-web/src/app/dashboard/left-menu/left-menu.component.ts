@@ -83,6 +83,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
             this.debitorStations.push( { label: station.stationNo.toString(), value: station } );
           } );
         }
+        this.cd.detectChanges();
       } );
 
     this.auth.activeStation$
