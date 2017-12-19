@@ -1,19 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
 
-  constructor( private router: Router ) {
+  private versionUrl = `assets/version.json`;
+
+  constructor( private router: Router, private http: HttpClient ) {
   }
 
   canActivate( route: ActivatedRouteSnapshot, state: RouterStateSnapshot ) {
-    // check version
-    const locallyStoredVersion = localStorage.getItem( 'version' );
-    if (locallyStoredVersion
-      && locallyStoredVersion === environment.version
-      && localStorage.getItem( 'currentUser' )) {
+    this.http.get<{ version }>( this.versionUrl )
+      .subscribe( ( json ) => {
+          const locallyStoredVersion = localStorage.getItem( 'version' );
+          if(locallyStoredVersion && json.version !== locallyStoredVersion) {
+            this.router.navigate( [ 'login' ] );
+            window.location.reload();
+          }
+        },
+        ( error: Response ) => console.log( error ) );
+    if (localStorage.getItem( 'currentUser' )) {
       // logged in so return true
       return true;
     }
