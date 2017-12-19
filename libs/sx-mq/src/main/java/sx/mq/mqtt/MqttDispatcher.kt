@@ -189,9 +189,29 @@ class MqttDispatcher(
                 .toHotCache(this.executorService)
     }
 
+    /**
+     * Subscribe to topic
+     * @param topicName Topic name
+     * @param qos Qos
+     */
     override fun subscribe(topicName: String, qos: Int): Observable<MqttMessage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // TODO: replace passthrough with durable subscription. consumers shouldn't have to worry.
+        return this.client.subscribe(
+                topicName = topicName,
+                qos = qos
+        )
     }
+
+    /**
+     * Unsubscribe from topic
+     * @param topicName Topic name
+     */
+    override fun unsubscribe(topicName: String): Completable {
+        return this.client.unsubscribe(
+                topicName
+        )
+    }
+
 
     /**
      * Disconnect from remote broker and discontinue connection retries.
@@ -203,10 +223,6 @@ class MqttDispatcher(
             this.connectionSubscription = null
             return this.client.disconnect()
         }
-    }
-
-    override fun unsubscribe(topicName: String): Completable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     /**
