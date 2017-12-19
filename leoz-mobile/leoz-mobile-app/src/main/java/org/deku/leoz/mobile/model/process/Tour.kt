@@ -4,7 +4,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
@@ -69,7 +68,7 @@ class Tour : CompositeDisposableSupplier {
                 .subscribe { parcels ->
                     log.trace("Sending tour update")
                     this.mqttEndpoints.central.main.channel().send(
-                            TourServiceV1.TourUpdateMessage(
+                            TourServiceV1.TourUpdate(tour = TourServiceV1.Tour(
                                     nodeUid = identity.uid.value,
                                     userId = login.authenticatedUser?.id ?: 0,
                                     stops = parcels.map { stop ->
@@ -85,7 +84,7 @@ class Tour : CompositeDisposableSupplier {
                                                 }
                                         )
                                     }
-                            )
+                            ))
                     )
                 }
                 .bind(this)

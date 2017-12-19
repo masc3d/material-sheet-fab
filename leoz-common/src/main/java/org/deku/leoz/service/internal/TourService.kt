@@ -49,7 +49,7 @@ interface TourServiceV1 {
     @ApiModel(description = "Tour")
     data class Tour(
             @ApiModelProperty(position = 10, required = true, value = "Tour id")
-            var id: Int = 0,
+            var id: Int? = null,
             @ApiModelProperty(position = 20, required = true, value = "Node this tour belongs to")
             var nodeUid: String? = null,
             @ApiModelProperty(position = 20, required = true, value = "User this tour belongs to")
@@ -81,17 +81,13 @@ interface TourServiceV1 {
     }
 
     /**
-     * Message sent when tour is updated
+     * Tour update
      */
     @Serializable(0x227e7efb9e653c)
-    data class TourUpdateMessage(
-            /** The node uid this message originates from */
-            var nodeUid: String = "",
-            /** User id */
-            var userId: Int = 0,
-            /** Tour update timestamp */
-            var timestamp: Date = Date(),
-            /** Stops in current tour order */
-            var stops: List<Stop> = listOf()
+    data class TourUpdate(
+            /** Updated tour (may be filled partially) */
+            var tour: Tour? = null,
+            /** Update timestamp */
+            var timestamp: Date = Date()
     )
 }

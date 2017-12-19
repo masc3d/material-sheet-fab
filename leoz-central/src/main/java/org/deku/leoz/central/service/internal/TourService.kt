@@ -34,7 +34,7 @@ import javax.ws.rs.Path
 class TourServiceV1
     :
         org.deku.leoz.service.internal.TourServiceV1,
-        MqHandler<TourServiceV1.TourUpdateMessage> {
+        MqHandler<TourServiceV1.TourUpdate> {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -83,7 +83,7 @@ class TourServiceV1
         val rTour = dsl.fetchOne(
                 TAD_TOUR,
                 TAD_TOUR.USER_ID.eq(userId).and(TAD_TOUR.NODE_ID.isNull))
-        ?:
+                ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND,
                         detail = "No assignable tour for user [${userId}]"
@@ -135,14 +135,22 @@ class TourServiceV1
     /**
      * Tour update message handler
      */
-    override fun onMessage(message: TourServiceV1.TourUpdateMessage, replyChannel: MqChannel?) {
+    override fun onMessage(message: TourServiceV1.TourUpdate, replyChannel: MqChannel?) {
         log.trace("Tour message ${message}")
 
-        val nodeId = dsl.selectFrom(MST_NODE).fetchByUid(message.nodeUid)
-                ?.nodeId
+        val tour = message.tour ?: run {
+            return
+        }
 
-        if (nodeId == null) {
-            log.warn("Node ${message.nodeUid} doesn't exist. Discarding message")
+        val nodeUid = tour.nodeUid ?: run {
+            log.trace("Updates without node uid are not supported (yet)")
+            return
+        }
+
+        val nodeId = dsl.selectFrom(MST_NODE).fetchByUid(nodeUid)
+                ?.nodeId
+                ?: run {
+            log.warn("Node ${nodeUid} doesn't exist. Discarding message")
             return
         }
 
@@ -155,7 +163,7 @@ class TourServiceV1
             ) ?:
                     // Create new one if it doesn't exist
                     dsl.newRecord(TAD_TOUR).also {
-                        it.userId = message.userId
+                        it.userId = tour.userId
                         it.nodeId = nodeId
                         it.timestamp = message.timestamp.toTimestamp()
                         it.store()
@@ -167,7 +175,7 @@ class TourServiceV1
                     .where(TAD_TOUR_ENTRY.TOUR_ID.eq(rTour.id))
                     .execute()
 
-            message.stops.forEachIndexed { index, stop ->
+            tour.stops.forEachIndexed { index, stop ->
                 stop.tasks.forEach { task ->
                     dsl.newRecord(TAD_TOUR_ENTRY).also {
                         it.tourId = rTour.id
