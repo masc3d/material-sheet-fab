@@ -62,6 +62,7 @@ class LocationServiceV2 :
         return gpsPoint
     }
 
+    //region REST
     override fun get(userId: Int?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationServiceV2.GpsData> {
         var debitor_id = debitorId
         val email = when {
@@ -129,7 +130,7 @@ class LocationServiceV2 :
                             posList.forEach {
                                 gpsListTmp.add(it.toGpsData())
                             }*/
-                            gpsListTmp = geoFilter(posList)
+                            gpsListTmp = filter(posList)
 
                         }
                         gpsdataList.add(LocationServiceV2.GpsData(
@@ -152,7 +153,7 @@ class LocationServiceV2 :
 
                     val posList = posRepository.findByUserId(userRecord.id, pos_from, pos_to)
                     if (posList != null) {
-                        gpsList = geoFilter(posList)
+                        gpsList = filter(posList)
                         /*
                         posList.forEach {
                             gpsList.add(it.toGpsData())
@@ -256,7 +257,7 @@ class LocationServiceV2 :
                             posList.forEach {
                                 gpsListTmp.add(it.toGpsData())
                             }*/
-                            gpsListTmp = geoFilter(posList)
+                            gpsListTmp = filter(posList)
 
                         }
                         gpsdataList.add(LocationServiceV2.GpsData(
@@ -287,7 +288,7 @@ class LocationServiceV2 :
                     }
 
                     if (posList != null) {
-                        gpsList = geoFilter(posList)
+                        gpsList = filter(posList)
                         /*
                         posList.forEach {
                             gpsList.add(it.toGpsData())
@@ -317,7 +318,34 @@ class LocationServiceV2 :
         }
     }
 
-    fun geoFilter(posList: List<TadNodeGeopositionRecord>): MutableList<LocationServiceV2.GpsDataPoint> {
+    override fun getDistance(lonFirst: Double, latFirst: Double, lonSecond: Double, latSecond: Double): Double {
+        try {
+            if (lonSecond == 0.0 && latSecond == 0.0)
+                throw DefaultProblem(
+                        detail = "Invalid geo-data",
+                        status = Response.Status.BAD_REQUEST)
+
+            val tLat = (latSecond - latFirst) * Math.PI / 180
+            val tLon = (lonSecond - lonFirst) * Math.PI / 180
+            val oLat = latFirst * Math.PI / 180
+            val oLastLat = latSecond * Math.PI / 180
+            val a = Math.pow(Math.sin(tLat / 2), 2.0) + Math.pow(Math.sin(tLon / 2), 2.0) * Math.cos(oLat) * Math.cos(oLastLat)
+            val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+            val tDist = 6371 * c
+            return tDist
+
+        } catch (e: Exception) {
+            throw DefaultProblem(
+                    detail = e.toString(),
+                    status = Response.Status.BAD_REQUEST)
+        }
+    }
+    //endregion
+
+    /**
+     * Filter positional records
+     */
+    fun filter(posList: List<TadNodeGeopositionRecord>): MutableList<LocationServiceV2.GpsDataPoint> {
         val gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
 
         var lastLon: Double = 0.0
@@ -365,6 +393,9 @@ class LocationServiceV2 :
 
     }
 
+    /**
+     * TODO: DOC. check distance, like what
+     */
     fun checkDistance(lon: Double, lat: Double, lastLon: Double, lastLat: Double, distance: Double): Boolean {
         var check = false
 
@@ -418,30 +449,5 @@ class LocationServiceV2 :
 //todo
             posRepository.save(r)
         }
-    }
-
-    override fun getDistance(lonFirst: Double, latFirst: Double, lonSecond: Double, latSecond: Double): Long {
-
-        try {
-            if (lonSecond == 0.0 && latSecond == 0.0)
-                throw DefaultProblem(
-                        detail = "Invalid geo-data",
-                        status = Response.Status.BAD_REQUEST)
-            val tLat = (latSecond - latFirst) * Math.PI / 180
-            val tLon = (lonSecond - lonFirst) * Math.PI / 180
-            val oLat = latFirst * Math.PI / 180
-            val oLastLat = latSecond * Math.PI / 180
-            val a = Math.pow(Math.sin(tLat / 2), 2.0) + Math.pow(Math.sin(tLon / 2), 2.0) * Math.cos(oLat) * Math.cos(oLastLat)
-            val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-            val tDist = Math.round(6371 * c)//(,1)
-            return tDist
-
-        } catch (e: Exception) {
-            throw DefaultProblem(
-                    detail = e.toString(),
-                    status = Response.Status.BAD_REQUEST)
-        }
-
-
     }
 }

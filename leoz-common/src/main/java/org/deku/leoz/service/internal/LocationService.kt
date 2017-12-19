@@ -21,7 +21,6 @@ import java.util.*
 interface LocationServiceV2 {
     companion object {
         const val USER_ID = "user-id"
-        const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
         const val FROM = "from"
         const val TO = "to"
@@ -91,7 +90,7 @@ interface LocationServiceV2 {
      * @param email User email
      */
     @GET
-    @Path("/recent/")
+    @Path("/recent")
     @ApiOperation(value = "Get recent location data", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getRecent(
             @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
@@ -101,12 +100,13 @@ interface LocationServiceV2 {
     ): List<GpsData>
 
     @GET
-    @Path("/getDistance")
-    @ApiOperation(value = "Get distance between two location data in km", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @Path("/distance")
+    @ApiOperation(value = "Get distance between two locations in km", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiKey(false)
     fun getDistance(
             @QueryParam(LON_FIRST) @ApiParam(value = "first longitude", required = true, example = "8.3926") lonFirst: Double,
             @QueryParam(LAT_FIRST) @ApiParam(value = "first latitude", required = true, example = "49.5131") latFirst: Double,
             @QueryParam(LON_SECOND) @ApiParam(value = "first longitude", required = true, example = "9.585760") lonSecond: Double,
             @QueryParam(LAT_SECOND) @ApiParam(value = "first longitude", required = true, example = "50.9082916666667") latSecond: Double
-    ): Long
+    ): Double
 }
