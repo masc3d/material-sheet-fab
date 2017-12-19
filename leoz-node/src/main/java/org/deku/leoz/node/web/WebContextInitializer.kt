@@ -7,7 +7,7 @@ import io.undertow.server.handlers.resource.ResourceManager
 import io.undertow.server.handlers.resource.URLResource
 import org.deku.leoz.config.Rest
 import org.deku.leoz.node.Application
-import org.deku.leoz.node.config.MessageBrokerConfiguration
+import org.deku.leoz.node.config.MqBrokerConfiguration
 import org.deku.leoz.node.rest.swagger.SwaggerBootstrapServlet
 import org.jboss.resteasy.core.Dispatcher
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
@@ -53,7 +53,7 @@ class WebContextInitializer : ServletContextInitializer {
     @Inject
     private lateinit var springBeanProcessor: SpringBeanProcessor
     @Inject
-    private lateinit var brokerSettings: MessageBrokerConfiguration.Settings
+    private lateinit var brokerSettings: MqBrokerConfiguration.Settings
 
     @Throws(ServletException::class)
     override fun onStartup(servletContext: ServletContext) {

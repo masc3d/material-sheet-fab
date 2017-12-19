@@ -105,7 +105,15 @@ object MqEndpoints {
             )
         }
 
-        val topic: MqEndpoint by lazy {
+        fun topic(identityUid: Identity.Uid): MqEndpoint {
+            return MqEndpoint(
+                    destinationType = DestinationType.Topic,
+                    destinationName = "leoz.node.topic.${identityUid.short}",
+                    serializer = KryoSerializer().gzip
+            )
+        }
+
+        val broadcast: MqEndpoint by lazy {
             MqEndpoint(
                     destinationType = DestinationType.Topic,
                     destinationName = "leoz.node.topic",
@@ -115,7 +123,7 @@ object MqEndpoints {
     }
 
     object mobile {
-        val topic: MqEndpoint by lazy {
+        val broadcast: MqEndpoint by lazy {
             MqEndpoint(
                     destinationType = DestinationType.Topic,
                     destinationName = "leoz.mobile.topic",

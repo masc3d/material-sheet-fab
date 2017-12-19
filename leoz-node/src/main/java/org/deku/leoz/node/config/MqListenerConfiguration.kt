@@ -25,8 +25,8 @@ import javax.inject.Inject
 @Configuration
 @Service
 @Lazy(false)
-open class MessageListenerConfiguration {
-    private val log = LoggerFactory.getLogger(MessageListenerConfiguration::class.java)
+open class MqListenerConfiguration {
+    private val log = LoggerFactory.getLogger(MqListenerConfiguration::class.java)
 
     @Inject
     private lateinit var application: Application
@@ -44,9 +44,9 @@ open class MessageListenerConfiguration {
                 executorService)
     }
 
-    val nodeTopicListener by lazy {
+    val nodeBroadcastListener by lazy {
         SpringJmsListener(
-                JmsEndpoints.node.topic,
+                JmsEndpoints.node.broadcast,
                 executorService)
     }
 
@@ -84,7 +84,7 @@ open class MessageListenerConfiguration {
 
         if (mqConfiguration.broker.isStarted) {
             this.nodeQueueListener.start()
-            this.nodeTopicListener.start()
+            this.nodeBroadcastListener.start()
         }
     }
 
@@ -93,7 +93,7 @@ open class MessageListenerConfiguration {
      */
     @Synchronized private fun stop() {
         this.nodeQueueListener.stop()
-        this.nodeTopicListener.stop()
+        this.nodeBroadcastListener.stop()
     }
     //endregion
 }

@@ -17,9 +17,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import java.io.File
-import java.net.Inet4Address
-import java.net.InetAddress
-import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
@@ -54,7 +51,6 @@ open class SshServerConfiguration {
     fun onInitialize() {
         val sshd = this.sshServer
 
-        sshd.host = "0.0.0.0"
         sshd.port = SshServerConfiguration.DEFAULT_PORT
 
         sshd.ioServiceFactoryFactory = Nio2ServiceFactoryFactory(

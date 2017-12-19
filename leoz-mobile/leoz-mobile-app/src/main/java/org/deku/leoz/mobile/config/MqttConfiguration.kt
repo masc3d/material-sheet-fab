@@ -9,9 +9,9 @@ import com.github.salomonbrys.kodein.erased.singleton
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.config.MqConfiguration
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.mobile.settings.RemoteSettings
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.MqttListeners
+import org.deku.leoz.mobile.settings.RemoteSettings
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
@@ -75,8 +75,17 @@ class MqttConfiguration {
                 client.statusEvent.subscribeBy(onNext = {
                     when {
                         it is MqttRxClient.Status.ConnectionComplete -> {
-                            // Start listeners on connection
-                            instance<MqttListeners>().mobile.topic.start()
+                            log.trace("Starting mq listeners")
+
+                            try {
+                                // Start listeners on connection
+                                instance<MqttListeners>().also {
+                                    it.mobile.broadcast.start()
+                                    it.node.topic.start()
+                                }
+                            } catch(e: Throwable) {
+                                log.error(e.message, e)
+                            }
                         }
                     }
                 })
@@ -84,12 +93,16 @@ class MqttConfiguration {
                 client
             }
 
+            bind<MqttSqlitePersistence>() with singleton {
+                MqttSqlitePersistence(
+                        databaseFile = instance<Context>().getDatabasePath("mqtt.db"))
+            }
+
             bind<MqttDispatcher>() with singleton {
                 val dispatcher = MqttDispatcher(
                         client = instance<MqttRxClient>(),
                         executorService = instance<ExecutorService>(),
-                        persistence = MqttSqlitePersistence(
-                                databaseFile = instance<Context>().getDatabasePath("mqtt.db"))
+                        persistence = instance<MqttSqlitePersistence>()
                 )
 
                 // Wire connectivity
@@ -105,14 +118,15 @@ class MqttConfiguration {
 
             bind<MqttContext>() with singleton {
                 MqttContext(
-                        // Using the dispatcher as a client proxy for transparent reocnnection and persistence
+                        // Using the dispatcher as a client proxy for transparent reconnection and persistence
                         client = { instance<MqttDispatcher>() }
                 )
             }
 
             bind<MqttEndpoints>() with singleton {
                 MqttEndpoints(
-                        context = instance<MqttContext>()
+                        context = instance<MqttContext>(),
+                        identityUid = instance<Identity>().uid
                 )
             }
 

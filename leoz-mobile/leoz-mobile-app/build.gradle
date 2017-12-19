@@ -188,7 +188,7 @@ dependencies {
             "android.arch.lifecycle:runtime:1.0.3",
 
             // Camera
-            "com.wonderkiln:camerakit:0.13.1",
+            "com.wonderkiln:camerakit:0.13.0",
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
@@ -263,8 +263,9 @@ dependencies {
             },
 
             // UI
-            "eu.davidea:flexible-adapter:5.0.0-rc3",
+            "eu.davidea:flexible-adapter:5.0.0-rc4",
             "eu.davidea:flexible-adapter-databinding:1.0.0-b2@aar",
+            "eu.davidea:flexible-adapter-ui:1.0.0-b1@aar",
             "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",
 
             // Dialog
@@ -294,10 +295,9 @@ dependencies {
                 exclude group: 'org.json', module: 'json'
             },
 
-            //
-            // FOR TESTING
-            //
+            "org.zeroturnaround:zt-zip:1.12",
 
+            //region EVALUATION
             "com.github.lzyzsd:circleprogress:1.2.1",
 
             //RX Location
@@ -350,6 +350,7 @@ dependencies {
 
             "com.fenchtose:tooltip:0.1.5",
             "net.cachapa.expandablelayout:expandablelayout:2.9.2"
+            //endregion
     )
 
     debugImplementation(

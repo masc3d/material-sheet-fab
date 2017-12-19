@@ -44,6 +44,7 @@ import kotlinx.android.synthetic.main.main_nav_header.view.*
 import kotlinx.android.synthetic.main.view_update_indicator.view.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
@@ -53,9 +54,9 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.repository.OrderRepository
-import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
+import org.deku.leoz.mobile.service.LocationServices
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.settings.RemoteSettings
@@ -152,36 +153,26 @@ abstract class Activity : BaseActivity(),
     /** Indicates the activity has been paused */
     private var isPaused = false
 
-    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
-    private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
-    private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
-    private val locationServices: LocationServices by Kodein.global.lazy.instance()
-
-    private val device: Device by Kodein.global.lazy.instance()
-    private val identity: Identity by Kodein.global.lazy.instance()
-
-
-    private val ntpTime: NtpTime by Kodein.global.lazy.instance()
-
-    // AIDC readers
+    // Dependencies
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val applicationStateMonitor: ApplicationStateMonitor by Kodein.global.lazy.instance()
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
-    private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
-
-    private val feedback: Feedback by Kodein.global.lazy.instance()
-
-    // Services
-    private val updateService: UpdateService by Kodein.global.lazy.instance()
-
-    // Process models
-    private val login: Login by Kodein.global.lazy.instance()
-    private val db: Database by Kodein.global.lazy.instance()
-    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
-
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
-
+    private val db: Database by Kodein.global.lazy.instance()
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+    private val device: Device by Kodein.global.lazy.instance()
+    private val diagnostics: Diagnostics by Kodein.global.lazy.instance()
+    private val feedback: Feedback by Kodein.global.lazy.instance()
+    private val identity: Identity by Kodein.global.lazy.instance()
+    private val locationServices: LocationServices by Kodein.global.lazy.instance()
+    private val login: Login by Kodein.global.lazy.instance()
     private val mqttDispatcher: MqttDispatcher by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
+    private val ntpTime: NtpTime by Kodein.global.lazy.instance()
+    private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
+    private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
+    private val simulatingAidcReader: SimulatingAidcReader by Kodein.global.lazy.instance()
+    private val updateService: UpdateService by Kodein.global.lazy.instance()
 
     /** Action items */
     private val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
@@ -623,7 +614,8 @@ abstract class Activity : BaseActivity(),
                 updateService.trigger()
             }
 
-            R.id.nav_send -> {
+            R.id.nav_send_diagnostics -> {
+                this.diagnostics.send()
             }
 
             R.id.nav_logout -> {
@@ -906,7 +898,7 @@ abstract class Activity : BaseActivity(),
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    log.trace("LocationSettingsChangedEvent fired")
+                    log.trace("Location settings change detected")
                     checkLocationSettings()
                 }
 
@@ -1136,9 +1128,9 @@ abstract class Activity : BaseActivity(),
         if (!debugSettings.allowDeveloperOptions && Settings.Secure.getString(this.contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED) == "1") {
             MaterialDialog.Builder(this)
                     .title(getString(R.string.dialog_title_developer_enabled))
-                    .content(getString(R.string.dialog_text_developer_enabled))
-                    .positiveText("Settings")
-                    .negativeText("Abort")
+                    .content(getString(R.string.dialog_content_developer_enabled))
+                    .positiveText(R.string.action_settings)
+                    .negativeText(R.string.cancel)
                     .onPositive { _, _ ->
                         val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                         this.startActivityForResult(intent, 0)
@@ -1153,8 +1145,8 @@ abstract class Activity : BaseActivity(),
          */
         if (!device.mobileDateEnabled) {
             MaterialDialog.Builder(this)
-                    .title("Mobile-Data disabled")
-                    .content("Mobile-Data are disabled! To continue you must enable Mobile-Data")
+                    .title(R.string.dialog_title_mobile_data_disabled)
+                    .content(R.string.dialog_content_mobile_data_disabled)
                     .neutralText(R.string.ok)
                     .cancelable(false)
                     .onNeutral { _, _ ->
@@ -1175,7 +1167,7 @@ abstract class Activity : BaseActivity(),
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onError = {
-                                log.warn("LocationSettings not satisfied!", it)
+                                log.warn("LocationSettings not satisfied")
                             }
                     )
         } else {
@@ -1188,8 +1180,8 @@ abstract class Activity : BaseActivity(),
             if (!this.device.isEmulator && !isProvidersAvailable) {
                 log.warn("Location settings not satisfied")
                 MaterialDialog.Builder(this)
-                        .title("Location settings not satisfied")
-                        .content("You disabled either GPS or Network locations. Both must be enabled to continue.")
+                        .title(R.string.dialog_title_gps_disabled)
+                        .content(R.string.dialog_content_gps_disabled)
                         .positiveText(R.string.action_settings)
                         .negativeText(R.string.cancel)
                         .onPositive { _, _ ->
@@ -1200,7 +1192,7 @@ abstract class Activity : BaseActivity(),
                             )
                         }
                         .onNegative { _, _ ->
-                            log.warn("LocationSettings resolution aborted.")
+                            log.warn("LocationSettings resolution aborted")
                             this.app.terminate()
                         }
                         .show()

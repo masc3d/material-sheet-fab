@@ -53,7 +53,7 @@ open class ApplicationService : org.deku.leoz.service.internal.ApplicationServic
     override fun notifyBundleUpdate(bundleName: String) {
         val message = UpdateInfo(bundleName)
 
-        JmsEndpoints.node.topic.channel().use {
+        JmsEndpoints.node.broadcast.channel().use {
             it.send(UpdateInfo(bundleName))
         }
 

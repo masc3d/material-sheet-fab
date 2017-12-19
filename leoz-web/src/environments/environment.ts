@@ -5,18 +5,26 @@
 
 export const environment = {
   production: false,
-  version: '20171130',
-  apiUrl: 'https://leoz-t1.derkurier.de:13000/rs/api',          // testing system       for leoz.it-cobra.es
-  // apiUrl: 'https://leoz-demo.derkurier.de:13000/rs/api',     // testing system       for leoz.it-cobra.es
-  // apiUrl: 'https://leoz.derkurier.de:13000/rs/api',          // live system          for command.derkurier.de
-  // apiUrl: 'http://localhost:13000/rs/api',                   // local system
-  defLang: 'de',
+  version: '20171220', // on change, always adapt assets/version.json
+  // --build-optimizer false
+  // testing system      apiUrl for leoz.it-cobra.es
+  apiUrl: 'https://leoz-t1.derkurier.de:13000/rs/api',
+  // local system        apiUrl
+  // apiUrl: 'http://localhost:13000/rs/api',
+  // testing system      apiUrl for command-demo.derkurier.de ==> (leoz-demo.derkurier.de:13000)
+  // apiUrl: 'https://leoz-demo.derkurier.de:13000/rs/api',
+  // live system         apiUrl for command.derkurier.de      ==> (leoz.derkurier.de:13000)
+  // apiUrl: 'https://leoz.derkurier.de:13000/rs/api',
+  defMenu: 'leo-old',
   // use "leoz" for produktive environment.
   // "leo-old" will show the old menustructure for testingpurposes
   // "leo-old" may be used only on environments which are not reachable by unauthorized users
-  defMenu: 'leo-old',
-  devUser: 'dev@leoz',
+  defLang: 'de',
+  devUser: 'info@it',
   devPass: 'password',
   autologin: 'yes',
-  pingURL: 'https://leoz-t1.derkurier.de:13000/rs/api/internal/v1/application/version'
+
+  pingURL: 'https://leoz-t1.derkurier.de:13000/rs/api/internal/v1/application/version'   // for leoz.it-cobra.es
+  // pingURL: 'https://leoz-demo.derkurier.de:13000/rs/api/internal/v1/application/version' // for command-demo.derkurier.de
+  // pingURL: 'https://leoz.derkurier.de:13000/rs/api/internal/v1/application/version'      // for command.derkurier.de
 };

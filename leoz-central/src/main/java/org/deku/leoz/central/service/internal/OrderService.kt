@@ -53,22 +53,21 @@ class OrderService : OrderService {
                         title = "Order not found",
                         status = Response.Status.NOT_FOUND)
 
-//to be removed if mobile supports apikeys
-                if (apiKey != null) {
-//--<
-                    val authorizedUserRecord = userRepository.findByKey(apiKey)
-                    authorizedUserRecord ?:
-                            throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+                apiKey
+                        ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
-                    /**
-                     * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
-                     * ADMIN-User are allowed to access every order.
-                     */
-                    if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-                        //todo include send_date (JT)
-                        if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
-                            throw DefaultProblem(status = Response.Status.FORBIDDEN)
-                    }
+                val authorizedUserRecord = userRepository.findByKey(apiKey)
+                authorizedUserRecord ?:
+                        throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+
+                /**
+                 * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
+                 * ADMIN-User are allowed to access every order.
+                 */
+                if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+                    //todo include send_date (JT)
+                    if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
+                        throw DefaultProblem(status = Response.Status.FORBIDDEN)
                 }
                 orders = listOf(order)
             }
@@ -95,22 +94,22 @@ class OrderService : OrderService {
                 ?: throw DefaultProblem(
                 title = "Order not found",
                 status = Response.Status.NOT_FOUND)
-//todo to be removed if mobile supports apikeys
-        if (apiKey != null) {
-//--<
-            val authorizedUserRecord = userRepository.findByKey(apiKey)
-            authorizedUserRecord ?:
-                    throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
-            /**
-             * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
-             * ADMIN-User are allowed to access every order.
-             */
-            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-                //todo include send_date (JT)
-                if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
-                    throw DefaultProblem(status = Response.Status.FORBIDDEN)
-            }
+        apiKey
+                ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+
+        val authorizedUserRecord = userRepository.findByKey(apiKey)
+        authorizedUserRecord ?:
+                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+
+        /**
+         * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
+         * ADMIN-User are allowed to access every order.
+         */
+        if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+            //todo include send_date (JT)
+            if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
+                throw DefaultProblem(status = Response.Status.FORBIDDEN)
         }
 
         order.parcels = this.orderRepository
@@ -135,15 +134,15 @@ class OrderService : OrderService {
             }
         }
     }
-//todo include send_date
+
+    //todo include send_date
     fun Order.findOrderDebitorId(pickupDeliver: Type): Int {
-        var station: Int
+        val station: Int
 
         when (pickupDeliver) {
             Type.PICKUP -> station = this.pickupStation
             Type.DELIVERY -> station = this.deliveryStation
         }
-//                depotRepository.findDebitorDepots(authorizedUserRecord.debitorId).map { (deliveryListRecord.deliveryStation.toInt()) }.isEmpty()
 
         return depotRepository.findDebitor(station)
     }
@@ -189,11 +188,7 @@ class OrderService : OrderService {
                     ps.add(ParcelService.valueOf(it.name))
             }
         }
-/*
-        else {
-            ps.add(ParcelService.valueOf(ParcelService.NO_ADDITIONAL_SERVICE.name))
-        }
-*/
+
         o.pickupServices = ps
 
         o.pickupAppointment.dateStart = r.appointmentPickupStart
@@ -222,11 +217,7 @@ class OrderService : OrderService {
                     ds.add(ParcelService.valueOf(it.name))
             }
         }
-/*
-        else {
-            ds.add(ParcelService.valueOf(ParcelService.NO_ADDITIONAL_SERVICE.name))
-        }
-*/
+
         o.deliveryServices = ds
 
         if (r.cashAmount > 0 && (r.service.toLong() and ParcelService.CASH_ON_DELIVERY.serviceId) == ParcelService.CASH_ON_DELIVERY.serviceId) {

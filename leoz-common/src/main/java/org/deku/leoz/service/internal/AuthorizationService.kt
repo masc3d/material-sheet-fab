@@ -57,50 +57,12 @@ interface AuthorizationService {
     )
 
     /**
-     * Mobile device info
-     */
-    data class Mobile(
-            /** Device model */
-            @ApiModelProperty(value = "Mobile device model", example = "CT-50", required = true)
-            var model: String = "",
-            /** Device serial number */
-            @ApiModelProperty(value = "Mobile device serial", example = "ABCDEFGH", required = true)
-            var serial: String = "",
-            /** Device IMEI */
-            @ApiModelProperty(value = "Mobile device imei", example = "990000862471854", required = true)
-            var imei: String = ""
-    ) {
-        /** Empty companion for attaching extension methods */
-        companion object {}
-    }
-
-    /**
-     * Mobile authorization request
-     */
-    data class MobileRequest(
-            @ApiModelProperty(value = "User credentials", required = true)
-            var user: Credentials? = null,
-            @ApiModelProperty(value = "Mobile device info", required = true)
-            var mobile: Mobile? = null
-    )
-
-
-    /**
      * Web authorization response
      */
     data class Response(
             var key: String = "",
             var user: User? = null
     )
-
-    /**
-     * Request authorization
-     * @param request Authorization request
-     */
-    @PATCH
-    @Path("/mobile")
-    @ApiOperation(value = "Request mobile device authorization")
-    fun authorizeMobile(request: MobileRequest): Response
 
     /**
      * Request authorization

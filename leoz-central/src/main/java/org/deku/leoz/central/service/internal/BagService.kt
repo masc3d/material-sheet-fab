@@ -1,7 +1,6 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.dekuclient.Routines
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.node.rest.ServiceException
@@ -21,11 +20,8 @@ import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
-import org.deku.leoz.model.counter
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.BagService
-import org.deku.leoz.service.internal.LoadinglistService
-import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagResponse
@@ -96,11 +92,11 @@ class BagService : BagService {
 
         val bag = depotRepository.getBag(un.value.value.toLong())?.toGeneralBag()
         bag ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
-        val oid = bag.orderhub2depot
+        val oid = bag.orderhubTodepot
         if (oid != null) {
             bag.unitNo = depotRepository.getUnitNo(oid)
         }
-        val oidBack = bag.orderdepot2hub
+        val oidBack = bag.orderdepotTohub
         if (oidBack != null) {
             bag.unitNoBack = depotRepository.getUnitNo(oidBack)
 
@@ -686,8 +682,8 @@ class BagService : BagService {
         }
     }
 
-    override fun getCount2SendBackByStation(stationNo: Int): Int {
-        return depotRepository.getCountBags2SendBagByStation(stationNo)
+    override fun getCountToSendBackByStation(stationNo: Int): Int {
+        return depotRepository.getCountBagsToSendBagByStation(stationNo)
     }
 
 

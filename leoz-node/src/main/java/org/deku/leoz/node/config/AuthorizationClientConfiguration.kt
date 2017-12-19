@@ -1,7 +1,6 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.service.internal.AuthorizationClientService
@@ -28,7 +27,7 @@ open class AuthorizationClientConfiguration {
     private lateinit var executorService: ScheduledExecutorService
 
     @Inject
-    private lateinit var messageListenerConfiguration: MessageListenerConfiguration
+    private lateinit var mqListenerConfiguration: MqListenerConfiguration
 
     @Inject
     private lateinit var lifecycleController: LifecycleController
@@ -59,7 +58,7 @@ open class AuthorizationClientConfiguration {
         this.lifecycleController.registerNetworkDependant(this.authorizationClientService)
 
         // Add message handler delegatess
-        this.messageListenerConfiguration.nodeQueueListener.addDelegate(
+        this.mqListenerConfiguration.nodeQueueListener.addDelegate(
                 this.authorizationClientService)
     }
 }

@@ -1,5 +1,6 @@
 package org.deku.leoz.config
 
+import org.apache.activemq.broker.region.virtual.CompositeQueue
 import org.apache.activemq.broker.region.virtual.CompositeTopic
 import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker

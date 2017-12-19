@@ -85,7 +85,10 @@ dependencies {
             "de.javakaffee:kryo-serializers:$v_kryo_serializers",
 
             // Logging
-            "ch.qos.logback:logback-classic:$v_logback"
+            "ch.qos.logback:logback-classic:$v_logback",
+
+            // Tika, content analysis framework
+            "org.apache.tika:tika-core:$v_apache_tika"
     )
 
     testCompile(
@@ -103,7 +106,10 @@ dependencies {
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
 
             // MQTT client
-            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
+
+            // Tika, content analysis framework
+            "org.apache.tika:tika-core:$v_apache_tika"
     )
 }
 

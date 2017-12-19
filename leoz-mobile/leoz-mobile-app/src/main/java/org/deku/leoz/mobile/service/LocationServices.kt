@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile
+package org.deku.leoz.mobile.service
 
 import android.content.Context
 import android.location.LocationManager

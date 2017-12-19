@@ -50,8 +50,8 @@ interface BagService {
             val lastStation: Long? = null,
             val sealNumberYellow: Long? = null,
             val sealNumberRed: Long? = null,
-            val orderhub2depot: Long? = null,
-            val orderdepot2hub: Long? = null,
+            val orderhubTodepot: Long? = null,
+            val orderdepotTohub: Long? = null,
             val initStatus: Int = 0,
             val workdate: Date? = null,
             val printed: Int? = null,
@@ -167,7 +167,7 @@ interface BagService {
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
-    fun getCount2SendBackByStation(
+    fun getCountToSendBackByStation(
             @PathParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
 
     ): Int

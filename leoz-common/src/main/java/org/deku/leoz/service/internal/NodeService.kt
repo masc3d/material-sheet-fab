@@ -1,7 +1,11 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
+import org.deku.leoz.config.Rest
+import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.io.serialization.Serializable
+import sx.mq.jms.channel
+import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.*
@@ -15,6 +19,10 @@ import javax.ws.rs.core.*
 @io.swagger.annotations.Api(value = "Node operations")
 @ApiKey
 interface NodeServiceV1 {
+
+    companion object {
+        const val NODE_UID = "node-uid"
+    }
 
     /**
      * Node status/information message
@@ -32,4 +40,17 @@ interface NodeServiceV1 {
             /** Opaque system info (usually json blob) */
             var systemInformation: String = ""
     ) { companion object }
+
+    /**
+     * Message for requesting diagnostic data from a node
+     */
+    @Serializable(0xbf735f572c9029)
+    class DiagnosticDataRequest
+
+    @PATCH
+    @Path("/{${NODE_UID}}/request-diagnostic-data")
+    @ApiOperation(value = "Request diagnostic data from remote node", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun requestDiagnosticData(
+            @PathParam(NODE_UID) @ApiParam(value = "Node uid") nodeUid: String
+    )
 }

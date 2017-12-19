@@ -9,11 +9,11 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
+import org.deku.leoz.MimeType
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.ParcelMeta
 import org.deku.leoz.mobile.model.entity.create
-import org.deku.leoz.mobile.mq.MimeType
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.sendFile
 import org.slf4j.LoggerFactory

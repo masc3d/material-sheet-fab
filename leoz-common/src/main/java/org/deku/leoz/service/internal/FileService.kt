@@ -3,8 +3,11 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.Api
 import org.deku.leoz.model.AdditionalInfo
 import sx.collections.chunked
+import sx.io.copyTo
 import sx.io.serialization.Serializable
+import sx.io.toSequence
 import sx.rs.auth.ApiKey
+import java.io.InputStream
 import java.util.*
 import javax.activation.MimeType
 import javax.ws.rs.Consumes
@@ -71,5 +74,29 @@ fun ByteArray.toFileFragmentMessages(
                 chunkSize = maxChunkSize,
                 totalSize = this.size,
                 payload = bytes)
+    }
+}
+
+/**
+ * Creates a sequence of file fragment messages from an input stream
+ */
+fun InputStream.toFileFragmentMessages(
+        nodeUid: String,
+        fileUid: UUID,
+        mimeType: String,
+        maxChunkSize: Int,
+        totalSize: Int
+): Sequence<FileServiceV1.FileFragmentMessage> {
+    return this.toSequence(maxChunkSize).mapIndexed { index, bytes ->
+        FileServiceV1.FileFragmentMessage(
+                nodeUid = nodeUid,
+                fileUid = fileUid,
+                mimeType = mimeType,
+                index = index,
+                total = Math.ceil(totalSize.toDouble() / maxChunkSize).toInt(),
+                chunkSize = maxChunkSize,
+                totalSize = totalSize,
+                payload = bytes
+        )
     }
 }

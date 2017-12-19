@@ -65,8 +65,6 @@ export class LoginComponent extends AbstractTranslateComponent implements OnInit
   }
 
   login() {
-
-
     this.loading = true;
     this.authenticationService.login( this.loginForm.value.username, this.loginForm.value.password )
       .subscribe(

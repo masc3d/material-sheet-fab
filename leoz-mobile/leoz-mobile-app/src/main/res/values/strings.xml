@@ -7,6 +7,8 @@
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
 
+    <string name="active_stop">Active stop</string>
+
     <string name="app_name" translatable="false">mobileX</string>
     <string name="app_name_long" translatable="false">mobileX</string>
     <string name="app_project_name" translatable="false">leoz-mobile</string>
@@ -62,16 +64,18 @@
     <string name="device_check_instruction_to_continue">You are not allowed to continue the delivery without completing this check.</string>
     <string name="device_check_instructions">You have got 3 attempts to enter the correct digits. If all three fail, the devlivery failed.</string>
 
+    <string name="dialog_content_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
+    <string name="dialog_content_gps_disabled">You disabled either GPS or Network locations. Both must be enabled to continue.</string>
+    <string name="dialog_content_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
+    <string name="dialog_content_mobile_data_disabled">Mobile data is disabled. To continue you must enable it</string>
     <string name="dialog_content_outdated_orders">Orders are outdated. All data must be erased in order to proceed. Continue?</string>
     <string name="dialog_content_stop_merge">Do you want to merge this stop?</string>
     <string name="dialog_content_stop_reopen">Re-open this stop?</string>
     <string name="dialog_content_time_misconfigured">The time on your device seems to be wrong configured. Please enable auto-configuration for Time(-zones) for the best conformity or correct the time manually.\n\nDifference of time: %s seconds</string>
-    <string name="dialog_text_developer_enabled">Developer options are enabled on your device. To continue, you must disable developer options!</string>
-    <string name="dialog_text_gps_disabled">The GPS location on your device is disabled. To continue, you must enable GPS location!</string>
-    <string name="dialog_text_missing_signature">There is no signature provided. Did the customer signed on the paper list?</string>
     <string name="dialog_title_developer_enabled">Developer options enabled</string>
     <string name="dialog_title_event_selection">Event selection</string>
     <string name="dialog_title_gps_disabled">GPS location provider is not enabled</string>
+    <string name="dialog_title_mobile_data_disabled">Mobile data disabled</string>
     <string name="dialog_title_stop_reopen">Stop activation</string>
     <string name="dialog_title_time_misconfigured">Date/Time misconfiguration</string>
 
@@ -245,11 +249,11 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="recipient">Recipient</string>
     <string name="recipient_dialog_content">Who accepted the shipment?</string>
 
-    <string name="report_bug">Report bug</string>
-
     <string name="reset">Reset</string>
 
     <string name="running">running</string>
+
+    <string name="send_diagnostic_data">Send diagnostic data</string>
 
     <string name="service_cash_delivery">Cash on delivery</string>
     <string name="service_department_delivery">Department delivery</string>
@@ -291,6 +295,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="sort_zip">By zip</string>
 
     <string name="station_id">Station ID</string>
+
+    <string name="stop_to_be_added">Stop to be added</string>
 
     <string name="street">Street</string>
 
@@ -343,6 +349,4 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="warehouse">Warehouse</string>
 
     <string name="yes_start_tour">Yes, start tour</string>
-    <string name="stop_to_be_added">Stop to be added</string>
-    <string name="active_stop">Active stop</string>
 </resources>

@@ -36,7 +36,7 @@ open class FileSyncClientConfiguration {
     @Inject
     private lateinit var sshTunnelProvider: SshTunnelProvider
     @Inject
-    private lateinit var messageListenerConfiguration: MessageListenerConfiguration
+    private lateinit var mqListenerConfiguration: MqListenerConfiguration
     @Inject
     private lateinit var lifecycleController: LifecycleController
     @Inject
@@ -61,7 +61,7 @@ open class FileSyncClientConfiguration {
     fun onInitialize() {
         this.lifecycleController.registerNetworkDependant(this.fileSyncClientService)
 
-        messageListenerConfiguration.nodeQueueListener.addDelegate(
+        mqListenerConfiguration.nodeQueueListener.addDelegate(
                 this.fileSyncClientService
         )
     }

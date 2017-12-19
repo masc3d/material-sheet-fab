@@ -24,7 +24,7 @@ open class FileSyncHostConfiguration {
     @Inject
     private lateinit var storage: Storage
     @Inject
-    private lateinit var messageListenerConfiguration: MessageListenerConfiguration
+    private lateinit var messageListenerConfiguration: MqListenerConfiguration
     @Inject
     private lateinit var executorService: ScheduledExecutorService
 

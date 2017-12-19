@@ -11,6 +11,9 @@ logging:
         org.deku.leoz: INFO
         # Shows config loading details on DEBUG log level
         org.springframework.boot.context.config: INFO
+        # dbcp2 logs an ugly warning including stack trace referring to unregsitering jmx
+        # when it's auto-closed on shutdown (as spring already unregistered the jmx bean)
+        org.apache.commons.dbcp2.BasicDataSource: ERROR
 
 server:
     ssl:

@@ -232,7 +232,7 @@ dependencies {
             "org.apache.pdfbox:pdfbox:2.0.8",
 
             // Tika, content analysis framework
-            "org.apache.tika:tika-core:1.16",
+            "org.apache.tika:tika-core:$v_apache_tika",
 
             // hawt.io
             "io.hawt:hawtio-springboot:2.0.0",
@@ -248,32 +248,24 @@ dependencies {
             // Socket.IO
             "io.socket:socket.io-client:$v_socketio",
 
-            // TODO: for testing jinq
+            //region EVALUATION
             "org.jinq:jinq-jpa:+",
 
-            // TODO: for testing jsch
             "com.jcraft:jsch:+",
 
-            // TODO: For testing aspectj proxies with spring
             "org.aspectj:aspectjrt:$v_aspectj",
             "org.aspectj:aspectjweaver:$v_aspectj",
 
-            // TODO: for testing vaadin
             "com.vaadin:vaadin-spring-boot:2.0.1",
             "com.vaadin:vaadin-client:$v_vaadin",
             "com.vaadin:vaadin-client-compiled:$v_vaadin",
             "com.vaadin:vaadin-themes:$v_vaadin",
+            //endregion
     )
 
     driver(
             "com.h2database:h2:$v_h2"
     )
-
-    // TODO: kapt disabled due to https://youtrack.jetbrains.com/issue/KT-14139. @see generateQueryDSL
-    // QueryDSL codegen/annotation processor
-//    kapt(
-//            "com.querydsl:querydsl-apt:$v_querydsl:jpa",
-//            "org.eclipse.persistence:javax.persistence:$v_javax_persistence")
 
     querydslapt(
             "com.querydsl:querydsl-apt:$v_querydsl:jpa"

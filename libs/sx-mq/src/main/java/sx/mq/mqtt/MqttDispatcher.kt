@@ -189,9 +189,29 @@ class MqttDispatcher(
                 .toHotCache(this.executorService)
     }
 
+    /**
+     * Subscribe to topic
+     * @param topicName Topic name
+     * @param qos Qos
+     */
     override fun subscribe(topicName: String, qos: Int): Observable<MqttMessage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // TODO: replace passthrough with durable subscription. consumers shouldn't have to worry.
+        return this.client.subscribe(
+                topicName = topicName,
+                qos = qos
+        )
     }
+
+    /**
+     * Unsubscribe from topic
+     * @param topicName Topic name
+     */
+    override fun unsubscribe(topicName: String): Completable {
+        return this.client.unsubscribe(
+                topicName
+        )
+    }
+
 
     /**
      * Disconnect from remote broker and discontinue connection retries.
@@ -205,10 +225,6 @@ class MqttDispatcher(
         }
     }
 
-    override fun unsubscribe(topicName: String): Completable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     /**
      * Start remote broker connection.
      * The connection will be retried internally until it succeeds or {@link disconnect} is called.
@@ -220,6 +236,7 @@ class MqttDispatcher(
             // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
             this.connectionSubscription = Completable
                     .defer {
+                        log.info("Attempting connection to ${this.client.uri}")
                         this.client.connect()
                     }
                     .onErrorComplete {
