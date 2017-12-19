@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.mobile.service.LocationCache
+import org.deku.leoz.mobile.service.NodeService
 import org.deku.leoz.mobile.service.NotificationService
 import org.deku.leoz.mobile.service.UpdateService
 import org.threeten.bp.Duration
@@ -26,12 +27,16 @@ class ServiceConfiguration {
              * Notification service
              */
             bind<NotificationService>() with eagerSingleton {
-                val service = NotificationService()
+                NotificationService().also {
+                    // Wire notification service with listener
+                    instance<MqttListeners>().mobile.broadcast.addDelegate(it)
+                }
+            }
 
-                // Wire notification service with listener
-                instance<MqttListeners>().mobile.broadcast.addDelegate(service)
-
-                service
+            bind<NodeService>() with eagerSingleton {
+                NodeService().also {
+                    instance<MqttListeners>().node.topic.addDelegate(it)
+                }
             }
 
             /**

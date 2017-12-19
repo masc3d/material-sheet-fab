@@ -118,7 +118,7 @@ class MqttConfiguration {
 
             bind<MqttContext>() with singleton {
                 MqttContext(
-                        // Using the dispatcher as a client proxy for transparent reocnnection and persistence
+                        // Using the dispatcher as a client proxy for transparent reconnection and persistence
                         client = { instance<MqttDispatcher>() }
                 )
             }
