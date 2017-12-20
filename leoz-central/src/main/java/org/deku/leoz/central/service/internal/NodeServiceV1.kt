@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.central.data.repository.fetchByUid
@@ -11,6 +12,7 @@ import org.deku.leoz.service.internal.NodeServiceV1
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.zalando.problem.Status
 import sx.log.slf4j.info
 import sx.mq.MqChannel
@@ -36,6 +38,7 @@ class NodeServiceV1
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
 
     @Inject
