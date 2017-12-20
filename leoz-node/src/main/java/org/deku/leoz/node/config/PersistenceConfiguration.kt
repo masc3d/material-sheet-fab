@@ -1,5 +1,6 @@
 package org.deku.leoz.node.config
 
+import kotlinx.support.jdk7.use
 import org.deku.leoz.node.Storage
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.PersistenceUnitProperties
@@ -268,8 +269,22 @@ open class PersistenceConfiguration {
         }
     //endregion
 
+    /**
+     * Migrate flyway schema version table from `schema_version` (<= 4.x) to `flyway_schema_history` (>= 5.x)
+     */
+    @Deprecated("Required by leoz-central <= 0.147, leoz-node <= 0.74")
+    private fun migrateFLywaySchemaVersionTable() {
+        this.dataSource.connection.use { cn ->
+            cn.createStatement().use {
+                it.execute("ALTER TABLE IF EXISTS \"schema_version\" RENAME TO \"flyway_schema_history\"")
+            }
+        }
+    }
+
     @PostConstruct
     open fun onInitialize() {
+        this.migrateFLywaySchemaVersionTable()
+
         // Migrate schema
         log.info("Migrating embedded data source schema")
         val flyway = Flyway()
