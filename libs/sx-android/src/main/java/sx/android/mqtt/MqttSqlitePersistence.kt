@@ -24,7 +24,6 @@ import java.io.File
 class MqttSqlitePersistence constructor(
         private val databaseFile: File
 ) : IMqttPersistence {
-
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
@@ -102,21 +101,45 @@ class MqttSqlitePersistence constructor(
     }
 
     override fun get(topicName: String?): Observable<MqttPersistentMessage> {
-        return Observable.create<MqttPersistentMessage> { onSubscribe ->
-            this.db.select(
-                    tableName = TABLE_NAME
-            ).exec {
+        val BATCH_SIZE = 100
+
+        return Observable.create<MqttPersistentMessage> { emitter ->
+            try {
                 val parser = MessageRowParser()
 
-                try {
-                    asMapSequence().forEach {
-                        onSubscribe.onNext(parser.parseRow(it))
-                    }
-                } catch (e: Throwable) {
-                    onSubscribe.onError(e)
-                    return@exec
+                // Group selects into batches, so it's safe for consumers
+                // to remove records even on large queues
+                var lastId = -1
+                while (true) {
+                    val batch = this.db.select(
+                            tableName = TABLE_NAME
+                    )
+                            .whereArgs(
+                                    select = "${COL_ID} > {${COL_ID}}",
+                                    args = *arrayOf(COL_ID to lastId)
+                            )
+                            .orderBy(COL_ID)
+                            .limit(BATCH_SIZE)
+                            .exec {
+                                asMapSequence()
+                                        .map { parser.parseRow(it) }
+                                        .toList()
+                            }
+
+                    // No results -> done
+                    if (batch.size == 0)
+                        break
+
+                    // Store last id for next batch/iteration
+                    lastId = batch.last().persistentId
+
+                    // Emit message batch
+                    batch.forEach { emitter.onNext(it) }
                 }
-                onSubscribe.onComplete()
+
+                emitter.onComplete()
+            } catch (e: Throwable) {
+                emitter.onError(e)
             }
         }
     }
@@ -153,5 +176,4 @@ class MqttSqlitePersistence constructor(
                             .toMap()
                 }
     }
-
 }
