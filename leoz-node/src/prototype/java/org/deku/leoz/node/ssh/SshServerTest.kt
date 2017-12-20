@@ -29,7 +29,7 @@ class SshServerTest {
 
         sshd.keyPairProvider = SimpleGeneratorHostKeyProvider(Files.createTempFile("hostkey", "ser"))
 
-        sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
+        sshd.forwardingFilter = AcceptAllForwardingFilter()
 
         sshd.passwordAuthenticator = object : PasswordAuthenticator {
             override fun authenticate(username: String?, password: String?, session: ServerSession?): Boolean {
