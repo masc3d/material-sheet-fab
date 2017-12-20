@@ -51,6 +51,6 @@ interface NodeServiceV1 {
     @Path("/{${NODE_UID}}/request-diagnostic-data")
     @ApiOperation(value = "Request diagnostic data from remote node", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun requestDiagnosticData(
-            @PathParam(NODE_UID) @ApiParam(value = "Node uid") nodeUid: String
+            @PathParam(NODE_UID) @ApiParam(value = "Node uid. Short/truncated uids are allowed as long as they are unique.") nodeUid: String
     )
 }

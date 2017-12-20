@@ -78,8 +78,27 @@ fun SelectWhereStep<MstNodeRecord>.fetchById(id: Int): MstNodeRecord? {
     return this.where(MST_NODE.NODE_ID.eq(id)).fetchOne()
 }
 
-fun SelectWhereStep<MstNodeRecord>.fetchByUid(nodeUid: String): MstNodeRecord? {
-    return this.where(MST_NODE.KEY.eq(nodeUid)).fetchOne()
+/**
+ * Fetch node record by uid
+ * @param nodeUid Node uid
+ * @param strict Allows lookups by short/truncated uid as long as the result is unique
+ */
+fun SelectWhereStep<MstNodeRecord>.fetchByUid(nodeUid: String, strict: Boolean = true ): MstNodeRecord? {
+    return when {
+        strict -> {
+            // Only allow precise matches
+            this.where(MST_NODE.KEY.eq(nodeUid)).fetchOne()
+        }
+        else -> {
+            // Allow short/truncated uids
+            this.where(MST_NODE.KEY.startsWith(nodeUid)).toList().let {
+                when {
+                    it.count() > 1 -> null
+                    else -> it.firstOrNull()
+                }
+            }
+        }
+    }
 }
 
 fun SelectWhereStep<MstNodeRecord>.fetchIsAuthorized(nodeUid: String): Boolean {

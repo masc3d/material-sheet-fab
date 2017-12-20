@@ -1,16 +1,22 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.central.data.repository.fetchByUid
+import org.deku.leoz.central.data.repository.uid
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.NodeServiceV1
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
+import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
+import org.zalando.problem.Status
 import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
+import sx.rs.DefaultProblem
 import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
@@ -28,6 +34,9 @@ class NodeServiceV1
         MqHandler<NodeServiceV1.Info> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    @Inject
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var nodeJooqRepository: NodeJooqRepository
@@ -55,7 +64,15 @@ class NodeServiceV1
     }
 
     override fun requestDiagnosticData(nodeUid: String) {
-        JmsEndpoints.node.topic(Identity.Uid(nodeUid)).channel().use {
+        val rNode = dsl.
+                selectFrom(Tables.MST_NODE)
+                .fetchByUid(
+                        nodeUid = nodeUid,
+                        strict = false)
+
+                ?: throw DefaultProblem(status = Status.NOT_FOUND)
+
+        JmsEndpoints.node.topic(Identity.Uid(rNode.uid)).channel().use {
             it.send(NodeServiceV1.DiagnosticDataRequest())
         }
     }
