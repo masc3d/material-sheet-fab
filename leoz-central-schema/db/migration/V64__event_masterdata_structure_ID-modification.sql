@@ -26,3 +26,6 @@ CREATE INDEX `mst_event_reason_event-id_index` ON mst_event_reason (event_id);
 CREATE INDEX `mst_event_reason_reason-id_index` ON mst_event_reason (reason_id);
 CREATE INDEX mst_event_reason_combination_index ON mst_event_reason (event_id, reason_id);
 CREATE INDEX `mst_event_reason_combination-old_index` ON mst_event_reason (status_old, reason_old);
+
+ALTER TABLE mst_reason MODIFY id INT(11) NOT NULL;
+ALTER TABLE mst_event MODIFY id INT(11) NOT NULL;
