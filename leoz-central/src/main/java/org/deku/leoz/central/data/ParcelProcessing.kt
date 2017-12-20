@@ -207,7 +207,13 @@ open class ParcelProcessing {
                     val pathMobile = storage.mobileDataDirectory.toPath()
                     val fileNameInfo = userId.toString()
                     val loc = Location.SB
-                    val mobileFilename = FileName(pictureUID, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
+                    val mobileFilename = FileName(
+                            value = pictureUID,
+                            date = it.scanned.toTimestamp(),
+                            type = loc,
+                            basePath = pathMobile,
+                            additionalInfo = fileNameInfo
+                    )
                     val newFile = mobileFilename.getFilenameWithoutExtension() + ".jpg"
                     val pathFileMobile = mobileFilename.getPath().resolve(newFile).toFile().toPath()
                     val bmp = pathFileMobile.toString().substringAfter(pathMobile.toString()).substring(1)
@@ -248,7 +254,13 @@ open class ParcelProcessing {
                     val fileNameInfo = userId.toString()//.substringBefore("-")
                     val loc = Location.valueOf(parcelAddInfo.pictureLocation!!)
 
-                    val mobileFilename = FileName(parcelScan, it.scanned.toTimestamp(), loc, pathMobile, fileNameInfo)
+                    val mobileFilename = FileName(
+                            value = parcelScan,
+                            date = it.scanned.toTimestamp(),
+                            type = loc,
+                            basePath = pathMobile,
+                            additionalInfo = fileNameInfo
+                    )
                     val relPathMobile = mobileFilename.getPath()
                     //val file = mobileFilename.getFilenameWithoutExtension() + ".bmp"
                     val file = parcelAddInfo.pictureFileName!!
