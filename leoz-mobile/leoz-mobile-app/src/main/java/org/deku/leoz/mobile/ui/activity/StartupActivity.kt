@@ -24,9 +24,7 @@ import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.mobile.service.LocationService
-import org.deku.leoz.mobile.service.LocationServiceGMS
-import org.deku.leoz.mobile.service.UpdateService
+import org.deku.leoz.mobile.service.*
 import org.deku.leoz.mobile.ui.BaseActivity
 import org.deku.leoz.mobile.ui.extension.showErrorAlert
 import org.deku.leoz.service.internal.NodeServiceV1
@@ -194,14 +192,14 @@ class StartupActivity : BaseActivity() {
                                         throw RuntimeException(text, e)
                                     }
 
-                                    // Start update service
-                                    Kodein.global.instance<UpdateService>()
-
                                     // Late initialization of singletons which require eg. permissions
                                     Kodein.global.instance<IMqttAsyncClient>()
                                     Kodein.global.instance<LogMqAppender>().also {
                                         it.dispatcher.start()
                                     }
+                                    Kodein.global.instance<NotificationService>()
+                                    Kodein.global.instance<NodeService>()
+                                    Kodein.global.instance<UpdateService>()
 
                                     // Send authorization message
                                     run {
