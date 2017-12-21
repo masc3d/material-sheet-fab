@@ -1,7 +1,11 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
+import io.swagger.annotations.Authorization
+import org.deku.leoz.config.Rest
+import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -17,6 +21,7 @@ interface ConfigurationServiceV1 {
     ) {
         enum class Scope {
             WEB,
+            NODE,
             MOBILE
         }
     }
@@ -33,21 +38,22 @@ interface ConfigurationServiceV1 {
 
     companion object {
         const val USER_ID = "user-id"
-        const val DEVICE_ID = "device-id"
+        const val NODE_ID = "node-id"
+        const val NODE_KEY = "node-key"
         const val SCHEMA_VERSION = "schema-version"
     }
 
     @GET
-    @Path("/user/{$USER_ID}")
-    fun getUserConfiguration(
-            @PathParam(value = USER_ID) @ApiParam(value = "The requested users ID", required = true) userId: Int,
-            @QueryParam(value = SCHEMA_VERSION) @ApiParam(value = "The schema version of the configuration") schemaVersion: Int,
-            @ApiParam(value = "Scope of the configuration", required = false) scope: Configuration.Scope? = null
-    ): UserConfiguration?
+    @Path("/user")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get configuration of calling user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getCurrentUserConfiguration(): String?
 
     @GET
-    @Path("/device/{$DEVICE_ID}")
-    fun getMobileDeviceConfiguration(
-            @PathParam(value = DEVICE_ID) deviceId: String
-    ): MobileDeviceConfiguration?
+    @Path("/device")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get configuration given node", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getNodeConfiguration(
+            @QueryParam(value = NODE_KEY) nodeKey: String
+    ): String?
 }
