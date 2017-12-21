@@ -20,9 +20,8 @@ fun <T> Throwable.toObservable(): Observable<T> = Observable.error(this)
 interface CompositeDisposableSupplier : Disposable {
     val compositeDisposable: CompositeDisposable
 
-    override fun isDisposed(): Boolean {
-        return this.compositeDisposable.isDisposed
-    }
+    override fun isDisposed(): Boolean =
+            this.compositeDisposable.isDisposed
 
     override fun dispose() {
         this.compositeDisposable.dispose()
@@ -33,24 +32,21 @@ interface CompositeDisposableSupplier : Disposable {
  * Subscribe on a specific executor
  * @param executor Executor to subscribe on.
  */
-fun <T> Observable<T>.subscribeOn(executor: Executor? = null): Observable<T> {
-    return if (executor != null) this.subscribeOn(Schedulers.from(executor)) else this
-}
+fun <T> Observable<T>.subscribeOn(executor: Executor? = null): Observable<T> =
+        if (executor != null) this.subscribeOn(Schedulers.from(executor)) else this
 
 /**
  * Subscribe on a specific sexecutor
  * @param executor Executor to subscribe on.
  */
-fun Completable.subscribeOn(executor: Executor? = null): Completable {
-    return if (executor != null) this.subscribeOn(Schedulers.from(executor)) else this
-}
+fun Completable.subscribeOn(executor: Executor? = null): Completable =
+        if (executor != null) this.subscribeOn(Schedulers.from(executor)) else this
 
 /**
  * Observe on specific executor
  */
-fun <T> Observable<T>.observeOn(executor: Executor? = null): Observable<T> {
-    return if (executor != null) this.observeOn(Schedulers.from(executor)) else this
-}
+fun <T> Observable<T>.observeOn(executor: Executor? = null): Observable<T> =
+        if (executor != null) this.observeOn(Schedulers.from(executor)) else this
 
 /**
  * Connects to observable to force start emitting and returns the Observable (instead of the subscription
@@ -67,16 +63,14 @@ fun <T> ConnectableObservable<T>.connected(composite: CompositeDisposable? = nul
  * Transforms observable into a hot completable
  * Created by masc on 23/06/16.
  */
-fun <T> Observable<T>.toHotCompletable(composite: CompositeDisposable? = null, executor: Executor? = null): Completable {
-    return this.subscribeOn(executor).publish().connected(composite).ignoreElements()
-}
+fun <T> Observable<T>.toHotCompletable(composite: CompositeDisposable? = null, executor: Executor? = null): Completable =
+        this.subscribeOn(executor).publish().connected(composite).ignoreElements()
 
 /**
  * Transform Observable into a hot one with replay applied
  */
-fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null, executor: Executor? = null): Observable<T> {
-    return this.subscribeOn(executor).replay().connected(composite)
-}
+fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null, executor: Executor? = null): Observable<T> =
+        this.subscribeOn(executor).replay().connected(composite)
 
 /**
  * Transforms Completable into a hot one with cache applied
@@ -95,18 +89,6 @@ fun Completable.toHotCache(executor: Executor? = null, onError: (Throwable) -> U
  */
 fun Completable.toHotCache(scheduler: Scheduler, onError: (Throwable) -> Unit = {}): Completable {
     val c = this.subscribeOn(scheduler)
-            .cache()
-
-    c.subscribeBy(onError = onError)
-
-    return c
-}
-
-/**
- * Transforms Completable into a hot one with cache applied
- */
-fun Completable.toHotCache(onError: (Throwable) -> Unit = {}): Completable {
-    val c = this.subscribeOn(executor = null)
             .cache()
 
     c.subscribeBy(onError = onError)
