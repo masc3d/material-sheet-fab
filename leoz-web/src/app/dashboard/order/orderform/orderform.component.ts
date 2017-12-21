@@ -5,7 +5,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import 'rxjs/add/operator/filter';
 
 
@@ -34,6 +34,11 @@ export class OrderformComponent extends AbstractTranslateComponent implements On
   ngOnInit() {
     super.ngOnInit();
 
-    this.orderformForm = this.fb.group( {} );
+    this.orderformForm = this.fb.group( {
+      consignorClientNos: [ null ],
+      consignorClientReNos: [ null ],
+      customer: [ null ],
+      reference: [ null ],
+    } );
   }
 }
