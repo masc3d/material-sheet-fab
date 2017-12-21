@@ -152,6 +152,8 @@ dependencies {
     )
 
     testImplementation(
+            project(':sx-mq'),
+
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
             "org.robolectric:shadows-multidex:3.5.1",

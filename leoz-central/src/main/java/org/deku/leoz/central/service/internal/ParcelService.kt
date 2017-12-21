@@ -307,12 +307,23 @@ open class ParcelServiceV1 :
         val pathMobile = storage.mobileDataDirectory.toPath()
 
         val addInfo = userId.toString()//.substringBefore("-")
-        val mobileFilename = FileName(number, date, location, pathMobile, addInfo)
+        val mobileFilename = FileName(
+                value = number,
+                date = date,
+                type = location,
+                basePath = pathMobile,
+                additionalInfo = addInfo)
+
         val relPathMobile = mobileFilename.getPath()
 
         val path = storage.workTmpDataDirectory.toPath()
 
-        val mobileWorkFilename = FileName(number, date, location, path, addInfo)
+        val mobileWorkFilename = FileName(
+                value = number,
+                date = date,
+                type = location,
+                basePath = path,
+                additionalInfo = addInfo)
         val relPath = mobileWorkFilename.getPath()
 
         val fileExtension: String
@@ -343,7 +354,13 @@ open class ParcelServiceV1 :
         imgPath = outFile.toPath()
 
         if (keepOriginal) {
-            val mobileOriginalFilename = FileName(number, date, locationOriginal!!, pathMobile, addInfo)
+            val mobileOriginalFilename = FileName(
+                    value = number,
+                    date = date,
+                    type = locationOriginal!!,
+                    basePath = pathMobile,
+                    additionalInfo = addInfo
+            )
             val relPathMobileOriginal = mobileOriginalFilename.getPath()
             val pathFileMobileOriginal = relPathMobileOriginal.resolve(file).toFile().toPath()
             Files.copy(pathFile, pathFileMobileOriginal)

@@ -80,12 +80,24 @@ class convertSVGTest {
         val pathMobile = storage.mobileDataDirectory.toPath()
 
         val addInfo = userId.toString()//.substringBefore("-")
-        val mobileFilename = FileName(number, date, location, pathMobile, addInfo)
+        val mobileFilename = FileName(
+                value = number,
+                date = date,
+                type = location,
+                basePath = pathMobile,
+                additionalInfo = addInfo
+        )
         val relPathMobile = mobileFilename.getPath()
 
         val path = storage.workTmpDataDirectory.toPath()
 
-        val mobileWorkFilename = FileName(number, date, location, path, addInfo)
+        val mobileWorkFilename = FileName(
+                value = number,
+                date = date,
+                type = location,
+                basePath = path,
+                additionalInfo = addInfo
+        )
         val relPath = mobileWorkFilename.getPath()
 
         var fileExtension: String
