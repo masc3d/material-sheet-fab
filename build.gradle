@@ -9,7 +9,7 @@ buildscript {
         v_android_buildtools = '27.0.1'
         v_android_support = '27.0.2'
         v_android_test = '1.0.1'
-        v_android_gms = '11.6.2'
+        v_android_gms = '11.8.0'
         v_anko = '0.10.3'
         v_javamail = '1.6.0'
         v_junit = '4.12'
@@ -17,7 +17,7 @@ buildscript {
         v_material_dialogs = '0.9.6.0'
         v_ormlite = '5.0'
         v_paho = '1.2.0'
-        v_roboelectric = '3.5.1'
+        v_roboelectric = '3.6.1'
         v_rxlifecycle = '2.2.1'
         v_truetime = '3.3'
     }
@@ -156,7 +156,7 @@ dependencies {
 
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
-            "org.robolectric:shadows-multidex:3.5.1",
+            "org.robolectric:shadows-multidex:$v_roboelectric",
 
             // MQTT client
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
