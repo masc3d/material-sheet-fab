@@ -26,14 +26,14 @@ class ServiceConfiguration {
             /**
              * Notification service
              */
-            bind<NotificationService>() with eagerSingleton {
+            bind<NotificationService>() with singleton {
                 NotificationService().also {
                     // Wire notification service with listener
                     instance<MqttListeners>().mobile.broadcast.addDelegate(it)
                 }
             }
 
-            bind<NodeService>() with eagerSingleton {
+            bind<NodeService>() with singleton {
                 NodeService().also {
                     instance<MqttListeners>().node.topic.addDelegate(it)
                 }

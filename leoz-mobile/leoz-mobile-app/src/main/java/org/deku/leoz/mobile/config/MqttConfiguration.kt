@@ -126,7 +126,7 @@ class MqttConfiguration {
             bind<MqttEndpoints>() with singleton {
                 MqttEndpoints(
                         context = instance<MqttContext>(),
-                        identityUid = instance<Identity>().uid
+                        identityUid = { instance<Identity>().uid }
                 )
             }
 

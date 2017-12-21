@@ -8,10 +8,12 @@ import sx.mq.mqtt.toMqtt
 /**
  * MQTT channels
  * Created by masc on 12.05.17.
+ * @param context Mqtt context
+ * @param identityUid Identity uid (lazy supplier)
  */
 class MqttEndpoints(
         private val context: MqttContext,
-        private val identityUid: Identity.Uid) {
+        private val identityUid: () -> Identity.Uid) {
 
     inner class Central {
         val main by lazy {
@@ -44,7 +46,7 @@ class MqttEndpoints(
 
     inner class Node {
         val topic by lazy {
-            MqEndpoints.node.topic(identityUid).toMqtt(
+            MqEndpoints.node.topic(identityUid()).toMqtt(
                     context = context,
                     qos = 1
             )
