@@ -75,7 +75,7 @@ class ConfigurationService: ConfigurationService {
     }
 
     override fun getNodeConfiguration(nodeKey: String): String {
-        val node = nodeJooqRepository.findByKey(nodeKey) ?: throw DefaultProblem(title = "Invalid DeviceID", detail = "Device ID could not be found", status = Response.Status.NOT_FOUND)
+        val node = nodeJooqRepository.findByKey(nodeKey) ?: throw DefaultProblem(title = "Invalid Node UID", detail = "Node UID could not be found", status = Response.Status.NOT_FOUND)
 
         return if (node.configuration.isNullOrEmpty()) "{}" else node.configuration
     }
