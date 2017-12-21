@@ -2,8 +2,6 @@ package sx.mq.mqtt
 
 import io.reactivex.Observable
 import org.eclipse.paho.client.mqttv3.MqttMessage
-import org.slf4j.LoggerFactory
-import java.util.*
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
