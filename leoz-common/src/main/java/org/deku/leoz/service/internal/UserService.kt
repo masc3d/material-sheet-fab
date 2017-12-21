@@ -185,7 +185,7 @@ interface UserService {
     ): String
 
     @GET
-    @Path("/configuration")
+    @Path("/auth/configuration")
     @ApiOperation(value = "Get user configuration for current user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getCurrentUserConfiguration(): String
 }

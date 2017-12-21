@@ -44,6 +44,9 @@ class NodeServiceV1
     @Inject
     private lateinit var nodeJooqRepository: NodeJooqRepository
 
+    @Inject
+    private lateinit var configurationService: ConfigurationService
+
     override fun onMessage(message: NodeServiceV1.Info, replyChannel: MqChannel?) {
         val nodeInfo = message
 
@@ -79,4 +82,9 @@ class NodeServiceV1
             it.send(NodeServiceV1.DiagnosticDataRequest())
         }
     }
+
+    override fun getConfiguration(nodeUid: String): String {
+        return configurationService.getNodeConfiguration(nodeUid)
+    }
+
 }

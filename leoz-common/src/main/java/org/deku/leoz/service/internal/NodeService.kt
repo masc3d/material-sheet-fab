@@ -53,4 +53,11 @@ interface NodeServiceV1 {
     fun requestDiagnosticData(
             @PathParam(NODE_UID) @ApiParam(value = "Node uid. Short/truncated uids are allowed as long as they are unique.") nodeUid: String
     )
+
+    @GET
+    @Path("/{${NODE_UID}}/configuration")
+    @ApiOperation(value = "Request configuration for specified node key", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getConfiguration(
+            @PathParam(value = NODE_UID) @ApiParam(value = "Node UID. Full UID required") nodeUid: String
+    ): String
 }
