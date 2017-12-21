@@ -176,4 +176,16 @@ interface UserService {
     @Path("/auth")
     @ApiOperation(value = "Get auth user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(): User
+
+    @GET
+    @Path("/{$USER_ID}/configuration")
+    @ApiOperation(value = "Get user configuration by user-id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getConfigurationById(
+            @PathParam(value = USER_ID) userId: Int
+    ): String
+
+    @GET
+    @Path("/configuration")
+    @ApiOperation(value = "Get user configuration for current user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getCurrentUserConfiguration(): String
 }

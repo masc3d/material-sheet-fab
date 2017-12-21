@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Configuration service")
-interface ConfigurationServiceV1 {
+interface ConfigurationService {
 
     data class Configuration(
             val scope: Scope,
@@ -44,10 +44,12 @@ interface ConfigurationServiceV1 {
     }
 
     @GET
-    @Path("/user")
+    @Path("/user/{${USER_ID}}")
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get configuration of calling user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getCurrentUserConfiguration(): String?
+    @ApiOperation(value = "Get configuration of user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getUserConfiguration(
+            @PathParam(value = USER_ID) userId: Int
+    ): String
 
     @GET
     @Path("/device")
@@ -55,5 +57,5 @@ interface ConfigurationServiceV1 {
     @ApiOperation(value = "Get configuration given node", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getNodeConfiguration(
             @QueryParam(value = NODE_KEY) nodeKey: String
-    ): String?
+    ): String
 }

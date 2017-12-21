@@ -45,6 +45,9 @@ class UserService : UserService {
     @Inject
     private lateinit var depotRepository: DepotJooqRepository
 
+    @Inject
+    private lateinit var configurationService: ConfigurationService
+
     @Context
     private lateinit var httpHeaders: HttpHeaders
 
@@ -419,6 +422,14 @@ class UserService : UserService {
 //                    status = Response.Status.UNAUTHORIZED)
 //        }
         return authorizedUserRecord.toUser()
+    }
+
+    override fun getConfigurationById(userId: Int): String {
+        return configurationService.getUserConfiguration(userId)
+    }
+
+    override fun getCurrentUserConfiguration(): String {
+        return configurationService.getUserConfiguration(this.get().id ?: throw DefaultProblem(status = Response.Status.NOT_FOUND))
     }
 
 }

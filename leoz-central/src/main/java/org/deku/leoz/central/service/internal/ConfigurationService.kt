@@ -4,7 +4,8 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.config.Rest
-import org.deku.leoz.service.internal.ConfigurationServiceV1
+import org.deku.leoz.model.UserRole
+import org.deku.leoz.service.internal.ConfigurationService
 import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
@@ -19,7 +20,7 @@ import javax.ws.rs.core.Response
 
 @Named
 @Path("internal/v1/configuration")
-class ConfigurationServiceV1: ConfigurationServiceV1 {
+class ConfigurationService: ConfigurationService {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -39,7 +40,7 @@ class ConfigurationServiceV1: ConfigurationServiceV1 {
     @Context
     private lateinit var httpHeaders: HttpHeaders
 
-    override fun getCurrentUserConfiguration(): String? {
+    override fun getUserConfiguration(userId: Int): String {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
         apiKey ?:
                 throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
@@ -48,14 +49,32 @@ class ConfigurationServiceV1: ConfigurationServiceV1 {
         authorizedUserRecord ?:
                 throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
 
+        val targetUserRecord = userRepository.findById(userId) ?: throw DefaultProblem(title = "User not found", status = Response.Status.NOT_FOUND)
+
+        if (targetUserRecord.keyId != authorizedUserRecord.keyId) {
+            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+                if (authorizedUserRecord.debitorId != targetUserRecord.debitorId) {
+                    throw DefaultProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
+                } else {
+                    val authRole = UserRole.valueOf(authorizedUserRecord.role)
+                    val targetRole = UserRole.valueOf(targetUserRecord.role)
+                    if (authRole != UserRole.POWERUSER) {
+                        if (targetRole >= authRole) {
+                            throw DefaultProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
+                        }
+                    }
+                }
+            }
+        }
+
         return try {
-            authorizedUserRecord.config.toString()
+            targetUserRecord.config.toString()
         } catch (e: Exception) {
             "{}"
         }
     }
 
-    override fun getNodeConfiguration(nodeKey: String): String? {
+    override fun getNodeConfiguration(nodeKey: String): String {
         val node = nodeJooqRepository.findByKey(nodeKey) ?: throw DefaultProblem(title = "Invalid DeviceID", detail = "Device ID could not be found", status = Response.Status.NOT_FOUND)
 
         return if (node.configuration.isNullOrEmpty()) "{}" else node.configuration
