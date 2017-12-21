@@ -294,21 +294,6 @@ class Stopwatch {
             }
         }
 
-        /**
-         * Creates (and starts) a new stopwatch and executes a block with automatic logging
-         * @param name Name of operation to measure
-         * @param log Log action to perform
-         * @param block Block to execute/measure
-         */
-        fun createStarted(name: String, log: LogAction = {}, block: (Stopwatch, LogAction) -> Unit) {
-            val sw = Stopwatch.createStarted()
-            try {
-                block(sw, log)
-            } finally {
-                log.invoke("${name} [${sw}]")
-            }
-        }
-
         private fun chooseUnit(nanos: Long): TimeUnit {
             if (TimeUnit.DAYS.convert(nanos, TimeUnit.NANOSECONDS) > 0) {
                 return TimeUnit.DAYS

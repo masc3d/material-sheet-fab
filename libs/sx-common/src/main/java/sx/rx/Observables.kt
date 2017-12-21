@@ -91,6 +91,30 @@ fun Completable.toHotCache(executor: Executor? = null, onError: (Throwable) -> U
 }
 
 /**
+ * Transforms Completable into a hot one with cache applied
+ */
+fun Completable.toHotCache(scheduler: Scheduler, onError: (Throwable) -> Unit = {}): Completable {
+    val c = this.subscribeOn(scheduler)
+            .cache()
+
+    c.subscribeBy(onError = onError)
+
+    return c
+}
+
+/**
+ * Transforms Completable into a hot one with cache applied
+ */
+fun Completable.toHotCache(onError: (Throwable) -> Unit = {}): Completable {
+    val c = this.subscribeOn(executor = null)
+            .cache()
+
+    c.subscribeBy(onError = onError)
+
+    return c
+}
+
+/**
  * Transform Observable into a hot one with replay applied
  */
 fun <T> Observable<T>.toHotReplay(composite: CompositeDisposable? = null, scheduler: Scheduler? = null): Observable<T> {
