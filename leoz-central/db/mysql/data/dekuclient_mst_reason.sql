@@ -51,7 +51,7 @@ INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) 
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (51, 'PASSIVE', 'Passiv', null);
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (52, 'PERISHABLE', 'Verderbliche Ware', null);
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (53, 'PICKUPREF', 'Abholreferenz', null);
-INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (54, 'PICKUPUNOPTAIN', 'Abholort nicht erreichbar', null);
+INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (54, 'LOCUNOPTAINABLE', 'Abholort nicht erreichbar', null);
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (55, 'PINFAULTY', 'PIN / IMEI Fehlerhaft', null);
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (56, 'PODONDEMAND', 'externer Spediteur / POD auf Anfrage', null);
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (57, 'POSTAGEADJUST', 'Frankatur angepasst', null);
@@ -87,3 +87,5 @@ INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) 
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (87, 'WRONGLOADED', 'Fehlentladung', null);
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (88, 'WRONGROUTED', 'Fehlrouting', null);
 INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (89, 'XCHCODEFAULTY', 'X-Change Code falsch', null);
+INSERT INTO dekuclient.mst_reason (id, reasoncode, reason_name, reason_text_id) VALUES (90, 'NOTSTACOMPLIANT', 'Ware nicht Stationskonform
+', null);
