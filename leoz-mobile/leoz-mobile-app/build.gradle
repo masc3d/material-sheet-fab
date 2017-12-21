@@ -18,12 +18,12 @@ buildscript {
     }
 
     ext {
-        v_android_gms = '11.6.2'
+        v_android_gms = '11.8.0'
         v_anko = '0.10.3'
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.6.0'
         v_parceler = '1.1.9'
-        v_roboelectric = '3.5.1'
+        v_roboelectric = '3.6.1'
         v_rxlifecycle = '2.2.1'
         v_stetho = '1.5.0'
         v_truetime = '3.3'
@@ -365,7 +365,7 @@ dependencies {
             "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
 
             "org.robolectric:robolectric:$v_roboelectric",
-            "org.robolectric:shadows-multidex:3.5.1",
+            "org.robolectric:shadows-multidex:$v_roboelectric",
     )
 
     androidTestImplementation(
