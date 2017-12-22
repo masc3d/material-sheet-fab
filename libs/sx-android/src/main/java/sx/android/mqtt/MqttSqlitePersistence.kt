@@ -5,11 +5,14 @@ import io.reactivex.Observable
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.jetbrains.anko.db.*
 import org.slf4j.LoggerFactory
+import sx.Stopwatch
 import sx.android.anko.sqlite.getBoolean
 import sx.android.anko.sqlite.getByteArray
 import sx.android.anko.sqlite.getInt
 import sx.android.anko.sqlite.getString
 import sx.android.database.sqlite.backupTo
+import sx.log.slf4j.info
+import sx.log.slf4j.trace
 import sx.mq.mqtt.IMqttPersistence
 import sx.mq.mqtt.MqttPersistentMessage
 import sx.mq.mqtt.toPersistentMessage
@@ -18,22 +21,27 @@ import java.io.File
 /**
  * MQTT dispatcher persistence implementation for SQLite on android
  * @param databaseFile Database file to use
+ * @param maxInMemoryBatchSize The maximum (in-memory) size of a single batch (in bytes)
  * Created by masc on 16.05.17.
  * TODO: (not yet) thread-safe. currently not suited for sharing among multiple dispatchers (or a dispatcher implementing multi-threaded dequee)
  */
 class MqttSqlitePersistence constructor(
-        private val databaseFile: File
+        private val databaseFile: File,
+        private val maxInMemoryBatchSize: Int = MAX_BATCH_SIZE_BYTES
 ) : IMqttPersistence {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    companion object {
-        private val TABLE_NAME = "mqtt"
-        private val COL_ID = "id"
-        private val COL_TOPIC = "topic"
-        private val COL_QOS = "qos"
-        private val COL_RETAINED = "retained"
-        private val COL_MESSAGEID = "message_id"
-        private val COL_PAYLOAD = "payload"
+    private companion object {
+        const val TABLE_NAME = "mqtt"
+        const val COL_ID = "id"
+        const val COL_TOPIC = "topic"
+        const val COL_QOS = "qos"
+        const val COL_RETAINED = "retained"
+        const val COL_MESSAGEID = "message_id"
+        const val COL_PAYLOAD = "payload"
+
+        const val MAX_BATCH_SIZE = 4096
+        const val MAX_BATCH_SIZE_BYTES = 5 * 1024 * 1024
     }
 
     private val db by lazy {
@@ -101,8 +109,6 @@ class MqttSqlitePersistence constructor(
     }
 
     override fun get(topicName: String?): Observable<MqttPersistentMessage> {
-        val BATCH_SIZE = 100
-
         return Observable.create<MqttPersistentMessage> { emitter ->
             try {
                 val parser = MessageRowParser()
@@ -110,25 +116,57 @@ class MqttSqlitePersistence constructor(
                 // Group selects into batches, so it's safe for consumers
                 // to remove records even on large queues
                 var lastId = -1
-                while (true) {
-                    val batch = this.db.select(
-                            tableName = TABLE_NAME
-                    )
-                            .whereArgs(
-                                    select = "${COL_ID} > {${COL_ID}}",
-                                    args = *arrayOf(COL_ID to lastId)
-                            )
-                            .orderBy(COL_ID)
-                            .limit(BATCH_SIZE)
-                            .exec {
-                                asMapSequence()
-                                        .map { parser.parseRow(it) }
-                                        .toList()
-                            }
+
+                loop@ while (!emitter.isDisposed) {
+                    var batchSize: Int = 0
+                    var batchSizeBytes: Int = 0
+
+                    //region Determine batch size
+                    // Peek payload sizes
+                    val sizes = Stopwatch.createStarted(this, "SELECT BATCH SIZES", { _, _ ->
+                        val COL_SIZE = "LENGTH(${COL_PAYLOAD})"
+                        this.db.select(TABLE_NAME, COL_SIZE)
+                                .orderBy(COL_ID)
+                                .limit(MAX_BATCH_SIZE)
+                                .exec {
+                                    asSequence()
+                                            .map { IntParser.parseRow(it) }
+                                            .toList()
+                                }
+
+                    })
+
+                    log.info { "Maximum batch size ${sizes.count()} -> ${sizes.sum()} bytes" }
+
+                    for (size in sizes) {
+                        batchSizeBytes += size
+                        if (batchSizeBytes > this.maxInMemoryBatchSize)
+                            break
+                        batchSize++
+                    }
+                    batchSize = if (batchSize > 0) batchSize else 1
+                    //endregion
+
+                    log.info { "Processing batch size ${batchSize} -> ${batchSizeBytes} bytes" }
+                    val batch = Stopwatch.createStarted(this, "SELECT BATCH", { _, _ ->
+                        this.db.select(TABLE_NAME)
+                                .whereArgs(
+                                        select = "${COL_ID} > {${COL_ID}}",
+                                        args = *arrayOf(COL_ID to lastId)
+                                )
+                                .orderBy(COL_ID)
+                                .limit(batchSize)
+                                .exec {
+                                    asMapSequence()
+                                            .map { parser.parseRow(it) }
+                                            .toList()
+                                }
+
+                    })
 
                     // No results -> done
                     if (batch.size == 0)
-                        break
+                        break@loop
 
                     // Store last id for next batch/iteration
                     lastId = batch.last().persistentId
