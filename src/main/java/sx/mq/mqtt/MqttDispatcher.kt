@@ -18,7 +18,6 @@ import sx.rx.toHotCache
 import java.lang.Thread.MIN_PRIORITY
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -171,7 +170,7 @@ class MqttDispatcher(
                                                         .subscribeOn(this@MqttDispatcher.dequeuScheduler)
                                         )
                                         .toSingleDefault(m)
-                                        .subscribeOn(this@MqttDispatcher.dequeuScheduler)
+                                        .subscribeOn(this.dequeuScheduler)
                                         .blockingGet()
 
                                 Observable.just(m)
@@ -180,14 +179,14 @@ class MqttDispatcher(
                                 if (count > 0)
                                     log.info("Dequeued ${count} in [${sw}]")
                             }
-                            .subscribeOn(scheduler)
+                            .subscribeOn(scheduler.limit(1))
                             // Map processed batch back to trigger unit
                             .ignoreElements()
                             .toSingleDefault(trigger)
                             .toObservable()
                 }
-                .subscribeBy(onError = {
-                    log.error("Dequeue terminated with error [${it.message}]")
+                .subscribeBy(onError = { e ->
+                    log.error("Dequeue terminated with error [${e.message}]")
                 })
     }
 
@@ -242,12 +241,17 @@ class MqttDispatcher(
     /**
      * Disconnect from remote broker and discontinue connection retries.
      * The returned {@link Completable} will always be completed without error.
+     *
+     * IMPORTANT: Disconnecting gracefully leads to (irrational) delayed
+     * connection related errors on eg. publish with paho-1.2.0, which may
+     * interrupt dequeuing eg. so `disconnect` should be always be called with `forcibly=true`
+     * for reliable results.
      */
-    override fun disconnect(): Completable {
+    override fun disconnect(forcibly: Boolean): Completable {
         this.lock.withLock {
             log.info("Disconnecting")
             this.connectionSubscription = null
-            return this.client.disconnect()
+            return this.client.disconnect(forcibly)
         }
     }
 

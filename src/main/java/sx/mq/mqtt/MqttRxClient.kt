@@ -36,7 +36,7 @@ interface IMqttRxClient {
     /**
      * Disconnect client
      */
-    fun disconnect(): Completable
+    fun disconnect(forcibly: Boolean = false): Completable
 }
 
 /**
@@ -186,7 +186,6 @@ class MqttRxClient(
                 .toHotCache()
     }
 
-
     /**
      * Establish connection
      * @param options Connection options
@@ -223,23 +222,27 @@ class MqttRxClient(
     /**
      * Disconnect
      */
-    override fun disconnect(): Completable {
+    override fun disconnect(forcibly: Boolean): Completable {
         return Completable.create { emitter ->
-            try {
-                this.parent.disconnect(
-                        null,
-                        object : IMqttActionListener {
-                            override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                emitter.onComplete()
-                            }
+            if (forcibly) {
+                this.shutdown()
+            } else {
+                try {
+                    this.parent.disconnect(
+                            null,
+                            object : IMqttActionListener {
+                                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                                    emitter.onComplete()
+                                }
 
-                            override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                                if (!emitter.isDisposed)
-                                    emitter.onError(exception ?: MqttException(null))
-                            }
-                        })
-            } catch (e: Throwable) {
-                emitter.onError(e)
+                                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                                    if (!emitter.isDisposed)
+                                        emitter.onError(exception ?: MqttException(null))
+                                }
+                            })
+                } catch (e: Throwable) {
+                    emitter.onError(e)
+                }
             }
         }
                 .toHotCache()
