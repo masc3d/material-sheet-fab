@@ -109,7 +109,7 @@ class MqttConfiguration {
                 instance<Connectivity>().networkProperty.subscribe {
                     when (it.value.state) {
                         NetworkInfo.State.CONNECTED -> dispatcher.connect()
-                        else -> dispatcher.disconnect()
+                        else -> dispatcher.disconnect(forcibly = true)
                     }
                 }
 
