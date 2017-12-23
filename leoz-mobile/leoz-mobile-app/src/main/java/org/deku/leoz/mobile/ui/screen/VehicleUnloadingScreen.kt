@@ -416,7 +416,7 @@ class VehicleUnloadingScreen :
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result: Result<org.deku.leoz.model.Parcel> = UnitNumber.parseLabel(event.data)
+        val result: Result<UnitNumber> = UnitNumber.parseLabel(event.data)
 
         when {
             result.hasError -> {
@@ -425,7 +425,7 @@ class VehicleUnloadingScreen :
                         .build().show()
             }
             else -> {
-                this.onInput(unitNumber = result.value.number)
+                this.onInput(unitNumber = result.value)
             }
         }
     }

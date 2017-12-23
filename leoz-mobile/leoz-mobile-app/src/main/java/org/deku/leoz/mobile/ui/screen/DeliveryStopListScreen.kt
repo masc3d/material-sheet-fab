@@ -42,7 +42,6 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.vm.StopListStatisticsViewModel
 import org.deku.leoz.mobile.ui.vm.StopViewModel
 import org.deku.leoz.model.DekuUnitNumber
-import org.deku.leoz.model.Parcel
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
@@ -586,7 +585,7 @@ class DeliveryStopListScreen
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result: Result<Parcel> = UnitNumber.parseLabel(event.data)
+        val result: Result<UnitNumber> = UnitNumber.parseLabel(event.data)
 
         when {
             result.hasError -> {
@@ -597,7 +596,7 @@ class DeliveryStopListScreen
                         .build().show()
             }
             else -> {
-                this.onInput(unitNumber = result.value.number)
+                this.onInput(unitNumber = result.value)
             }
         }
     }

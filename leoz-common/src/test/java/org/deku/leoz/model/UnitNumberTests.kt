@@ -27,12 +27,6 @@ class UnitNumberTests {
             "900102602853"
     )
 
-    val GLS_UNIT_LABELS = listOf(
-            "458515041831",
-            "458515041824",
-            "458515041770"
-    )
-
     val DEKU_GLS_UNIT_LABELS = listOf(
             "845515041830",
             "845515041823",
@@ -143,6 +137,18 @@ class UnitNumberTests {
             "100713216757"
     )
 
+    val GLS_UNIT_LABELS = listOf(
+            "458515041831",
+            "458515041824",
+            "458515041770"
+    )
+
+    val GLS_UNIT_NUMBERS_NO_EXPRESS = listOf(
+            "45251504183",
+            "45251504182",
+            "45251504177"
+    )
+
     @Test
     fun testGlsUnitNumbers() {
         // Test GLS unit numbers
@@ -195,6 +201,13 @@ class UnitNumberTests {
             if (!un.assertAny(UnitNumber.Type.Parcel).hasError) {
                 Assert.assertEquals(un.value.type, UnitNumber.Type.Parcel)
             }
+        }
+    }
+
+    @Test
+    fun testGlsUnitNumbersNonExpress() {
+        GLS_UNIT_NUMBERS_NO_EXPRESS.forEach {
+            Assert.assertTrue(GlsUnitNumber.parse(it).hasError)
         }
     }
 

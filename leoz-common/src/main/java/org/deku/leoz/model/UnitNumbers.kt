@@ -17,13 +17,14 @@ abstract class UnitNumber protected constructor(
          * Universal label parsing for unit numbers
          * @param label Label content to parse
          */
-        fun parseLabel(label: String): Result<Parcel> {
-            val number =
-                    DekuUnitNumber.parseLabel(label).valueOrNull
-                            ?: GlsUnitNumber.parseLabel(label).valueOrNull?.toUnitNumber()
-                            ?: return Result(error = IllegalArgumentException("Invalid unit label"))
-
-            return Result(value = Parcel(number = number))
+        fun parseLabel(label: String): Result<UnitNumber> {
+            return try {
+                Result(value = DekuUnitNumber.parseLabel(label).valueOrNull
+                        ?: GlsUnitNumber.parseLabel(label).valueOrNull?.toUnitNumber()
+                        ?: return Result(error = IllegalArgumentException("Invalid unit label")))
+            } catch (e: Throwable) {
+                Result(error = e)
+            }
         }
     }
 
@@ -110,32 +111,30 @@ class DekuUnitNumber private constructor(
             )
         }
 
-        /** Parse a plain unit number without check digit */
-        fun parse(value: String): Result<DekuUnitNumber> {
-            if (value.length != 11)
-                return Result(error = IllegalArgumentException("Unit number [${value}] must have 11 digits"))
+        private fun parse(value: String, asLabel: Boolean): Result<DekuUnitNumber> {
+            val requiredLength = if (asLabel) 12 else 11
+
+            if (value.length != requiredLength)
+                return Result(error = IllegalArgumentException("Label based unit number [${value}] must have ${requiredLength} digits"))
 
             if (!value.all { it.isDigit() })
                 return Result(error = IllegalArgumentException("Unit number [${value}] must be numeric"))
 
-            return Result(DekuUnitNumber(value))
+            val number = if (asLabel) {
+                CheckDigits.DEKU.verify(value)
+                        ?: return Result(error = IllegalArgumentException("Unit number [${value}] has invalid check digit"))
+            } else {
+                value
+            }
+
+            return Result(DekuUnitNumber(number))
         }
+
+        /** Parse a plain unit number without check digit */
+        fun parse(value: String): Result<DekuUnitNumber> = this.parse(value, asLabel = false)
 
         /** Parse label unit number, which includes a check digit */
-        fun parseLabel(value: String): Result<DekuUnitNumber> {
-            if (value.length != 12)
-                return Result(error = IllegalArgumentException("Label based unit number [${value}] must have 12 digits"))
-
-            if (!value.all { it.isDigit() })
-                return Result(error = IllegalArgumentException("Unit number [${value}] must be numeric"))
-
-            val number = CheckDigits.DEKU.verify(value)
-
-            return when {
-                number != null -> Result(DekuUnitNumber(number))
-                else -> Result(error = IllegalArgumentException("Unit number [${value}] has invalid check digit"))
-            }
-        }
+        fun parseLabel(value: String): Result<DekuUnitNumber> = this.parse(value, asLabel = true)
     }
 }
 
@@ -183,41 +182,41 @@ class GlsUnitNumber private constructor(
     }
 
     companion object {
-        fun parse(value: String): Result<GlsUnitNumber> {
-            if (value.length != 11)
-                return Result(error = IllegalArgumentException("GLS unit number [${value}] must have 11 digits"))
+        private fun parse(value: String, asLabel: Boolean): Result<GlsUnitNumber> {
+            val requiredLength = if (asLabel) 12 else 11
+
+            if (value.length != requiredLength)
+                return Result(error = IllegalArgumentException("GLS unit number [${value}] must have ${requiredLength} digits"))
 
             if (!value.all { it.isDigit() })
                 return Result(error = IllegalArgumentException("GLS unit number [${value}] must be numeric"))
 
-            val un = GlsUnitNumber(value)
+            val number = if (asLabel) {
+                CheckDigits.GLS.verify(value)
+                        ?: return Result(error = IllegalArgumentException("GLS unit number [${value}] has invalid check digit"))
+            } else {
+                value
+            }
 
+            val un = GlsUnitNumber(number)
+
+            // Evaluate/check service type
             try {
                 un.serviceType
-            } catch(e: Throwable) {
+            } catch (e: Throwable) {
                 return Result(error = IllegalArgumentException("GLS unit number [${value}] has unsupported service token [${un.serviceTypeToken}]"))
             }
 
             if (un.serviceType != ServiceType.EXPRESS)
-                    return Result(error = IllegalArgumentException("GLS unit number [${value}] has invalid service type [${un.serviceType}]"))
+                return Result(error = IllegalArgumentException("GLS unit number [${value}] has invalid service type [${un.serviceType}]"))
 
-            return Result(GlsUnitNumber(value))
+            return Result(un)
+
         }
 
-        fun parseLabel(value: String): Result<GlsUnitNumber> {
-            if (value.length != 12)
-                return Result(error = IllegalArgumentException("Label based GLS unit number [${value}] must have 12 digits"))
+        fun parse(value: String): Result<GlsUnitNumber> = this.parse(value, asLabel = false)
 
-            if (!value.all { it.isDigit() })
-                return Result(error = IllegalArgumentException("GLS unit number [${value}] must be numeric"))
-
-            val number = CheckDigits.GLS.verify(value)
-
-            return when {
-                number != null -> Result(GlsUnitNumber(number))
-                else -> Result(error = IllegalArgumentException("GLS unit number [${value}] has invalid check digit"))
-            }
-        }
+        fun parseLabel(value: String): Result<GlsUnitNumber> = this.parse(value, asLabel = true)
     }
 }
 

@@ -749,7 +749,7 @@ class DeliveryStopProcessScreen :
     private fun onAidcRead(event: AidcReader.ReadEvent) {
         log.trace("AIDC READ $event")
 
-        val result: Result<Parcel> = UnitNumber.parseLabel(event.data)
+        val result: Result<UnitNumber> = UnitNumber.parseLabel(event.data)
 
         when {
             result.hasError -> {
@@ -760,7 +760,7 @@ class DeliveryStopProcessScreen :
                         .build().show()
             }
             else -> {
-                this.onInput(unitNumber = result.value.number)
+                this.onInput(unitNumber = result.value)
             }
         }
     }
