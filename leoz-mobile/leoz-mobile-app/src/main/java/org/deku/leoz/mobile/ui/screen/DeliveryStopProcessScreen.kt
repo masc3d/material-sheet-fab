@@ -4,8 +4,8 @@ import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.app.FragmentManager
 import android.os.Handler
+import android.support.v4.app.FragmentManager
 import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
 import android.view.LayoutInflater
@@ -23,6 +23,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
@@ -769,6 +770,7 @@ class DeliveryStopProcessScreen :
         // Regular stop parcels
         this.deliveryStop
                 .parcels
+                .subscribeOn(db.scheduler)
                 .blockingFirst()
                 .firstOrNull { it.number == unitNumber.value }
                 ?.also {
@@ -778,8 +780,9 @@ class DeliveryStopProcessScreen :
 
         // Other stop parcels (merge support)
         this.parcelRepository
-                .entities
-                .firstOrNull { it.number == unitNumber.value }
+                .findByNumber(unitNumber.value)
+                .subscribeOn(db.scheduler)
+                .blockingGet()
                 ?.also { parcel ->
                     val sourceStop = parcel.order.deliveryTask.stop
                             ?: throw IllegalStateException("No stop for task")
