@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        v_android_buildtools = '27.0.1'
+        v_android_buildtools = '27.0.3'
         v_android_support = '27.0.2'
     }
 
