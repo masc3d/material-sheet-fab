@@ -69,8 +69,12 @@ interface CallbackArguments {
       <p-column field="mobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
       <p-column header="">
         <ng-template let-driver="rowData" pTemplate="body">
-          <i class="fa fa-crosshairs fa-fw" aria-hidden="true" (click)="showPositionPeriodically(driver)"></i>
-          <i class="fa fa-road fa-fw" aria-hidden="true" (click)="showRoutePeriodically(driver)"></i>
+          <span (click)="showPositionPeriodically(driver)">
+            <i class="fa fa-crosshairs fa-fw" aria-hidden="true"></i>
+          </span>
+          <span (click)="showRoutePeriodically(driver)">
+            <i class="fa fa-road fa-fw" aria-hidden="true"></i>
+          </span>
         </ng-template>
       </p-column>
     </p-dataTable>

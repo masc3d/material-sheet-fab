@@ -333,7 +333,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
       const officeManagementItems = [
         {
           label: this.translate.instant( 'co-worker' ),
-          icon: 'fa-smile-o',
+          icon: 'far fa-thumbs-up',
           routerLink: 'user',
           command: closeMenu
         } ];

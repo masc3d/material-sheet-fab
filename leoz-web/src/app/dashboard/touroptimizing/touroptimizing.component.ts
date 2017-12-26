@@ -39,7 +39,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
     fontawesome.library.add(regular.faHourglass);
 
     this.touroptimizingForm = this.fb.group( {
-      payload: [ null ],
+      carCount: [ null ],
       selectloadlist: [ null ],
       scanfield: [ null ],
       loadlistnumber: [ { value: '', disabled: true } ],
