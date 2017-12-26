@@ -243,6 +243,12 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
           command: closeMenu
         },
         {
+          label: this.translate.instant( 'touroptimizing' ),
+          icon: '',
+          routerLink: '/dashboard/touroptimizing',
+          command: closeMenu
+        },
+        {
           label: this.translate.instant( 'deliverydispo' ),
           icon: '',
           routerLink: '/dashboard/deliverydispo',

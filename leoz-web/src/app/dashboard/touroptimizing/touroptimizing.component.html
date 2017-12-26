@@ -1,0 +1,178 @@
+<form [formGroup]="touroptimizingForm" style="padding-top: 10px" class="mbDashboardContent">
+  <div class="ui-fluid">
+    <div class="ui-g" style="min-height: 465px; height: calc(100vh - 236px);">
+
+      <div class="ui-g-12 ui-lg-4" style="padding:0;">
+        <p-fieldset legend="{{'1-stoplist' | translate}}">
+
+          <style>
+            .row-stoplist {
+              font-size:14px;padding:5px;
+            }
+            .row-stoplist > div {
+              padding: 0; height:20px;
+            }
+          </style>
+          <p-dataScroller [value]="shipments" [rows]="100" [inline]="true" scrollHeight="100%"
+                          [style]="{'height': '550px'}">
+
+            <ng-template let-shipments pTemplate="body">
+              <div class="ui-g row-stoplist">
+
+                <div class="ui-g-12 ui-lg-1"><i class="far fa-hourglass" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-lg-2">{{shipments.deliveryTime}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="far fa-building" style="color: #184b7d;"></i></div>
+                <!--<div class="ui-g-12 ui-lg-1"><i class="fa-address-card-o" style="color: #184b7d;"></i></div>-->
+                <div class="ui-g-12 ui-lg-2">{{shipments.deliveryAddress.zipCode}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa fa-balance-scale" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-md-2">{{shipments.parcels[0]?.realWeight}}</div>
+
+                <div class="ui-g-12 ui-lg-1">
+                    <span *ngIf="shipments.optimized; else notOptimized">
+                      <i class="fas fa-sync" style="color: #00a200;"></i>
+                    </span>
+                    <ng-template #notOptimized>
+                      <i class="fas fa-sync" style="color: #ff0000;"></i>
+                    </ng-template>
+                </div>
+
+                <div class="ui-g-12 ui-lg-1">
+                  <p-checkbox name="optimize" value="optimize"></p-checkbox>
+                </div>
+
+              </div>
+            </ng-template>
+          </p-dataScroller>
+          <div style="margin-top: 10px;">
+            <div class="ui-g-12 ui-lg-1"><i class="fas fa-truck" style="color: #184b7d; margin-top: 5px;"></i></div>
+            <div class="ui-g-12 ui-lg-2"><i class="ui-g-12 ui-g-nopad">
+              <input #scanfield pInputText formControlName="carCount" class="bgYellow"></i></div>
+            <div class="ui-g-12 ui-lg-5"><i class="fas fa-sync" style="color: #184b7d; margin-top: 5px;"></i></div>
+            <div class="ui-g-12 ui-lg-4" style="color: #184b7d; margin-top: 5px;">mark all/none</div>
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-4" style="padding:0;">
+        <p-fieldset legend="{{'2-deliverylists' | translate}}">
+
+          <style>
+            .row-deliverylist {
+              font-size:14px;padding:5px;border-bottom:1px solid #D5D5D5;
+            }
+            .row-deliverylist > div {
+              padding: 0; height:30px;
+            }
+          </style>
+          <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="100%"
+                          [style]="{'height': '550px'}">
+
+            <ng-template let-tour pTemplate="body">
+              <div class="ui-g row-deliverylist">
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa fa-align-justify" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-lg-3">{{tour.deliverylistNumber}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;">S</i></div>
+                <div class="ui-g-12 ui-lg-1">{{tour.shipments}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;">P</i></div>
+                <div class="ui-g-12 ui-lg-1">{{tour.packages}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa fa-balance-scale" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-md-3">{{tour.weight}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="far fa-clock" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-lg-3">{{tour.time}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa fa-road" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-lg-3">{{tour.distance}}</div>
+
+                <div class="ui-g-12 ui-lg-1">
+                    <span *ngIf="tour.optimized; else notOptimized">
+                      <i class="fas fa-sync" style="color: #00a200;"></i>
+                    </span>
+                  <ng-template #notOptimized>
+                    <i class="fas fa-sync" style="color: #ff0000;"></i>
+                  </ng-template>
+                </div>
+
+                <div class="ui-g-12 ui-lg-1">
+                  <p-checkbox name="optimize" value="optimize"></p-checkbox>
+                </div>
+
+              </div>
+            </ng-template>
+          </p-dataScroller>
+          <div style="margin-top: 10px;">
+            <div class="ui-g-12 ui-lg-6"><i class="fas fa-percent" style="color: #184b7d;"></i> 12</div>
+            <div class="ui-g-12 ui-lg-2"><i class="fas fa-print" style="color: #184b7d;"></i></div>
+            <div class="ui-g-12 ui-lg-2"><i class="fas fa-sync" style="color: #184b7d;"></i></div>
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="ui-g-12 ui-lg-4" style="padding:0;">
+        <p-fieldset legend="{{'3-tourlists' | translate}}">
+
+          <style>
+            .row-tourlist {
+              font-size:14px;padding:5px;border-bottom:1px solid #D5D5D5;
+            }
+            .row-tourlist > div {
+              padding: 0; height:30px;
+            }
+          </style>
+          <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="100%"
+                          [style]="{'height': '550px'}">
+
+            <ng-template let-tour pTemplate="body">
+              <div class="ui-g row-tourlist">
+
+                <div class="ui-g-12 ui-lg-1"><i class="fas fa-truck" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-lg-3">{{tour.tourNo}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;">S</i></div>
+                <div class="ui-g-12 ui-lg-1">{{tour.tourShipments}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;">P</i></div>
+                <div class="ui-g-12 ui-lg-1">{{tour.tourPackages}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa fa-balance-scale" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-md-3">{{tour.tourWeight}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="far fa-clock" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-lg-3">{{tour.tourTime}}</div>
+
+                <div class="ui-g-12 ui-lg-1"><i class="fa fa-road" style="color: #184b7d;"></i></div>
+                <div class="ui-g-12 ui-lg-3">{{tour.tourDistance}}</div>
+
+                <div class="ui-g-12 ui-lg-1">
+                    <span *ngIf="tour.tourOptimized; else tourNotOptimized">
+                      <i class="fas fa-sync" style="color: #00a200;"></i>
+                    </span>
+                  <ng-template #tourNotOptimized>
+                    <i class="fas fa-sync" style="color: #ff0000;"></i>
+                  </ng-template>
+                </div>
+
+                <div class="ui-g-12 ui-lg-1">
+                  <p-checkbox name="optimize" value="optimize"></p-checkbox>
+                </div>
+
+              </div>
+            </ng-template>
+          </p-dataScroller>
+          <div style="margin-top: 10px;">
+            <div class="ui-g-12 ui-lg-6"><i class="fas fa-percent" style="color: #184b7d;"></i> 87</div>
+            <div class="ui-g-12 ui-lg-2"><i class="fas fa-print" style="color: #184b7d;"></i></div>
+            <div class="ui-g-12 ui-lg-2"><i class="fas fa-sync" style="color: #184b7d;"></i></div>
+          </div>
+        </p-fieldset>
+      </div>
+
+    </div>
+  </div>
+</form>

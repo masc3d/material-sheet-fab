@@ -15,4 +15,5 @@ export interface Shipment {
   deliveryPos?: number;
   deliveryStatus?: number;
   deliveryCode?: number;
+  optimized?: boolean
 }
