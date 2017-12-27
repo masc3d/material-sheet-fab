@@ -171,7 +171,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
       scanfield: [ null ],
       loadlistnumber: [ { value: '', disabled: true } ],
       printlabel: [ null ],
-      basedon: [ 'actuallist' ]
+      basedon: [ null ]
     } );
 
     this.loadinglistService.activeLoadinglist$
