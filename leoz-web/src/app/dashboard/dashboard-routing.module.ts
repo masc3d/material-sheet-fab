@@ -76,6 +76,13 @@ export const routes = [
         loadChildren: 'app/dashboard/tourzipmapping/tourzipmapping.module#TourzipmappingModule'
       },
       {
+        path: 'touroptimizing',
+        data: { preload: true },
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/touroptimizing/touroptimizing.module#TouroptimizingModule'
+      },
+      {
         path: 'order',
         data: { preload: true },
         canActivate: [ AuthenticationGuard,

@@ -17,7 +17,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
     <p-dataTable [value]="users$ | async | userfilter" resizableColumns="true" [responsive]="true"
                  sortMode="multiple" [multiSortMeta]="multiSortMeta">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
-      <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
+      <p-column field="lastName" header="{{'surname' | translate}}" sortable="true"></p-column>
       <p-column field="role" header="{{'role' | translate}}" [sortable]="true">
         <ng-template let-user="rowData" pTemplate="body">
           {{ translate.role(user.role) }}
@@ -43,10 +43,12 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
       </p-column>
       <p-column header="">
         <ng-template let-user="rowData" pTemplate="body">
-          <i *ngIf="myself(user) || checkPermission(user)" class="fa fa-pencil fa-fw" aria-hidden="true"
-             (click)="selected(user)"></i>
-          <i *ngIf="checkPermission(user)" class="fa fa-trash-o fa-fw" aria-hidden="true"
-             (click)="deactivate(user)"></i>
+          <span (click)="selected(user)">
+          <i *ngIf="myself(user) || checkPermission(user)" class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>
+          </span>
+          <span (click)="deactivate(user)">
+          <i *ngIf="checkPermission(user)" class="far fa-trash-alt fa-fw" aria-hidden="true"></i>
+          </span>
         </ng-template>
       </p-column>
     </p-dataTable>
@@ -73,7 +75,6 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
 
     this.multiSortMeta.push( { field: 'active', order: -1 } );
     this.multiSortMeta.push( { field: 'lastName', order: 1 } );
-
     this.deactivate( <User> {} );
     this.selected( <User> {} );
     this.users$ = this.userService.users$;

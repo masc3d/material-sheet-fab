@@ -170,7 +170,9 @@
           <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
             <p-dropdown formControlName="selectbaglist" [options]="baglists" [style]="{'width': '125px'}"
                         (onChange)="selectBaglist($event.value)"></p-dropdown>
-            <i class="fa fa-print fa-fw" aria-hidden="true" (click)="generateLabel()"></i>
+            <span (click)="generateLabel()">
+              <i class="fa fa-print fa-fw" aria-hidden="true"></i>
+            </span>
           </div>
           <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">
             <button pButton type="button" (click)="refreshData()" label="{{'update' | translate}}"></button>

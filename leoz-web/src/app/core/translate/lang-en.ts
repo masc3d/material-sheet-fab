@@ -397,6 +397,8 @@ export const LANG_EN_TRANS = {
   // statusbar
   'not_connected_to_leoz': 'not connected to leoz',
   'connected_to_leoz': 'connected to leoz',
+  // touroptimizing
+  'touroptimizing': 'Tour optimizing',
 };
 
 

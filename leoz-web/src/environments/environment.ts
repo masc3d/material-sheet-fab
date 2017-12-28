@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  version: '20171220', // on change, always adapt assets/version.json
+  version: '20171221', // on change, always adapt assets/version.json
   // --build-optimizer false
   // testing system      apiUrl for leoz.it-cobra.es
   apiUrl: 'https://leoz-t1.derkurier.de:13000/rs/api',

@@ -37,6 +37,7 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
 
   ngOnInit() {
     super.ngOnInit();
+
     this.scanOptions = this.createScanOptions();
     this.ipointscanlistForm = this.fb.group( {
       scanfield: [ null ],
