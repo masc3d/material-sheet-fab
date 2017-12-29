@@ -20,7 +20,7 @@ import { AppComponent } from './app.component';
     AppRoutingModule
   ],
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   bootstrap: [ AppComponent ]
 })

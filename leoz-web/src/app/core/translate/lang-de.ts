@@ -399,5 +399,9 @@ export const LANG_DE_TRANS = {
   'connected_to_leoz': 'mit leoz verbunden',
   // touroptimizing
   'touroptimizing': 'Touroptimierung',
+  'stoplist': 'Stopliste',
+  'deliverylists': 'Zustelllisten',
+  'tourlists': 'Tourlisten',
+  'mark_all_none': 'Alle/Keine markieren',
 };
 
