@@ -21,7 +21,7 @@ buildscript {
         v_feign = '9.5.1'
         v_flyway = '5.0.3'
         v_fxform2 = '8.1.5'
-        v_guava = '23.5-jre'
+        v_guava = '23.6-jre'
         v_h2 = '1.4.196'
         v_ini4j = '0.5.4'
         v_jackson = '2.9.3'

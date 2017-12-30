@@ -99,7 +99,7 @@ dependencies {
             "org.jooq:jooq:$v_jooq",
 
             // JDBC connection pooling
-            "org.apache.commons:commons-dbcp2:2.1.1",
+            "org.apache.commons:commons-dbcp2:2.2.0",
 
             // For SVG image conversions
             "org.apache.xmlgraphics:batik-transcoder:$v_batik",

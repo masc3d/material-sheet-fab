@@ -122,6 +122,7 @@ dependencies {
             project(':sx-common'),
             project(':leoz-core'),
             project(':leoz-node-data'),
+            project(':leoz-smartlane'),
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",

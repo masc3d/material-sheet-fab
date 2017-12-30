@@ -61,7 +61,7 @@ dependencies {
 
             // Guava.
             // IMPORTANT: updating guava may cause classpath issues with gradle android-tools
-            "com.google.guava:guava:23.5-jre",
+            "com.google.guava:guava:23.6-jre",
     )
 
     testCompile(
