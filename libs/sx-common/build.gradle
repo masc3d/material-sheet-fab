@@ -14,7 +14,7 @@ buildscript {
         v_kotlin = '1.2.10'
         v_koptional = '1.2.0'
         v_requery = '1.4.1'
-        v_resteasy = '3.1.4.Final'
+        v_resteasy = '4.0.0.Beta1'
         v_socketio = '1.0.0'
         v_slf4j = '1.7.25'
     }
@@ -65,7 +65,7 @@ dependencies {
             "org.threeten:threetenbp:1.3.6",
 
             // JAX-RS
-            "javax.ws.rs:javax.ws.rs-api:2.0.1",
+            "javax.ws.rs:javax.ws.rs-api:2.1",
             "org.zalando:problem:0.20.0",
 
             // JNA
