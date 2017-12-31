@@ -50,7 +50,7 @@ class NodeServiceV1
     override fun onMessage(message: NodeServiceV1.Info, replyChannel: MqChannel?) {
         val nodeInfo = message
 
-        log.info(nodeInfo)
+        log.info { nodeInfo }
 
         val identityUid = Identity.Uid(nodeInfo.uid)
         var rNode = nodeJooqRepository.findByKey(identityUid.value)

@@ -53,7 +53,7 @@ class SmartlaneBridgeTest {
             )
                     .blockingFirst()
                     .also {
-                        log.trace(it)
+                        log.trace { it }
                     }
         })
     }

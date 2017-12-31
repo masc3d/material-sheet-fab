@@ -211,11 +211,11 @@ open class Application :
         log.info("${this.name} [${version}] ${JvmUtil.shortInfoText} pid [${Process.currentProcess.pid}]")
 
         // Log system information
-        log.info(this.systemInformation)
+        log.info { this.systemInformation }
 
         // Initialize identity
         this.initializeIdentity()
-        log.info(identity)
+        log.info { identity }
 
         // Uncaught threaded exception handler
         Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {

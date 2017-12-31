@@ -14,15 +14,15 @@ class DateTests {
 
     @Test
     fun testToDateWithoutTime() {
-        log.trace(
-                Date().toDateWithoutTime()
-        )
+        log.trace {
+            Date().toDateWithoutTime()
+        }
     }
 
     @Test
     fun testToDateOnlyTime() {
-        log.trace(
-                Date().toTimeWithoutDate()
-        )
+        log.trace {
+            Date().toTimeWithoutDate()
+        }
     }
 }

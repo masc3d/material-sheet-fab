@@ -53,7 +53,7 @@ open class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
     fun onInitialize() {
         // Initialize rsync executable path
         try {
-            log.info(Rsync.executable.file)
+            log.info { Rsync.executable.file }
 
             // Rsync configuration
             val config = RsyncServer.Configuration()

@@ -6,30 +6,6 @@ import org.slf4j.bridge.SLF4JBridgeHandler
 import java.util.logging.Level
 import java.util.logging.LogManager
 
-/**
- * Slf4j extensinos
- * Created by masc on 01/07/16.
- */
-fun Logger.info(it: Any?) {
-    this.info(it.toString())
-}
-
-fun Logger.debug(it: Any?) {
-    this.debug(it.toString())
-}
-
-fun Logger.warn(it: Any?) {
-    this.warn(it.toString())
-}
-
-fun Logger.error(it: Any?) {
-    this.error(it.toString())
-}
-
-fun Logger.trace(it: Any?) {
-    this.trace(it.toString())
-}
-
 //region Lazy message evaluation
 inline fun Logger.error(it: () -> Any?) {
     if (isErrorEnabled) error(it().toString())

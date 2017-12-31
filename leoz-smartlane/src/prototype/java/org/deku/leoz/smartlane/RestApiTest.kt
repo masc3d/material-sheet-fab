@@ -75,12 +75,12 @@ class RestApiTest {
     @Test
     fun testAuth() {
         restClient.proxy(AuthApi::class.java).also {
-            log.trace(
-                    it.auth(AuthApi.Request(
-                            email = "juergen.toepper@derkurier.de",
-                            password = "PanicLane"
-                    ))
-            )
+            log.trace {
+                it.auth(AuthApi.Request(
+                        email = "juergen.toepper@derkurier.de",
+                        password = "PanicLane"
+                ))
+            }
         }
     }
 
@@ -89,17 +89,17 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(AddressApi::class.java).also {
-            log.trace(
-                    it.postAddress(
-                            Address().also {
-                                it.contactcompany = "Test"
-                                it.street = "Waldhof"
-                                it.housenumber = "1"
-                                it.city = "Schaafheim"
-                                it.postalcode = "64850"
-                            }
-                    )
-            )
+            log.trace {
+                it.postAddress(
+                        Address().also {
+                            it.contactcompany = "Test"
+                            it.street = "Waldhof"
+                            it.housenumber = "1"
+                            it.city = "Schaafheim"
+                            it.postalcode = "64850"
+                        }
+                )
+            }
         }
     }
 
@@ -108,9 +108,9 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(AddressApi::class.java).also {
-            log.trace(
-                    it.address
-            )
+            log.trace {
+                it.address
+            }
         }
     }
 
@@ -121,9 +121,9 @@ class RestApiTest {
         restClient.proxy(DeliveryApi::class.java).also { service ->
             val status = service.deliverystatus
 
-            log.trace(
-                    status
-            )
+            log.trace {
+                status
+            }
         }
     }
 
@@ -132,12 +132,12 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(DeliveryApi::class.java).also {
-            log.trace(
-                    it.getDelivery("{}")
-                            .subscribe {
-                                log.trace("Delivery ${it.id}")
-                            }
-            )
+            log.trace {
+                it.getDelivery("{}")
+                        .subscribe {
+                            log.trace("Delivery ${it.id}")
+                        }
+            }
         }
     }
 
@@ -171,9 +171,9 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(RouteApi::class.java).also { service ->
-            log.trace(
-                    service.routestatus
-            )
+            log.trace {
+                service.routestatus
+            }
         }
     }
 
@@ -182,12 +182,12 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(RouteApi::class.java).also { routeApi ->
-            log.trace(
-                    routeApi.getRoute("{}")
-                            .subscribe {
-                                log.trace("Route ${it.id}")
-                            }
-            )
+            log.trace {
+                routeApi.getRoute("{}")
+                        .subscribe {
+                            log.trace("Route ${it.id}")
+                        }
+            }
         }
     }
 

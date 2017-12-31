@@ -115,7 +115,7 @@ class AuthorizationService
      */
     override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.MqChannel?) {
         try {
-            log.info(message)
+            log.info { message }
 
             // Response message
             val am = AuthorizationService.NodeResponse()
