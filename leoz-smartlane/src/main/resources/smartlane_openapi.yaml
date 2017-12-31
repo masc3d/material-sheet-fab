@@ -4,9 +4,9 @@ info:
   description: "The following table contains a technical specification of all API endpoints usable for Smartlane"
   version: "1.0"
 host: dispatch.smartlane.io
+basePath: /api
 schemes:
   - https
-basePath: /api
 produces:
   - application/json
 consumes:
@@ -21,10 +21,10 @@ security:
 
 x-samples-languages:
   - 'curl'
-  - 'node'
-  - 'javascript'
   - 'python'
   - 'java'
+  - 'node'
+  - 'javascript'
 
 paths:
   /company:
@@ -1663,7 +1663,7 @@ paths:
           ]
         - in: query
           name: numvehicles
-          description: "fix maximum number of tours that can be planned. If this parameter is set to a specific value, the actual number of drivers in the system will be ignored. No route will be calculated if this value is not enough for the necessary number of tours."
+          description: "fix maximum number of tours that can be planned. If this parameter is set to a specific value, the actual number of drivers in the system will be ignored. No route will be calculated if this value is not enough for the necessary number of tours. Defaults to number of driver objects in the system. If there are no drivers in the system, a maximum of 5 is assumed."
           default: 0
           type: integer
           format: int32
@@ -3442,9 +3442,15 @@ definitions:
         description: if set to true, this delivery will be fixed as last delivery of the tour. Only one delivery can be final
         type: boolean
         default: false
-      notify_customer:
+      notify_customer_email:
         type: boolean
         default: false
+      notify_customer_sms:
+        type: boolean
+        default: false
+      deliverytype_id:
+        type: integer
+        format: int32
 
   Deliverystatus:
     type: object
@@ -3576,6 +3582,8 @@ definitions:
       city:
         type: string
       contactcompany:
+        type: string
+      customernr:
         type: string
       contactfirstname:
         type: string
