@@ -51,7 +51,7 @@ class JmsTest {
         val mc = s2.createConsumer(q)
         val msg = mc.receive()
         //        msg.acknowledge()
-        log.info(msg)
+        log.info { msg }
 
         s2.commit()
         mc.close()
