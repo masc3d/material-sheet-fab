@@ -95,7 +95,17 @@ dependencies {
             "junit:junit:$v_junit",
             "ch.qos.logback:logback-classic:$v_logback",
 
+            // JSR-310 / java.time drop-in replacement
+            "org.threeten:threetenbp:$v_threeten",
+
             // REST
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+
+            // RESTeasy client
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
+
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-jaxrs:$v_feign",
