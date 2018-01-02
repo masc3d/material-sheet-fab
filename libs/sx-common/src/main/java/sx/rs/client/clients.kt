@@ -15,16 +15,24 @@ import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider
+import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.net.TrustingSSLSocketFactory
+import sx.rs.LoggingFilter
+import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.net.URI
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.*
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSession
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 import javax.ws.rs.client.ClientRequestContext
 import javax.ws.rs.client.ClientRequestFilter
+import javax.ws.rs.core.HttpHeaders
 
 /**
  * Ignoring X509 trust manager, typically used when disabling SSL certificate checks
@@ -51,7 +59,7 @@ abstract class RestClient(
         val ignoreSslCertificate: Boolean = false) {
 
     protected val connectTimeout = Duration.ofSeconds(5)
-    protected val socketTimeout = Duration.ofSeconds(15)
+    protected val readTimeout = Duration.ofSeconds(15)
 
     protected val ignoringCertificateSslContext by lazy {
         val ignoringCertificateSslContext = SSLContext.getInstance("TLS")
@@ -72,7 +80,7 @@ class JerseyClient(
     private val client by lazy {
         var clientBuilder = JerseyClientBuilder()
                 .property(ClientProperties.CONNECT_TIMEOUT, connectTimeout.toMillis().toInt())
-                .property(ClientProperties.READ_TIMEOUT, socketTimeout.toMillis().toInt())
+                .property(ClientProperties.READ_TIMEOUT, readTimeout.toMillis().toInt())
 
         if (ignoreSslCertificate) {
             clientBuilder = clientBuilder
@@ -104,14 +112,16 @@ class RestEasyClient(
 ) :
         RestClient(baseUri, ignoreSslCertificate) {
 
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+
     /** JWT token to include in header */
     var jwtToken: String? = null
 
     private val client by lazy {
         ResteasyClientBuilder()
                 .connectionPoolSize(connectionPoolSize)
-                .establishConnectionTimeout(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)
-                .socketTimeout(socketTimeout.toMillis(), TimeUnit.MILLISECONDS)
+                .connectTimeout(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)
+                .readTimeout(readTimeout.toMillis(), TimeUnit.MILLISECONDS)
                 .also {
                     if (ignoreSslCertificate) {
                         it
@@ -126,10 +136,10 @@ class RestEasyClient(
                 .register(object : ClientRequestFilter {
                     override fun filter(requestContext: ClientRequestContext) {
                         if (this@RestEasyClient.jwtToken != null)
-                            requestContext.headers.add("Authorization", "JWT ${this@RestEasyClient.jwtToken}")
+                            requestContext.headers.add(HttpHeaders.AUTHORIZATION, "JWT ${this@RestEasyClient.jwtToken}")
                     }
-
                 })
+                .register(LoggingFilter())
                 .build()
     }
 
@@ -207,7 +217,7 @@ class FeignClient(
                 .retryer(Retryer.NEVER_RETRY)
                 .options(Request.Options(
                         connectTimeout.toMillis().toInt(),
-                        socketTimeout.toMillis().toInt()))
+                        readTimeout.toMillis().toInt()))
                 .encoder(this.encoder)
                 .decoder(this.decoder)
                 .contract(JAXRSContract())
