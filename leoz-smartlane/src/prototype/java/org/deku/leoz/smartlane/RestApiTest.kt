@@ -155,7 +155,7 @@ class RestApiTest {
                         Observable.fromIterable(it)
                     }
                     .subscribeOn(Schedulers.io().limit(4))
-                    .blockingSubscribe{
+                    .blockingSubscribe {
                         log.trace("Cancelling delivery ${it.id}")
                         try {
                             deliveryApi.postCanceldeliveryById(it.id)
@@ -182,12 +182,11 @@ class RestApiTest {
         this.authorize()
 
         restClient.proxy(RouteApi::class.java).also { routeApi ->
-            log.trace {
-                routeApi.getRoute("{}")
-                        .subscribe {
-                            log.trace("Route ${it.id}")
-                        }
-            }
+            routeApi.getRoute("{}")
+                    .blockingIterable()
+                    .forEach {
+                        log.trace("Route ${it.id}")
+                    }
         }
     }
 

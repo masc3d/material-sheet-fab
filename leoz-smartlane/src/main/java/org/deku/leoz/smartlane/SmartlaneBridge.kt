@@ -63,8 +63,8 @@ class SmartlaneBridge {
          * RX scheduler specific to this domain/customer, for fine-grained customer based concurrency control
          */
         val scheduler by lazy {
-            SchedulerWhen({
-                workers -> Completable.merge(Flowable.merge(workers, 2))
+            SchedulerWhen({ workers ->
+                Completable.merge(Flowable.merge(workers, 2))
             }, Schedulers.io())
         }
 
@@ -118,11 +118,14 @@ class SmartlaneBridge {
 
     /**
      * Optimize route
+     * @param routingInput Smartlane routing input
+     * @return Observable
      */
     fun optimizeRoute(routingInput: Routinginput): Observable<Route> {
         val routeApiGeneric by lazy { this.proxy(RouteApiGeneric::class.java, customerId = customerId) }
         val routeApi by lazy { this.proxy(RouteApi::class.java, customerId = customerId) }
 
+        val domain = domain(customerId)
         val id = routingInput.hashCode().toHexString()
 
         return Observable.fromCallable {
@@ -154,10 +157,10 @@ class SmartlaneBridge {
                                     }
                             )
                             .map {
-                                routeApi
-                                        .getRouteById(it.routeIds.first())
+                                // Get the final result
+                                routeApi.getRouteById(it.routeIds.first())
                             }
                 }
-                .subscribeOn(domain(customerId).scheduler)
+                .subscribeOn(domain.scheduler)
     }
 }

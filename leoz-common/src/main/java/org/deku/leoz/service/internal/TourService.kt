@@ -2,11 +2,13 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
-import org.deku.leoz.service.entity.ShortDate
 import sx.io.serialization.Serializable
 import java.util.*
 import javax.ws.rs.*
+import javax.ws.rs.container.AsyncResponse
+import javax.ws.rs.container.Suspended
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 /**
  * Tour service interface
@@ -31,7 +33,7 @@ interface TourServiceV1 {
     ): Tour
 
     @GET
-    @Path("/by-node/{${NODE_UID}}")
+    @Path("/${NODE_UID}/{${NODE_UID}}")
     @ApiOperation(value = "Get tour by node uid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getByNode(
             @PathParam(NODE_UID) @ApiParam(value = "Node uid", required = true)
@@ -39,12 +41,21 @@ interface TourServiceV1 {
     ): Tour
 
     @GET
-    @Path("/by-user/{${USER_ID}}")
+    @Path("/${USER_ID}/{${USER_ID}}")
     @ApiOperation(value = "Get tour by user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getByUser(
             @PathParam(USER_ID) @ApiParam(value = "User id")
             userId: Int
     ): Tour
+
+    @PATCH
+    @Path("/{${ID}}/optimize")
+    @ApiOperation(value = "Optimize tour", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun optimize(
+        @PathParam(ID) @ApiParam(value = "Tour id")
+        id: Int,
+        @Suspended response: AsyncResponse
+    )
 
     @ApiModel(description = "Tour")
     data class Tour(
