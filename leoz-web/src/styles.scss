@@ -329,9 +329,9 @@ p-tabpanel > div {
 }
 
 .shadow {
-  -webkit-box-shadow: 1px 1px 2px 3px #a79e9e;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-  -moz-box-shadow:    1px 1px 2px 3px #a79e9e;  /* Firefox 3.5 - 3.6 */
-  box-shadow:         1px 1px 2px 3px #a79e9e;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+  -webkit-box-shadow: 1px 1px 1px 2px #a79e9e;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+  -moz-box-shadow:    1px 1px 1px 2px #a79e9e;  /* Firefox 3.5 - 3.6 */
+  box-shadow:         1px 1px 1px 2px #a79e9e;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
 .ui-widget-header .ui-button, .ui-widget-content .ui-button, .ui-widget.ui-button, .ui-button {
@@ -512,18 +512,4 @@ p-tabpanel > div {
   //font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
   font-weight: bold;
   font-style: normal;
-}
-.fa-smile-white:before {
-  content: "&#xf118;";
-  font-family: 'FontAwesome';
-  font-weight: bold;
-  font-style: normal;
-}
-.icon-ic_weight_scale:before {
-  content: "\e900";
-}
-@font-face {
-  font-family: 'FontAwesome';
-  src: local('Times New Roman');
-  unicode-range: U+26;
 }

@@ -403,5 +403,8 @@ export const LANG_DE_TRANS = {
   'deliverylists': 'Zustelllisten',
   'tourlists': 'Tourlisten',
   'mark_all_none': 'Alle/Keine markieren',
+  'none': 'Keine',
+  'all': 'Alle',
+  'optimize': 'Optimieren',
 };
 

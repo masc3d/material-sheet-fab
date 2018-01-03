@@ -403,6 +403,9 @@ export const LANG_EN_TRANS = {
   'deliverylists': 'Deliverylists',
   'tourlists': 'Tourlists',
   'mark_all_none': 'Mark all/none',
+  'none': 'None',
+  'all': 'All',
+  'optimize': 'Optimize',
 };
 
 

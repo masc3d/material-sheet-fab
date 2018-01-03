@@ -4,8 +4,9 @@ import {
   ButtonModule,
   CheckboxModule,
   DataScrollerModule,
-  DataTableModule, FieldsetModule,
-  InputTextModule
+  DataTableModule,
+  FieldsetModule,
+  InputTextModule, ToggleButtonModule
 } from 'primeng/primeng';
 
 import { SharedModule } from '../../shared/shared.module';
@@ -21,6 +22,7 @@ import { TouroptimizingService } from './touroptimizing.service';
     FieldsetModule,
     InputTextModule,
     ButtonModule,
+    ToggleButtonModule,
     CheckboxModule,
     TouroptimizingRoutingModule,
     DataScrollerModule,

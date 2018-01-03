@@ -1,7 +1,7 @@
 <form [formGroup]="touroptimizingForm" style="padding-top: 10px" class="mbDashboardContent">
   <div class="ui-fluid">
     <div class="ui-g" style="min-height: 465px;">
-      <div class="ui-g-12 ui-lg-4 shadow" style="padding:0;">
+      <div class="ui-g-12 ui-lg-4 shadow" style="padding:0; width: 32%; margin-left: 10px;">
         <style>
           .row-stoplist {
             font-size:14px;padding:5px;
@@ -10,16 +10,19 @@
             padding: 0; height:20px;
           }
         </style>
-        <div class="ui-g" style="font-weight: bold; margin-top: 5px;font-size:13px;">
-          <div class="ui-g-12 ui-lg-3" style="font-size:16px;">{{'stoplist' | translate}}</div>
-          <!--<div class="ui-g-12 ui-lg-3" style="font-size:16px; font-family: 'FontAwesome';">&#xf118;</div>-->
-          <div class="ui-g-12 ui-lg-3" style="padding-top:10px;"><i class="fa fa-map-marker" style="color: #184b7d;"></i> (26)</div>
-          <div class="ui-g-12 ui-lg-3" style="padding-top:10px;"><i class="fa fa-balance-scale" style="color: #184b7d;"></i> (218)</div>
-          <div class="ui-g-12 ui-lg-3"></div>
+        <div class="ui-g" style="font-size:16px;">
+          <div class="ui-g-12 ui-lg-12">{{'stoplist' | translate}}</div>
+        </div>
+        <div class="ui-g" style="font-weight: bold;font-size:13px; padding-left: 3px;">
+          <div class="ui-g-12 ui-lg-2"><i class="fa fa-percent" style="color: #184b7d;"></i> (3)</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fa fa-map-marker" style="color: #184b7d;"></i> (95)</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S (456)</div>
+          <div class="ui-g-12 ui-lg-3"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P (1296)</div>
+          <div class="ui-g-12 ui-lg-3"><i class="fa fa-balance-scale" style="color: #184b7d;"></i> (5076)</div>
         </div>
         <hr/>
-            <p-dataScroller [value]="shipments" [rows]="100" [inline]="true" scrollHeight="94%"
-                            [style]="{'height': '550px', 'padding': '0 3px 3px 3px'}">
+            <p-dataScroller [value]="shipments" [rows]="100" [inline]="true" scrollHeight="100%"
+                            [style]="{'height': '620px', 'padding': '0 3px 3px 3px'}">
 
               <ng-template let-shipments pTemplate="body">
                 <div class="ui-g row-stoplist">
@@ -45,36 +48,42 @@
               </ng-template>
             </p-dataScroller>
 
-            <div style="margin-top: 10px;">
-              <div class="ui-g-12 ui-lg-1"><i class="fa fa-truck" style="color: #184b7d; margin-top: 5px;"></i></div>
-              <div class="ui-g-12 ui-lg-2"><i class="ui-g-12 ui-g-nopad">
-                <input #scanfield pInputText formControlName="carCount" class="bgYellow"></i></div>
-              <div class="ui-g-12 ui-lg-3"><i class="fa fa-sync" style="color: #184b7d; margin-top: 5px;"></i></div>
-              <div class="ui-g-12 ui-lg-6">
-                <button pButton label="{{'mark_all_none' | translate}}"></button>
-              </div>
-            </div>
+        <div class="ui-g-12 ui-lg-4">
+          <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
+                                onIcon="fa-check-square" offIcon="fa-square-o"></p-toggleButton>
+        </div>
+        <div class="ui-inputgroup ui-g-12 ui-lg-4">
+          <span class="ui-inputgroup-addon"><i class="fa fa-truck"></i></span>
+          <input type="text" pInputText>
+        </div>
+        <div class="ui-g-12 ui-lg-4">
+          <button pButton label="{{'optimize' | translate}}" type="button" icon="fa fa-sync" iconPos="left"></button>
+        </div>
       </div>
-      <div class="ui-g-12 ui-lg-4 shadow" style="padding:0">
+      <div class="ui-g-12 ui-lg-4 shadow" style="padding:0; width: 32%; margin-left: 10px;">
         <style>
           .row-deliverylist {
-            font-size:14px;padding:5px;border-bottom:5px solid #D5D5D5;
+            font-size:14px;padding:5px;border-bottom:2px solid #D5D5D5;
             background: linear-gradient(to bottom, white, #f1f1f1);
+            border-radius: 10px;
           }
           .row-deliverylist > div {
             padding: 0; height:15px;background: transparent;
           }
         </style>
-        <div class="ui-g" style="font-weight: bold; margin-top: 5px;font-size:13px;padding-left: 3px;">
-          <div class="ui-g-12 ui-lg-3" style="font-size:16px;">{{'deliverylists' | translate}}</div>
-          <div class="ui-g-12 ui-lg-2" style="padding-top:10px;"><i class="fa fa-align-justify" style="color: #184b7d;"></i> (12)</div>
-          <div class="ui-g-12 ui-lg-2" style="padding-top:10px;"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S (218)</div>
-          <div class="ui-g-12 ui-lg-2" style="padding-top:10px;"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P (327)</div>
-          <div class="ui-g-12 ui-lg-3" style="padding-top:10px;"><i class="fa fa-balance-scale" style="color: #184b7d;"></i> (1690)</div>
+        <div class="ui-g" style="font-size:16px; padding-left: 3px;">
+          <div class="ui-g-12 ui-lg-12">{{'deliverylists' | translate}}</div>
+        </div>
+        <div class="ui-g" style="font-weight: bold;font-size:13px; padding-left: 3px;">
+          <div class="ui-g-12 ui-lg-2"><i class="fa fa-percent" style="color: #184b7d;"></i> (8)</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fa fa-align-justify" style="color: #184b7d;"></i> (12)</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S (218)</div>
+          <div class="ui-g-12 ui-lg-3"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P (327)</div>
+          <div class="ui-g-12 ui-lg-3"><i class="fa fa-balance-scale" style="color: #184b7d;"></i> (1690)</div>
         </div>
         <hr/>
-            <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="94%"
-                            [style]="{'height': '550px', 'padding': '0 3px 3px 3px'}">
+            <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="100%"
+                            [style]="{'height': '620px', 'padding': '0 3px 3px 3px'}">
               <ng-template let-tour pTemplate="body">
                 <div class="ui-g row-deliverylist">
                   <div class="ui-g-12 ui-md-1">&nbsp;</div>
@@ -107,35 +116,42 @@
                 </div>
               </ng-template>
             </p-dataScroller>
-          <div style="margin-top: 10px;">
-            <div class="ui-g-12 ui-lg-2"><i class="fa fa-percent" style="color: #184b7d;"></i> 12</div>
-            <div class="ui-g-12 ui-lg-2"><i class="fa fa-print" style="color: #184b7d;"></i></div>
-            <div class="ui-g-12 ui-lg-2"><i class="fa fa-sync" style="color: #184b7d;"></i></div>
-            <div class="ui-g-12 ui-lg-6">
-              <button pButton label="{{'mark_all_none' | translate}}"></button>
-            </div>
-          </div>
+        <div class="ui-g-12 ui-lg-4">
+          <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
+                          onIcon="fa-check-square" offIcon="fa-square-o"></p-toggleButton>
+        </div>
+
+        <div class="ui-g-12 ui-lg-4">
+          <button pButton label="{{'optimize' | translate}}" type="button" icon="fa fa-sync" iconPos="left"></button>
+        </div>
+        <div class="ui-g-12 ui-lg-4">
+          <button pButton label="{{'print' | translate}}" type="button" icon="fa fa-print" iconPos="left"></button>
+        </div>
       </div>
-      <div class="ui-g-12 ui-lg-4 shadow" style="padding:0;">
+      <div class="ui-g-12 ui-lg-4 shadow" style="padding:0; width: 32%; margin-left: 10px;">
         <style>
           .row-tourlist {
-            font-size:14px;padding:5px;border-bottom:5px solid #D5D5D5;
+            font-size:14px;padding:5px;border-bottom:2px solid #D5D5D5;
             background: linear-gradient(to bottom, white, #f1f1f1);
+            border-radius: 10px;
           }
           .row-tourlist > div {
             padding: 0; height:15px;background: transparent;
           }
         </style>
-        <div class="ui-g" style="font-weight: bold; margin-top: 5px;font-size:13px;padding-left: 3px;">
-          <div class="ui-g-12 ui-lg-3" style="font-size:16px;">{{'tourlists' | translate}}</div>
-          <div class="ui-g-12 ui-lg-2" style="padding-top:10px;"><i class="fa fa-align-justify" style="color: #184b7d;"></i> (12)</div>
-          <div class="ui-g-12 ui-lg-2" style="padding-top:10px;"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S (456)</div>
-          <div class="ui-g-12 ui-lg-2" style="padding-top:10px;"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P (1296)</div>
-          <div class="ui-g-12 ui-lg-3" style="padding-top:10px;"><i class="fa fa-balance-scale" style="color: #184b7d;"></i> (5076)</div>
+        <div class="ui-g" style="font-size:16px; padding-left: 3px;">
+          <div class="ui-g-12 ui-lg-12">{{'tourlists' | translate}}</div>
+        </div>
+        <div class="ui-g" style="font-weight: bold;font-size:13px; padding-left: 3px;">
+          <div class="ui-g-12 ui-lg-2"><i class="fa fa-percent" style="color: #184b7d;"></i> (89)</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fa fa-truck" style="color: #184b7d;"></i> (12)</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S (456)</div>
+          <div class="ui-g-12 ui-lg-3"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P (1296)</div>
+          <div class="ui-g-12 ui-lg-3"><i class="fa fa-balance-scale" style="color: #184b7d;"></i> (5076)</div>
         </div>
         <hr/>
-            <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="94%"
-                                  [style]="{'height': '550px', 'padding': '0 3px 3px 3px'}">
+            <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="100%"
+                                  [style]="{'height': '620px', 'padding': '0 3px 3px 3px'}">
               <ng-template let-tour pTemplate="body">
                 <div class="ui-g row-tourlist">
                   <div class="ui-g-12 ui-md-1">&nbsp;</div>
@@ -146,7 +162,7 @@
                   <div class="ui-g-12 ui-lg-1">{{tour.tourPackages}}</div>
                   <div class="ui-g-12 ui-lg-1"><i class="fa fa-balance-scale" style="color: #184b7d;"></i></div>
                   <div class="ui-g-12 ui-md-3">{{tour.tourWeight}}</div>
-                  <div class="ui-g-12 ui-lg-1"><i class="fa fa-align-justify" style="color: #184b7d;"></i></div>
+                  <div class="ui-g-12 ui-lg-1"><i class="fa fa-truck" style="color: #184b7d;"></i></div>
                   <div class="ui-g-12 ui-lg-3" style="font-weight: bold">{{tour.tourNo}}</div>
                   <div class="ui-g-12 ui-md-6">&nbsp;</div>
                   <div class="ui-g-12 ui-lg-1">
@@ -168,14 +184,18 @@
                 </div>
               </ng-template>
             </p-dataScroller>
-          <div style="margin-top: 10px;">
-            <div class="ui-g-12 ui-lg-2"><i class="fa fa-percent" style="color: #184b7d;"></i> 87</div>
-            <div class="ui-g-12 ui-lg-2"><i class="fa fa-print" style="color: #184b7d;"></i></div>
-            <div class="ui-g-12 ui-lg-2"><i class="fa fa-sync" style="color: #184b7d;"></i></div>
-            <div class="ui-g-12 ui-lg-6">
-              <button pButton label="{{'mark_all_none' | translate}}"></button>
-            </div>
-          </div>
+            <!--<div class="ui-g-12 ui-lg-2"><i class="fa fa-percent" style="color: #184b7d;"></i> 87</div>-->
+        <div class="ui-g-12 ui-lg-4">
+          <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
+                          onIcon="fa-check-square" offIcon="fa-square-o"></p-toggleButton>
+        </div>
+
+        <div class="ui-g-12 ui-lg-4">
+          <button pButton label="{{'optimize' | translate}}" type="button" icon="fa fa-sync" iconPos="left"></button>
+        </div>
+        <div class="ui-g-12 ui-lg-4">
+          <button pButton label="{{'print' | translate}}" type="button" icon="fa fa-print" iconPos="left"></button>
+        </div>
       </div>
     </div>
   </div>
