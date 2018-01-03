@@ -10,7 +10,7 @@ buildscript {
         v_android_support = '27.0.2'
         v_android_test = '1.0.1'
         v_android_gms = '11.8.0'
-        v_anko = '0.10.3'
+        v_anko = '0.10.4'
         v_javamail = '1.6.0'
         v_junit = '4.12'
         v_kotlin = '1.2.10'
@@ -101,7 +101,7 @@ dependencies {
             "com.android.support:design:$v_android_support",
 
             // rx
-            "io.reactivex.rxjava2:rxjava:2.1.7",
+            "io.reactivex.rxjava2:rxjava:2.1.8",
             "io.reactivex.rxjava2:rxandroid:2.0.1",
             "io.reactivex:rxkotlin:2.0.0-RC1",
 
@@ -134,7 +134,7 @@ dependencies {
             "com.afollestad.material-dialogs:commons:$v_material_dialogs",
 
             // ReactiveNetwork
-            "com.github.pwittchen:reactivenetwork-rx2:0.12.2",
+            "com.github.pwittchen:reactivenetwork-rx2:0.12.3",
 
             // Flexible adapter
             "eu.davidea:flexible-adapter:5.0.0-rc4",
