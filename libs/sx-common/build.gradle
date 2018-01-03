@@ -8,6 +8,7 @@ buildscript {
         v_javax_persistence = '2.1.1'
         v_jersey = '2.26'
         v_jgit = '4.9.1.201712030800-r'
+        v_jna = '4.5.1'
         v_jsch = '0.1.54'
         v_jsch_proxy = '0.0.9'
         v_querydsl = '4.1.4'
@@ -69,8 +70,8 @@ dependencies {
             "org.zalando:problem:0.20.0",
 
             // JNA
-            "net.java.dev.jna:jna:4.5.0",
-            "net.java.dev.jna:jna-platform:4.5.0",
+            "net.java.dev.jna:jna:$v_jna",
+            "net.java.dev.jna:jna-platform:$v_jna",
 
             // REST
             // Jersey REST client
