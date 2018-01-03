@@ -5,9 +5,9 @@ import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
 import org.deku.leoz.service.internal.UserService.User
 import sx.io.serialization.Serializable
-import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import javax.ws.rs.Consumes
+import javax.ws.rs.PATCH
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType

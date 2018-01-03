@@ -1,7 +1,6 @@
 package org.deku.leoz.service.internal.entity.update
 
 import sx.io.serialization.Serializable
-import java.util.*
 
 /**
  * Update info/notification message.

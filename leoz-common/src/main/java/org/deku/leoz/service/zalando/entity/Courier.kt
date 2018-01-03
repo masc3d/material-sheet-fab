@@ -1,8 +1,9 @@
 package org.deku.leoz.service.zalando.entity
 
-import io.swagger.annotations.*
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 import javax.annotation.Generated
-import com.fasterxml.jackson.annotation.*
 
 @ApiModel(description = "Defines the driver who will pick up a tour and deliver all orders related to the tour.")
 @Generated(value = ["io.swagger.codegen.languages.JavaResteasyServerCodegen"], date = "2017-03-10T11:34:55.297Z")

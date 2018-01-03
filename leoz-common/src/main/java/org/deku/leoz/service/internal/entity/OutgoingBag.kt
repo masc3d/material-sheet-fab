@@ -1,6 +1,7 @@
 package org.deku.leoz.service.internal.entity
 
-import io.swagger.annotations.*
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 
 /**
  * Created by 27694066 on 22.02.2017.

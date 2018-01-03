@@ -1,11 +1,12 @@
 package org.deku.leoz.service.internal
 
-import io.swagger.annotations.*
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import io.swagger.annotations.Authorization
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AdditionalInfo
-import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
-import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*

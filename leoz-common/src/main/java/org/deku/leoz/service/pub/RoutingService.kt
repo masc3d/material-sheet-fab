@@ -1,13 +1,16 @@
 package org.deku.leoz.service.pub
 
-import org.deku.leoz.service.entity.ServiceError
-import javax.ws.rs.*
-import javax.ws.rs.core.*
 import io.swagger.annotations.*
+import org.deku.leoz.service.entity.DayType
+import org.deku.leoz.service.entity.ServiceError
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.entity.ShortTime
-import org.deku.leoz.service.entity.DayType
 import sx.rs.auth.ApiKey
+import javax.ws.rs.Consumes
+import javax.ws.rs.POST
+import javax.ws.rs.Path
+import javax.ws.rs.Produces
+import javax.ws.rs.core.MediaType
 
 /**
  * Created by masc on 17.09.14.

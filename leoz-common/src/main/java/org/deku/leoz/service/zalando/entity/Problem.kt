@@ -1,7 +1,8 @@
 package org.deku.leoz.service.zalando.entity
 
-import io.swagger.annotations.*
-import com.fasterxml.jackson.annotation.*
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 import javax.annotation.Generated
 
 @ApiModel(description = "Problem details description (see https://tools.ietf.org/html/rfc7807)")

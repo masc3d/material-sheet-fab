@@ -1,13 +1,16 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
-import org.deku.leoz.model.*
 import org.deku.leoz.config.Rest
+import org.deku.leoz.model.Carrier
+import org.deku.leoz.model.OrderClassification
+import org.deku.leoz.model.ParcelService
+import org.deku.leoz.model.ParcelType
+import org.deku.leoz.service.internal.entity.Address
 import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
-import org.deku.leoz.service.internal.entity.Address
 
 /**
  * Created by JT on 24.05.17.

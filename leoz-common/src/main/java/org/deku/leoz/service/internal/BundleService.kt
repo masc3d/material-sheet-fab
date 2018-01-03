@@ -1,8 +1,9 @@
 package org.deku.leoz.service.internal
 
-import io.swagger.annotations.*
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
-import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType

@@ -1,15 +1,12 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
-import org.deku.leoz.model.AdditionalInfo
 import sx.collections.chunked
-import sx.io.copyTo
 import sx.io.serialization.Serializable
 import sx.io.toSequence
 import sx.rs.auth.ApiKey
 import java.io.InputStream
 import java.util.*
-import javax.activation.MimeType
 import javax.ws.rs.Consumes
 import javax.ws.rs.Path
 import javax.ws.rs.Produces

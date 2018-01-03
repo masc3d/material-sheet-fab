@@ -1,10 +1,11 @@
 package org.deku.leoz.service.internal
 
-import javax.ws.rs.core.*
-import javax.ws.rs.*
-import io.swagger.annotations.*
-import sx.rs.PATCH
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
 import sx.rs.auth.ApiKey
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 /**
  * Created by masc on 09.10.15.

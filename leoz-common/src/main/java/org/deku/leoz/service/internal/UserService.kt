@@ -1,12 +1,11 @@
 package org.deku.leoz.service.internal
 
+import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
+import org.deku.leoz.model.UserPreferenceKey
+import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
-import io.swagger.annotations.*
-import org.deku.leoz.model.UserPreferenceKey
-import sx.rs.PATCH
-import sx.rs.auth.ApiKey
 
 /**
  * User service

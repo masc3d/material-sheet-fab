@@ -1,14 +1,13 @@
 package org.deku.leoz.service.internal
 
-import io.swagger.annotations.*
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import io.swagger.annotations.Authorization
 import org.deku.leoz.config.Rest
-import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.io.serialization.Serializable
-import sx.mq.jms.channel
-import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import javax.ws.rs.*
-import javax.ws.rs.core.*
+import javax.ws.rs.core.MediaType
 
 /**
  * Created by JT on 05.02.16.

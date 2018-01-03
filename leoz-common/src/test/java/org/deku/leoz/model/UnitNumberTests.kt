@@ -6,7 +6,6 @@ import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import sx.junit.StandardTest
-import sx.log.slf4j.*
 
 /**
  * Created by masc on 05.07.17.

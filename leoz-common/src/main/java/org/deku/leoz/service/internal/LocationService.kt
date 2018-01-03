@@ -1,13 +1,13 @@
 package org.deku.leoz.service.internal
 
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
-import org.deku.leoz.model.VehicleType
 import org.deku.leoz.config.Rest
+import org.deku.leoz.model.VehicleType
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
 import java.util.*
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
 
 /**
  * Location service V2

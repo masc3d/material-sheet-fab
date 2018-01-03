@@ -1,19 +1,17 @@
 package org.deku.leoz.service.internal
 
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.service.entity.ServiceError
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
-import org.deku.leoz.service.internal.entity.BagNumberRange
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 import sx.io.serialization.Serializable
-import sx.rs.PATCH
 import sx.rs.auth.ApiKey
 import java.util.*
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
 
 /**
  * Created by 27694066 on 20.02.2017.
@@ -103,7 +101,7 @@ interface BagService {
         SCAN_ID_WRONG_CHECK_DIGIT(2074)
     }
 
-    @sx.rs.PATCH
+    @PATCH
     @Path("/{${ID}}/initialize")
     @ApiOperation("Initialize bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
@@ -142,7 +140,7 @@ interface BagService {
     )
     fun getDiff(): List<BagDiff>
 
-    @sx.rs.PATCH
+    @PATCH
     @Path("/{$ID}/arrival")
     @ApiOperation("Line Arrival", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(
@@ -151,7 +149,7 @@ interface BagService {
     fun lineArrival(
             @ApiParam(value = "Scan id", example = "10055618") @PathParam(ID) scanId: String?): BagResponse
 
-    @sx.rs.PATCH
+    @PATCH
     @Path("/{$ID}/in")
     @ApiOperation("Incoming bag", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(*arrayOf(

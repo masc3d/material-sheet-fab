@@ -4,7 +4,6 @@ import org.apache.tika.mime.MimeTypes
 import org.junit.Assert
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.log.slf4j.*
 
 /**
  * Created by masc on 16.12.17.
