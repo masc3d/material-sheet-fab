@@ -1549,7 +1549,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (orderRecord.service.toLong() and 134217728.toLong() == 134217728.toLong()) {
             val oldService = orderRecord.service.toString()
             orderRecord.service = (orderRecord.service.toLong() - 134217728.toLong()).toInt().toUInteger()
-            if (orderRecord.store() > 1) {
+            if (orderRecord.store() > 0) {
                 fieldHistoryRepository.addEntry(
                         orderId = unitRecord.orderid.toLong(),
                         unitNo = unitRecord.colliebelegnr.toLong(),
@@ -1563,7 +1563,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (orderRecord.empfaenger != null && orderRecord.empfaenger.isNotEmpty()) {
                 val oldRecipient = orderRecord.empfaenger
                 orderRecord.empfaenger = null
-                if (orderRecord.store() > 1) {
+                if (orderRecord.store() > 0) {
                     fieldHistoryRepository.addEntry(
                             orderId = unitRecord.orderid.toLong(),
                             unitNo = unitRecord.colliebelegnr.toLong(),
@@ -1580,7 +1580,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (orderRecord.uploadstatus == null || orderRecord.uploadstatus.toInt() != 1) {
             val oldUploadstatus = orderRecord.uploadstatus?.toString() ?: ""
             orderRecord.uploadstatus = 1
-            if (orderRecord.store() > 1) {
+            if (orderRecord.store() > 0) {
                 fieldHistoryRepository.addEntry(
                         orderId = unitRecord.orderid.toLong(),
                         unitNo = unitRecord.colliebelegnr.toLong(),
@@ -1595,7 +1595,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
         val oldDtSendad2z = orderRecord.dtsendad2z?.toGregorianLongDateTimeString() ?: ""
         orderRecord.dtsendad2z = Date().toTimestamp()
-        if (orderRecord.store() > 1) {
+        if (orderRecord.store() > 0) {
             fieldHistoryRepository.addEntry(
                     orderId = unitRecord.orderid.toLong(),
                     unitNo = unitRecord.colliebelegnr.toLong(),
