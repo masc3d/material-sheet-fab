@@ -328,7 +328,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
                 ).toString()
 
         participant.station = rRoute.station!!
-        participant.zone = getZoneFromArea(area = rRoute.area!!, zipCode = queryZipCode)
+        participant.zone = getZoneFromArea(area = rRoute.area!!, country = rRoute.country, zipCode = queryZipCode)
         participant.island = (rRoute.island != 0)
         participant.earliestTimeOfDelivery = rRoute.etod!!.toShortTime()
         participant.term = rRoute.term!!
@@ -517,18 +517,22 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
     }
 
     /**
+     * TODO This is only valid for national destinations, international destinations require the area identifier
      * @return The "zone-code" for the given area-code
      * @param area: The area where you want to know the zone.
      * @param zipCode: Optional. For logging entries if an unsupported area is given in the first parameter.
      */
-    private fun getZoneFromArea(area: String, zipCode: String? = null): String {
-        return when (area) {
-            "A", "B" -> "WR"
-            "C", "D" -> "UL"
-            else -> {
-                log.warn("ZipCode [${zipCode ?: "N/A"}] provided an unhandled area/zone [$area]")
-                "N/A"
+    private fun getZoneFromArea(area: String, country: String, zipCode: String? = null): String {
+        return if (country != "DE")
+            area
+        else
+            when (area) {
+                "A", "B" -> "WR"
+                "C", "D" -> "UL"
+                else -> {
+                    log.warn("ZipCode [${zipCode ?: "N/A"}] provided an unhandled area/zone [$area]")
+                    "N/A"
+                }
             }
-        }
     }
 }
