@@ -128,6 +128,8 @@ class SmartlaneBridge {
         val domain = domain(customerId)
         val id = routingInput.hashCode().toHexString()
 
+        // TODO: transform to single. only has a single result
+
         return Observable.fromCallable {
             log.trace("[${id}] Requesting route")
             // Start async route calculation

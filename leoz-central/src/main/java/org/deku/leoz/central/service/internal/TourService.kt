@@ -14,7 +14,10 @@ import org.deku.leoz.central.data.repository.fetchByUid
 import org.deku.leoz.central.data.repository.uid
 import org.deku.leoz.model.TaskType
 import org.deku.leoz.service.internal.TourServiceV1
+import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.smartlane.SmartlaneBridge
+import org.deku.leoz.smartlane.model.Routedeliveryinput
+import org.deku.leoz.smartlane.model.Routinginput
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -117,16 +120,19 @@ class TourServiceV1
      * Optimize tour
      */
     override fun optimize(id: Int, response: AsyncResponse) {
-        Completable.fromCallable {
-            val tour = this.getById(id)
+        val tour = this.getById(id)
 
-            response.resume(Response
-                    .status(Response.Status.OK)
-                    .build()
-            )
-        }
-                .subscribeOn(this.executorService)
+        this.smartlaneBridge.optimizeRoute(
+                tour.toRoutingInput()
+        )
                 .subscribeBy(
+                        onNext = {
+                            log.trace("SUCCESSFUL ${it}")
+                            response.resume(Response
+                                    .status(Response.Status.OK)
+                                    .build()
+                            )
+                        },
                         onError = { e ->
                             response.resume(DefaultProblem(
                                     status = Status.INTERNAL_SERVER_ERROR,
@@ -134,8 +140,41 @@ class TourServiceV1
                             ))
                         }
                 )
+
+        response.resume(Response
+                .status(Response.Status.ACCEPTED)
+                .build()
+        )
     }
     //endregion
+
+    /**
+     * Transform tour into smartlane routing input
+     */
+    private fun TourServiceV1.Tour.toRoutingInput(): Routinginput {
+        return Routinginput().also {
+            it.deliverydata = this.stops.map { stop ->
+                Routedeliveryinput().also {
+                    stop.address?.also { address ->
+                        it.contactlastname = address.line1
+                        it.contactfirstname = address.line2
+                        it.contactcompany = address.line3
+                        it.street = address.street
+                        it.housenumber = address.streetNo
+                        it.city = address.city
+                        it.postalcode = address.zipCode
+                        address.geoLocation?.also { geo ->
+                            it.lat = geo.latitude.toString()
+                            it.lng = geo.longitude.toString()
+                        }
+                    }
+
+                    // Track stop via custom id
+                    it.customId = stop.id?.toString()
+                }
+            }
+        }
+    }
 
     /**
      * Transform tour/node record into service result
@@ -155,18 +194,29 @@ class TourServiceV1
                 .selectFrom(TAD_TOUR_ENTRY)
                 .fetchByTourId(tourRecord.id)
 
+        val orders = this@TourServiceV1.orderService.getByIds(
+                tourEntryRecords.map { it.orderId }.distinct()
+        )
+
         return TourServiceV1.Tour(
                 id = tourRecord.id,
                 nodeUid = nodeRecord?.uid,
                 userId = tourRecord.userId,
-                orders = this@TourServiceV1.orderService.getByIds(
-                        tourEntryRecords.map { it.orderId }.distinct()
-                ),
+                orders = orders,
                 stops = tourEntryRecords.groupBy { it.position }
                         .map { stop ->
                             TourServiceV1.Stop(
+                                    address = stop.value.first().let { task ->
+                                        orders.first { it.id == task.orderId }.let {
+                                            when (TaskType.valueMap.getValue(task.orderTaskType)) {
+                                                TaskType.DELIVERY -> it.deliveryAddress
+                                                TaskType.PICKUP -> it.pickupAddress
+                                            }
+                                        }
+                                    },
                                     tasks = stop.value.map { task ->
                                         TourServiceV1.Task(
+                                                id = task.id,
                                                 orderId = task.orderId,
                                                 taskType = when (TaskType.valueMap.getValue(task.orderTaskType)) {
                                                     TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY

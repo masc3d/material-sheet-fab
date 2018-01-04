@@ -1,7 +1,9 @@
 package org.deku.leoz.service.internal
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
+import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
 import java.util.*
 import javax.ws.rs.*
@@ -52,9 +54,9 @@ interface TourServiceV1 {
     @Path("/{${ID}}/optimize")
     @ApiOperation(value = "Optimize tour", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun optimize(
-        @PathParam(ID) @ApiParam(value = "Tour id")
-        id: Int,
-        @Suspended response: AsyncResponse
+            @PathParam(ID) @ApiParam(value = "Tour id")
+            id: Int,
+            @Suspended response: AsyncResponse
     )
 
     @ApiModel(description = "Tour")
@@ -72,17 +74,32 @@ interface TourServiceV1 {
     )
 
     @Serializable(0xc65eacc35a3d73)
+    @JsonPropertyOrder("id")
     @ApiModel(description = "Stop")
-    data class Stop(
+    class Stop(
+            /** The first stop task's address */
+            @ApiModelProperty(position = 10, required = false, value = "Stop address")
+            var address: Address? = null,
+            /** Stop tasks */
+            @ApiModelProperty(position = 20, required = true, value = "Stop tasks")
             var tasks: List<Task> = listOf()
-    )
+    ) {
+        /** Stop id. Refers to the first task its tour entry (task) id */
+        val id: Int? get() = this.tasks.firstOrNull()?.id
+    }
 
     @Serializable(0x8eeb2fbff14af5)
     @ApiModel(description = "Task")
     data class Task(
-            @ApiModelProperty(position = 10, required = true, value = "Order id")
+            /**
+             * Stop task id. Refers to its tour entry (task) id.
+             * The task id is optional when updating tours, as the entire tour will be replaced
+             */
+            @ApiModelProperty(position = 10, required = false, value = "Stop task id")
+            var id: Int? = null,
+            @ApiModelProperty(position = 20, required = true, value = "Order id this task refers to")
             var orderId: Long = 0,
-            @ApiModelProperty(position = 20, required = true, value = "Task type", example = "DELIVERY")
+            @ApiModelProperty(position = 30, required = true, value = "Task type", example = "DELIVERY")
             var taskType: Task.Type = Type.DELIVERY
     ) {
         enum class Type {
