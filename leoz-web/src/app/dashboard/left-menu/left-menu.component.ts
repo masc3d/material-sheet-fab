@@ -199,7 +199,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'dispo' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/pickupdispo',
           command: closeMenu
         },
         {

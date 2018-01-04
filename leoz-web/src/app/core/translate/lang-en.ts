@@ -406,6 +406,22 @@ export const LANG_EN_TRANS = {
   'none': 'None',
   'all': 'All',
   'optimize': 'Optimize',
+  // pickupdispo
+  'info': 'Info',
+  'open_orders_max3days': 'Open Orders (max. 3 days)',
+  'processed_orders_today': 'Processed Orders (today)',
+  'open_orders': 'open orders',
+  'processed_orders': 'processed orders',
+  'not_loaded': 'not loaded',
+  'packs_without_loadingscan_max3days': 'Packs without loadingscan (max. 3 days)',
+  'completed_orders_today': 'Completed Orders (today)',
+  'third_party_pickup': 'Third Party Pickups',
+  'status_third_party_pickup_max3days': 'Status Third Party Pickups (max. 3 days)',
+  'status': 'Status',
+  'own_pickup': 'own pickup',
+  'status_own_pickup_max3days': 'Status own Pickups (max. 3 days)',
+  'status_overview': 'Status overview',
+  'status_overview_max3days': 'Status overview (max. 3 days)',
 };
 
 

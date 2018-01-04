@@ -406,5 +406,21 @@ export const LANG_DE_TRANS = {
   'none': 'Keine',
   'all': 'Alle',
   'optimize': 'Optimieren',
+  // pickupdispo
+  'info': 'Info',
+  'open_orders_max3days': 'Offene Aufträge (max. 3 Tage)',
+  'processed_orders_today': 'Disponierte Aufträge (heute)',
+  'open_orders': 'offene Aufträge',
+  'processed_orders': 'disponierte Aufträge',
+  'not_loaded': 'nicht beladen',
+  'packs_without_loadingscan_max3days': 'Packstücke ohne Beladescan (max. 3 Tage)',
+  'completed_orders_today': 'Erledigte Aufträge (heute)',
+  'third_party_pickup': 'Fremd-PU',
+  'status_third_party_pickup_max3days': 'Stati Fremd-Pickups (max. 3 Tage)',
+  'status': 'Status',
+  'own_pickup': 'eigene PU',
+  'status_own_pickup_max3days': 'Stati eigene Pickups (max. 3 Tage)',
+  'status_overview': 'Statusübersicht',
+  'status_overview_max3days': 'Statusübersicht (max. 3 Tage)',
 };
 

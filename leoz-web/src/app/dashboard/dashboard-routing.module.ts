@@ -90,6 +90,13 @@ export const routes = [
         loadChildren: 'app/dashboard/order/order.module#OrderModule'
       },
       {
+        path: 'pickupdispo',
+        data: { preload: true },
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/pickupdispo/pickupdispo.module#PickupdispoModule'
+      },
+      {
         path: 'printers',
         canActivate: [ AuthenticationGuard,
           RoleGuard ],

@@ -1,0 +1,142 @@
+  <div class="ui-fluid" style="padding-top: 10px;" class="mbDashboardContent">
+    <div class="ui-g">
+
+      <div id="tabViewWrapper" class="ui-g-12" style="padding:0;">
+          <p-tabView [style]="{'height': '100%'}">
+            <p-tabPanel header="{{'open_orders' | translate}}" [style]="{'height': '100%'}">
+              <p-dataTable resizableColumns="false" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate"
+                           [style]="{'height': '100%'}">
+                <p-header>
+                  {{ 'open_orders_max3days' | translate }}
+                </p-header>
+                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
+                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
+                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
+                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
+                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
+                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
+                <p-column field="info" header="{{'info' | translate}}" [sortable]="true"></p-column>
+                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
+                <p-column field="realweight" header="{{'realweight'| translate}}" ></p-column>
+                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
+              </p-dataTable>
+            </p-tabPanel>
+            <p-tabPanel header="{{'processed_orders' | translate}}" [style]="{'height': '100%'}">
+              <p-dataTable resizableColumns="false" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate"
+                           [style]="{'height': '100%'}">
+                <p-header>
+                  {{ 'processed_orders_today' | translate }}
+                </p-header>
+                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
+                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
+                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
+                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
+                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
+                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
+                <p-column field="info" header="{{'info' | translate}}" [sortable]="true"></p-column>
+                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
+                <p-column field="realweight" header="{{'realweight'| translate}}" ></p-column>
+                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
+              </p-dataTable>
+            </p-tabPanel>
+            <p-tabPanel header="{{'not_loaded' | translate}}" [style]="{'height': '100%'}">
+              <p-dataTable resizableColumns="false" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate"
+                           [style]="{'height': '100%'}">
+                <p-header>
+                  {{ 'packs_without_loadingscan_max3days' | translate }}
+                </p-header>
+                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
+                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
+                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
+                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
+                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
+                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
+                <p-column field="info" header="{{'info' | translate}}" [sortable]="true"></p-column>
+                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
+                <p-column field="realweight" header="{{'realweight'| translate}}" ></p-column>
+                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
+              </p-dataTable>
+            </p-tabPanel>
+            <p-tabPanel header="{{'loaded' | translate}}" [style]="{'height': '100%'}">
+              <p-dataTable resizableColumns="false" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate"
+                           [style]="{'height': '100%'}">
+                <p-header>
+                  {{ 'completed_orders_today' | translate }}
+                </p-header>
+                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
+                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
+                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
+                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
+                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
+                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
+                <p-column field="info" header="{{'info' | translate}}" [sortable]="true"></p-column>
+                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
+                <p-column field="realweight" header="{{'realweight'| translate}}" ></p-column>
+                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
+              </p-dataTable>
+            </p-tabPanel>
+            <p-tabPanel header="{{'third_party_pickup' | translate}}" [style]="{'height': '100%'}">
+              <p-dataTable resizableColumns="false" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate"
+                           [style]="{'height': '100%'}">
+                <p-header>
+                  {{ 'status_third_party_pickup_max3days' | translate }}
+                </p-header>
+                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
+                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
+                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
+                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
+                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
+                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
+                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
+                <p-column field="weight" header="{{'weight'| translate}}" ></p-column>
+                <p-column field="status" header="{{'status' | translate}}" [sortable]="true"></p-column>
+                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
+              </p-dataTable>
+            </p-tabPanel>
+            <p-tabPanel header="{{'own_pickup' | translate}}" [style]="{'height': '100%'}">
+              <p-dataTable resizableColumns="false" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate"
+                           [style]="{'height': '100%'}">
+                <p-header>
+                  {{ 'status_own_pickup_max3days' | translate }}
+                </p-header>
+                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
+                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
+                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
+                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
+                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
+                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
+                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
+                <p-column field="weight" header="{{'weight'| translate}}" ></p-column>
+                <p-column field="status" header="{{'status' | translate}}" [sortable]="true"></p-column>
+                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
+              </p-dataTable>
+            </p-tabPanel>
+            <p-tabPanel header="{{'status_overview' | translate}}" [style]="{'height': '100%'}">
+              <p-dataTable resizableColumns="false" responsive="true"
+                           [emptyMessage]="'noDataAvailable' | translate"
+                           [style]="{'height': '100%'}">
+                <p-header>
+                  {{ 'status_overview_max3days' | translate }}
+                </p-header>
+                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
+                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
+                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
+                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
+                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
+                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
+                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
+                <p-column field="weight" header="{{'weight'| translate}}" ></p-column>
+                <p-column field="status" header="{{'status' | translate}}" [sortable]="true"></p-column>
+                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
+              </p-dataTable>
+            </p-tabPanel>
+          </p-tabView>
+      </div>
+    </div>
+  </div>
