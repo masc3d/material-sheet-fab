@@ -39,6 +39,8 @@ import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.core.Response
+import javax.ws.rs.sse.Sse
+import javax.ws.rs.sse.SseEventSink
 
 /**
  * Tour service implementation
@@ -128,7 +130,16 @@ class TourServiceV1
                 tour.toRoutingInput()
         )
                 .subscribeBy(
-                        onNext = {
+                        onNext = { route ->
+                            route.deliveries
+                                    .sortedBy { it.orderindex }
+                                    .forEachIndexed { index, delivery ->
+                                        // TODO: update `tad_tour_entry` positions
+                                        val oldIndex = tour.stops.indexOfFirst { it.id == delivery.customId.toInt() }
+
+                                        log.trace { "ROUTE POS UPDATE ${oldIndex} -> ${index} (${delivery.orderindex})" }
+                                    }
+
                             response.resume(Response
                                     .status(Response.Status.OK)
                                     .build()
@@ -143,6 +154,19 @@ class TourServiceV1
                         }
                 )
     }
+
+    override fun optimizeSse(id: Int, domainSink: SseEventSink, sse: Sse) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun optimizeForNode(nodeUid: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun createFromDeliveryList(deliveryListId: Int): TourServiceV1.Tour {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     //endregion
 
     /**
@@ -166,10 +190,9 @@ class TourServiceV1
                         }
                     }
 
-                    // TODO: omit times when not today or in the future, otherwise smartlane will emit error
+                    // TODO: providing pdt fields causes smartlane to fail (with 500 or `route could not be calculated`)
                     it.pdtFrom = stop.appointmentStart?.replaceDate(Date().plusDays(1))
                     it.pdtTo = stop.appointmentEnd?.replaceDate(Date().plusDays(1))?.plusHours(5)
-
                     log.trace("PDT ${it.pdtFrom} -> ${it.pdtTo}")
 
                     // Track stop via custom id
