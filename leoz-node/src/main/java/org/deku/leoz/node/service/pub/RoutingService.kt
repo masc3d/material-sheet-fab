@@ -517,7 +517,6 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
     }
 
     /**
-     * TODO This is only valid for national destinations, international destinations require the area identifier
      * @return The "zone-code" for the given area-code
      * @param area: The area where you want to know the zone.
      * @param zipCode: Optional. For logging entries if an unsupported area is given in the first parameter.
