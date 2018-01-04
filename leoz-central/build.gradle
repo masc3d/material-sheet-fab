@@ -289,6 +289,12 @@ tasks.generateMainJooqSchemaSource {
     dependsOn tasks.flywayCopy
 }
 
+tasks.generateMainJooqSchemaSource.with {
+    javaExecSpec = { JavaExecSpec s ->
+        s.jvmArgs '--add-modules', 'java.xml.bind'
+    }
+}
+
 clean {
     doFirst {
         JOOQ_GENERATED_DIR.deleteDir()
