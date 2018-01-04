@@ -61,11 +61,11 @@ interface TourServiceV1 {
 
     @ApiModel(description = "Tour")
     data class Tour(
-            @ApiModelProperty(position = 10, required = true, value = "Tour id")
+            @ApiModelProperty(position = 10, required = false, value = "Tour id")
             var id: Int? = null,
-            @ApiModelProperty(position = 20, required = true, value = "Node this tour belongs to")
+            @ApiModelProperty(position = 20, required = false, value = "Node this tour belongs to")
             var nodeUid: String? = null,
-            @ApiModelProperty(position = 20, required = true, value = "User this tour belongs to")
+            @ApiModelProperty(position = 20, required = false, value = "User this tour belongs to")
             var userId: Int? = null,
             @ApiModelProperty(position = 40, required = true, value = "Orders referenced by this tour")
             var orders: List<OrderService.Order> = listOf(),
@@ -82,11 +82,13 @@ interface TourServiceV1 {
             var address: Address? = null,
             /** Stop tasks */
             @ApiModelProperty(position = 20, required = true, value = "Stop tasks")
-            var tasks: List<Task> = listOf()
-    ) {
-        /** Stop id. Refers to the first task its tour entry (task) id */
-        val id: Int? get() = this.tasks.firstOrNull()?.id
-    }
+            var tasks: List<Task> = listOf(),
+
+            @ApiModelProperty(position = 30, required = false, value = "Stop appointment start")
+            var appointmentStart: Date? = null,
+            @ApiModelProperty(position = 40, required = false, value = "Stop appointment end")
+            var appointmentEnd: Date? = null
+    )
 
     @Serializable(0x8eeb2fbff14af5)
     @ApiModel(description = "Task")
@@ -100,7 +102,12 @@ interface TourServiceV1 {
             @ApiModelProperty(position = 20, required = true, value = "Order id this task refers to")
             var orderId: Long = 0,
             @ApiModelProperty(position = 30, required = true, value = "Task type", example = "DELIVERY")
-            var taskType: Task.Type = Type.DELIVERY
+            var taskType: Task.Type = Type.DELIVERY,
+
+            @ApiModelProperty(position = 40, required = false, value = "Task appointment start")
+            var appointmentStart: Date? = null,
+            @ApiModelProperty(position = 50, required = false, value = "Task appointment end")
+            var appointmentEnd: Date? = null
     ) {
         enum class Type {
             PICKUP,
@@ -119,3 +126,6 @@ interface TourServiceV1 {
             var timestamp: Date = Date()
     )
 }
+
+/** Stop id. Refers to the first task its tour entry (task) id */
+val TourServiceV1.Stop.id: Int? get() = this.tasks.firstOrNull()?.id

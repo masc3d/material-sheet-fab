@@ -15,6 +15,7 @@ import org.deku.leoz.central.data.repository.uid
 import org.deku.leoz.model.TaskType
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.entity.Address
+import org.deku.leoz.service.internal.id
 import org.deku.leoz.smartlane.SmartlaneBridge
 import org.deku.leoz.smartlane.model.Routedeliveryinput
 import org.deku.leoz.smartlane.model.Routinginput
@@ -27,7 +28,11 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.DefaultProblem
 import sx.rx.subscribeOn
+import sx.time.plusDays
+import sx.time.plusHours
+import sx.time.replaceDate
 import sx.time.toTimestamp
+import java.util.*
 import java.util.concurrent.ExecutorService
 import javax.inject.Inject
 import javax.inject.Named
@@ -54,9 +59,6 @@ class TourServiceV1
 
     @Inject
     private lateinit var orderService: OrderService
-
-    @Inject
-    private lateinit var executorService: ExecutorService
 
     @Inject
     private lateinit var smartlaneBridge: SmartlaneBridge
@@ -127,24 +129,19 @@ class TourServiceV1
         )
                 .subscribeBy(
                         onNext = {
-                            log.trace("SUCCESSFUL ${it}")
                             response.resume(Response
                                     .status(Response.Status.OK)
                                     .build()
                             )
                         },
                         onError = { e ->
+                            log.error(e.message, e)
                             response.resume(DefaultProblem(
                                     status = Status.INTERNAL_SERVER_ERROR,
                                     detail = e.message
                             ))
                         }
                 )
-
-        response.resume(Response
-                .status(Response.Status.ACCEPTED)
-                .build()
-        )
     }
     //endregion
 
@@ -169,6 +166,12 @@ class TourServiceV1
                         }
                     }
 
+                    // TODO: omit times when not today or in the future, otherwise smartlane will emit error
+                    it.pdtFrom = stop.appointmentStart?.replaceDate(Date().plusDays(1))
+                    it.pdtTo = stop.appointmentEnd?.replaceDate(Date().plusDays(1))?.plusHours(5)
+
+                    log.trace("PDT ${it.pdtFrom} -> ${it.pdtTo}")
+
                     // Track stop via custom id
                     it.customId = stop.id?.toString()
                 }
@@ -177,7 +180,7 @@ class TourServiceV1
     }
 
     /**
-     * Transform tour/node record into service result
+     * Transform tour/node record into service entity
      * @param nodeRecord Optional node record referring to this tour. If not provided it will be looked up.
      */
     private fun TadTourRecord.toTour(nodeRecord: MstNodeRecord? = null): TourServiceV1.Tour {
@@ -198,6 +201,10 @@ class TourServiceV1
                 tourEntryRecords.map { it.orderId }.distinct()
         )
 
+        val ordersById = mapOf(
+                *orders.map { Pair(it.id, it) }.toTypedArray()
+        )
+
         return TourServiceV1.Tour(
                 id = tourRecord.id,
                 nodeUid = nodeRecord?.uid,
@@ -205,6 +212,28 @@ class TourServiceV1
                 orders = orders,
                 stops = tourEntryRecords.groupBy { it.position }
                         .map { stop ->
+                            val tasks = stop.value.map { task ->
+                                val taskType = TaskType.valueMap.getValue(task.orderTaskType)
+                                val order = ordersById.getValue(task.orderId)
+
+                                TourServiceV1.Task(
+                                        id = task.id,
+                                        orderId = task.orderId,
+                                        appointmentStart = when (taskType) {
+                                            TaskType.DELIVERY -> order.deliveryAppointment.dateStart
+                                            TaskType.PICKUP -> order.pickupAppointment.dateStart
+                                        },
+                                        appointmentEnd = when (taskType) {
+                                            TaskType.DELIVERY -> order.deliveryAppointment.dateEnd
+                                            TaskType.PICKUP -> order.pickupAppointment.dateEnd
+                                        },
+                                        taskType = when (taskType) {
+                                            TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                            TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
+                                        }
+                                )
+                            }
+
                             TourServiceV1.Stop(
                                     address = stop.value.first().let { task ->
                                         orders.first { it.id == task.orderId }.let {
@@ -214,16 +243,9 @@ class TourServiceV1
                                             }
                                         }
                                     },
-                                    tasks = stop.value.map { task ->
-                                        TourServiceV1.Task(
-                                                id = task.id,
-                                                orderId = task.orderId,
-                                                taskType = when (TaskType.valueMap.getValue(task.orderTaskType)) {
-                                                    TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
-                                                    TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
-                                                }
-                                        )
-                                    }
+                                    tasks = tasks,
+                                    appointmentStart = tasks.map { it.appointmentStart }.filterNotNull().max(),
+                                    appointmentEnd = tasks.map { it.appointmentEnd }.filterNotNull().min()
                             )
                         }
         )
