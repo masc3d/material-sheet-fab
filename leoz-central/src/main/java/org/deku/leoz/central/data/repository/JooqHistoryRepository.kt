@@ -14,7 +14,7 @@ import javax.inject.Named
  * Created by helke on 24.03.17.
  */
 @Named
-open class HistoryJooqRepository {
+open class JooqHistoryRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext

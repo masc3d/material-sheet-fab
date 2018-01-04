@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
+import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.setHashedPassword
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AllowedStations
 import sx.rs.DefaultProblem
@@ -17,7 +17,6 @@ import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.model.UserRole
-import org.deku.leoz.node.data.repository.master.StationRepository
 import java.util.*
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.HttpHeaders
@@ -37,13 +36,13 @@ class UserService : UserService {
     private lateinit var dslContext: DSLContext
 
     @Inject
-    private lateinit var userRepository: UserJooqRepository
+    private lateinit var userRepository: JooqUserRepository
 
     @Inject
-    private lateinit var mailRepository: MailQueueRepository
+    private lateinit var mailRepository: JooqMailQueueRepository
 
     @Inject
-    private lateinit var depotRepository: DepotJooqRepository
+    private lateinit var depotRepository: JooqDepotRepository
 
     @Inject
     private lateinit var configurationService: ConfigurationService

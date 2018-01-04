@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import org.deku.leoz.central.config.DataTestConfiguration
 import org.deku.leoz.central.config.DatabaseSyncConfiguration
-import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -28,7 +28,7 @@ class NodeJooqRepositoryTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    private lateinit var nodeJooqRepository: NodeJooqRepository
+    private lateinit var nodeJooqRepository: JooqNodeRepository
 
     @Test
     fun testNodeJooqRepository() {

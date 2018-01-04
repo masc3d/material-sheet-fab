@@ -1,7 +1,7 @@
 package org.deku.leoz.central.data
 
 import org.deku.leoz.central.config.DataTestConfiguration
-import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class UserJooqRepositoryTest {
 
     @Inject
-    private lateinit var userJooqRepository: UserJooqRepository
+    private lateinit var userJooqRepository: JooqUserRepository
 
 //    @Test
 //    fun testCreateUser() {

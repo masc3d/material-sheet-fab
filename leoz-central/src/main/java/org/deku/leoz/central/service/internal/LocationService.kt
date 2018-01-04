@@ -40,13 +40,13 @@ class LocationServiceV2 :
     private lateinit var dslContext: DSLContext
 
     @Inject
-    private lateinit var userRepository: UserJooqRepository
+    private lateinit var userRepository: JooqUserRepository
 
     @Inject
-    private lateinit var posRepository: PositionJooqRepository
+    private lateinit var posRepository: JooqGeopositionRepository
 
     @Inject
-    private lateinit var nodeRepository: NodeJooqRepository
+    private lateinit var nodeRepository: JooqNodeRepository
 
     fun TadNodeGeopositionRecord.toGpsData(): LocationServiceV2.GpsDataPoint {
         val gpsPoint = LocationServiceV2.GpsDataPoint(

@@ -9,7 +9,7 @@ import javax.inject.Named
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadParcelMessagesRecord
 
 @Named
-class MessagesJooqRepository {
+class JooqMessagesRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
 

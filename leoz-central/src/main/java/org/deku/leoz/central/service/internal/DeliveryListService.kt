@@ -1,8 +1,8 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
-import org.deku.leoz.central.data.repository.DeliveryListJooqRepository
-import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
+import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
 import sx.rs.DefaultProblem
@@ -35,13 +35,13 @@ class DeliveryListService
     private lateinit var httpHeaders: HttpHeaders
 
     @Inject
-    private lateinit var deliveryListRepository: DeliveryListJooqRepository
+    private lateinit var deliveryListRepository: JooqDeliveryListRepository
 
     @Inject
     private lateinit var orderService: org.deku.leoz.central.service.internal.OrderService
 
     @Inject
-    private lateinit var userRepository: UserJooqRepository
+    private lateinit var userRepository: JooqUserRepository
 
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)

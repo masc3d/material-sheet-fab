@@ -15,7 +15,7 @@ import java.util.*
  * Created by helke on 29.05.17.
  */
 @Named
-class PositionJooqRepository {
+class JooqGeopositionRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dslContext: DSLContext

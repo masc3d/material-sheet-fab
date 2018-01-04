@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier
  * Created by JT on 17.05.17.
  */
 @Named
-class KeyJooqRepository {
+class JooqKeyRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dslContext: DSLContext

@@ -23,19 +23,19 @@ class OrderService : OrderService {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    private lateinit var orderRepository: OrderJooqRepository
+    private lateinit var orderRepository: JooqOrderRepository
 
     @Inject
-    private lateinit var parcelRepository: ParcelJooqRepository
+    private lateinit var parcelRepository: JooqParcelRepository
 
     @Inject
-    private lateinit var statusRepository: StatusJooqRepository
+    private lateinit var statusRepository: JooqStatusRepository
 
     @Inject
-    private lateinit var userRepository: UserJooqRepository
+    private lateinit var userRepository: JooqUserRepository
 
     @Inject
-    private lateinit var depotRepository: DepotJooqRepository
+    private lateinit var depotRepository: JooqDepotRepository
 
     override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
         return get(labelRef, custRef, parcelScan, null)

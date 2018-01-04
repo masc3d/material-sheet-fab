@@ -1,7 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.Application
-import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.central.data.repository.JooqNodeRepository
 import sx.rs.DefaultProblem
 import org.deku.leoz.node.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
@@ -23,7 +23,7 @@ open class BundleServiceV1 : org.deku.leoz.node.service.internal.BundleServiceV1
 
     /** Central db node table repository */
     @Inject
-    private lateinit var nodeJooqRepository: NodeJooqRepository
+    private lateinit var nodeJooqRepository: JooqNodeRepository
 
     /**
      * Determine alias by node key

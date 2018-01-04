@@ -1,8 +1,8 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.repository.NodeJooqRepository
-import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.central.data.repository.JooqNodeRepository
+import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.service.internal.ConfigurationService
@@ -32,10 +32,10 @@ class ConfigurationService: ConfigurationService {
     private lateinit var userService: UserService
 
     @Inject
-    private lateinit var userRepository: UserJooqRepository
+    private lateinit var userRepository: JooqUserRepository
 
     @Inject
-    private lateinit var nodeJooqRepository: NodeJooqRepository
+    private lateinit var nodeJooqRepository: JooqNodeRepository
 
     @Context
     private lateinit var httpHeaders: HttpHeaders

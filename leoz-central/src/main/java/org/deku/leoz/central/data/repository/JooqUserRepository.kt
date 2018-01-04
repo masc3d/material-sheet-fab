@@ -19,7 +19,7 @@ import org.deku.leoz.service.internal.UserService
  * Created by 27694066 on 25.04.2017.
  */
 @Named
-open class UserJooqRepository {
+open class JooqUserRepository {
     companion object {
         // Backend specific salt. This one shouldn't be reused on other devices
         private val SALT = "27abf393a822078603768c78de67e4a3".parseHex()

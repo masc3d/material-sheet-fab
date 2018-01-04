@@ -3,14 +3,11 @@ package org.deku.leoz.central.data
 import org.deku.leoz.central.config.DataTestConfiguration
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
-import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstNodeRecord
-import org.deku.leoz.central.data.repository.HistoryJooqRepository
-import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.central.data.repository.JooqHistoryRepository
 import org.jooq.DSLContext
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -35,7 +32,7 @@ class HistoryJooqRepositoryTest {
     private lateinit var dslContext: DSLContext
 
     @Inject
-    private lateinit var historyRepository: HistoryJooqRepository
+    private lateinit var historyRepository: JooqHistoryRepository
 
     @Test
     fun testAdd() {

@@ -2,14 +2,12 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
-import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.data.repository.fetchByUid
 import org.deku.leoz.central.data.repository.uid
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.NodeServiceV1
-import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -42,7 +40,7 @@ class NodeServiceV1
     private lateinit var dsl: DSLContext
 
     @Inject
-    private lateinit var nodeJooqRepository: NodeJooqRepository
+    private lateinit var nodeJooqRepository: JooqNodeRepository
 
     @Inject
     private lateinit var configurationService: ConfigurationService

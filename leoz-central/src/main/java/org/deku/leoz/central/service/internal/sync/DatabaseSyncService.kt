@@ -108,10 +108,7 @@ constructor(
 
     // JOOQ Repositories
     @Inject
-    private lateinit var genericJooqRepository: org.deku.leoz.central.data.repository.GenericJooqRepository
-
-    @Inject
-    private lateinit var syncJooqRepository: org.deku.leoz.central.data.repository.SyncJooqRepository
+    private lateinit var syncJooqRepository: org.deku.leoz.central.data.repository.JooqSyncRepository
 
     @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     @Synchronized open fun sync(clean: Boolean) {
@@ -194,7 +191,7 @@ constructor(
             // masc20150530. JOOQ cursor requires an explicit transaction
             transactionJooq.execute<Any> { _ ->
                 // Read source records newer than destination timestamp
-                val source = genericJooqRepository.findNewerThan(
+                val source = syncJooqRepository.findNewerThan(
                         destMaxSyncId,
                         p.sourceTable,
                         p.sourceTableSyncIdField)

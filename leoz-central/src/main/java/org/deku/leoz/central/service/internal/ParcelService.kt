@@ -6,10 +6,9 @@ import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.JPEGTranscoder
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.ParcelProcessing
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
-import org.deku.leoz.central.data.repository.MessagesJooqRepository
-import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.central.data.repository.JooqMessagesRepository
+import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.FileName
@@ -73,13 +72,13 @@ open class ParcelServiceV1 :
 
 
     @Inject
-    private lateinit var messagesRepository: MessagesJooqRepository
+    private lateinit var messagesRepository: JooqMessagesRepository
 
     @Inject
-    private lateinit var parcelProcessing: ParcelProcessing
+    private lateinit var parcelProcessingService: ParcelProcessingService
 
     @Inject
-    private lateinit var nodeRepository: NodeJooqRepository
+    private lateinit var nodeRepository: JooqNodeRepository
 
     /**
      * Parcel service message handler
@@ -292,7 +291,7 @@ open class ParcelServiceV1 :
         }
 
         try {
-            parcelProcessing.processMessages()
+            parcelProcessingService.processMessages()
         } catch (e: Throwable) {
             log.error(e.message, e)
         }

@@ -1,7 +1,7 @@
 package org.deku.leoz.central.data
 
 import org.deku.leoz.central.config.DataTestConfiguration
-import org.deku.leoz.central.data.repository.MailQueueRepository
+import org.deku.leoz.central.data.repository.JooqMailQueueRepository
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class MailQueueRepositoryTest {
 
     @Inject
-    private lateinit var mailRepository: MailQueueRepository
+    private lateinit var mailRepository: JooqMailQueueRepository
 
     @Test
     fun testInsertWithValidReceiver() {

@@ -16,7 +16,7 @@ import javax.inject.Named
  * Created by masc on 02.07.15.
  */
 @Named
-class NodeJooqRepository {
+class JooqNodeRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext

@@ -2,8 +2,10 @@ package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.Tblauftrag
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecord
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -15,7 +17,7 @@ import javax.inject.Named
  * Created by JT on 30.06.17.
  */
 @Named
-open class OrderJooqRepository {
+open class JooqOrderRepository {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -74,7 +76,12 @@ open class OrderJooqRepository {
         )
     }
 
-
-
-
+    fun findOrderByOrderNumber(orderNo: Long): TblauftragRecord? {
+        if(orderNo==0.toLong()) return null
+        return dslContext.select()
+                .from(Tables.TBLAUFTRAG)
+                .where(Tables.TBLAUFTRAG.ORDERID.eq(orderNo.toDouble()))
+                //.and(Tables.TBLAUFTRAG.ORDERID.greaterThan(0.0))
+                ?.fetchOneInto(Tblauftrag.TBLAUFTRAG)
+    }
 }

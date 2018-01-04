@@ -1,7 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
+import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.verifyPassword
 import org.deku.leoz.identity.Identity
 import sx.rs.DefaultProblem
 import org.deku.leoz.service.internal.AuthorizationService
@@ -34,13 +34,13 @@ class AuthorizationService
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    private lateinit var nodeJooqRepository: NodeJooqRepository
+    private lateinit var nodeJooqRepository: JooqNodeRepository
 
     @Inject
-    private lateinit var userRepository: UserJooqRepository
+    private lateinit var userRepository: JooqUserRepository
 
     @Inject
-    private lateinit var keyRepository: KeyJooqRepository
+    private lateinit var keyRepository: JooqKeyRepository
 
 
     interface Listener : EventListener {

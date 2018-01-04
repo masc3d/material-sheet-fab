@@ -2,7 +2,6 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.DataTestConfiguration
 import org.deku.leoz.central.config.ParcelServiceConfiguration
-import org.deku.leoz.central.data.ParcelProcessing
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -19,7 +18,7 @@ import javax.inject.Inject
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = [
     DataTestConfiguration::class,
-    ParcelProcessing::class,
+    ParcelProcessingService::class,
     ParcelServiceConfiguration::class,
     ParcelServiceConfiguration.Settings::class,
     ParcelServiceV1::class]

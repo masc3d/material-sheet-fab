@@ -10,8 +10,8 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @Named
-class MailQueueRepository {
-    private val log = LoggerFactory.getLogger(MailQueueRepository::class.java)
+class JooqMailQueueRepository {
+    private val log = LoggerFactory.getLogger(JooqMailQueueRepository::class.java)
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)

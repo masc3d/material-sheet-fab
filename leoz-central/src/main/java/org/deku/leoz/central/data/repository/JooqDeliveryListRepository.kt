@@ -19,7 +19,7 @@ import javax.inject.Named
  * Created by JT on 12.07.17.
  */
 @Named
-open class DeliveryListJooqRepository {
+open class JooqDeliveryListRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext

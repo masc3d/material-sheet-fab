@@ -46,10 +46,10 @@ class BagService : BagService {
     private lateinit var dslContext: DSLContext
 
     @Inject
-    private lateinit var logHistoryRepository: HistoryJooqRepository
+    private lateinit var logHistoryRepository: JooqHistoryRepository
 
     @Inject
-    private lateinit var depotRepository: DepotJooqRepository
+    private lateinit var depotRepository: JooqDepotRepository
 
     @Inject
     private lateinit var routingService: org.deku.leoz.node.service.pub.RoutingService

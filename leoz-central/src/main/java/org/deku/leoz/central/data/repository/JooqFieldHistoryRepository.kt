@@ -15,7 +15,7 @@ import java.util.*
 
 
 @Named
-class FieldHistoryJooqRepository {
+class JooqFieldHistoryRepository {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)

@@ -1,10 +1,11 @@
-package org.deku.leoz.central.data
+package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.config.ParcelServiceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
 import org.deku.leoz.time.toTimeWithoutDate
@@ -20,14 +21,13 @@ import javax.inject.Inject
 import javax.inject.Named
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 
 
 @Named
-open class ParcelProcessing {
+open class ParcelProcessingService {
 
     class ParcelProcessingException(message: String, inner: Throwable? = null) : Exception(message, inner)
 
@@ -35,22 +35,22 @@ open class ParcelProcessing {
     private lateinit var storage: Storage
 
     @Inject
-    private lateinit var messagesRepository: MessagesJooqRepository
+    private lateinit var messagesRepository: JooqMessagesRepository
 
     @Inject
-    private lateinit var userRepository: UserJooqRepository
+    private lateinit var userRepository: JooqUserRepository
 
     @Inject
-    private lateinit var parcelRepository: ParcelJooqRepository
+    private lateinit var parcelRepository: JooqParcelRepository
 
     @Inject
-    private lateinit var statusRepository: StatusJooqRepository
+    private lateinit var statusRepository: JooqStatusRepository
 
     @Inject
-    private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
+    private lateinit var fieldHistoryRepository: JooqFieldHistoryRepository
 
     @Inject
-    private lateinit var orderRepository: OrderTableJooqRepository
+    private lateinit var orderRepository: JooqOrderRepository
 
     @Inject
     private lateinit var parcelServiceSettings: ParcelServiceConfiguration.Settings

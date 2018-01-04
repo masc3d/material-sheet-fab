@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier
  * Created by masc on 27/02/16.
  */
 @Named
-class BundleVersionJooqRepository {
+class JooqBundleVersionRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dslContext: DSLContext

@@ -27,7 +27,7 @@ import java.time.LocalDate
  * Created by JT on 18.07.17.
  */
 @Named
-class ParcelJooqRepository {
+class JooqParcelRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
 

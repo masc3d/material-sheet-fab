@@ -49,13 +49,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     private lateinit var bagService: BagService
 
     @Inject
-    private lateinit var depotRepository: DepotJooqRepository
+    private lateinit var depotRepository: JooqDepotRepository
 
     @Inject
-    private lateinit var parcelRepository: ParcelJooqRepository
+    private lateinit var parcelRepository: JooqParcelRepository
 
     @Inject
-    private lateinit var fieldHistoryRepository: FieldHistoryJooqRepository
+    private lateinit var fieldHistoryRepository: JooqFieldHistoryRepository
 
     @Inject
     private lateinit var routingService: org.deku.leoz.node.service.pub.RoutingService
@@ -67,7 +67,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     private lateinit var bagServiceCentral: org.deku.leoz.central.service.internal.BagService
 
     @Inject
-    private lateinit var statusRepository: StatusJooqRepository
+    private lateinit var statusRepository: JooqStatusRepository
 
     data class ExportUnitOrder(val unit: TblauftragcolliesRecord, val order: TblauftragRecord)
 

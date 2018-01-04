@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Named
-class StatusJooqRepository {
+class JooqStatusRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
 

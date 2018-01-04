@@ -25,7 +25,7 @@ import org.deku.leoz.service.internal.ExportService
  * Created by masc on 07.05.15.
  */
 @Named
-open class DepotJooqRepository {
+open class JooqDepotRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
