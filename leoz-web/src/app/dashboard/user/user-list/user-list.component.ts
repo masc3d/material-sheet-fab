@@ -44,10 +44,10 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
       <p-column header="">
         <ng-template let-user="rowData" pTemplate="body">
           <span (click)="selected(user)">
-          <i *ngIf="myself(user) || checkPermission(user)" class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>
+          <i *ngIf="myself(user) || checkPermission(user)" class="fa fa-pencil" aria-hidden="true"></i>
           </span>
           <span (click)="deactivate(user)">
-          <i *ngIf="checkPermission(user)" class="far fa-trash-alt fa-fw" aria-hidden="true"></i>
+          <i *ngIf="checkPermission(user)" class="fa fa-trash-o" aria-hidden="true"></i>
           </span>
         </ng-template>
       </p-column>
