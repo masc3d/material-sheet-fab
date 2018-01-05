@@ -101,6 +101,11 @@ fun SelectWhereStep<MstNodeRecord>.fetchByUid(nodeUid: String, strict: Boolean =
     }
 }
 
+fun SelectWhereStep<MstNodeRecord>.fetchUidById(id: Int): String? {
+    return this.where(MST_NODE.NODE_ID.eq(id))
+            .fetchOne(MST_NODE.KEY)
+}
+
 fun SelectWhereStep<MstNodeRecord>.fetchIsAuthorized(nodeUid: String): Boolean {
     return this.fetchByUid(nodeUid)?.authorized ?: 0 != 0
 }

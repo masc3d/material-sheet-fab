@@ -11,7 +11,6 @@ import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.container.Suspended
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 import javax.ws.rs.sse.Sse
 import javax.ws.rs.sse.SseEventSink
 
@@ -25,10 +24,21 @@ import javax.ws.rs.sse.SseEventSink
 interface TourServiceV1 {
     companion object {
         const val ID = "id"
+        const val DEBITOR_ID = "debitor-id"
         const val DELIVERYLIST_ID = "deliverylist-id"
         const val NODE_UID = "node-uid"
         const val USER_ID = "user-id"
     }
+
+    @GET
+    @Path("/")
+    @ApiOperation(
+            value = "Get tour(s)",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun get(
+            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
+            debitorId: Int?
+    ): List<Tour>
 
     @GET
     @Path("/{${ID}}")
@@ -54,14 +64,26 @@ interface TourServiceV1 {
             userId: Int
     ): Tour
 
+    /**
+     * Contains information for creating a tour from a delivery list
+     * @param deliveryListId
+     */
+    @ApiModel(description = "Contains information for creating a tour from a delivery list")
+    data class TourFromDeliverylist(
+            @ApiModelProperty(position = 10, required = true, value = "Delivery list (id) to create tour from")
+            var deliveryListId: Int? = null,
+            @ApiModelProperty(position = 20, required = true, value = "User (id) this tour will get assigned to")
+            var userId: Int? = null
+    )
+
     @POST
-    @Path("/deliverylist/{${DELIVERYLIST_ID}}")
+    @Path("/deliverylist")
     @ApiOperation(value = "Create a new tour from a delivery list",
             notes = "This tour will not be attached to a specific node and be used to split/optimize.",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun createFromDeliveryList(
-            @PathParam(DELIVERYLIST_ID) @ApiParam(value = "Deliverylist id to create tour from")
-            deliveryListId: Int
+    fun create(
+            @ApiParam(value = "Request for creating tour from a delivery list")
+            request: TourFromDeliverylist
     ): Tour
 
     @PATCH
