@@ -17,27 +17,27 @@ import org.springframework.beans.factory.annotation.Qualifier
 class JooqKeyRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    lateinit var dslContext: DSLContext
+    lateinit var dsl: DSLContext
 
     fun findByID(id: Int): MstKeyRecord? {
         if (id == 0)
             return null
         else
-            return dslContext.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.KEY_ID.eq(id))
+            return dsl.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.KEY_ID.eq(id))
     }
 
     fun findValidByKey(key: String): Boolean {
-        return (dslContext.fetchOne(
+        return (dsl.fetchOne(
                 MstKey.MST_KEY,
                 Tables.MST_KEY.KEY.eq(key)
         ) != null)
     }
 
     fun insertNew(key: String): Int {
-        val r = dslContext.newRecord(Tables.MST_KEY)
+        val r = dsl.newRecord(Tables.MST_KEY)
         r.key = key
         r.store()
 
-        return dslContext.lastID().toInt()
+        return dsl.lastID().toInt()
     }
 }

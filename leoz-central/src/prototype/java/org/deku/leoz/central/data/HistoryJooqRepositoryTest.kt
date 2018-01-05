@@ -29,14 +29,14 @@ class HistoryJooqRepositoryTest {
 
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     @Inject
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var historyRepository: JooqHistoryRepository
 
     @Test
     fun testAdd() {
-        val record = dslContext.newRecord(Tables.TBLHISTORIE)
+        val record = dsl.newRecord(Tables.TBLHISTORIE)
         record.info = "TEST"
         historyRepository.save(record)
     }

@@ -33,7 +33,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var glsShipmentProcessingService: ShipmentProcessingPortType
@@ -46,7 +46,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
         try {
             val deliveryOptionId: Int = deliveryOrder.deliveryOption.id!!.split(delimiters = *arrayOf("-"), ignoreCase = true, limit = 0)[0].toInt()
 
-            val result = dslContext.select()
+            val result = dsl.select()
                     .from(Tables.SDD_CUSTOMER
                             .join(Tables.SDD_CONTACT).on(Tables.SDD_CUSTOMER.CUSTOMERID.equal(Tables.SDD_CONTACT.CUSTOMERID))
                             .join(Tables.SDD_CONTZIP).on(Tables.SDD_CONTACT.ZIPLAYER.equal(Tables.SDD_CONTZIP.LAYER)))
@@ -79,11 +79,11 @@ class CarrierIntegrationService : CarrierIntegrationService {
                         detail = "The given delivery option with zip code [$delOptionZip] does not match the target address zipcode [$targetAddrZip]")
             }
 
-            val knownOrder = dslContext.fetchCount(
+            val knownOrder = dsl.fetchCount(
                     Tables.SDD_FPCS_ORDER,
                     Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(deliveryOrder.incomingId)) > 0
 
-            val fpcsRecord: SddFpcsOrderRecord = dslContext.newRecord(Tables.SDD_FPCS_ORDER)
+            val fpcsRecord: SddFpcsOrderRecord = dsl.newRecord(Tables.SDD_FPCS_ORDER)
             fpcsRecord.customersReference = deliveryOrder.incomingId
             fpcsRecord.customerNo = result.getValue(0, Tables.SDD_CUSTOMER.CUSTOMERID)
             fpcsRecord.contactNo = result.getValue(0, Tables.SDD_CONTACT.CONTACTID)
@@ -102,7 +102,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
             fpcsRecord.dtShip = java.sql.Date(Calendar.getInstance().timeInMillis)
 
             if (knownOrder) {
-                val existingRecord = dslContext.fetch(Tables.SDD_FPCS_ORDER, Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(fpcsRecord.customersReference).and(Tables.SDD_FPCS_ORDER.GLS_PARCELNO.isNotNull))
+                val existingRecord = dsl.fetch(Tables.SDD_FPCS_ORDER, Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(fpcsRecord.customersReference).and(Tables.SDD_FPCS_ORDER.GLS_PARCELNO.isNotNull))
                 fpcsRecord.glsParcelno = existingRecord[0].glsParcelno
                 fpcsRecord.glsTrackid = existingRecord[0].glsTrackid
             }
@@ -194,7 +194,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
                     fpcsRecord.store()
 
                     //Check if GLS Parcel number is within the assigned range. Otherwise cancel the order and throw a problem.
-                    val checkRange = dslContext.fetchCount(
+                    val checkRange = dsl.fetchCount(
                             Tables.TBLSYSCOLLECTIONS
                                     .join(Tables.SDD_CUSTOMER)
                                     .on(Tables.TBLSYSCOLLECTIONS.TXTP2
@@ -253,7 +253,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
             target_address_address_line: String): List<DeliveryOption> {
 
         try {
-            val sddRoute: SddContzipRecord = dslContext.fetchOne(
+            val sddRoute: SddContzipRecord = dsl.fetchOne(
                     Tables.SDD_CONTZIP,
                     Tables.SDD_CONTZIP.ZIP
                             .eq(target_address_zip_code)
@@ -289,7 +289,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
     override fun cancelDeliveryOrder(id: String): Response {
 
         try {
-            val order: SddFpcsOrderRecord = dslContext.fetchOne(
+            val order: SddFpcsOrderRecord = dsl.fetchOne(
                     Tables.SDD_FPCS_ORDER,
                     Tables.SDD_FPCS_ORDER.ID
                             .eq(id.toInt())

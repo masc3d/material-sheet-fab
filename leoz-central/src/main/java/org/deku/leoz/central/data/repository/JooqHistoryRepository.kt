@@ -17,19 +17,19 @@ import javax.inject.Named
 open class JooqHistoryRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     //@Inject
     //private lateinit var historyRepository: HistoryJooqRepository
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun save(logEntry: TblhistorieRecord) {
-        dslContext.insertInto(Tables.TBLHISTORIE).set(logEntry).execute()
+        dsl.insertInto(Tables.TBLHISTORIE).set(logEntry).execute()
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun save(depotId: String, info: String, msgLocation: String, orderId: String) {
-        val record = dslContext.newRecord(Tables.TBLHISTORIE)
+        val record = dsl.newRecord(Tables.TBLHISTORIE)
         record.depotid = if(depotId.length>10)depotId.substring(0,10) else depotId
         record.info = info
         record.msglocation = if(msgLocation.length>45) msgLocation.substring(0,45) else msgLocation

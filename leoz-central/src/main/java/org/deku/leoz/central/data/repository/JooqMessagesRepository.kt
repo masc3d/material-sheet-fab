@@ -13,10 +13,10 @@ class JooqMessagesRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
 
-    lateinit var dslContext: DSLContext
+    lateinit var dsl: DSLContext
 
     fun findUnprocessedMsg(): List<TadParcelMessagesRecord>{
-        return dslContext.select()
+        return dsl.select()
                 .from(Tables.TAD_PARCEL_MESSAGES)
                 .where(Tables.TAD_PARCEL_MESSAGES.IS_PROCCESSED.isFalse)
                 .fetchInto(TadParcelMessagesRecord::class.java)

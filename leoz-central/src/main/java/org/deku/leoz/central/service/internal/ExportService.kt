@@ -40,7 +40,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var userService: UserService
@@ -163,7 +163,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     override fun getNewLoadinglistNo(): ExportService.Loadinglist {
         userService.get()
 
-        return ExportService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 300000)
+        return ExportService.Loadinglist(loadinglistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 300000)
     }
 
     override fun getParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
@@ -247,7 +247,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     override fun getNewBagLoadinglistNo(): ExportService.Loadinglist {
         userService.get()
 
-        return ExportService.Loadinglist(loadinglistNo = Routines.fTan(dslContext.configuration(), counter.LOADING_LIST.value) + 10000)
+        return ExportService.Loadinglist(loadinglistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000)
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
@@ -360,7 +360,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         recSeal.bemerkung = t
         recSeal.store()
 
-        dslContext.update(Tables.SSO_S_MOVEPOOL)
+        dsl.update(Tables.SSO_S_MOVEPOOL)
                 .set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_RED, unRedSeal.value.value.toDouble())
                 .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bag.bagNumber!!.toDouble())
                         .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
@@ -417,7 +417,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             } else {
                 //update movepool
                 try {
-                    dslContext.update(Tables.SSO_S_MOVEPOOL)
+                    dsl.update(Tables.SSO_S_MOVEPOOL)
                             .set(Tables.SSO_S_MOVEPOOL.STATUS, BagStatus.OPENED.value.toDouble())
                             .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, stationNo.toDouble())
                             .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bag.bagNumber!!.toDouble())
@@ -782,7 +782,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val unitRecord = exportUnitOrder.unit
         val orderRecord = exportUnitOrder.order
 
-        dslContext.update(Tables.SSO_S_MOVEPOOL)
+        dsl.update(Tables.SSO_S_MOVEPOOL)
                 .set(Tables.SSO_S_MOVEPOOL.STATUS, BagStatus.CLOSED_FROM_HUB.value.toDouble())
                 .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, 2.0)
                 .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bag.bagNumber!!.toDouble())
@@ -1512,7 +1512,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val infotext = "WebExport"
         var existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), Event.EXPORT_RECEIVE.creator.toString(), Event.EXPORT_RECEIVE.concatId, Reason.NORMAL.id)
         if (!existStatus) {
-            val r = dslContext.newRecord(Tables.TBLSTATUS)
+            val r = dsl.newRecord(Tables.TBLSTATUS)
             r.packstuecknummer = unitRecord.colliebelegnr
             r.setDate(scanTs)
             r.setTime(scanTs)
@@ -1530,7 +1530,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
         existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)
         if (!existStatus) {
-            val r = dslContext.newRecord(Tables.TBLSTATUS)
+            val r = dsl.newRecord(Tables.TBLSTATUS)
             r.packstuecknummer = unitRecord.colliebelegnr
             r.setDate(scanTs)
             r.setTime(scanTs)

@@ -57,7 +57,7 @@ open class ParcelProcessingService {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -114,7 +114,7 @@ open class ParcelProcessingService {
                 }
 
                 var insertStatus = true
-                val r = dslContext.newRecord(Tables.TBLSTATUS)
+                val r = dsl.newRecord(Tables.TBLSTATUS)
 
                 val parcelNo = parcelRecord.colliebelegnr.toLong()
 
@@ -171,7 +171,7 @@ open class ParcelProcessingService {
 //                        for (i in 0..uids.size - 1) {
 //                            val damagedFileUID = uids[i]
 //                        }
-                        val rDamaged = dslContext.newRecord(Tables.TBLSTATUS)
+                        val rDamaged = dsl.newRecord(Tables.TBLSTATUS)
 
                         rDamaged.packstuecknummer = r.packstuecknummer
                         rDamaged.datum = r.datum
@@ -386,7 +386,7 @@ open class ParcelProcessingService {
                                     //if (parcelScan.startsWith("10071")) {
                                     val unitInBagUnitRecords = parcelRepository.findUnitsInBagByBagUnitNumber(parcelNo)
                                     unitInBagUnitRecords.forEach {
-                                        val unitInBagStatusRecord = dslContext.newRecord(Tables.TBLSTATUS)
+                                        val unitInBagStatusRecord = dsl.newRecord(Tables.TBLSTATUS)
                                         unitInBagStatusRecord.packstuecknummer = it.colliebelegnr
                                         unitInBagStatusRecord.datum = r.datum
                                         unitInBagStatusRecord.zeit = r.zeit

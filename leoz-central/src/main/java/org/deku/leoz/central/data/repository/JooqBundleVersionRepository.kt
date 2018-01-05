@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Qualifier
 class JooqBundleVersionRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    lateinit var dslContext: DSLContext
+    lateinit var dsl: DSLContext
 
     fun findByAlias(bundleName: String, versionAlias: String): MstBundleVersionRecord? {
-        return dslContext.fetchOne(Tables.MST_BUNDLE_VERSION,
+        return dsl.fetchOne(Tables.MST_BUNDLE_VERSION,
                 Tables.MST_BUNDLE_VERSION.BUNDLE
                         .eq(bundleName)
                         .and(Tables.MST_BUNDLE_VERSION.ALIAS

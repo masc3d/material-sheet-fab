@@ -18,13 +18,13 @@ import java.util.*
 class JooqGeopositionRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    lateinit var dslContext: DSLContext
+    lateinit var dsl: DSLContext
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     fun findByUserId(id: Int, from: Date, to: Date): List<TadNodeGeopositionRecord>? {
 
-        return dslContext
+        return dsl
                 .select()
                 .from(Tables.TAD_NODE_GEOPOSITION)
                 .where(Tables.TAD_NODE_GEOPOSITION.USER_ID.eq(id))
@@ -35,7 +35,7 @@ class JooqGeopositionRepository {
 
     fun findRecentByUserId(id: Int): List<TadNodeGeopositionRecord>? {
 
-        return dslContext
+        return dsl
                 .select()
                 .from(Tables.TAD_NODE_GEOPOSITION)
                 .where(Tables.TAD_NODE_GEOPOSITION.USER_ID.eq(id))

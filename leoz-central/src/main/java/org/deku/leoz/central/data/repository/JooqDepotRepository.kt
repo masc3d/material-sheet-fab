@@ -28,11 +28,11 @@ import org.deku.leoz.service.internal.ExportService
 open class JooqDepotRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun findAll(): List<TbldepotlisteRecord> {
-        return dslContext
+        return dsl
                 .select()
                 .from(Tables.TBLDEPOTLISTE)
                 .fetchInto(TbldepotlisteRecord::class.java)
@@ -40,7 +40,7 @@ open class JooqDepotRepository {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun findSectionDepots(iSection: Int, iPosition: Int): List<String> {
-        return dslContext
+        return dsl
                 .select(Tables.SECTIONDEPOTLIST.DEPOT)
                 .from(Tables.SECTIONDEPOTLIST)
                 .where(Tables.SECTIONDEPOTLIST.SECTION.eq(iSection.toLong())
@@ -50,7 +50,7 @@ open class JooqDepotRepository {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun findDebitor(StationNr: Int): Int {
-        return dslContext
+        return dsl
                 .select(Tables.MST_DEBITOR.DEBITOR_ID)
                 .from(Tables.MST_DEBITOR).innerJoin(Tables.MST_DEBITOR_STATION)
                 .on(Tables.MST_DEBITOR.DEBITOR_ID.eq(Tables.MST_DEBITOR_STATION.DEBITOR_ID))
@@ -60,7 +60,7 @@ open class JooqDepotRepository {
     }
 
     open fun findStationsByDebitorId(debitorId: Int): List<String> {
-        return dslContext
+        return dsl
                 .select(Tables.TBLDEPOTLISTE.DEPOTNR)
                 .from(Tables.TBLDEPOTLISTE)
                 .where(Tables.TBLDEPOTLISTE.ID.eq(debitorId))
@@ -70,7 +70,7 @@ open class JooqDepotRepository {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun findByMatchcode(matchcode: String): TbldepotlisteRecord {
-        return dslContext
+        return dsl
                 .select()
                 .from(Tables.TBLDEPOTLISTE)
                 .where(Tables.TBLDEPOTLISTE.DEPOTMATCHCODE.eq(matchcode))
@@ -78,14 +78,14 @@ open class JooqDepotRepository {
     }
 
     open fun getCountBagsToSendBagByStation(stationNo: Int): Int {
-        val countBagsUsedByStation: Int = dslContext.selectCount()
+        val countBagsUsedByStation: Int = dsl.selectCount()
                 .from(Tables.SSO_S_MOVEPOOL)
                 .where(Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(stationNo.toDouble())
                         .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
                         .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(6.0)))
                 .fetchOne(0, Int::class.java)
 
-        val quota: Int = dslContext.select(Tables.TBLDEPOTLISTE.BAGKONTINGENT)
+        val quota: Int = dsl.select(Tables.TBLDEPOTLISTE.BAGKONTINGENT)
                 .from(Tables.TBLDEPOTLISTE)
                 .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(stationNo)
                         .and(Tables.TBLDEPOTLISTE.AKTIVIERUNGSDATUM.greaterOrEqual(Date().toTimestamp()))
@@ -100,23 +100,23 @@ open class JooqDepotRepository {
     }
 
     open fun getBag(bagId: Long): SsoSMovepoolRecord? {
-//        val record = dslContext.select()
+//        val record = dsl.select()
 //                .from(Tables.SSO_S_MOVEPOOL)
 //                .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
 //                .fetchOne(record: SsoSMovepoolRecord::class.java)
-        return dslContext.fetchOne(SsoSMovepool.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
+        return dsl.fetchOne(SsoSMovepool.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
         //return record
     }
 
     open fun getUnitNo(orderid: Long): Long? {
         if (orderid == 0.toLong()) return null
-        return dslContext.select(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(Tables.TBLAUFTRAGCOLLIES)
+        return dsl.select(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(Tables.TBLAUFTRAGCOLLIES)
                 .where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble()))
                 .fetchOne(0, Long::class.java)
     }
 
     open fun getSeal(sealNo:Long):SsoPMovRecord?{
-        return dslContext.fetchOne(SsoPMov.SSO_P_MOV,Tables.SSO_P_MOV.PLOMBENNUMMER.eq(sealNo.toDouble()))
+        return dsl.fetchOne(SsoPMov.SSO_P_MOV,Tables.SSO_P_MOV.PLOMBENNUMMER.eq(sealNo.toDouble()))
     }
 }
 

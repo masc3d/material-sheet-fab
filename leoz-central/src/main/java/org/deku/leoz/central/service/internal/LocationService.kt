@@ -37,7 +37,7 @@ class LocationServiceV2 :
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var userRepository: JooqUserRepository
@@ -434,7 +434,7 @@ class LocationServiceV2 :
         log.trace { "Received ${dataPoints.count()} from [${message.nodeKey}] user [${message.userId}]" }
 
         dataPoints.forEach {
-            val r = dslContext.newRecord(Tables.TAD_NODE_GEOPOSITION)
+            val r = dsl.newRecord(Tables.TAD_NODE_GEOPOSITION)
 
             r.userId = message.userId
             r.nodeId = nodeRepository.findByKey(message.nodeKey ?: "")?.nodeId
