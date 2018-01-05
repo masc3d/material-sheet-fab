@@ -60,7 +60,9 @@ dependencies {
 
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
-            "io.swagger:swagger-jaxrs:$v_swagger",
+            dependencies.create("io.swagger:swagger-jaxrs:$v_swagger") {
+                exclude group: 'javax.ws.rs', module: 'jsr311-api'
+            },
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
@@ -71,8 +73,10 @@ dependencies {
 
             // REST
             "io.github.openfeign:feign-core:$v_feign",
-            "io.github.openfeign:feign-jaxrs:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
+            dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
+                exclude group: 'javax.ws.rs', module: 'jsr311-api'
+            },
 
             // YAML
             "org.yaml:snakeyaml:$v_snakeyaml",
@@ -108,8 +112,10 @@ dependencies {
 
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
-            "io.github.openfeign:feign-jaxrs:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
+            dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
+                exclude group: 'javax.ws.rs', module: 'jsr311-api'
+            },
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",

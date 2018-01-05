@@ -45,7 +45,9 @@ dependencies {
     compileOnly(
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
-            "io.swagger:swagger-jaxrs:$v_swagger",
+            dependencies.create("io.swagger:swagger-jaxrs:$v_swagger") {
+                exclude group: 'javax.ws.rs', module: 'jsr311-api'
+            },
 
             "io.swagger:swagger-codegen:$v_swagger_codegen",
 
@@ -63,7 +65,9 @@ dependencies {
 
             // Socket.IO
             "io.socket:socket.io-client:$v_socketio",
-            "io.swagger:swagger-jaxrs:$v_swagger"
+            dependencies.create("io.swagger:swagger-jaxrs:$v_swagger") {
+                exclude group: 'javax.ws.rs', module: 'jsr311-api'
+            }
     )
 }
 
