@@ -67,14 +67,12 @@ class Stopwatch {
 
              * @since 10.0
              */
-            fun systemTicker(): Ticker {
-                return SYSTEM_TICKER
-            }
+            fun systemTicker(): Ticker =
+                    SYSTEM_TICKER
 
             private val SYSTEM_TICKER = object : Ticker() {
-                override fun read(): Long {
-                    return System.nanoTime()
-                }
+                override fun read(): Long =
+                        System.nanoTime()
             }
         }
     }
@@ -192,9 +190,8 @@ class Stopwatch {
         return this
     }
 
-    private fun elapsedNanos(): Long {
-        return if (isRunning) ticker.read() - startTick + elapsedNanos else elapsedNanos
-    }
+    private fun elapsedNanos(): Long =
+            if (isRunning) ticker.read() - startTick + elapsedNanos else elapsedNanos
 
     /**
      * Returns the current elapsed time shown on this stopwatch, expressed
@@ -205,9 +202,8 @@ class Stopwatch {
      * precision here.
      * @since 14.0 (since 10.0 as `elapsedTime()`)
      */
-    fun elapsed(desiredUnit: TimeUnit): Long {
-        return desiredUnit.convert(elapsedNanos(), TimeUnit.NANOSECONDS)
-    }
+    fun elapsed(desiredUnit: TimeUnit): Long =
+            desiredUnit.convert(elapsedNanos(), TimeUnit.NANOSECONDS)
 
     /**
      * Returns a string representation of the current elapsed time.
@@ -228,40 +224,31 @@ class Stopwatch {
          * as its time source.
          * @since 15.0
          */
-        fun createUnstarted(): Stopwatch {
-            return Stopwatch()
-        }
+        fun createUnstarted(): Stopwatch = Stopwatch()
 
         /**
          * Creates (but does not start) a new stopwatch, using the specified time
          * source.
          * @since 15.0
          */
-        fun createUnstarted(ticker: Ticker): Stopwatch {
-            return Stopwatch(ticker)
-        }
+        fun createUnstarted(ticker: Ticker): Stopwatch = Stopwatch(ticker)
 
         /**
          * Creates (and starts) a new stopwatch using [System.nanoTime]
          * as its time source.
          * @since 15.0
          */
-        fun createStarted(): Stopwatch {
-            return Stopwatch().start()
-        }
+        fun createStarted(): Stopwatch = Stopwatch().start()
 
         /**
          * Creates (and starts) a new stopwatch, using the specified time
          * source.
          * @since 15.0
          */
-        fun createStarted(ticker: Ticker): Stopwatch {
-            return Stopwatch(ticker).start()
-        }
+        fun createStarted(ticker: Ticker): Stopwatch = Stopwatch(ticker).start()
 
-        private fun createLogMessage(stopwatch: Stopwatch, name: String): String {
-            return "${name} [${stopwatch}]"
-        }
+        private fun createLogMessage(stopwatch: Stopwatch, name: String): String =
+                "${name} [${stopwatch}]"
 
         /**
          * Creates (and starts) a new stopwatch and executes a block with automatic logging
@@ -291,21 +278,6 @@ class Stopwatch {
                 return block(sw, log)
             } finally {
                 log.info(this.createLogMessage(sw, name))
-            }
-        }
-
-        /**
-         * Creates (and starts) a new stopwatch and executes a block with automatic logging
-         * @param name Name of operation to measure
-         * @param log Log action to perform
-         * @param block Block to execute/measure
-         */
-        fun createStarted(name: String, log: LogAction = {}, block: (Stopwatch, LogAction) -> Unit) {
-            val sw = Stopwatch.createStarted()
-            try {
-                block(sw, log)
-            } finally {
-                log.invoke("${name} [${sw}]")
             }
         }
 

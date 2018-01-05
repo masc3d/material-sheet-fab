@@ -35,7 +35,7 @@ class ConcurrencyTest {
                     // Process maximum 4 simultaneously
                 }, 4)
                 .blockingSubscribe {
-                    log.trace(it)
+                    log.trace { it }
                 }
     }
 
@@ -54,7 +54,7 @@ class ConcurrencyTest {
         }
                 .merge()
                 .blockingSubscribe {
-                    log.trace(it)
+                    log.trace { it }
                 }
 
     }

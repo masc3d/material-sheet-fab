@@ -23,9 +23,7 @@ class Result<T> private constructor (
      * Delivers the result value or throws in case of error condition
      */
     val value: T
-        get() {
-            return _value ?: throw error!!
-        }
+        get() = _value ?: throw error!!
 
     /**
      * Delivers the result value or null in case of error
