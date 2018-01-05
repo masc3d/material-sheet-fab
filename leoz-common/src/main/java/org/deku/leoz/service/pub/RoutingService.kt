@@ -24,14 +24,14 @@ interface RoutingService {
     /**
      * Routing service specific error codes
      */
-    enum class ErrorCode private constructor(private val mValue: Int) {
+    enum class ErrorCode(private val value: Int) {
         ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER(1000)
     }
 
     /**
      * Created by masc on 23.06.15.
      */
-    @ApiModel(value = "RoutingRequest", subTypes = arrayOf(Request.Participant::class), description = "Routing request")
+    @ApiModel(value = "RoutingRequest", subTypes = [(Request.Participant::class)], description = "Routing request")
     class Request {
         /**
          * Sender or consignee attributes
@@ -54,7 +54,7 @@ interface RoutingService {
             @ApiModelProperty(dataType = "string", example = "020", position = 60, required = false, value = "Desired station number", allowableValues = "010 - 999")
             var desiredStation: String? = null
 
-            constructor() {  }
+            constructor() {}
 
             constructor(country: String? = null, zip: String? = null, timeFrom: String? = null, timeTo: String? = null, desiredStation: String? = null) {
                 this.country = country
@@ -83,9 +83,14 @@ interface RoutingService {
         @ApiModelProperty(value = "Consignee", position = 40, required = false)
         var consignee: Participant? = null
 
-        constructor() { }
+        @JvmOverloads constructor(
+                sendDate: ShortDate? = null,
+                desiredDeliveryDate: ShortDate? = null,
+                services: Int? = null,
+                weight: Float? = null,
+                sender: Participant? = null,
+                consignee: Participant? = null) {
 
-        constructor(sendDate: ShortDate? = null, desiredDeliveryDate: ShortDate? = null, services: Int? = null, weight: Float? = null, sender: Participant? = null, consignee: Participant? = null) {
             this.sendDate = sendDate
             this.desiredDeliveryDate = desiredDeliveryDate
             this.services = services
@@ -99,8 +104,8 @@ interface RoutingService {
      * Routing service request response
      * Created by JT on 23.06.15.
      */
-    @ApiModel(value = "Routing", subTypes = arrayOf(Routing.Participant::class), description = "Routing response")
-    class Routing {
+    @ApiModel(value = "Routing", subTypes = [(Routing.Participant::class)], description = "Routing response")
+    class Routing() {
         /**
          * Routing service request response member
          * Created by JT on 23.06.15.
@@ -176,16 +181,13 @@ interface RoutingService {
 
         @ApiModelProperty(dataType = "date", example = "2017-06-02", position = 20, required = false, value = "Delivery date", allowableValues = "2017-06-01")
         var deliveryDate: ShortDate? = null
-
-        constructor() {
-        }
     }
 
     @POST
     @Path("/request")
     @ApiOperation(value = "Request routing information")
-    @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
+    @ApiResponses(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class)
     )
     fun request(@ApiParam(value = "Routing request") routingRequest: Request): Routing
 }
