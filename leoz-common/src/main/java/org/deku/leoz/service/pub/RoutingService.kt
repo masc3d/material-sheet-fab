@@ -124,10 +124,10 @@ interface RoutingService {
             @ApiModelProperty(dataType = "string", example = "01-1010", position = 30, required = true, value = "Zipcode contry conform")
             var zipCode: String = ""
 
-            @ApiModelProperty(dataType = "string", example = "A", position = 40, required = true, value = "Zone", allowableValues = "A,B,C,D,WR,UL")
+            @ApiModelProperty(dataType = "string", example = "A", position = 40, required = true, value = "Zone", allowableValues = "A,B,C,D")
             var zone: String = ""
 
-            @ApiModelProperty(dataType = "string", example = "WR", position = 45, required = false, value = "Natinoal zone", allowableValues = "WR,UL")
+            @ApiModelProperty(dataType = "string", example = "WR", position = 45, required = false, value = "National zone", allowableValues = "WR,UL")
             var nationalZone: String = ""
 
             @ApiModelProperty(dataType = "string", example = "X", position = 50, required = true, value = "Sector", allowableValues = "A-Z")
