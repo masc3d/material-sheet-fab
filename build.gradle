@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.2.0'
+        v_kotlin = '1.2.10'
     }
 
     repositories {
@@ -61,7 +61,7 @@ dependencies {
 
             // Guava.
             // IMPORTANT: updating guava may cause classpath issues with gradle android-tools
-            "com.google.guava:guava:23.5-jre",
+            "com.google.guava:guava:23.6-jre",
     )
 
     testCompile(
