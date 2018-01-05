@@ -37,7 +37,9 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
-            debitorId: Int?
+            debitorId: Int?,
+            @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
+            userId: Int?
     ): List<Tour>
 
     @GET

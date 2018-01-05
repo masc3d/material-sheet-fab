@@ -71,27 +71,36 @@ class TourServiceV1
 
     //region REST
 
-    override fun get(debitorId: Int?): List<TourServiceV1.Tour> {
-        val tourRecords = when {
-            debitorId != null -> {
-                dsl.selectFrom(TAD_TOUR)
-                        .where(TAD_TOUR.USER_ID.`in`(
+    override fun get(
+            debitorId: Int?,
+            userId: Int?
+    ): List<TourServiceV1.Tour> {
+        val tourRecords = dsl
+                .selectFrom(TAD_TOUR)
+                .where()
+                .let {
+                    when {
+                        debitorId != null -> it.and(TAD_TOUR.USER_ID.`in`(
                                 dsl.select(MST_USER.ID)
                                         .from(MST_USER)
                                         .where(MST_USER.DEBITOR_ID.eq(debitorId))
                         ))
-                        .fetchArray()
-            }
-            else -> {
-                dsl.selectFrom(TAD_TOUR)
-                        .fetchArray()
-            }
-        }.also {
-            if (it.size == 0) {
-                // No tour records in selection
-                throw DefaultProblem(status = Status.NOT_FOUND)
-            }
-        }
+                        else -> it
+                    }
+                }
+                .let {
+                    when {
+                        userId != null -> it.and(TAD_TOUR.USER_ID.eq(userId))
+                        else -> it
+                    }
+                }
+                .fetchArray()
+                .also {
+                    if (it.size == 0) {
+                        // No tour records in selection
+                        throw DefaultProblem(status = Status.NOT_FOUND)
+                    }
+                }
 
         // Pre-fetch relevant records
         val nodeUidsById = dsl.select(MST_NODE.NODE_ID, MST_NODE.KEY)
@@ -121,9 +130,7 @@ class TourServiceV1
                 throw DefaultProblem(
                         status = Status.NOT_FOUND
                 )
-
-        log.trace("YO")
-
+        
         val nodeUid = dsl.selectFrom(MST_NODE)
                 .fetchUidById(tourRecord.nodeId) ?:
                 throw DefaultProblem(
@@ -155,13 +162,13 @@ class TourServiceV1
     }
 
     /**
-     * Get tour by user
+     * Get the (latest) tour for a user
      */
     override fun getByUser(userId: Int): TourServiceV1.Tour {
-        val tourRecord = dsl.fetchOne(
-                TAD_TOUR,
-                TAD_TOUR.USER_ID.eq(userId).and(TAD_TOUR.NODE_ID.isNull)
-        ) ?:
+        val tourRecord = dsl.selectFrom(TAD_TOUR)
+                .where(TAD_TOUR.USER_ID.eq(userId).and(TAD_TOUR.NODE_ID.isNull))
+                .orderBy(TAD_TOUR.TIMESTAMP.desc())
+                .fetchAny() ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND,
                         detail = "No assignable tour for user [${userId}]"
