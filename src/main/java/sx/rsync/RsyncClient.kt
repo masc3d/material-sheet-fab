@@ -359,7 +359,7 @@ class RsyncClient() {
                             val fr = FileRecord.tryParse(output)
                             if (fr != null) {
                                 if (onFile != null) onFile(fr)
-                                log.trace(fr)
+                                log.trace { fr }
                                 if (!fr.isDirectory)
                                     files.add(File(fr.path))
                                 return
@@ -368,7 +368,7 @@ class RsyncClient() {
                             val pr = ProgressRecord.tryParse(output)
                             if (pr != null) {
                                 if (onProgress != null) onProgress(pr)
-                                log.trace(pr)
+                                log.trace { pr }
                                 return
                             }
                         }
