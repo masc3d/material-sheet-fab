@@ -355,10 +355,7 @@ class UserService : UserService {
 //todo read from mst_station_user
 //        rec.allowedStations = stations
 
-        if (!userRepository.save(rec))
-            throw DefaultProblem(
-                    status = Response.Status.BAD_REQUEST,
-                    title = "Problem on update")
+        rec.store()
 
         if (sendAppLink) {
             sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)
