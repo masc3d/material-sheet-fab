@@ -26,7 +26,7 @@ ext {
                     url     : 'jdbc:mysql://leoz-t1.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 61
+                    target  : 64
             ],
             // Production/live
             live  : [
@@ -48,7 +48,7 @@ ext {
 
 buildscript {
     ext {
-        v_flyway = '5.0.1'
+        v_flyway = '5.0.5'
         v_mysql = '5.1.40'
 
         DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
