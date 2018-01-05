@@ -60,7 +60,7 @@ interface TourServiceV1 {
 
     @GET
     @Path("/user/{${USER_ID}}")
-    @ApiOperation(value = "Get tour by user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get (current) tour for a user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getByUser(
             @PathParam(USER_ID) @ApiParam(value = "User id")
             userId: Int

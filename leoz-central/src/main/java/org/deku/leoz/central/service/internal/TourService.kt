@@ -55,10 +55,13 @@ class TourServiceV1
     private lateinit var dsl: DSLContext
 
     @Inject
-    private lateinit var userRepository: JooqUserRepository
+    private lateinit var deliverylistRepository: JooqDeliveryListRepository
 
     @Inject
-    private lateinit var deliverylistRepository: JooqDeliveryListRepository
+    private lateinit var tourRepository: JooqTourRepository
+
+    @Inject
+    private lateinit var userRepository: JooqUserRepository
 
     @Inject
     private lateinit var orderService: OrderService
@@ -66,11 +69,11 @@ class TourServiceV1
     @Inject
     private lateinit var smartlaneBridge: SmartlaneBridge
 
-    @Inject
-    private lateinit var deliverylistService: DeliveryListService
-
     //region REST
 
+    /**
+     * Get tours
+     */
     override fun get(
             debitorId: Int?,
             userId: Int?
@@ -81,9 +84,7 @@ class TourServiceV1
                 .let {
                     when {
                         debitorId != null -> it.and(TAD_TOUR.USER_ID.`in`(
-                                dsl.select(MST_USER.ID)
-                                        .from(MST_USER)
-                                        .where(MST_USER.DEBITOR_ID.eq(debitorId))
+                                userRepository.findUserIdsByDebitor(debitorId)
                         ))
                         else -> it
                     }
@@ -110,8 +111,8 @@ class TourServiceV1
                 ))
                 .associate { Pair(it.value1(), it.value2()) }
 
-        val tourEntriesByTourId = dsl.selectFrom(TAD_TOUR_ENTRY)
-                .where(TAD_TOUR_ENTRY.TOUR_ID.`in`(tourRecords.map { it.id }))
+        val tourEntriesByTourId = tourRepository
+                .findEntriesByIds(tourRecords.map { it.id })
                 .groupBy { it.tourId }
 
         return tourRecords.map {
@@ -126,11 +127,11 @@ class TourServiceV1
      * Get tour by id
      */
     override fun getById(id: Int): TourServiceV1.Tour {
-        val tourRecord = dsl.fetchOne(TAD_TOUR, TAD_TOUR.ID.eq(id)) ?:
+        val tourRecord = tourRepository.findById(id) ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND
                 )
-        
+
         val nodeUid = dsl.selectFrom(MST_NODE)
                 .fetchUidById(tourRecord.nodeId) ?:
                 throw DefaultProblem(
@@ -153,7 +154,7 @@ class TourServiceV1
                         detail = "Unknown node uid ${nodeUid}"
                 )
 
-        val tourRecord = dsl.fetchOne(TAD_TOUR, TAD_TOUR.NODE_ID.eq(nodeId)) ?:
+        val tourRecord = tourRepository.findByNodeId(nodeId) ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND
                 )
@@ -162,13 +163,10 @@ class TourServiceV1
     }
 
     /**
-     * Get the (latest) tour for a user
+     * Get the (current) tour for a user
      */
     override fun getByUser(userId: Int): TourServiceV1.Tour {
-        val tourRecord = dsl.selectFrom(TAD_TOUR)
-                .where(TAD_TOUR.USER_ID.eq(userId).and(TAD_TOUR.NODE_ID.isNull))
-                .orderBy(TAD_TOUR.TIMESTAMP.desc())
-                .fetchAny() ?:
+        val tourRecord = tourRepository.findLatestByUserId(userId) ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND,
                         detail = "No assignable tour for user [${userId}]"
@@ -220,6 +218,9 @@ class TourServiceV1
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    /**
+     * Create tour
+     */
     override fun create(
             request: TourServiceV1.TourFromDeliverylist
     ): TourServiceV1.Tour {
@@ -244,6 +245,7 @@ class TourServiceV1
 
         // Create tour/entries from delivery list
         val tour = dsl.transactionResult { _ ->
+            // Create new tour
             val tourRecord = dsl.newRecord(TAD_TOUR).also {
                 it.nodeId = null
                 it.userId = userId
@@ -251,6 +253,7 @@ class TourServiceV1
                 it.store()
             }
 
+            // Transform delivery list detail to tour entry record
             val tourEntryRecords = dlDetailRecords.mapIndexed { index, dlDetailRecord ->
                 dsl.newRecord(TAD_TOUR_ENTRY).also {
                     it.tourId = tourRecord.id
@@ -269,7 +272,6 @@ class TourServiceV1
 
         return tour
     }
-
     //endregion
 
     /**
@@ -307,8 +309,8 @@ class TourServiceV1
 
     /**
      * Transform tour/node record into service entity
-     * @param nodeUid Optional node record referring to this tour. If not provided it will be looked up.
-     * @param tourEntryRecordsByTourId Optional tour entry record map for fast lookups
+     * @param nodeUid OPTIONAL node record referring to this tour. If not provided it will be looked up.
+     * @param tourEntryRecordsByTourId OPTIONAL tour entry record map for fast lookups
      */
     private fun TadTourRecord.toTour(
             nodeUid: String? = null,
@@ -324,10 +326,10 @@ class TourServiceV1
         }
 
         // Fetch tour entries. Equal positions represent stop tasks in order of PK
-        val tourEntryRecords = tourEntryRecordsByTourId?.getValue(tourRecord.id)
-                ?: dsl
-                .selectFrom(TAD_TOUR_ENTRY)
-                .fetchByTourId(tourRecord.id)
+        val tourEntryRecords = if (tourEntryRecordsByTourId != null)
+            tourEntryRecordsByTourId.get(tourRecord.id) ?: listOf()
+        else
+            tourRepository.findEntriesById(tourRecord.id)
 
         val orders = this@TourServiceV1.orderService.getByIds(
                 tourEntryRecords.map { it.orderId }.distinct()
