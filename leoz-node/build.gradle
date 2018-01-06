@@ -169,7 +169,7 @@ dependencies {
             "org.zalando:jackson-datatype-problem:$v_rest_problem",
 
             // JPA
-            "javax.persistence:javax.persistence-api:2.2",
+            "javax.persistence:javax.persistence-api:$v_javax_persistence",
             dependencies.create("org.eclipse.persistence:eclipselink:$v_eclipselink") {
                 exclude module: 'javax.persistence'
             },
