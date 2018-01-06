@@ -4,7 +4,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import com.sun.javafx.collections.ImmutableObservableList
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.concurrent.Task
@@ -63,7 +62,7 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
     /** LeoBridge instance */
     private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
 
-    private var stations: ObservableList<Station> = ImmutableObservableList()
+    private var stations: ObservableList<Station> = FXCollections.observableArrayList<Station>()
 
     private val queryTaskExecutor = Executors.newFixedThreadPool(3)
     private var queryTask: Task<ObservableList<Station>>? = null
