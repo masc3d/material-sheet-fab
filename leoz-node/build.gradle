@@ -126,6 +126,11 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
 
+            //region TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
+            "org.glassfish.main:javax.jws:4.0-b33",
+            "javax.xml.ws:jaxws-api:2.3.0",
+            //endregion
+
             // spring
             "org.springframework.data:spring-data-jpa:$v_spring_data_jpa",
             "org.springframework.data:spring-data-commons:$v_spring_data_commons",
