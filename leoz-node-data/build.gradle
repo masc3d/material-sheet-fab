@@ -430,17 +430,6 @@ static List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
 
         def uidLiteral = uid + "L"
 
-        // TODO: @Serializable annotation causes StackOverflowError when eclipselink pre-deploys persistence unit
-        // Set @Serializable annotation if it's not there already
-//        if (jsource.annotations.find {
-//            it.qualifiedName == sx.io.serialization.Serializable.canonicalName
-//        } == null) {
-//            jsource
-//                    .addAnnotation()
-//                    .setName(sx.io.serialization.Serializable.canonicalName)
-//                    .setLiteralValue("uid", uidLiteral)
-//        }
-
         // Amend serializableVersionUID if applicable
         def serializableUidField = jsource.fields.find {
             it.name == "serialVersionUID"
