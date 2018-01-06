@@ -3,12 +3,9 @@ package org.deku.leoz.identity
 import org.deku.leoz.SystemInformation
 import sx.security.DigestType
 import sx.security.getInstance
-import sx.text.toHexString
 import java.security.SecureRandom
 import java.util.*
-import sun.security.krb5.Confounder.bytes
 import java.nio.ByteBuffer
-
 
 /**
  * Identity factory for desktop devices

@@ -58,7 +58,10 @@ dependencies {
             "com.gojuno.koptional:koptional:1.2.0",
             "com.gojuno.koptional:koptional-rxjava2-extensions:1.2.0",
 
-            "org.apache.commons:commons-lang3:3.7"
+            "org.apache.commons:commons-lang3:3.7",
+
+            // TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
+            "javax.xml.bind:jaxb-api:2.3.0"
     )
 
     compileOnly(
@@ -131,11 +134,6 @@ dependencies {
 // For sharing test classes (eg. for running as android instrumentation in android projects)
 configurations {
     testArtifacts
-}
-
-// TODO: kotlin compiler won't see jdk9 modules, the following seems to work for java compiler only
-compileJava {
-    options.compilerArgs += ["--add-modules", "java.xml.bind"]
 }
 
 task testJar(type: Jar) {
