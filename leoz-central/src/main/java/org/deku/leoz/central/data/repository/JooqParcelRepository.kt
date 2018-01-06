@@ -31,10 +31,10 @@ class JooqParcelRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
 
-    lateinit var dslContext: DSLContext
+    lateinit var dsl: DSLContext
 
     fun getCountParcelsByBmp(bmpFilename: String): Int {
-        return dslContext.selectCount()
+        return dsl.selectCount()
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .where(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME.eq(bmpFilename)
                 )// .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble())))
@@ -42,7 +42,7 @@ class JooqParcelRepository {
     }
 
     fun setSignaturePath(parcelNumber: String, path: String) {
-        dslContext.update(Tables.TBLAUFTRAGCOLLIES)
+        dsl.update(Tables.TBLAUFTRAGCOLLIES)
                 .set(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME, path)
                 .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(parcelNumber.toDouble()))
                 .execute()
@@ -50,7 +50,7 @@ class JooqParcelRepository {
 
     fun getParcelByParcelId(id: Long): TblauftragcolliesRecord? {
         if (id == 0.toLong()) return null
-        return dslContext.select()
+        return dsl.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .where(Tables.TBLAUFTRAGCOLLIES.PARCEL_ID.eq(id.toInt()))
                 ?.fetchOneInto(Tblauftragcollies.TBLAUFTRAGCOLLIES)
@@ -58,7 +58,7 @@ class JooqParcelRepository {
 
     fun findParcelByUnitNumber(unitNo: Long): TblauftragcolliesRecord? {
         if (unitNo == 0.toLong()) return null
-        return dslContext.fetchOne(
+        return dsl.fetchOne(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(unitNo.toDouble())
         )
@@ -67,14 +67,14 @@ class JooqParcelRepository {
 
 
     fun findUnitsInBagByBagUnitNumber(bagUnitNo: Long): List<TblauftragcolliesRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRABC.eq(bagUnitNo.toDouble())
         )
     }
 
     fun findUnitsInBagBackByBagBackUnitNumber(bagBackUnitNo: Long): List<TblauftragcolliesRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRC.eq(bagBackUnitNo.toDouble())
                         .and(Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRC.ne(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR))
@@ -82,7 +82,7 @@ class JooqParcelRepository {
     }
 
     fun getParcelsByOrderId(orderId: Long): List<TblauftragcolliesRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
                 //  .and(Tables.TBLAUFTRAGCOLLIES.ORDERPOS.greaterThan(0))
@@ -91,21 +91,21 @@ class JooqParcelRepository {
     }
 
     fun getParcelsByLoadingList(loadinglistNo: Long): List<TblauftragcolliesRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.eq(loadinglistNo.toDouble())
         )
     }
 
     fun getOrderById(orderId: Long): TblauftragRecord? {
-        return dslContext.fetchOne(
+        return dsl.fetchOne(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.ORDERID.eq(orderId.toDouble())
         )
     }
 
     fun getOrdersByIds(orderIds: List<Long>): List<TblauftragRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.ORDERID.`in`(orderIds.map { it.toDouble() })
         )
@@ -115,7 +115,7 @@ class JooqParcelRepository {
     //fun getParcelsToExportByLoadingList(loadinglistNo: Long, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<ExportService.Order> {
     fun getParcelsToExportByLoadingList(loadinglistNo: Long): List<ExportService.Order> {
         val result = listOf<ExportService.Order>()
-        val records = dslContext.fetch(
+        val records = dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES
                         .join(Tables.TBLAUFTRAG)
                         .on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID)),
@@ -151,7 +151,7 @@ class JooqParcelRepository {
 
     fun getParcelsToExportInBagByStation(station: Int, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<ExportService.Order> {
         val result = listOf<ExportService.Order>()
-        val records = dslContext.fetch(
+        val records = dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES
                         .join(Tables.TBLAUFTRAG)
                         .on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID)),
@@ -188,7 +188,7 @@ class JooqParcelRepository {
     }
 
     fun getOrderToExportById(orderId: Long): TblauftragRecord? {
-        return dslContext.fetchOne(
+        return dsl.fetchOne(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.ORDERID.eq(orderId.toDouble())
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
@@ -199,7 +199,7 @@ class JooqParcelRepository {
     }
 
     fun getOrdersToExportByStation(station: Int, sendDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<TblauftragRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.DEPOTNRABD.eq(station)
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
@@ -213,7 +213,7 @@ class JooqParcelRepository {
 
 
     fun getParcelsToExportByOrderid(orderId: Long): List<TblauftragcolliesRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
@@ -223,14 +223,14 @@ class JooqParcelRepository {
     }
 
     fun getParcelsToExportByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
-//        return dslContext.select()
+//        return dsl.select()
 //                .from(Tables.TBLAUFTRAGCOLLIES)
 //                .where(
 //                        Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
 //                                .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
 //                                .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30))))//fehlendes Pkst raus
 //                .fetchInto(TblauftragcolliesRecord::class.java)
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
@@ -239,7 +239,7 @@ class JooqParcelRepository {
     }
 
     fun getLoadedParcelsToExportByOrderid(orderId: Long): List<TblauftragcolliesRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
                         .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.greaterThan(100000.0))
@@ -250,7 +250,7 @@ class JooqParcelRepository {
     }
 
     fun getLoadedParcelsToExportByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
                         .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.greaterThan(100000.0))
@@ -261,7 +261,7 @@ class JooqParcelRepository {
     }
 
     fun getParcelsToExportByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord>? {
-        return dslContext.select()
+        return dsl.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .join(Tables.TBLAUFTRAG)
                 .on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID))
@@ -276,7 +276,7 @@ class JooqParcelRepository {
     }
 
     fun getParcelsToExportByCreference(cReference: String): List<TblauftragcolliesRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference)
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
@@ -287,7 +287,7 @@ class JooqParcelRepository {
     fun getParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord> {
         val unitRecords: List<TblauftragcolliesRecord>
         if (station == 800) {
-            unitRecords = dslContext.fetch(
+            unitRecords = dsl.fetch(
                     Tables.TBLAUFTRAGCOLLIES,
                     Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.greaterOrEqual(800)
                             .and(Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.lessOrEqual(900))
@@ -295,7 +295,7 @@ class JooqParcelRepository {
             )
 
         } else {
-            unitRecords = dslContext.fetch(
+            unitRecords = dsl.fetch(
                     Tables.TBLAUFTRAGCOLLIES,
                     Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.eq(station)
                             .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))

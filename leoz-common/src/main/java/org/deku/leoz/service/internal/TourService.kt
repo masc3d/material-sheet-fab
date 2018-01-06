@@ -9,8 +9,10 @@ import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.container.Suspended
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
+import javax.ws.rs.sse.Sse
+import javax.ws.rs.sse.SseEventSink
 
 /**
  * Tour service interface
@@ -22,9 +24,23 @@ import javax.ws.rs.core.Response
 interface TourServiceV1 {
     companion object {
         const val ID = "id"
+        const val DEBITOR_ID = "debitor-id"
+        const val DELIVERYLIST_ID = "deliverylist-id"
         const val NODE_UID = "node-uid"
         const val USER_ID = "user-id"
     }
+
+    @GET
+    @Path("/")
+    @ApiOperation(
+            value = "Get tour(s)",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun get(
+            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
+            debitorId: Int?,
+            @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
+            userId: Int?
+    ): List<Tour>
 
     @GET
     @Path("/{${ID}}")
@@ -35,7 +51,7 @@ interface TourServiceV1 {
     ): Tour
 
     @GET
-    @Path("/${NODE_UID}/{${NODE_UID}}")
+    @Path("/node/{${NODE_UID}}")
     @ApiOperation(value = "Get tour by node uid", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getByNode(
             @PathParam(NODE_UID) @ApiParam(value = "Node uid", required = true)
@@ -43,20 +59,72 @@ interface TourServiceV1 {
     ): Tour
 
     @GET
-    @Path("/${USER_ID}/{${USER_ID}}")
-    @ApiOperation(value = "Get tour by user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @Path("/user/{${USER_ID}}")
+    @ApiOperation(value = "Get (current) tour for a user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getByUser(
             @PathParam(USER_ID) @ApiParam(value = "User id")
             userId: Int
     ): Tour
 
+    /**
+     * Contains information for creating a tour from a delivery list
+     * @param deliveryListId
+     */
+    @ApiModel(description = "Contains information for creating a tour from a delivery list")
+    data class TourFromDeliverylist(
+            @ApiModelProperty(position = 10, required = true, value = "Delivery list (id) to create tour from")
+            var deliveryListId: Int? = null,
+            @ApiModelProperty(position = 20, required = true, value = "User (id) this tour will get assigned to")
+            var userId: Int? = null
+    )
+
+    @POST
+    @Path("/deliverylist")
+    @ApiOperation(value = "Create a new tour from a delivery list",
+            notes = "This tour will not be attached to a specific node and be used to split/optimize.",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun create(
+            @ApiParam(value = "Request for creating tour from a delivery list")
+            request: TourFromDeliverylist
+    ): Tour
+
     @PATCH
     @Path("/{${ID}}/optimize")
-    @ApiOperation(value = "Optimize tour", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Optimize tour",
+            notes = "This call is synchronous and will update central entities on completion.",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun optimize(
             @PathParam(ID) @ApiParam(value = "Tour id")
             id: Int,
             @Suspended response: AsyncResponse
+    )
+
+    @PATCH
+    @Path("/{${ID}}/optimize/sse")
+    @Produces(MediaType.SERVER_SENT_EVENTS)
+    @ApiOperation(
+            value = "Optimize tour (with SSE support)",
+            notes = "This call supports server-sent-events (SSE) and will update central entities on completion",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun optimizeSse(
+            @PathParam(ID) @ApiParam(value = "Tour id")
+            id: Int,
+            @Context domainSink: SseEventSink,
+            @Context sse: Sse
+    )
+
+    @PATCH
+    @Path("/node/{${NODE_UID}}/optimize")
+    @ApiOperation(
+            value = "Optimize tour for a (mobile) node",
+            notes = "Starts the optimization process" +
+                    " and sends a tour update (message) to the node which owns the tour when complete." +
+                    " Central entities won't be updated as this is the responsibility of the node" +
+                    " once the user has accepted the optimized tour.",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun optimizeForNode(
+            @PathParam(NODE_UID) @ApiParam(value = "Mobile node id")
+            nodeUid: String
     )
 
     @ApiModel(description = "Tour")

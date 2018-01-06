@@ -43,7 +43,7 @@ class BagService : BagService {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var logHistoryRepository: JooqHistoryRepository
@@ -176,10 +176,10 @@ class BagService : BagService {
 
         try {
             var workDate: LocalDate = getWorkingDate()
-            val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
+            val result = dsl.selectCount().from(Tables.TBLHUBLINIENPLAN)
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
                     .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(workDate.toTimestamp())).fetch()
-            //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
+            //val result = dsl.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
             if (result.getValue(0, 0) == 0) {
                 //workDate=nextWerktag(workDate.addDays(-1),"100","DE","36285")
                 workDate = getNextDeliveryDate(workDate.plusDays(-1).toDate(), "100", "DE", "36285")
@@ -193,7 +193,7 @@ class BagService : BagService {
             val dt = java.sql.Date.valueOf(workDate)
 
 
-            var resultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
+            var resultCount = dsl.fetchCount(Tables.SSO_S_MOVEPOOL,
                     Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(depotNr.toDouble())
                             .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(status))
                             .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
@@ -215,7 +215,7 @@ class BagService : BagService {
             val whiteSeal_string = unWhiteSeal.value.value
 
 
-            val movePool = dslContext.fetchOne(Tables.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagID_double))
+            val movePool = dsl.fetchOne(Tables.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagID_double))
             if (movePool == null) {
                 logHistoryRepository.save(
                         depotId = initBag,
@@ -248,7 +248,7 @@ class BagService : BagService {
                 throw ServiceException(ErrorCode.UPDATE_MOVEPOOL_FAILED)
             }
 
-            val depotliste = dslContext.fetchOne(Tables.TBLDEPOTLISTE, Tables.TBLDEPOTLISTE.DEPOTNR.eq(depotNr.toInt()))
+            val depotliste = dsl.fetchOne(Tables.TBLDEPOTLISTE, Tables.TBLDEPOTLISTE.DEPOTNR.eq(depotNr.toInt()))
             if (depotliste == null) {
                 logHistoryRepository.save(
                         depotId = initBag,
@@ -262,7 +262,7 @@ class BagService : BagService {
             depotliste.update()
 
 
-            val white = dslContext.newRecord(Tables.SSO_P_MOV)
+            val white = dsl.newRecord(Tables.SSO_P_MOV)
             white.plombennummer = whiteSeal_double
             white.status = 2.0
             white.statuszeit = now.toTimestamp()
@@ -283,7 +283,7 @@ class BagService : BagService {
             }
 
 
-            val yellow = dslContext.newRecord(Tables.SSO_P_MOV)
+            val yellow = dsl.newRecord(Tables.SSO_P_MOV)
             yellow.plombennummer = yellowSeal_double
             yellow.status = 2.0
             yellow.statuszeit = now.toTimestamp()
@@ -353,7 +353,7 @@ class BagService : BagService {
 
 
             var workDate: LocalDate = getWorkingDate()
-            val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
+            val result = dsl.selectCount().from(Tables.TBLHUBLINIENPLAN)
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
                     .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(workDate.toTimestamp()))
                     .fetch()
@@ -369,7 +369,7 @@ class BagService : BagService {
             val dt: Date = workDate.toDate()
             val movepoolStatus: Double = 5.0
 
-            val resultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL.innerJoin(Tables.SECTIONDEPOTLIST)
+            val resultCount = dsl.fetchCount(Tables.SSO_S_MOVEPOOL.innerJoin(Tables.SECTIONDEPOTLIST)
                     .on(Tables.SSO_S_MOVEPOOL.LASTDEPOT.coerce(Int::class.java).eq(Tables.SECTIONDEPOTLIST.DEPOTNR),
                             Tables.SSO_S_MOVEPOOL.STATUS.eq(movepoolStatus)
                                     .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
@@ -394,11 +394,11 @@ class BagService : BagService {
             .and(depotnr.ni(select lastdepot from sso_s_movepool where movepool='m' and status=5 and work_date=))
             .fetchInto(String::class.java)
              **/
-            l = dslContext.select(Tables.SECTIONDEPOTLIST.DEPOT)
+            l = dsl.select(Tables.SECTIONDEPOTLIST.DEPOT)
                     .from(Tables.SECTIONDEPOTLIST)
                     .where(Tables.SECTIONDEPOTLIST.SECTION.eq(section.toLong()))
                     .and(Tables.SECTIONDEPOTLIST.POSITION.eq(position))
-                    .and(Tables.SECTIONDEPOTLIST.DEPOTNR.notIn(dslContext.select(Tables.SSO_S_MOVEPOOL.LASTDEPOT.coerce(Int::class.java)).from(Tables.SSO_S_MOVEPOOL)
+                    .and(Tables.SECTIONDEPOTLIST.DEPOTNR.notIn(dsl.select(Tables.SSO_S_MOVEPOOL.LASTDEPOT.coerce(Int::class.java)).from(Tables.SSO_S_MOVEPOOL)
                             .where(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")
                                     .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(movepoolStatus))
                                     .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.eq(dt.toSqlDate())))))
@@ -424,7 +424,7 @@ class BagService : BagService {
             diff = mutableListOf()
             //diff=listOf()
 
-            val runresult = dslContext.select()
+            val runresult = dsl.select()
                     .from(Tables.USYSTBLZAEHLER)
                     .where(Tables.USYSTBLZAEHLER.COUNTERTYP.eq(43))
                     .fetch()
@@ -438,7 +438,7 @@ class BagService : BagService {
             runid -= 1
 
             //diff
-            val diffresult = dslContext.select(Tables.SSO_CHECK.COLLIEBELEGNR, //.as("unitno"),
+            val diffresult = dsl.select(Tables.SSO_CHECK.COLLIEBELEGNR, //.as("unitno"),
                     Tables.SSO_CHECK.STRANG, //.as("section"),
                     Tables.SSO_CHECK.LD, //.as("deliverydate"),
                     Tables.SSO_CHECK.BEMERKUNG, //.as("notice"),
@@ -504,7 +504,7 @@ class BagService : BagService {
         var color: String
         try {
             val line: Int
-            val lineR = dslContext.select(Tables.TBLHUBLINIEN.LINIENNR)
+            val lineR = dsl.select(Tables.TBLHUBLINIEN.LINIENNR)
                     .from(Tables.TBLHUBLINIEN)
                     .where(Tables.TBLHUBLINIEN.VERSION.eq(lineVersion))
                     .and(Tables.TBLHUBLINIEN.SCANID.eq(lineScanId.toDouble()))
@@ -538,7 +538,7 @@ class BagService : BagService {
                 return BagResponse(ok, info)
             }
             /*
-            val lineCount = dslContext.fetchCount(Tables.TBLHUBLINIEN,
+            val lineCount = dsl.fetchCount(Tables.TBLHUBLINIEN,
                     Tables.TBLHUBLINIEN.VERSION.eq(lineVersion)
                             .and(Tables.TBLHUBLINIEN.LINIENNR.eq(line)))
             if (lineCount == 0) {
@@ -552,7 +552,7 @@ class BagService : BagService {
             }
             */
             ok = true
-            val recLine = dslContext.fetchOne(Tables.TBLHUBLINIEN, Tables.TBLHUBLINIEN.KFZHUBEINGANG.isNull
+            val recLine = dsl.fetchOne(Tables.TBLHUBLINIEN, Tables.TBLHUBLINIEN.KFZHUBEINGANG.isNull
                     .and(Tables.TBLHUBLINIEN.VERSION.eq(lineVersion))
                     .and(Tables.TBLHUBLINIEN.LINIENNR.eq(line)))
             if (recLine != null) {
@@ -578,7 +578,7 @@ class BagService : BagService {
             val s = UInteger.valueOf(134217728)
 
 
-            val unitCount = dslContext.fetchCount(Tables.TBLAUFTRAGCOLLIES.innerJoin(Tables.TBLAUFTRAG)
+            val unitCount = dsl.fetchCount(Tables.TBLAUFTRAGCOLLIES.innerJoin(Tables.TBLAUFTRAG)
                     .on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID)),
                     Tables.TBLAUFTRAGCOLLIES.BELADELINIE.eq(line.toDouble())
                             .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
@@ -588,7 +588,7 @@ class BagService : BagService {
                             .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull))
 
 
-            val unitWeight = dslContext.select(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL?.sum()?.round())
+            val unitWeight = dsl.select(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL?.sum()?.round())
                     .from(Tables.TBLAUFTRAGCOLLIES.innerJoin(Tables.TBLAUFTRAG).on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID)))
                     .where(Tables.TBLAUFTRAGCOLLIES.BELADELINIE.eq(line.toDouble()))
                     .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
@@ -599,7 +599,7 @@ class BagService : BagService {
             var weight = "${unitCount.toString()}/${unitWeight.toString()}"
             val ui = UInteger.valueOf(line)
 
-            val rec = dslContext.fetchOne(Tables.HUBFAHRZEUGBELADUNG, Tables.HUBFAHRZEUGBELADUNG.LINIE.eq(ui))
+            val rec = dsl.fetchOne(Tables.HUBFAHRZEUGBELADUNG, Tables.HUBFAHRZEUGBELADUNG.LINIE.eq(ui))
             if (rec != null) {
                 rec.angekommen = -1
                 rec.entladung = 0.0

@@ -1,11 +1,17 @@
 package sx.mq.mqtt
 
-import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.*
 import io.reactivex.subjects.PublishSubject
-import org.eclipse.paho.client.mqttv3.*
+import org.eclipse.paho.client.mqttv3.IMqttActionListener
+import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
+import org.eclipse.paho.client.mqttv3.IMqttMessageListener
+import org.eclipse.paho.client.mqttv3.IMqttToken
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions
+import org.eclipse.paho.client.mqttv3.MqttException
+import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
-import org.threeten.bp.Duration
 import sx.rx.toHotCache
 import sx.rx.toHotReplay
 
@@ -36,7 +42,7 @@ interface IMqttRxClient {
     /**
      * Disconnect client
      */
-    fun disconnect(forcibly: Boolean = false): Completable
+    fun disconnect(): Completable
 }
 
 /**
@@ -46,8 +52,6 @@ interface IMqttRxClient {
 class MqttRxClient(
         private val parent: IMqttAsyncClient,
         private val connectOptions: MqttConnectOptions) : IMqttRxClient {
-
-    private val log = LoggerFactory.getLogger(this.javaClass)
 
     abstract class Status {
         data class ConnectionComplete(val reconnect: Boolean, val serverURI: String) : MqttRxClient.Status()
@@ -100,7 +104,7 @@ class MqttRxClient(
      * @param message Message to publish
      */
     override fun publish(topicName: String, message: MqttMessage): Completable {
-        return Completable.create { emitter ->
+        return Completable.create {
             try {
                 this.parent.publish(
                         topicName,
@@ -108,24 +112,20 @@ class MqttRxClient(
                         null,
                         object : IMqttActionListener {
                             override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                emitter.onComplete()
+                                it.onComplete()
                             }
 
                             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                                if (!emitter.isDisposed)
-                                    emitter.onError(exception ?: MqttException(null))
+                                it.onError(exception ?: MqttException(null))
                             }
                         }
                 )
-            } catch (e: Throwable) {
-                emitter.onError(e)
+            } catch(e: Throwable) {
+                it.onError(e)
             }
         }
                 .toHotCache()
     }
-
-    val uri: String
-        get() = this.parent.serverURI
 
     /**
      * Subscribe to topic
@@ -133,7 +133,7 @@ class MqttRxClient(
      * @param qos Message QOS
      */
     override fun subscribe(topicName: String, qos: Int): Observable<MqttMessage> {
-        return Observable.create<MqttMessage> { emitter ->
+        return Observable.create<MqttMessage> { subscriber ->
             try {
                 this.parent.subscribe(
                         topicName,
@@ -144,18 +144,17 @@ class MqttRxClient(
                             }
 
                             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                                if (!emitter.isDisposed)
-                                    emitter.onError(exception ?: MqttException(null))
+                                subscriber.onError(exception ?: MqttException(null))
                             }
 
                         },
                         object : IMqttMessageListener {
                             override fun messageArrived(topic: String, message: MqttMessage) {
-                                emitter.onNext(message)
+                                subscriber.onNext(message)
                             }
                         })
-            } catch (e: Throwable) {
-                emitter.onError(e)
+            } catch(e: Throwable) {
+                subscriber.onError(e)
             }
         }
                 .toHotReplay()
@@ -166,54 +165,53 @@ class MqttRxClient(
      * @param topicName Topic name to unsubscribe from
      */
     override fun unsubscribe(topicName: String): Completable {
-        return Completable.create { emitter ->
+        return Completable.create {
             try {
                 this.parent.unsubscribe(topicName, null, object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        emitter.onComplete()
+                        it.onComplete()
                     }
 
                     override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                        if (!emitter.isDisposed)
-                            emitter.onError(exception ?: MqttException(null))
+                        it.onError(exception ?: MqttException(null))
                     }
 
                 })
-            } catch (e: Throwable) {
-                emitter.onError(e)
+            } catch(e: Throwable) {
+                it.onError(e)
             }
         }
                 .toHotCache()
     }
+
 
     /**
      * Establish connection
      * @param options Connection options
      */
     override fun connect(): Completable {
-        return Completable.create { emitter ->
+        return Completable.create {
             try {
                 this.parent.connect(this.connectOptions,
                         null,
                         object : IMqttActionListener {
                             override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                emitter.onComplete()
+                                it.onComplete()
                             }
 
                             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                                if (!emitter.isDisposed)
-                                    emitter.onError(exception ?: MqttException(null))
+                                it.onError(exception ?: MqttException(null))
                             }
                         })
-            } catch (e: Throwable) {
-                // Make sure the connection is shutdown thoroughly
+            } catch(e: Throwable) {
+                // Make sure the connection is closed thoroughly
                 try {
-                    this.shutdown()
-                } catch (e: Throwable) {
-                    log.warn(e.message, e)
+                    this.parent.close()
+                } catch(e: Throwable) {
+                    // Errors during close are not relevant
                 }
 
-                emitter.onError(e)
+                it.onError(e)
             }
         }
                 .toHotCache()
@@ -222,45 +220,25 @@ class MqttRxClient(
     /**
      * Disconnect
      */
-    override fun disconnect(forcibly: Boolean): Completable {
-        return Completable.create { emitter ->
-            if (forcibly) {
-                this.shutdown()
-            } else {
-                try {
-                    this.parent.disconnect(
-                            null,
-                            object : IMqttActionListener {
-                                override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                    emitter.onComplete()
-                                }
+    override fun disconnect(): Completable {
+        return Completable.create {
+            try {
+                this.parent.disconnect(
+                        null,
+                        object : IMqttActionListener {
+                            override fun onSuccess(asyncActionToken: IMqttToken?) {
+                                it.onComplete()
+                            }
 
-                                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                                    if (!emitter.isDisposed)
-                                        emitter.onError(exception ?: MqttException(null))
-                                }
-                            })
-                } catch (e: Throwable) {
-                    emitter.onError(e)
-                }
+                            override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                                it.onError(exception ?: MqttException(null))
+                            }
+                        })
+            } catch(e: Throwable) {
+                it.onError(e)
             }
         }
                 .toHotCache()
-    }
-
-    /**
-     * Shutdown all parent client comms and socket immediately.
-     */
-    private fun shutdown() {
-        this.parent.also { client ->
-            val QUIESCE_TIMEOUT = Duration.ofSeconds(0)
-            val DISCONNECT_TIMEOUT = Duration.ofSeconds(0)
-
-            if (client is MqttAsyncClient)
-                client.disconnectForcibly(QUIESCE_TIMEOUT.toMillis(), DISCONNECT_TIMEOUT.toMillis(), false)
-            else
-                client.disconnectForcibly(QUIESCE_TIMEOUT.toMillis(), DISCONNECT_TIMEOUT.toMillis())
-        }
     }
 
     /**

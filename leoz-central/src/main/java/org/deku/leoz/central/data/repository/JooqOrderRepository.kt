@@ -23,10 +23,10 @@ open class JooqOrderRepository {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     fun findById(id: Long): TadVOrderRecord? {
-        return dslContext.fetchOne(
+        return dsl.fetchOne(
                 Tables.TAD_V_ORDER,
                 Tables.TAD_V_ORDER.ID.eq(id.toDouble()))
     }
@@ -39,14 +39,14 @@ open class JooqOrderRepository {
     fun findByIds(ids: List<Long>): List<TadVOrderRecord> {
         val set = LinkedHashSet(ids.map { it.toDouble() })
 
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TAD_V_ORDER,
                 Tables.TAD_V_ORDER.ID.`in`(set)
         ).sortedWith(compareBy { set.indexOf(it.id) })
     }
 
     fun findByScan(scanId: String): TadVOrderRecord? {
-        val rParcel = dslContext.fetchOne(
+        val rParcel = dsl.fetchOne(
                 Tables.TAD_V_ORDER_PARCEL,
                 Tables.TAD_V_ORDER_PARCEL.SCAN_ID.eq(scanId.toDouble()))
         if (rParcel == null)
@@ -59,7 +59,7 @@ open class JooqOrderRepository {
      * @param id Order id
      */
     fun findParcelsByOrderId(id: Long): List<TadVOrderParcelRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TAD_V_ORDER_PARCEL,
                 Tables.TAD_V_ORDER_PARCEL.ORDER_ID.eq(id.toDouble())
         )
@@ -70,7 +70,7 @@ open class JooqOrderRepository {
      * @param ids Order ids
      */
     fun findParcelsByOrderIds(ids: List<Long>): List<TadVOrderParcelRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TAD_V_ORDER_PARCEL,
                 Tables.TAD_V_ORDER_PARCEL.ORDER_ID.`in`(ids.map { it.toDouble() })
         )
@@ -78,7 +78,7 @@ open class JooqOrderRepository {
 
     fun findOrderByOrderNumber(orderNo: Long): TblauftragRecord? {
         if(orderNo==0.toLong()) return null
-        return dslContext.select()
+        return dsl.select()
                 .from(Tables.TBLAUFTRAG)
                 .where(Tables.TBLAUFTRAG.ORDERID.eq(orderNo.toDouble()))
                 //.and(Tables.TBLAUFTRAG.ORDERID.greaterThan(0.0))

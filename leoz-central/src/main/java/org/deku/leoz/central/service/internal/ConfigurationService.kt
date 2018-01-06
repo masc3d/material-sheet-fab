@@ -26,7 +26,7 @@ class ConfigurationService: ConfigurationService {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var userService: UserService

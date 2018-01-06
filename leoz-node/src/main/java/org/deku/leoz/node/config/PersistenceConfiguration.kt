@@ -262,7 +262,7 @@ open class PersistenceConfiguration {
 
     @get:Bean
     @get:Qualifier(QUALIFIER_JOOQ)
-    open val dslContext: DefaultDSLContext
+    open val dsl: DefaultDSLContext
         get() {
             val settings = org.jooq.conf.Settings().withStatementType(StatementType.PREPARED_STATEMENT)
             return DefaultDSLContext(this.jooqConnectionProvider, SQLDialect.H2, settings)

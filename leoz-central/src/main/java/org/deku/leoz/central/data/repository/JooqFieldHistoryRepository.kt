@@ -19,10 +19,10 @@ class JooqFieldHistoryRepository {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    lateinit var dslContext: DSLContext
+    lateinit var dsl: DSLContext
 
     fun addEntry(orderId: Long, unitNo: Long, fieldName: String, oldValue: String, newValue: String, changer: String, point: String) {
-        val fieldHistoryRecord = dslContext.newRecord(Tables.TBLFELDHISTORIE)
+        val fieldHistoryRecord = dsl.newRecord(Tables.TBLFELDHISTORIE)
         fieldHistoryRecord.orderid = orderId.toDouble()
         fieldHistoryRecord.belegnummer = unitNo.toDouble()
         fieldHistoryRecord.feldname = fieldName
@@ -30,7 +30,7 @@ class JooqFieldHistoryRepository {
         fieldHistoryRecord.newvalue = newValue
         fieldHistoryRecord.changer = changer
         fieldHistoryRecord.point = point
-        fieldHistoryRecord.id = Routines.fTan(dslContext.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+        fieldHistoryRecord.id = Routines.fTan(dsl.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
         fieldHistoryRecord.store()
     }
 }

@@ -83,7 +83,10 @@
             plugins: [
                 SwaggerUIBundle.plugins.DownloadUrl
             ],
-            layout: "StandaloneLayout"
+            layout: "StandaloneLayout",
+            apisSorter: "alpha",
+            operationsSorter: "alpha",
+            defaultModelRendering: "model"
         })
 
         window.ui = ui

@@ -3,10 +3,12 @@ package org.deku.leoz.node.service.pub
 import com.google.common.base.Strings
 import com.google.common.collect.Iterables
 import com.google.common.primitives.Ints
+import com.neovisionaries.i18n.CountryCode
+import org.deku.leoz.model.RoutingZone
+import org.deku.leoz.model.RoutingZoneDe
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoutingLayer
 import org.deku.leoz.node.data.jpa.QMstHolidayCtrl
-import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.jpa.QMstRoutingLayer
 import org.deku.leoz.node.data.repository.master.*
 import org.deku.leoz.node.rest.ServiceException
@@ -16,9 +18,6 @@ import org.deku.leoz.service.entity.DayType
 import org.deku.leoz.service.entity.ServiceErrorCode
 import org.deku.leoz.service.pub.RoutingService.*
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-import sx.rs.auth.ApiKey
 import sx.time.toDate
 import sx.time.toLocalDate
 import java.sql.Timestamp
@@ -298,10 +297,10 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found")
 
-        participant.sector = rStation.sector ?:""
+        participant.sector = rStation.sector ?: ""
         participant.country = rRoute.country
         participant.zipCode = queryZipCode
-        participant.term = rRoute.term ?:1
+        participant.term = rRoute.term ?: 1
 
         when (sendDelivery) {
             "S" -> {
@@ -328,7 +327,11 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
                 ).toString()
 
         participant.station = rRoute.station!!
-        participant.zone = getZoneFromArea(area = rRoute.area!!, country = rRoute.country, zipCode = queryZipCode)
+        participant.zone = rRoute.area!!
+        participant.nationalZone = getNationalZoneFromArea(
+                zone = RoutingZone.valueOf(rRoute.area!!),
+                country = rRoute.country
+        )
         participant.island = (rRoute.island != 0)
         participant.earliestTimeOfDelivery = rRoute.etod!!.toShortTime()
         participant.term = rRoute.term!!
@@ -517,21 +520,21 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
     }
 
     /**
-     * @return The "zone-code" for the given area-code
-     * @param area: The area where you want to know the zone.
-     * @param zipCode: Optional. For logging entries if an unsupported area is given in the first parameter.
+     * @return The national zone for the given zone (area-code)
+     * @param zone: The zone (area) to resolve
+     * @param country: The country for which to get the national zone
+     * @return National zone or empty string in case a transformation is not applicable
      */
-    private fun getZoneFromArea(area: String, country: String, zipCode: String? = null): String {
-        return if (country != "DE")
-            area
-        else
-            when (area) {
-                "A", "B" -> "WR"
-                "C", "D" -> "UL"
-                else -> {
-                    log.warn("ZipCode [${zipCode ?: "N/A"}] provided an unhandled area/zone [$area]")
-                    "N/A"
+    private fun getNationalZoneFromArea(zone: RoutingZone, country: String): String {
+        return when (country) {
+            CountryCode.DE.alpha2 -> {
+                when (zone) {
+                    RoutingZone.A, RoutingZone.B -> RoutingZoneDe.WR.value
+                    RoutingZone.C, RoutingZone.D -> RoutingZoneDe.UL.value
+                    else -> ""
                 }
             }
+            else -> ""
+        }
     }
 }

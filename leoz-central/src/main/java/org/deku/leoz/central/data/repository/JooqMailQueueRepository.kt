@@ -15,7 +15,7 @@ class JooqMailQueueRepository {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    lateinit var dslContext: DSLContext
+    lateinit var dsl: DSLContext
 
     fun insertSms(receiver: String, message: String) {
 
@@ -29,8 +29,8 @@ class JooqMailQueueRepository {
                 throw IllegalArgumentException("Receiver [$receiver] must not contain letters, symbols or special characters.")
             }
 
-            val r = dslContext.newRecord(Tables.TBLMAILQUEUE).also {
-                it.id = dslContext.select(Routines.fTan(54)).fetch().first().value1().toInt()
+            val r = dsl.newRecord(Tables.TBLMAILQUEUE).also {
+                it.id = dsl.select(Routines.fTan(54)).fetch().first().value1().toInt()
                 it.station = 2
                 it.queue = message
                 it.status = Status.NEW

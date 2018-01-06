@@ -22,30 +22,30 @@ import javax.inject.Named
 open class JooqDeliveryListRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     //falsch debitor fehlt
     fun findById(id: Long): TadVDeliverylistRecord? {
-        return dslContext.fetchOne(
+        return dsl.fetchOne(
                 Tables.TAD_V_DELIVERYLIST,
                 Tables.TAD_V_DELIVERYLIST.ID.eq(id.toDouble()))
     }
 
     fun findInfoByDate(deliveryDate: Date): List<TadVDeliverylistRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TAD_V_DELIVERYLIST,
                 Tables.TAD_V_DELIVERYLIST.DELIVERY_LIST_DATE.equal(deliveryDate.toTimestamp()))
     }
 
     fun findInfoByDebitor(debitorId: Int): List<TadVDeliverylistRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TAD_V_DELIVERYLIST,
                 Tables.TAD_V_DELIVERYLIST.DEBITOR_ID.eq(debitorId.toLong())
         )
     }
 
     fun findInfoByDateDebitorList(deliveryDate: Date, debitorId: Int): List<TadVDeliverylistRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TAD_V_DELIVERYLIST,
                 Tables.TAD_V_DELIVERYLIST.DELIVERY_LIST_DATE.equal(deliveryDate.toTimestamp())
                         .and(Tables.TAD_V_DELIVERYLIST.DEBITOR_ID.eq(debitorId.toLong()))
@@ -53,7 +53,7 @@ open class JooqDeliveryListRepository {
     }
 
     fun findDetailsById(id: Long): List<TadVDeliverylistDetailsRecord> {
-        return dslContext.fetch(
+        return dsl.fetch(
                 Tables.TAD_V_DELIVERYLIST_DETAILS,
                 Tables.TAD_V_DELIVERYLIST_DETAILS.ID.eq(id.toDouble()))
     }

@@ -1,20 +1,16 @@
 package org.deku.leoz.central.service.internal
 
-import io.reactivex.Completable
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
-import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstNodeRecord
+import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_USER
 import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR
 import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR_ENTRY
+import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourEntryRecord
 import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourRecord
-import org.deku.leoz.central.data.repository.fetchById
-import org.deku.leoz.central.data.repository.fetchByTourId
-import org.deku.leoz.central.data.repository.fetchByUid
-import org.deku.leoz.central.data.repository.uid
+import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.model.TaskType
 import org.deku.leoz.service.internal.TourServiceV1
-import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.id
 import org.deku.leoz.smartlane.SmartlaneBridge
 import org.deku.leoz.smartlane.model.Routedeliveryinput
@@ -27,18 +23,19 @@ import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.rs.DefaultProblem
-import sx.rx.subscribeOn
 import sx.time.plusDays
 import sx.time.plusHours
 import sx.time.replaceDate
 import sx.time.toTimestamp
+import java.sql.Timestamp
 import java.util.*
-import java.util.concurrent.ExecutorService
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.core.Response
+import javax.ws.rs.sse.Sse
+import javax.ws.rs.sse.SseEventSink
 
 /**
  * Tour service implementation
@@ -58,6 +55,15 @@ class TourServiceV1
     private lateinit var dsl: DSLContext
 
     @Inject
+    private lateinit var deliverylistRepository: JooqDeliveryListRepository
+
+    @Inject
+    private lateinit var tourRepository: JooqTourRepository
+
+    @Inject
+    private lateinit var userRepository: JooqUserRepository
+
+    @Inject
     private lateinit var orderService: OrderService
 
     @Inject
@@ -66,50 +72,101 @@ class TourServiceV1
     //region REST
 
     /**
+     * Get tours
+     */
+    override fun get(
+            debitorId: Int?,
+            userId: Int?
+    ): List<TourServiceV1.Tour> {
+        val tourRecords = dsl
+                .selectFrom(TAD_TOUR)
+                .where()
+                .let {
+                    when {
+                        debitorId != null -> it.and(TAD_TOUR.USER_ID.`in`(
+                                userRepository.findUserIdsByDebitor(debitorId)
+                        ))
+                        else -> it
+                    }
+                }
+                .let {
+                    when {
+                        userId != null -> it.and(TAD_TOUR.USER_ID.eq(userId))
+                        else -> it
+                    }
+                }
+                .fetchArray()
+                .also {
+                    if (it.size == 0) {
+                        // No tour records in selection
+                        throw DefaultProblem(status = Status.NOT_FOUND)
+                    }
+                }
+
+        // Pre-fetch relevant records
+        val nodeUidsById = dsl.select(MST_NODE.NODE_ID, MST_NODE.KEY)
+                .from(MST_NODE)
+                .where(MST_NODE.NODE_ID.`in`(
+                        tourRecords.mapNotNull { it.nodeId }
+                ))
+                .associate { Pair(it.value1(), it.value2()) }
+
+        val tourEntriesByTourId = tourRepository
+                .findEntriesByIds(tourRecords.map { it.id })
+                .groupBy { it.tourId }
+
+        return tourRecords.map {
+            it.toTour(
+                    nodeUid = it.nodeId?.let { nodeId -> nodeUidsById.getValue(nodeId) },
+                    tourEntryRecordsByTourId = tourEntriesByTourId
+            )
+        }
+    }
+
+    /**
      * Get tour by id
      */
     override fun getById(id: Int): TourServiceV1.Tour {
-        val tourRecord = dsl.fetchOne(TAD_TOUR, TAD_TOUR.ID.eq(id)) ?:
+        val tourRecord = tourRepository.findById(id) ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND
                 )
 
-        val nodeRecord = dsl.selectFrom(MST_NODE)
-                .fetchById(tourRecord.nodeId) ?:
+        val nodeUid = dsl.selectFrom(MST_NODE)
+                .fetchUidById(tourRecord.nodeId) ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND,
                         detail = "No node uid for id [${tourRecord.nodeId}]"
                 )
 
-        return tourRecord.toTour(nodeRecord)
+        return tourRecord.toTour(nodeUid)
     }
 
     /**
      * Get tour by node
      */
     override fun getByNode(nodeUid: String): TourServiceV1.Tour {
-        val nodeRecord = dsl.selectFrom(MST_NODE).fetchByUid(nodeUid) ?:
+        val nodeId = dsl.selectFrom(MST_NODE)
+                .where(MST_NODE.KEY.eq(nodeUid))
+                .fetchOne(MST_NODE.NODE_ID) ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND,
                         detail = "Unknown node uid ${nodeUid}"
                 )
 
-        val tourRecord = dsl.fetchOne(TAD_TOUR, TAD_TOUR.NODE_ID.eq(nodeRecord.nodeId)) ?:
+        val tourRecord = tourRepository.findByNodeId(nodeId) ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND
                 )
 
-        return tourRecord.toTour(nodeRecord)
+        return tourRecord.toTour(nodeUid)
     }
 
     /**
-     * Get tour by user
+     * Get the (current) tour for a user
      */
     override fun getByUser(userId: Int): TourServiceV1.Tour {
-        val tourRecord = dsl.fetchOne(
-                TAD_TOUR,
-                TAD_TOUR.USER_ID.eq(userId).and(TAD_TOUR.NODE_ID.isNull)
-        ) ?:
+        val tourRecord = tourRepository.findLatestByUserId(userId) ?:
                 throw DefaultProblem(
                         status = Status.NOT_FOUND,
                         detail = "No assignable tour for user [${userId}]"
@@ -128,7 +185,16 @@ class TourServiceV1
                 tour.toRoutingInput()
         )
                 .subscribeBy(
-                        onNext = {
+                        onNext = { route ->
+                            route.deliveries
+                                    .sortedBy { it.orderindex }
+                                    .forEachIndexed { index, delivery ->
+                                        // TODO: update `tad_tour_entry` positions
+                                        val oldIndex = tour.stops.indexOfFirst { it.id == delivery.customId.toInt() }
+
+                                        log.trace { "ROUTE POS UPDATE ${oldIndex} -> ${index} (${delivery.orderindex})" }
+                                    }
+
                             response.resume(Response
                                     .status(Response.Status.OK)
                                     .build()
@@ -142,6 +208,69 @@ class TourServiceV1
                             ))
                         }
                 )
+    }
+
+    override fun optimizeSse(id: Int, domainSink: SseEventSink, sse: Sse) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun optimizeForNode(nodeUid: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    /**
+     * Create tour
+     */
+    override fun create(
+            request: TourServiceV1.TourFromDeliverylist
+    ): TourServiceV1.Tour {
+
+        val deliveryListId = request.deliveryListId?.toLong()
+                ?: throw DefaultProblem(
+                status = Status.BAD_REQUEST,
+                detail = "Delivery list id is mandatory"
+        )
+
+        val userId = request.userId
+                ?: throw DefaultProblem(
+                status = Status.BAD_REQUEST,
+                detail = "User id is mandatory"
+        )
+
+        val dlDetailRecords = deliverylistRepository.findDetailsById(
+                deliveryListId
+        )
+
+        val timestamp = Date().toTimestamp()
+
+        // Create tour/entries from delivery list
+        val tour = dsl.transactionResult { _ ->
+            // Create new tour
+            val tourRecord = dsl.newRecord(TAD_TOUR).also {
+                it.nodeId = null
+                it.userId = userId
+                it.timestamp = timestamp
+                it.store()
+            }
+
+            // Transform delivery list detail to tour entry record
+            val tourEntryRecords = dlDetailRecords.mapIndexed { index, dlDetailRecord ->
+                dsl.newRecord(TAD_TOUR_ENTRY).also {
+                    it.tourId = tourRecord.id
+                    it.orderId = dlDetailRecord.orderId.toLong()
+                    it.orderTaskType = TaskType.valueOf(dlDetailRecord.stoptype).value
+                    it.position = (index + 1).toDouble()
+                    it.timestamp = timestamp
+                    it.store()
+                }
+            }
+
+            tourRecord.toTour(
+                    tourEntryRecordsByTourId = mapOf(Pair(tourRecord.id, tourEntryRecords))
+            )
+        }
+
+        return tour
     }
     //endregion
 
@@ -166,10 +295,9 @@ class TourServiceV1
                         }
                     }
 
-                    // TODO: omit times when not today or in the future, otherwise smartlane will emit error
+                    // TODO: providing pdt fields causes smartlane to fail (with 500 or `route could not be calculated`)
                     it.pdtFrom = stop.appointmentStart?.replaceDate(Date().plusDays(1))
                     it.pdtTo = stop.appointmentEnd?.replaceDate(Date().plusDays(1))?.plusHours(5)
-
                     log.trace("PDT ${it.pdtFrom} -> ${it.pdtTo}")
 
                     // Track stop via custom id
@@ -181,21 +309,27 @@ class TourServiceV1
 
     /**
      * Transform tour/node record into service entity
-     * @param nodeRecord Optional node record referring to this tour. If not provided it will be looked up.
+     * @param nodeUid OPTIONAL node record referring to this tour. If not provided it will be looked up.
+     * @param tourEntryRecordsByTourId OPTIONAL tour entry record map for fast lookups
      */
-    private fun TadTourRecord.toTour(nodeRecord: MstNodeRecord? = null): TourServiceV1.Tour {
+    private fun TadTourRecord.toTour(
+            nodeUid: String? = null,
+            tourEntryRecordsByTourId: Map<Int, List<TadTourEntryRecord>>? = null): TourServiceV1.Tour {
         val tourRecord = this
 
-        if (tourRecord.nodeId != null && nodeRecord == null)
-            throw IllegalArgumentException("Inconsistent arguments")
-
-        if (nodeRecord != null && tourRecord.nodeId != nodeRecord.nodeId)
-            throw IllegalArgumentException("Inconsistent arguments")
+        @Suppress("NAME_SHADOWING")
+        val nodeUid = this.nodeId?.let {
+            nodeUid ?: dsl.select(MST_NODE.KEY)
+                    .from(MST_NODE)
+                    .where(MST_NODE.NODE_ID.eq(tourRecord.nodeId))
+                    .fetchOne().value1()
+        }
 
         // Fetch tour entries. Equal positions represent stop tasks in order of PK
-        val tourEntryRecords = dsl
-                .selectFrom(TAD_TOUR_ENTRY)
-                .fetchByTourId(tourRecord.id)
+        val tourEntryRecords = if (tourEntryRecordsByTourId != null)
+            tourEntryRecordsByTourId.get(tourRecord.id) ?: listOf()
+        else
+            tourRepository.findEntriesById(tourRecord.id)
 
         val orders = this@TourServiceV1.orderService.getByIds(
                 tourEntryRecords.map { it.orderId }.distinct()
@@ -207,7 +341,7 @@ class TourServiceV1
 
         return TourServiceV1.Tour(
                 id = tourRecord.id,
-                nodeUid = nodeRecord?.uid,
+                nodeUid = nodeUid,
                 userId = tourRecord.userId,
                 orders = orders,
                 stops = tourEntryRecords.groupBy { it.position }
@@ -250,6 +384,7 @@ class TourServiceV1
                         }
         )
     }
+
 
     /**
      * Tour update message handler
@@ -297,7 +432,7 @@ class TourServiceV1
                 stop.tasks.forEach { task ->
                     dsl.newRecord(TAD_TOUR_ENTRY).also {
                         it.tourId = tourRecord.id
-                        it.position = index.toDouble()
+                        it.position = (index + 1).toDouble()
                         it.orderId = task.orderId
                         it.orderTaskType = when (task.taskType) {
                             TourServiceV1.Task.Type.DELIVERY -> TaskType.DELIVERY.value

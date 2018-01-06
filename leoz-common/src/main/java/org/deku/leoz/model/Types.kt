@@ -511,3 +511,23 @@ enum class LoadinglistType {
 }
 
 const val maxWeightForParcelBag = 2.0
+
+/**
+ * Universal routing zones
+ */
+enum class RoutingZone(val value: String) {
+    // TODO: document what those values represent
+    A("A"),
+    B("B"),
+    C("C"),
+    D("D")
+}
+
+/**
+ * German national routing zones
+ */
+enum class RoutingZoneDe(val value: String) {
+    // TODO: document what those values represent
+    WR("WR"),
+    UL("UL")
+}

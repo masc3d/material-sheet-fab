@@ -18,11 +18,11 @@ class JooqStatusRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
 
-    lateinit var dslContext: DSLContext
+    lateinit var dsl: DSLContext
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     fun statusExist(unitNo: Long, creator: String, status: Int, reason: Int): Boolean {
-        val exist = dslContext.selectCount().from(Tblstatus.TBLSTATUS)
+        val exist = dsl.selectCount().from(Tblstatus.TBLSTATUS)
                 .where(Tables.TBLSTATUS.PACKSTUECKNUMMER.eq(unitNo.toDouble()))
                 .and(Tables.TBLSTATUS.KZ_STATUSERZEUGER.eq(creator))
                 .and(Tables.TBLSTATUS.KZ_STATUS.eq(status.toUInteger()))

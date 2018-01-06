@@ -65,7 +65,7 @@ open class ParcelServiceV1 :
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var storage: Storage
@@ -113,7 +113,7 @@ open class ParcelServiceV1 :
             //dodo  events[].parcelScancode shuld be filled to handle deleted or moved parcel in mysql between deliverylist and delivered event
 
             //val parcelScan = parcelNo.toString()
-            val recordMessages = dslContext.newRecord(Tables.TAD_PARCEL_MESSAGES)
+            val recordMessages = dsl.newRecord(Tables.TAD_PARCEL_MESSAGES)
             recordMessages.userId = message.userId
             //recordMessages.nodeId = message.nodeId
             recordMessages.nodeIdX = nodeId

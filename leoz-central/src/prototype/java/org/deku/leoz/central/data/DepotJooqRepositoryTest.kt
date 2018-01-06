@@ -28,7 +28,7 @@ class DepotJooqRepositoryTest {
 
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     @Inject
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var depotRepository: JooqDepotRepository

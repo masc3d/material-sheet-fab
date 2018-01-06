@@ -26,13 +26,13 @@ class JooqSyncRepository {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     /**
      * Prepared statement
      */
     private val qFindSyncIdByTableName by lazy {
-        dslContext
+        dsl
                 .select(Tables.SYS_SYNC.SYNC_ID)
                 .from(Tables.SYS_SYNC)
                 .where(Tables.SYS_SYNC.TABLE_NAME.eq(
@@ -40,7 +40,7 @@ class JooqSyncRepository {
     }
 
     private val qFindAll by lazy {
-        dslContext.selectFrom(Tables.SYS_SYNC)
+        dsl.selectFrom(Tables.SYS_SYNC)
     }
 
     /**
@@ -77,7 +77,7 @@ class JooqSyncRepository {
             table: TableImpl<TRecord>,
             field: TableField<out Record, Long>?): Cursor<TRecord> {
 
-        return dslContext.selectFrom(table)
+        return dsl.selectFrom(table)
                 .where(if ((syncId != null && field != null)) field.gt(syncId) else DSL.trueCondition())
                 .fetchLazy()
     }

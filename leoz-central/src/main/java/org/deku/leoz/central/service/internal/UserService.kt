@@ -33,7 +33,7 @@ class UserService : UserService {
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
-    private lateinit var dslContext: DSLContext
+    private lateinit var dsl: DSLContext
 
     @Inject
     private lateinit var userRepository: JooqUserRepository
@@ -196,7 +196,7 @@ class UserService : UserService {
         var rec = userRepository.findByMail(email)
         if (rec == null) {
             isNew = true
-            rec = dslContext.newRecord(Tables.MST_USER)
+            rec = dsl.newRecord(Tables.MST_USER)
             //if (user.email == null || user.email.equals("@"))
             if (user.email.equals("@"))
                 user.email = email
@@ -355,10 +355,7 @@ class UserService : UserService {
 //todo read from mst_station_user
 //        rec.allowedStations = stations
 
-        if (!userRepository.save(rec))
-            throw DefaultProblem(
-                    status = Response.Status.BAD_REQUEST,
-                    title = "Problem on update")
+        rec.store()
 
         if (sendAppLink) {
             sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)
