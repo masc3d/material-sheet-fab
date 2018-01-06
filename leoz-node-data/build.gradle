@@ -26,8 +26,11 @@ buildscript {
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
         classpath "com.h2database:h2:$v_h2"
-        // Eclipselink
-        classpath "org.eclipse.persistence:eclipselink:$v_eclipselink"
+        // JPA
+        classpath "javax.persistence:javax.persistence-api:$v_javax_persistence"
+        classpath("org.eclipse.persistence:eclipselink:$v_eclipselink") {
+            exclude module: 'javax.persistence'
+        }
         // Roaster
         classpath "org.jboss.forge.roaster:roaster-api:$v_roaster"
         classpath "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
@@ -134,18 +137,17 @@ dependencies {
     compile(
             project(':sx-serialization'),
 
-            // persistence framework(s)
-            // eclipselink
-            "org.eclipse.persistence:eclipselink:$v_eclipselink",
+            // JPA
+            "javax.persistence:javax.persistence-api:$v_javax_persistence",
+            dependencies.create("org.eclipse.persistence:eclipselink:$v_eclipselink") {
+                exclude module: 'javax.persistence'
+            },
 
             // queryDSL
             "com.querydsl:querydsl-core:$v_querydsl",
             "com.querydsl:querydsl-jpa:$v_querydsl",
             "com.querydsl:querydsl-collections:$v_querydsl",
             "com.querydsl:querydsl-sql-codegen:$v_querydsl",
-
-            // persistence
-            "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
 
             // jooq
             "org.jooq:jooq:$v_jooq",
@@ -336,10 +338,10 @@ static generatePersistenceXml(File persistenceXml, List<String> classNames) {
     def builder = new MarkupBuilder(fileWriter)
     builder.persistence(xmlns: "http://java.sun.com/xml/ns/persistence", version: "1.0") {
         "persistence-unit"(name: "leoz") {
-            properties {
-            }
             classNames.each {
                 "class"(it)
+            }
+            properties {
             }
         }
     }
@@ -430,15 +432,6 @@ static List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
         }
 
         def uidLiteral = uid + "L"
-        // Set @Serializable annotation if it's not there already
-        if (jsource.annotations.find {
-            it.qualifiedName == sx.io.serialization.Serializable.canonicalName
-        } == null) {
-            jsource
-                    .addAnnotation()
-                    .setName(sx.io.serialization.Serializable.canonicalName)
-                    .setLiteralValue("uid", uidLiteral)
-        }
 
         // Amend serializableVersionUID if applicable
         def serializableUidField = jsource.fields.find {
