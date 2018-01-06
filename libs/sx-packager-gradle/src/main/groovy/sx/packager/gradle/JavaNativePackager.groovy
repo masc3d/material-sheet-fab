@@ -61,6 +61,7 @@ class BuildNativeBundleTask extends Task {
             this.packageDescription = this.extension.title
 
         def packagerPlatformDir = this.getPackagerPlatformDir()
+        def packagerPlatformBundlesDir = this.getPackagerPlatformBundlesDir()
 
         def mainJar = this.getMainJar()
         def mainClassName = this.getMainClassName();
@@ -101,7 +102,7 @@ class BuildNativeBundleTask extends Task {
                     "-title", this.extension.title,
                     "-description", this.packageDescription,
                     "-name", this.packageName,
-                    "-outdir", packagerPlatformDir,
+                    "-outdir", packagerPlatformBundlesDir,
                     "-outfile", this.extension.bundleName,
                     "-srcdir", packagerLibsDir,
                     "-appclass", mainClassName,
@@ -144,10 +145,9 @@ class ReleaseNativeBundleTask extends ReleaseTask {
 
         def releasePlatformPath = this.getReleasePlatformPath()
 
-        def packagerPlatformDir = this.getPackagerPlatformDir()
+        def packagerPlatformBundlesDir = this.getPackagerPlatformBundlesDir()
 
-        def packagerBundlePath = Paths.get(packagerPlatformDir.toURI())
-                .resolve('bundles')
+        def packagerBundlePath = Paths.get(packagerPlatformBundlesDir.toURI())
                 .resolve(SystemUtils.IS_OS_MAC ? "" : this.extension.bundleName)
                 .toFile()
 
