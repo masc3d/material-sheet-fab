@@ -66,11 +66,19 @@ abstract class Task extends DefaultTask {
     }
 
     /**
-     * Build packager platform/arch path for current system
+     * Packager platform/arch path for current system
      * @return
      */
     protected File getPackagerPlatformDir() {
         return new File(this.extension.packagerBaseDir, PlatformId.current().toString())
+    }
+
+    /**
+     * Packager platform/arch bundles path
+     * @return
+     */
+    protected File getPackagerPlatformBundlesDir() {
+        return new File(this.getPackagerPlatformDir(), 'bundles')
     }
 }
 
@@ -246,7 +254,7 @@ class ReleasePushTask extends ReleaseTask {
                     pc.setPushAll()
                     println "Pushing to git remote [${pc.remote}]"
                     pc.call()
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     def tdc = git.tagDelete()
                     tdc.tags = tagName
                     tdc.call()
