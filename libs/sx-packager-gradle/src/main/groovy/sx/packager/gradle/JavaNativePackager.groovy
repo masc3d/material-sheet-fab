@@ -71,7 +71,8 @@ class BuildNativeBundleTask extends Task {
         // JDK/JRE
         def jvm = org.gradle.internal.jvm.Jvm.current()
         def jdk_home = jvm.javaHome
-        def jre_home = jvm.jre.homeDir
+        // With jdk9, jre won't be available, thus reverting to jdk home
+        def jre_home = jvm.jre?.homeDir ?: jdk_home
         println "JDK home [${jdk_home}]"
         println "JRE home [${jre_home}]"
 
