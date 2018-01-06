@@ -17,7 +17,7 @@ buildscript {
         v_commons_lang = '3.7'
         v_commons_io = '2.6'
         v_commons_logging = '1.2'
-        v_eclipselink = '2.6.4'
+        v_eclipselink = '2.7.1'
         v_feign = '9.5.1'
         v_flyway = '5.0.5'
         v_fxform2 = '8.1.5'
@@ -27,7 +27,7 @@ buildscript {
         v_jackson = '2.9.3'
         v_javassist = '3.22.0-GA'
         v_javax_servlet = '3.1.0'
-        v_javax_persistence = '2.1.1'
+        v_javax_persistence = '2.2.0'
         v_javax_ws_rs = '2.1'
         // masc20170922. jersey 2.26 causes `InjectionManagerFactory` not found exception in leoz-ui
         v_jersey = '2.25'

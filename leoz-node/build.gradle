@@ -168,9 +168,11 @@ dependencies {
             "org.zalando:problem:$v_rest_problem",
             "org.zalando:jackson-datatype-problem:$v_rest_problem",
 
-            // persistence framework(s)
-            // eclipselink
-            "org.eclipse.persistence:eclipselink:$v_eclipselink",
+            // JPA
+            "javax.persistence:javax.persistence-api:2.2",
+            dependencies.create("org.eclipse.persistence:eclipselink:$v_eclipselink") {
+                exclude module: 'javax.persistence'
+            },
 
             // queryDSL
             "com.querydsl:querydsl-core:$v_querydsl",
@@ -185,9 +187,6 @@ dependencies {
 
             // databases
             "com.h2database:h2:$v_h2",
-
-            // persistence
-            "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
 
             // jooq
             "org.jooq:jooq:$v_jooq",
