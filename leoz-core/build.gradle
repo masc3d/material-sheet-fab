@@ -87,9 +87,6 @@ dependencies {
     )
 
     compileOnly(
-            // Persistence
-            "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
-
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
 

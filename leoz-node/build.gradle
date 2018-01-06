@@ -26,8 +26,6 @@ buildscript {
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
         classpath "com.h2database:h2:$v_h2"
-        // Eclipselink
-        classpath "org.eclipse.persistence:eclipselink:$v_eclipselink"
         // Roaster
         classpath "org.jboss.forge.roaster:roaster-api:$v_roaster"
         classpath "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
