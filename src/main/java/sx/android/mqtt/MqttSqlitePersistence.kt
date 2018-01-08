@@ -136,7 +136,7 @@ class MqttSqlitePersistence constructor(
 
                     })
 
-                    log.info { "Maximum batch size ${sizes.count()} -> ${sizes.sum()} bytes" }
+                    log.trace { "Maximum batch size ${sizes.count()} -> ${sizes.sum()} bytes" }
 
                     for (size in sizes) {
                         batchSizeBytes += size
@@ -147,7 +147,7 @@ class MqttSqlitePersistence constructor(
                     batchSize = if (batchSize > 0) batchSize else 1
                     //endregion
 
-                    log.info { "Processing batch size ${batchSize} -> ${batchSizeBytes} bytes" }
+                    log.trace { "Processing batch size ${batchSize} -> ${batchSizeBytes} bytes" }
                     val batch = Stopwatch.createStarted(this, "SELECT BATCH", { _, _ ->
                         this.db.select(TABLE_NAME)
                                 .whereArgs(
