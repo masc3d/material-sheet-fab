@@ -172,7 +172,6 @@ dependencies {
             project(':sx-common'),
             project(':sx-serialization'),
             project(':sx-mq'),
-            project(':leoz-common'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             "com.jakewharton.threetenabp:threetenabp:1.0.5",
