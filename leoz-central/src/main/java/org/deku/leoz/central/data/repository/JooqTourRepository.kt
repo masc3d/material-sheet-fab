@@ -29,27 +29,27 @@ class JooqTourRepository {
                 .fetchAny()
     }
 
+    /**
+     * Find tour entries
+     * @param Tour ids
+     * @return Tour entries in positional order
+     */
     fun findEntriesByIds(ids: Collection<Int>): List<TadTourEntryRecord> {
         return dsl.selectFrom(Tables.TAD_TOUR_ENTRY)
                 .where(Tables.TAD_TOUR_ENTRY.TOUR_ID.`in`(ids))
+                .orderBy(Tables.TAD_TOUR_ENTRY.POSITION, Tables.TAD_TOUR_ENTRY.ID)
                 .toList()
     }
 
+    /**
+     * Find tour entries
+     * @param Tour id
+     * @return Tour entries in positional order
+     */
     fun findEntriesById(id: Int): List<TadTourEntryRecord> {
         return dsl.selectFrom(Tables.TAD_TOUR_ENTRY)
                 .where(Tables.TAD_TOUR_ENTRY.TOUR_ID.eq(id))
+                .orderBy(Tables.TAD_TOUR_ENTRY.POSITION, Tables.TAD_TOUR_ENTRY.ID)
                 .toList()
     }
-}
-
-/**
- * Fetch tour entries, correctly sorted by position/id
- * @param tourId Tour id
- */
-fun SelectWhereStep<TadTourEntryRecord>.fetchByTourId(tourId: Int): List<TadTourEntryRecord> {
-    // Fetch tour entries. Equal positions represent stop tasks in order of PK
-    return this
-            .where(Tables.TAD_TOUR_ENTRY.TOUR_ID.eq(tourId))
-            .orderBy(Tables.TAD_TOUR_ENTRY.POSITION, Tables.TAD_TOUR_ENTRY.ID)
-            .fetch()
 }

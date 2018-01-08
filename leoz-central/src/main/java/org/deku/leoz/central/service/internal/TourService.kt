@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal
 
+import io.reactivex.Completable
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
@@ -9,6 +10,8 @@ import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR_ENTRY
 import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourEntryRecord
 import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourRecord
 import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.config.JmsEndpoints
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TaskType
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.id
@@ -22,6 +25,7 @@ import org.zalando.problem.Status
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.mq.jms.channel
 import sx.rs.DefaultProblem
 import sx.time.plusDays
 import sx.time.plusHours
@@ -132,12 +136,14 @@ class TourServiceV1
                         status = Status.NOT_FOUND
                 )
 
-        val nodeUid = dsl.selectFrom(MST_NODE)
-                .fetchUidById(tourRecord.nodeId) ?:
-                throw DefaultProblem(
-                        status = Status.NOT_FOUND,
-                        detail = "No node uid for id [${tourRecord.nodeId}]"
-                )
+        val nodeUid = tourRecord.nodeId?.let {
+            dsl.selectFrom(MST_NODE)
+                    .fetchUidById(tourRecord.nodeId) ?:
+                    throw DefaultProblem(
+                            status = Status.NOT_FOUND,
+                            detail = "No node uid for id [${tourRecord.nodeId}]"
+                    )
+        }
 
         return tourRecord.toTour(nodeUid)
     }
@@ -176,25 +182,53 @@ class TourServiceV1
     }
 
     /**
-     * Optimize tour
+     * Optimize a tour and update tour entry positions in place
+     * @param id Tour id
      */
-    override fun optimize(id: Int, response: AsyncResponse) {
+    fun optimize(id: Int): Completable {
         val tour = this.getById(id)
 
-        this.smartlaneBridge.optimizeRoute(
+        return this.smartlaneBridge.optimizeRoute(
                 tour.toRoutingInput()
         )
+                .doOnNext { route ->
+                    dsl.transaction { _ ->
+                        val entryRecords = tourRepository.findEntriesById(id)
+
+                        route.deliveries
+                                .sortedBy { it.orderindex }
+                                .forEachIndexed { index, delivery ->
+                                    // Select stop tour entry which matches custom id
+                                    val entryRecord = entryRecords.first { it.id == delivery.customId.toInt() }
+
+                                    log.trace { "TOUR ENTRY POSITION UPDATE ${entryRecord.position} -> ${index} (${delivery.orderindex})" }
+
+                                    // Update position for all entries on the same (positional) level
+                                    val entryIds = entryRecords
+                                            .filter { it.position == entryRecord.position }
+                                            .map { it.id }
+
+                                    val timestamp = Date().toTimestamp()
+                                    dsl.update(TAD_TOUR_ENTRY)
+                                            .set(TAD_TOUR_ENTRY.POSITION, (index + 1).toDouble())
+                                            .set(TAD_TOUR_ENTRY.TIMESTAMP, timestamp)
+                                            .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
+                                            .execute()
+                                }
+                    }
+                }
+                .ignoreElements()
+    }
+
+    /**
+     * Optimize tour
+     * @param id Tour id
+     * @param response Asynchronous response
+     */
+    override fun optimize(id: Int, response: AsyncResponse) {
+        this.optimize(id)
                 .subscribeBy(
-                        onNext = { route ->
-                            route.deliveries
-                                    .sortedBy { it.orderindex }
-                                    .forEachIndexed { index, delivery ->
-                                        // TODO: update `tad_tour_entry` positions
-                                        val oldIndex = tour.stops.indexOfFirst { it.id == delivery.customId.toInt() }
-
-                                        log.trace { "ROUTE POS UPDATE ${oldIndex} -> ${index} (${delivery.orderindex})" }
-                                    }
-
+                        onComplete = {
                             response.resume(Response
                                     .status(Response.Status.OK)
                                     .build()
@@ -215,7 +249,34 @@ class TourServiceV1
     }
 
     override fun optimizeForNode(nodeUid: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val node = dsl.selectFrom(MST_NODE)
+                .fetchByUid(nodeUid, strict = false)
+                ?:
+                throw DefaultProblem(
+                        status = Status.NOT_FOUND,
+                        detail = "Node not found"
+                )
+
+        val tour = tourRepository.findByNodeId(node.nodeId)
+                ?:
+                throw DefaultProblem(
+                        status = Status.NOT_FOUND,
+                        detail = "Tour not found"
+                )
+
+        this.optimize(tour.id)
+                .subscribeBy(
+                        onComplete = {
+                            JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
+                                    .channel()
+                                    .send(TourServiceV1.TourUpdate(
+                                            tour = this.getById(tour.id)
+                                    ))
+                        },
+                        onError = {
+                            // TODO send error message
+                        }
+                )
     }
 
     /**
@@ -297,7 +358,7 @@ class TourServiceV1
 
                     // TODO: providing pdt fields causes smartlane to fail (with 500 or `route could not be calculated`)
                     it.pdtFrom = stop.appointmentStart?.replaceDate(Date().plusDays(1))
-                    it.pdtTo = stop.appointmentEnd?.replaceDate(Date().plusDays(1))?.plusHours(5)
+                    it.pdtTo = stop.appointmentEnd?.replaceDate(Date().plusDays(1))
                     log.trace("PDT ${it.pdtFrom} -> ${it.pdtTo}")
 
                     // Track stop via custom id
