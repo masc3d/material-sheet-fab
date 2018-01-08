@@ -6,6 +6,7 @@ buildscript {
         v_feign = '9.5.1'
         v_jackson = '2.9.3'
         v_javax_persistence = '2.2'
+        v_jaxb = '2.3.0'
         v_jersey = '2.26'
         v_jgit = '4.9.1.201712030800-r'
         v_jna = '4.5.1'
@@ -47,7 +48,7 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
-            "javax.xml.bind:jaxb-api:2.3.0",
+            "javax.xml.bind:jaxb-api:$v_jaxb",
 
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",

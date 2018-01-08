@@ -48,6 +48,11 @@ dependencies {
             project(':barbarywatchservice'),
             project(':leoz-common'),
 
+            //region TODO: workaround for kotlin compiler not seeing jdk9 modules in non-jigsaw projects
+            "com.sun.xml.bind:jaxb-core:$v_jaxb",
+            "com.sun.xml.bind:jaxb-impl:$v_jaxb",
+            //endregion
+            
             // JSR-310 / java.time drop-in replacement
             "org.threeten:threetenbp:$v_threeten",
 
