@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttException.REASON_CODE_CLIENT_CONNECTED
@@ -11,9 +12,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.Stopwatch
+import sx.rx.limit
 import sx.rx.retryWithExponentialBackoff
-import sx.rx.subscribeOn
 import sx.rx.toHotCache
+import java.lang.Thread.MIN_PRIORITY
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -30,7 +32,7 @@ import kotlin.properties.Delegates
 class MqttDispatcher(
         private val client: MqttRxClient,
         private val persistence: IMqttPersistence,
-        private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
+        private val executorService: ExecutorService
 ) : IMqttRxClient {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -39,6 +41,21 @@ class MqttDispatcher(
     /** Statistics update event. Provides a map of topic -> count */
     val statisticsUpdateEvent by lazy { this.statisticsUpdatEventSubject.hide() }
     private val statisticsUpdatEventSubject by lazy { BehaviorSubject.create<Map<String, Int>>() }
+
+    /** Scheduler for general use */
+    private val scheduler by lazy {
+        Schedulers.from(this.executorService)
+    }
+
+    /** Specific dequeue scheduler, single-threaded, low priority */
+    private val dequeuScheduler by lazy {
+        Schedulers.from(Executors.newFixedThreadPool(1, {
+            Thread(it).also {
+                it.name = "mqtt-dispatcher-${it.id}"
+                it.priority = MIN_PRIORITY
+            }
+        }))
+    }
 
     /** Statistics/message count cache by topic name */
     private var statistics by Delegates.observable<MutableMap<String, Int>>(
@@ -131,37 +148,45 @@ class MqttDispatcher(
                             .doOnNext {
                                 count++
                             }
-                            .concatMap {
+                            .concatMap { m ->
                                 // Map each persisted message to publish/remove flow (sequentially)
-                                log.trace("Publishing [m${it.persistentId}]")
                                 this.client
-                                        .publish(it.topicName, it.toMqttMessage())
-                                        .concatWith(Completable.fromAction {
-                                            // Remove from persistence when publish was successful
-                                            this.persistence.remove(it)
+                                        .publish(m.topicName, m.toMqttMessage())
+                                        .doOnSubscribe {
+                                            log.trace("Publishing [m${m.persistentId}]")
+                                        }
+                                        .concatWith(
+                                                Completable.fromAction {
+                                                    // Remove from persistence when publish was successful
+                                                    this.persistence.remove(m)
 
-                                            this.updateStatistics(
-                                                    topicName = it.topicName,
-                                                    messageAmountAdded = -1
-                                            )
+                                                    this.updateStatistics(
+                                                            topicName = m.topicName,
+                                                            messageAmountAdded = -1
+                                                    )
 
-                                            log.trace("Removed [m${it.persistentId}]")
-                                        })
-                                        .toSingleDefault(it)
-                                        .toObservable()
+                                                    log.trace("Removed [m${m.persistentId}]")
+                                                }
+                                                        .subscribeOn(this@MqttDispatcher.dequeuScheduler)
+                                        )
+                                        .toSingleDefault(m)
+                                        .subscribeOn(this.dequeuScheduler)
+                                        .blockingGet()
+
+                                Observable.just(m)
                             }
                             .doOnComplete {
                                 if (count > 0)
                                     log.info("Dequeued ${count} in [${sw}]")
                             }
+                            .subscribeOn(scheduler.limit(1))
                             // Map processed batch back to trigger unit
                             .ignoreElements()
                             .toSingleDefault(trigger)
                             .toObservable()
                 }
-                .subscribeOn(executorService)
-                .subscribeBy(onError = {
-                    log.error("Dequeue terminated with error [${it.message}]")
+                .subscribeBy(onError = { e ->
+                    log.error("Dequeue terminated with error [${e.message}]")
                 })
     }
 
@@ -186,27 +211,48 @@ class MqttDispatcher(
                 this.dequeueTrigger.onNext(Unit)
             }
         }
-                .toHotCache(this.executorService)
+                .toHotCache(scheduler)
     }
 
+    /**
+     * Subscribe to topic
+     * @param topicName Topic name
+     * @param qos Qos
+     */
     override fun subscribe(topicName: String, qos: Int): Observable<MqttMessage> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // TODO: replace passthrough with durable subscription. consumers shouldn't have to worry.
+        return this.client.subscribe(
+                topicName = topicName,
+                qos = qos
+        )
     }
+
+    /**
+     * Unsubscribe from topic
+     * @param topicName Topic name
+     */
+    override fun unsubscribe(topicName: String): Completable {
+        return this.client.unsubscribe(
+                topicName
+        )
+    }
+
 
     /**
      * Disconnect from remote broker and discontinue connection retries.
      * The returned {@link Completable} will always be completed without error.
+     *
+     * IMPORTANT: Disconnecting gracefully leads to (irrational) delayed
+     * connection related errors on eg. publish with paho-1.2.0, which may
+     * interrupt dequeuing eg. so `disconnect` should be always be called with `forcibly=true`
+     * for reliable results.
      */
-    override fun disconnect(): Completable {
+    override fun disconnect(forcibly: Boolean): Completable {
         this.lock.withLock {
             log.info("Disconnecting")
             this.connectionSubscription = null
-            return this.client.disconnect()
+            return this.client.disconnect(forcibly)
         }
-    }
-
-    override fun unsubscribe(topicName: String): Completable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     /**
@@ -220,6 +266,7 @@ class MqttDispatcher(
             // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
             this.connectionSubscription = Completable
                     .defer {
+                        log.info("Attempting connection to ${this.client.uri}")
                         this.client.connect()
                     }
                     .onErrorComplete {

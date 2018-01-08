@@ -18,6 +18,7 @@ import sx.mq.Channels
 import sx.mq.config.MqTestConfiguration
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.message.TestMessage
+import java.util.concurrent.Executors
 
 /**
  * Created by masc on 21.05.17.
@@ -68,7 +69,9 @@ class MqttDispatcherTest {
         val dispatcher: MqttDispatcher by lazy {
             MqttDispatcher(
                     client = this.client,
-                    persistence = MqttInMemoryPersistence())
+                    executorService = Executors.newCachedThreadPool(),
+                    persistence = MqttInMemoryPersistence()
+            )
         }
 
         val context by lazy {
@@ -102,7 +105,7 @@ class MqttDispatcherTest {
         Thread.sleep(1000)
 
         Stopwatch.createStarted("publish", { log.info(it) }, { _, _ ->
-            for (i in 0..10000){
+            for (i in 0..10000) {
                 Mqtt.testQueue.channel().send(TestMessage())
             }
         })
