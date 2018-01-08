@@ -2,6 +2,7 @@ package sx
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -277,7 +278,7 @@ class Stopwatch {
             try {
                 return block(sw, log)
             } finally {
-                log.info(this.createLogMessage(sw, name))
+                log.trace(this.createLogMessage(sw, name))
             }
         }
 
