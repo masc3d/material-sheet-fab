@@ -225,6 +225,9 @@ dependencies {
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-jaxrs:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
+            
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
 
             // Requery
             "io.requery:requery:$v_requery",
