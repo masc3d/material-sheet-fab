@@ -328,10 +328,6 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 
         participant.station = rRoute.station!!
         participant.zone = rRoute.area!!
-        participant.nationalZone = getNationalZoneFromArea(
-                zone = RoutingZone.valueOf(rRoute.area!!),
-                country = rRoute.country
-        )
         participant.island = (rRoute.island != 0)
         participant.earliestTimeOfDelivery = rRoute.etod!!.toShortTime()
         participant.term = rRoute.term!!
@@ -516,25 +512,6 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
 
             this.query = zipQuery
             this.conform = zipConform
-        }
-    }
-
-    /**
-     * @return The national zone for the given zone (area-code)
-     * @param zone: The zone (area) to resolve
-     * @param country: The country for which to get the national zone
-     * @return National zone or empty string in case a transformation is not applicable
-     */
-    private fun getNationalZoneFromArea(zone: RoutingZone, country: String): String {
-        return when (country) {
-            CountryCode.DE.alpha2 -> {
-                when (zone) {
-                    RoutingZone.A, RoutingZone.B -> RoutingZoneDe.WR.value
-                    RoutingZone.C, RoutingZone.D -> RoutingZoneDe.UL.value
-                    else -> ""
-                }
-            }
-            else -> ""
         }
     }
 }
