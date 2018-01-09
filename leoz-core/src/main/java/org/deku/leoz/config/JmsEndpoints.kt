@@ -1,6 +1,7 @@
 package org.deku.leoz.config
 
 import org.deku.leoz.identity.Identity
+import org.threeten.bp.Duration
 import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.toJms
@@ -16,7 +17,7 @@ object JmsEndpoints {
     class QueueChannels(
             val mqChannel: MqEndpoints.QueueEndpoints) {
 
-        val kryo =  mqChannel.kryo.toJms(
+        val kryo = mqChannel.kryo.toJms(
                 context = context
         )
 
@@ -57,7 +58,11 @@ object JmsEndpoints {
 
         fun topic(identityUid: Identity.Uid): JmsEndpoint {
             return MqEndpoints.node.topic(identityUid)
-                    .toJms(context = context)
+                    .toJms(
+                            context = context,
+                            // As nodes may vanish, messages need to have a reasonable TTL
+                            ttl = Duration.ofDays(1)
+                    )
         }
 
         val broadcast: JmsEndpoint by lazy {
