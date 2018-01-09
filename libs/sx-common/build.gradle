@@ -14,7 +14,7 @@ buildscript {
         v_querydsl = '4.1.4'
         v_kotlin = '1.2.10'
         v_koptional = '1.2.0'
-        v_requery = '1.4.1'
+        v_requery = '1.5.0'
         v_resteasy = '4.0.0.Beta1'
         v_socketio = '1.0.0'
         v_slf4j = '1.7.25'
