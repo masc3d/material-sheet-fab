@@ -7,7 +7,7 @@ buildscript {
         v_jackson = '2.9.3'
         v_javax_persistence = '2.2'
         v_jersey = '2.26'
-        v_jgit = '4.9.1.201712030800-r'
+        v_jgit = '4.10.0.201712302008-r'
         v_jna = '4.5.1'
         v_jsch = '0.1.54'
         v_jsch_proxy = '0.0.9'

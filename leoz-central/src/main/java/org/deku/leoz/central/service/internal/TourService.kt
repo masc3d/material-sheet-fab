@@ -54,6 +54,7 @@ class TourServiceV1
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    //region Dependencices
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
@@ -72,9 +73,9 @@ class TourServiceV1
 
     @Inject
     private lateinit var smartlaneBridge: SmartlaneBridge
+    //endregion
 
     //region REST
-
     /**
      * Get tours
      */
@@ -354,6 +355,7 @@ class TourServiceV1
     }
     //endregion
 
+    //region Transformations
     /**
      * Transform tour into smartlane routing input
      */
@@ -480,7 +482,9 @@ class TourServiceV1
                         }
         )
     }
+    //endregion
 
+    //region MQ handlers
     @MqHandler.Types(
             TourServiceV1.TourUpdate::class,
             TourServiceV1.TourOptimizationRequest::class
@@ -562,4 +566,5 @@ class TourServiceV1
             }
         }
     }
+    //endregion
 }
