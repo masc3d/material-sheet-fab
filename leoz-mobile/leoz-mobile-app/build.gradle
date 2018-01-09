@@ -218,14 +218,16 @@ dependencies {
             "com.trello.rxlifecycle2:rxlifecycle:$v_rxlifecycle",
             "com.trello.rxlifecycle2:rxlifecycle-kotlin:$v_rxlifecycle",
             "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle",
-            "com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar",
+            "com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar",
 
             // REST
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
-            "io.github.openfeign:feign-jaxrs:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
-            
+            dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
+                exclude group: "javax.ws.rs", module: "jsr311-api"
+            },
+
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
 
@@ -239,7 +241,7 @@ dependencies {
             "io.swagger:swagger-annotations:$v_swagger",
 
             // Kotlin extensions for activity/fragment state persistence
-            "com.github.tinsukE:icekick:0.2",
+            "com.github.tinsukE:icekick:0.4",
 
             "org.parceler:parceler-api:$v_parceler",
             'com.journeyapps:zxing-android-embedded:3.5.0',
