@@ -185,12 +185,16 @@ class TourServiceV1
      * Optimize a tour and update tour entry positions in place
      * @param id Tour id
      */
-    fun optimize(id: Int): Completable {
+    fun optimize(
+            id: Int,
+            optimizationOptions: TourServiceV1.TourOptimizationOptions
+    ): Completable {
         val tour = this.getById(id)
 
         return this.smartlaneBridge.optimizeRoute(
-                tour.toRoutingInput()
-        )
+                tour.toRoutingInput(
+                        optimizationOptions
+                ))
                 .doOnNext { route ->
                     dsl.transaction { _ ->
                         val entryRecords = tourRepository.findEntriesById(id)
@@ -225,8 +229,14 @@ class TourServiceV1
      * @param id Tour id
      * @param response Asynchronous response
      */
-    override fun optimize(id: Int, response: AsyncResponse) {
-        this.optimize(id)
+    override fun optimize(
+            id: Int,
+            optimizationOptions: TourServiceV1.TourOptimizationOptions, response: AsyncResponse) {
+
+        this.optimize(
+                id,
+                optimizationOptions
+        )
                 .subscribeBy(
                         onComplete = {
                             response.resume(Response
@@ -244,11 +254,14 @@ class TourServiceV1
                 )
     }
 
-    override fun optimizeSse(id: Int, domainSink: SseEventSink, sse: Sse) {
+    override fun optimizeSse(id: Int, optimizationOptions: TourServiceV1.TourOptimizationOptions, domainSink: SseEventSink, sse: Sse) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun optimizeForNode(nodeUid: String) {
+    override fun optimizeForNode(
+            nodeUid: String,
+            optimizationOptions: TourServiceV1.TourOptimizationOptions
+    ) {
         val node = dsl.selectFrom(MST_NODE)
                 .fetchByUid(nodeUid, strict = false)
                 ?:
@@ -264,7 +277,10 @@ class TourServiceV1
                         detail = "Tour not found"
                 )
 
-        this.optimize(tour.id)
+        this.optimize(
+                id = tour.id,
+                optimizationOptions = optimizationOptions
+        )
                 .subscribeBy(
                         onComplete = {
                             JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
@@ -341,7 +357,9 @@ class TourServiceV1
     /**
      * Transform tour into smartlane routing input
      */
-    private fun TourServiceV1.Tour.toRoutingInput(): Routinginput {
+    private fun TourServiceV1.Tour.toRoutingInput(
+            optimizationOptions: TourServiceV1.TourOptimizationOptions
+    ): Routinginput {
         return Routinginput().also {
             it.deliverydata = this.stops.map { stop ->
                 Routedeliveryinput().also {
@@ -359,9 +377,23 @@ class TourServiceV1
                         }
                     }
 
-                    // TODO: providing pdt fields causes smartlane to fail (with 500 or `route could not be calculated`)
-                    it.pdtFrom = stop.appointmentStart?.replaceDate(Date().plusDays(1))
-                    it.pdtTo = stop.appointmentEnd?.replaceDate(Date().plusDays(1))
+                    // Current time
+                    val now = Date()
+
+                    //region Determine pdt parameters
+                    var pdtFrom = stop.appointmentStart
+                    var pdtTo = stop.appointmentEnd
+                    if (optimizationOptions.amendAppointmentTimes) {
+                        pdtFrom = pdtFrom?.replaceDate(now)
+                        pdtTo = pdtTo?.replaceDate(now)
+                    }
+                    pdtTo = if (pdtTo != null && pdtTo > now) pdtTo else null
+                    pdtFrom = if (pdtTo != null) pdtFrom else null
+                    //endregion
+
+                    it.pdtFrom = pdtFrom
+                    it.pdtTo = pdtTo
+
                     log.trace("PDT ${it.pdtFrom} -> ${it.pdtTo}")
 
                     // Track stop via custom id
@@ -464,7 +496,10 @@ class TourServiceV1
                     return
                 }
 
-                this.optimizeForNode(nodeUid)
+                this.optimizeForNode(
+                        nodeUid = nodeUid,
+                        optimizationOptions = message.optimizationOptions
+                )
             }
         }
     }

@@ -95,6 +95,8 @@ interface TourServiceV1 {
     fun optimize(
             @PathParam(ID) @ApiParam(value = "Tour id")
             id: Int,
+            @ApiParam(value = "Tour optimization options")
+            optimizationOptions: TourOptimizationOptions,
             @Suspended response: AsyncResponse
     )
 
@@ -108,6 +110,8 @@ interface TourServiceV1 {
     fun optimizeSse(
             @PathParam(ID) @ApiParam(value = "Tour id")
             id: Int,
+            @ApiParam(value = "Tour optimization options")
+            optimizationOptions: TourOptimizationOptions,
             @Context domainSink: SseEventSink,
             @Context sse: Sse
     )
@@ -123,7 +127,9 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun optimizeForNode(
             @PathParam(NODE_UID) @ApiParam(value = "Mobile node id")
-            nodeUid: String
+            nodeUid: String,
+            @ApiParam(value = "Tour optimization options")
+            optimizationOptions: TourOptimizationOptions
     )
 
     @ApiModel(description = "Tour")
@@ -182,6 +188,18 @@ interface TourServiceV1 {
         }
     }
 
+    @Serializable(0xc41f67f95c2025)
+    @ApiModel(description = "Tour optimization options")
+    data class TourOptimizationOptions(
+            @ApiModelProperty(position = 10,
+                    required = false,
+                    value = "Amend appointment times",
+                    notes = "Amends all appointment times, so they relate to the current day",
+                    example = "false"
+            )
+            var amendAppointmentTimes: Boolean = false
+    )
+
     /**
      * Tour update
      */
@@ -200,7 +218,8 @@ interface TourServiceV1 {
      */
     @Serializable(0x20ccdbc9cf990c)
     data class TourOptimizationRequest(
-            var nodeUid: String? = null
+            var nodeUid: String? = null,
+            var optimizationOptions: TourOptimizationOptions = TourOptimizationOptions()
     )
 
     /**
