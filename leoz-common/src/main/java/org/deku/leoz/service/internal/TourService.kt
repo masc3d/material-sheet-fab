@@ -25,7 +25,6 @@ interface TourServiceV1 {
     companion object {
         const val ID = "id"
         const val DEBITOR_ID = "debitor-id"
-        const val DELIVERYLIST_ID = "deliverylist-id"
         const val NODE_UID = "node-uid"
         const val USER_ID = "user-id"
     }
@@ -191,8 +190,31 @@ interface TourServiceV1 {
             /** Updated tour (may be filled partially) */
             var tour: Tour? = null,
             /** Update timestamp */
-            var timestamp: Date = Date()
+            var timestamp: Date = Date(),
+            /** Indicates that this update is a tour optimization */
+            var isOptimization: Boolean = false
     )
+
+    /**
+     * Tour optimization request
+     */
+    @Serializable(0x20ccdbc9cf990c)
+    data class TourOptimizationRequest(
+            var nodeUid: String? = null
+    )
+
+    /**
+     * Tour optimization error
+     */
+    @Serializable(0xc416aca7da4d56)
+    data class TourOptimizationError(
+            var type: Type = Type.ROUTE_COULD_NOT_BE_DETERMINED
+    ) {
+        enum class Type {
+            INVALID_REQUEST,
+            ROUTE_COULD_NOT_BE_DETERMINED
+        }
+    }
 }
 
 /** Stop id. Refers to the first task its tour entry (task) id */

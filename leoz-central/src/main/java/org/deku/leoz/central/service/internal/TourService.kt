@@ -50,7 +50,7 @@ import javax.ws.rs.sse.SseEventSink
 class TourServiceV1
     :
         org.deku.leoz.service.internal.TourServiceV1,
-        MqHandler<TourServiceV1.TourUpdate> {
+        MqHandler<Any> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -273,8 +273,11 @@ class TourServiceV1
                                             tour = this.getById(tour.id)
                                     ))
                         },
-                        onError = {
-                            // TODO send error message
+                        onError = { e ->
+                            log.error(e.message, e)
+                            JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
+                                    .channel()
+                                    .send(TourServiceV1.TourOptimizationError())
                         }
                 )
     }
@@ -446,11 +449,30 @@ class TourServiceV1
         )
     }
 
+    @MqHandler.Types(
+            TourServiceV1.TourUpdate::class,
+            TourServiceV1.TourOptimizationRequest::class
+    )
+    override fun onMessage(message: Any, replyChannel: MqChannel?) {
+        when (message) {
+            is TourServiceV1.TourUpdate -> {
+                this.onMessage(message)
+            }
+            is TourServiceV1.TourOptimizationRequest -> {
+                val nodeUid = message.nodeUid ?: run {
+                    log.warn("Tour optimization request received without node uid")
+                    return
+                }
+
+                this.optimizeForNode(nodeUid)
+            }
+        }
+    }
 
     /**
      * Tour update message handler
      */
-    override fun onMessage(message: TourServiceV1.TourUpdate, replyChannel: MqChannel?) {
+    private fun onMessage(message: TourServiceV1.TourUpdate) {
         log.trace { "Tour message ${message}" }
 
         val tour = message.tour ?: run {
