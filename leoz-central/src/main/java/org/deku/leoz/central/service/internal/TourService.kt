@@ -4,7 +4,6 @@ import io.reactivex.Completable
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
-import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_USER
 import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR
 import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR_ENTRY
 import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourEntryRecord
@@ -27,11 +26,8 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
 import sx.rs.DefaultProblem
-import sx.time.plusDays
-import sx.time.plusHours
 import sx.time.replaceDate
 import sx.time.toTimestamp
-import java.sql.Timestamp
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -198,13 +194,16 @@ class TourServiceV1
                 ))
                 .doOnNext { route ->
                     dsl.transaction { _ ->
+                        val now = Date().toTimestamp()
                         val entryRecords = tourRepository.findEntriesById(id)
 
                         route.deliveries
                                 .sortedBy { it.orderindex }
                                 .forEachIndexed { index, delivery ->
                                     // Select stop tour entry which matches custom id
-                                    val entryRecord = entryRecords.first { it.id == delivery.customId.toInt() }
+                                    val stop = tour.stops.first { it.id == delivery.customId.toInt() }
+
+                                    val entryRecord = entryRecords.first { it.id == stop.id }
 
                                     log.trace { "TOUR ENTRY POSITION UPDATE ${entryRecord.position} -> ${index} (${delivery.orderindex})" }
 
@@ -213,13 +212,17 @@ class TourServiceV1
                                             .filter { it.position == entryRecord.position }
                                             .map { it.id }
 
-                                    val timestamp = Date().toTimestamp()
                                     dsl.update(TAD_TOUR_ENTRY)
                                             .set(TAD_TOUR_ENTRY.POSITION, (index + 1).toDouble())
-                                            .set(TAD_TOUR_ENTRY.TIMESTAMP, timestamp)
+                                            .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
                                             .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
                                             .execute()
                                 }
+
+                        dsl.update(TAD_TOUR)
+                                .set(TAD_TOUR.OPTIMIZED, now)
+                                .where(TAD_TOUR.ID.eq(id))
+                                .execute()
                     }
                 }
                 .ignoreElements()
@@ -330,6 +333,7 @@ class TourServiceV1
             val tourRecord = dsl.newRecord(TAD_TOUR).also {
                 it.nodeId = null
                 it.userId = userId
+                it.deliverylistId = request.deliveryListId
                 it.timestamp = timestamp
                 it.store()
             }
