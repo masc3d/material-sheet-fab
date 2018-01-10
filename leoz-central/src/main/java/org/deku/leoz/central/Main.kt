@@ -14,7 +14,7 @@ import org.springframework.core.annotation.Order
  * Disabled auto configuraton as it's slow. Pulling in configurations manually as needed.
  * Created by masc on 28.05.15.
  */
-@Configuration("central.MainSpringBoot")
+@Configuration("central.main")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ComponentScan(lazyInit = true)
 open class Main : org.deku.leoz.node.Main() {

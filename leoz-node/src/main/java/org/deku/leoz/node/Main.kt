@@ -14,7 +14,6 @@ import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.Banner
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration
-import org.springframework.boot.autoconfigure.web.*
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
@@ -28,14 +27,14 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import java.lang.UnsupportedOperationException
+import org.springframework.scheduling.annotation.EnableScheduling
 import java.net.URLClassLoader
 
 /**
  * Spring boot main application class
  * Created by masc on 28.05.15.
  */
-@Configuration("node.MainSpringBoot")
+@Configuration( "node.main")
 @ComponentScan(lazyInit = true)
 @Order(Ordered.LOWEST_PRECEDENCE)
 // Auto configuraton is slow. Pulling in configurations manually as needed.
@@ -76,6 +75,7 @@ import java.net.URLClassLoader
         LocalDevToolsAutoConfiguration::class
 )
 @EnableConfigurationProperties
+@EnableScheduling
 open class Main {
     companion object {
         private val log = LoggerFactory.getLogger(Main::class.java)
