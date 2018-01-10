@@ -10,6 +10,6 @@
     </root>
 
     <logger name="org.deku.leoz" level="TRACE" />
-    <logger name="sx.rs" level="INFO" />
+    <logger name="sx.rs" level="TRACE" />
     <logger name="org.jboss.resteasy" level="INFO" />
 </configuration>

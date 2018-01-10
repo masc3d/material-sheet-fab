@@ -1,12 +1,10 @@
 package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.sun.media.jfxmediaimpl.MediaDisposer
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
@@ -32,15 +30,10 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
 import sx.rs.DefaultProblem
-import sx.rx.subscribeOn
-import sx.time.plusDays
 import sx.time.replaceDate
 import sx.time.toTimestamp
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.ScheduledExecutorService
-import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -49,7 +42,6 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ContextResolver
 import javax.ws.rs.sse.Sse
-import javax.ws.rs.sse.SseBroadcaster
 import javax.ws.rs.sse.SseEventSink
 
 /**
@@ -68,7 +60,7 @@ class TourServiceV1
     /**
      * Tracks optimizations and provides notifications
      */
-    private class Optimizations : Iterable<TourServiceV1.TourOptimizationStatus> {
+    private inner class Optimizations : Iterable<TourServiceV1.TourOptimizationStatus> {
         /** Holds all current optimizations (by tour id) */
         private val byId = ConcurrentHashMap<Int, TourServiceV1.TourOptimizationStatus>()
 
@@ -105,14 +97,13 @@ class TourServiceV1
 
         override fun iterator(): Iterator<TourServiceV1.TourOptimizationStatus>
                 = this.byId.values.iterator()
-    }
 
-    @PostConstruct
-    fun initialize() {
-        this.optimizations.updated
-                .subscribe {
-                    log.trace { "UPDATED ${it}" }
-                }
+        init {
+            this.updated
+                    .subscribe {
+                        log.trace { "UPDATED ${it}" }
+                    }
+        }
     }
 
     /**
@@ -259,6 +250,10 @@ class TourServiceV1
             id: Int,
             optimizationOptions: TourServiceV1.TourOptimizationOptions
     ): Completable {
+        // Check if optimization for this tour is already in progress
+        if (this.optimizations.any { it.id == id })
+            throw IllegalStateException("Optimization for tour [${id}] already in progress")
+
         val tour = this.getById(id)
         val tourId = tour.id!!
 
@@ -321,25 +316,32 @@ class TourServiceV1
             id: Int,
             optimizationOptions: TourServiceV1.TourOptimizationOptions, response: AsyncResponse) {
 
-        this.optimize(
-                id,
-                optimizationOptions
-        )
-                .subscribeBy(
-                        onComplete = {
-                            response.resume(Response
-                                    .status(Response.Status.OK)
-                                    .build()
-                            )
-                        },
-                        onError = { e ->
-                            log.error(e.message, e)
-                            response.resume(DefaultProblem(
-                                    status = Status.INTERNAL_SERVER_ERROR,
-                                    detail = e.message
-                            ))
-                        }
-                )
+        try {
+            this.optimize(
+                    id,
+                    optimizationOptions
+            )
+                    .subscribeBy(
+                            onComplete = {
+                                response.resume(Response
+                                        .status(Response.Status.OK)
+                                        .build()
+                                )
+                            },
+                            onError = { e ->
+                                log.error(e.message, e)
+                                response.resume(DefaultProblem(
+                                        status = Status.INTERNAL_SERVER_ERROR,
+                                        detail = e.message
+                                ))
+                            }
+                    )
+        } catch (e: Exception) {
+            throw DefaultProblem(
+                    status = Status.INTERNAL_SERVER_ERROR,
+                    detail = e.message
+            )
+        }
     }
 
     override fun status(ids: List<Int>, sink: SseEventSink, sse: Sse) {
@@ -389,25 +391,32 @@ class TourServiceV1
                         detail = "Tour not found"
                 )
 
-        this.optimize(
-                id = tour.id,
-                optimizationOptions = optimizationOptions
-        )
-                .subscribeBy(
-                        onComplete = {
-                            JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
-                                    .channel()
-                                    .send(TourServiceV1.TourUpdate(
-                                            tour = this.getById(tour.id)
-                                    ))
-                        },
-                        onError = { e ->
-                            log.error(e.message, e)
-                            JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
-                                    .channel()
-                                    .send(TourServiceV1.TourOptimizationError())
-                        }
-                )
+        try {
+            this.optimize(
+                    id = tour.id,
+                    optimizationOptions = optimizationOptions
+            )
+                    .subscribeBy(
+                            onComplete = {
+                                JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
+                                        .channel()
+                                        .send(TourServiceV1.TourUpdate(
+                                                tour = this.getById(tour.id)
+                                        ))
+                            },
+                            onError = { e ->
+                                log.error(e.message, e)
+                                JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
+                                        .channel()
+                                        .send(TourServiceV1.TourOptimizationError())
+                            }
+                    )
+        } catch (e: Exception) {
+            throw DefaultProblem(
+                    status = Status.INTERNAL_SERVER_ERROR,
+                    detail = e.message
+            )
+        }
     }
 
     /**
@@ -501,7 +510,7 @@ class TourServiceV1
                         pdtFrom = pdtFrom?.replaceDate(now)
                         pdtTo = pdtTo?.replaceDate(now)
                     }
-                    pdtTo = if (pdtTo != null && pdtTo < now) pdtTo else null
+                    pdtTo = if (pdtTo != null && pdtTo > now) pdtTo else null
                     pdtFrom = if (pdtTo != null) pdtFrom else null
                     //endregion
 
