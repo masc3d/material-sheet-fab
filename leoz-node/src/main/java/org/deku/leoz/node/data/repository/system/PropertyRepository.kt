@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.querydsl.core.types.Predicate
-import org.deku.leoz.node.data.jpa.SysProperty
+import org.deku.leoz.node.data.jpa.LclProperty
 import org.eclipse.persistence.config.CacheUsage
 import org.slf4j.LoggerFactory
 import org.springframework.data.jpa.repository.JpaRepository
@@ -27,13 +27,13 @@ enum class PropertyKeys(val value: String) {
  * Created by masc on 29.06.15.
  */
 interface PropertyRepository :
-        JpaRepository<SysProperty, String>,
-        QuerydslPredicateExecutor<SysProperty> {
+        JpaRepository<LclProperty, String>,
+        QuerydslPredicateExecutor<LclProperty> {
 
     @QueryHints(
             QueryHint(name = org.eclipse.persistence.config.QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
     )
-    override fun findOne(predicate: Predicate): Optional<SysProperty>
+    override fun findOne(predicate: Predicate): Optional<LclProperty>
 }
 
 // Extension methods
@@ -67,7 +67,7 @@ fun PropertyRepository.saveObject(value: Any) {
                 .writer()
                 .writeValue(sw, value)
     }
-    this.save(SysProperty(a.key.value, sw.toString()))
+    this.save(LclProperty(a.key.value, sw.toString()))
 }
 
 /**
