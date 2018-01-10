@@ -223,7 +223,7 @@ abstract class SerializerTest(
      * Test serialization with plain object array
      */
     @Test
-    fun testObjectArrayDeserialization() {
+    open fun testObjectArrayDeserialization() {
         Serializer.types.purge()
 
         val slist = ArrayList<Any?>(listOf(TestObject1(), TestObject1(), TestObject1()))
