@@ -2,13 +2,7 @@ package org.deku.leoz.smartlane
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import org.deku.leoz.smartlane.api.AddressApi
-import org.deku.leoz.smartlane.api.AuthApi
-import org.deku.leoz.smartlane.api.AuthorizationApi
-import org.deku.leoz.smartlane.api.DeliveryApi
-import org.deku.leoz.smartlane.api.RouteApi
-import org.deku.leoz.smartlane.api.getDelivery
-import org.deku.leoz.smartlane.api.getRoute
+import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.Address
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -111,6 +105,19 @@ class RestApiTest {
             log.trace {
                 it.address
             }
+        }
+    }
+
+    @Test
+    fun testAddressDelete() {
+        this.authorize()
+
+        val addressApi = restClient.proxy(AddressApi::class.java)
+        val addressInternalApi = restClient.proxy(AddressInternalApi::class.java)
+
+        addressApi.address.objects.forEach { address ->
+            log.trace { "Deleting address [${address.id}]"}
+            addressInternalApi.delete(address.id)
         }
     }
 
