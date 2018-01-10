@@ -1,7 +1,13 @@
 package org.deku.leoz.central.service.internal
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.sun.media.jfxmediaimpl.MediaDisposer
 import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
 import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR
@@ -26,15 +32,24 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
 import sx.rs.DefaultProblem
+import sx.rx.subscribeOn
+import sx.time.plusDays
 import sx.time.replaceDate
 import sx.time.toTimestamp
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.ScheduledExecutorService
+import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
+import javax.ws.rs.ext.ContextResolver
 import javax.ws.rs.sse.Sse
+import javax.ws.rs.sse.SseBroadcaster
 import javax.ws.rs.sse.SseEventSink
 
 /**
@@ -49,6 +64,61 @@ class TourServiceV1
         MqHandler<Any> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    /**
+     * Tracks optimizations and provides notifications
+     */
+    private class Optimizations : Iterable<TourServiceV1.TourOptimizationStatus> {
+        /** Holds all current optimizations (by tour id) */
+        private val byId = ConcurrentHashMap<Int, TourServiceV1.TourOptimizationStatus>()
+
+        private val updatedSubject = PublishSubject.create<TourServiceV1.TourOptimizationStatus>()
+        /** Update notifications */
+        val updated = Observable
+                // Emit all current statuses initially
+                .fromIterable(this)
+                // ..followed by live updates
+                .concatWith(updatedSubject.hide())
+
+        /**
+         * Should be called when tour optimization is started
+         * @param tourRecord Tour record
+         */
+        fun onStart(id: Int) {
+            TourServiceV1.TourOptimizationStatus(id = id, inProgress = true).also { status ->
+                this.byId.set(id, status)
+                this.updatedSubject.onNext(status)
+            }
+        }
+
+        /**
+         * Should be called when tour optimization finishes
+         * @param tourRecord Tour record
+         */
+        fun onFinish(id: Int) {
+            // TODO: emit errors
+            TourServiceV1.TourOptimizationStatus(id = id, inProgress = false).also { status ->
+                this.byId.remove(id)
+                this.updatedSubject.onNext(status)
+            }
+        }
+
+        override fun iterator(): Iterator<TourServiceV1.TourOptimizationStatus>
+                = this.byId.values.iterator()
+    }
+
+    @PostConstruct
+    fun initialize() {
+        this.optimizations.updated
+                .subscribe {
+                    log.trace { "UPDATED ${it}" }
+                }
+    }
+
+    /**
+     * Current optimizations
+     */
+    private val optimizations = Optimizations()
 
     //region Dependencices
     @Inject
@@ -69,6 +139,9 @@ class TourServiceV1
 
     @Inject
     private lateinit var smartlaneBridge: SmartlaneBridge
+
+    @Context
+    private lateinit var objectMapperResolver: ContextResolver<ObjectMapper>
     //endregion
 
     //region REST
@@ -187,11 +260,15 @@ class TourServiceV1
             optimizationOptions: TourServiceV1.TourOptimizationOptions
     ): Completable {
         val tour = this.getById(id)
+        val tourId = tour.id!!
 
         return this.smartlaneBridge.optimizeRoute(
                 tour.toRoutingInput(
                         optimizationOptions
                 ))
+                .doOnSubscribe {
+                    this.optimizations.onStart(tourId)
+                }
                 .doOnNext { route ->
                     dsl.transaction { _ ->
                         val now = Date().toTimestamp()
@@ -205,7 +282,8 @@ class TourServiceV1
 
                                     val entryRecord = entryRecords.first { it.id == stop.id }
 
-                                    log.trace { "TOUR ENTRY POSITION UPDATE ${entryRecord.position} -> ${index} (${delivery.orderindex})" }
+                                    val newPosition = (index + 1).toDouble()
+                                    log.trace { "OPTIMIZATION POSITION UPDATE ${entryRecord.position} -> ${newPosition} (${delivery.orderindex})" }
 
                                     // Update position for all entries on the same (positional) level
                                     val entryIds = entryRecords
@@ -213,7 +291,7 @@ class TourServiceV1
                                             .map { it.id }
 
                                     dsl.update(TAD_TOUR_ENTRY)
-                                            .set(TAD_TOUR_ENTRY.POSITION, (index + 1).toDouble())
+                                            .set(TAD_TOUR_ENTRY.POSITION, newPosition)
                                             .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
                                             .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
                                             .execute()
@@ -224,6 +302,12 @@ class TourServiceV1
                                 .where(TAD_TOUR.ID.eq(id))
                                 .execute()
                     }
+                }
+                .doOnComplete {
+                    this.optimizations.onFinish(tourId)
+                }
+                .doOnError {
+                    this.optimizations.onFinish(tourId)
                 }
                 .ignoreElements()
     }
@@ -258,8 +342,32 @@ class TourServiceV1
                 )
     }
 
-    override fun optimizeSse(id: Int, optimizationOptions: TourServiceV1.TourOptimizationOptions, domainSink: SseEventSink, sse: Sse) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun status(ids: List<Int>, sink: SseEventSink, sse: Sse) {
+        var subscription: Disposable? = null
+
+        val objectMapper = this.objectMapperResolver.getContext(null)
+
+        subscription = this.optimizations.updated
+                // TODO: eventually may have to emit dummy in interval to poll for passive client close
+                .takeUntil { sink.isClosed }
+                // Filter only relevant tours for optimization updates
+                .filter { ids.contains(it.id) }
+                .doOnComplete {
+                    log.trace("SSE COMPLETED")
+                }
+                .doOnDispose {
+                    log.trace("SSE DISPOSED")
+                }
+                .subscribe {
+                    // Send SSE event for each update
+                    sink.send(sse.newEvent(objectMapper.writeValueAsString(it)))
+                            .exceptionally {
+                                // Close down and unsubscribe on send errors
+                                subscription?.dispose()
+                                sink.close()
+                                null
+                            }
+                }
     }
 
     override fun optimizeForNode(
@@ -393,7 +501,7 @@ class TourServiceV1
                         pdtFrom = pdtFrom?.replaceDate(now)
                         pdtTo = pdtTo?.replaceDate(now)
                     }
-                    pdtTo = if (pdtTo != null && pdtTo > now) pdtTo else null
+                    pdtTo = if (pdtTo != null && pdtTo < now) pdtTo else null
                     pdtFrom = if (pdtTo != null) pdtFrom else null
                     //endregion
 

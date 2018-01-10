@@ -5,6 +5,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
+import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.container.AsyncResponse
@@ -21,6 +22,7 @@ import javax.ws.rs.sse.SseEventSink
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Tour service")
+@ApiKey(false)
 interface TourServiceV1 {
     companion object {
         const val ID = "id"
@@ -100,19 +102,17 @@ interface TourServiceV1 {
             @Suspended response: AsyncResponse
     )
 
-    @PATCH
-    @Path("/{${ID}}/optimize/sse")
+    @GET
+    @Path("/optimize/status/sse")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     @ApiOperation(
-            value = "Optimize tour (with SSE support)",
-            notes = "This call supports server-sent-events (SSE) and will update central entities on completion",
+            value = "Get tour status updates",
+            notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun optimizeSse(
-            @PathParam(ID) @ApiParam(value = "Tour id")
-            id: Int,
-            @ApiParam(value = "Tour optimization options")
-            optimizationOptions: TourOptimizationOptions,
-            @Context domainSink: SseEventSink,
+    fun status(
+            @ApiParam(value = "Tour ids")
+            ids: List<Int>,
+            @Context sink: SseEventSink,
             @Context sse: Sse
     )
 
@@ -209,7 +209,7 @@ interface TourServiceV1 {
             var tour: Tour? = null,
             /** Update timestamp */
             var timestamp: Date = Date(),
-            /** Indicates that this update is a tour optimization */
+            /** True whenthis update is a tour optimization */
             var isOptimization: Boolean = false
     )
 
@@ -220,6 +220,17 @@ interface TourServiceV1 {
     data class TourOptimizationRequest(
             var nodeUid: String? = null,
             var optimizationOptions: TourOptimizationOptions = TourOptimizationOptions()
+    )
+
+    /**
+     * Tour optimization status
+     */
+    @Serializable(0xdf5d24c36e52ac)
+    data class TourOptimizationStatus(
+            /** Tour id */
+            var id: Int = 0,
+            /** Optimization progress */
+            var inProgress: Boolean = false
     )
 
     /**
