@@ -42,7 +42,7 @@ class UserService : UserService {
     private lateinit var mailRepository: JooqMailQueueRepository
 
     @Inject
-    private lateinit var depotRepository: JooqDepotRepository
+    private lateinit var stationRepository: JooqStationRepository
 
     @Inject
     private lateinit var configurationService: ConfigurationService
@@ -144,7 +144,7 @@ class UserService : UserService {
                 }
 
                 !stationMatchcode.isNullOrEmpty() -> {
-                    user.debitorId = depotRepository.findByMatchcode(matchcode = stationMatchcode!!).debitorId
+                    user.debitorId = stationRepository.findByMatchcode(matchcode = stationMatchcode!!).debitorId
                 }
             }
 

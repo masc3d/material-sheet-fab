@@ -49,7 +49,7 @@ class BagService : BagService {
     private lateinit var logHistoryRepository: JooqHistoryRepository
 
     @Inject
-    private lateinit var depotRepository: JooqDepotRepository
+    private lateinit var stationRepository: JooqStationRepository
 
     @Inject
     private lateinit var routingService: org.deku.leoz.node.service.pub.RoutingService
@@ -90,15 +90,15 @@ class BagService : BagService {
         if (un.value.type != UnitNumber.Type.BagId)
             throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
 
-        val bag = depotRepository.getBag(un.value.value.toLong())?.toGeneralBag()
+        val bag = stationRepository.getBag(un.value.value.toLong())?.toGeneralBag()
         bag ?: throw ServiceException(ErrorCode.BAG_ID_NOT_VALID)
         val oid = bag.orderhubTodepot
         if (oid != null) {
-            bag.unitNo = depotRepository.getUnitNo(oid)
+            bag.unitNo = stationRepository.getUnitNo(oid)
         }
         val oidBack = bag.orderdepotTohub
         if (oidBack != null) {
-            bag.unitNoBack = depotRepository.getUnitNo(oidBack)
+            bag.unitNoBack = stationRepository.getUnitNo(oidBack)
 
         }
         return bag
@@ -330,7 +330,7 @@ class BagService : BagService {
             val l: List<String>
             //l = listOf("Hallo", "Test")
             //findSectionDepots
-            l = depotRepository.findSectionDepots(section, position)
+            l = stationRepository.findSectionDepots(section, position)
             return l
         } catch (e: Exception) {
             logHistoryRepository.save(
@@ -683,7 +683,7 @@ class BagService : BagService {
     }
 
     override fun getCountToSendBackByStation(stationNo: Int): Int {
-        return depotRepository.getCountBagsToSendBagByStation(stationNo)
+        return stationRepository.getCountBagsToSendBagByStation(stationNo)
     }
 
 

@@ -49,7 +49,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     private lateinit var bagService: BagService
 
     @Inject
-    private lateinit var depotRepository: JooqDepotRepository
+    private lateinit var stationRepository: JooqStationRepository
 
     @Inject
     private lateinit var parcelRepository: JooqParcelRepository
@@ -313,7 +313,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                     status = Response.Status.CONFLICT,
                     title = "Redseal not valid"
             )
-        val recSeal = depotRepository.getSeal(unRedSeal.value.value.toLong())
+        val recSeal = stationRepository.getSeal(unRedSeal.value.value.toLong())
         recSeal ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
                 title = "RedSeal not found"
@@ -986,7 +986,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                     title = "BagId not valid"
             )
 
-        val bag = depotRepository.getBag(un.value.value.toLong())?.toBag()
+        val bag = stationRepository.getBag(un.value.value.toLong())?.toBag()
         bag ?:
                 throw RestProblem(
                         status = Response.Status.NOT_FOUND,
@@ -1021,7 +1021,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
         val oid = bag.orderhubTodepot
         if (oid != null) {
-            val b = depotRepository.getUnitNo(oid)
+            val b = stationRepository.getUnitNo(oid)
             bag.unitNo = b
             if (b != null) {
                 val unUn = DekuUnitNumber.parse(b.toString())
@@ -1039,7 +1039,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 )
 
 
-        val backUnit = depotRepository.getUnitNo(oidBack)
+        val backUnit = stationRepository.getUnitNo(oidBack)
         bag.unitNoBack = backUnit
         backUnit ?:
                 throw RestProblem(

@@ -35,7 +35,7 @@ class OrderService : OrderService {
     private lateinit var userRepository: JooqUserRepository
 
     @Inject
-    private lateinit var depotRepository: JooqDepotRepository
+    private lateinit var stationRepository: JooqStationRepository
 
     override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
         return get(labelRef, custRef, parcelScan, null)
@@ -144,7 +144,7 @@ class OrderService : OrderService {
             Type.DELIVERY -> station = this.deliveryStation
         }
 
-        return depotRepository.findDebitor(station)
+        return stationRepository.findDebitor(station)
     }
 
     enum class Type {

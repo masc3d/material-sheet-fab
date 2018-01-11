@@ -2,6 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
+import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
@@ -29,7 +30,6 @@ class DeliveryListService
         DeliveryListService,
         MqHandler<DeliveryListService.StopOrderUpdateMessage>
 {
-
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Context
@@ -37,6 +37,9 @@ class DeliveryListService
 
     @Inject
     private lateinit var deliveryListRepository: JooqDeliveryListRepository
+
+    @Inject
+    private lateinit var stationRepository: JooqStationRepository
 
     @Inject
     private lateinit var orderService: org.deku.leoz.central.service.internal.OrderService
@@ -64,7 +67,7 @@ class DeliveryListService
             if (debitorId.toInt() != authorizedUserRecord.debitorId)
                 throw RestProblem(status = Response.Status.FORBIDDEN)
         }
-        }
+    }
 
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
         val deliveryList: DeliveryListService.DeliveryList
@@ -102,6 +105,11 @@ class DeliveryListService
                 }
 
         return deliveryList
+    }
+
+    override fun get(stationId: Int?): List<DeliveryListService.DeliveryList> {
+        stationRepository.
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {

@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import org.deku.leoz.central.config.DataTestConfiguration
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.repository.JooqDepotRepository
+import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.jooq.DSLContext
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -31,11 +31,11 @@ class DepotJooqRepositoryTest {
     private lateinit var dsl: DSLContext
 
     @Inject
-    private lateinit var depotRepository: JooqDepotRepository
+    private lateinit var stationRepository: JooqStationRepository
 
     @Test
     fun testFindAll() {
-        depotRepository.findAll().forEach {
+        stationRepository.findAll().forEach {
             println(it)
         }
     }
