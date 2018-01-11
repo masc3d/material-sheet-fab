@@ -39,6 +39,7 @@ import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.core.Context
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ContextResolver
 import javax.ws.rs.sse.Sse
@@ -131,8 +132,6 @@ class TourServiceV1
     @Inject
     private lateinit var smartlaneBridge: SmartlaneBridge
 
-    @Context
-    private lateinit var objectMapperResolver: ContextResolver<ObjectMapper>
     //endregion
 
     //region REST
@@ -344,31 +343,46 @@ class TourServiceV1
         }
     }
 
-    override fun status(ids: List<Int>, sink: SseEventSink, sse: Sse) {
+    override fun status(stationId: Int, sink: SseEventSink, sse: Sse) {
         var subscription: Disposable? = null
 
-        val objectMapper = this.objectMapperResolver.getContext(null)
+        fun close() {
+            subscription?.dispose()
+            sink.close()
+        }
 
         subscription = this.optimizations.updated
                 // TODO: eventually may have to emit dummy in interval to poll for passive client close
                 .takeUntil { sink.isClosed }
-                // Filter only relevant tours for optimization updates
-                .filter { ids.contains(it.id) }
+                // TODO: Filter only relevant tours for optimization updates (station id lookup)
+//                .filter { ids.contains(it.id) }
+                .doOnSubscribe {
+                    log.trace("SSE SUBSCRIBED")
+                }
                 .doOnComplete {
                     log.trace("SSE COMPLETED")
                 }
                 .doOnDispose {
                     log.trace("SSE DISPOSED")
                 }
-                .subscribe {
-                    // Send SSE event for each update
-                    sink.send(sse.newEvent(objectMapper.writeValueAsString(it)))
-                            .exceptionally {
-                                // Close down and unsubscribe on send errors
-                                subscription?.dispose()
-                                sink.close()
-                                null
-                            }
+                .subscribe { status ->
+                    try {
+                        // Send SSE event for each update
+                        sink.send(sse.newEventBuilder()
+                                .mediaType(MediaType.APPLICATION_JSON_TYPE)
+                                .data(status.javaClass, status)
+                                .build()
+                        )
+                                .exceptionally { e ->
+                                    log.error(e.message)
+                                    // Close down and unsubscribe on send errors
+                                    close()
+                                    null
+                                }
+                    } catch (e: Throwable) {
+                        log.error(e.message)
+                        close()
+                    }
                 }
     }
 

@@ -110,8 +110,8 @@ interface TourServiceV1 {
             notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun status(
-            @ApiParam(value = "Tour ids")
-            ids: List<Int>,
+            @ApiParam(value = "The station id to retrieve tour status updates for")
+            stationId: Int,
             @Context sink: SseEventSink,
             @Context sse: Sse
     )
