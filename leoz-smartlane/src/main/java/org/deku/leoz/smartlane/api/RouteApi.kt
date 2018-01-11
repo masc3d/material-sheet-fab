@@ -71,6 +71,7 @@ interface RouteApiGeneric {
     )
 
     enum class ProcessStatusType(val value: String) {
+        STARTED("STARTED"),
         PENDING("PENDING"),
         SUCCESS("SUCCESS")
     }
@@ -188,6 +189,10 @@ fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.Rou
 
                         when (processStatus.status) {
                         // Operation still pending
+                            RouteApiGeneric.ProcessStatusType.STARTED -> {
+                                throw PendingException()
+                            }
+
                             RouteApiGeneric.ProcessStatusType.PENDING -> {
                                 throw PendingException()
                             }
@@ -203,6 +208,7 @@ fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.Rou
                                         throw IllegalStateException(it.message)
                                 }
                             }
+
                             else -> {
                                 throw IllegalStateException("Unexpected process status ${processStatus.status}")
                             }
