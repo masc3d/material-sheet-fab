@@ -101,6 +101,12 @@ export const routes = [
         canActivate: [ AuthenticationGuard,
           RoleGuard ],
         loadChildren: 'app/dashboard/settings/printer/printer.module#PrinterModule'
+      },
+      {
+        path: 'stateofshipments',
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/stateofshipments/stateofshipments.module#StateofshipmentsModule'
       }
     ]
   }

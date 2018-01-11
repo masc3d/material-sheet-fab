@@ -422,6 +422,9 @@ export const LANG_EN_TRANS = {
   'status_own_pickup_max3days': 'Status own Pickups (max. 3 days)',
   'status_overview': 'Status overview',
   'status_overview_max3days': 'Status overview (max. 3 days)',
+  // state of shipment
+  'shipment-No': 'Shipment-No',
+  'ad_hoc_accounting': 'ad hoc accounting',
 };
 
 

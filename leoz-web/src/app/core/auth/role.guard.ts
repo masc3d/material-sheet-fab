@@ -22,6 +22,7 @@ export class RoleGuard implements CanActivate {
       'touroptimizing',
       'ipointscan',
       'pickupdispo',
+      'stateofshipments',
       'order'],
     'POWERUSER': [
       'user',
@@ -35,6 +36,7 @@ export class RoleGuard implements CanActivate {
       'touroptimizing',
       'ipointscan',
       'pickupdispo',
+      'stateofshipments',
       'order' ],
   };
 

@@ -422,5 +422,8 @@ export const LANG_DE_TRANS = {
   'status_own_pickup_max3days': 'Stati eigene Pickups (max. 3 Tage)',
   'status_overview': 'Statusübersicht',
   'status_overview_max3days': 'Statusübersicht (max. 3 Tage)',
+  // state of shipment
+  'shipment-No': 'Sendungs-Nr',
+  'ad_hoc_accounting': 'ad hoc Abrechnung',
 };
 

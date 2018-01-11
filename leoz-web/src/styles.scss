@@ -232,6 +232,15 @@ input {
   padding-left: 4px;
   max-width: 150px;
 }
+
+.inputFieldSoS {
+  border:1px solid darkgrey;
+  //padding-left: 4px;
+  width: calc(100% - 2px);
+  background-color: #ffffff;
+  height: 29px;
+}
+
 /* Buttons */
 .ui-button-text-only .ui-button-text {
   padding: .25em 0.6em;
@@ -391,7 +400,11 @@ p-tabpanel > div {
 }
 
 #fieldsetPackages > fieldset > div.ui-fieldset-content-wrapper {
-  width: calc(calc(100vw -  212px) * 0.61);
+   width: calc(calc(100vw -  212px) * 0.61);
+ }
+
+.far {
+  font-weight: 400 !important;
 }
 
 @media (max-width: 1020px) {
@@ -512,4 +525,8 @@ p-tabpanel > div {
   //font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
   font-weight: bold;
   font-style: normal;
+}
+
+.padding5px {
+  padding: 5px;
 }

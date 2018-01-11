@@ -13,8 +13,6 @@ import { Router } from '@angular/router';
 import { BagscanGuard } from '../../core/auth/bagscan.guard';
 import { ElectronService } from '../../core/electron/electron.service';
 
-import { faSmile } from '@fortawesome/fontawesome-free-regular/faSmile';
-
 @Component( {
   selector: 'app-left-menu',
   template: `
@@ -125,7 +123,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         items: [
           {
             label: this.translate.instant( 'tour' ),
-            icon: 'fa fa-bus',
+            icon: 'fas fa-bus',
             routerLink: 'tour',
             command: closeMenu
           }
@@ -271,7 +269,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'shipmentstatus' ),
           icon: '',
-          routerLink: '',
+          routerLink: '/dashboard/stateofshipments',
           command: closeMenu
         },
         {
@@ -425,7 +423,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         items: [
           {
             label: this.translate.instant( 'tour' ),
-            icon: 'fa fa-bus',
+            icon: 'fas fa-bus',
             routerLink: 'tour',
             command: closeMenu
           }
