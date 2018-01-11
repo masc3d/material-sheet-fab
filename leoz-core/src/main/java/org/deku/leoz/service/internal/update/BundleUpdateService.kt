@@ -15,11 +15,10 @@ import sx.concurrent.Service
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.platform.PlatformId
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import sx.rs.toString
 import java.util.concurrent.ScheduledExecutorService
 import javax.ws.rs.ClientErrorException
-import javax.ws.rs.WebApplicationException
 import kotlin.NoSuchElementException
 
 /**
@@ -97,7 +96,7 @@ class BundleUpdateService(
             presets.sortedBy { it.requiresBoot }.forEach { p ->
                 try {
                     this@BundleUpdateService.update(p)
-                } catch(e: DefaultProblem) {
+                } catch(e: RestProblem) {
                     log.error(e.message)
                 }
                 catch(e: ClientErrorException) {

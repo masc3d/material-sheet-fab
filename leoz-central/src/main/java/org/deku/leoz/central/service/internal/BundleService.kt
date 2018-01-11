@@ -2,7 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.data.repository.JooqNodeRepository
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import org.deku.leoz.node.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
@@ -31,7 +31,7 @@ open class BundleServiceV1 : org.deku.leoz.node.service.internal.BundleServiceV1
     override fun aliasByNodeKey(nodeKey: String): String {
         val rNode = nodeJooqRepository.findByKey(nodeKey)
         if (rNode == null)
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "Unknown node key [${nodeKey}]",
                     status = Status.NOT_FOUND)
 

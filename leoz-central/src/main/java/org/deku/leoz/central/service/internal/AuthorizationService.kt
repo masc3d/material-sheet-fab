@@ -3,7 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.verifyPassword
 import org.deku.leoz.identity.Identity
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.model.UserRole
 import org.slf4j.LoggerFactory
@@ -60,11 +60,11 @@ class AuthorizationService
         val userRecord = this.userRepository.findByMail(email = user.email)
 
         userRecord ?:
-                throw DefaultProblem(title = "User does not exist")
+                throw RestProblem(title = "User does not exist")
 
         // Verify credentials
         if (!userRecord.verifyPassword(user.password))
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "User authentication failed",
                     status = Response.Status.UNAUTHORIZED)
 
@@ -72,17 +72,17 @@ class AuthorizationService
         df.maximumFractionDigits = 0
 
         if (!UserRole.values().any { it.name == userRecord.role })
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "Invalid user role",
                     status = Response.Status.UNAUTHORIZED)
 
         if (!userRecord.isActive) {
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "user deactivated",
                     status = Response.Status.UNAUTHORIZED)
         }
         if (Date() > userRecord.expiresOn) {
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "user account expired",
                     status = Response.Status.UNAUTHORIZED)
         }
@@ -103,7 +103,7 @@ class AuthorizationService
 //        val isValid = try { UUID.fromString(keyRecord.key); true } catch(e: Throwable) { false }
 
         if (keyRecord == null)
-            throw DefaultProblem(title = "User key not valid")
+            throw RestProblem(title = "User key not valid")
 
         return AuthorizationService.Response(
                 key = keyRecord.key,

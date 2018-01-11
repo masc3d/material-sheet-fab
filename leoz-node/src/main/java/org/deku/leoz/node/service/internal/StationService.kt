@@ -7,7 +7,7 @@ import org.deku.leoz.node.data.repository.master.StationRepository
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import org.deku.leoz.service.internal.entity.Station
 import org.deku.leoz.service.internal.entity.StationV2
 import javax.inject.Inject
@@ -102,7 +102,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
         val station = stationRepository
                 .findByStation(stationNo)
-                ?: throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Station not found")
+                ?: throw RestProblem(status = Response.Status.NOT_FOUND, title = "Station not found")
 
         return station.toStationV2()
     }
@@ -115,7 +115,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
                 .findStationIdsByDebitorid(debitorId)
                 .also {
                     if (it.count() == 0)
-                        throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Station IDs not found")
+                        throw RestProblem(status = Response.Status.NOT_FOUND, title = "Station IDs not found")
                 }
 
         val stations = stationRepository
@@ -123,7 +123,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
                         .stationId.`in`(*stationIds.toTypedArray()))
                 .also {
                     if (it.count() == 0)
-                        throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "Stations not found")
+                        throw RestProblem(status = Response.Status.NOT_FOUND, title = "Stations not found")
                 }
 
         return stations.map { s -> s.toStationV2() }.toTypedArray()
@@ -133,7 +133,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
         val user=userService.get()
 
         val debitorId=user.debitorId
-        debitorId ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "user without debitor")
+        debitorId ?: throw RestProblem(status = Response.Status.BAD_REQUEST, title = "user without debitor")
         return getByDebitorId(debitorId )
     }
 }

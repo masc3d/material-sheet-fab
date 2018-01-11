@@ -5,7 +5,7 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.BundleServiceV1
@@ -21,7 +21,6 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.Path
-import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.MediaType
@@ -73,7 +72,7 @@ open class BundleServiceV1 : BundleServiceV1 {
             if (nodeKey == null) {
                 val instanceVersionAlias = this.updateConfiguration.versionAlias
                 if (instanceVersionAlias.isEmpty())
-                    throw DefaultProblem(title = "Missing criteria")
+                    throw RestProblem(title = "Missing criteria")
 
                 versionAlias = instanceVersionAlias
             } else {
@@ -88,7 +87,7 @@ open class BundleServiceV1 : BundleServiceV1 {
                 .orElse(null)
 
         if (rVersion == null)
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "No version record for bundle [${bundleName}] version alias [${versionAlias}]",
                     status = Status.NOT_FOUND)
 
@@ -119,7 +118,7 @@ open class BundleServiceV1 : BundleServiceV1 {
      */
     override fun download(bundleName: String, version: String): Response {
         if (!this.bundleRepository.rsyncModuleUri.isFile())
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "Bundle repository is not local [${this.bundleRepository.rsyncModuleUri}]",
                     status = Status.INTERNAL_SERVER_ERROR
             )
@@ -131,7 +130,7 @@ open class BundleServiceV1 : BundleServiceV1 {
                 .resolve("${bundleName}-${version}.apk")
 
         if (!downloadFile.exists())
-            throw DefaultProblem(
+            throw RestProblem(
                     status = Response.Status.NOT_FOUND,
                     title = "No such file")
 

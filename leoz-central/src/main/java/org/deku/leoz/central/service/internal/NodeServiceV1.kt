@@ -16,7 +16,7 @@ import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
@@ -74,7 +74,7 @@ class NodeServiceV1
                         nodeUid = nodeUid,
                         strict = false)
 
-                ?: throw DefaultProblem(status = Status.NOT_FOUND)
+                ?: throw RestProblem(status = Status.NOT_FOUND)
 
         JmsEndpoints.node.topic(Identity.Uid(rNode.uid)).channel().use {
             it.send(NodeServiceV1.DiagnosticDataRequest())

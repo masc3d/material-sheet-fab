@@ -5,7 +5,7 @@ import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
@@ -29,6 +29,7 @@ class DeliveryListService
         DeliveryListService,
         MqHandler<DeliveryListService.StopOrderUpdateMessage>
 {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Context
@@ -43,31 +44,39 @@ class DeliveryListService
     @Inject
     private lateinit var userRepository: JooqUserRepository
 
-    override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
+    /**
+     * Asserts that the user (=apiKey) is entitled to access data for this debitor
+     * @throws RestProblem if no authorized
+     */
+    fun assertOwner(debitorId: Long) {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-                ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
-
-        val deliveryList: DeliveryListService.DeliveryList
-        val deliveryListRecord: TadVDeliverylistRecord?
-
-        deliveryListRecord = this.deliveryListRepository.findById(id)
-                ?:
-                throw DefaultProblem(
-                        title = "DeliveryList not found",
-                        status = Response.Status.NOT_FOUND)
+                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
-                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+                throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         /**
          * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
          * ADMIN-User are allowed to access every delivery-list.
          */
         if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-            if (deliveryListRecord.debitorId.toInt() != authorizedUserRecord.debitorId)
-                throw DefaultProblem(status = Response.Status.FORBIDDEN)
+            if (debitorId.toInt() != authorizedUserRecord.debitorId)
+                throw RestProblem(status = Response.Status.FORBIDDEN)
         }
+        }
+
+    override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
+        val deliveryList: DeliveryListService.DeliveryList
+        val deliveryListRecord: TadVDeliverylistRecord?
+
+        deliveryListRecord = this.deliveryListRepository.findById(id)
+                ?:
+                throw RestProblem(
+                        title = "DeliveryList not found",
+                        status = Response.Status.NOT_FOUND)
+
+        this.assertOwner(deliveryListRecord.debitorId)
 
         deliveryList = deliveryListRecord.toDeliveryList()
 
@@ -97,10 +106,10 @@ class DeliveryListService
 
     override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-                ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         val authorizedUserRecord = userRepository.findByKey(apiKey)
-                ?: throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         val dlInfos = when {
             deliveryDate != null -> {

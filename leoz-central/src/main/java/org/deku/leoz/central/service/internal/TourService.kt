@@ -1,6 +1,5 @@
 package org.deku.leoz.central.service.internal
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -29,7 +28,7 @@ import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import sx.time.replaceDate
 import sx.time.toTimestamp
 import java.util.*
@@ -38,10 +37,8 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
-import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import javax.ws.rs.ext.ContextResolver
 import javax.ws.rs.sse.Sse
 import javax.ws.rs.sse.SseEventSink
 
@@ -163,7 +160,7 @@ class TourServiceV1
                 .also {
                     if (it.size == 0) {
                         // No tour records in selection
-                        throw DefaultProblem(status = Status.NOT_FOUND)
+                        throw RestProblem(status = Status.NOT_FOUND)
                     }
                 }
 
@@ -192,14 +189,14 @@ class TourServiceV1
      */
     override fun getById(id: Int): TourServiceV1.Tour {
         val tourRecord = tourRepository.findById(id) ?:
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Status.NOT_FOUND
                 )
 
         val nodeUid = tourRecord.nodeId?.let {
             dsl.selectFrom(MST_NODE)
                     .fetchUidById(tourRecord.nodeId) ?:
-                    throw DefaultProblem(
+                    throw RestProblem(
                             status = Status.NOT_FOUND,
                             detail = "No node uid for id [${tourRecord.nodeId}]"
                     )
@@ -215,13 +212,13 @@ class TourServiceV1
         val nodeId = dsl.selectFrom(MST_NODE)
                 .where(MST_NODE.KEY.eq(nodeUid))
                 .fetchOne(MST_NODE.NODE_ID) ?:
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Status.NOT_FOUND,
                         detail = "Unknown node uid ${nodeUid}"
                 )
 
         val tourRecord = tourRepository.findByNodeId(nodeId) ?:
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Status.NOT_FOUND
                 )
 
@@ -233,7 +230,7 @@ class TourServiceV1
      */
     override fun getByUser(userId: Int): TourServiceV1.Tour {
         val tourRecord = tourRepository.findLatestByUserId(userId) ?:
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Status.NOT_FOUND,
                         detail = "No assignable tour for user [${userId}]"
                 )
@@ -329,14 +326,14 @@ class TourServiceV1
                             },
                             onError = { e ->
                                 log.error(e.message, e)
-                                response.resume(DefaultProblem(
+                                response.resume(RestProblem(
                                         status = Status.INTERNAL_SERVER_ERROR,
                                         detail = e.message
                                 ))
                             }
                     )
         } catch (e: Exception) {
-            throw DefaultProblem(
+            throw RestProblem(
                     status = Status.INTERNAL_SERVER_ERROR,
                     detail = e.message
             )
@@ -394,14 +391,14 @@ class TourServiceV1
         val node = dsl.selectFrom(MST_NODE)
                 .fetchByUid(nodeUid, strict = false)
                 ?:
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Status.NOT_FOUND,
                         detail = "Node not found"
                 )
 
         val tour = tourRepository.findByNodeId(node.nodeId)
                 ?:
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Status.NOT_FOUND,
                         detail = "Tour not found"
                 )
@@ -427,7 +424,7 @@ class TourServiceV1
                             }
                     )
         } catch (e: Exception) {
-            throw DefaultProblem(
+            throw RestProblem(
                     status = Status.INTERNAL_SERVER_ERROR,
                     detail = e.message
             )
@@ -442,13 +439,13 @@ class TourServiceV1
     ): TourServiceV1.Tour {
 
         val deliveryListId = request.deliveryListId?.toLong()
-                ?: throw DefaultProblem(
+                ?: throw RestProblem(
                 status = Status.BAD_REQUEST,
                 detail = "Delivery list id is mandatory"
         )
 
         val userId = request.userId
-                ?: throw DefaultProblem(
+                ?: throw RestProblem(
                 status = Status.BAD_REQUEST,
                 detail = "User id is mandatory"
         )

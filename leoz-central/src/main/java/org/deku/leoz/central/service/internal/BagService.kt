@@ -27,7 +27,7 @@ import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 import org.deku.leoz.service.pub.RoutingService
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import sx.time.toLocalDate
 import sx.time.workDate
 import javax.ws.rs.core.Response
@@ -482,7 +482,7 @@ class BagService : BagService {
         val un = DekuUnitNumber.parseLabel(scanId)
         when {
             un.hasError -> {
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Response.Status.NOT_FOUND,
                         title = "Wrong check digit"
                 )
@@ -490,7 +490,7 @@ class BagService : BagService {
         }
         if (un.value.type != UnitNumber.Type.Parcel)
 
-            throw DefaultProblem(
+            throw RestProblem(
                     status = Response.Status.NOT_FOUND,
                     title = "ScanId not valid"
             )

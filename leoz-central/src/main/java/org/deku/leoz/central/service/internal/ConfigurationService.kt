@@ -10,7 +10,7 @@ import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -43,24 +43,24 @@ class ConfigurationService: ConfigurationService {
     override fun getUserConfiguration(userId: Int): String {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
         apiKey ?:
-                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+                throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
-                throw DefaultProblem(status = Response.Status.UNAUTHORIZED)
+                throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
-        val targetUserRecord = userRepository.findById(userId) ?: throw DefaultProblem(title = "User not found", status = Response.Status.NOT_FOUND)
+        val targetUserRecord = userRepository.findById(userId) ?: throw RestProblem(title = "User not found", status = Response.Status.NOT_FOUND)
 
         if (targetUserRecord.keyId != authorizedUserRecord.keyId) {
             if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
                 if (authorizedUserRecord.debitorId != targetUserRecord.debitorId) {
-                    throw DefaultProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
+                    throw RestProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
                 } else {
                     val authRole = UserRole.valueOf(authorizedUserRecord.role)
                     val targetRole = UserRole.valueOf(targetUserRecord.role)
                     if (authRole != UserRole.POWERUSER) {
                         if (targetRole >= authRole) {
-                            throw DefaultProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
+                            throw RestProblem(title = "No access to this user", status = Response.Status.FORBIDDEN)
                         }
                     }
                 }
@@ -75,7 +75,7 @@ class ConfigurationService: ConfigurationService {
     }
 
     override fun getNodeConfiguration(nodeUid: String): String {
-        val node = nodeJooqRepository.findByKey(nodeUid) ?: throw DefaultProblem(title = "Invalid Node UID", detail = "Node UID could not be found", status = Response.Status.NOT_FOUND)
+        val node = nodeJooqRepository.findByKey(nodeUid) ?: throw RestProblem(title = "Invalid Node UID", detail = "Node UID could not be found", status = Response.Status.NOT_FOUND)
 
         return if (node.configuration.isNullOrEmpty()) "{}" else node.configuration
     }

@@ -4,7 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SddContzipRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SddFpcsOrderRecord
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import org.deku.leoz.service.zalando.entity.DeliveryOption
 import org.deku.leoz.service.zalando.entity.DeliveryOrder
 import org.deku.leoz.service.zalando.entity.NotifiedDeliveryOrder
@@ -55,7 +55,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
                     .fetch()
 
             if (result.size == 0) {
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Response.Status.NOT_FOUND,
                         title = "No delivery options found",
                         detail = "No delivery options found for given id")
@@ -66,7 +66,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
 
             // Ensure that there is only one record (may be not necessary due to unique/primary key "ID" in table "SDD_ContZip")
             if (result.size != 1) {
-                throw DefaultProblem(
+                throw RestProblem(
                         status = Response.Status.CONFLICT,
                         title = "Multiple delivery options found",
                         detail = "Multiple delivery options found")
@@ -74,7 +74,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
 
             // Make sure that the given zipcode of target address is same of the given delivery option.
             if (!delOptionZip.equals(targetAddrZip, ignoreCase = true)) {
-                throw DefaultProblem(
+                throw RestProblem(
                         title = "Delivery option not matching given address",
                         detail = "The given delivery option with zip code [$delOptionZip] does not match the target address zipcode [$targetAddrZip]")
             }
@@ -172,7 +172,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
                     if (parcelData.size != 1) {
                         fpcsRecord.cancelRequested = -2
                         fpcsRecord.store()
-                        throw DefaultProblem(
+                        throw RestProblem(
                                 title = "Error serving fpcs",
                                 detail = "Central GLS system reported an error")
                     }
@@ -209,17 +209,17 @@ class CarrierIntegrationService : CarrierIntegrationService {
                         return NotifiedDeliveryOrder(fpcsRecord.id.toString(), "https://gls-group.eu/DE/de/paketverfolgung?match=${fpcsRecord.glsTrackid}")
                     } else {
                         cancelDeliveryOrder(glsParcelNum)
-                        throw DefaultProblem(
+                        throw RestProblem(
                                 title = "Customers range exceeded.",
                                 detail = "The order could not be processed due to an leaked customers range. Contact GLS Support ASAP!")
                     }
 
-                } catch(d: DefaultProblem) { //Don't catch a thrown DefaultProblem as a general Exception. These are supposed to be thrown.
+                } catch(d: RestProblem) { //Don't catch a thrown DefaultProblem as a general Exception. These are supposed to be thrown.
                     throw d
                 } catch (e: Exception) {
                     fpcsRecord.cancelRequested = -2
                     fpcsRecord.store()
-                    throw DefaultProblem(
+                    throw RestProblem(
                             title = "Error serving GLS systems",
                             detail = "The order could not be stored in GLS Systems due to an error: ${e.message}")
                 }
@@ -229,10 +229,10 @@ class CarrierIntegrationService : CarrierIntegrationService {
                 return NotifiedDeliveryOrder(fpcsRecord.id.toString(), "https://gls-group.eu/DE/de/paketverfolgung?match=${fpcsRecord.glsTrackid}")
             }
         } catch(e: Exception) {
-            if (e is DefaultProblem) {
+            if (e is RestProblem) {
                 throw e
             } else {
-                throw DefaultProblem(
+                throw RestProblem(
                         title = "Unhandled exception",
                         detail = e.message)
             }
@@ -273,11 +273,11 @@ class CarrierIntegrationService : CarrierIntegrationService {
              * Make sure that zip-codes do not overlap within Zalando areas.
              * If so, check sdd_contzip Zalando-layers for duplicate entries.
              */
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "Too many delivery options found",
                     detail = "The given zip code is not unique")
         } catch (e: Exception) {
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "Unhandled exception",
                     detail = e.message)
         }
@@ -293,12 +293,12 @@ class CarrierIntegrationService : CarrierIntegrationService {
                     Tables.SDD_FPCS_ORDER,
                     Tables.SDD_FPCS_ORDER.ID
                             .eq(id.toInt())
-            ) ?: throw DefaultProblem(
+            ) ?: throw RestProblem(
                     status = Response.Status.NOT_FOUND,
                     detail = "No order with id [$id] found")
 
             if (order.cancelRequested == -1) {
-                throw DefaultProblem(
+                throw RestProblem(
                         detail = "Cancellation for order with id [$id] already requested")
             }
 
@@ -311,7 +311,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
                 if (cancelResponse.result.equals("CANCELLATION_PENDING", ignoreCase = true) || cancelResponse.result.equals("CANCELLED", ignoreCase = true)) { //TODO Check for other possible results
                     return Response.ok().build()
                 } else {
-                    throw DefaultProblem(
+                    throw RestProblem(
                             title = "Cancellation failed",
                             detail = "Cancellation failed with response [${cancelResponse.result}]")
                 }
@@ -320,7 +320,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
             throw BadRequestException()
 
         } catch(e: Exception) {
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "Cancellation failed",
                     detail = "Cancellation for order with id [$id] failed due to an unhandled exception: ${e.message}")
         }

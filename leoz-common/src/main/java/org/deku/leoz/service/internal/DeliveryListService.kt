@@ -4,6 +4,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.service.entity.ShortDate
 import sx.io.serialization.Serializable
+import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -24,11 +25,11 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Delivery list service")
+@ApiKey
 interface DeliveryListService {
     companion object {
-        //const val ORDER_ID = "order-id"
         const val ID = "id"
-        //const val DRIVER = "driver"
+        const val STATION_ID = "station-id"
         const val DELIVERY_DATE = "delivery-date"
     }
 
@@ -39,6 +40,14 @@ interface DeliveryListService {
             @PathParam(ID) @ApiParam(example = "89586115", value = "Delivery list id", required = true)
             id: Long
     ): DeliveryList
+
+    @GET
+    @Path("/")
+    @ApiOperation(value = "Get delivery list(s)", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun get(
+            @QueryParam(STATION_ID) @ApiParam(example = "89586115", value = "Station id", required = false)
+            stationId: Int?
+    ): List<DeliveryList>
 
     @GET
     @Path("/info")

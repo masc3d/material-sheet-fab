@@ -4,7 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadNodeGeopositionRecord
 import org.deku.leoz.central.data.repository.*
-import sx.rs.DefaultProblem
+import sx.rs.RestProblem
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import java.util.*
@@ -71,7 +71,7 @@ class LocationServiceV2 :
             else -> when {
                 userId != null -> {
                     val rUser = userRepository.findById(userId)
-                            ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
+                            ?: throw RestProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
 
                     rUser.email
                 }
@@ -86,18 +86,18 @@ class LocationServiceV2 :
         var gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
 
         apiKey ?:
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+                throw RestProblem(status = Response.Status.BAD_REQUEST)
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+                throw RestProblem(status = Response.Status.BAD_REQUEST)
 
         if (!authorizedUserRecord.isActive) {
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "login user deactivated",
                     status = Response.Status.UNAUTHORIZED)
         }
         if (Date() > authorizedUserRecord.expiresOn) {
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "login user account expired",
                     status = Response.Status.UNAUTHORIZED)
         }
@@ -109,11 +109,11 @@ class LocationServiceV2 :
         when {
             debitor_id != null -> {
                 val userRecList = userRepository.findByDebitorId(debitor_id)
-                        ?: throw DefaultProblem(
+                        ?: throw RestProblem(
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by debitor-id")
                 if (userRecList.isEmpty())
-                    throw DefaultProblem(
+                    throw RestProblem(
                             status = Response.Status.NOT_FOUND,
                             title = "no user found by debitor-id")
                 //val user = mutableListOf<LocationService.User>()
@@ -144,7 +144,7 @@ class LocationServiceV2 :
             }
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
-                        ?: throw DefaultProblem(
+                        ?: throw RestProblem(
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by email")
 
@@ -166,7 +166,7 @@ class LocationServiceV2 :
                             userId = userRecord.id,
                             gpsDataPoints = gpsList))
                 } else {
-                    throw DefaultProblem(
+                    throw RestProblem(
                             status = Response.Status.FORBIDDEN,
                             title = "user found but no permission returning this user")
                 }
@@ -179,7 +179,7 @@ class LocationServiceV2 :
                 // We may return all users here at one point, for those who require it
                 // In this case we should sensibly check if the user is allowed to do that.
 
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+                throw RestProblem(status = Response.Status.BAD_REQUEST)
 
             }
         }
@@ -193,7 +193,7 @@ class LocationServiceV2 :
             else -> when {
                 userId != null -> {
                     val rUser = userRepository.findById(userId)
-                            ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
+                            ?: throw RestProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
 
                     rUser.email
                 }
@@ -205,18 +205,18 @@ class LocationServiceV2 :
         var gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
 
         apiKey ?:
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+                throw RestProblem(status = Response.Status.BAD_REQUEST)
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+                throw RestProblem(status = Response.Status.BAD_REQUEST)
 
         if (!authorizedUserRecord.isActive) {
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "login user deactivated",
                     status = Response.Status.UNAUTHORIZED)
         }
         if (Date() > authorizedUserRecord.expiresOn) {
-            throw DefaultProblem(
+            throw RestProblem(
                     title = "login user account expired",
                     status = Response.Status.UNAUTHORIZED)
         }
@@ -229,11 +229,11 @@ class LocationServiceV2 :
 
             debitor_id != null -> {
                 val userRecList = userRepository.findByDebitorId(debitor_id)
-                        ?: throw DefaultProblem(
+                        ?: throw RestProblem(
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by debitor-id")
                 if (userRecList.isEmpty())
-                    throw DefaultProblem(
+                    throw RestProblem(
                             status = Response.Status.NOT_FOUND,
                             title = "no user found by debitor-id")
                 //val user = mutableListOf<LocationService.User>()
@@ -271,7 +271,7 @@ class LocationServiceV2 :
             }
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
-                        ?: throw DefaultProblem(
+                        ?: throw RestProblem(
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by email")
 
@@ -301,7 +301,7 @@ class LocationServiceV2 :
                             userId = userRecord.id,
                             gpsDataPoints = gpsList))
                 } else {
-                    throw DefaultProblem(
+                    throw RestProblem(
                             status = Response.Status.FORBIDDEN,
                             title = "user found but no permission returning this user")
                 }
@@ -314,7 +314,7 @@ class LocationServiceV2 :
                 // We may return all users here at one point, for those who require it
                 // In this case we should sensibly check if the user is allowed to do that.
 
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+                throw RestProblem(status = Response.Status.BAD_REQUEST)
             }
         }
     }
@@ -322,7 +322,7 @@ class LocationServiceV2 :
     override fun getDistance(lonFirst: Double, latFirst: Double, lonSecond: Double, latSecond: Double): Double {
         try {
             if (lonSecond == 0.0 && latSecond == 0.0)
-                throw DefaultProblem(
+                throw RestProblem(
                         detail = "Invalid geo-data",
                         status = Response.Status.BAD_REQUEST)
 
@@ -336,7 +336,7 @@ class LocationServiceV2 :
             return tDist
 
         } catch (e: Exception) {
-            throw DefaultProblem(
+            throw RestProblem(
                     detail = e.toString(),
                     status = Response.Status.BAD_REQUEST)
         }
@@ -427,7 +427,7 @@ class LocationServiceV2 :
         // TODO: from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
 
         val dataPoints = message.dataPoints?.toList()
-                ?: throw DefaultProblem(
+                ?: throw RestProblem(
                 detail = "Missing data points",
                 status = Response.Status.BAD_REQUEST)
 
