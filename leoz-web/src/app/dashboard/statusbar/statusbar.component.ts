@@ -8,10 +8,10 @@ import { TranslateService } from '../../core/translate/translate.service';
   template: `
     <div id="statusbar">
       <span *ngIf="isOnline">
-        <i class="fa fa-wifi" style="color: #00a200;"></i> {{'connected_to_leoz' | translate }}
+        <i class="fas fa-wifi" style="color: #00a200;"></i> {{'connected_to_leoz' | translate }}
       </span>
       <span *ngIf="!isOnline">
-        <i class="fa fa-ban" style="color: red;"></i> {{'not_connected_to_leoz' | translate }}
+        <i class="fas fa-ban" style="color: red;"></i> {{'not_connected_to_leoz' | translate }}
       </span>
     </div>
   `,

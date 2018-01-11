@@ -15,7 +15,7 @@ import { TranslateService } from '../core/translate/translate.service';
         <img (click)="changeLang('en')" src="assets/images/gb.png" width="33px" height="19px" alt="gb">
       </div>
       <div id="mobile-main-menu" (click)="toggle()">
-        <i class="fa fa-bars" style="color: #ffffff; font-size: 32px;"></i>
+        <i class="fas fa-bars" style="color: #ffffff; font-size: 32px;"></i>
       </div>
     </div>
   `,

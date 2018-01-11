@@ -70,10 +70,10 @@ interface CallbackArguments {
       <p-column header="">
         <ng-template let-driver="rowData" pTemplate="body">
           <span (click)="showPositionPeriodically(driver)">
-            <i class="fa fa-crosshairs fa-fw" aria-hidden="true"></i>
+            <i class="fas fa-crosshairs fa-fw" aria-hidden="true"></i>
           </span>
           <span (click)="showRoutePeriodically(driver)">
-            <i class="fa fa-road fa-fw" aria-hidden="true"></i>
+            <i class="fas fa-road fa-fw" aria-hidden="true"></i>
           </span>
         </ng-template>
       </p-column>
