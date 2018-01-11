@@ -13,6 +13,7 @@ import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.JerseyClientBuilder
 import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider
 import org.slf4j.LoggerFactory
@@ -32,7 +33,10 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 import javax.ws.rs.client.ClientRequestContext
 import javax.ws.rs.client.ClientRequestFilter
+import javax.ws.rs.client.WebTarget
 import javax.ws.rs.core.HttpHeaders
+import javax.ws.rs.sse.SseEvent
+import javax.ws.rs.sse.SseEventSource
 
 /**
  * Ignoring X509 trust manager, typically used when disabling SSL certificate checks
@@ -147,15 +151,21 @@ class RestEasyClient(
         return this.proxy(serviceClass, null, null)
     }
 
-    fun <T> proxy(serviceClass: Class<T>, path: String? = null, jwtToken: String? = null): T {
-        val baseUri = this.baseUri.let {
+    fun createUri(path: String? = null): URI =
             if (path != null)
                 this.baseUri.resolve(path)
             else
                 this.baseUri
-        }
 
-        val webTarget: ClientWebTarget = this.client.target(baseUri) as ClientWebTarget
+    /**
+     * Create service proxy
+     * @param path Optinoal path override
+     * @param jwtToken Optional jwt token override
+     */
+    fun target(path: String? = null, jwtToken: String? = null): ResteasyWebTarget {
+        val webTarget: ClientWebTarget = this.client.target(
+                this.createUri(path)
+        ) as ClientWebTarget
 
         // return webTarget.proxy(serviceClass)
         // masc20170329. for compatibility with spring-boot-devtools restart, need to use the serviceclass' classloader
@@ -167,6 +177,18 @@ class RestEasyClient(
                             requestContext.headers.add("Authorization", "JWT ${jwtToken}")
                     }
                 })
+    }
+
+    /**
+     * Create service proxy
+     * @param path Optinoal path override
+     * @param jwtToken Optional jwt token override
+     */
+    fun <T> proxy(serviceClass: Class<T>, path: String? = null, jwtToken: String? = null): T {
+        return this.target(
+                path = path,
+                jwtToken = jwtToken
+        )
                 .proxyBuilder(serviceClass)
                 .classloader(serviceClass.classLoader)
                 .build()
