@@ -5,6 +5,7 @@ import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
 import org.deku.leoz.rest.RestClientFactory
 import sx.rs.client.FeignClient
+import sx.rs.client.JerseyClient
 import sx.rs.client.RestClient
 import sx.rs.client.RestEasyClient
 import java.net.URI
@@ -26,6 +27,15 @@ class RestClientTestConfiguration {
         }
     }
 
+    class JerseyClientFactory : RestClientFactory() {
+        override fun create(baseUri: URI, ignoreSsl: Boolean, apiKey: String?): RestClient {
+            return JerseyClient(
+                    baseUri = baseUri,
+                    ignoreSslCertificate = ignoreSsl
+            )
+        }
+    }
+
     class RestEasyClientFactory : RestClientFactory() {
         override fun create(baseUri: URI, ignoreSsl: Boolean, apiKey: String?): RestClient {
             return RestEasyClient(
@@ -39,6 +49,7 @@ class RestClientTestConfiguration {
         val module = Kodein.Module {
             import(RestClientConfiguration.module)
 
+            //region Client factories
             bind<FeignClientFactory>() with singleton {
                 FeignClientFactory()
             }
@@ -47,6 +58,12 @@ class RestClientTestConfiguration {
                 RestEasyClientFactory()
             }
 
+            bind<JerseyClientFactory>() with singleton() {
+                JerseyClientFactory()
+            }
+            //endregion
+
+            //region Clients
             bind<FeignClient>() with provider {
                 instance<FeignClientFactory>().create() as FeignClient
             }
@@ -54,6 +71,11 @@ class RestClientTestConfiguration {
             bind<RestEasyClient>() with provider {
                 instance<RestEasyClientFactory>().create() as RestEasyClient
             }
+
+            bind<JerseyClient>() with provider {
+                instance<JerseyClientFactory>().create() as JerseyClient
+            }
+            //endregion
 
             // Default rest client factory
             bind<RestClientFactory>() with provider {

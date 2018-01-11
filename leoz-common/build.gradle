@@ -122,6 +122,11 @@ dependencies {
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
 
+            // Jersey REST client
+            "org.glassfish.jersey.core:jersey-client:$v_jersey",
+            "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey",
+            "org.glassfish.jersey.media:jersey-media-sse:$v_jersey",
+
             // RESTeasy client
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",

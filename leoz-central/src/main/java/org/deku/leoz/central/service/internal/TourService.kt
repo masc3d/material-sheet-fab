@@ -369,6 +369,7 @@ class TourServiceV1
                     try {
                         // Send SSE event for each update
                         sink.send(sse.newEventBuilder()
+                                .id("${UUID.randomUUID()}")
                                 .mediaType(MediaType.APPLICATION_JSON_TYPE)
                                 .data(status.javaClass, status)
                                 .build()
