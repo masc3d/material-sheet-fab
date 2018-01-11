@@ -14,8 +14,24 @@ apply plugin: 'idea'
 
 group = 'org.deku.leoz'
 version = '1.0'
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileKotlin {
+    kotlinOptions {
+        // masc20181101. android support
+        // API levels < 24 are not compatible with some java8 bytecode kt compiler produces
+        jvmTarget = JavaVersion.VERSION_1_6
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        // Some test cases require java 8 features (eg JAX-RS SSE tests)
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
 
 repositories {
     mavenCentral()

@@ -33,7 +33,15 @@ apply plugin: 'nu.studer.jooq'
 apply plugin: 'org.flywaydb.flyway'
 apply plugin: 'sx-packager'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+
 version = '0.149-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
