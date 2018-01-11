@@ -47,6 +47,10 @@ class RestClientConfiguration {
             bind<LocationServiceV2>() with provider {
                 createProxy(clientFactory = instance(), serviceType = LocationServiceV2::class.java)
             }
+
+            bind<TourServiceV1>() with provider {
+                createProxy(clientFactory = instance(), serviceType = TourServiceV1::class.java)
+            }
         }
     }
 }

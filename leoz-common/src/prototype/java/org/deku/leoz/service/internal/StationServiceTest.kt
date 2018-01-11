@@ -1,9 +1,8 @@
-package org.deku.leoz.rest
+package org.deku.leoz.service.internal
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
-import org.deku.leoz.config.RestClientTestFactory
-import org.deku.leoz.service.internal.StationService
+import org.deku.leoz.config.RestClientTestConfiguration
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
@@ -16,7 +15,7 @@ class StationServiceTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val kodein = Kodein {
-        import(RestClientTestFactory.module)
+        import(RestClientTestConfiguration.module)
     }
 
     @Test
