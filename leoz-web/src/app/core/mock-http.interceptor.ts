@@ -13,198 +13,123 @@ export class MockHttpInterceptor implements HttpInterceptor {
     const params: HttpParams = req.params;
     const body = req.body;
 
-    if (url.endsWith( '/internal/v1/loadinglist/packages' )) {
-      switch (method) {
-        case 'POST':
-          // get parameters from post request
-          switch (body.packageId) {
-            case '1060532266':
-              return Observable.of( new HttpResponse<any>( {
-                body: { status: 201, packageId: '1060532266', msgText: 'success' }
-              } ) );
-            case '79650002359':
-              return new Observable( resp => {
-                resp.next( new HttpResponse( {
-                  body: {
-                    status: 201,
-                    packageId: '79650002359', msgText: 'already scanned'
-                  }
-                } ) );
-                resp.complete();
-              } );
-            case '79650002360':
-              return new Observable( resp => {
-                resp.next( new HttpResponse( {
-                  body: {
-                    status: 201,
-                    packageId: '79650002360', msgText: 'transfered to other laodlist'
-                  }
-                } ) );
-                resp.complete();
-              } );
-            case '7280330924':
-              return new Observable( resp => {
-                resp.next( new HttpResponse( {
-                  body: {
-                    status: 301,
-                    packageId: '7280330924', msgText: 'depot mismatch'
-                  }
-                } ) );
-                resp.complete();
-              } );
-            case '7280330925':
-              return new Observable( resp => {
-                resp.next( new HttpResponse( {
-                  body: {
-                    status: 301,
-                    packageId: '7280330925', msgText: 'invalid senddate'
-                  }
-                } ) );
-                resp.complete();
-              } );
-            case '7280330926':
-              return new Observable( resp => {
-                resp.next( new HttpResponse( {
-                  body: {
-                    status: 301,
-                    packageId: '7280330926', msgText: 'invalid product'
-                  }
-                } ) );
-                resp.complete();
-              } );
-            case '7280330927':
-              return new Observable( resp => {
-                resp.next( new HttpResponse( {
-                  body: {
-                    status: 301,
-                    packageId: '7280330927', msgText: 'valore'
-                  }
-                } ) );
-                resp.complete();
-              } );
-            case '7280330928':
-              return new Observable( resp => {
-                resp.next( new HttpResponse( {
-                  body: {
-                    status: 301,
-                    packageId: '7280330928', msgText: 'no activeLoadinglist'
-                  }
-                } ) );
-                resp.complete();
-              } );
-            default:
-              return new Observable( resp => {
-                resp.next( new HttpResponse( {
-                  body: {
-                    status: 301,
-                    packageId: body.packageId, msgText: 'not found'
-                  }
-                } ) );
-                resp.complete();
-              } );
-          }
-        default:
-          return new Observable( resp => {
-            // resp.next( new HttpErrorResponse( {
-            resp.next( new HttpResponse( {
-              status: 201
-              // error: new Error( 'Unknown RequestMethod' )
-            } ) );
-            resp.complete();
-          } );
-      }
-    } else if (url.endsWith( '/internal/v1/loadinglist/report/header' )) {
-      return new Observable( resp => {
-        resp.next( new HttpResponse( {
-          status: 200,
-          body: loadlistHeaderData
-        } ) );
-        resp.complete();
-      } );
-    } else if (url.endsWith( '/internal/v1/bagscan/packages' )) {
-      return new Observable( resp => {
-        resp.next( new HttpResponse( {
-          status: 200,
-          body: allPackages
-        } ) );
-        resp.complete();
-      } );
-    } else if (url.match( 'bagdata' )) {
-      return new Observable( resp => {
-        resp.next( new HttpResponse( {
-          status: 200,
-          body: {
-            'bagId': 12345,
-            'backLabel': 12334,
-            'backSeal': 123456,
-            'baglistNo': params.get( 'baglistNo' )
-          }
-        } ) );
-        resp.complete();
-      } );
-    } else if (url.endsWith( 'bagscan/validate/bagid' )) {
-      // get parameters from post request
-      switch (body.bagId) {
-        case '1':
-          return new Observable( resp => {
-            resp.next( new HttpResponse( {
-              status: 201,
-              body: { status: 201, msgText: 'success' }
-            } ) );
-            resp.complete();
-          } );
-        default:
-          return new Observable( resp => {
-            resp.next( new HttpResponse( {
-              status: 301,
-              body: { status: 301, msgText: 'not found' }
-            } ) );
-            resp.complete();
-          } );
-      }
-    } else if (url.endsWith( 'bagscan/validate/backlabel' )) {
-      // get parameters from post request
-      switch (body.backLabel) {
-        case '1':
-          return new Observable( resp => {
-            resp.next( new HttpResponse( {
-              status: 201,
-              body: { msgText: 'success' }
-            } ) );
-            resp.complete();
-          } );
-        default:
-          return new Observable( resp => {
-            resp.next( new HttpResponse( {
-              status: 301,
-              body: { msgText: 'not found' }
-            } ) );
-            resp.complete();
-          } );
-      }
-    } else if (url.endsWith( 'bagscan/validate/backseal' )) {
-      // get parameters from post request
-      switch (body.backSeal) {
-        case '1':
-          return new Observable( resp => {
-            resp.next( new HttpResponse( {
-              status: 201,
-              body: { msgText: 'success' }
-            } ) );
-            resp.complete();
-          } );
-        default:
-          return new Observable( resp => {
-            resp.next( new HttpResponse( {
-              status: 301,
-              body: { msgText: 'not found' }
-            } ) );
-            resp.complete();
-          } );
-      }
-    }
-
-
+    // if (url.endsWith( '/internal/v1/loadinglist/packages' )) {
+    //   switch (method) {
+    //     case 'POST':
+    //       // get parameters from post request
+    //       switch (body.packageId) {
+    //         case '1060532266':
+    //           return Observable.of( new HttpResponse<any>( {
+    //             body: { status: 201, packageId: '1060532266', msgText: 'success' }
+    //           } ) );
+    //         case '79650002359':
+    //           return new Observable( resp => {
+    //             resp.next( new HttpResponse( {
+    //               body: {
+    //                 status: 201,
+    //                 packageId: '79650002359', msgText: 'already scanned'
+    //               }
+    //             } ) );
+    //             resp.complete();
+    //           } );
+    //         case '79650002360':
+    //           return new Observable( resp => {
+    //             resp.next( new HttpResponse( {
+    //               body: {
+    //                 status: 201,
+    //                 packageId: '79650002360', msgText: 'transfered to other laodlist'
+    //               }
+    //             } ) );
+    //             resp.complete();
+    //           } );
+    //         case '7280330924':
+    //           return new Observable( resp => {
+    //             resp.next( new HttpResponse( {
+    //               body: {
+    //                 status: 301,
+    //                 packageId: '7280330924', msgText: 'depot mismatch'
+    //               }
+    //             } ) );
+    //             resp.complete();
+    //           } );
+    //         case '7280330925':
+    //           return new Observable( resp => {
+    //             resp.next( new HttpResponse( {
+    //               body: {
+    //                 status: 301,
+    //                 packageId: '7280330925', msgText: 'invalid senddate'
+    //               }
+    //             } ) );
+    //             resp.complete();
+    //           } );
+    //         case '7280330926':
+    //           return new Observable( resp => {
+    //             resp.next( new HttpResponse( {
+    //               body: {
+    //                 status: 301,
+    //                 packageId: '7280330926', msgText: 'invalid product'
+    //               }
+    //             } ) );
+    //             resp.complete();
+    //           } );
+    //         case '7280330927':
+    //           return new Observable( resp => {
+    //             resp.next( new HttpResponse( {
+    //               body: {
+    //                 status: 301,
+    //                 packageId: '7280330927', msgText: 'valore'
+    //               }
+    //             } ) );
+    //             resp.complete();
+    //           } );
+    //         case '7280330928':
+    //           return new Observable( resp => {
+    //             resp.next( new HttpResponse( {
+    //               body: {
+    //                 status: 301,
+    //                 packageId: '7280330928', msgText: 'no activeLoadinglist'
+    //               }
+    //             } ) );
+    //             resp.complete();
+    //           } );
+    //         default:
+    //           return new Observable( resp => {
+    //             resp.next( new HttpResponse( {
+    //               body: {
+    //                 status: 301,
+    //                 packageId: body.packageId, msgText: 'not found'
+    //               }
+    //             } ) );
+    //             resp.complete();
+    //           } );
+    //       }
+    //     default:
+    //       return new Observable( resp => {
+    //         // resp.next( new HttpErrorResponse( {
+    //         resp.next( new HttpResponse( {
+    //           status: 201
+    //           // error: new Error( 'Unknown RequestMethod' )
+    //         } ) );
+    //         resp.complete();
+    //       } );
+    //   }
+    // } else if (url.endsWith( '/internal/v1/loadinglist/report/header' )) {
+    //   return new Observable( resp => {
+    //     resp.next( new HttpResponse( {
+    //       status: 200,
+    //       body: loadlistHeaderData
+    //     } ) );
+    //     resp.complete();
+    //   } );
+    // } else if (url.endsWith( '/internal/v1/bagscan/packages' )) {
+    //   return new Observable( resp => {
+    //     resp.next( new HttpResponse( {
+    //       status: 200,
+    //       body: allPackages
+    //     } ) );
+    //     resp.complete();
+    //   } );
+    // }
     return next.handle( req );
   }
 }

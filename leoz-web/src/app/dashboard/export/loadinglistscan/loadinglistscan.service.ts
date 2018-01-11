@@ -15,7 +15,7 @@ export class LoadinglistscanService extends AbstractExportService {
     auth.activeStation$.subscribe( ( activeStation: Station ) => {
       this.activeStation = activeStation;
       const stationNo = this.activeStation.stationNo.toString();
-      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${stationNo}?send-date=${this.wds.workingDate()}`;
+      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${stationNo}/order?send-date=${this.wds.workingDate()}`;
     } );
   }
 }

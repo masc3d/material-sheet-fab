@@ -15,12 +15,13 @@ import { Shipment } from '../../core/models/shipment.model';
 import { sumAndRound } from '../../core/math/sumAndRound';
 import { WorkingdateService } from '../../core/workingdate.service';
 import { InetConnectionService } from '../../core/inet-connection.service';
+import { User } from '../user/user.model';
 
 @Injectable()
 export abstract class AbstractExportService {
 
   protected packageUrl: string;
-  protected scanUrl = `${environment.apiUrl}/internal/v1/parcel/export`;
+  protected scanUrl = `${environment.apiUrl}/internal/v1/export`;
 
   protected abstract newLoadlistNoUrl: string;
   protected abstract reportHeaderUrl: string;
@@ -135,10 +136,20 @@ export abstract class AbstractExportService {
     } );
   }
 
-  scanPack( packageId: string, loadlistNo: number ): Observable<Object> {
-    return this.http.put( this.scanUrl,
-      { 'parcel-no': packageId, 'loadinglist-no': loadlistNo, 'station-no': this.activeStation.stationNo } );
-  }
+  scanPack( packageId: string, loadlistNo: number ): Observable<HttpResponse<any>> {
+
+      const params = new HttpParams()
+        .set('parcel-no-or-reference', packageId)
+        .set('loadinglist-no', loadlistNo.toString())
+        .set('station-no', this.activeStation.stationNo.toString());
+
+      return this.http.patch( this.scanUrl, null, {
+        observe: 'response',
+        params: params
+      } ).map( ( response: HttpResponse<any> ) => {
+        return response;
+      } );
+    }
 
   setActiveLoadinglist( selected: number ) {
     this.activeLoadinglistSubject.next( this.createLoadinglist( selected, [] ) );

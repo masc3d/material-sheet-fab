@@ -48,7 +48,7 @@
             {{'packNumber' | translate}}
           </div>
           <div class="ui-g-12 ui-lg-5 ui-g-nopad">
-            <input #packageNo pInputText formControlName="packageNo"
+            <input #packageNo pInputText formControlName="packageNo" (change)="scanPackToBag()"
                    style="height: 69px; margin-bottom:5px; width:calc(98% - 2px); font-size: 40px">
           </div>
         </div>
@@ -171,7 +171,7 @@
             <p-dropdown formControlName="selectbaglist" [options]="baglists" [style]="{'width': '125px'}"
                         (onChange)="selectBaglist($event.value)"></p-dropdown>
             <span (click)="generateLabel()">
-              <i class="fa fa-print fa-fw" aria-hidden="true"></i>
+              <i class="fas fa-print fa-fw" aria-hidden="true"></i>
             </span>
           </div>
           <div class="ui-g-12 ui-g-nopad" style="margin-top: 2px; padding: 5px">

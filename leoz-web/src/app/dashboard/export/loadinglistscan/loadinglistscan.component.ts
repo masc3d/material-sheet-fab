@@ -380,12 +380,14 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
         // beim Scanversuch keine Ladeliste gesetzt:
         //    Feld Scan Nachrichten = TRL("kein Scan")  und rot
         //    Feld unterhalb der Aktionen = TRL("Keine Ladelistennummer gesetzt.")  und rot
+        console.log('errorType', errorType)
         this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan', 'noLlNoSet', 'critical' );
         break;
       case 'not found':
         // beim Scanversuch keinen Datensatz in der DB gefunden:
         //    Feld Scan Nachrichten = TRL("Kein Datensatz vorhanden.")  und rot
         //    Feld unterhalb der Aktionen = TRL("kein Scan")  und rot
+        console.log('errorType', errorType)
         this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan', 'noDataInDatabase', 'critical' );
         break;
       case 'depot mismatch':
@@ -434,6 +436,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
       .subscribe( ( response: HttpResponse<any> ) => {
           const json = response;
           // switch (response.status) {
+        console.log('json.status', json.status)
           switch (json.status) {
             case 200:
               this.handleSuccess( 'success' );

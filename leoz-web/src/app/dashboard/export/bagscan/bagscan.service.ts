@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -8,6 +8,7 @@ import { AbstractExportService } from '../abstract-export.service';
 import { BagData } from './bagdata.model';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
 import { Station } from '../../../core/auth/station.model';
+import * as moment from 'moment';
 
 @Injectable()
 export class BagscanService extends AbstractExportService {
@@ -15,61 +16,38 @@ export class BagscanService extends AbstractExportService {
   public activeBagDataSubject = new BehaviorSubject<BagData>( <BagData> {} );
   public activeBagData$ = this.activeBagDataSubject.asObservable().distinctUntilChanged();
 
-  protected bagDataUrl = `${environment.apiUrl}/internal/v1/bagscan/bagdata`;
-  protected validateBagIdUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/bagid`;
-  protected validateBackLabelUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/backlabel`;
-  protected validateBackSealUrl = `${environment.apiUrl}/internal/v1/bagscan/validate/backseal`;
-
-  protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/bagscan/new`;
+  protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/export/bag/loadinglist`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/bagscan/report/header`;
 
   protected subscribeActiveStation( auth: AuthenticationService ) {
     auth.activeStation$.subscribe( ( activeStation: Station ) => {
       this.activeStation = activeStation;
-      const stationNo = this.activeStation.stationNo.toString();
-      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${stationNo}/bag?send-date=${this.wds.workingDate()}`;
+      const stationNo = this.activeStation.stationNo;
+      this.packageUrl = `${environment.apiUrl}/internal/v1/export/station/${stationNo}/bag/order?send-date=${this.wds.workingDate()}`;
     } );
   }
 
-  setActiveLoadinglist( selected: number ) {
-    // REST fetch corresponding bagId, sealNo, backlabelNo
-    this.activeBagDataSubject.next( <BagData> {} );
-    this.getBagData( selected );
-    super.setActiveLoadinglist( selected );
+  validateBagId( bagId: number ): Observable<Object> {
+    const stationNo = this.activeStation.stationNo;
+    const validateBagIdUrl = `${environment.apiUrl}/internal/v1/export/station/${stationNo}/bag/${bagId}`;
+    return this.http.get( validateBagIdUrl);
   }
 
-  /**
-   * Headset of the Bag
-   * @param {number} baglistNo
-   */
-  getBagData( baglistNo: number ): void {
-    this.http.post<BagData>( this.bagDataUrl,
-      { 'baglistNo': baglistNo } )
-      .subscribe( ( bagData ) => this.activeBagDataSubject.next( bagData ),
-        ( _ ) => {
-          this.ics.isOffline();
-          this.activeBagDataSubject.next( <BagData> {} );
-        } );
+  scanPackToBag( bagId: number, bagbackNo: number, packageId: number, loadlistNo: number, yellowseal: number ): Observable<Object> {
+    const scanPackToBagUrl = `${environment.apiUrl}/internal/v1/export/bag/${bagId}/fill`;
+    const params = new HttpParams()
+      .set('bagback-no', bagbackNo.toString())
+      .set('parcel-no-or-reference', packageId.toString())
+      .set('yellowseal', yellowseal.toString())
+      .set('loadinglist-no', loadlistNo.toString())
+      .set('station-no', this.activeStation.stationNo.toString());
+
+    return this.http.patch( scanPackToBagUrl, null, {
+      observe: 'response',
+      params: params
+    } ).map( ( response: HttpResponse<any> ) => {
+      return response;
+    } );
   }
 
-  validateBagId( bagId: string ): Observable<HttpResponse<any>> {
-    return this.http.post( this.validateBagIdUrl, { 'bagId': bagId },
-      { observe: 'response' } )
-  }
-
-  validateBackLabel( bagId: string, backLabel: string ): Observable<HttpResponse<any>> {
-    return this.http.post( this.validateBackLabelUrl,
-      { 'bagId': bagId, 'backLabel': backLabel },
-      {
-        observe: 'response'
-      } );
-  }
-
-  validateBackSeal( bagId: string, backLabel: string, backSeal: string ): Observable<HttpResponse<any>> {
-    return this.http.post( this.validateBackSealUrl,
-      { 'bagId': bagId, 'backLabel': backLabel, 'backSeal': backSeal },
-      {
-        observe: 'response'
-      } )
-  }
 }
