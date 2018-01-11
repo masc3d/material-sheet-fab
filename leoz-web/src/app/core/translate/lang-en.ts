@@ -406,6 +406,7 @@ export const LANG_EN_TRANS = {
   'none': 'None',
   'all': 'All',
   'optimize': 'Optimize',
+  'driverlists': 'Driverlists',
   // pickupdispo
   'info': 'Info',
   'open_orders_max3days': 'Open Orders (max. 3 days)',
