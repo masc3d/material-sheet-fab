@@ -28,6 +28,7 @@ interface TourServiceV1 {
         const val ID = "id"
         const val DEBITOR_ID = "debitor-id"
         const val NODE_UID = "node-uid"
+        const val STATION_ID = "station-id"
         const val USER_ID = "user-id"
     }
 
@@ -110,6 +111,7 @@ interface TourServiceV1 {
             notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun status(
+            @QueryParam(STATION_ID)
             @ApiParam(value = "The station id to retrieve tour status updates for")
             stationId: Int,
             @Context sink: SseEventSink,
