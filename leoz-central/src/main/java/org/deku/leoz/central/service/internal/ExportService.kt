@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Routines
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SsoSMovepoolRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.central.data.repository.*
@@ -1610,4 +1611,24 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         return ExportUnitOrder(unitRecord, orderRecord)
     }
 
+    fun SsoSMovepoolRecord.toBag(): ExportService.Bag {
+        val bag = ExportService.Bag(
+                this.bagNumber.toLong(),
+                this.sealNumberGreen?.toLong(),
+                //this.status?.toInt(),
+                BagStatus.values().find { it.value == this.status?.toInt() },
+                this.statusTime,
+                this.lastdepot?.toInt(),
+                this.sealNumberYellow?.toLong(),
+                this.sealNumberRed?.toLong(),
+                this.orderhub2depot?.toLong(),
+                this.orderdepot2hub?.toLong(),
+                this.initStatus,
+                this.workDate,
+                this.printed?.toInt(),
+                this.multibag.toInt(),
+                this.movepool
+        )
+        return bag
+    }
 }

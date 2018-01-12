@@ -2,7 +2,9 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SsoSMovepoolRecord
 import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.model.BagStatus
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.internal.BagService.ErrorCode
 import org.jooq.DSLContext
@@ -22,6 +24,7 @@ import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.BagService
+import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagResponse
@@ -686,5 +689,24 @@ class BagService : BagService {
         return stationRepository.getCountBagsToSendBagByStation(stationNo)
     }
 
-
+    fun SsoSMovepoolRecord.toGeneralBag(): BagService.Bag {
+        val bag = BagService.Bag(
+                this.bagNumber.toLong(),
+                this.sealNumberGreen?.toLong(),
+                //this.status?.toInt(),
+                BagStatus.values().find { it.value == this.status?.toInt() },
+                this.statusTime,
+                this.lastdepot?.toLong(),
+                this.sealNumberYellow?.toLong(),
+                this.sealNumberRed?.toLong(),
+                this.orderhub2depot?.toLong(),
+                this.orderdepot2hub?.toLong(),
+                this.initStatus,
+                this.workDate,
+                this.printed?.toInt(),
+                this.multibag.toInt(),
+                this.movepool
+        )
+        return bag
+    }
 }

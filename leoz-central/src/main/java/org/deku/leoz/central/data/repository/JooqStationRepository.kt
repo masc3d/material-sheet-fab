@@ -2,6 +2,7 @@ package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SsoPMov
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SsoSMov
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SsoSMovepool
@@ -30,66 +31,68 @@ open class JooqStationRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
 
-    @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun findAll(): List<TbldepotlisteRecord> {
+    fun findAll(): List<TbldepotlisteRecord> {
         return dsl
                 .select()
-                .from(Tables.TBLDEPOTLISTE)
+                .from(TBLDEPOTLISTE)
                 .fetchInto(TbldepotlisteRecord::class.java)
     }
 
-    @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun findSectionDepots(iSection: Int, iPosition: Int): List<String> {
+    fun findById(id: Int): TbldepotlisteRecord? =
+            dsl.fetchOne(TBLDEPOTLISTE, TBLDEPOTLISTE.ID.eq(id))
+
+    fun findByDebitorId(debitorId: Int): List<TbldepotlisteRecord> =
+            dsl.fetch(TBLDEPOTLISTE, TBLDEPOTLISTE.DEBITOR_ID.eq(debitorId)).toList()
+
+    fun findSectionDepots(iSection: Int, iPosition: Int): List<String> {
         return dsl
-                .select(Tables.SECTIONDEPOTLIST.DEPOT)
-                .from(Tables.SECTIONDEPOTLIST)
-                .where(Tables.SECTIONDEPOTLIST.SECTION.eq(iSection.toLong())
-                        .and(Tables.SECTIONDEPOTLIST.POSITION.eq(iPosition)))
+                .select(SECTIONDEPOTLIST.DEPOT)
+                .from(SECTIONDEPOTLIST)
+                .where(SECTIONDEPOTLIST.SECTION.eq(iSection.toLong())
+                        .and(SECTIONDEPOTLIST.POSITION.eq(iPosition)))
                 .fetchInto(String::class.java)
     }
 
-    @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun findDebitor(StationNr: Int): Int {
+    fun findDebitor(StationNr: Int): Int {
         return dsl
-                .select(Tables.MST_DEBITOR.DEBITOR_ID)
-                .from(Tables.MST_DEBITOR).innerJoin(Tables.MST_DEBITOR_STATION)
-                .on(Tables.MST_DEBITOR.DEBITOR_ID.eq(Tables.MST_DEBITOR_STATION.DEBITOR_ID))
-                .where(Tables.MST_DEBITOR_STATION.STATION_ID.eq(StationNr)
+                .select(MST_DEBITOR.DEBITOR_ID)
+                .from(MST_DEBITOR).innerJoin(MST_DEBITOR_STATION)
+                .on(MST_DEBITOR.DEBITOR_ID.eq(MST_DEBITOR_STATION.DEBITOR_ID))
+                .where(MST_DEBITOR_STATION.STATION_ID.eq(StationNr)
 //todo include send_date  between active_from and active_to
-                ).fetchOne(Tables.MST_DEBITOR_STATION.DEBITOR_ID)
+                ).fetchOne(MST_DEBITOR_STATION.DEBITOR_ID)
     }
 
-    open fun findStationsByDebitorId(debitorId: Int): List<String> {
+    fun findStationsByDebitorId(debitorId: Int): List<String> {
         return dsl
-                .select(Tables.TBLDEPOTLISTE.DEPOTNR)
-                .from(Tables.TBLDEPOTLISTE)
-                .where(Tables.TBLDEPOTLISTE.ID.eq(debitorId))
+                .select(TBLDEPOTLISTE.DEPOTNR)
+                .from(TBLDEPOTLISTE)
+                .where(TBLDEPOTLISTE.ID.eq(debitorId))
 //todo include send_date  between active_from and active_to
                 .fetchInto(String::class.java)
     }
 
-    @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun findByMatchcode(matchcode: String): TbldepotlisteRecord {
+    fun findByMatchcode(matchcode: String): TbldepotlisteRecord {
         return dsl
                 .select()
-                .from(Tables.TBLDEPOTLISTE)
-                .where(Tables.TBLDEPOTLISTE.DEPOTMATCHCODE.eq(matchcode))
+                .from(TBLDEPOTLISTE)
+                .where(TBLDEPOTLISTE.DEPOTMATCHCODE.eq(matchcode))
                 .fetchOneInto(TbldepotlisteRecord::class.java)
     }
 
-    open fun getCountBagsToSendBagByStation(stationNo: Int): Int {
+    fun getCountBagsToSendBagByStation(stationNo: Int): Int {
         val countBagsUsedByStation: Int = dsl.selectCount()
-                .from(Tables.SSO_S_MOVEPOOL)
-                .where(Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(stationNo.toDouble())
-                        .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
-                        .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(6.0)))
+                .from(SSO_S_MOVEPOOL)
+                .where(SSO_S_MOVEPOOL.LASTDEPOT.eq(stationNo.toDouble())
+                        .and(SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
+                        .and(SSO_S_MOVEPOOL.STATUS.eq(6.0)))
                 .fetchOne(0, Int::class.java)
 
-        val quota: Int = dsl.select(Tables.TBLDEPOTLISTE.BAGKONTINGENT)
-                .from(Tables.TBLDEPOTLISTE)
-                .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(stationNo)
-                        .and(Tables.TBLDEPOTLISTE.AKTIVIERUNGSDATUM.greaterOrEqual(Date().toTimestamp()))
-                        .and(Tables.TBLDEPOTLISTE.DEAKTIVIERUNGSDATUM.lessOrEqual(Date().toTimestamp()))
+        val quota: Int = dsl.select(TBLDEPOTLISTE.BAGKONTINGENT)
+                .from(TBLDEPOTLISTE)
+                .where(TBLDEPOTLISTE.DEPOTNR.eq(stationNo)
+                        .and(TBLDEPOTLISTE.AKTIVIERUNGSDATUM.greaterOrEqual(Date().toTimestamp()))
+                        .and(TBLDEPOTLISTE.DEAKTIVIERUNGSDATUM.lessOrEqual(Date().toTimestamp()))
                 )
                 .fetchOne(0, Int::class.java) ?: 0
 
@@ -99,82 +102,23 @@ open class JooqStationRepository {
         return diff
     }
 
-    open fun getBag(bagId: Long): SsoSMovepoolRecord? {
+    fun getBag(bagId: Long): SsoSMovepoolRecord? {
 //        val record = dsl.select()
-//                .from(Tables.SSO_S_MOVEPOOL)
-//                .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
+//                .from(SSO_S_MOVEPOOL)
+//                .where(SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
 //                .fetchOne(record: SsoSMovepoolRecord::class.java)
-        return dsl.fetchOne(SsoSMovepool.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
+        return dsl.fetchOne(SsoSMovepool.SSO_S_MOVEPOOL, SSO_S_MOVEPOOL.BAG_NUMBER.eq(bagId.toDouble()))
         //return record
     }
 
-    open fun getUnitNo(orderid: Long): Long? {
+    fun getUnitNo(orderid: Long): Long? {
         if (orderid == 0.toLong()) return null
-        return dsl.select(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(Tables.TBLAUFTRAGCOLLIES)
-                .where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble()))
+        return dsl.select(TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(TBLAUFTRAGCOLLIES)
+                .where(TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble()))
                 .fetchOne(0, Long::class.java)
     }
 
-    open fun getSeal(sealNo:Long):SsoPMovRecord?{
-        return dsl.fetchOne(SsoPMov.SSO_P_MOV,Tables.SSO_P_MOV.PLOMBENNUMMER.eq(sealNo.toDouble()))
+    fun getSeal(sealNo: Long): SsoPMovRecord? {
+        return dsl.fetchOne(SsoPMov.SSO_P_MOV, SSO_P_MOV.PLOMBENNUMMER.eq(sealNo.toDouble()))
     }
 }
-
-fun SsoSMovepoolRecord.toBag(): ExportService.Bag {
-    val bag = ExportService.Bag(
-            this.bagNumber.toLong(),
-            this.sealNumberGreen?.toLong(),
-            //this.status?.toInt(),
-            BagStatus.values().find { it.value == this.status?.toInt() },
-            this.statusTime,
-            this.lastdepot?.toInt(),
-            this.sealNumberYellow?.toLong(),
-            this.sealNumberRed?.toLong(),
-            this.orderhub2depot?.toLong(),
-            this.orderdepot2hub?.toLong(),
-            this.initStatus,
-            this.workDate,
-            this.printed?.toInt(),
-            this.multibag.toInt(),
-            this.movepool
-    )
-    return bag
-}
-
-fun SsoSMovepoolRecord.toGeneralBag(): BagService.Bag {
-    val bag = BagService.Bag(
-            this.bagNumber.toLong(),
-            this.sealNumberGreen?.toLong(),
-            //this.status?.toInt(),
-            BagStatus.values().find { it.value == this.status?.toInt() },
-            this.statusTime,
-            this.lastdepot?.toLong(),
-            this.sealNumberYellow?.toLong(),
-            this.sealNumberRed?.toLong(),
-            this.orderhub2depot?.toLong(),
-            this.orderdepot2hub?.toLong(),
-            this.initStatus,
-            this.workDate,
-            this.printed?.toInt(),
-            this.multibag.toInt(),
-            this.movepool
-    )
-    return bag
-}
-//fun SsoSMovepoolRecord.toBag(): BagService.Bag{
-//    val bag=BagService.Bag(
-//            this.bagNumber.toLong(),
-//            this.sealNumberGreen?.toLong(),
-//            BagStatus.values().find{it.value==this.status?.toInt()},
-//            this.statusTime,
-//            this.lastdepot?.toLong(),
-//            this.sealNumberYellow?.toLong(),
-//            this.sealNumberRed?.toLong(),
-//            depotRepository.getUnitNo(this.orderhub2depot?.toLong()),
-//            //this.orderhub2depot?.toLong(),
-//            depotRepository.getUnitNo(this.orderdepot2hub?.toLong()),
-//            //this.orderdepot2hub?.toLong(),
-//            this.workDate
-//    )
-//    return bag
-//}
