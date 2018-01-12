@@ -42,16 +42,16 @@ interface DeliveryListService {
     ): DeliveryList
 
     @GET
-    @Path("/")
+    @Path("/station/{${STATION_ID}}")
     @ApiOperation(value = "Get delivery list(s)", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
-            @QueryParam(STATION_ID) @ApiParam(example = "89586115", value = "Station id", required = false)
+            @PathParam(STATION_ID) @ApiParam(example = "89586115", value = "Station id", required = false)
             stationId: Int?
     ): List<DeliveryList>
 
     @GET
     @Path("/info")
-    @ApiOperation(value = "Get delivery list info", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get delivery list info/overview", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             //todo not jet implemented            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null,
             @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false)

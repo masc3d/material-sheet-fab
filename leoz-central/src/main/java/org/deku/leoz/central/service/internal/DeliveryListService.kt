@@ -10,6 +10,7 @@ import sx.rs.RestProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.slf4j.LoggerFactory
+import org.zalando.problem.Status
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import javax.inject.Inject
@@ -28,8 +29,7 @@ import javax.ws.rs.core.Response
 class DeliveryListService
     :
         DeliveryListService,
-        MqHandler<DeliveryListService.StopOrderUpdateMessage>
-{
+        MqHandler<DeliveryListService.StopOrderUpdateMessage> {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Context
@@ -51,7 +51,7 @@ class DeliveryListService
      * Asserts that the user (=apiKey) is entitled to access data for this debitor
      * @throws RestProblem if no authorized
      */
-    fun assertOwner(debitorId: Long) {
+    fun assertOwner(debitorId: Int) {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
                 ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
@@ -79,7 +79,7 @@ class DeliveryListService
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
 
-        this.assertOwner(deliveryListRecord.debitorId)
+        this.assertOwner(deliveryListRecord.debitorId.toInt())
 
         deliveryList = deliveryListRecord.toDeliveryList()
 
@@ -108,8 +108,17 @@ class DeliveryListService
     }
 
     override fun get(stationId: Int?): List<DeliveryListService.DeliveryList> {
-        stationRepository.
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        stationId ?:
+                throw RestProblem(status = Status.BAD_REQUEST)
+
+        val station = stationRepository.findById(stationId) ?:
+                throw RestProblem(status = Status.NOT_FOUND)
+
+        this.assertOwner(station.debitorId)
+
+        this.deliveryListRepository.findByStationId(stationId)
+
+        TODO("not implemented @see List<TadVDeliverylistRecord>.toDeliveryLists()")
     }
 
     override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
@@ -163,6 +172,14 @@ class DeliveryListService
                 date = ShortDate(r.deliveryListDate)
         )
         return l
+    }
+
+    /**
+     * Transform list of delivery list records into service entities in the most efficient manner
+     * @return Delivery lists
+     */
+    fun List<TadVDeliverylistRecord>.toDeliveryLists(): List<DeliveryListService.DeliveryList> {
+        TODO("implement")
     }
 
     /**
