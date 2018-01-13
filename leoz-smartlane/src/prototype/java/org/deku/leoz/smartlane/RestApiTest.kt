@@ -113,11 +113,11 @@ class RestApiTest {
         this.authorize()
 
         val addressApi = restClient.proxy(AddressApi::class.java)
-        val addressInternalApi = restClient.proxy(AddressInternalApi::class.java)
+        val internalApi = restClient.proxy(InternalApi::class.java)
 
         addressApi.address.objects.forEach { address ->
-            log.trace { "Deleting address [${address.id}]"}
-            addressInternalApi.delete(address.id)
+            log.trace { "Deleting address [${address.id}]" }
+            internalApi.deleteAddress(address.id)
         }
     }
 
@@ -174,6 +174,32 @@ class RestApiTest {
     }
 
     @Test
+    fun testDeliveryDeleteAll() {
+        this.authorize()
+
+        val deliveryApi = restClient.proxy(DeliveryApi::class.java)
+        val internalApi = restClient.proxy(InternalApi::class.java)
+
+        deliveryApi.getDelivery("{}")
+                .doOnNext {
+                    log.trace("fetched ${it.id}")
+                }
+                .toList()
+                .flatMapObservable {
+                    Observable.fromIterable(it)
+                }
+                .subscribeOn(Schedulers.io().limit(4))
+                .blockingSubscribe {
+                    log.trace("Cancelling delivery ${it.id}")
+                    try {
+                        internalApi.deleteDelivery((it.id))
+                    } catch (e: Exception) {
+                        log.error(e.message)
+                    }
+                }
+    }
+
+    @Test
     fun testRouteStatus() {
         this.authorize()
 
@@ -220,5 +246,31 @@ class RestApiTest {
                         }
                     }
         }
+    }
+
+
+    @Test
+    fun testRouteDeleteAll() {
+        this.authorize()
+
+        val routeApi = restClient.proxy(RouteApi::class.java)
+        val internalApi = restClient.proxy(InternalApi::class.java)
+        routeApi.getRoute("{}")
+                .doOnNext {
+                    log.trace("fetched ${it.id}")
+                }
+                .toList()
+                .flatMapObservable {
+                    Observable.fromIterable(it)
+                }
+                .subscribeOn(Schedulers.io().limit(4))
+                .blockingSubscribe {
+                    log.trace("Cancelling route ${it.id}")
+                    try {
+                        internalApi.deleteRoute(it.id)
+                    } catch (e: Exception) {
+                        log.error(e.message)
+                    }
+                }
     }
 }
