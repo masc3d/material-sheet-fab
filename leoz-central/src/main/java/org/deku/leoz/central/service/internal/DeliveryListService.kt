@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory
 import org.zalando.problem.Status
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -70,44 +71,20 @@ class DeliveryListService
     }
 
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
-        val deliveryList: DeliveryListService.DeliveryList
-        val deliveryListRecord: TadVDeliverylistRecord?
+        val dlRecord: TadVDeliverylistRecord?
 
-        deliveryListRecord = this.deliveryListRepository.findById(id)
+        dlRecord = this.deliveryListRepository.findById(id)
                 ?:
                 throw RestProblem(
                         title = "DeliveryList not found",
                         status = Response.Status.NOT_FOUND)
 
-        this.assertOwner(deliveryListRecord.debitorId.toInt())
+        this.assertOwner(dlRecord.debitorId.toInt())
 
-        deliveryList = deliveryListRecord.toDeliveryList()
-
-        val deliveryListStops = this.deliveryListRepository.findDetailsById(id)
-        val orders = orderService.getByIds(deliveryListStops.map { it.orderId.toLong() })
-        val deliveryListOrdersById = deliveryListStops
-                .groupBy { it.orderId }
-
-        deliveryList.orders = orders
-        deliveryList.stops = deliveryList.orders
-                .map {
-                    val dlDetailsRecord = deliveryListOrdersById.getValue(it.id.toDouble()).first()
-                    DeliveryListService.Stop(
-                            tasks = listOf(
-                                    DeliveryListService.Task(
-                                            orderId = it.id,
-                                            isRemoved = if (dlDetailsRecord.removedInDeliverylist != 0.0) true else false,
-                                            taskType = DeliveryListService.Task.Type.valueOf(dlDetailsRecord.stoptype)
-                                    ).also {
-                                        it.stopType = it.taskType!!
-                                    }
-                            ))
-                }
-
-        return deliveryList
+        return dlRecord.toDeliveryList()
     }
 
-    override fun get(stationId: Int?): List<DeliveryListService.DeliveryList> {
+    override fun getByStationId(stationId: Int?): List<DeliveryListService.DeliveryList> {
         stationId ?:
                 throw RestProblem(status = Status.BAD_REQUEST)
 
@@ -116,12 +93,12 @@ class DeliveryListService
 
         this.assertOwner(station.debitorId)
 
-        this.deliveryListRepository.findByStationId(stationId)
-
-        TODO("not implemented @see List<TadVDeliverylistRecord>.toDeliveryLists()")
+        return this.deliveryListRepository
+                .findByStationId(stationId)
+                .toDeliveryLists()
     }
 
-    override fun get(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
+    override fun getInfo(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
         val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
                 ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
@@ -147,22 +124,7 @@ class DeliveryListService
         }
     }
 
-    fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList {
-        val r = this
-
-        val l = DeliveryListService.DeliveryList(
-                id = r.id.toLong(),
-                info = DeliveryListService.DeliveryListInfo(
-                        id = r.id.toLong(),
-                        date = ShortDate(r.deliveryListDate),
-                        debitorId = r.debitorId
-                ),
-                orders = listOf(),
-                stops = listOf()
-        )
-        return l
-    }
-
+    //region Transformations
     fun TadVDeliverylistRecord.toDeliveryListInfo(): DeliveryListService.DeliveryListInfo {
         val r = this
 
@@ -178,9 +140,58 @@ class DeliveryListService
      * Transform list of delivery list records into service entities in the most efficient manner
      * @return Delivery lists
      */
-    fun List<TadVDeliverylistRecord>.toDeliveryLists(): List<DeliveryListService.DeliveryList> {
-        TODO("implement")
+    fun Iterable<TadVDeliverylistRecord>.toDeliveryLists(): List<DeliveryListService.DeliveryList> {
+        val dlDetailRecordsById = this@DeliveryListService.deliveryListRepository
+                // The order of detail records are crucial, as they represent stop order
+                .findDetailsByIds(this.map { it.id.toLong() })
+                .groupBy { it.id }
+
+        val orders = orderService.getByIds(
+                dlDetailRecordsById.flatMap { it.value }.map { it.orderId.toLong() }.distinct()
+        )
+                .associateBy { it.id }
+
+        return this.map { dlRecord ->
+            val dlDetailRecords = dlDetailRecordsById.getValue(dlRecord.id)
+
+            val dlDetailRecordsByPosition = dlDetailRecords
+                    .groupBy { it.orderPosition }
+
+            DeliveryListService.DeliveryList(
+                    id = dlRecord.id.toLong(),
+                    info = DeliveryListService.DeliveryListInfo(
+                            id = dlRecord.id.toLong(),
+                            date = ShortDate(dlRecord.deliveryListDate),
+                            debitorId = dlRecord.debitorId
+                    ),
+                    orders = dlDetailRecords.map { orders.getValue(it.orderId.toLong()) },
+                    stops = dlDetailRecordsByPosition.map { dlDetailsForStop ->
+                        DeliveryListService.Stop(
+                                tasks = dlDetailsForStop.value
+                                        // Filter duplicate tasks
+                                        .distinctBy { listOf(it.orderId, it.stoptype) }
+                                        .map {
+                                            DeliveryListService.Task(
+                                                    orderId = it.orderId.toLong(),
+                                                    isRemoved = if (it.removedInDeliverylist != 0.0) true else false,
+                                                    taskType = DeliveryListService.Task.Type.valueOf(it.stoptype)
+                                            ).also {
+                                                it.stopType = it.taskType!!
+                                            }
+                                        }
+                        )
+                    }
+            )
+        }
     }
+
+    /**
+     * Transform single delivery list
+     */
+    fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList =
+        listOf(this).toDeliveryLists().first()
+
+    //endregion
 
     /**
      * Message handler receiving updated delivery lists
