@@ -452,7 +452,7 @@ class VehicleLoadingScreen :
             // Synthetic inputs for delivery lists, retrieved via online service
             val ovDeliveryLists = Observable.fromCallable {
                 val deliveryListService = Kodein.global.instance<DeliveryListService>()
-                deliveryListService.get(deliveryDate = null)
+                deliveryListService.getInfo(deliveryDate = null)
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)

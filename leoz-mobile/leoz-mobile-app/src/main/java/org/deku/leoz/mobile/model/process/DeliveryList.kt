@@ -131,25 +131,6 @@ class DeliveryList : CompositeDisposableSupplier {
     }
 
     /**
-     * Extension method for filtering distinct stops
-     */
-    private fun List<Stop>.distinctStops(): List<Stop> {
-        return this.flatMap { stop ->
-            stop.tasks.map { task ->
-                Pair(stop, task)
-            }
-        }.groupBy {
-            // Group by order task id to find duplicates
-            it.second.id
-        }.map {
-            if (it.value.count() > 1) {
-                log.warn("Duplicate stop task [${it.key}], filtering all but the last one")
-            }
-            it.value.last().first
-        }
-    }
-
-    /**
      * Loads delivery list data from remote peer and merge into local database
      * @param deliveryListNumber Delivery list id
      * @return Hot observable which completes with a list of stops
@@ -202,7 +183,6 @@ class DeliveryList : CompositeDisposableSupplier {
                             }.filterNotNull()
                     )
                 }
-                        .distinctStops()
 
                 stopRepository
                         .merge(stops)
