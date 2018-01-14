@@ -310,7 +310,9 @@ class TourServiceV1
      */
     override fun optimize(
             id: Int,
-            optimizationOptions: TourServiceV1.TourOptimizationOptions, response: AsyncResponse) {
+            waitForCompletion: Boolean,
+            optimizationOptions: TourServiceV1.TourOptimizationOptions,
+            response: AsyncResponse) {
 
         try {
             this.optimize(
@@ -319,19 +321,30 @@ class TourServiceV1
             )
                     .subscribeBy(
                             onComplete = {
-                                response.resume(Response
-                                        .status(Response.Status.OK)
-                                        .build()
-                                )
+                                if (waitForCompletion) {
+                                    response.resume(Response
+                                            .status(Response.Status.OK)
+                                            .build()
+                                    )
+                                }
                             },
                             onError = { e ->
                                 log.error(e.message, e)
-                                response.resume(RestProblem(
-                                        status = Status.INTERNAL_SERVER_ERROR,
-                                        detail = e.message
-                                ))
+                                if (waitForCompletion) {
+                                    response.resume(RestProblem(
+                                            status = Status.INTERNAL_SERVER_ERROR,
+                                            detail = e.message
+                                    ))
+                                }
                             }
                     )
+
+            if (!waitForCompletion) {
+                response.resume(Response
+                        .status(Response.Status.ACCEPTED)
+                        .build()
+                )
+            }
         } catch (e: Exception) {
             throw RestProblem(
                     status = Status.INTERNAL_SERVER_ERROR,

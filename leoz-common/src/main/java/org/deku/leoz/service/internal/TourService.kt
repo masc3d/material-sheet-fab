@@ -30,6 +30,7 @@ interface TourServiceV1 {
         const val NODE_UID = "node-uid"
         const val STATION_ID = "station-id"
         const val USER_ID = "user-id"
+        const val WAIT_FOR_COMPLETION = "wait-for-completion"
     }
 
     @GET
@@ -98,6 +99,8 @@ interface TourServiceV1 {
     fun optimize(
             @PathParam(ID) @ApiParam(value = "Tour id")
             id: Int,
+            @QueryParam(WAIT_FOR_COMPLETION) @ApiParam(value = "Wait for optimization completion", example = "false")
+            waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
             optimizationOptions: TourOptimizationOptions,
             @Suspended response: AsyncResponse
@@ -199,8 +202,23 @@ interface TourServiceV1 {
                     notes = "Amends all appointment times, so they relate to the current day",
                     example = "false"
             )
-            var amendAppointmentTimes: Boolean = false
-    )
+            var amendAppointmentTimes: Boolean = false,
+            @ApiModelProperty(position = 20,
+                    required = false,
+                    value = "Vehicles to optimize for"
+            )
+            var vehicles: List<Vehicle> = listOf()
+    ) {
+        @Serializable(0x4bcec10612464e )
+        data class Vehicle(
+                @ApiModelProperty(position = 10,
+                        required = false,
+                        value = "Vehicle capacity in kg",
+                        example = "500.0"
+                )
+                var capacity: Double = 500.0
+        )
+    }
 
     /**
      * Tour update
