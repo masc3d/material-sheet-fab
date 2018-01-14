@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
@@ -7,41 +6,51 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Tour } from '../../core/models/touroptimizing.model';
 
 import { Shipment } from '../../core/models/shipment.model';
+import { Deliverylist } from '../../core/models/deliverylist.model';
+import { TouroptimizingService } from './touroptimizing.service';
 
 @Component( {
   selector: 'app-touroptimizing',
   templateUrl: './touroptimizing.component.html',
-  styleUrls: ['./touroptimizing.css'],
+  styleUrls: [ './touroptimizing.css' ],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class TouroptimizingComponent extends AbstractTranslateComponent implements OnInit {
 
   touroptimizingForm: FormGroup;
-  tour: Tour[];
-  shipments: Shipment[];
+  deliverylists: Deliverylist[];
+  deliverylistsOrderCount: number;
+  deliverylistsParcelCount: number;
+  deliverylistsTotalWeight: number;
+  tours: Tour[];
 
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
-               public router: Router ) {
-    super( translate, cd, () => {
-    } );
+               protected touroptimizingService: TouroptimizingService ) {
+    super( translate, cd );
   }
 
   ngOnInit() {
     super.ngOnInit();
 
-    this.touroptimizingForm = this.fb.group( {
-      carCount: [ null ],
-      selectloadlist: [ null ],
-      scanfield: [ null ],
-      loadlistnumber: [ { value: '', disabled: true } ],
-      printlabel: [ null ],
-      basedon: [ 'standard' ],
-      basedonscan: [ '' ]
-    } );
-    this.tour = [
-      { deliverylistNumber: 123456789,
+    this.deliverylistsOrderCount = 0;
+    this.deliverylistsParcelCount = 0;
+    this.deliverylistsTotalWeight = 0;
+    this.deliverylists = [];
+    this.touroptimizingService.deliverylists$
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( deliverylists: Deliverylist[] ) => {
+        this.deliverylists = deliverylists;
+        this.deliverylistsOrderCount = this.countOrders( deliverylists );
+        this.deliverylistsParcelCount = this.countParcels( deliverylists );
+        this.deliverylistsTotalWeight = this.sumWeights( deliverylists );
+        this.cd.markForCheck();
+      } );
+    this.touroptimizingForm = this.fb.group( {} );
+    this.tours = [
+      {
+        deliverylistNumber: 123456789,
         shipments: 33,
         packages: 49,
         weight: 234,
@@ -56,7 +65,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: false
       },
-      { deliverylistNumber: 678912345,
+      {
+        deliverylistNumber: 678912345,
         shipments: 45,
         packages: 98,
         weight: 436,
@@ -71,7 +81,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -86,7 +97,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -101,7 +113,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -116,7 +129,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -131,7 +145,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -146,7 +161,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -161,7 +177,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -176,7 +193,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -191,7 +209,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75,
@@ -206,7 +225,8 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourDistance: '108',
         tourOptimized: true
       },
-      { deliverylistNumber: 123894567,
+      {
+        deliverylistNumber: 123894567,
         shipments: 5,
         packages: 18,
         weight: 75.10,
@@ -222,293 +242,27 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         tourOptimized: true
       }
     ];
-    this.shipments = [
-      {
-        deliveryAddress: {
-          zipCode: '50825',
-        },
-        deliveryTime: '12:00',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 12.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50123',
-        },
-        deliveryTime: '08:00',
-        optimized: true,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 1.90,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-      {
-        deliveryAddress: {
-          zipCode: '50444',
-        },
-        deliveryTime: '09:30',
-        optimized: false,
-        parcels: [ {
-          parcelNo: 84259511468,
-          realWeight: 8.50,
-        } ]
-      },
-    ];
+    this.touroptimizingService.getDeliverylists();
+  }
+
+  private sumWeights( deliverylists: Deliverylist[] ) {
+    return deliverylists.length > 0
+      ? deliverylists.map( ( d ) => d.totalWeight )
+        .reduce( ( a, b ) => a + b )
+      : 0;
+  }
+
+  private countParcels( deliverylists: Deliverylist[] ) {
+    return deliverylists.length > 0
+      ? deliverylists.map( ( d ) => d.totalPackages )
+        .reduce( ( a, b ) => a + b )
+      : 0;
+  }
+
+  private countOrders( deliverylists: Deliverylist[] ) {
+    return deliverylists.length > 0
+      ? deliverylists.map( ( d ) => d.totalShipments )
+        .reduce( ( a, b ) => a + b )
+      : 0;
   }
 }

@@ -6,47 +6,21 @@
           <div class="ui-g-12 ui-lg-12">{{'deliverylists' | translate}}</div>
         </div>
         <div class="ui-g" style="font-weight: bold;font-size:13px; padding-left: 3px;">
-          <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent" style="color: #184b7d;"></i> (8)</div>
-          <div class="ui-g-12 ui-lg-2"><i class="fas fa-align-justify" style="color: #184b7d;"></i> (12)</div>
-          <div class="ui-g-12 ui-lg-2"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S (218)</div>
-          <div class="ui-g-12 ui-lg-3"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P (327)</div>
-          <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale" style="color: #184b7d;"></i> (1690)</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent" style="color: #184b7d;"></i> (0)</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fas fa-align-justify" style="color: #184b7d;"></i> ({{deliverylists.length}})</div>
+          <div class="ui-g-12 ui-lg-2"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S ({{deliverylistsOrderCount}})</div>
+          <div class="ui-g-12 ui-lg-3"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P ({{deliverylistsParcelCount}})</div>
+          <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale" style="color: #184b7d;"></i> ({{deliverylistsTotalWeight}})</div>
         </div>
         <hr/>
-        <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="100%"
-                        [style]="{'height': '620px', 'padding': '0 3px 3px 3px'}">
-          <ng-template let-tour pTemplate="body">
-            <div class="ui-g row-deliverylist">
-              <div class="ui-g-12 ui-lg-1">&nbsp;</div>
-              <div class="ui-g-12 ui-lg-3">&nbsp;</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S</div>
-              <div class="ui-g-12 ui-lg-1">{{tour.shipments}}</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P</div>
-              <div class="ui-g-12 ui-lg-1">{{tour.packages}}</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fas fa-balance-scale" style="color: #184b7d;"></i></div>
-              <div class="ui-g-12 ui-lg-3">{{tour.weight}}</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fas fa-align-justify" style="color: #184b7d;"></i></div>
-              <div class="ui-g-12 ui-lg-3" style="font-weight: bold">{{tour.deliverylistNumber}}</div>
-              <div class="ui-g-12 ui-lg-6">&nbsp;</div>
-              <div class="ui-g-12 ui-lg-1">
-                    <span *ngIf="tour.optimized; else notOptimized">
-                      <i class="fas fa-sync" style="color: #00a200;"></i>
-                    </span>
-                <ng-template #notOptimized>
-                  <i class="fas fa-sync" style="color: #ff0000;"></i>
-                </ng-template>
-              </div>
-              <div class="ui-g-12 ui-lg-1">
-                <p-checkbox name="optimize" value="optimize"></p-checkbox>
-              </div>
-              <div class="ui-g-12 ui-lg-4">&nbsp;</div>
-              <div class="ui-g-12 ui-lg-1"><i class="far fa-clock" style="color: #184b7d;"></i></div>
-              <div class="ui-g-12 ui-lg-1">{{tour.time}}</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fas fa-road" style="color: #184b7d;"></i></div>
-              <div class="ui-g-12 ui-lg-5">{{tour.distance}}</div>
-            </div>
-          </ng-template>
-        </p-dataScroller>
+        <div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">
+          <div *ngFor="let deliverylist of deliverylists">
+            <app-tourlistitem [id]="deliverylist.id" [faIcon]="'fa-align-justify'" [totalShipments]="deliverylist.totalShipments"
+                              [totalPackages]="deliverylist.totalPackages" [totalWeight]="deliverylist.totalWeight"
+                              [optimized]="deliverylist.optimized" [time]="deliverylist.time"
+                              [distance]="deliverylist.distance"></app-tourlistitem>
+          </div>
+        </div>
         <div class="ui-g-12 ui-lg-4">
           <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
                           onIcon="far fa-check-square" offIcon="far fa-square"></p-toggleButton>
@@ -75,40 +49,14 @@
           <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale" style="color: #184b7d;"></i> (5076)</div>
         </div>
         <hr/>
-        <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="100%"
-                        [style]="{'height': '620px', 'padding': '0 3px 3px 3px'}">
-          <ng-template let-tour pTemplate="body">
-            <div class="ui-g row-tourlist">
-              <div class="ui-g-12 ui-lg-1">&nbsp;</div>
-              <div class="ui-g-12 ui-lg-3">&nbsp;</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S</div>
-              <div class="ui-g-12 ui-lg-1">{{tour.tourShipments}}</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P</div>
-              <div class="ui-g-12 ui-lg-1">{{tour.tourPackages}}</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fas fa-balance-scale" style="color: #184b7d;"></i></div>
-              <div class="ui-g-12 ui-lg-3">{{tour.tourWeight}}</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fas fa-truck" style="color: #184b7d;"></i></div>
-              <div class="ui-g-12 ui-lg-3" style="font-weight: bold">{{tour.tourNo}}</div>
-              <div class="ui-g-12 ui-lg-6">&nbsp;</div>
-              <div class="ui-g-12 ui-lg-1">
-                        <span *ngIf="tour.tourOptimized; else tourNotOptimized">
-                          <i class="fas fa-sync" style="color: #00a200;"></i>
-                        </span>
-                <ng-template #tourNotOptimized>
-                  <i class="fas fa-sync" style="color: #ff0000;"></i>
-                </ng-template>
-              </div>
-              <div class="ui-g-12 ui-lg-1">
-                <p-checkbox name="optimize" value="optimize"></p-checkbox>
-              </div>
-              <div class="ui-g-12 ui-lg-4">&nbsp;</div>
-              <div class="ui-g-12 ui-lg-1"><i class="far fa-clock" style="color: #184b7d;"></i></div>
-              <div class="ui-g-12 ui-lg-1">{{tour.tourTime}}</div>
-              <div class="ui-g-12 ui-lg-1"><i class="fas fa-road" style="color: #184b7d;"></i></div>
-              <div class="ui-g-12 ui-lg-5">{{tour.tourDistance}}</div>
-            </div>
-          </ng-template>
-        </p-dataScroller>
+        <div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">
+          <div *ngFor="let tour of tours">
+            <app-tourlistitem [id]="tour.tourNo" [faIcon]="'fa-truck'" [totalShipments]="tour.tourShipments"
+                              [totalPackages]="tour.tourPackages" [totalWeight]="tour.tourWeight"
+                              [optimized]="tour.tourOptimized" [time]="tour.tourTime"
+                              [distance]="tour.tourDistance"></app-tourlistitem>
+          </div>
+        </div>
         <div class="ui-g-12 ui-lg-4">
           <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
                           onIcon="far fa-check-square" offIcon="far fa-square"></p-toggleButton>
@@ -132,40 +80,14 @@
           <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale" style="color: #184b7d;"></i> (5076)</div>
         </div>
         <hr/>
-            <p-dataScroller [value]="tour" [rows]="100" [inline]="true" scrollHeight="100%"
-                                  [style]="{'height': '620px', 'padding': '0 3px 3px 3px'}">
-              <ng-template let-tour pTemplate="body">
-                <div class="ui-g row-tourlist">
-                  <div class="ui-g-12 ui-lg-1">&nbsp;</div>
-                  <div class="ui-g-12 ui-lg-3">&nbsp;</div>
-                  <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S</div>
-                  <div class="ui-g-12 ui-lg-1">{{tour.tourShipments}}</div>
-                  <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P</div>
-                  <div class="ui-g-12 ui-lg-1">{{tour.tourPackages}}</div>
-                  <div class="ui-g-12 ui-lg-1"><i class="fas fa-balance-scale" style="color: #184b7d;"></i></div>
-                  <div class="ui-g-12 ui-lg-3">{{tour.tourWeight}}</div>
-                  <div class="ui-g-12 ui-lg-1"><i class="far fa-user" style="color: #184b7d;"></i></div>
-                  <div class="ui-g-12 ui-lg-3" style="font-weight: bold">{{tour.tourNo}}</div>
-                  <div class="ui-g-12 ui-lg-6">&nbsp;</div>
-                  <div class="ui-g-12 ui-lg-1">
-                        <span *ngIf="tour.tourOptimized; else tourNotOptimized">
-                          <i class="fas fa-sync" style="color: #00a200;"></i>
-                        </span>
-                    <ng-template #tourNotOptimized>
-                      <i class="fas fa-sync" style="color: #ff0000;"></i>
-                    </ng-template>
-                  </div>
-                  <div class="ui-g-12 ui-lg-1">
-                    <p-checkbox name="optimize" value="optimize"></p-checkbox>
-                  </div>
-                  <div class="ui-g-12 ui-lg-4">&nbsp;</div>
-                  <div class="ui-g-12 ui-lg-1"><i class="far fa-clock" style="color: #184b7d;"></i></div>
-                  <div class="ui-g-12 ui-lg-1">{{tour.tourTime}}</div>
-                  <div class="ui-g-12 ui-lg-1"><i class="fas fa-road" style="color: #184b7d;"></i></div>
-                  <div class="ui-g-12 ui-lg-5">{{tour.tourDistance}}</div>
-                </div>
-              </ng-template>
-            </p-dataScroller>
+        <div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">
+          <div *ngFor="let tour of tours">
+            <app-tourlistitem [id]="tour.tourNo" [faIcon]="'fa-user'" [totalShipments]="tour.tourShipments"
+                              [totalPackages]="tour.tourPackages" [totalWeight]="tour.tourWeight"
+                              [optimized]="tour.tourOptimized" [time]="tour.tourTime"
+                              [distance]="tour.tourDistance"></app-tourlistitem>
+          </div>
+        </div>
         <div class="ui-g-12 ui-lg-4">
           <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
                           onIcon="far fa-check-square" offIcon="far fa-square"></p-toggleButton>

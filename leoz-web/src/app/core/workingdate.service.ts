@@ -11,4 +11,8 @@ export class WorkingdateService {
     const nowMinusXHours = moment().subtract( NOW_MINUS_X_HOURS, 'hours' );
     return nowMinusXHours.format( 'YYYY/MM/DD' );
   }
+
+  public deliveryDateForWS() {
+    return moment().format( 'YYYY-MM-DD' );
+  }
 }

@@ -14,6 +14,7 @@ import { DatePipe } from '@angular/common';
 import { TouroptimizingRoutingModule } from './touroptimizing-routing.module';
 import { TouroptimizingComponent } from './touroptimizing.component';
 import { TouroptimizingService } from './touroptimizing.service';
+import { TourlistitemComponent } from './tourlistitem.component';
 
 @NgModule( {
   imports: [
@@ -27,7 +28,10 @@ import { TouroptimizingService } from './touroptimizing.service';
     TouroptimizingRoutingModule,
     DataScrollerModule,
   ],
-  declarations: [ TouroptimizingComponent ],
+  declarations: [
+    TourlistitemComponent,
+    TouroptimizingComponent
+  ],
   providers: [
     TouroptimizingService,
     DatePipe,
