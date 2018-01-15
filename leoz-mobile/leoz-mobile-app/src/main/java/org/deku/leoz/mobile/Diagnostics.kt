@@ -13,6 +13,7 @@ import org.zeroturnaround.zip.ZipUtil
 import sx.ProcessExecutor
 import sx.mq.mqtt.channel
 import java.io.File
+import java.nio.file.Files
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,6 +43,11 @@ class Diagnostics() {
 
             database.backup(
                     destinationFile = diagDir.resolve(database.name)
+            )
+
+            storage.logDir.copyRecursively(
+                    target = diagDir.resolve(storage.logDir.name),
+                    overwrite = true
             )
 
             val diagZipFile = diagDir.parentFile.resolve(diagDir.name + MimeType.LEOZ_DIAGNOSTIC_ZIP.extension)
