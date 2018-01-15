@@ -1418,7 +1418,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val unitRecord = eu.unit
         val orderRecord = eu.order
 
-        if (unitRecord.ladelistennummerd.toLong() != loadingListNo) {
+        if (unitRecord.ladelistennummerd==null || unitRecord.ladelistennummerd.toLong() != loadingListNo) {
             val oldLoadinglist = unitRecord.ladelistennummerd?.toLong()?.toString() ?: ""
             unitRecord.ladelistennummerd = loadingListNo.toDouble()
             if (unitRecord.store() > 0) {
