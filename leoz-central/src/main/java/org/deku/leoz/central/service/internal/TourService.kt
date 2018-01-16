@@ -1,6 +1,5 @@
 package org.deku.leoz.central.service.internal
 
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -25,6 +24,7 @@ import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.zalando.problem.Status
+import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -34,9 +34,10 @@ import sx.time.replaceDate
 import sx.time.toTimestamp
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
-import javax.ws.rs.NotSupportedException
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.core.MediaType
@@ -116,23 +117,26 @@ class TourServiceV1
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
 
+    // Repositories
     @Inject
     private lateinit var deliverylistRepository: JooqDeliveryListRepository
-
     @Inject
     private lateinit var tourRepository: JooqTourRepository
-
     @Inject
     private lateinit var userRepository: JooqUserRepository
-
     @Inject
     private lateinit var nodeRepository: JooqNodeRepository
+    @Inject
+    private lateinit var stationRepository: JooqStationRepository
 
     @Inject
     private lateinit var orderService: OrderService
 
     @Inject
     private lateinit var smartlaneBridge: SmartlaneBridge
+
+    @Inject
+    private lateinit var executorService: ExecutorService
 
     //endregion
 
@@ -350,7 +354,7 @@ class TourServiceV1
 
                         val orders = stops
                                 .flatMap { it.tasks }
-                                .map { it.orderId }
+                                .map { it.orderId }.distinct()
                                 .map { orderId -> tour.orders.first { it.id == orderId } }
 
                         TourServiceV1.Tour(
@@ -460,43 +464,66 @@ class TourServiceV1
     override fun status(stationId: Int, sink: SseEventSink, sse: Sse) {
         var subscription: Disposable? = null
 
-        fun close() {
+        //this.stationRepository.findById(stationId)
+
+        // The status request uuid
+        val uuid = "${UUID.randomUUID()}"
+
+        /** Helper to close down (with optional error) */
+        fun close(error: Throwable? = null) {
             subscription?.dispose()
             sink.close()
+
+            log.info { "SSE CLOSED [${uuid}] ${error?.message ?: ""}" }
         }
 
-        subscription = this.optimizations.updated
-                // TODO: eventually may have to emit dummy in interval to poll for passive client close
-                .takeUntil { sink.isClosed }
-                // TODO: Filter only relevant tours for optimization updates (station id lookup)
+        subscription = Observable.merge(
+                // Emit interval based (ping) event in order to detect remote disconnection
+                Observable.interval(1, TimeUnit.MINUTES)
+                        .map { sse.newEventBuilder().id(uuid).build() }
+                ,
+                // Listen for updates
+                this.optimizations.updated
+                        // TODO: Filter only relevant tours for optimization updates (station id lookup)
 //                .filter { ids.contains(it.id) }
-                .doOnSubscribe {
-                    log.trace("SSE SUBSCRIBED")
-                }
-                .doOnComplete {
-                    log.trace("SSE COMPLETED")
-                }
-                .doOnDispose {
-                    log.trace("SSE DISPOSED")
-                }
-                .subscribe { status ->
+                        .doOnSubscribe {
+                            log.trace { "SSE SUBSCRIBED [${uuid}]" }
+                        }
+                        .doOnComplete {
+                            log.trace { "SSE COMPLETED [${uuid}]" }
+                        }
+                        .doOnDispose {
+                            log.trace { "SSE DISPOSED [${uuid}]" }
+                        }
+                        .map { status ->
+                            // Build SSE event from status update
+                            sse.newEventBuilder()
+                                    .id(uuid)
+                                    .mediaType(MediaType.APPLICATION_JSON_TYPE)
+                                    .data(status.javaClass, status)
+                                    .build()
+                        }
+        )
+                .takeUntil { sink.isClosed }
+                .subscribe { event ->
                     try {
                         // Send SSE event for each update
-                        sink.send(sse.newEventBuilder()
-                                .id("${UUID.randomUUID()}")
-                                .mediaType(MediaType.APPLICATION_JSON_TYPE)
-                                .data(status.javaClass, status)
-                                .build()
-                        )
+                        sink.send(event)
+                                .whenComplete { result, e ->
+                                    val error: Throwable? = when {
+                                        result is Throwable -> result
+                                        e != null -> e
+                                        else -> null
+                                    }
+
+                                    close(error)
+                                }
                                 .exceptionally { e ->
-                                    log.error(e.message)
-                                    // Close down and unsubscribe on send errors
-                                    close()
+                                    close(e)
                                     null
                                 }
                     } catch (e: Throwable) {
-                        log.error(e.message)
-                        close()
+                        close(e)
                     }
                 }
     }
