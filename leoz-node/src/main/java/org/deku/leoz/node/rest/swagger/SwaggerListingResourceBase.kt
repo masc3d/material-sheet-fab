@@ -5,8 +5,10 @@ import io.swagger.jaxrs.listing.BaseApiListingResource
 import io.swagger.models.Swagger
 import io.swagger.models.parameters.AbstractSerializableParameter
 import org.apache.commons.lang3.StringUtils
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder
 import org.jboss.resteasy.spi.ResteasyUriInfo
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.trace
 import java.net.URI
 import java.nio.file.Paths
 import javax.inject.Inject
@@ -32,7 +34,7 @@ abstract class SwaggerListingResourceBase : BaseApiListingResource() {
     @GET
     @Produces(MediaType.APPLICATION_JSON, "application/yaml")
     @ApiOperation(value = "The swagger definition in either JSON or YAML", hidden = true)
-    @Path("/swagger.{type:json|yaml}")
+    @Path("/openapi-2.{type:json|yaml}")
     fun getListing(
             @Context app: Application,
             @Context sc: ServletConfig,
@@ -44,10 +46,21 @@ abstract class SwaggerListingResourceBase : BaseApiListingResource() {
         // As we're running all swagger instances under a single web application/dispatcher servlet
         // Have to mangle the paths so they reflect distinct base URIs, so base class
         // implementation can locate swagger instances setup by {@link SwaggerBootstrapServlet} by base URI.
-        val filenameIndex = uriInfo.path.lastIndexOf('/')
-        val path = uriInfo.path.substring(0, filenameIndex).trimStart('/')
-        val filename = uriInfo.path.substring(filenameIndex)
-        val newUriInfo = ResteasyUriInfo(uriInfo.baseUri.resolve(path), URI.create(filename))
+
+        val path = uriInfo.pathSegments
+                .take(uriInfo.pathSegments.count() - 1)
+                .joinToString("/")
+
+        val filename = uriInfo.pathSegments.last().path
+
+        val newUriInfo = ResteasyUriInfo(
+                // Path must be part of base URI for swagger spec distinction
+                uriInfo.baseUri.resolve(path),
+                ResteasyUriBuilder()
+                        .uri(filename)
+                        .replaceQuery(uriInfo.requestUri.query)
+                        .build()
+        )
 
         if (StringUtils.isNotBlank(type) && type.trim { it <= ' ' }.equals("yaml", ignoreCase = true)) {
             return getListingYamlResponse(app, context, sc, headers, newUriInfo)
@@ -56,8 +69,14 @@ abstract class SwaggerListingResourceBase : BaseApiListingResource() {
         }
     }
 
-    override fun process(app: Application?, servletContext: ServletContext?, sc: ServletConfig?, headers: HttpHeaders?, uriInfo: UriInfo?): Swagger {
+    override fun process(app: Application, servletContext: ServletContext, sc: ServletConfig, headers: HttpHeaders, uriInfo: UriInfo): Swagger {
         return super.process(app, servletContext, sc, headers, uriInfo).also { swagger ->
+            // Support for `postman` query parameter, eg. placeholders (https://www.getpostman.com)
+            swagger.host = when {
+                uriInfo.queryParameters.containsKey("postman") -> "{{host}}"
+                else -> ""
+            }
+
             swagger.paths.values.forEach {
                 it.operations?.forEach {
                     it.parameters?.forEach {
@@ -77,3 +96,4 @@ abstract class SwaggerListingResourceBase : BaseApiListingResource() {
         }
     }
 }
+
