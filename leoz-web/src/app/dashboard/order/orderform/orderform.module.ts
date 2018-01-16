@@ -22,6 +22,7 @@ import { InfoComponent } from './info/info.component';
 import { ProductspecComponent } from './productspec/productspec.component';
 import { PackagesComponent } from './packages/packages.component';
 import { SystemComponent } from './system/system.component';
+import { PackagesRowComponent } from './packages/packages.row.component';
 
 @NgModule( {
   imports: [
@@ -46,6 +47,7 @@ import { SystemComponent } from './system/system.component';
     ClientComponent,
     ProductspecComponent,
     PackagesComponent,
+    PackagesRowComponent,
     SystemComponent
   ],
   exports: [ OrderformComponent ],

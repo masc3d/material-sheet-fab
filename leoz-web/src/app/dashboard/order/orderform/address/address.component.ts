@@ -6,6 +6,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Component( {
   selector: 'app-address',
   templateUrl: './address.component.html',
+  styles: [`
+    input[pinputtext] {
+      height: 25px;
+      margin-bottom: 2px;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class AddressComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
