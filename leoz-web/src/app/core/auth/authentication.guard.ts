@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
@@ -11,7 +11,7 @@ export class AuthenticationGuard implements CanActivate {
   }
 
   canActivate( route: ActivatedRouteSnapshot, state: RouterStateSnapshot ) {
-    this.http.get<{ version }>( this.versionUrl )
+    this.http.get<{ version }>( this.versionUrl, {params: new HttpParams().set( 'blanco', Date.now().toString() ) } )
       .subscribe( ( json ) => {
           const locallyStoredVersion = localStorage.getItem( 'version' );
           if(locallyStoredVersion && json.version !== locallyStoredVersion) {
