@@ -94,8 +94,7 @@ interface TourServiceV1 {
 
     @PATCH
     @Path("/optimize")
-    @ApiOperation(value = "Optimize tour",
-            notes = "This call is synchronous and will update central entities on completion.",
+    @ApiOperation(value = "Optimize tour(s)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun optimize(
             @QueryParam(IDS) @ApiParam(value = "Tour id(s)")
@@ -110,7 +109,6 @@ interface TourServiceV1 {
     @PATCH
     @Path("/{${ID}}/optimize")
     @ApiOperation(value = "Optimize tour",
-            notes = "This call is synchronous and will update central entities on completion.",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun optimize(
             @PathParam(ID) @ApiParam(value = "Tour id")
