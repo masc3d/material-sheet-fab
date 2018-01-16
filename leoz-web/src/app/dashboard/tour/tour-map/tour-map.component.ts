@@ -10,6 +10,7 @@ import { MarkerModel } from './marker.model';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { DateMomentjsPipe } from '../../../core/translate/date-momentjs.pipe';
+import { GeoJsonTypes } from 'geojson';
 
 @Component( {
   selector: 'app-tour-map',
@@ -229,7 +230,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
       this.yagaMap.removeLayer( this.geoJsonLayer );
     }
     let geoJson = {
-      'type': 'FeatureCollection',
+      'type': <GeoJsonTypes>'FeatureCollection',
       'features': []
     };
     if (activeRoute && activeRoute.length > 0) {
@@ -266,7 +267,7 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
         }
       }, ...marker ];
       geoJson = {
-        'type': 'FeatureCollection',
+        'type': <GeoJsonTypes>'FeatureCollection',
         'features': features
       };
 
