@@ -80,7 +80,7 @@ class SmartlaneBridgeTest {
                     }
             )
                     .blockingSubscribe {
-                        log.trace("Processed ${it.id}")
+                        log.trace("Processed ${it.map { it.id }}")
                     }
         })
     }

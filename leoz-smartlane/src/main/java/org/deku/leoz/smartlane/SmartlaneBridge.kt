@@ -121,7 +121,7 @@ class SmartlaneBridge {
      * @param routingInput Smartlane routing input
      * @return Observable
      */
-    fun optimizeRoute(routingInput: Routinginput): Observable<Route> {
+    fun optimizeRoute(routingInput: Routinginput): Observable<List<Route>> {
         val routeApiGeneric by lazy { this.proxy(RouteApiGeneric::class.java, customerId = customerId) }
         val routeApi by lazy { this.proxy(RouteApi::class.java, customerId = customerId) }
 
@@ -146,7 +146,7 @@ class SmartlaneBridge {
                         )
                     }
                             .retryWith(
-                                    count = 100,
+                                    count = 1000,
                                     action = { _, e ->
                                         when (e) {
                                         // Retry when pending
@@ -160,7 +160,9 @@ class SmartlaneBridge {
                             )
                             .map {
                                 // Get the final result
-                                routeApi.getRouteById(it.routeIds.first())
+                                it.routeIds.map {
+                                    routeApi.getRouteById(it)
+                                }
                             }
                 }
                 .subscribeOn(domain.scheduler)

@@ -2,6 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
@@ -35,6 +36,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Named
+import javax.ws.rs.NotSupportedException
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.core.MediaType
@@ -124,6 +126,9 @@ class TourServiceV1
     private lateinit var userRepository: JooqUserRepository
 
     @Inject
+    private lateinit var nodeRepository: JooqNodeRepository
+
+    @Inject
     private lateinit var orderService: OrderService
 
     @Inject
@@ -209,9 +214,8 @@ class TourServiceV1
      * Get tour by node
      */
     override fun getByNode(nodeUid: String): TourServiceV1.Tour {
-        val nodeId = dsl.selectFrom(MST_NODE)
-                .where(MST_NODE.KEY.eq(nodeUid))
-                .fetchOne(MST_NODE.NODE_ID) ?:
+        val nodeId = this.nodeRepository.findByKeyStartingWith(nodeUid)?.nodeId
+                ?:
                 throw RestProblem(
                         status = Status.NOT_FOUND,
                         detail = "Unknown node uid ${nodeUid}"
@@ -239,13 +243,88 @@ class TourServiceV1
     }
 
     /**
-     * Optimize a tour and update tour entry positions in place
+     * Create new tours
+     * @param tours Tours to create
+     * @return Ids of created tours
+     */
+    fun create(tours: Iterable<TourServiceV1.Tour>): List<Int> {
+        return dsl.transactionResult { _ ->
+            tours.map { tour ->
+                // Create new one if it doesn't exist
+                val tourRecord = dsl.newRecord(TAD_TOUR).also {
+                    it.userId = tour.userId
+                    it.store()
+                }
+
+                tour.stops.forEachIndexed { index, stop ->
+                    stop.tasks.forEach { task ->
+                        dsl.newRecord(TAD_TOUR_ENTRY).also {
+                            it.tourId = tourRecord.id
+                            it.position = (index + 1).toDouble()
+                            it.orderId = task.orderId
+                            it.orderTaskType = when (task.taskType) {
+                                TourServiceV1.Task.Type.DELIVERY -> TaskType.DELIVERY.value
+                                TourServiceV1.Task.Type.PICKUP -> TaskType.DELIVERY.value
+                            }
+                            it.store()
+                        }
+                    }
+                }
+
+                tourRecord.id
+            }
+        }
+    }
+
+    /**
+     * Update existing tour from optimized one
+     * @param tour Optimized tour
+     */
+    fun updateFromOptimizedTour(tour: TourServiceV1.Tour) {
+        dsl.transaction { _ ->
+            val tourId = tour.id ?: throw IllegalArgumentException("Tour id cannot be null")
+
+            val now = Date().toTimestamp()
+            val entryRecords = tourRepository.findEntriesById(tourId)
+
+            tour.stops
+                    .forEachIndexed { index, stop ->
+                        // Select stop tour entry which matches custom id
+                        val entryRecord = entryRecords.first { it.id == stop.id }
+
+                        val newPosition = (index + 1).toDouble()
+                        log.trace { "OPTIMIZATION POSITION UPDATE ${entryRecord.position} -> ${newPosition}" }
+
+                        // Update position for all entries on the same (positional) level
+                        val entryIds = entryRecords
+                                .filter { it.position == entryRecord.position }
+                                .map { it.id }
+
+                        dsl.update(TAD_TOUR_ENTRY)
+                                .set(TAD_TOUR_ENTRY.POSITION, newPosition)
+                                .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
+                                .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
+                                .execute()
+                    }
+
+            dsl.update(TAD_TOUR)
+                    .set(TAD_TOUR.OPTIMIZED, now)
+                    .where(TAD_TOUR.ID.eq(tourId))
+                    .execute()
+        }
+    }
+
+    /**
+     * Optimize a tour.
+     * This method operates solely on service entities and will not perform central database updates.
      * @param id Tour id
+     * @param optimizationOptions Optimization options
+     * @return Single observable of optimized tours
      */
     fun optimize(
             id: Int,
             optimizationOptions: TourServiceV1.TourOptimizationOptions
-    ): Completable {
+    ): Single<List<TourServiceV1.Tour>> {
         // Check if optimization for this tour is already in progress
         if (this.optimizations.any { it.id == id })
             throw IllegalStateException("Optimization for tour [${id}] already in progress")
@@ -258,69 +337,74 @@ class TourServiceV1
                         optimizationOptions
                 ))
                 .doOnSubscribe {
+                    log.trace("ONSTART")
                     this.optimizations.onStart(tourId)
                 }
-                .doOnNext { route ->
-                    dsl.transaction { _ ->
-                        val now = Date().toTimestamp()
-                        val entryRecords = tourRepository.findEntriesById(id)
-
-                        route.deliveries
+                .map { routes ->
+                    routes.map { route ->
+                        val stops = route.deliveries
                                 .sortedBy { it.orderindex }
-                                .forEachIndexed { index, delivery ->
-                                    // Select stop tour entry which matches custom id
-                                    val stop = tour.stops.first { it.id == delivery.customId.toInt() }
-
-                                    val entryRecord = entryRecords.first { it.id == stop.id }
-
-                                    val newPosition = (index + 1).toDouble()
-                                    log.trace { "OPTIMIZATION POSITION UPDATE ${entryRecord.position} -> ${newPosition} (${delivery.orderindex})" }
-
-                                    // Update position for all entries on the same (positional) level
-                                    val entryIds = entryRecords
-                                            .filter { it.position == entryRecord.position }
-                                            .map { it.id }
-
-                                    dsl.update(TAD_TOUR_ENTRY)
-                                            .set(TAD_TOUR_ENTRY.POSITION, newPosition)
-                                            .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
-                                            .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
-                                            .execute()
+                                .map { delivery ->
+                                    tour.stops.first { it.id == delivery.customId.toInt() }
                                 }
 
-                        dsl.update(TAD_TOUR)
-                                .set(TAD_TOUR.OPTIMIZED, now)
-                                .where(TAD_TOUR.ID.eq(id))
-                                .execute()
+                        val orders = stops
+                                .flatMap { it.tasks }
+                                .map { it.orderId }
+                                .map { orderId -> tour.orders.first { it.id == orderId } }
+
+                        TourServiceV1.Tour(
+                                id = null,
+                                nodeUid = tour.nodeUid,
+                                userId = tour.userId,
+                                stops = stops,
+                                orders = orders
+                        )
                     }
                 }
-                .doOnComplete {
+                .doFinally {
                     this.optimizations.onFinish(tourId)
                 }
-                .doOnError {
-                    this.optimizations.onFinish(tourId)
-                }
-                .ignoreElements()
+                .firstOrError()
     }
 
     /**
-     * Optimize tour
-     * @param id Tour id
-     * @param response Asynchronous response
+     * Optimize tours
      */
     override fun optimize(
-            id: Int,
+            ids: List<Int>,
             waitForCompletion: Boolean,
             optimizationOptions: TourServiceV1.TourOptimizationOptions,
             response: AsyncResponse) {
 
+        data class Optimization(val tourId: Int, val result: List<TourServiceV1.Tour>)
+
         try {
-            this.optimize(
-                    id,
-                    optimizationOptions
-            )
+            log.info("Starting ruote optimization for tours [${ids.joinToString(", ")}] ")
+
+            Observable.mergeDelayError(ids.map { id ->
+                this.optimize(
+                        id = id,
+                        optimizationOptions = optimizationOptions
+                )
+                        .toObservable()
+                        .map { Optimization(tourId = id, result = it) }
+            })
                     .subscribeBy(
+                            onNext = { optimization ->
+                                val tours = optimization.result
+
+                                log.info("Ruote optimization completed for tour [${optimization.tourId}]")
+
+                                if (optimizationOptions.vehicles?.count() ?: 0 > 0) {
+                                    // Create tours from optimized results
+                                    this.create(tours)
+                                } else {
+                                    this.updateFromOptimizedTour(tours.first())
+                                }
+                            },
                             onComplete = {
+                                log.info("Route optimization completed")
                                 if (waitForCompletion) {
                                     response.resume(Response
                                             .status(Response.Status.OK)
@@ -339,6 +423,8 @@ class TourServiceV1
                             }
                     )
 
+
+
             if (!waitForCompletion) {
                 response.resume(Response
                         .status(Response.Status.ACCEPTED)
@@ -351,6 +437,24 @@ class TourServiceV1
                     detail = e.message
             )
         }
+    }
+
+    /**
+     * Optimize tour
+     * @param id Tour id
+     * @param response Asynchronous response
+     */
+    override fun optimize(
+            id: Int,
+            waitForCompletion: Boolean,
+            optimizationOptions: TourServiceV1.TourOptimizationOptions,
+            response: AsyncResponse) {
+
+        this.optimize(
+                ids = listOf(id),
+                waitForCompletion = waitForCompletion,
+                optimizationOptions = optimizationOptions,
+                response = response)
     }
 
     override fun status(stationId: Int, sink: SseEventSink, sse: Sse) {
@@ -422,11 +526,11 @@ class TourServiceV1
                     optimizationOptions = optimizationOptions
             )
                     .subscribeBy(
-                            onComplete = {
+                            onSuccess = { tours ->
                                 JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
                                         .channel()
                                         .send(TourServiceV1.TourUpdate(
-                                                tour = this.getById(tour.id)
+                                                tour = tours.first()
                                         ))
                             },
                             onError = { e ->
@@ -509,45 +613,52 @@ class TourServiceV1
             optimizationOptions: TourServiceV1.TourOptimizationOptions
     ): Routinginput {
         return Routinginput().also {
-            it.deliverydata = this.stops.map { stop ->
-                Routedeliveryinput().also {
-                    stop.address?.also { address ->
-                        it.contactlastname = address.line1
-                        it.contactfirstname = address.line2
-                        it.contactcompany = address.line3
-                        it.street = address.street
-                        it.housenumber = address.streetNo
-                        it.city = address.city
-                        it.postalcode = address.zipCode
-                        address.geoLocation?.also { geo ->
-                            it.lat = geo.latitude.toString()
-                            it.lng = geo.longitude.toString()
+            it.deliverydata = this.stops
+                    .map { stop ->
+                        Routedeliveryinput().also {
+                            stop.address?.also { address ->
+                                it.contactlastname = address.line1
+                                it.contactfirstname = address.line2
+                                it.contactcompany = address.line3
+                                it.street = address.street
+                                it.housenumber = address.streetNo
+                                it.city = address.city
+                                it.postalcode = address.zipCode
+                                address.geoLocation?.also { geo ->
+                                    it.lat = geo.latitude.toString()
+                                    it.lng = geo.longitude.toString()
+                                }
+                            }
+
+                            // Current time
+                            val now = Date()
+
+                            //region Determine pdt parameters
+                            if (!optimizationOptions.omitAppointmentTimes) {
+                                var pdtFrom = stop.appointmentStart
+                                var pdtTo = stop.appointmentEnd
+                                if (optimizationOptions.amendAppointmentTimes) {
+                                    pdtFrom = pdtFrom?.replaceDate(now)
+                                    pdtTo = pdtTo?.replaceDate(now)
+                                }
+                                pdtTo = if (pdtTo != null && pdtTo > now) pdtTo else null
+                                pdtFrom = if (pdtTo != null) pdtFrom else null
+                                //endregion
+
+                                it.pdtFrom = pdtFrom
+                                it.pdtTo = pdtTo
+
+                                log.trace("PDT ${it.pdtFrom} -> ${it.pdtTo}")
+                            }
+
+                            // Track stop via custom id
+                            it.customId = stop.id?.toString()
+
+                            it.load = optimizationOptions.vehicles
+                                    ?.map { "${it.capacity}kg" }
+                                    ?.joinToString(",")
                         }
                     }
-
-                    // Current time
-                    val now = Date()
-
-                    //region Determine pdt parameters
-                    var pdtFrom = stop.appointmentStart
-                    var pdtTo = stop.appointmentEnd
-                    if (optimizationOptions.amendAppointmentTimes) {
-                        pdtFrom = pdtFrom?.replaceDate(now)
-                        pdtTo = pdtTo?.replaceDate(now)
-                    }
-                    pdtTo = if (pdtTo != null && pdtTo > now) pdtTo else null
-                    pdtFrom = if (pdtTo != null) pdtFrom else null
-                    //endregion
-
-                    it.pdtFrom = pdtFrom
-                    it.pdtTo = pdtTo
-
-                    log.trace("PDT ${it.pdtFrom} -> ${it.pdtTo}")
-
-                    // Track stop via custom id
-                    it.customId = stop.id?.toString()
-                }
-            }
         }
     }
 
@@ -641,17 +752,24 @@ class TourServiceV1
                 this.onMessage(message)
             }
             is TourServiceV1.TourOptimizationRequest -> {
-                val nodeUid = message.nodeUid ?: run {
-                    log.warn("Tour optimization request received without node uid")
-                    return
-                }
-
-                this.optimizeForNode(
-                        nodeUid = nodeUid,
-                        optimizationOptions = message.optimizationOptions
-                )
+                this.onMessage(message)
             }
         }
+    }
+
+    /**
+     * Tour optimization request message handler
+     */
+    private fun onMessage(message: TourServiceV1.TourOptimizationRequest) {
+        val nodeUid = message.nodeUid ?: run {
+            log.warn("Tour optimization request received without node uid")
+            return
+        }
+
+        this.optimizeForNode(
+                nodeUid = nodeUid,
+                optimizationOptions = message.optimizationOptions
+        )
     }
 
     /**
@@ -696,20 +814,21 @@ class TourServiceV1
                     .where(TAD_TOUR_ENTRY.TOUR_ID.eq(tourRecord.id))
                     .execute()
 
-            tour.stops.forEachIndexed { index, stop ->
-                stop.tasks.forEach { task ->
-                    dsl.newRecord(TAD_TOUR_ENTRY).also {
-                        it.tourId = tourRecord.id
-                        it.position = (index + 1).toDouble()
-                        it.orderId = task.orderId
-                        it.orderTaskType = when (task.taskType) {
-                            TourServiceV1.Task.Type.DELIVERY -> TaskType.DELIVERY.value
-                            TourServiceV1.Task.Type.PICKUP -> TaskType.DELIVERY.value
+            tour.stops
+                    .forEachIndexed { index, stop ->
+                        stop.tasks.forEach { task ->
+                            dsl.newRecord(TAD_TOUR_ENTRY).also {
+                                it.tourId = tourRecord.id
+                                it.position = (index + 1).toDouble()
+                                it.orderId = task.orderId
+                                it.orderTaskType = when (task.taskType) {
+                                    TourServiceV1.Task.Type.DELIVERY -> TaskType.DELIVERY.value
+                                    TourServiceV1.Task.Type.PICKUP -> TaskType.DELIVERY.value
+                                }
+                                it.store()
+                            }
                         }
-                        it.store()
                     }
-                }
-            }
         }
     }
     //endregion

@@ -26,6 +26,7 @@ import javax.ws.rs.sse.SseEventSink
 interface TourServiceV1 {
     companion object {
         const val ID = "id"
+        const val IDS = "ids"
         const val DEBITOR_ID = "debitor-id"
         const val NODE_UID = "node-uid"
         const val STATION_ID = "station-id"
@@ -90,6 +91,21 @@ interface TourServiceV1 {
             @ApiParam(value = "Request for creating tour from a delivery list")
             request: TourFromDeliverylist
     ): Tour
+
+    @PATCH
+    @Path("/optimize")
+    @ApiOperation(value = "Optimize tour",
+            notes = "This call is synchronous and will update central entities on completion.",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun optimize(
+            @QueryParam(IDS) @ApiParam(value = "Tour id(s)")
+            ids: List<Int>,
+            @QueryParam(WAIT_FOR_COMPLETION) @ApiParam(value = "Wait for optimization completion", example = "false")
+            waitForCompletion: Boolean,
+            @ApiParam(value = "Tour optimization options")
+            optimizationOptions: TourOptimizationOptions,
+            @Suspended response: AsyncResponse
+    )
 
     @PATCH
     @Path("/{${ID}}/optimize")
@@ -203,11 +219,20 @@ interface TourServiceV1 {
                     example = "false"
             )
             var amendAppointmentTimes: Boolean = false,
+            @ApiModelProperty(position = 10,
+                    required = false,
+                    value = "Omit appointment times",
+                    notes = "Omits all appointment times",
+                    example = "false"
+            )
+            var omitAppointmentTimes: Boolean = false,
             @ApiModelProperty(position = 20,
                     required = false,
-                    value = "Vehicles to optimize for"
+                    value = "Vehicles to optimize for. " +
+                            "When this parameter is omitted, the tour will be optimized in place. " +
+                            "When provided, new tours will be created for each vehicle."
             )
-            var vehicles: List<Vehicle> = listOf()
+            var vehicles: List<Vehicle>? = null
     ) {
         @Serializable(0x4bcec10612464e )
         data class Vehicle(
