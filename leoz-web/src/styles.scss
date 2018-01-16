@@ -272,7 +272,7 @@ a {
   text-decoration: none !important;
   &:hover,
   &:focus {
-    color: $color-deku-blue !important;
+    //color: $color-deku-blue !important;
   }
 }
 
@@ -362,7 +362,7 @@ p-tabpanel > div {
 }
 
 .ui-state-default a {
-  color: #000000 !important;
+  color: #000000;
   font-weight: normal;
 }
 
@@ -506,17 +506,25 @@ p-tabpanel > div {
 
 *::-webkit-input-placeholder { /* WebKit browsers */
   color:    #c3c1c1;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-size: 16px;
 }
 *:-moz-placeholder { /* Mozilla Firefox <18 */
   color:    #c3c1c1;
   opacity:  1;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-size: 16px;
 }
 *::-moz-placeholder { /* Mozilla Firefox 19+ */
   color:    #c3c1c1;
   opacity:  1;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-size: 16px;
 }
 *:-ms-input-placeholder { /* Internet Explorer 10-11 */
   color:    #c3c1c1;
+  font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  font-size: 16px;
 }
 
 // Symbols:
@@ -529,4 +537,21 @@ p-tabpanel > div {
 
 .padding5px {
   padding: 5px;
+}
+
+p-tabView.orderForm li>a {
+  background-color: #5f5f61;
+  color: white;
+}
+p-tabView.orderForm li>a:hover {
+  background-color: #5f5f61;
+  color: lightgray !important;
+}
+
+div.orderform fieldset.ui-fieldset {
+  border:0;
+}
+
+div.orderform .ui-fieldset .ui-fieldset-legend {
+  color: white;
 }

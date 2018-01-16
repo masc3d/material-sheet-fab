@@ -15,6 +15,16 @@ import { TranslateService } from '../../../core/translate/translate.service';
 @Component( {
   selector: 'app-orderform',
   templateUrl: './orderform.component.html',
+  styles: [ `
+    .bgColorTabView {
+      background-color:#cacad0;
+    }
+
+    input[pinputtext] {
+      height: 25px;
+      margin-bottom: 2px;
+    }
+  ` ],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 

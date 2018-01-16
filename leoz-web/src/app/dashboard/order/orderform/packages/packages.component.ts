@@ -9,7 +9,7 @@ import { AbstractTranslateComponent } from '../../../../core/translate/abstract-
 })
 export class PackagesComponent extends AbstractTranslateComponent {
 
-  @Input() isPickup: boolean
+  @Input() isPickup: boolean;
 
   constructor(public translate: TranslateService ,
               protected cd: ChangeDetectorRef ) {

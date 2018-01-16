@@ -28,55 +28,8 @@
 
   <div class="ui-g-12 ui-g-nopad" style="margin-top: 10px;
                                             min-height: 192px; padding: 10px 0 10px 0;">
-    <div class="ui-g-12 ui-lg-3 ui-g-nopad">
-      100502269858
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      1
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      1
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      1
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      1,5
-    </div>
-    <div class="ui-g-12 ui-lg-3 ui-g-nopad">
-      Paket
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      &nbsp;
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      2
-    </div>
-
-    <div class="ui-g-12 ui-lg-3 ui-g-nopad">
-      100502269865
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      2
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      1
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      1
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      1
-    </div>
-    <div class="ui-g-12 ui-lg-3 ui-g-nopad">
-      Valore
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      &nbsp;
-    </div>
-    <div class="ui-g-12 ui-lg-1 ui-g-nopad">
-      1
-    </div>
+    <app-packages-row [pack]="{ packageNo: '100502269858', weight: '1', length: '1', witdh: '1', height: '1,5', type: 'Paket', orderPos: '2'}" [index]="1"></app-packages-row>
+    <app-packages-row [pack]="{ packageNo: '100502269865', weight: '2', length: '1', witdh: '1', height: '1', type: 'Valore', orderPos: '1'}" [index]="2"></app-packages-row>
 
   </div>
 </div>

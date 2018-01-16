@@ -1,8 +1,8 @@
 <form [formGroup]="orderformForm">
-  <div class="ui-fluid ui-g">
+  <div class="orderform ui-fluid ui-g">
     <div class="ui-g-12 ui-lg-5" style="padding: 0;">
       <p-fieldset legend="{{'consignor' | translate}}">
-        <div class="ui-g-12 ui-g-nopad">
+        <div class="ui-g-12 ui-g-nopad" style="margin-top: 5px;">
           <div class="ui-g-12 ui-lg-6 ui-g-nopad">
             <input pInputText formControlName="consignorClientNos" placeholder="{{ 'consignorClientNos' | translate }}">
           </div>
@@ -21,8 +21,8 @@
       <div>
         <app-address [addresses]="pickupAddresses" [placeholderLine1]="'senderLine1'"
                      [placeholderLine2]="'senderLine2'" [placeholderLine3]="'senderLine3'"></app-address>
-        <div class="ui-g-12 ui-g-nopad shadow" style="margin: 10px 0 10px 0; min-height: 385px;">
-          <p-tabView [style]="{'minHeight': '350px'}">
+        <div class="ui-g-12 ui-g-nopad bgColorTabView" style="margin: 10px 0 10px 0; min-height: 325px;">
+          <p-tabView class="orderForm" [style]="{'minHeight': '325px'}">
             <p-tabPanel header="{{'pickupTimeWindow' | translate}}">
               <app-timewindows [isPickup]="true"></app-timewindows>
             </p-tabPanel>
@@ -40,15 +40,15 @@
             </p-tabPanel>
           </p-tabView>
         </div>
-        <div class="ui-g-12 ui-g-nopad">
-          <app-packages  style = "min-height: 90px"></app-packages>
+        <div class="ui-g-12 ui-g-nopad bgColorTabView" style="padding: 4px;" >
+          <app-packages style="min-height: 90px;"></app-packages>
         </div>
       </div>
     </p-fieldset>
     </div>
     <div class="ui-g-12 ui-lg-5" style="padding: 0;">
       <p-fieldset legend="{{'consignee' | translate}}">
-          <div class="ui-g-12 ui-g-nopad">
+          <div class="ui-g-12 ui-g-nopad" style="margin-top: 5px;">
             <div class="ui-g-12 ui-lg-6 ui-g-nopad">
               <input pInputText placeholder="{{ 'consigneeClientNos' | translate }}">
             </div>
@@ -60,8 +60,8 @@
         </div>
             <app-address [addresses]="deliveryAddresses" [placeholderLine1]="'deliveryLine1'"
                          [placeholderLine2]="'deliveryLine2'" [placeholderLine3]="'deliveryLine3'"></app-address>
-          <div class="ui-g-12 ui-g-nopad shadow" style="margin: 10px 0 10px 0; min-height: 385px;">
-            <p-tabView [style]="{'minHeight': '350px'}">
+          <div class="ui-g-12 ui-g-nopad bgColorTabView" style="margin: 10px 0 10px 0; min-height: 325px;">
+            <p-tabView class="orderForm" [style]="{'minHeight': '325px'}">
               <p-tabPanel header="{{'deliveryTimeWindow' | translate}}">
                 <app-timewindows [isPickup]="false"></app-timewindows>
               </p-tabPanel>
@@ -76,13 +76,13 @@
               </p-tabPanel>
             </p-tabView>
           </div>
-        <div class="ui-g-12 ui-g-nopad">
+        <div class="ui-g-12 ui-g-nopad bgColorTabView" style="padding: 4px;">
           <app-productspec style = "min-height: 90px"></app-productspec>
         </div>
       </p-fieldset>
     </div>
     <div class="ui-g-12 ui-lg-2" style="padding: 0;">
-      <p-fieldset legend="{{'system' | translate}}">
+      <p-fieldset id="orderformFS3" legend="{{'system' | translate}}">
         <app-system></app-system>
       </p-fieldset>
     </div>
