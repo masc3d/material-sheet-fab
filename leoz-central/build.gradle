@@ -9,7 +9,7 @@ import java.nio.file.Files
 
 buildscript {
     ext {
-        v_mysql = '5.1.40'
+        v_mysql = '5.1.45'
     }
 
     dependencies {
