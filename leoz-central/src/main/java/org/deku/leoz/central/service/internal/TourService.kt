@@ -134,10 +134,6 @@ class TourServiceV1
 
     @Inject
     private lateinit var smartlaneBridge: SmartlaneBridge
-
-    @Inject
-    private lateinit var executorService: ExecutorService
-
     //endregion
 
     //region REST
@@ -264,6 +260,7 @@ class TourServiceV1
                 // Create new one if it doesn't exist
                 val tourRecord = dsl.newRecord(TAD_TOUR).also {
                     it.userId = tour.userId
+                    it.stationId = tour.stationId
                     it.store()
                 }
 
@@ -283,6 +280,14 @@ class TourServiceV1
                 }
 
                 tourRecord.id
+            }
+        }
+    }
+
+    override fun delete(ids: List<Int>) {
+        dsl.transaction { _ ->
+            ids.forEach {
+                this.tourRepository.delete(it)
             }
         }
     }
@@ -348,7 +353,6 @@ class TourServiceV1
                         optimizationOptions
                 ))
                 .doOnSubscribe {
-                    log.trace("ONSTART")
                     this.optimizations.onStart(tourId)
                 }
                 .map { routes ->
@@ -368,6 +372,7 @@ class TourServiceV1
                                 id = null,
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
+                                stationId = tour.stationId,
                                 stops = stops,
                                 orders = orders
                         )
@@ -391,7 +396,7 @@ class TourServiceV1
         data class Optimization(val tourId: Int, val result: List<TourServiceV1.Tour>)
 
         try {
-            log.info("Starting ruote optimization for tours [${ids.joinToString(", ")}] ")
+            log.info("Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] ")
 
             Observable.mergeDelayError(ids.map { id ->
                 this.optimize(
@@ -415,7 +420,7 @@ class TourServiceV1
                                 }
                             },
                             onComplete = {
-                                log.info("Route optimization completed")
+                                log.info("Route optimization process completed")
                                 if (waitForCompletion) {
                                     response.resume(Response
                                             .status(Response.Status.OK)
@@ -526,7 +531,8 @@ class TourServiceV1
                                         else -> null
                                     }
 
-                                    close(error)
+                                    if (error != null)
+                                        close(error)
                                 }
                                 .exceptionally { e ->
                                     close(e)
@@ -724,6 +730,7 @@ class TourServiceV1
                 id = tourRecord.id,
                 nodeUid = nodeUid,
                 userId = tourRecord.userId,
+                stationId = tourRecord.stationId,
                 orders = orders,
                 stops = tourEntryRecords.groupBy { it.position }
                         .map { stop ->

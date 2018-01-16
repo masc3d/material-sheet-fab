@@ -63,7 +63,7 @@ class TourServiceTest {
             ResteasyClientBuilder.newBuilder().build().also { client ->
                 SseEventSource.target(client
                         .target("http://localhost:13000/rs/api/internal/v1/tour/optimize/status/sse")
-                        .queryParam("station-id", 1)
+                        .queryParam("station-id", 310)
                 )
                         .build()
                         .apply {

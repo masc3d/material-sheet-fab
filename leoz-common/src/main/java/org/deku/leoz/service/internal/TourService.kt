@@ -79,9 +79,18 @@ interface TourServiceV1 {
             notes = "The tour will be owned by the same station",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun create(
-            @PathParam(DELIVERYLIST_ID) @ApiParam(value = "Request for creating tour from a delivery list")
+            @PathParam(DELIVERYLIST_ID) @ApiParam(value = "Source delivery list id")
             deliveryListId: Int
     ): Tour
+
+    @DELETE
+    @Path("/")
+    @ApiOperation(value = "Delete tour(s)",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun delete(
+            @QueryParam(IDS) @ApiParam(value = "Tour id(s)")
+            ids: List<Int>
+    )
 
     @PATCH
     @Path("/optimize")
@@ -148,11 +157,13 @@ interface TourServiceV1 {
             var id: Int? = null,
             @ApiModelProperty(position = 20, required = false, value = "Node this tour belongs to")
             var nodeUid: String? = null,
-            @ApiModelProperty(position = 20, required = false, value = "User this tour belongs to")
+            @ApiModelProperty(position = 30, required = false, value = "User this tour belongs to")
             var userId: Int? = null,
-            @ApiModelProperty(position = 40, required = true, value = "Orders referenced by this tour")
+            @ApiModelProperty(position = 40, required = false, value = "Station this tour belongs to")
+            var stationId: Int? = null,
+            @ApiModelProperty(position = 50, required = true, value = "Orders referenced by this tour")
             var orders: List<OrderService.Order> = listOf(),
-            @ApiModelProperty(position = 50, required = true, value = "Tour stop list")
+            @ApiModelProperty(position = 60, required = true, value = "Tour stop list")
             var stops: List<Stop> = listOf()
     )
 

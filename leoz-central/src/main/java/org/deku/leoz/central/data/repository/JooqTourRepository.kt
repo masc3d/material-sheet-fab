@@ -52,4 +52,20 @@ class JooqTourRepository {
                 .orderBy(Tables.TAD_TOUR_ENTRY.POSITION, Tables.TAD_TOUR_ENTRY.ID)
                 .toList()
     }
+
+    /**
+     * Delete tour
+     * @param id Tour id
+     */
+    fun delete(id: Int) {
+        dsl.transaction { _ ->
+            dsl.deleteFrom(Tables.TAD_TOUR_ENTRY)
+                    .where(Tables.TAD_TOUR_ENTRY.TOUR_ID.eq(id))
+                    .execute()
+
+            dsl.deleteFrom(Tables.TAD_TOUR)
+                    .where(Tables.TAD_TOUR.ID.eq(id))
+                    .execute()
+        }
+    }
 }
