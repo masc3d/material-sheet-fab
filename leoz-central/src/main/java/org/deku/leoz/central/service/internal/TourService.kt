@@ -146,6 +146,7 @@ class TourServiceV1
      */
     override fun get(
             debitorId: Int?,
+            stationId: Int?,
             userId: Int?
     ): List<TourServiceV1.Tour> {
         val tourRecords = dsl
@@ -156,6 +157,12 @@ class TourServiceV1
                         debitorId != null -> it.and(TAD_TOUR.USER_ID.`in`(
                                 userRepository.findUserIdsByDebitor(debitorId)
                         ))
+                        else -> it
+                    }
+                }
+                .let {
+                    when {
+                        stationId != null -> it.and(TAD_TOUR.STATION_ID.eq(stationId))
                         else -> it
                     }
                 }
@@ -466,6 +473,10 @@ class TourServiceV1
 
         //this.stationRepository.findById(stationId)
 
+        val tourIds = dsl.selectFrom(TAD_TOUR)
+                .where(TAD_TOUR.STATION_ID.eq(stationId))
+                .fetch(TAD_TOUR.ID)
+
         // The status request uuid
         val uuid = "${UUID.randomUUID()}"
 
@@ -484,8 +495,7 @@ class TourServiceV1
                 ,
                 // Listen for updates
                 this.optimizations.updated
-                        // TODO: Filter only relevant tours for optimization updates (station id lookup)
-//                .filter { ids.contains(it.id) }
+                        .filter { tourIds.contains(it.id) }
                         .doOnSubscribe {
                             log.trace { "SSE SUBSCRIBED [${uuid}]" }
                         }
@@ -575,27 +585,15 @@ class TourServiceV1
         }
     }
 
-    /**
-     * Create tour
-     */
-    override fun create(
-            request: TourServiceV1.TourFromDeliverylist
-    ): TourServiceV1.Tour {
-
-        val deliveryListId = request.deliveryListId?.toLong()
-                ?: throw RestProblem(
-                status = Status.BAD_REQUEST,
-                detail = "Delivery list id is mandatory"
-        )
-
-        val userId = request.userId
-                ?: throw RestProblem(
-                status = Status.BAD_REQUEST,
-                detail = "User id is mandatory"
+    override fun create(deliveryListId: Int): TourServiceV1.Tour {
+        val dlRecord = deliverylistRepository.findById(
+                deliveryListId.toLong()
+        ) ?: throw RestProblem(
+                status = Status.NOT_FOUND
         )
 
         val dlDetailRecords = deliverylistRepository.findDetailsById(
-                deliveryListId
+                deliveryListId.toLong()
         )
 
         val timestamp = Date().toTimestamp()
@@ -605,8 +603,9 @@ class TourServiceV1
             // Create new tour
             val tourRecord = dsl.newRecord(TAD_TOUR).also {
                 it.nodeId = null
-                it.userId = userId
-                it.deliverylistId = request.deliveryListId
+                it.userId = null
+                it.stationId = dlRecord.deliveryStation.toInt()
+                it.deliverylistId = deliveryListId
                 it.timestamp = timestamp
                 it.store()
             }

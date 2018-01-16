@@ -28,6 +28,7 @@ interface TourServiceV1 {
         const val ID = "id"
         const val IDS = "ids"
         const val DEBITOR_ID = "debitor-id"
+        const val DELIVERYLIST_ID = "deliverylist-id"
         const val NODE_UID = "node-uid"
         const val STATION_ID = "station-id"
         const val USER_ID = "user-id"
@@ -42,6 +43,8 @@ interface TourServiceV1 {
     fun get(
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
             debitorId: Int?,
+            @QueryParam(STATION_ID) @ApiParam(value = "Station id", required = false)
+            stationId: Int?,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
             userId: Int?
     ): List<Tour>
@@ -70,26 +73,14 @@ interface TourServiceV1 {
             userId: Int
     ): Tour
 
-    /**
-     * Contains information for creating a tour from a delivery list
-     * @param deliveryListId
-     */
-    @ApiModel(description = "Contains information for creating a tour from a delivery list")
-    data class TourFromDeliverylist(
-            @ApiModelProperty(position = 10, required = true, value = "Delivery list (id) to create tour from")
-            var deliveryListId: Int? = null,
-            @ApiModelProperty(position = 20, required = true, value = "User (id) this tour will get assigned to")
-            var userId: Int? = null
-    )
-
     @POST
-    @Path("/deliverylist")
+    @Path("/deliverylist/{${DELIVERYLIST_ID}}")
     @ApiOperation(value = "Create a new tour from a delivery list",
-            notes = "This tour will not be attached to a specific node and be used to split/optimize.",
+            notes = "The tour will be owned by the same station",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun create(
-            @ApiParam(value = "Request for creating tour from a delivery list")
-            request: TourFromDeliverylist
+            @PathParam(DELIVERYLIST_ID) @ApiParam(value = "Request for creating tour from a delivery list")
+            deliveryListId: Int
     ): Tour
 
     @PATCH
