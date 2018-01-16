@@ -15,6 +15,7 @@ import javax.inject.Named
 import javax.servlet.ServletConfig
 import javax.servlet.ServletContext
 import javax.servlet.http.HttpServlet
+import javax.ws.rs.core.Context
 
 /**
  * Public API documentation context/configuration
@@ -23,12 +24,6 @@ import javax.servlet.http.HttpServlet
 @Named
 class SwaggerBootstrapServlet : HttpServlet() {
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    // @Context
-    // masc201505.
-    // TODO: workaround for resteasy bug https://issues.jboss.org/browse/RESTEASY-828
-    @Inject
-    private lateinit var context: ServletContext
 
     override fun init(servletConfig: ServletConfig) {
         super.init(servletConfig)
@@ -84,6 +79,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
             servletConfig: ServletConfig,
             info: Info,
             mappingPrefix: String,
+            host: String = "",
             basePath: String = "",
             packageNames: List<String>) {
 
@@ -91,6 +87,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
         val swagger = Swagger()
                 .securityDefinition(AUTH_APIKEY, ApiKeyAuthDefinition(AUTH_APIKEY, In.HEADER))
                 .info(info)
+                .host(host)
                 // All our swagger instances are currently running under the same (web application) base URI.
                 .basePath(mappingPrefix)
 
