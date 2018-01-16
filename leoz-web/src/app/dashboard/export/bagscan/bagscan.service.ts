@@ -30,17 +30,21 @@ export class BagscanService extends AbstractExportService {
   validateBagId( bagId: number ): Observable<Object> {
     const stationNo = this.activeStation.stationNo;
     const validateBagIdUrl = `${environment.apiUrl}/internal/v1/export/station/${stationNo}/bag/${bagId}`;
-    return this.http.get( validateBagIdUrl);
+    return this.http.get( validateBagIdUrl );
   }
 
-  scanPackToBag( bagId: number, bagbackNo: number, packageId: number, loadlistNo: number, yellowseal: number ): Observable<Object> {
+  scanPackToBag( bagId: number, bagbackNo: number, packageId: number, loadlistNoLabel: string, yellowseal: number ): Observable<Object> {
+
+    console.log( 'scanPackToBag( bagId: number, bagbackNo: number, packageId: number, loadlistNo: number, yellowseal: number )',
+      bagId, bagbackNo, packageId, loadlistNoLabel, yellowseal );
+
     const scanPackToBagUrl = `${environment.apiUrl}/internal/v1/export/bag/${bagId}/fill`;
     const params = new HttpParams()
-      .set('bagback-no', bagbackNo.toString())
-      .set('parcel-no-or-reference', packageId.toString())
-      .set('yellowseal', yellowseal.toString())
-      .set('loadinglist-no', loadlistNo.toString())
-      .set('station-no', this.activeStation.stationNo.toString());
+      .set( 'bagback-no', bagbackNo.toString() )
+      .set( 'parcel-no-or-reference', packageId.toString() )
+      .set( 'yellowseal', yellowseal.toString() )
+      .set( 'loadinglist-no', loadlistNoLabel )
+      .set( 'station-no', this.activeStation.stationNo.toString() );
 
     return this.http.patch( scanPackToBagUrl, null, {
       observe: 'response',

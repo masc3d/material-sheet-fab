@@ -165,6 +165,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.bagscanService.activeLoadinglist$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeLoadinglist: Exportlist ) => {
+        console.log('this.activeBaglist changed...', activeLoadinglist);
         this.activeBaglist = activeLoadinglist;
         this.calcStats();
       } );
@@ -351,7 +352,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.bagscanService.scanPackToBag( this.bagscanForm.get( 'bagId' ).value,
       this.bagscanForm.get( 'backLabel' ).value,
       this.bagscanForm.get( 'packageNo' ).value,
-      this.activeBaglist.loadlistNo,
+      this.activeBaglist.label,
       this.bagscanForm.get( 'backSeal' ).value )
       .subscribe( ( response: HttpResponse<any> ) => {
           console.log( 'hier....', response );

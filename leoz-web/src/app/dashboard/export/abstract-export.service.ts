@@ -39,6 +39,7 @@ export abstract class AbstractExportService {
   public loadlists$ = this.loadlistsSubject.asObservable();
 
   public activeLoadinglistSubject = new BehaviorSubject<Exportlist>( <Exportlist> {
+    label: null,
     loadlistNo: null,
     packages: []
   } );
@@ -85,10 +86,11 @@ export abstract class AbstractExportService {
       this.loadlistsSubject.next( selectItemsArray );
 
       const allLoadlistArray = loadinglistNosUnique
-        .map( ( loadinglistNo: number ) => this.createLoadinglist( loadinglistNo, packages ) );
+        .map( ( loadinglistNo: number ) => this.createLoadinglist( loadinglistNo, null, packages ) );
       this.allLoadlistsSubject.next( allLoadlistArray );
 
-      this.activeLoadinglistSubject.next( this.createLoadinglist( this.activeLoadinglistTmp.loadlistNo, packages ) );
+      this.activeLoadinglistSubject.next(
+        this.createLoadinglist( this.activeLoadinglistTmp.loadlistNo, this.activeLoadinglistTmp.label, packages ) );
     } );
   }
 
@@ -123,10 +125,14 @@ export abstract class AbstractExportService {
    */
   newLoadlist(): void {
     this.http.post<NewLoadinglistNoResponse>( this.newLoadlistNoUrl, null )
-      .subscribe( ( data ) => this.setActiveLoadinglist( data.loadinglistNo ),
+      .subscribe( ( data ) => {
+          this.setActiveLoadinglist( data.loadinglistNo, data.label );
+          console.log( 'newLoadlist()...', data.loadinglistNo, data.label );
+        },
         ( _ ) => {
           this.ics.isOffline();
-        } );
+        }
+      );
   }
 
   reportHeaderData( loadlistNo: string ): Observable<HttpResponse<any>> {
@@ -138,21 +144,21 @@ export abstract class AbstractExportService {
 
   scanPack( packageId: string, loadlistNo: number ): Observable<HttpResponse<any>> {
 
-      const params = new HttpParams()
-        .set('parcel-no-or-reference', packageId)
-        .set('loadinglist-no', loadlistNo.toString())
-        .set('station-no', this.activeStation.stationNo.toString());
+    const params = new HttpParams()
+      .set( 'parcel-no-or-reference', packageId )
+      .set( 'loadinglist-no', loadlistNo.toString() )
+      .set( 'station-no', this.activeStation.stationNo.toString() );
 
-      return this.http.patch( this.scanUrl, null, {
-        observe: 'response',
-        params: params
-      } ).map( ( response: HttpResponse<any> ) => {
-        return response;
-      } );
-    }
+    return this.http.patch( this.scanUrl, null, {
+      observe: 'response',
+      params: params
+    } ).map( ( response: HttpResponse<any> ) => {
+      return response;
+    } );
+  }
 
-  setActiveLoadinglist( selected: number ) {
-    this.activeLoadinglistSubject.next( this.createLoadinglist( selected, [] ) );
+  setActiveLoadinglist( selected: number, label: string = null ) {
+    this.activeLoadinglistSubject.next( this.createLoadinglist( selected, label, [] ) );
     this.getAllPackages();
   }
 
@@ -161,8 +167,8 @@ export abstract class AbstractExportService {
       .map( ( parcel: Package ) => parcel.realWeight ) );
   }
 
-  private createLoadinglist( loadlistNo: number, allPackages: Package[] ) {
+  private createLoadinglist( loadlistNo: number, label: string, allPackages: Package[] ) {
     const currentPackages = allPackages.filter( ( pack: Package ) => loadlistNo !== null && pack.loadinglistNo === loadlistNo );
-    return <Exportlist> { loadlistNo: loadlistNo, packages: currentPackages };
+    return <Exportlist> { loadlistNo: loadlistNo, label: label, packages: currentPackages };
   }
 }
