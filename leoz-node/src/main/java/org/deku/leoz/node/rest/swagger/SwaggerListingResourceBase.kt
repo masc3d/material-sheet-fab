@@ -73,8 +73,10 @@ abstract class SwaggerListingResourceBase : BaseApiListingResource() {
         return super.process(app, servletContext, sc, headers, uriInfo).also { swagger ->
             // Support for `postman` query parameter, eg. placeholders (https://www.getpostman.com)
             swagger.host = when {
+                // Postman host placeholder
                 uriInfo.queryParameters.containsKey("postman") -> "{{host}}"
-                else -> ""
+                // Current request's `host:port`
+                else -> uriInfo.requestUri.rawAuthority
             }
 
             swagger.paths.values.forEach {
