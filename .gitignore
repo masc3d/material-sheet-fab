@@ -12,6 +12,7 @@
 .idea/libraries
 .idea/dataSources
 .idea/inspectionProfile
+.idea/httpRequests
 build
 buildSrc/build
 buildSrc/src/import
