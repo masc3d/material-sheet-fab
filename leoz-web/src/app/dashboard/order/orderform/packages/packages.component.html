@@ -19,17 +19,18 @@
       <input pInputText placeholder="{{'typeOfPackaging' | translate}}">
     </div>
     <div class="ui-g-12 ui-lg-1 ui-g-nopad" style="padding: 5px;">
-      <i class="fas fa-info-circle" style="color: #184b7d;"></i>
+      <i class="fas fa-info-circle iconBlue"></i>
     </div>
     <div class="ui-g-12 ui-lg-1 ui-g-nopad" style="padding: 5px;">
-      <i class="fas fa-lock" style="color: #184b7d;"></i>
+      <i class="fas fa-lock iconBlue"></i>
     </div>
   </div>
 
   <div class="ui-g-12 ui-g-nopad" style="margin-top: 10px;
                                             min-height: 192px; padding: 10px 0 10px 0;">
-    <app-packages-row [pack]="{ packageNo: '100502269858', weight: '1', length: '1', witdh: '1', height: '1,5', type: 'Paket', orderPos: '2'}" [index]="1"></app-packages-row>
-    <app-packages-row [pack]="{ packageNo: '100502269865', weight: '2', length: '1', witdh: '1', height: '1', type: 'Valore', orderPos: '1'}" [index]="2"></app-packages-row>
+    <app-packages-row [pack]="{ packageNo: '100502269858', weight: '1', length: '1', width: '1', height: '1,5', type: 'Paket', orderPos: '3'}" [index]="1"></app-packages-row>
+    <app-packages-row [pack]="{ packageNo: '100502269865', weight: '2', length: '1', width: '1', height: '1', type: 'Valore', orderPos: '2'}" [index]="2"></app-packages-row>
+    <app-packages-row [pack]="{ packageNo: '100502267652', weight: '1.5', length: '1', width: '1', height: '1', type: 'Palette', orderPos: '1'}" [index]="1"></app-packages-row>
 
   </div>
 </div>

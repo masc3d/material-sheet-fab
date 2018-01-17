@@ -7,30 +7,34 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
       <div class="ui-g-12 ui-lg-3 ui-g-nopad">{{pack.packageNo}}</div>
       <div class="ui-g-12 ui-lg-1 ui-g-nopad">{{pack.weight}}</div>
       <div class="ui-g-12 ui-lg-1 ui-g-nopad">{{pack.length}}</div>
-      <div class="ui-g-12 ui-lg-1 ui-g-nopad">{{pack.witdh}}</div>
+      <div class="ui-g-12 ui-lg-1 ui-g-nopad">{{pack.width}}</div>
       <div class="ui-g-12 ui-lg-1 ui-g-nopad">{{pack.height}}</div>
       <div class="ui-g-12 ui-lg-3 ui-g-nopad">{{pack.type}}</div>
-      <div class="ui-g-12 ui-lg-1 ui-g-nopad">&nbsp;</div>
-      <div class="ui-g-12 ui-lg-1 ui-g-nopad">{{pack.orderPos}}</div>
+      <div class="ui-g-12 ui-lg-1 ui-g-nopad"><i class="fas fa-pencil-alt iconBlue" aria-hidden="true" style="padding-left: 5px;"></i></div>
+      <div class="ui-g-12 ui-lg-1 ui-g-nopad"><i class="far fa-trash-alt iconBlue" aria-hidden="true" style="padding-left: 5px;"></i></div>
+      <!--<div class="ui-g-12 ui-lg-1 ui-g-nopad">{{pack.orderPos}}</div>-->
     </div>
   `,
   styles: [ `
+    .evenBgColor > div {
+      background-color: #adadaf85;
+    }
     .oddBgColor > div {
-      background-color: #adadaf;
+      background-color: #ebebeb;
     }
   ` ],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 
 export class PackagesRowComponent implements OnInit {
-  @Input() pack: { packageNo: string, weight: string, length: string, witdh: string, height: string, type: string, orderPos: string };
+  @Input() pack: { packageNo: string, weight: string, length: string, width: string, height: string, type: string, orderPos: string };
 
   @Input() index: number;
 
   oddBgColor: string;
 
   ngOnInit() {
-    this.oddBgColor = this.index % 2 === 1 ? 'oddBgColor' : '';
+    this.oddBgColor = this.index % 2 === 1 ? 'oddBgColor' : 'evenBgColor';
   }
 
 }

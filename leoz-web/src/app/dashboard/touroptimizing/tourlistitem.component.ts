@@ -6,13 +6,13 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     <div class="ui-g row-tourlistitem">
       <div class="ui-g-12 ui-lg-1">&nbsp;</div>
       <div class="ui-g-12 ui-lg-3">&nbsp;</div>
-      <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;S</div>
+      <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fa-sum"></i>&nbsp;S</div>
       <div class="ui-g-12 ui-lg-1">{{totalShipments}}</div>
-      <div class="ui-g-12 ui-lg-1"><i class="fa-sum" style="color: #184b7d;"></i>&nbsp;P</div>
+      <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fa-sum"></i>&nbsp;P</div>
       <div class="ui-g-12 ui-lg-1">{{totalPackages}}</div>
-      <div class="ui-g-12 ui-lg-1"><i class="fas fa-balance-scale" style="color: #184b7d;"></i></div>
+      <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas fa-balance-scale"></i></div>
       <div class="ui-g-12 ui-lg-3">{{totalWeight}}</div>
-      <div class="ui-g-12 ui-lg-1"><i class="fas {{faIcon}}" style="color: #184b7d;"></i></div>
+      <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas {{faIcon}}"></i></div>
       <div class="ui-g-12 ui-lg-3" style="font-weight: bold">{{id}}</div>
       <div class="ui-g-12 ui-lg-6">&nbsp;</div>
       <div class="ui-g-12 ui-lg-1">
@@ -27,9 +27,9 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         <p-checkbox name="optimize" value="optimize"></p-checkbox>
       </div>
       <div class="ui-g-12 ui-lg-4">&nbsp;</div>
-      <div class="ui-g-12 ui-lg-1"><i class="far fa-clock" style="color: #184b7d;"></i></div>
+      <div class="ui-g-12 ui-lg-1 iconBlue"><i class="far fa-clock"></i></div>
       <div class="ui-g-12 ui-lg-1">{{time}}</div>
-      <div class="ui-g-12 ui-lg-1"><i class="fas fa-road" style="color: #184b7d;"></i></div>
+      <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas fa-road"></i></div>
       <div class="ui-g-12 ui-lg-5">{{distance}}</div>
     </div>
   `,

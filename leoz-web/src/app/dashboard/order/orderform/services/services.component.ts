@@ -5,6 +5,12 @@ import { AbstractTranslateComponent } from '../../../../core/translate/abstract-
 @Component({
   selector: 'app-services',
   templateUrl: './services.component.html',
+  styles: [ `
+    input[pinputtext] {
+      height: 25px;
+      margin-bottom: 2px;
+    }
+  ` ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ServicesComponent extends AbstractTranslateComponent {
