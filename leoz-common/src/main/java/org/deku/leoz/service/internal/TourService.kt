@@ -181,7 +181,10 @@ interface TourServiceV1 {
             @ApiModelProperty(position = 30, required = false, value = "Stop appointment start")
             var appointmentStart: Date? = null,
             @ApiModelProperty(position = 40, required = false, value = "Stop appointment end")
-            var appointmentEnd: Date? = null
+            var appointmentEnd: Date? = null,
+
+            @ApiModelProperty(position = 50, required = false, value = "Stop weight")
+            var weight: Double? = null
     )
 
     @Serializable(0x8eeb2fbff14af5)

@@ -551,17 +551,11 @@ class TourServiceV1
         val node = dsl.selectFrom(MST_NODE)
                 .fetchByUid(nodeUid, strict = false)
                 ?:
-                throw RestProblem(
-                        status = Status.NOT_FOUND,
-                        detail = "Node not found"
-                )
+                throw RestProblem(status = Status.NOT_FOUND, detail = "Node not found")
 
         val tour = tourRepository.findByNodeId(node.nodeId)
                 ?:
-                throw RestProblem(
-                        status = Status.NOT_FOUND,
-                        detail = "Tour not found"
-                )
+                throw RestProblem(status = Status.NOT_FOUND, detail = "Tour not found")
 
         try {
             this.optimize(
@@ -656,6 +650,7 @@ class TourServiceV1
                                 it.housenumber = address.streetNo
                                 it.city = address.city
                                 it.postalcode = address.zipCode
+                                it.load = "${stop.weight}kg"
                                 address.geoLocation?.also { geo ->
                                     it.lat = geo.latitude.toString()
                                     it.lng = geo.longitude.toString()
@@ -687,11 +682,16 @@ class TourServiceV1
                             it.customId = stop.id?.toString()
 
                             it.load = optimizationOptions.vehicles
-                                    ?.map { "${it.capacity}kg" }
+//                                    ?.map { "${it.capacity}kg" }
+                                    ?.map { "1" }
                                     ?.joinToString(",")
                         }
                     }
         }
+    }
+
+    private fun Iterable<TadTourRecord>.toTours(): List<TourServiceV1.Tour> {
+        TODO("not implemented")
     }
 
     /**
@@ -767,7 +767,11 @@ class TourServiceV1
                                     },
                                     tasks = tasks,
                                     appointmentStart = tasks.map { it.appointmentStart }.filterNotNull().max(),
-                                    appointmentEnd = tasks.map { it.appointmentEnd }.filterNotNull().min()
+                                    appointmentEnd = tasks.map { it.appointmentEnd }.filterNotNull().min(),
+                                    weight = tasks
+                                            .map { ordersById.getValue(it.orderId) }
+                                            .flatMap { it.parcels }
+                                            .sumByDouble { it.dimension.weight }
                             )
                         }
         )
