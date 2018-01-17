@@ -5,6 +5,12 @@ import { TranslateService } from '../../../../core/translate/translate.service';
 @Component({
   selector: 'app-system',
   templateUrl: './system.component.html',
+  styles: [ `
+    input[pinputtext] {
+      height: 25px;
+      margin-bottom: 2px;
+    }
+  ` ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SystemComponent extends AbstractTranslateComponent {

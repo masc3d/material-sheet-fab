@@ -5,6 +5,12 @@ import { TranslateService } from '../../../../core/translate/translate.service';
 @Component({
   selector: 'app-timewindows',
   templateUrl: './timewindows.component.html',
+  styles: [ `
+    input[pinputtext] {
+      height: 25px;
+      margin-bottom: 2px;
+    }
+  ` ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TimewindowsComponent extends AbstractTranslateComponent {

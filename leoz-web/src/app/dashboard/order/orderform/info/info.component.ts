@@ -5,6 +5,12 @@ import { AbstractTranslateComponent } from '../../../../core/translate/abstract-
 @Component({
   selector: 'app-info',
   templateUrl: './info.component.html',
+  styles: [ `
+    input[pinputtext] {
+      height: 25px;
+      margin-bottom: 2px;
+    }
+  ` ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InfoComponent extends AbstractTranslateComponent {
