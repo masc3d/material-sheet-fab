@@ -102,7 +102,7 @@ interface TourServiceV1 {
             @QueryParam(WAIT_FOR_COMPLETION) @ApiParam(value = "Wait for optimization completion", example = "false")
             waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
-            optimizationOptions: TourOptimizationOptions,
+            options: TourOptimizationOptions,
             @Suspended response: AsyncResponse
     )
 
@@ -116,7 +116,7 @@ interface TourServiceV1 {
             @QueryParam(WAIT_FOR_COMPLETION) @ApiParam(value = "Wait for optimization completion", example = "false")
             waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
-            optimizationOptions: TourOptimizationOptions,
+            options: TourOptimizationOptions,
             @Suspended response: AsyncResponse
     )
 
@@ -148,7 +148,7 @@ interface TourServiceV1 {
             @PathParam(NODE_UID) @ApiParam(value = "Mobile node id")
             nodeUid: String,
             @ApiParam(value = "Tour optimization options")
-            optimizationOptions: TourOptimizationOptions
+            options: TourOptimizationOptions
     )
 
     @ApiModel(description = "Tour")
@@ -215,35 +215,50 @@ interface TourServiceV1 {
     @Serializable(0xc41f67f95c2025)
     @ApiModel(description = "Tour optimization options")
     data class TourOptimizationOptions(
+
             @ApiModelProperty(position = 10,
                     required = false,
-                    value = "Amend appointment times",
-                    notes = "Amends all appointment times, so they relate to the current day",
-                    example = "false"
-            )
-            var amendAppointmentTimes: Boolean = false,
-            @ApiModelProperty(position = 10,
-                    required = false,
-                    value = "Omit appointment times",
-                    notes = "Omits all appointment times",
-                    example = "false"
-            )
-            var omitAppointmentTimes: Boolean = false,
+                    value = "Appointment related options")
+            var appointments: Appointments = Appointments(),
+
             @ApiModelProperty(position = 20,
                     required = false,
                     value = "Vehicles to optimize for. " +
                             "When this parameter is omitted, the tour will be optimized in place. " +
-                            "When provided, new tours will be created for each vehicle."
-            )
+                            "When provided, new tours will be created for each vehicle.")
             var vehicles: List<Vehicle>? = null
     ) {
+        @Serializable(0xf045189c321341)
+        @ApiModel(description = "Appointment options")
+        data class Appointments(
+                @ApiModelProperty(position = 10,
+                        required = false,
+                        value = "Omit appointments",
+                        notes = "Omits appointments entirely",
+                        example = "false")
+                var omit: Boolean = false,
+
+                @ApiModelProperty(position = 20,
+                        required = false,
+                        value = "Replaces date of all appointments with current day",
+                        example = "false")
+                var replaceDatesWithToday: Boolean = false,
+
+                @ApiModelProperty(position = 30,
+                        required = false,
+                        value = "Shift appointment times in hours",
+                        notes = "When this parameter is provided, appointments times are shifted " +
+                                "relative to the current time (rounded to next full hour)",
+                        example = "4")
+                var shiftHoursFromNow: Int? = null
+        )
+
         @Serializable(0x4bcec10612464e )
         data class Vehicle(
                 @ApiModelProperty(position = 10,
                         required = false,
                         value = "Vehicle capacity in kg",
-                        example = "500.0"
-                )
+                        example = "500.0")
                 var capacity: Double = 500.0
         )
     }
@@ -267,7 +282,7 @@ interface TourServiceV1 {
     @Serializable(0x20ccdbc9cf990c)
     data class TourOptimizationRequest(
             var nodeUid: String? = null,
-            var optimizationOptions: TourOptimizationOptions = TourOptimizationOptions()
+            var options: TourOptimizationOptions = TourOptimizationOptions()
     )
 
     /**

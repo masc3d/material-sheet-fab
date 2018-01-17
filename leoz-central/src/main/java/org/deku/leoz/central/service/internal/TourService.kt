@@ -23,6 +23,8 @@ import org.deku.leoz.smartlane.model.Routinginput
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.threeten.bp.Duration
+import org.threeten.bp.temporal.ChronoUnit
 import org.zalando.problem.Status
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
@@ -30,11 +32,9 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
 import sx.rs.RestProblem
-import sx.time.replaceDate
-import sx.time.toTimestamp
+import sx.time.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
@@ -96,8 +96,7 @@ class TourServiceV1
             }
         }
 
-        override fun iterator(): Iterator<TourServiceV1.TourOptimizationStatus>
-                = this.byId.values.iterator()
+        override fun iterator(): Iterator<TourServiceV1.TourOptimizationStatus> = this.byId.values.iterator()
 
         init {
             this.updated
@@ -200,18 +199,16 @@ class TourServiceV1
      * Get tour by id
      */
     override fun getById(id: Int): TourServiceV1.Tour {
-        val tourRecord = tourRepository.findById(id) ?:
-                throw RestProblem(
-                        status = Status.NOT_FOUND
-                )
+        val tourRecord = tourRepository.findById(id) ?: throw RestProblem(
+                status = Status.NOT_FOUND
+        )
 
         val nodeUid = tourRecord.nodeId?.let {
             dsl.selectFrom(MST_NODE)
-                    .fetchUidById(tourRecord.nodeId) ?:
-                    throw RestProblem(
-                            status = Status.NOT_FOUND,
-                            detail = "No node uid for id [${tourRecord.nodeId}]"
-                    )
+                    .fetchUidById(tourRecord.nodeId) ?: throw RestProblem(
+                    status = Status.NOT_FOUND,
+                    detail = "No node uid for id [${tourRecord.nodeId}]"
+            )
         }
 
         return tourRecord.toTour(nodeUid)
@@ -222,16 +219,14 @@ class TourServiceV1
      */
     override fun getByNode(nodeUid: String): TourServiceV1.Tour {
         val nodeId = this.nodeRepository.findByKeyStartingWith(nodeUid)?.nodeId
-                ?:
-                throw RestProblem(
+                ?: throw RestProblem(
                         status = Status.NOT_FOUND,
                         detail = "Unknown node uid ${nodeUid}"
                 )
 
-        val tourRecord = tourRepository.findByNodeId(nodeId) ?:
-                throw RestProblem(
-                        status = Status.NOT_FOUND
-                )
+        val tourRecord = tourRepository.findByNodeId(nodeId) ?: throw RestProblem(
+                status = Status.NOT_FOUND
+        )
 
         return tourRecord.toTour(nodeUid)
     }
@@ -240,11 +235,10 @@ class TourServiceV1
      * Get the (current) tour for a user
      */
     override fun getByUser(userId: Int): TourServiceV1.Tour {
-        val tourRecord = tourRepository.findLatestByUserId(userId) ?:
-                throw RestProblem(
-                        status = Status.NOT_FOUND,
-                        detail = "No assignable tour for user [${userId}]"
-                )
+        val tourRecord = tourRepository.findLatestByUserId(userId) ?: throw RestProblem(
+                status = Status.NOT_FOUND,
+                detail = "No assignable tour for user [${userId}]"
+        )
 
         return tourRecord.toTour()
     }
@@ -334,12 +328,12 @@ class TourServiceV1
      * Optimize a tour.
      * This method operates solely on service entities and will not perform central database updates.
      * @param id Tour id
-     * @param optimizationOptions Optimization options
+     * @param options Optimization options
      * @return Single observable of optimized tours
      */
     fun optimize(
             id: Int,
-            optimizationOptions: TourServiceV1.TourOptimizationOptions
+            options: TourServiceV1.TourOptimizationOptions
     ): Single<List<TourServiceV1.Tour>> {
         // Check if optimization for this tour is already in progress
         if (this.optimizations.any { it.id == id })
@@ -350,7 +344,7 @@ class TourServiceV1
 
         return this.smartlaneBridge.optimizeRoute(
                 tour.toRoutingInput(
-                        optimizationOptions
+                        options
                 ))
                 .doOnSubscribe {
                     this.optimizations.onStart(tourId)
@@ -390,7 +384,7 @@ class TourServiceV1
     override fun optimize(
             ids: List<Int>,
             waitForCompletion: Boolean,
-            optimizationOptions: TourServiceV1.TourOptimizationOptions,
+            options: TourServiceV1.TourOptimizationOptions,
             response: AsyncResponse) {
 
         data class Optimization(val tourId: Int, val result: List<TourServiceV1.Tour>)
@@ -401,7 +395,7 @@ class TourServiceV1
             Observable.mergeDelayError(ids.map { id ->
                 this.optimize(
                         id = id,
-                        optimizationOptions = optimizationOptions
+                        options = options
                 )
                         .toObservable()
                         .map { Optimization(tourId = id, result = it) }
@@ -412,7 +406,7 @@ class TourServiceV1
 
                                 log.info("Ruote optimization completed for tour [${optimization.tourId}]")
 
-                                if (optimizationOptions.vehicles?.count() ?: 0 > 0) {
+                                if (options.vehicles?.count() ?: 0 > 0) {
                                     // Create tours from optimized results
                                     this.create(tours)
                                 } else {
@@ -440,7 +434,6 @@ class TourServiceV1
                     )
 
 
-
             if (!waitForCompletion) {
                 response.resume(Response
                         .status(Response.Status.ACCEPTED)
@@ -463,13 +456,13 @@ class TourServiceV1
     override fun optimize(
             id: Int,
             waitForCompletion: Boolean,
-            optimizationOptions: TourServiceV1.TourOptimizationOptions,
+            options: TourServiceV1.TourOptimizationOptions,
             response: AsyncResponse) {
 
         this.optimize(
                 ids = listOf(id),
                 waitForCompletion = waitForCompletion,
-                optimizationOptions = optimizationOptions,
+                options = options,
                 response = response)
     }
 
@@ -546,21 +539,19 @@ class TourServiceV1
 
     override fun optimizeForNode(
             nodeUid: String,
-            optimizationOptions: TourServiceV1.TourOptimizationOptions
+            options: TourServiceV1.TourOptimizationOptions
     ) {
         val node = dsl.selectFrom(MST_NODE)
                 .fetchByUid(nodeUid, strict = false)
-                ?:
-                throw RestProblem(status = Status.NOT_FOUND, detail = "Node not found")
+                ?: throw RestProblem(status = Status.NOT_FOUND, detail = "Node not found")
 
         val tour = tourRepository.findByNodeId(node.nodeId)
-                ?:
-                throw RestProblem(status = Status.NOT_FOUND, detail = "Tour not found")
+                ?: throw RestProblem(status = Status.NOT_FOUND, detail = "Tour not found")
 
         try {
             this.optimize(
                     id = tour.id,
-                    optimizationOptions = optimizationOptions
+                    options = options
             )
                     .subscribeBy(
                             onSuccess = { tours ->
@@ -636,9 +627,14 @@ class TourServiceV1
      * Transform tour into smartlane routing input
      */
     private fun TourServiceV1.Tour.toRoutingInput(
-            optimizationOptions: TourServiceV1.TourOptimizationOptions
+            options: TourServiceV1.TourOptimizationOptions
     ): Routinginput {
         return Routinginput().also {
+            val shiftOffset by lazy {
+                Duration.ofHours(
+                        options.appointments.shiftHoursFromNow?.toLong() ?: 0)
+            }
+
             it.deliverydata = this.stops
                     .map { stop ->
                         Routedeliveryinput().also {
@@ -657,33 +653,64 @@ class TourServiceV1
                                 }
                             }
 
-                            // Current time
-                            val now = Date()
-
-                            //region Determine pdt parameters
-                            if (!optimizationOptions.omitAppointmentTimes) {
-                                var pdtFrom = stop.appointmentStart
-                                var pdtTo = stop.appointmentEnd
-                                if (optimizationOptions.amendAppointmentTimes) {
-                                    pdtFrom = pdtFrom?.replaceDate(now)
-                                    pdtTo = pdtTo?.replaceDate(now)
-                                }
-                                pdtTo = if (pdtTo != null && pdtTo > now) pdtTo else null
-                                pdtFrom = if (pdtTo != null) pdtFrom else null
-                                //endregion
-
-                                it.pdtFrom = pdtFrom
-                                it.pdtTo = pdtTo
-
-                                log.trace("PDT ${it.pdtFrom} -> ${it.pdtTo}")
-                            }
-
                             // Track stop via custom id
                             it.customId = stop.id?.toString()
 
-                            it.load = optimizationOptions.vehicles
+                            it.load = options.vehicles
                                     ?.map { "${it.capacity}kg" }
                                     ?.joinToString(",")
+
+                            if (!options.appointments.omit) {
+                                it.pdtFrom = stop.appointmentStart
+                                it.pdtTo = stop.appointmentEnd
+                            }
+                        }
+                    }
+                    .also {
+                        // Current time
+                        val now = Date()
+
+                        if (!options.appointments.omit) {
+
+                            if (options.appointments.replaceDatesWithToday) {
+                                it.forEach {
+                                    it.pdtFrom = it.pdtFrom?.replaceDate(now)
+                                    it.pdtTo = it.pdtTo?.replaceDate(now)
+                                }
+                            }
+
+                            if (options.appointments.shiftHoursFromNow != null) {
+                                val earliestAppointmentTime by lazy {
+                                    (it.mapNotNull { it.pdtFrom }.min() ?: Date()).toLocalDateTime()
+                                }
+
+                                fun Date.shiftAppointmentTime(): Date {
+                                    return now.toLocalDateTime()
+                                            // Round to next full hour
+                                            .truncatedTo(ChronoUnit.HOURS)
+                                            .plus(Duration.ofHours(1))
+                                            // Add duration between earlist appointment time and this one
+                                            .plus(Duration.between(
+                                                    earliestAppointmentTime,
+                                                    this.toLocalDateTime()))
+                                            // Add shift offset
+                                            .plus(shiftOffset)
+                                            .toDate()
+                                }
+
+                                it.forEach {
+                                    it.pdtFrom = it.pdtFrom?.shiftAppointmentTime()
+                                    it.pdtTo = it.pdtTo?.shiftAppointmentTime()
+                                }
+                            }
+
+                            // Sanity checks
+                            it.forEach {
+                                it.pdtTo = if (it.pdtTo != null && it.pdtTo > now) it.pdtTo else null
+                                it.pdtFrom = if (it.pdtTo != null) it.pdtFrom else null
+
+                                log.trace { "PDT ${it.pdtFrom} -> ${it.pdtTo}" }
+                            }
                         }
                     }
         }
@@ -775,7 +802,7 @@ class TourServiceV1
                         }
         )
     }
-    //endregion
+//endregion
 
     //region MQ handlers
     @MqHandler.Types(
@@ -804,7 +831,7 @@ class TourServiceV1
 
         this.optimizeForNode(
                 nodeUid = nodeUid,
-                optimizationOptions = message.optimizationOptions
+                options = message.options
         )
     }
 
@@ -826,9 +853,9 @@ class TourServiceV1
         val nodeId = dsl.selectFrom(MST_NODE).fetchByUid(nodeUid)
                 ?.nodeId
                 ?: run {
-            log.warn("Node ${nodeUid} doesn't exist. Discarding message")
-            return
-        }
+                    log.warn("Node ${nodeUid} doesn't exist. Discarding message")
+                    return
+                }
 
         // Upsert stop list
         dsl.transaction { _ ->
@@ -837,13 +864,13 @@ class TourServiceV1
                     TAD_TOUR,
                     TAD_TOUR.NODE_ID.eq(nodeId)
             ) ?:
-                    // Create new one if it doesn't exist
-                    dsl.newRecord(TAD_TOUR).also {
-                        it.userId = tour.userId
-                        it.nodeId = nodeId
-                        it.timestamp = message.timestamp.toTimestamp()
-                        it.store()
-                    }
+            // Create new one if it doesn't exist
+            dsl.newRecord(TAD_TOUR).also {
+                it.userId = tour.userId
+                it.nodeId = nodeId
+                it.timestamp = message.timestamp.toTimestamp()
+                it.store()
+            }
 
             // Recreate tour entries from update
             dsl.delete(TAD_TOUR_ENTRY)
@@ -867,5 +894,5 @@ class TourServiceV1
                     }
         }
     }
-    //endregion
+//endregion
 }
