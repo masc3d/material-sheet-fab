@@ -238,6 +238,7 @@ constructor(
 
                     } catch(e: Throwable) {
                         jpaTransactionManager.rollback(transaction)
+                        throw e
                     }
 
                     // Re-query destination timestamp
