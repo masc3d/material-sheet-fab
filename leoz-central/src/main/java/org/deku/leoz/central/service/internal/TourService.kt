@@ -682,8 +682,7 @@ class TourServiceV1
                             it.customId = stop.id?.toString()
 
                             it.load = optimizationOptions.vehicles
-//                                    ?.map { "${it.capacity}kg" }
-                                    ?.map { "1" }
+                                    ?.map { "${it.capacity}kg" }
                                     ?.joinToString(",")
                         }
                     }
