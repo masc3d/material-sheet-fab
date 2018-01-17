@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
@@ -144,8 +145,8 @@ constructor(
      * @param deleteBeforeUpdate    Delete all records before updating
      */
     open fun update(preset: SimplePreset<Record, Any>,
-               syncIdMap: Map<String, Long>,
-               deleteBeforeUpdate: Boolean
+                    syncIdMap: Map<String, Long>,
+                    deleteBeforeUpdate: Boolean
     ) {
         preset.also { p ->
             // Stopwatch
@@ -202,7 +203,15 @@ constructor(
                     // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
                     log.info(lfmt("Outdated [${destMaxSyncId}]"))
                     var count = 0
-                    transactionJpa.execute<Any> { _ ->
+
+                    val JPA_FLUSH_BATCH_SIZE = 100
+                    val JPA_TRANSACTION_BATCH_SIZE = 10000
+                    val jpaTransactionManager = transactionJpa.transactionManager
+                            ?: throw IllegalStateException()
+
+                    var transaction: TransactionStatus = jpaTransactionManager.getTransaction(transactionJpa)
+
+                    try {
                         while (source.hasNext()) {
                             // Fetch next record
                             val record = source.fetchNext()
@@ -210,12 +219,25 @@ constructor(
                             val entity = p.conversionFunction(record)
                             // Store entity
                             entityManager.merge(entity)
+
+                            count++
+
                             // Flush every now and then (improves performance)
-                            if (count++ % 100 == 0) {
+                            if (count % JPA_FLUSH_BATCH_SIZE == 0) {
                                 entityManager.flush()
                                 entityManager.clear()
                             }
+
+                            if (count % JPA_TRANSACTION_BATCH_SIZE == 0) {
+                                jpaTransactionManager.commit(transaction)
+                                transaction = jpaTransactionManager.getTransaction(transactionJpa)
+                            }
                         }
+
+                        jpaTransactionManager.commit(transaction)
+
+                    } catch(e: Throwable) {
+                        jpaTransactionManager.rollback(transaction)
                     }
 
                     // Re-query destination timestamp
