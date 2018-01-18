@@ -2,6 +2,7 @@ package org.deku.leoz.node.data.repository
 
 import org.eclipse.persistence.config.QueryHints
 import org.eclipse.persistence.config.ResultSetType
+import org.eclipse.persistence.queries.CursoredStream
 import org.eclipse.persistence.queries.ScrollableCursor
 import javax.persistence.EntityManager
 import javax.persistence.criteria.ParameterExpression
@@ -38,34 +39,58 @@ class EntityRepository(
 
     /**
      * Count of entities newer than specific sync id
-     * @param syncId
+     * @param syncId THe sync id to compare to
+     * @param maxCount Maximum count to determine (performance optimization for large tables)
      * @return
      */
-    fun countNewerThan(syncId: Long?): Long {
-        val cb = entityManager.criteriaBuilder
-        val cq = cb.createQuery(Long::class.java)
+    fun countNewerThan(syncId: Long?, maxCount: Long? = null): Long {
+        val builder = entityManager.criteriaBuilder
 
-        // Roots and parameters
-        val croot = cq.from(entityType)
-        var cparam: ParameterExpression<Long>? = null
-        var prSyncId: Predicate? = null
-        val syncIdAttribute = this.syncIdAttribute
-        if (syncIdAttribute != null && syncId != null) {
-            cparam = cb.parameter(Long::class.java)
-            val pathSyncId = croot.get<Long>(syncIdAttribute.name)
-            prSyncId = cb.greaterThan(pathSyncId, cparam)
+        return when {
+            syncId == null || this.hasSyncIdAttribute() == false -> {
+                // Plain entity count
+                val query = builder.createQuery(Long::class.java)
+
+                query.select(builder.count(
+                        query.from(entityType)
+                ))
+
+                entityManager.createQuery(query).singleResult.let {
+                    if (maxCount != null && it > maxCount)
+                        maxCount
+                    else
+                        it
+                }
+            }
+
+            else -> {
+                // Query for sync-ids with max result (much more efficient than counting over large tables)
+                val query = builder.createQuery(Long::class.java)
+
+                // Roots and parameters
+                val entityPath = query.from(entityType)
+
+                val syncIdAttribute = this.syncIdAttribute
+                        ?: throw IllegalStateException("Entity type [${entityType}] is missing sync-id field")
+
+                val syncIdPath: Path<Long> = entityPath.get<Long>(syncIdAttribute.name)
+                val syncIdParam: ParameterExpression<Long> = builder.parameter(Long::class.java)
+                val syncIdPredicate: Predicate = builder.greaterThan(syncIdPath, syncIdParam)
+
+                // Count query
+                query.select(syncIdPath).where(syncIdPredicate)
+
+                // Execute
+                entityManager.createQuery(query).let {
+                    it.setParameter(syncIdParam, syncId)
+
+                    if (maxCount != null)
+                        it.setMaxResults(maxCount.toInt())
+
+                    it.resultList
+                }.count().toLong()
+            }
         }
-
-        // Count query
-        cq.select(cb.count(croot))
-        if (prSyncId != null)
-            cq.where(prSyncId)
-
-        // Execute
-        val q = entityManager.createQuery(cq)
-        if (cparam != null)
-            q.setParameter(cparam, syncId)
-        return q.singleResult
     }
 
     /**
@@ -73,33 +98,33 @@ class EntityRepository(
      * @return
      */
     fun findMaxSyncId(): Long? {
-        val cb = entityManager.criteriaBuilder
-        val cq = cb.createQuery(Long::class.java)
+        val builder = entityManager.criteriaBuilder
+        val query = builder.createQuery(Long::class.java)
 
-        val croot = cq.from(entityType)
+        val entityPath = query.from(entityType)
 
         val syncIdAttribute = this.syncIdAttribute
-        if (syncIdAttribute == null)
-            return null
+                ?: return null
 
-        val pathSyncId = croot.get<Long>(syncIdAttribute.name)
-        val prSyncId = cb.max(pathSyncId)
-        cq.select(prSyncId)
+        val syncIdPath = entityPath.get<Long>(syncIdAttribute.name)
 
         // Execute
-        val q = entityManager.createQuery(cq)
-        return q.singleResult
+        return entityManager
+                .createQuery(
+                        query.select(builder.max(syncIdPath))
+                )
+                .singleResult
     }
 
     /**
      * Remove all entities
      */
     fun removeAll() {
-        val cb = entityManager.criteriaBuilder
-        val cd = cb.createCriteriaDelete(entityType)
+        val builder = entityManager.criteriaBuilder
+        val query = builder.createCriteriaDelete(entityType)
 
-        val q = entityManager.createQuery(cd)
-        q.executeUpdate()
+        entityManager.createQuery(query)
+                .executeUpdate()
     }
 
     /**
@@ -109,38 +134,41 @@ class EntityRepository(
      * *
      * @return Cursor
      */
-    fun findNewerThan(syncId: Long?): ScrollableCursor {
-        val cb = entityManager.criteriaBuilder
-        val cq = cb.createQuery(entityType)
+    fun findNewerThan(syncId: Long?, maxResults: Int): CursoredStream {
+        val builder = entityManager.criteriaBuilder
+        val query = builder.createQuery(entityType)
 
         // Roots and parameters
-        val croot = cq.from(entityType)
-        var cparam: ParameterExpression<Long>? = null
-        var prSyncId: Predicate? = null
-        var pathSyncId: Path<Long>? = null
+        val entityPath = query.from(entityType)
+        var syncIdParam: ParameterExpression<Long>? = null
+        var syncIdPredicate: Predicate? = null
+        var syncIdPath: Path<Long>? = null
         val syncIdAttribute = syncIdAttribute
         if (syncIdAttribute != null && syncId != null) {
-            pathSyncId = croot.get(syncIdAttribute.name)
-            cparam = cb.parameter(Long::class.java)
-            prSyncId = cb.greaterThan(pathSyncId, cparam)
+            syncIdPath = entityPath.get(syncIdAttribute.name)
+            syncIdParam = builder.parameter(Long::class.java)
+            syncIdPredicate = builder.greaterThan(syncIdPath, syncIdParam)
         }
 
         // Select
         @Suppress("UNCHECKED_CAST")
-        cq.select(croot as Selection<out Nothing>)
-        if (prSyncId != null)
-            cq.where(prSyncId)
+        query.select(entityPath as Selection<out Nothing>)
+        if (syncIdPredicate != null)
+            query.where(syncIdPredicate)
 
-        if (pathSyncId != null)
-            cq.orderBy(cb.asc(pathSyncId))
+        if (syncIdPath != null)
+            query.orderBy(builder.asc(syncIdPath))
 
         // Execute entity query
-        val q = entityManager.createQuery(cq)
-                .setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly)// Eclipselink specific hints for enabling cursor support, will change result of query to cursor
-                .setHint(QueryHints.SCROLLABLE_CURSOR, true)
-        if (cparam != null)
-            q.setParameter(cparam, syncId)
+        val q = entityManager.createQuery(query)
+                // Eclipselink specific hints for enabling cursor support, will change result of query to cursor
+                .setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly)
+                .setHint(QueryHints.CURSOR, true)
+                .setMaxResults(maxResults)
 
-        return q.singleResult as ScrollableCursor
+        if (syncIdParam != null)
+            q.setParameter(syncIdParam, syncId)
+
+        return (q.singleResult as CursoredStream)
     }
 }
