@@ -2,8 +2,12 @@ package org.deku.leoz.node.service.internal.sync
 
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repository.EntityRepository
+import org.deku.leoz.node.data.truncate
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
+import org.slf4j.event.Level
+import sx.Stopwatch
 import sx.log.slf4j.debug
+import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.*
@@ -66,7 +70,8 @@ class EntityConsumer
      * @param requestAll Ignores sync id, requests all entities (mainly for testing)
      * @param clean Clears all data before requesting
      */
-    @Synchronized fun request(
+    @Synchronized
+    fun request(
             entityType: Class<*>,
             remoteSyncId: Long? = null,
             requestAll: Boolean = false,
@@ -83,7 +88,7 @@ class EntityConsumer
 
                 if (clean) {
                     PersistenceUtil.transaction(em, {
-                        er.removeAll()
+                        em.truncate(entityType)
                     })
                 }
 
@@ -97,34 +102,45 @@ class EntityConsumer
                     }
                 }
 
+                if (!er.hasSyncIdAttribute()) {
+                    log.debug { lfmt("No timestamp attribute found -> removing all entities") }
+                    PersistenceUtil.transaction(em, {
+                        em.truncate(entityType)
+                    })
+                }
+
                 val sw = com.google.common.base.Stopwatch.createStarted()
 
                 // Send entity state message
                 this.requestClient.createReplyClient().use { replyClient ->
-                    requestClient.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = replyClient)
+                    var totalCount: Long = 0
+                    var bytesReceived: Long = 0
 
-                    log.info(lfmt("Requesting entities"))
+                    while (true) {
+                        var count = 0
+                        log.info { lfmt("Requesting with sync-id [${syncId}]") }
 
-                    // Receive entity update message
-                    val euMessage = replyClient.receive(EntityUpdateMessage::class.java)
+                        requestClient.sendRequest(
+                                message = EntityStateMessage(entityType = entityType, syncId = syncId),
+                                replyChannel = replyClient)
 
-                    log.debug { lfmt(euMessage.toString()) }
-                    val count = AtomicLong()
+                        // Receive entity update message
+                        val euMessage = replyClient.receive(
+                                EntityUpdateMessage::class.java)
 
-                    var bytesReceived = 0L
-                    if (euMessage.amount > 0) {
+                        log.debug { lfmt("${euMessage}") }
+
+                        if (euMessage.amount == 0L)
+                            break
+
                         val emv = em!!
                         PersistenceUtil.transaction(em) {
-                            if (!er.hasSyncIdAttribute()) {
-                                log.debug { lfmt("No timestamp attribute found -> removing all entities") }
-                                er.removeAll()
-                            }
-
                             // Receive entities
                             var eos: Boolean
                             var lastJmsTimestamp: Long = 0
                             do {
-                                val tMsg = replyClient.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
+                                val tMsg = replyClient.receive()
+                                        ?: throw TimeoutException("Timeout while waiting for next entities chunk")
 
                                 // Verify message order
                                 if (tMsg.jmsTimestamp < lastJmsTimestamp)
@@ -142,12 +158,7 @@ class EntityConsumer
                                         bytesReceived += size
                                     }) as Array<*>
 
-                                    // TODO: exceptions within transactions behave in a strange way.
-                                    // data of transactions that were committed may not be there and h2 may report
-                                    // cache level state nio exceptions.
-                                    // Data seems to remain consistent though
                                     if (syncId != null || requestAll) {
-                                        log.trace(lfmt("Removing existing entities"))
                                         // If there's already entities, clean out existing first.
                                         // it's much faster than merging everything
                                         for (o in entities) {
@@ -168,13 +179,25 @@ class EntityConsumer
                                     }
                                     emv.flush()
                                     emv.clear()
-                                    count.getAndUpdate { c -> c + entities.size }
+
+                                    count += entities.size
                                 }
                             } while (!eos)
                         }
 
+                        totalCount += count
+
+                        // For sync-id-less syncs, batches cannot be supported (TODO: remove support for this)
+                        if (!er.hasSyncIdAttribute())
+                            break
+
+                        if (count < euMessage.batchSize)
+                            break
+
+                        syncId = er.findMaxSyncId()
                     }
-                    log.info(lfmt("Received and stored ${count.get()} in ${sw} (${bytesReceived} bytes)"))
+
+                    log.info { lfmt("Received and stored ${totalCount} in ${sw} (${bytesReceived} bytes)") }
                 }
             } catch (e: TimeoutException) {
                 log.error(lfmt(e.message ?: ""))

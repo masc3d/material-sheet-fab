@@ -1,8 +1,13 @@
 package org.deku.leoz.node.service.internal.sync
 
 import org.deku.leoz.node.data.jpa.TadNodeGeoposition
+import org.deku.leoz.node.data.repository.EntityRepository
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
+import org.slf4j.event.Level
+import sx.Stopwatch
 import sx.log.slf4j.debug
+import sx.log.slf4j.info
+import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.*
@@ -22,7 +27,7 @@ class EntityPublisher(
         private val entityManagerFactory: javax.persistence.EntityManagerFactory,
         /** Executor used for listening/processing incoming messages */
         listenerExecutor: java.util.concurrent.Executor)
-:
+    :
         SpringJmsListener(requestEndpoint, listenerExecutor),
         MqHandler<EntityStateMessage> {
     init {
@@ -47,24 +52,34 @@ class EntityPublisher(
     override fun onMessage(message: EntityStateMessage, replyChannel: MqChannel?) {
         var em: javax.persistence.EntityManager? = null
         try {
-            val sw = com.google.common.base.Stopwatch.createStarted()
-
-            if (message.entityType == TadNodeGeoposition::class.java) {
-                log.warn("Entity sync of TadNodeGeoposition is currently not supported")
-                return
-            }
+            val sw = Stopwatch.createStarted()
 
             // Entity state message
             val esMessage = message
             val entityType = esMessage.entityType
             val syncId = esMessage.syncId
-            val lfmt = { s: String -> "[" + entityType!!.canonicalName + "]" + " " + s }
+
+            fun lfmt(msg: String) = "[${entityType!!.canonicalName}] ${msg}"
 
             em = entityManagerFactory.createEntityManager()
-            val er = org.deku.leoz.node.data.repository.EntityRepository(em, entityType!!)
+            val er = EntityRepository(em, entityType!!)
+
+            val BATCH_SIZE = 100000
+            val CHUNK_SIZE = 500
+
+            log.info { lfmt("Remote has [${message.syncId}]") }
 
             // Count records
-            val count = er.countNewerThan(syncId)
+            val count = Stopwatch.createStarted(this, lfmt("Count newer"), Level.DEBUG, {
+                er.countNewerThan(
+                        syncId = syncId,
+                        maxCount = when {
+                            er.hasSyncIdAttribute() -> BATCH_SIZE.toLong()
+                        // No batches for entities which don't support entity snyc TODO: remove support for this
+                            else -> null
+                        }
+                )
+            })
 
             if (replyChannel == null || !(replyChannel is JmsChannel))
                 throw IllegalArgumentException("IMS reply client required")
@@ -72,28 +87,37 @@ class EntityPublisher(
             replyChannel.statistics.enabled = true
 
             // Send entity update message
-            val euMessage = EntityUpdateMessage(count)
-            log.debug { lfmt(euMessage.toString()) }
+            val euMessage = EntityUpdateMessage(
+                    amount = count,
+                    batchSize = BATCH_SIZE)
+
+            log.info { lfmt("Sending [${euMessage}]") }
+
             replyChannel.send(euMessage)
 
             if (count > 0) {
                 // Query with cursor
-                var cursor: org.eclipse.persistence.queries.ScrollableCursor? = null
+                var cursor: org.eclipse.persistence.queries.CursoredStream? = null
                 try {
-                    cursor = er.findNewerThan(syncId)
-
-                    val CHUNK_SIZE = 500
+                    var sentCount = 0
                     val buffer = java.util.ArrayList<Any?>(CHUNK_SIZE)
-                    log.info(lfmt("Sending ${count}"))
-                    while (true) {
+
+                    cursor = Stopwatch.createStarted(this, lfmt("Find newer"), Level.DEBUG, {
+                        er.findNewerThan(syncId, BATCH_SIZE)
+                    })
+
+                    while (sentCount < BATCH_SIZE) {
                         var next: Any? = null
+
                         if (cursor.hasNext()) {
                             next = cursor.next()
                             buffer.add(next)
                         }
+
                         if (buffer.size >= CHUNK_SIZE || next == null) {
                             if (buffer.size > 0) {
                                 replyChannel.send(buffer.toArray())
+                                sentCount += buffer.size
                                 buffer.clear()
                             }
 
@@ -112,7 +136,7 @@ class EntityPublisher(
                 }
             }
             log.info(lfmt("Sent ${count} in ${sw} (${replyChannel.statistics.bytesSent} bytes)"))
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             log.error(e.message, e);
         } finally {
             if (em != null)
