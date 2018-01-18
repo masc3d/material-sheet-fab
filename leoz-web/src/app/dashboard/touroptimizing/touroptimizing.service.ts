@@ -39,6 +39,7 @@ export class TouroptimizingService {
                   deliverylistById.totalWeight = [].concat(...parcels)
                     .map( p => p.dimension.weight)
                     .reduce( (a, b) => a + b);
+                  deliverylistById.selected = false;
                   const tmpArr = [ ...this.deliverylistsSubject.getValue(), deliverylistById ];
                   this.deliverylistsSubject.next( tmpArr );
                 },
@@ -57,5 +58,11 @@ export class TouroptimizingService {
   getDeliverylistById( id: number ): Observable<Deliverylist> {
     const deliverylistByIdUrl = `${environment.apiUrl}/internal/v1/deliverylist/${id}`;
     return this.http.get( deliverylistByIdUrl );
+  }
+
+  switchSelectionAllDeliverylists(allSelected: boolean) {
+    const tmpArr = [ ...this.deliverylistsSubject.getValue()];
+    tmpArr.forEach((d: Deliverylist) => d.selected = allSelected);
+    this.deliverylistsSubject.next(tmpArr);
   }
 }

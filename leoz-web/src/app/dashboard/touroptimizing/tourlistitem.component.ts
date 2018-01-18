@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { TourListItem } from '../../core/models/tour-list-item.model';
 
 @Component( {
   selector: 'app-tourlistitem',
@@ -7,16 +8,16 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
       <div class="ui-g-12 ui-lg-1">&nbsp;</div>
       <div class="ui-g-12 ui-lg-3">&nbsp;</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fa-sum"></i>&nbsp;S</div>
-      <div class="ui-g-12 ui-lg-1">{{totalShipments}}</div>
+      <div class="ui-g-12 ui-lg-1">{{listItem.totalShipments}}</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fa-sum"></i>&nbsp;P</div>
-      <div class="ui-g-12 ui-lg-1">{{totalPackages}}</div>
+      <div class="ui-g-12 ui-lg-1">{{listItem.totalPackages}}</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas fa-balance-scale"></i></div>
-      <div class="ui-g-12 ui-lg-3">{{totalWeight}}</div>
+      <div class="ui-g-12 ui-lg-3">{{listItem.totalWeight}}</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas {{faIcon}}"></i></div>
-      <div class="ui-g-12 ui-lg-3" style="font-weight: bold">{{id}}</div>
+      <div class="ui-g-12 ui-lg-3" style="font-weight: bold">{{listItem.id}}</div>
       <div class="ui-g-12 ui-lg-6">&nbsp;</div>
       <div class="ui-g-12 ui-lg-1">
-                    <span *ngIf="optimized; else notOptimized">
+                    <span *ngIf="listItem.optimized; else notOptimized">
                       <i class="fas fa-sync" style="color: #00a200;"></i>
                     </span>
         <ng-template #notOptimized>
@@ -24,13 +25,13 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         </ng-template>
       </div>
       <div class="ui-g-12 ui-lg-1">
-        <p-checkbox name="optimize" value="optimize"></p-checkbox>
+        <p-checkbox name="optimize" [(ngModel)]="listItem.selected" binary="true"></p-checkbox>
       </div>
       <div class="ui-g-12 ui-lg-4">&nbsp;</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="far fa-clock"></i></div>
-      <div class="ui-g-12 ui-lg-1">{{time}}</div>
+      <div class="ui-g-12 ui-lg-1">{{listItem.time}}</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas fa-road"></i></div>
-      <div class="ui-g-12 ui-lg-5">{{distance}}</div>
+      <div class="ui-g-12 ui-lg-5">{{listItem.distance}}</div>
     </div>
   `,
   styles: [`
@@ -47,17 +48,11 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
       height: 15px;
       background: transparent;
     }
-  `],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `]
 } )
 export class TourlistitemComponent {
 
-  @Input() id: number;
+  @Input() listItem: TourListItem;
   @Input() faIcon: string;
-  @Input() totalShipments: number;
-  @Input() totalPackages: number;
-  @Input() totalWeight: number;
-  @Input() optimized: boolean;
-  @Input() time: string;
-  @Input() distance: number;
+
 }

@@ -20,6 +20,7 @@ import { InetConnectionService } from './inet-connection.service';
 import { PreloadSelectedModules } from './PreloadSelectedModules';
 import { WorkingdateService } from './workingdate.service';
 import { ElectronService } from './electron/electron.service';
+import { StoplistReportingService } from './reporting/stoplist-reporting.service';
 
 @NgModule( {
   imports: [
@@ -43,6 +44,7 @@ export class CoreModule {
         PrintingService,
         LoadinglistReportingService,
         BagscanReportingService,
+        StoplistReportingService,
         SoundService,
         RoleGuard,
         BagscanGuard,

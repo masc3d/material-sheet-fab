@@ -2,12 +2,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Tour } from '../../core/models/touroptimizing.model';
-
-import { Shipment } from '../../core/models/shipment.model';
 import { Deliverylist } from '../../core/models/deliverylist.model';
 import { TouroptimizingService } from './touroptimizing.service';
+import { TourListItem } from '../../core/models/tour-list-item.model';
+import { PrintingService } from '../../core/printing/printing.service';
+import { StoplistReportingService } from '../../core/reporting/stoplist-reporting.service';
 
 @Component( {
   selector: 'app-touroptimizing',
@@ -17,17 +16,18 @@ import { TouroptimizingService } from './touroptimizing.service';
 } )
 export class TouroptimizingComponent extends AbstractTranslateComponent implements OnInit {
 
-  touroptimizingForm: FormGroup;
   deliverylists: Deliverylist[];
   deliverylistsOrderCount: number;
   deliverylistsParcelCount: number;
   deliverylistsTotalWeight: number;
-  tours: Tour[];
+  vehicleCount: number;
+  tours: TourListItem[];
 
-  constructor( private fb: FormBuilder,
-               protected translate: TranslateService,
+  constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
-               protected touroptimizingService: TouroptimizingService ) {
+               protected touroptimizingService: TouroptimizingService,
+               protected printingService: PrintingService,
+               protected reportingService: StoplistReportingService) {
     super( translate, cd );
   }
 
@@ -47,199 +47,15 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         this.deliverylistsTotalWeight = this.sumWeights( deliverylists );
         this.cd.markForCheck();
       } );
-    this.touroptimizingForm = this.fb.group( {} );
     this.tours = [
-      {
-        deliverylistNumber: 123456789,
-        shipments: 33,
-        packages: 49,
-        weight: 234,
-        time: '3:15',
-        distance: '96',
+      <TourListItem> {
+        id: 123456789,
+        totalShipments: 33,
+        totalPackages: 49,
+        totalWeight: 234,
         optimized: true,
-        tourNo: 568,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: false
-      },
-      {
-        deliverylistNumber: 678912345,
-        shipments: 45,
-        packages: 98,
-        weight: 436,
-        time: '5:35',
-        distance: '126',
-        optimized: false,
-        tourNo: 547,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75,
-        time: '1:22',
-        distance: '55',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108',
-        tourOptimized: true
-      },
-      {
-        deliverylistNumber: 123894567,
-        shipments: 5,
-        packages: 18,
-        weight: 75.10,
-        time: '1:22',
-        distance: '55.65',
-        optimized: false,
-        tourNo: 125,
-        tourWeight: 423.80,
-        tourShipments: 38,
-        tourPackages: 47,
-        tourTime: '3:45',
-        tourDistance: '108.40',
-        tourOptimized: true
+        time: '13:12',
+        distance: 99
       }
     ];
     this.touroptimizingService.getDeliverylists();
@@ -265,4 +81,28 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         .reduce( ( a, b ) => a + b )
       : 0;
   }
+
+  changeCheckAllDeliverylists( evt: { checked: boolean } ) {
+      this.touroptimizingService.switchSelectionAllDeliverylists(evt.checked);
+  }
+
+  optimizeDeliverylists() {
+    console.log( 'optimizeDeliverylists...' );
+    console.log( 'vehicleCount:', this.vehicleCount );
+    console.log( 'selectedIds:', this.deliverylists
+      .filter( d => d.selected)
+      .map(d => d.id) );
+  }
+
+  printDeliveryLists() {
+    console.log( 'printDeliveryLists...' );
+    const listsToPrint = this.deliverylists.filter( d => d.selected);
+    console.log( 'selected:', listsToPrint);
+
+    const filename = 'sl_' + listsToPrint.map( d => d.id ).join( '_' );
+   this.printingService.printReports( this.reportingService
+                  .generateReports( listsToPrint ),
+                filename, false );
+  }
+
 }

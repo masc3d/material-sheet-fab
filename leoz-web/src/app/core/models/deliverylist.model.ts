@@ -18,4 +18,5 @@ export interface Deliverylist {
   totalShipments?: number;
   totalPackages?: number;
   totalWeight?: number;
+  selected?: boolean;
 }

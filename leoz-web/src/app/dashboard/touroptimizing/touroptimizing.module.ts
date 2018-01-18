@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import {
   ButtonModule,
@@ -19,6 +20,7 @@ import { TourlistitemComponent } from './tourlistitem.component';
 @NgModule( {
   imports: [
     SharedModule,
+    FormsModule,
     DataTableModule,
     FieldsetModule,
     InputTextModule,
