@@ -4,9 +4,6 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblhistorieRecord
 import org.jooq.DSLContext
-import org.jooq.Record
-import org.jooq.UpdatableRecord
-import org.jooq.impl.UpdatableRecordImpl
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.transaction.annotation.Transactional
 
@@ -43,13 +40,3 @@ open class JooqHistoryRepository {
     }
 }
 
-/**
- * Extension method for storing record with field history
- */
-fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory() {
-    this.fields().forEach {
-        if (this.changed(it)) {
-            // TODO: add field history record
-        }
-    }
-}

@@ -1,5 +1,7 @@
 package org.deku.leoz.central.service.internal
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Routines
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
@@ -131,7 +133,9 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
         exportUnit(ExportUnitOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
 
-        return title
+        val mapper = ObjectMapper()
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        return mapper.writeValueAsString(title)
     }
 
     override fun getLoadedParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
@@ -702,7 +706,9 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 )
             }
         }
-        return title
+        val mapper = ObjectMapper()
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        return mapper.writeValueAsString(title)
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
@@ -988,21 +994,19 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             )
 
         val bag = stationRepository.getBag(un.value.value.toLong())?.toBag()
-        bag ?:
-                throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "BagId not found"
-                )
+        bag ?: throw RestProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "BagId not found"
+        )
         //check bag
         bag.bagNumber ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
                 title = "Bagnumber null"
         )
-        bag.lastStation ?:
-                throw RestProblem(
-                        status = Response.Status.CONFLICT,
-                        title = "BagId without lastStation"
-                )
+        bag.lastStation ?: throw RestProblem(
+                status = Response.Status.CONFLICT,
+                title = "BagId without lastStation"
+        )
 
         if (!bag.movepool.equals("m")) {
             throw RestProblem(
@@ -1033,20 +1037,18 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
         }
         val oidBack = bag.orderdepotTohub
-        oidBack ?:
-                throw RestProblem(
-                        status = Response.Status.CONFLICT,
-                        title = "BagId found - no bagback-order found"
-                )
+        oidBack ?: throw RestProblem(
+                status = Response.Status.CONFLICT,
+                title = "BagId found - no bagback-order found"
+        )
 
 
         val backUnit = stationRepository.getUnitNo(oidBack)
         bag.unitNoBack = backUnit
-        backUnit ?:
-                throw RestProblem(
-                        status = Response.Status.CONFLICT,
-                        title = "BagId found - no bagback-unit found"
-                )
+        backUnit ?: throw RestProblem(
+                status = Response.Status.CONFLICT,
+                title = "BagId found - no bagback-unit found"
+        )
 
         val unUnBack = DekuUnitNumber.parse(backUnit.toString())
         if (!unUnBack.hasError) {
@@ -1055,17 +1057,15 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
         if (bag.lastStation == 2) {
             val bagBackOrder = parcelRepository.getOrderById(oidBack)
-            bagBackOrder ?:
-                    throw RestProblem(
-                            status = Response.Status.CONFLICT,
-                            title = "BagId found - bagback-order not found"
-                    )
+            bagBackOrder ?: throw RestProblem(
+                    status = Response.Status.CONFLICT,
+                    title = "BagId found - bagback-order not found"
+            )
 
-            bagBackOrder.depotnrabd ?:
-                    throw RestProblem(
-                            status = Response.Status.CONFLICT,
-                            title = "BagId found - bagback-order without depotnrabd"
-                    )
+            bagBackOrder.depotnrabd ?: throw RestProblem(
+                    status = Response.Status.CONFLICT,
+                    title = "BagId found - bagback-order without depotnrabd"
+            )
 
             if (bagBackOrder.depotnrabd.toInt() != stationNo) {
                 throw RestProblem(
@@ -1418,7 +1418,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val unitRecord = eu.unit
         val orderRecord = eu.order
 
-        if (unitRecord.ladelistennummerd==null || unitRecord.ladelistennummerd.toLong() != loadingListNo) {
+        if (unitRecord.ladelistennummerd == null || unitRecord.ladelistennummerd.toLong() != loadingListNo) {
             val oldLoadinglist = unitRecord.ladelistennummerd?.toLong()?.toString() ?: ""
             unitRecord.ladelistennummerd = loadingListNo.toDouble()
             if (unitRecord.store() > 0) {

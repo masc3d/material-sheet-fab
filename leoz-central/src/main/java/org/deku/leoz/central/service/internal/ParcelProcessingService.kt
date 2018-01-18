@@ -381,7 +381,7 @@ open class ParcelProcessingService {
                         //
 
                         if (from != null) {
-                            if (from.equals("956") || from.equals("935"))
+                            if (from.equals("956") || from.equals("909"))
                                 if (DekuUnitNumber.parse(parcelScan).value.type == UnitNumber.Type.Bag) {
                                     //if (parcelScan.startsWith("10071")) {
                                     val unitInBagUnitRecords = parcelRepository.findUnitsInBagByBagUnitNumber(parcelNo)
@@ -399,7 +399,7 @@ open class ParcelProcessingService {
                                         //unitInBagStatusRecord.text = r.text
                                         unitInBagStatusRecord.text = textForStatus
                                         unitInBagStatusRecord.infotext = r.infotext
-                                        r.store()
+                                        unitInBagStatusRecord.store()
 
                                         val unitInBagOrderRecord = orderRepository.findOrderByOrderNumber(it.orderid.toLong())
                                         if (unitInBagOrderRecord != null) {

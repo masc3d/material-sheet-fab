@@ -19,6 +19,7 @@ import javax.inject.Inject
 //import org.xnio._private.Messages.msg
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.Base64
 
 @Category(StandardTest::class)
@@ -35,8 +36,12 @@ import java.util.Base64
         kotlin.String::class,
         org.slf4j.LoggerFactory::class,
         org.deku.leoz.Storage::class,
-        org.deku.leoz.node.Storage::class
-
+        org.deku.leoz.node.Storage::class,
+        org.deku.leoz.central.service.internal.ParcelProcessingService::class,
+        org.deku.leoz.central.service.internal.ConfigurationService::class,
+        org.deku.leoz.node.data.repository.master.RouteRepository::class,
+        org.deku.leoz.node.data.repository.master.CountryRepository::class,
+        org.deku.leoz.node.data.repository.master.CountryRepositoryImpl::class
 ))
 class ParcelServiceTest {
     @Inject
@@ -86,31 +91,36 @@ class ParcelServiceTest {
         //val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event), nodeId = "abcf-tzt", deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "müllerSchmidtIgor", signature = img64,mimetype="jpg"))
 
 
-        parcelService.onMessage(msg, null)
+        //    parcelService.onMessage(msg, null)
 
         //Postbox
         val imgPostbox = File(this.javaClass.getResource("/jpg/4c4b1f91-5539-4ac1-9fdd-04ea17deab63.jpg").toURI())
-        Files.copy(imgPostbox.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgPostbox.name).toFile().toPath())
+        Files.copy(imgPostbox.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgPostbox.name).toFile().toPath(), StandardCopyOption.REPLACE_EXISTING)
 
         val eventPostbox = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.POSTBOX.id, time = Date().toTimestamp(), parcelId = 15000000)
         val msgPostbox = ParcelServiceV1.ParcelMessage(events = arrayOf(eventPostbox), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", postboxDeliveryInfo = ParcelServiceV1.ParcelMessage.PostboxDeliveryInfo(pictureFileUid = UUID.fromString("4c4b1f91-5539-4ac1-9fdd-04ea17deab63")))
-        parcelService.onMessage(msgPostbox, null)
+//        parcelService.onMessage(msgPostbox, null)
 
 
         // SignOnPaper
         val imgSignOnPaper = File(this.javaClass.getResource("/jpg/86f86b71-acac-45fd-b4f1-5b7d2440e501.jpg").toURI())
-        Files.copy(imgSignOnPaper.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgSignOnPaper.name).toFile().toPath())
+        Files.copy(imgSignOnPaper.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgSignOnPaper.name).toFile().toPath(), StandardCopyOption.REPLACE_EXISTING)
         val msgSignOnPaper = ParcelServiceV1.ParcelMessage(events = arrayOf(event), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", signatureOnPaperInfo = ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(pictureFileUid = UUID.fromString("86f86b71-acac-45fd-b4f1-5b7d2440e501"), recipient = "MrBig1234565432413243567898uztdferste5rhuzt"))
-        parcelService.onMessage(msgSignOnPaper, null)
+        //    parcelService.onMessage(msgSignOnPaper, null)
 
         //Damaged
         val eventDamaged = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.PARCEL_DAMAGED.id, time = Date().toTimestamp(), parcelId = 15000000, additionalInfo = AdditionalInfo.DamagedInfo(description = "aufgerissen"))
         val msgDamaged = ParcelServiceV1.ParcelMessage(events = arrayOf(eventDamaged), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
-        parcelService.onMessage(msgDamaged, null)
+        //     parcelService.onMessage(msgDamaged, null)
 
         //ImportReceive
         val eventImportReceive = ParcelServiceV1.Event(event = Event.IMPORT_RECEIVE.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15001093, additionalInfo = AdditionalInfo.EmptyInfo)
         val msgImportReceive = ParcelServiceV1.ParcelMessage(events = arrayOf(eventImportReceive), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
-        parcelService.onMessage(msgImportReceive, null)
+        //    parcelService.onMessage(msgImportReceive, null)
+
+        //ImportReceive 956
+        val event956 = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 16413459, additionalInfo = AdditionalInfo.EmptyInfo)
+        val msg956 = ParcelServiceV1.ParcelMessage(events = arrayOf(event956), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
+        parcelService.onMessage(msg956, null)
     }
 }

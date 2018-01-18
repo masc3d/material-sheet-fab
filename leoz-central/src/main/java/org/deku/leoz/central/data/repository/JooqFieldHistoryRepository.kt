@@ -7,6 +7,7 @@ import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.counter
 import org.deku.leoz.time.toShortTime
 import org.jooq.DSLContext
+import org.jooq.UpdatableRecord
 import org.springframework.beans.factory.annotation.Qualifier
 import javax.inject.Inject
 import javax.inject.Named
@@ -32,5 +33,17 @@ class JooqFieldHistoryRepository {
         fieldHistoryRecord.point = point
         fieldHistoryRecord.id = Routines.fTan(dsl.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
         fieldHistoryRecord.store()
+    }
+}
+
+/**
+ * Extension method for storing record with field history
+ */
+fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory() {
+    this.fields().forEach {
+        if (this.changed(it)) {
+            // TODO: add field history record
+
+        }
     }
 }
