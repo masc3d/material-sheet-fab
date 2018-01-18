@@ -45,7 +45,7 @@ class SmartlaneBridgeTest {
 
     @Test
     fun testRoute() {
-        Stopwatch.createStarted(this, "calculateRoute", { _, _ ->
+        Stopwatch.createStarted(this, "calculateRoute", {
             bridge.optimizeRoute(
                     routingInput = Routinginput().also {
                         it.deliverydata = this.addresses.mapIndexed { index, address ->
@@ -66,7 +66,7 @@ class SmartlaneBridgeTest {
 
     @Test
     fun testRouteParallel() {
-        Stopwatch.createStarted(this, "calculateRoute", { _, _ ->
+        Stopwatch.createStarted(this, "calculateRoute", {
             Observable.merge(
                     (0..30).map {
                         bridge.optimizeRoute(

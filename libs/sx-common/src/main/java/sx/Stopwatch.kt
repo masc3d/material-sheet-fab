@@ -8,40 +8,40 @@ import java.util.concurrent.TimeUnit
 
 // ** Borrowed from guava, converted to kt.
 
-/**
- * An object that measures elapsed time in nanoseconds. It is useful to measure
- * elapsed time using this class instead of direct calls to [ ][System.nanoTime] for a few reasons:
- *
- *  * An alternate time source can be substituted, for testing or performance
- * reasons.
- *  * As documented by `nanoTime`, the value returned has no absolute
- * meaning, and can only be interpreted as relative to another timestamp
- * returned by `nanoTime` at a different time. `Stopwatch` is a
- * more effective abstraction because it exposes only these relative values,
- * not the absolute ones.
- *
- *
- * Basic usage:
- *
- * Stopwatch stopwatch = Stopwatch.[createStarted][.createStarted]();
- * doSomething();
- * stopwatch.[stop][.stop](); // optional
- * long millis = stopwatch.elapsed(MILLISECONDS);
- * log.info("time: " + stopwatch); // formatted string like "12.3 ms"
- *
- * Stopwatch methods are not idempotent; it is an error to start or stop a
- * stopwatch that is already in the desired state.
- *
- * When testing code that uses this class, use
- * [.createUnstarted] or [.createStarted] to
- * supply a fake or mock ticker.
- *  This allows you to
- * simulate any valid behavior of the stopwatch.
- *
- * **Note:** This class is not thread-safe.
- * @author Kevin Bourrillion
- * @since 10.0
- */
+        /**
+         * An object that measures elapsed time in nanoseconds. It is useful to measure
+         * elapsed time using this class instead of direct calls to [ ][System.nanoTime] for a few reasons:
+         *
+         *  * An alternate time source can be substituted, for testing or performance
+         * reasons.
+         *  * As documented by `nanoTime`, the value returned has no absolute
+         * meaning, and can only be interpreted as relative to another timestamp
+         * returned by `nanoTime` at a different time. `Stopwatch` is a
+         * more effective abstraction because it exposes only these relative values,
+         * not the absolute ones.
+         *
+         *
+         * Basic usage:
+         *
+         * Stopwatch stopwatch = Stopwatch.[createStarted][.createStarted]();
+         * doSomething();
+         * stopwatch.[stop][.stop](); // optional
+         * long millis = stopwatch.elapsed(MILLISECONDS);
+         * log.info("time: " + stopwatch); // formatted string like "12.3 ms"
+         *
+         * Stopwatch methods are not idempotent; it is an error to start or stop a
+         * stopwatch that is already in the desired state.
+         *
+         * When testing code that uses this class, use
+         * [.createUnstarted] or [.createStarted] to
+         * supply a fake or mock ticker.
+         *  This allows you to
+         * simulate any valid behavior of the stopwatch.
+         *
+         * **Note:** This class is not thread-safe.
+         * @author Kevin Bourrillion
+         * @since 10.0
+         */
 private typealias LogAction = (message: String) -> Unit
 
 class Stopwatch {
@@ -270,17 +270,27 @@ class Stopwatch {
          * Creates (and starts) a new stopwatch and executes a block with automatic logging via slf4j
          * @param instance Instane using stopwatch( (used for logging)
          * @param name Name of operation to measure
+         * @param level Log level to use for summary
          * @param block Block to execute/measure
          */
-        fun <T> createStarted(instance: Any, name: String, block: (Stopwatch, Logger) -> T): T {
+        fun <T> createStarted(instance: Any, name: String, level: Level = Level.TRACE, block: () -> T): T {
             val log = LoggerFactory.getLogger(instance.javaClass)
             val sw = Stopwatch.createStarted()
             try {
-                return block(sw, log)
+                return block()
             } finally {
                 log.trace(this.createLogMessage(sw, name))
             }
         }
+
+        /**
+         * Creates (and starts) a new stopwatch and executes a block with automatic logging via slf4j
+         * @param instance Instane using stopwatch( (used for logging)
+         * @param name Name of operation to measure
+         * @param block Block to execute/measure
+         */
+        fun <T> createStarted(instance: Any, name: String, block: () -> T): T =
+                this.createStarted(instance, name, Level.TRACE, block)
 
         private fun chooseUnit(nanos: Long): TimeUnit {
             if (TimeUnit.DAYS.convert(nanos, TimeUnit.NANOSECONDS) > 0) {
