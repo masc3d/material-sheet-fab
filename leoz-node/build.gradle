@@ -117,9 +117,7 @@ configurations {
 
 // TODO: to be removed when spring-boot goes final
 repositories {
-    maven {
-        url 'https://repo.spring.io/libs-milestone'
-    }
+    maven { url 'http://repo.spring.io/libs-snapshot' }
 }
 
 dependencies {

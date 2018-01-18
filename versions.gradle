@@ -53,8 +53,9 @@ buildscript {
         v_snakeyaml = '1.19'
         v_socketio = '1.0.0'
         v_spring = '5.0.2.RELEASE'
-        v_spring_data_jpa = '2.0.2.RELEASE'
-        v_spring_data_commons = '2.0.2.RELEASE'
+        // masc20180118. TODO: 2.1.0 snapshot required for kt-1.2.20 compat
+        v_spring_data_jpa = '2.1.0.DATAJPA-1234-SNAPSHOT'
+        v_spring_data_commons = '2.1.0.DATACMNS-1245-SNAPSHOT'
         v_springboot = '2.0.0.M7'
         v_sshd = '1.2.0'
         v_swagger = '1.5.17'
