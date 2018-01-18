@@ -1,6 +1,6 @@
 package org.deku.leoz.central.service.internal.sync
 
-import com.querydsl.jpa.impl.JPADeleteClause
+import org.deku.leoz.node.data.truncate
 import org.jooq.Record
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -160,8 +160,7 @@ constructor(
                 transactionJpa.execute<Any> { _ ->
                     log.info(lfmt("Deleting all entities"))
 
-                    JPADeleteClause(entityManager, p.destQdslEntityPath)
-                            .execute()
+                    entityManager.truncate(p.destQdslEntityPath.type)
 
                     entityManager.flush()
                     entityManager.clear()
