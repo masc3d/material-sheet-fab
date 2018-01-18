@@ -1,6 +1,6 @@
 <div class="ui-fluid ui-g" style=" margin-top: 10px;">
   <div class="ui-g-12 ui-g-nopad">
-    <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding: 0;">
+    <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0;">
       <span *ngIf="isPickup; else noPickup">
         {{'pickupdate' | translate}}:
       </span>
@@ -8,14 +8,20 @@
         {{'deliverydate' | translate}}:
       </ng-template>
     </div>
-    <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding: 0;">
-      <input pInputText style="width: 100%;">
+    <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0;">
+      <input pInputText>
     </div>
-    <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding: 0 0 0 10px;">
-      <input *ngIf="isPickup" pInputText placeholder="{{ 'vehicle' | translate }}">
+
+    <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0">
+      <span *ngIf="isPickup;">
+        {{'vehicle' | translate}}:
+      </span>
+
+    </div>
+    <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0">
+      <input *ngIf="isPickup" pInputText>
     </div>
   </div>
-
   <div class="ui-g-12 ui-g-nopad">
     <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0;">
         {{'from' | translate}}:
@@ -27,7 +33,7 @@
       {{'until' | translate}}:
     </div>
     <div class="ui-g-12 ui-lg-2 ui-g-nopad" style="padding: 0;">
-      <input pInputText style="width: 100%;">
+      <input pInputText>
     </div>
     <div class="ui-g-12 ui-lg-4 ui-g-nopad" style="padding-left: 10px">
       <span *ngIf="isPickup; else fixDelivery">
