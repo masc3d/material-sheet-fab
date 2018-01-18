@@ -20,6 +20,7 @@ import { LoadinglistReportHeader } from './loadinglist-report-header.model';
 import { BrowserCheck } from '../../../core/auth/browser-check';
 import { LoadinglistscanService } from './loadinglistscan.service';
 import { TYPE_VALUABLE } from '../../../core/constants';
+import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
 
 interface ScanMsg {
   packageId: string;
@@ -204,7 +205,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     this.loadinglistService.getAllPackages();
   }
 
-  isValuable(pack: Package) {
+  isValuable( pack: Package ) {
     return pack.typeOfPackaging === TYPE_VALUABLE;
   }
 
@@ -338,121 +339,86 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   }
 
 
+  private padStart( inputString: string, targetLength: number, padString: string ): string {
+    while (inputString.length < targetLength) {
+      inputString = padString + inputString;
+    }
+    return inputString;
+  }
+
+  private addCheckdigit( someNo: number ): string {
+    const checkdigit = checkdigitInt25( `${someNo}` );
+    return this.padStart(`${someNo}${checkdigit}`, 12, '0');
+  }
+
   public scanPackNos() {
     this.scan( this.selectedPackages.length,
       () => this.selectedPackages.forEach(
-        ( pack: Package ) => this.scanPackNo( String( pack.parcelNo )
-        )
+        ( pack: Package ) => this.scanPackNo( this.addCheckdigit( pack.parcelNo ) )
       )
     );
   }
 
   private handleSuccess( sucessType: string ) {
     switch (sucessType) {
-      case 'already scanned':
-        // Wenn bereits gescannt:
-        //    Feld Scan Nachrichten = TRL("Diese Belegnummer wurde bereits gescannt.")  und grün
-        //    Feld unterhalb der Aktionen = TRL("bereits gescannt.")  und grün
+      case 'Parcel already scanned':
         this.addScanMsg( '', 'success', 'green', '#ffffff', 'alreadyScanned',
           'noAlreadyScanned', 'chord' );
         break;
-      case 'transfered to other laodlist':
-        // Umbuchen auf andere Ladeliste:
-        //    Feld Scan Nachrichten = TRL("Diese Belegnummer wurde bereits auf eine andere Ladeliste gescannt
-        //    und wird jetzt umgebucht.")  und grün
-        //    Feld unterhalb der Aktionen = TRL("bereits gescannt.")  und grün
+      case 'Loadinglist changed':
         this.addScanMsg( '', 'success', 'green', '#ffffff', 'alreadyScanned',
           'transferedToOtherLoadlist', 'ding' );
         break;
-      case 'success':
       default:
-        // Packstück erfolgreich gescannt - Rückmeldung mit success
-        //    Feld Scan Nachrichten = leer und grün
-        //    Feld unterhalb der Aktionen = leer und grün
-        this.addScanMsg( '', 'success', 'green', '#ffffff', '', '', 'ding' );
+        this.addScanMsg( '', 'success', 'green', '#ffffff', '', sucessType, 'ding' );
         break;
     }
   }
 
   private handleError( packageId: string, errorType: string ) {
     switch (errorType) {
-      case 'no activeLoadinglist':
-        // beim Scanversuch keine Ladeliste gesetzt:
-        //    Feld Scan Nachrichten = TRL("kein Scan")  und rot
-        //    Feld unterhalb der Aktionen = TRL("Keine Ladelistennummer gesetzt.")  und rot
-        console.log('errorType', errorType)
-        this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan', 'noLlNoSet', 'critical' );
-        break;
-      case 'not found':
-        // beim Scanversuch keinen Datensatz in der DB gefunden:
-        //    Feld Scan Nachrichten = TRL("Kein Datensatz vorhanden.")  und rot
-        //    Feld unterhalb der Aktionen = TRL("kein Scan")  und rot
-        console.log('errorType', errorType)
-        this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan', 'noDataInDatabase', 'critical' );
-        break;
-      case 'depot mismatch':
-        // Beim Scanversuch prüfen, ob das abholende Depot auch das scannende Depot ist:
-        // Ausnahme 800, aber das muss der Websevice abfangen
-        //    Feld Scan Nachrichten = TRL("Nicht scanbar, da Sie für diese Sendung nicht das abholende Depot sind.")  und rot
-        //    Feld unterhalb der Aktionen = TRL("kein Scan")  und rot
-        this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan',
-          'depotMismatch',
-          'critical' );
-        break;
       case 'invalid senddate':
-        // fChkBelScan muss der Webservice machen, damit die Prüfung auf Verladedatum funktioniert:
-        //    Feld Scan Nachrichten = TRL("Das Verladedatum der Sendung entspricht nicht den vorgegebenen Kriterien.
-        //    Bitte in der Auftragserfassung nachbearbeiten.")  und rot
-        //    Feld unterhalb der Aktionen = TRL("kein Scan")  und rot
+        // Umbuchung funktioniert, zu testen: wenn ausgeliefert, .....
         this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan',
           'invalidSenddate',
           'critical' );
         break;
-      case 'invalid product':
-        // Nur ONS, sonst:
-        //    Feld Scan Nachrichten = TRL("Diese Sendung ist kein <ONS>. Scan nicht möglich.
-        //    Bitte in der Auftragserfassung nachbearbeiten.")  und rot
-        //    Feld unterhalb der Aktionen = TRL("kein Scan")  und rot
-        this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan',
-          'invalidProduct', 'critical' );
-        break;
       case 'valore':
-        // Keine Valore, ausser das Depot ist hierfür frei gegeben:
-        //    Feld Scan Nachrichten = TRL("Dieses Packstück ist eine Valore. Scan nicht möglich.
-        //    Valoren müssen in einen Bag gescannt werden.")  und rot
-        //    Feld unterhalb der Aktionen = TRL("kein Scan")  und rot
+        // muss noch geprüft werden, wenn Webservice korrigiert ist
         this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan',
           'noValoreScan', 'critical' );
         break;
       default:
-        console.log( 'unhandled errorType' );
-        this.soundService.play( 'critical' );
+        this.addScanMsg( packageId, 'error', 'red', '#ffffff', 'noScan',
+          errorType, 'critical' );
         break;
     }
   }
 
   public scanPackNo( packageId: string ) {
-    this.loadinglistService.scanPack( packageId, this.activeLoadinglist.loadlistNo)
+    this.loadinglistService.scanPack( packageId, this.activeLoadinglist.label )
       .subscribe( ( response: HttpResponse<any> ) => {
-          const json = response;
-          // switch (response.status) {
-        console.log('json.status', json.status)
-          switch (json.status) {
+          console.log( 'response', response );
+          switch (response.status) {
             case 200:
-              this.handleSuccess( 'success' );
-              break;
-            case 301:
-              this.handleError( json['packageId'], json['msgText'] );
+              this.handleSuccess( response.body.title );
               break;
             default:
-              // unknown reponse status from REST
               console.log( response );
               break;
           }
           this.receivedResponse();
         },
         ( error: HttpErrorResponse ) => {
-          console.log( error );
+          switch (error.status) {
+            case 400:
+            case 404:
+              this.handleError( packageId, error.error[ 'title' ] );
+              break;
+            default:
+              console.log( error );
+              break;
+          }
           this.receivedResponse();
         } );
   }
@@ -498,7 +464,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
 
   public selectLoadlist( selected: number ) {
     if (selected) {
-      this.loadinglistService.setActiveLoadinglist( selected );
+      this.loadinglistService.setActiveLoadinglist( selected, this.addCheckdigit( selected ) );
       this.resetPayloadField();
       this.actionMsgListSubject.next( [ 'actionChangeLoadlist' ] );
     }
@@ -527,7 +493,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
       .subscribe( ( response: HttpResponse<any> ) => {
           switch (response.status) {
             case 200:
-              const filename = 'll_' + listsToPrint.map((loadlist: Exportlist) => loadlist.loadlistNo).join('_');
+              const filename = 'll_' + listsToPrint.map( ( loadlist: Exportlist ) => loadlist.loadlistNo ).join( '_' );
               this.printingService.printReports( this.reportingService
                   .generateReports( listsToPrint, <LoadinglistReportHeader> response.body ),
                 filename, saving );

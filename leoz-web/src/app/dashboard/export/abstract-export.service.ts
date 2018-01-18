@@ -142,11 +142,11 @@ export abstract class AbstractExportService {
     } );
   }
 
-  scanPack( packageId: string, loadlistNo: number ): Observable<HttpResponse<any>> {
+  scanPack( packageId: string, loadlistLabel: string ): Observable<HttpResponse<any>> {
 
     const params = new HttpParams()
       .set( 'parcel-no-or-reference', packageId )
-      .set( 'loadinglist-no', loadlistNo.toString() )
+      .set( 'loadinglist-no', loadlistLabel )
       .set( 'station-no', this.activeStation.stationNo.toString() );
 
     return this.http.patch( this.scanUrl, null, {

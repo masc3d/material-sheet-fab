@@ -1,4 +1,4 @@
-export function checkdigitInt25( input: string) {
+export function checkdigitInt25( input: string): number {
   let oddSum = 0;
   let evenSum = 0;
   let counter = 1;
