@@ -16,9 +16,6 @@ import { TranslateService } from '../../../core/translate/translate.service';
   selector: 'app-orderform',
   templateUrl: './orderform.component.html',
   styles: [ `
-    .bgColorTabView {
-      background-color:#cbccd0b5;
-    }
     input[pinputtext] {
       height: 25px;
       margin-bottom: 2px;
