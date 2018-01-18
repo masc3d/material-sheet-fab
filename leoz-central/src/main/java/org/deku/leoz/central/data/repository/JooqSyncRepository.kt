@@ -13,6 +13,7 @@ import org.jooq.impl.TableImpl
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.Stopwatch
+import java.sql.ResultSet
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -78,7 +79,15 @@ class JooqSyncRepository {
             field: TableField<out Record, Long>?): Cursor<TRecord> {
 
         return dsl.selectFrom(table)
-                .where(if ((syncId != null && field != null)) field.gt(syncId) else DSL.trueCondition())
+                .let {
+                    when {
+                        (syncId != null && field != null) -> it.where(field.gt(syncId))
+                        else -> it
+                    }
+                }
+                .resultSetConcurrency(ResultSet.CONCUR_READ_ONLY)
+                .resultSetType(ResultSet.TYPE_FORWARD_ONLY)
+                .fetchSize(Int.MIN_VALUE)
                 .fetchLazy()
     }
 }
