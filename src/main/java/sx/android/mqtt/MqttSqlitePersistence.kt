@@ -123,7 +123,7 @@ class MqttSqlitePersistence constructor(
 
                     //region Determine batch size
                     // Peek payload sizes
-                    val sizes = Stopwatch.createStarted(this, "SELECT BATCH SIZES", { _, _ ->
+                    val sizes = Stopwatch.createStarted(this, "SELECT BATCH SIZES", {
                         val COL_SIZE = "LENGTH(${COL_PAYLOAD})"
                         this.db.select(TABLE_NAME, COL_SIZE)
                                 .orderBy(COL_ID)
@@ -148,7 +148,7 @@ class MqttSqlitePersistence constructor(
                     //endregion
 
                     log.trace { "Processing batch size ${batchSize} -> ${batchSizeBytes} bytes" }
-                    val batch = Stopwatch.createStarted(this, "SELECT BATCH", { _, _ ->
+                    val batch = Stopwatch.createStarted(this, "SELECT BATCH", {
                         this.db.select(TABLE_NAME)
                                 .whereArgs(
                                         select = "${COL_ID} > {${COL_ID}}",
