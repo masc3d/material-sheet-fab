@@ -161,9 +161,11 @@ interface TourServiceV1 {
             var userId: Int? = null,
             @ApiModelProperty(position = 40, required = false, value = "Station this tour belongs to")
             var stationId: Int? = null,
-            @ApiModelProperty(position = 50, required = true, value = "Orders referenced by this tour")
+            @ApiModelProperty(position = 50, required = false, value = "Delivery list this tour refers to")
+            var deliveryListId: Int? = null,
+            @ApiModelProperty(position = 60, required = true, value = "Orders referenced by this tour")
             var orders: List<OrderService.Order> = listOf(),
-            @ApiModelProperty(position = 60, required = true, value = "Tour stop list")
+            @ApiModelProperty(position = 70, required = true, value = "Tour stop list")
             var stops: List<Stop> = listOf()
     )
 

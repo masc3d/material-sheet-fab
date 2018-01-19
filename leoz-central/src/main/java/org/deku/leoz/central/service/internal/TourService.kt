@@ -136,7 +136,7 @@ class TourServiceV1
     //endregion
 
     /**
-     * Create new tours
+     * Create new tours from domain instance(s)
      * @param tours Tours to create
      * @return Ids of created tours
      */
@@ -766,6 +766,7 @@ class TourServiceV1
                 nodeUid = nodeUid,
                 userId = tourRecord.userId,
                 stationId = tourRecord.stationId,
+                deliveryListId = tourRecord.deliverylistId,
                 orders = orders,
                 stops = tourEntryRecords.groupBy { it.position }
                         .map { stop ->
@@ -811,7 +812,7 @@ class TourServiceV1
                         }
         )
     }
-//endregion
+    //endregion
 
     //region MQ handlers
     @MqHandler.Types(
