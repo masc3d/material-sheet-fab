@@ -766,7 +766,7 @@ class TourServiceV1
                 nodeUid = nodeUid,
                 userId = tourRecord.userId,
                 stationId = tourRecord.stationId,
-                deliveryListId = tourRecord.deliverylistId,
+                deliverylistId = tourRecord.deliverylistId,
                 orders = orders,
                 stops = tourEntryRecords.groupBy { it.position }
                         .map { stop ->
