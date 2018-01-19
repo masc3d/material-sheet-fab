@@ -179,7 +179,7 @@ class StartupActivity : BaseActivity() {
                                     val database: Database = Kodein.global.instance()
 
                                     try {
-                                        Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", { _, _ ->
+                                        Stopwatch.createStarted(this, "Preparing database [${database.dataSource.databaseName}]", {
                                             // Simply getting a writable database reference will perform (requery) migration
                                             database.dataSource.writableDatabase
                                         })
