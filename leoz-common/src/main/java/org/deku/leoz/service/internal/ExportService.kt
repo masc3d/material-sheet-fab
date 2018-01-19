@@ -100,6 +100,60 @@ interface ExportService {
         }
     }
 
+    enum class ResponseMsg(val value:String){
+        LlWrongCheckDigit("Loadinglist - wrong check digit"),
+        LlNotValid("Loadinglist not valid"),
+        LlChanged("Loadinglist changed"),
+        LlWrongType("Loadinglist not of Bag-Type"),
+        LlUsedForMultipleBags("Loadinglist used for multiple bags"),
+        LlAlreadyUsedForAnotherBag("Loadinglist already used for another bag"),
+        ValNotAllowed("Valuables not allowed"),
+        ValNotAllowedWithoutBag("Valuables not allowed without bag"),
+        ParcelAlreadyScanned("Parcel already scanned"),
+        ParcelNotFound("Parcel not found"),
+        ParcelDelivered("Parcel delivered"),
+        ParcelDeleted("Parcel deleted"),
+        MoreParcelsForCreference("More parcels found to this cReference"),
+        OrderNotFound("Order not found"),
+        NoONS("No ONS"),
+        StationDismatch("Station dismatch"),//order depotnabd!=übergebene Station
+        NoOrdersFound("No orders found"),
+        NoParcelsFound("No parcels found"),
+        NoParcelsFoundForStation("No parcels found for this station"),
+        NoParcelsFoundForLL("No parcels found for this list"),
+        BagIdWrongCheckDigit("BagId wrong check digit"),
+        BagIdNotValid("BagId not valid"),
+        BagIdNotFound("BagId not found"),
+        BagIdNull("BagId null"),
+        BagIdWithoutLastStation("BagId without lastStation"),
+        BagIdNotInMove("BagId not found in move-state"),
+        BagIdOkNoBack("BagId found - no bagback-unit found"),
+        BagIdOkNoBackOrder("BagId found - no bagback-order found"),
+        BagIdOkBackOrderWithoutAbd("BagId found - bagback-order without depotnrabd"),
+        BagIdOkBackOrderAbdMismatch("BagId found - bagback-order station mismatch depotnrabd"),
+        BagIdOkAlreadyExported("BagId found - bag already exported"),
+        BagIdOkAlreadyClosed("BagId found - bag already closed - try to reopen"),
+        BagIdOkAlreadyOpen("BagId found - already open"),
+        BagUnitWrongCheckDigit("Bag-UnitNo wrong check digit"),
+        BagUnitNotValid("Bag-UnitNo not valid"),
+        BagBackUnitDismatch("Bag-BackUnitNo dismatch"),
+        BagBackUnitUsedForMultipleLl("BagBackUnitNo used for multiple loadinglists"),
+        BagBackUnitAlreadyUsedForAnotherLl("BagBackUnitNo already used for another loadinglist"),
+        RedSealWrongDigit("Red seal - wrong check digit"),
+        RedSealNotValid("Red seal not valid"),
+        RedSealNotFound("Red seal not found"),
+        NoStation("No station"),
+        LastDepotStationMismatch("LastDepot-Station mismatch"),
+        SealStatusProblem("Sealstatus-problem"),
+        SealAlreadyInUse("SealNo already in use"),
+        SealMismatch("Seal number mismatch"),
+        YellowSealWrongCheckDigit("Yellow seal number - wrong check digit"),
+        YellowSealNotValid("Yellow seal number not valid"),
+        NoSealInBag("No seal number in bag"),
+        WeightGreaterThanMax("Weight > max"),
+        SendDateInvalid("Invalid senddate")
+    }
+
     @GET
     @Path("/station/{$STATION_NO}/order")
     @ApiOperation(value = "Get parcels to export", authorizations = arrayOf(Authorization(Rest.API_KEY)))
