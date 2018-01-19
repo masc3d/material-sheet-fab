@@ -147,7 +147,7 @@ class DeliveryStopProcessScreen :
     private val deliveredSection: SectionViewModel<ParcelEntity> by lazy {
         SectionViewModel(
                 icon = R.drawable.ic_delivery,
-                color = android.R.color.black,
+                color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_green,
                 title = getString(R.string.delivered),
                 items = this.deliveryStop.deliveredParcels
@@ -191,7 +191,7 @@ class DeliveryStopProcessScreen :
     private val damagedSection by lazy {
         SectionViewModel(
                 icon = R.drawable.ic_damaged,
-                color = android.R.color.black,
+                color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_accent,
                 showIfEmpty = true,
                 title = getString(R.string.event_reason_damaged),
@@ -202,7 +202,7 @@ class DeliveryStopProcessScreen :
     private val excludedSection by lazy {
         SectionViewModel(
                 icon = R.drawable.ic_split,
-                color = android.R.color.black,
+                color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_accent,
                 showIfEmpty = true,
                 title = getString(R.string.excluded),
@@ -216,7 +216,7 @@ class DeliveryStopProcessScreen :
     private fun EventNotDeliveredReason.toSection(): SectionViewModel<ParcelEntity> {
         return SectionViewModel(
                 icon = this.mobile.icon,
-                color = android.R.color.black,
+                color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_accent,
                 showIfEmpty = false,
                 title = this.mobile.textOrName(context),

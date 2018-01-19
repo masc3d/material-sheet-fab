@@ -134,7 +134,7 @@ class VehicleLoadingScreen :
     val loadedSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_truck_loading,
-                color = android.R.color.black,
+                color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.loaded).toString(),
                 items = this.deliveryList.loadedParcels.map { it.value }
@@ -144,7 +144,7 @@ class VehicleLoadingScreen :
     val damagedSection by lazy {
         SectionViewModel<ParcelEntity>(
                 icon = R.drawable.ic_damaged,
-                color = android.R.color.black,
+                color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_accent,
                 title = this.getString(R.string.event_reason_damaged),
                 items = this.deliveryList.damagedParcels.map { it.value }
