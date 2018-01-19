@@ -166,7 +166,9 @@ interface TourServiceV1 {
             @ApiModelProperty(position = 60, required = true, value = "Orders referenced by this tour")
             var orders: List<OrderService.Order> = listOf(),
             @ApiModelProperty(position = 70, required = true, value = "Tour stop list")
-            var stops: List<Stop> = listOf()
+            var stops: List<Stop> = listOf(),
+            @ApiModelProperty(position = 80, required = true, value = "Last optimization time")
+            var optimized: Date? = null
     )
 
     @Serializable(0xc65eacc35a3d73)

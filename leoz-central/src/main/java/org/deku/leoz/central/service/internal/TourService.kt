@@ -147,6 +147,8 @@ class TourServiceV1
                 val tourRecord = dsl.newRecord(TAD_TOUR).also {
                     it.userId = tour.userId
                     it.stationId = tour.stationId
+                    it.deliverylistId = tour.deliverylistId
+                    it.optimized = tour.optimized?.toTimestamp()
                     it.store()
                 }
 
@@ -564,6 +566,7 @@ class TourServiceV1
                     this.optimizations.onStart(tourId)
                 }
                 .map { routes ->
+                    val now = Date()
                     routes.map { route ->
                         val stops = route.deliveries
                                 .sortedBy { it.orderindex }
@@ -581,6 +584,8 @@ class TourServiceV1
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
                                 stationId = tour.stationId,
+                                deliverylistId = tour.deliverylistId,
+                                optimized = now,
                                 stops = stops,
                                 orders = orders
                         )
@@ -767,6 +772,7 @@ class TourServiceV1
                 userId = tourRecord.userId,
                 stationId = tourRecord.stationId,
                 deliverylistId = tourRecord.deliverylistId,
+                optimized = tourRecord.optimized,
                 orders = orders,
                 stops = tourEntryRecords.groupBy { it.position }
                         .map { stop ->
