@@ -223,8 +223,8 @@ interface TourServiceV1 {
 
             @ApiModelProperty(position = 20,
                     required = false,
-                    value = "Vehicles to optimize for. " +
-                            "When this parameter is omitted, the tour will be optimized in place. " +
+                    value = "Vehicles to optimize for",
+                    notes = "When this parameter is omitted, the tour will be optimized in place. " +
                             "When provided, new tours will be created for each vehicle.")
             var vehicles: List<Vehicle>? = null
     ) {
@@ -264,26 +264,48 @@ interface TourServiceV1 {
     }
 
     /**
-     * Tour update
+     * Generic tour update (for mq).
      */
     @Serializable(0x227e7efb9e653c)
     data class TourUpdate(
             /** Updated tour (may be filled partially) */
             var tour: Tour? = null,
             /** Update timestamp */
-            var timestamp: Date = Date(),
-            /** True whenthis update is a tour optimization */
-            var isOptimization: Boolean = false
+            var timestamp: Date = Date()
     )
 
     /**
-     * Tour optimization request
+     * Tour optimization request (for mq)
      */
     @Serializable(0x20ccdbc9cf990c)
     data class TourOptimizationRequest(
+            /** Unique uid for this request. Will be passed back on response */
+            var requestUid: String? = null,
+            /** Node uid requesting optimization */
             var nodeUid: String? = null,
+            /** Tour optimization options */
             var options: TourOptimizationOptions = TourOptimizationOptions()
     )
+
+    /**
+     * Tour optimization result (for mq)
+     */
+    @Serializable(0x8a511f02d293cb)
+    data class TourOptimizationResult(
+            /** Request uid this response belongs to */
+            var requestUid: String? = null,
+            /** Node uid */
+            var nodeUid: String? = null,
+            /** Optimized tour or null in case an error occured */
+            var tour: Tour? = null,
+            /** Error details */
+            var error: ErrorType? = null
+    ) {
+        enum class ErrorType {
+            INVALID_REQUEST,
+            ROUTE_COULD_NOT_BE_DETERMINED
+        }
+    }
 
     /**
      * Tour optimization status
@@ -295,19 +317,6 @@ interface TourServiceV1 {
             /** Optimization progress */
             var inProgress: Boolean = false
     )
-
-    /**
-     * Tour optimization error
-     */
-    @Serializable(0xc416aca7da4d56)
-    data class TourOptimizationError(
-            var type: Type = Type.ROUTE_COULD_NOT_BE_DETERMINED
-    ) {
-        enum class Type {
-            INVALID_REQUEST,
-            ROUTE_COULD_NOT_BE_DETERMINED
-        }
-    }
 }
 
 /** Stop id. Refers to the first task its tour entry (task) id */

@@ -135,6 +135,41 @@ class TourServiceV1
     private lateinit var smartlaneBridge: SmartlaneBridge
     //endregion
 
+    /**
+     * Create new tours
+     * @param tours Tours to create
+     * @return Ids of created tours
+     */
+    fun create(tours: Iterable<TourServiceV1.Tour>): List<Int> {
+        return dsl.transactionResult { _ ->
+            tours.map { tour ->
+                // Create new one if it doesn't exist
+                val tourRecord = dsl.newRecord(TAD_TOUR).also {
+                    it.userId = tour.userId
+                    it.stationId = tour.stationId
+                    it.store()
+                }
+
+                tour.stops.forEachIndexed { index, stop ->
+                    stop.tasks.forEach { task ->
+                        dsl.newRecord(TAD_TOUR_ENTRY).also {
+                            it.tourId = tourRecord.id
+                            it.position = (index + 1).toDouble()
+                            it.orderId = task.orderId
+                            it.orderTaskType = when (task.taskType) {
+                                TourServiceV1.Task.Type.DELIVERY -> TaskType.DELIVERY.value
+                                TourServiceV1.Task.Type.PICKUP -> TaskType.DELIVERY.value
+                            }
+                            it.store()
+                        }
+                    }
+                }
+
+                tourRecord.id
+            }
+        }
+    }
+
     //region REST
     /**
      * Get tours
@@ -243,139 +278,12 @@ class TourServiceV1
         return tourRecord.toTour()
     }
 
-    /**
-     * Create new tours
-     * @param tours Tours to create
-     * @return Ids of created tours
-     */
-    fun create(tours: Iterable<TourServiceV1.Tour>): List<Int> {
-        return dsl.transactionResult { _ ->
-            tours.map { tour ->
-                // Create new one if it doesn't exist
-                val tourRecord = dsl.newRecord(TAD_TOUR).also {
-                    it.userId = tour.userId
-                    it.stationId = tour.stationId
-                    it.store()
-                }
-
-                tour.stops.forEachIndexed { index, stop ->
-                    stop.tasks.forEach { task ->
-                        dsl.newRecord(TAD_TOUR_ENTRY).also {
-                            it.tourId = tourRecord.id
-                            it.position = (index + 1).toDouble()
-                            it.orderId = task.orderId
-                            it.orderTaskType = when (task.taskType) {
-                                TourServiceV1.Task.Type.DELIVERY -> TaskType.DELIVERY.value
-                                TourServiceV1.Task.Type.PICKUP -> TaskType.DELIVERY.value
-                            }
-                            it.store()
-                        }
-                    }
-                }
-
-                tourRecord.id
-            }
-        }
-    }
-
     override fun delete(ids: List<Int>) {
         dsl.transaction { _ ->
             ids.forEach {
                 this.tourRepository.delete(it)
             }
         }
-    }
-
-    /**
-     * Update existing tour from optimized one
-     * @param tour Optimized tour
-     */
-    fun updateFromOptimizedTour(tour: TourServiceV1.Tour) {
-        dsl.transaction { _ ->
-            val tourId = tour.id ?: throw IllegalArgumentException("Tour id cannot be null")
-
-            val now = Date().toTimestamp()
-            val entryRecords = tourRepository.findEntriesById(tourId)
-
-            tour.stops
-                    .forEachIndexed { index, stop ->
-                        // Select stop tour entry which matches custom id
-                        val entryRecord = entryRecords.first { it.id == stop.id }
-
-                        val newPosition = (index + 1).toDouble()
-                        log.trace { "OPTIMIZATION POSITION UPDATE ${entryRecord.position} -> ${newPosition}" }
-
-                        // Update position for all entries on the same (positional) level
-                        val entryIds = entryRecords
-                                .filter { it.position == entryRecord.position }
-                                .map { it.id }
-
-                        dsl.update(TAD_TOUR_ENTRY)
-                                .set(TAD_TOUR_ENTRY.POSITION, newPosition)
-                                .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
-                                .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
-                                .execute()
-                    }
-
-            dsl.update(TAD_TOUR)
-                    .set(TAD_TOUR.OPTIMIZED, now)
-                    .where(TAD_TOUR.ID.eq(tourId))
-                    .execute()
-        }
-    }
-
-    /**
-     * Optimize a tour.
-     * This method operates solely on service entities and will not perform central database updates.
-     * @param id Tour id
-     * @param options Optimization options
-     * @return Single observable of optimized tours
-     */
-    fun optimize(
-            id: Int,
-            options: TourServiceV1.TourOptimizationOptions
-    ): Single<List<TourServiceV1.Tour>> {
-        // Check if optimization for this tour is already in progress
-        if (this.optimizations.any { it.id == id })
-            throw IllegalStateException("Optimization for tour [${id}] already in progress")
-
-        val tour = this.getById(id)
-        val tourId = tour.id!!
-
-        return this.smartlaneBridge.optimizeRoute(
-                tour.toRoutingInput(
-                        options
-                ))
-                .doOnSubscribe {
-                    this.optimizations.onStart(tourId)
-                }
-                .map { routes ->
-                    routes.map { route ->
-                        val stops = route.deliveries
-                                .sortedBy { it.orderindex }
-                                .map { delivery ->
-                                    tour.stops.first { it.id == delivery.customId.toInt() }
-                                }
-
-                        val orders = stops
-                                .flatMap { it.tasks }
-                                .map { it.orderId }.distinct()
-                                .map { orderId -> tour.orders.first { it.id == orderId } }
-
-                        TourServiceV1.Tour(
-                                id = null,
-                                nodeUid = tour.nodeUid,
-                                userId = tour.userId,
-                                stationId = tour.stationId,
-                                stops = stops,
-                                orders = orders
-                        )
-                    }
-                }
-                .doFinally {
-                    this.optimizations.onFinish(tourId)
-                }
-                .firstOrError()
     }
 
     /**
@@ -393,8 +301,16 @@ class TourServiceV1
             log.info("Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] ")
 
             Observable.mergeDelayError(ids.map { id ->
+                val tour = this.getById(id)
+
+                if (tour.nodeUid != null) {
+                    // Node restrictions
+                    if (options.vehicles?.count() ?: 0 == 0)
+                        throw IllegalStateException("In place updates (vehicles not provided) are not supported for tours owned by nodes")
+                }
+
                 this.optimize(
-                        id = id,
+                        tour = tour,
                         options = options
                 )
                         .toObservable()
@@ -541,31 +457,32 @@ class TourServiceV1
             nodeUid: String,
             options: TourServiceV1.TourOptimizationOptions
     ) {
-        val node = dsl.selectFrom(MST_NODE)
+        val nodeRecord = dsl.selectFrom(MST_NODE)
                 .fetchByUid(nodeUid, strict = false)
                 ?: throw RestProblem(status = Status.NOT_FOUND, detail = "Node not found")
 
-        val tour = tourRepository.findByNodeId(node.nodeId)
-                ?: throw RestProblem(status = Status.NOT_FOUND, detail = "Tour not found")
+        val tourRecord = tourRepository.findByNodeId(nodeRecord.nodeId)
+                ?: throw RestProblem(status = Status.NOT_FOUND, detail = "No tour for this node")
 
         try {
+            val tour = this.getById(tourRecord.id)
+
             this.optimize(
-                    id = tour.id,
+                    tour = tour,
                     options = options
             )
                     .subscribeBy(
                             onSuccess = { tours ->
-                                JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
+                                JmsEndpoints.node.topic(identityUid = Identity.Uid(nodeRecord.uid))
                                         .channel()
-                                        .send(TourServiceV1.TourUpdate(
+                                        .send(TourServiceV1.TourOptimizationResult(
+                                                requestUid = null,
+                                                nodeUid = nodeRecord.uid,
                                                 tour = tours.first()
                                         ))
                             },
                             onError = { e ->
                                 log.error(e.message, e)
-                                JmsEndpoints.node.topic(identityUid = Identity.Uid(node.uid))
-                                        .channel()
-                                        .send(TourServiceV1.TourOptimizationError())
                             }
                     )
         } catch (e: Exception) {
@@ -619,6 +536,98 @@ class TourServiceV1
         }
 
         return tour
+    }
+    //endregion
+
+    //region Optimization
+    /**
+     * Optimize a tour
+     * @param tour Tour to optimize
+     * @param options Optimization options
+     * @return Single observable of optimized tours
+     */
+    fun optimize(
+            tour: TourServiceV1.Tour,
+            options: TourServiceV1.TourOptimizationOptions
+    ): Single<List<TourServiceV1.Tour>> {
+        // Check if optimization for this tour is already in progress
+        if (this.optimizations.any { it.id == tour.id })
+            throw IllegalStateException("Optimization for tour [${tour.id}] already in progress")
+
+        val tourId = tour.id!!
+
+        return this.smartlaneBridge.optimizeRoute(
+                tour.toRoutingInput(
+                        options
+                ))
+                .doOnSubscribe {
+                    this.optimizations.onStart(tourId)
+                }
+                .map { routes ->
+                    routes.map { route ->
+                        val stops = route.deliveries
+                                .sortedBy { it.orderindex }
+                                .map { delivery ->
+                                    tour.stops.first { it.id == delivery.customId.toInt() }
+                                }
+
+                        val orders = stops
+                                .flatMap { it.tasks }
+                                .map { it.orderId }.distinct()
+                                .map { orderId -> tour.orders.first { it.id == orderId } }
+
+                        TourServiceV1.Tour(
+                                id = null,
+                                nodeUid = tour.nodeUid,
+                                userId = tour.userId,
+                                stationId = tour.stationId,
+                                stops = stops,
+                                orders = orders
+                        )
+                    }
+                }
+                .doFinally {
+                    this.optimizations.onFinish(tourId)
+                }
+                .firstOrError()
+    }
+
+    /**
+     * Update existing tour from optimized one
+     * @param tour Optimized tour
+     */
+    fun updateFromOptimizedTour(tour: TourServiceV1.Tour) {
+        dsl.transaction { _ ->
+            val tourId = tour.id ?: throw IllegalArgumentException("Tour id cannot be null")
+
+            val now = Date().toTimestamp()
+            val entryRecords = tourRepository.findEntriesById(tourId)
+
+            tour.stops
+                    .forEachIndexed { index, stop ->
+                        // Select stop tour entry which matches custom id
+                        val entryRecord = entryRecords.first { it.id == stop.id }
+
+                        val newPosition = (index + 1).toDouble()
+                        log.trace { "OPTIMIZATION POSITION UPDATE ${entryRecord.position} -> ${newPosition}" }
+
+                        // Update position for all entries on the same (positional) level
+                        val entryIds = entryRecords
+                                .filter { it.position == entryRecord.position }
+                                .map { it.id }
+
+                        dsl.update(TAD_TOUR_ENTRY)
+                                .set(TAD_TOUR_ENTRY.POSITION, newPosition)
+                                .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
+                                .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
+                                .execute()
+                    }
+
+            dsl.update(TAD_TOUR)
+                    .set(TAD_TOUR.OPTIMIZED, now)
+                    .where(TAD_TOUR.ID.eq(tourId))
+                    .execute()
+        }
     }
     //endregion
 
