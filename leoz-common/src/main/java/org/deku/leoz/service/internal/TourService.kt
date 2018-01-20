@@ -30,7 +30,7 @@ interface TourServiceV1 {
         const val DEBITOR_ID = "debitor-id"
         const val DELIVERYLIST_ID = "deliverylist-id"
         const val NODE_UID = "node-uid"
-        const val STATION_ID = "station-id"
+        const val STATION_NO = "station-no"
         const val USER_ID = "user-id"
         const val WAIT_FOR_COMPLETION = "wait-for-completion"
     }
@@ -43,8 +43,8 @@ interface TourServiceV1 {
     fun get(
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
             debitorId: Int?,
-            @QueryParam(STATION_ID) @ApiParam(value = "Station id", required = false)
-            stationId: Int?,
+            @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
+            stationNo: Int?,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
             userId: Int?
     ): List<Tour>
@@ -128,9 +128,9 @@ interface TourServiceV1 {
             notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun status(
-            @QueryParam(STATION_ID)
-            @ApiParam(value = "The station id to retrieve tour status updates for")
-            stationId: Int,
+            @QueryParam(STATION_NO)
+            @ApiParam(value = "The station no to retrieve tour status updates for")
+            stationNo: Int,
             @Context sink: SseEventSink,
             @Context sse: Sse
     )
@@ -160,7 +160,7 @@ interface TourServiceV1 {
             @ApiModelProperty(position = 30, required = false, value = "User this tour belongs to")
             var userId: Int? = null,
             @ApiModelProperty(position = 40, required = false, value = "Station this tour belongs to")
-            var stationId: Int? = null,
+            var stationNo: Int? = null,
             @ApiModelProperty(position = 50, required = false, value = "Delivery list this tour refers to")
             var deliverylistId: Int? = null,
             @ApiModelProperty(position = 60, required = true, value = "Orders referenced by this tour")

@@ -125,8 +125,6 @@ class TourServiceV1
     private lateinit var userRepository: JooqUserRepository
     @Inject
     private lateinit var nodeRepository: JooqNodeRepository
-    @Inject
-    private lateinit var stationRepository: JooqStationRepository
 
     @Inject
     private lateinit var orderService: OrderService
@@ -146,7 +144,7 @@ class TourServiceV1
                 // Create new one if it doesn't exist
                 val tourRecord = dsl.newRecord(TAD_TOUR).also {
                     it.userId = tour.userId
-                    it.stationId = tour.stationId
+                    it.stationNo = tour.stationNo
                     it.deliverylistId = tour.deliverylistId
                     it.optimized = tour.optimized?.toTimestamp()
                     it.store()
@@ -178,7 +176,7 @@ class TourServiceV1
      */
     override fun get(
             debitorId: Int?,
-            stationId: Int?,
+            stationNo: Int?,
             userId: Int?
     ): List<TourServiceV1.Tour> {
         val tourRecords = dsl
@@ -194,7 +192,7 @@ class TourServiceV1
                 }
                 .let {
                     when {
-                        stationId != null -> it.and(TAD_TOUR.STATION_ID.eq(stationId))
+                        stationNo != null -> it.and(TAD_TOUR.STATION_NO.eq(stationNo))
                         else -> it
                     }
                 }
@@ -384,13 +382,13 @@ class TourServiceV1
                 response = response)
     }
 
-    override fun status(stationId: Int, sink: SseEventSink, sse: Sse) {
+    override fun status(stationNo: Int, sink: SseEventSink, sse: Sse) {
         var subscription: Disposable? = null
 
         //this.stationRepository.findById(stationId)
 
         val tourIds = dsl.selectFrom(TAD_TOUR)
-                .where(TAD_TOUR.STATION_ID.eq(stationId))
+                .where(TAD_TOUR.STATION_NO.eq(stationNo))
                 .fetch(TAD_TOUR.ID)
 
         // The status request uuid
@@ -514,7 +512,7 @@ class TourServiceV1
             val tourRecord = dsl.newRecord(TAD_TOUR).also {
                 it.nodeId = null
                 it.userId = null
-                it.stationId = dlRecord.deliveryStation.toInt()
+                it.stationNo = dlRecord.deliveryStation.toInt()
                 it.deliverylistId = deliveryListId
                 it.timestamp = timestamp
                 it.store()
@@ -583,7 +581,7 @@ class TourServiceV1
                                 id = null,
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
-                                stationId = tour.stationId,
+                                stationNo = tour.stationNo,
                                 deliverylistId = tour.deliverylistId,
                                 optimized = now,
                                 stops = stops,
@@ -770,7 +768,7 @@ class TourServiceV1
                 id = tourRecord.id,
                 nodeUid = nodeUid,
                 userId = tourRecord.userId,
-                stationId = tourRecord.stationId,
+                stationNo = tourRecord.stationNo,
                 deliverylistId = tourRecord.deliverylistId,
                 optimized = tourRecord.optimized,
                 orders = orders,
