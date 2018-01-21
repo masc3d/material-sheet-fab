@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonMappingException
 import org.deku.leoz.service.entity.ServiceError
 import org.slf4j.LoggerFactory
+import org.zalando.problem.Status
 import org.zalando.problem.ThrowableProblem
+import sx.rs.RestProblem
 import javax.inject.Named
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.MediaType
@@ -26,6 +28,10 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
         when(e) {
             is WebApplicationException -> return e.response
 
+            is NoSuchElementException -> {
+                status = Response.Status.NOT_FOUND.statusCode
+                entity = RestProblem(status = Status.NOT_FOUND, detail = e.message)
+            }
             is ServiceException -> {
                 if (e.entity != null) {
                     entity = e.entity
@@ -49,7 +55,7 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
                 val cause = e.cause?.message ?: "unknown"
 
                 status = Response.Status.BAD_REQUEST.statusCode
-                entity = ServiceError(message = "JSON mapping error [${locationMessage}]: ${cause}")
+                entity = RestProblem(status = Status.BAD_REQUEST, detail = "JSON mapping error [${locationMessage}]: ${cause}")
                 //endregion
             }
             is JsonProcessingException -> {
@@ -58,14 +64,15 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
                 val jl = e.location
 
                 val locationMessage: String = if (jl != null) " in line ${jl.lineNr} column ${jl.columnNr}" else ""
+
                 status = Response.Status.BAD_REQUEST.statusCode
-                entity = ServiceError(message = "JSON processing error${locationMessage}: ${e.originalMessage}")
+                entity = RestProblem(status = Status.BAD_REQUEST, detail = "JSON processing error${locationMessage}: ${e.originalMessage}")
                 //endregion
             }
             else -> {
                 log.error(e.message, e)
                 status = Response.Status.BAD_REQUEST.statusCode
-                entity = ServiceError(cause = e)
+                entity = RestProblem(status = Status.BAD_REQUEST, detail = e.message)
             }
         }
 
