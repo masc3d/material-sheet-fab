@@ -461,6 +461,10 @@ class TourServiceV1
                 .fetchByUid(nodeUid, strict = false)
                 ?: throw RestProblem(status = Status.NOT_FOUND, detail = "Node not found")
 
+        if (options.vehicles?.count() ?: 0 > 1)
+            throw RestProblem(status = Status.BAD_REQUEST, detail = "Multiple vehicles are not supported when " +
+                    "optimizing a single (node related) tour")
+
         val tourRecord = tourRepository.findByNodeId(nodeRecord.nodeId)
                 ?: throw RestProblem(status = Status.NOT_FOUND, detail = "No tour for this node")
 
@@ -493,49 +497,60 @@ class TourServiceV1
         }
     }
 
-    override fun create(deliveryListId: Int): TourServiceV1.Tour {
-        val dlRecord = deliverylistRepository.findById(
-                deliveryListId.toLong()
-        ) ?: throw RestProblem(
-                status = Status.NOT_FOUND
+    override fun create(deliverylistIds: List<Int>): List<TourServiceV1.Tour> {
+        val dlRecords = deliverylistRepository.findByIds(
+                deliverylistIds.map { it.toLong() }
         )
 
-        val dlDetailRecords = deliverylistRepository.findDetailsById(
-                deliveryListId.toLong()
+        dlRecords.map { it.id.toInt() }.let { deliverylistIds.subtract(it) }.also { missing ->
+            if (missing.count() > 0)
+                throw RestProblem(
+                        status = Status.NOT_FOUND,
+                        detail = "One or more delivery lists could not be found [${missing.joinToString(", ")}]")
+        }
+
+        val dlDetailRecordsById = deliverylistRepository.findDetailsByIds(
+                deliverylistIds.map { it.toLong() }
         )
+                .groupBy { it.id }
 
         val timestamp = Date().toTimestamp()
 
         // Create tour/entries from delivery list
-        val tour = dsl.transactionResult { _ ->
-            // Create new tour
-            val tourRecord = dsl.newRecord(TAD_TOUR).also {
-                it.nodeId = null
-                it.userId = null
-                it.stationNo = dlRecord.deliveryStation.toInt()
-                it.deliverylistId = deliveryListId
-                it.timestamp = timestamp
-                it.store()
-            }
-
-            // Transform delivery list detail to tour entry record
-            val tourEntryRecords = dlDetailRecords.mapIndexed { index, dlDetailRecord ->
-                dsl.newRecord(TAD_TOUR_ENTRY).also {
-                    it.tourId = tourRecord.id
-                    it.orderId = dlDetailRecord.orderId.toLong()
-                    it.orderTaskType = TaskType.valueOf(dlDetailRecord.stoptype).value
-                    it.position = (index + 1).toDouble()
+        val tours = dsl.transactionResult { _ ->
+            dlRecords.map { dlRecord ->
+                // Create new tour
+                val tourRecord = dsl.newRecord(TAD_TOUR).also {
+                    it.nodeId = null
+                    it.userId = null
+                    it.stationNo = dlRecord.deliveryStation.toInt()
+                    it.deliverylistId = dlRecord.id.toInt()
                     it.timestamp = timestamp
                     it.store()
                 }
-            }
 
-            tourRecord.toTour(
-                    tourEntryRecordsByTourId = mapOf(Pair(tourRecord.id, tourEntryRecords))
-            )
+                val dlDetailRecords = dlDetailRecordsById.getValue(dlRecord.id)
+
+                // Transform delivery list detail to tour entry record
+                val tourEntryRecords = dlDetailRecords.mapIndexed { index, dlDetailRecord ->
+                    dsl.newRecord(TAD_TOUR_ENTRY).also {
+                        it.tourId = tourRecord.id
+                        it.orderId = dlDetailRecord.orderId.toLong()
+                        it.orderTaskType = TaskType.valueOf(dlDetailRecord.stoptype).value
+                        it.position = (index + 1).toDouble()
+                        it.timestamp = timestamp
+                        it.store()
+                    }
+                }
+
+                // TODO: optimize performance: using iterable conversion extension
+                tourRecord.toTour(
+                        tourEntryRecordsByTourId = mapOf(Pair(tourRecord.id, tourEntryRecords))
+                )
+            }
         }
 
-        return tour
+        return tours.toList()
     }
     //endregion
 

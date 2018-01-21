@@ -28,7 +28,7 @@ interface TourServiceV1 {
         const val ID = "id"
         const val IDS = "ids"
         const val DEBITOR_ID = "debitor-id"
-        const val DELIVERYLIST_ID = "deliverylist-id"
+        const val DELIVERYLIST_IDS = "deliverylist-ids"
         const val NODE_UID = "node-uid"
         const val STATION_NO = "station-no"
         const val USER_ID = "user-id"
@@ -74,14 +74,14 @@ interface TourServiceV1 {
     ): Tour
 
     @POST
-    @Path("/deliverylist/{${DELIVERYLIST_ID}}")
-    @ApiOperation(value = "Create a new tour from a delivery list",
-            notes = "The tour will be owned by the same station",
+    @Path("/deliverylist")
+    @ApiOperation(value = "Create a new tour from delivery lists",
+            notes = "The tours created will be owned by the same station",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun create(
-            @PathParam(DELIVERYLIST_ID) @ApiParam(value = "Source delivery list id")
-            deliveryListId: Int
-    ): Tour
+            @ApiParam(value = "Source delivery list id(s)")
+            deliverylistIds: List<Int>
+    ): List<Tour>
 
     @DELETE
     @Path("/")
