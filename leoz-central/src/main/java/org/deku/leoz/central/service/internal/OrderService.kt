@@ -251,6 +251,7 @@ class OrderService : OrderService {
         p.lastDeliveryListId = r.lastDeliveryListId?.toInt()
         p.isDelivered = r.deliveredStatus.toInt() == 4
         p.isMissing = r.deliveredStatus.toInt() == 8 && r.lastDeliveredEventReason.toInt() == 30
+        // TODO: expensive lookup per parcel! needs to be optimized
         p.isDamaged = statusRepository.statusExist(r.scanId.toLong(), "E", 8, 31)
         p.dimension.weight = r.dimentionWeight
         p.dimension.height = r.dimensionHeight.toInt()
