@@ -79,10 +79,10 @@ class LoggingFilter  : ClientRequestFilter, ClientResponseFilter, WriterIntercep
     override fun filter(requestContext: ClientRequestContext, responseContext: ClientResponseContext) {
         //region Response logging
         log.trace {
-            val data = responseContext.entityStream.readBytes()
-            responseContext.entityStream = ByteArrayInputStream(data)
+            val data = responseContext.entityStream?.readBytes()
+            responseContext.entityStream = data?.let { ByteArrayInputStream(data) }
 
-            "RESPONSE ${data.toString(charset = Charsets.UTF_8)}"
+            "RESPONSE ${data?.toString(charset = Charsets.UTF_8)}"
         }
         //endregion
     }
