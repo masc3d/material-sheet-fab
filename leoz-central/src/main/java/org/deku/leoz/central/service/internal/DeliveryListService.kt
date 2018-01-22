@@ -116,7 +116,7 @@ class DeliveryListService
         }
 
         return dlInfos
-                .sortedWith(compareByDescending<TadVDeliverylistRecord> { it.createDate }.thenBy{ it.id })
+                .sortedWith(compareByDescending<TadVDeliverylistRecord> { it.deliveryListDate }.thenBy { it.id })
                 .map {
                     it.toDeliveryListInfo()
                 }
