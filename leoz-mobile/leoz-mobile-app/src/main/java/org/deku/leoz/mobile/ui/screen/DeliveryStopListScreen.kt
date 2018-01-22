@@ -299,6 +299,8 @@ class DeliveryStopListScreen
                             optimizationSubscription = tourService.optimize(
                                     omitAPpointments = true
                             )
+                                    // `Single`s that may be disposed before completion must be converted to observables
+                                    // in order to mitigate https://github.com/trello/RxLifecycle/issues/217
                                     .toObservable()
                                     .bindToLifecycle(this)
                                     .observeOnMainThread()
