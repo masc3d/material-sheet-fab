@@ -62,7 +62,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 group = 'org.deku.leoz'
-version = '0.74-SNAPSHOT'
+version = '0.75-SNAPSHOT'
 mainClassName = 'org.deku.leoz.node.Main'
 
 //region Constants
