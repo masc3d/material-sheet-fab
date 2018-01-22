@@ -45,13 +45,17 @@ class TourService : MqHandler<Any> {
 
     /**
      * Performs an observable tour optimimzation
-     * @param omitAPpointments Omit appointments for optimization
+     * @param options Optimization options
      */
     fun optimize(
-            omitAPpointments: Boolean = false
+            options: TourServiceV1.TourOptimizationOptions
     ): Single<TourServiceV1.TourOptimizationResult> {
         // Unique request id for message based request
         val requestUid = UUID.randomUUID().toString()
+
+        // Enforce some options
+        options.omitLoads = true
+        options.appointments.replaceDatesWithToday = true
 
         return this.optimizedTours
                 // Ignore any response not referring to this request
@@ -68,10 +72,7 @@ class TourService : MqHandler<Any> {
                             TourServiceV1.TourOptimizationRequest(
                                     requestUid = requestUid,
                                     nodeUid = identity.uid.value,
-                                    options = TourServiceV1.TourOptimizationOptions().also {
-                                        it.omitLoads = true
-                                        it.appointments.omit = omitAPpointments
-                                    }
+                                    options = options
                             ).also {
                                 log.trace { "Sending optimization request [${it}]" }
                             }
