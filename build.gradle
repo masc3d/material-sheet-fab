@@ -20,13 +20,13 @@ ext {
                     url     : 'jdbc:mysql://leoz-demo.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 70
+                    target  : 72
             ],
             leozT1  : [
                     url     : 'jdbc:mysql://leoz-t1.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    target  : 70
+                    target  : 72
             ],
             // Production/live
             live  : [
@@ -34,7 +34,7 @@ ext {
                     user    : 'migration',
                     password: 'dekudb',
                     baseline: 2,
-                    target  : 70
+                    target  : 72
             ],
             // Test 61
             test61: [
@@ -49,7 +49,7 @@ ext {
 buildscript {
     ext {
         v_flyway = '5.0.5'
-        v_mysql = '5.1.40'
+        v_mysql = '5.1.45'
 
         DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
         FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'db/migration')
