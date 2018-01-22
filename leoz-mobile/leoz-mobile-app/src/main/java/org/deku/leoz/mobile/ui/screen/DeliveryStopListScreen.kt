@@ -57,6 +57,7 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHolder
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
+import sx.log.slf4j.trace
 import sx.rx.ObservableRxProperty
 
 /**
@@ -298,7 +299,8 @@ class DeliveryStopListScreen
                             optimizationSubscription = tourService.optimize(
                                     omitAPpointments = true
                             )
-                                    .bindUntilEvent(this, FragmentEvent.PAUSE)
+                                    .toObservable()
+                                    .bindToLifecycle(this)
                                     .observeOnMainThread()
                                     .doFinally {
                                         dialog.dismiss()
