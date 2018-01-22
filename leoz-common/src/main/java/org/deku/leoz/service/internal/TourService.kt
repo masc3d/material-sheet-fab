@@ -26,9 +26,7 @@ import javax.ws.rs.sse.SseEventSink
 interface TourServiceV1 {
     companion object {
         const val ID = "id"
-        const val IDS = "ids"
         const val DEBITOR_ID = "debitor-id"
-        const val DELIVERYLIST_IDS = "deliverylist-ids"
         const val NODE_UID = "node-uid"
         const val STATION_NO = "station-no"
         const val USER_ID = "user-id"
@@ -88,7 +86,7 @@ interface TourServiceV1 {
     @ApiOperation(value = "Delete tour(s)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun delete(
-            @QueryParam(IDS) @ApiParam(value = "Tour id(s)")
+            @QueryParam(ID) @ApiParam(value = "Tour id(s)")
             ids: List<Int>
     )
 
@@ -97,7 +95,7 @@ interface TourServiceV1 {
     @ApiOperation(value = "Optimize tour(s)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun optimize(
-            @QueryParam(IDS) @ApiParam(value = "Tour id(s)")
+            @QueryParam(ID) @ApiParam(value = "Tour id(s)")
             ids: List<Int>,
             @QueryParam(WAIT_FOR_COMPLETION) @ApiParam(value = "Wait for optimization completion", example = "false")
             waitForCompletion: Boolean,
