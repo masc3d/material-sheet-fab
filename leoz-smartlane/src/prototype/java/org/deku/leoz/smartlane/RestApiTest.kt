@@ -118,7 +118,12 @@ class RestApiTest {
 
         addressApi.address.objects.forEach { address ->
             log.trace { "Deleting address [${address.id}]" }
-            internalApi.deleteAddress(address.id)
+
+            try {
+                internalApi.deleteAddress(address.id)
+            } catch(e: Throwable) {
+                log.error(e.message)
+            }
         }
     }
 

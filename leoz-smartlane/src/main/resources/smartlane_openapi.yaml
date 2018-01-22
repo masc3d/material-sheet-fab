@@ -1123,6 +1123,12 @@ paths:
           type: string
           description: Additial notes from the driver, e.g. reasons for undeliverable item.
         - in: formData
+          name: deliverytime
+          type: string
+          format: dateTime
+          required: false
+          description: Sets the `atd` (actual time of delivery) for the correspondent delivery
+        - in: formData
           name: name
           type: string
           description: Name of the recipient.
@@ -3431,12 +3437,12 @@ definitions:
         description: Estimated length of stay / delivery duration at recipient address.
         type: integer
         format: int32
-        default: 5
+        default : 5
       load:
         description: load of deliverd goods (e.g. nr or kg). deliveies can be loaded up to the defined vehicle capacity.
         type: integer
         format: int32
-        default: 1
+        default : 1
       notes:
         description: delivery notes which can be displayed to the driver
         type: string
