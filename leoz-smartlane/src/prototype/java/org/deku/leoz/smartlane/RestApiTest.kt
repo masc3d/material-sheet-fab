@@ -22,6 +22,7 @@ class RestApiTest {
     private val restClient by lazy {
         RestEasyClient(
                 baseUri = URI.create("https://dispatch.smartlane.io/der-kurier-test/"),
+                connectionPoolSize = 4,
                 objectMapper = SmartlaneApi.mapper
         )
     }
@@ -157,10 +158,6 @@ class RestApiTest {
                     .doOnNext {
                         log.trace("fetched ${it.id}")
                     }
-                    .toList()
-                    .flatMapObservable {
-                        Observable.fromIterable(it)
-                    }
                     .subscribeOn(Schedulers.io().limit(4))
                     .blockingSubscribe {
                         log.trace("Cancelling delivery ${it.id}")
@@ -184,13 +181,9 @@ class RestApiTest {
                 .doOnNext {
                     log.trace("fetched ${it.id}")
                 }
-                .toList()
-                .flatMapObservable {
-                    Observable.fromIterable(it)
-                }
                 .subscribeOn(Schedulers.io().limit(4))
                 .blockingSubscribe {
-                    log.trace("Cancelling delivery ${it.id}")
+                    log.trace("Deleting delivery ${it.id}")
                     try {
                         internalApi.deleteDelivery((it.id))
                     } catch (e: Exception) {
@@ -232,10 +225,6 @@ class RestApiTest {
                     .doOnNext {
                         log.trace("fetched ${it.id}")
                     }
-                    .toList()
-                    .flatMapObservable {
-                        Observable.fromIterable(it)
-                    }
                     .subscribeOn(Schedulers.io().limit(4))
                     .blockingSubscribe {
                         log.trace("Cancelling route ${it.id}")
@@ -259,13 +248,9 @@ class RestApiTest {
                 .doOnNext {
                     log.trace("fetched ${it.id}")
                 }
-                .toList()
-                .flatMapObservable {
-                    Observable.fromIterable(it)
-                }
                 .subscribeOn(Schedulers.io().limit(4))
                 .blockingSubscribe {
-                    log.trace("Cancelling route ${it.id}")
+                    log.trace("Deleting route ${it.id}")
                     try {
                         internalApi.deleteRoute(it.id)
                     } catch (e: Exception) {
