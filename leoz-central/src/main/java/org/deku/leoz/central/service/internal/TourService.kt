@@ -18,6 +18,7 @@ import org.deku.leoz.model.TaskType
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.id
 import org.deku.leoz.smartlane.SmartlaneBridge
+import org.deku.leoz.smartlane.model.Inputaddress
 import org.deku.leoz.smartlane.model.Routedeliveryinput
 import org.deku.leoz.smartlane.model.Routinginput
 import org.jooq.DSLContext
@@ -711,12 +712,14 @@ class TourServiceV1
                                 it.housenumber = address.streetNo
                                 it.city = address.city
                                 it.postalcode = address.zipCode
-                                if (!omitLoads)
-                                    it.load = stop.weight?.let { (it * 100.0).toInt() }
                                 address.geoLocation?.also { geo ->
                                     it.lat = geo.latitude.toString()
                                     it.lng = geo.longitude.toString()
                                 }
+                                address.countryCode = address.countryCode
+
+                                if (!omitLoads)
+                                    it.load = stop.weight?.let { (it * 100.0).toInt() }
                             }
 
                             // Track stop via custom id
@@ -775,6 +778,24 @@ class TourServiceV1
                             }
                         }
                     }
+
+            // When there's no appointments, set start address to first stop
+            val hasAppointments = it.deliverydata.any { it.pdtFrom != null || it.pdtTo != null }
+            if (!hasAppointments) {
+                this.stops.firstOrNull()?.address?.also { startAddress ->
+                    it.startaddress = Inputaddress().also {
+                        it.street = startAddress.street
+                        it.housenumber = startAddress.streetNo
+                        it.postalcode = startAddress.zipCode
+                        it.city = startAddress.city
+                        it.country = startAddress.countryCode
+                        startAddress.geoLocation?.also { location ->
+                            it.lat = location.latitude
+                            it.lng = location.longitude
+                        }
+                    }
+                }
+            }
 
             if (!omitLoads)
                 it.vehcapacities = options.vehicles?.map { (it.capacity * 100).toInt() }
