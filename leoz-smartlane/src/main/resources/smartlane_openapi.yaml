@@ -3277,7 +3277,9 @@ definitions:
         type: integer
         format: int32
       load:
-        type: string
+        type: integer
+        format: int32
+        default: 1
       notes:
         type: string
       custom_id:
@@ -3432,7 +3434,8 @@ definitions:
         default: 5
       load:
         description: load of deliverd goods (e.g. nr or kg). deliveies can be loaded up to the defined vehicle capacity.
-        type: string
+        type: integer
+        format: int32
         default: 1
       notes:
         description: delivery notes which can be displayed to the driver

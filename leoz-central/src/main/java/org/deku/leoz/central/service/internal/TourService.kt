@@ -490,7 +490,7 @@ class TourServiceV1
         val tour = this.getById(tourRecord.id)
 
         /** Handle error response on message based requests (nodeRequestUid was provided) */
-        fun handleErrorResponse(error: TourServiceV1.TourOptimizationResult.ErrorType){
+        fun handleErrorResponse(error: TourServiceV1.TourOptimizationResult.ErrorType) {
             // Only send error response on node requests
             if (nodeRequestUid != null) {
                 JmsEndpoints.node.topic(identityUid = Identity.Uid(nodeRecord.uid))
@@ -525,7 +525,7 @@ class TourServiceV1
                                         .ROUTE_COULD_NOT_BE_DETERMINED)
                             }
                     )
-        } catch(e: Throwable) {
+        } catch (e: Throwable) {
             handleErrorResponse(TourServiceV1.TourOptimizationResult.ErrorType
                     .REMOTE_REQUEST_FAILED)
 
@@ -709,7 +709,7 @@ class TourServiceV1
                                 it.housenumber = address.streetNo
                                 it.city = address.city
                                 it.postalcode = address.zipCode
-                                it.load = "${stop.weight}kg"
+                                it.load = stop.weight?.let { (it * 100.0).toInt() }
                                 address.geoLocation?.also { geo ->
                                     it.lat = geo.latitude.toString()
                                     it.lng = geo.longitude.toString()
@@ -718,10 +718,6 @@ class TourServiceV1
 
                             // Track stop via custom id
                             it.customId = stop.id?.toString()
-
-                            it.load = options.vehicles
-                                    ?.map { "${it.capacity}kg" }
-                                    ?.joinToString(",")
 
                             if (!options.appointments.omit) {
                                 it.pdtFrom = stop.appointmentStart
@@ -776,6 +772,9 @@ class TourServiceV1
                             }
                         }
                     }
+
+            it.vehcapacities = options.vehicles
+                    ?.map { (it.capacity * 100).toInt() }
         }
     }
 
@@ -900,7 +899,7 @@ class TourServiceV1
                     nodeRequestUid = message.requestUid,
                     options = message.options
             )
-        } catch(e: Throwable) {
+        } catch (e: Throwable) {
             log.error(e.message)
         }
     }
