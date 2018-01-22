@@ -136,8 +136,8 @@ class MqttDispatcher(
 
         // This observable never completes, as it's subject based.
         this.dequeueSubscription = this.dequeueTrigger
-                // Backpressure trigger events as each message publish emits)
-                .debounce(1, TimeUnit.SECONDS)
+                // Throttle trigger events as each message publish emits
+                .throttleLast(1, TimeUnit.SECONDS)
                 .concatMap { trigger ->
                     log.trace("Starting dequeue flow")
                     this.persistence.get()
