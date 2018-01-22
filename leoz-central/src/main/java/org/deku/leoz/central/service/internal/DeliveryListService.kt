@@ -57,8 +57,7 @@ class DeliveryListService
                 ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?:
-                throw RestProblem(status = Response.Status.UNAUTHORIZED)
+        authorizedUserRecord ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
 
         /**
          * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
@@ -74,10 +73,9 @@ class DeliveryListService
         val dlRecord: TadVDeliverylistRecord?
 
         dlRecord = this.deliveryListRepository.findById(id)
-                ?:
-                throw RestProblem(
-                        title = "DeliveryList not found",
-                        status = Response.Status.NOT_FOUND)
+                ?: throw RestProblem(
+                title = "DeliveryList not found",
+                status = Response.Status.NOT_FOUND)
 
         this.assertOwner(dlRecord.debitorId.toInt())
 
@@ -85,11 +83,9 @@ class DeliveryListService
     }
 
     override fun getByStationId(stationId: Int?): List<DeliveryListService.DeliveryList> {
-        stationId ?:
-                throw RestProblem(status = Status.BAD_REQUEST)
+        stationId ?: throw RestProblem(status = Status.BAD_REQUEST)
 
-        val station = stationRepository.findById(stationId) ?:
-                throw RestProblem(status = Status.NOT_FOUND)
+        val station = stationRepository.findById(stationId) ?: throw RestProblem(status = Status.NOT_FOUND)
 
         this.assertOwner(station.debitorId)
 
@@ -119,9 +115,11 @@ class DeliveryListService
             }
         }
 
-        return dlInfos.map {
-            it.toDeliveryListInfo()
-        }
+        return dlInfos
+                .sortedWith(compareByDescending<TadVDeliverylistRecord> { it.createDate }.thenBy{ it.id })
+                .map {
+                    it.toDeliveryListInfo()
+                }
     }
 
     //region Transformations
@@ -189,7 +187,7 @@ class DeliveryListService
      * Transform single delivery list
      */
     fun TadVDeliverylistRecord.toDeliveryList(): DeliveryListService.DeliveryList =
-        listOf(this).toDeliveryLists().first()
+            listOf(this).toDeliveryLists().first()
 
     //endregion
 
