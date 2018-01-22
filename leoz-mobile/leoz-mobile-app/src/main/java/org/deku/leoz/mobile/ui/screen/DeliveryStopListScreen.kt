@@ -565,6 +565,9 @@ class DeliveryStopListScreen
                         item.itemReleasedEvent
                                 .bindUntilEvent(this@DeliveryStopListScreen, FragmentEvent.PAUSE)
                                 .subscribe { position ->
+                                    // TODO: flexibleadapter released event fires on wrong item (but with the right position luckily)
+                                    val itemViewModel = adapter.getItem(position)?.viewModel as StopViewModel
+
                                     // Get the item it was moved after
                                     val previousItem = when {
                                         position >= this.adapterFirstStopItemIndex -> adapter.getItem(position - 1)
@@ -577,7 +580,7 @@ class DeliveryStopListScreen
                                     db.store.withTransaction {
                                         stopRepository
                                                 .move(
-                                                        stop = item.viewModel.stop,
+                                                        stop = itemViewModel.stop,
                                                         after = previousItemViewModel?.stop,
                                                         // Only persist immedaitely when not in edit mode
                                                         persist = !this@DeliveryStopListScreen.editMode
