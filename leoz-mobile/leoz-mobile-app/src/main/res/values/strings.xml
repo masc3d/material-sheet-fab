@@ -322,6 +322,8 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="to_recipient">To recipient</string>
 
     <string name="tour">Tour</string>
+    <string name="tour_optimization_in_progress">Optimizing tour</string>
+    <string name="tour_optimization_failed">Tour optimization failed</string>
 
     <string name="truck">Truck</string>
 

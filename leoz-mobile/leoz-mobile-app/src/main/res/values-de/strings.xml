@@ -275,6 +275,8 @@
     <string name="to_recipient">An Empfänger</string>
 
     <string name="tour">Tour</string>
+    <string name="tour_optimization_in_progress">Tour wird optimiert</string>
+    <string name="tour_optimization_failed">Optimierung nicht erfolgreich</string>
 
     <string name="truck">LKW</string>
 

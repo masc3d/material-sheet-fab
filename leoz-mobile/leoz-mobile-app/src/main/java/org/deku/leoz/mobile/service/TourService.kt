@@ -15,6 +15,7 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.mqtt.channel
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Mobile tour service
@@ -79,5 +80,6 @@ class TourService : MqHandler<Any> {
                 .doOnSuccess {
                     log.trace { "Received optimization response [${it}]"}
                 }
+                .timeout(2, TimeUnit.MINUTES)
     }
 }

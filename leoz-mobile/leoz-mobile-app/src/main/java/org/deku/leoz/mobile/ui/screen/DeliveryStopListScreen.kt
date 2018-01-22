@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.screen
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -55,6 +56,7 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHolder
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
+import sx.log.slf4j.trace
 import sx.rx.ObservableRxProperty
 
 /**
@@ -270,25 +272,58 @@ class DeliveryStopListScreen
                         }
 
                         R.id.action_sort_optimize -> {
+                            val dialog = MaterialDialog.Builder(this.activity)
+                                    .title(R.string.tour_optimization_in_progress)
+                                    .content(R.string.please_wait)
+                                    .cancelable(true)
+                                    .progress(true, 0)
+                                    .build().also {
+                                it.show()
+                            }
+
+                            fun onError() {
+                                this.activity.snackbarBuilder
+                                        .message(R.string.tour_optimization_failed)
+                                        .duration(Snackbar.LENGTH_LONG)
+                                        .build()
+                                        .show()
+                            }
+
                             tourService.optimize(
                                     omitAPpointments = true
                             )
                                     .bindUntilEvent(this, FragmentEvent.PAUSE)
                                     .observeOnMainThread()
+                                    .doFinally {
+                                        dialog.dismiss()
+                                    }
                                     .subscribe { result ->
-                                        result.tour?.also { optimizedTour ->
-                                            val pendingStops = this.tour.pendingStops.blockingFirst().value
-
-                                            optimizedTour.stops.map { optimizedStop ->
-                                                pendingStops.first { it.tasks.first().order.id == optimizedStop.tasks.first().orderId }
+                                        when {
+                                            result.error != null -> {
+                                                onError()
                                             }
-                                                    .also {
-                                                        it.forEachIndexed { index, stopEntity ->
-                                                            stopEntity.position = index.toDouble()
-                                                        }
+                                            else -> {
+                                                try {
+                                                    result.tour?.also { optimizedTour ->
+                                                        val pendingStops = this.tour.pendingStops.blockingFirst().value
 
-                                                        this.updateAdapterPositions(pendingStops)
+                                                        optimizedTour.stops.map { optimizedStop ->
+                                                            pendingStops.first { it.tasks.first().order.id == optimizedStop.tasks.first().orderId }
+                                                        }
+                                                                .also {
+                                                                    it.forEachIndexed { index, stopEntity ->
+                                                                        stopEntity.position = index.toDouble()
+                                                                    }
+
+                                                                    this.updateAdapterPositions(
+                                                                            pendingStops.sortedBy { it.position }
+                                                                    )
+                                                                }
                                                     }
+                                                } catch(e: Throwable) {
+                                                    onError()
+                                                }
+                                            }
                                         }
                                     }
                         }
