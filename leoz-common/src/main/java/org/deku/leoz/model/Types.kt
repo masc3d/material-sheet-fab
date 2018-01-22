@@ -1,5 +1,7 @@
 package org.deku.leoz.model
 
+import sx.io.serialization.Serializable
+
 /**
  * Created by helke on 28.04.17.
  * on changes code changes necessary
@@ -118,6 +120,7 @@ enum class SendData {
 /**
  * Parcel service definitions
  */
+@Serializable(0x8ef279bd15d711)
 enum class ParcelService(
         val serviceId: Long,
         val constraints: Constraints = Constraints()) {
