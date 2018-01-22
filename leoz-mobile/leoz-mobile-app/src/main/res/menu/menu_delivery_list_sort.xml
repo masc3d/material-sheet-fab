@@ -3,6 +3,13 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_sort_optimize"
+        android:orderInCategory="100"
+        android:title="@string/sort_optimize"
+        android:visible="true"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_sort_appointment_asc"
         android:orderInCategory="100"
         android:title="@string/sort_appointment"
@@ -21,13 +28,6 @@
         android:orderInCategory="100"
         android:title="@string/sort_zip"
         android:icon="@drawable/ic_sort_ascending"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/action_sort_distance"
-        android:orderInCategory="500"
-        android:title="@string/sort_distance"
-        android:visible="false"
         app:showAsAction="never"/>
 
 </menu>

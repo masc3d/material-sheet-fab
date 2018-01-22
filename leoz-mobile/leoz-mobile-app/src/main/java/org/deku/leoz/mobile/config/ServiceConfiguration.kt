@@ -7,10 +7,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import org.deku.leoz.rest.RestClientFactory
 import org.deku.leoz.mobile.mq.MqttListeners
-import org.deku.leoz.mobile.service.LocationCache
-import org.deku.leoz.mobile.service.NodeService
-import org.deku.leoz.mobile.service.NotificationService
-import org.deku.leoz.mobile.service.UpdateService
+import org.deku.leoz.mobile.service.*
 import org.threeten.bp.Duration
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
@@ -35,6 +32,12 @@ class ServiceConfiguration {
 
             bind<NodeService>() with singleton {
                 NodeService().also {
+                    instance<MqttListeners>().node.topic.addDelegate(it)
+                }
+            }
+
+            bind<TourService>() with singleton {
+                TourService().also {
                     instance<MqttListeners>().node.topic.addDelegate(it)
                 }
             }

@@ -35,6 +35,7 @@ import org.deku.leoz.mobile.model.entity.appointmentEnd
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.service.TourService
 import org.deku.leoz.mobile.ui.Headers
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.extension.inflateMenu
@@ -81,6 +82,8 @@ class DeliveryStopListScreen
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
+    private val tourService: TourService by Kodein.global.lazy.instance()
+
     private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
     private val timerEvent = timer.tickEvent
             .bindToLifecycle(this)
@@ -92,6 +95,7 @@ class DeliveryStopListScreen
     private var stopTypeState by serialState(Stop.State.PENDING)
 
     private val stopTypeProperty = ObservableRxProperty<Stop.State>(this.stopTypeState)
+
     /** Stop type */
     private var stopType by stopTypeProperty
 
@@ -265,8 +269,28 @@ class DeliveryStopListScreen
                             )
                         }
 
-                        R.id.action_sort_distance -> {
-                            // TODO add support for sorting by geo distance (need testdata)
+                        R.id.action_sort_optimize -> {
+                            tourService.optimize(
+                                    omitAPpointments = true
+                            )
+                                    .bindUntilEvent(this, FragmentEvent.PAUSE)
+                                    .observeOnMainThread()
+                                    .subscribe { result ->
+                                        result.tour?.also { optimizedTour ->
+                                            val pendingStops = this.tour.pendingStops.blockingFirst().value
+
+                                            optimizedTour.stops.map { optimizedStop ->
+                                                pendingStops.first { it.tasks.first().order.id == optimizedStop.tasks.first().orderId }
+                                            }
+                                                    .also {
+                                                        it.forEachIndexed { index, stopEntity ->
+                                                            stopEntity.position = index.toDouble()
+                                                        }
+
+                                                        this.updateAdapterPositions(pendingStops)
+                                                    }
+                                        }
+                                    }
                         }
 
                         R.id.action_done -> {
