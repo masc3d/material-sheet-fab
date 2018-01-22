@@ -44,6 +44,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.sse.Sse
 import javax.ws.rs.sse.SseEventSink
+import kotlin.NoSuchElementException
 
 /**
  * Tour service implementation
@@ -206,7 +207,7 @@ class TourServiceV1
                 .also {
                     if (it.size == 0) {
                         // No tour records in selection
-                        throw RestProblem(status = Status.NOT_FOUND)
+                        throw NoSuchElementException()
                     }
                 }
 
@@ -234,16 +235,13 @@ class TourServiceV1
      * Get tour by id
      */
     override fun getById(id: Int): TourServiceV1.Tour {
-        val tourRecord = tourRepository.findById(id) ?: throw RestProblem(
-                status = Status.NOT_FOUND
-        )
+        val tourRecord = tourRepository.findById(id)
+                ?: throw NoSuchElementException("No tour with id [${id}]")
 
         val nodeUid = tourRecord.nodeId?.let {
             dsl.selectFrom(MST_NODE)
-                    .fetchUidById(tourRecord.nodeId) ?: throw RestProblem(
-                    status = Status.NOT_FOUND,
-                    detail = "No node uid for id [${tourRecord.nodeId}]"
-            )
+                    .fetchUidById(tourRecord.nodeId)
+                    ?: throw NoSuchElementException("No node uid for id [${tourRecord.nodeId}]")
         }
 
         return tourRecord.toTour(nodeUid)
@@ -254,14 +252,10 @@ class TourServiceV1
      */
     override fun getByNode(nodeUid: String): TourServiceV1.Tour {
         val nodeId = this.nodeRepository.findByKeyStartingWith(nodeUid)?.nodeId
-                ?: throw RestProblem(
-                        status = Status.NOT_FOUND,
-                        detail = "Unknown node uid ${nodeUid}"
-                )
+                ?: throw NoSuchElementException("Unknown node uid ${nodeUid}")
 
-        val tourRecord = tourRepository.findByNodeId(nodeId) ?: throw RestProblem(
-                status = Status.NOT_FOUND
-        )
+        val tourRecord = tourRepository.findByNodeId(nodeId)
+                ?: throw NoSuchElementException()
 
         return tourRecord.toTour(nodeUid)
     }
@@ -270,10 +264,8 @@ class TourServiceV1
      * Get the (current) tour for a user
      */
     override fun getByUser(userId: Int): TourServiceV1.Tour {
-        val tourRecord = tourRepository.findLatestByUserId(userId) ?: throw RestProblem(
-                status = Status.NOT_FOUND,
-                detail = "No assignable tour for user [${userId}]"
-        )
+        val tourRecord = tourRepository.findLatestByUserId(userId)
+                ?: throw NoSuchElementException("No assignable tour for user [${userId}]")
 
         return tourRecord.toTour()
     }
@@ -457,20 +449,61 @@ class TourServiceV1
             nodeUid: String,
             options: TourServiceV1.TourOptimizationOptions
     ) {
+        try {
+            this.optimizeForNode(
+                    nodeUid = nodeUid,
+                    nodeRequestUid = null,
+                    options = options
+            )
+        } catch (e: Exception) {
+            throw RestProblem(
+                    status = Status.INTERNAL_SERVER_ERROR,
+                    detail = e.message
+            )
+        }
+    }
+
+    /**
+     * Start optimization for a node tour (asynchronously)
+     * @param nodeUid Node uid
+     * @param nodeRequestUid Message based request uid
+     * @param options Optimization options
+     * @throws NoSuchElementException
+     * @throws IllegalArgumentException
+     */
+    fun optimizeForNode(
+            nodeUid: String,
+            nodeRequestUid: String? = null,
+            options: TourServiceV1.TourOptimizationOptions
+    ) {
         val nodeRecord = dsl.selectFrom(MST_NODE)
                 .fetchByUid(nodeUid, strict = false)
-                ?: throw RestProblem(status = Status.NOT_FOUND, detail = "Node not found")
+                ?: throw NoSuchElementException("Node not found")
 
         if (options.vehicles?.count() ?: 0 > 1)
-            throw RestProblem(status = Status.BAD_REQUEST, detail = "Multiple vehicles are not supported when " +
+            throw IllegalArgumentException("Multiple vehicles are not supported when " +
                     "optimizing a single (node related) tour")
 
         val tourRecord = tourRepository.findByNodeId(nodeRecord.nodeId)
-                ?: throw RestProblem(status = Status.NOT_FOUND, detail = "No tour for this node")
+                ?: throw NoSuchElementException("No tour for this node")
+
+        val tour = this.getById(tourRecord.id)
+
+        /** Handle error response on message based requests (nodeRequestUid was provided) */
+        fun handleErrorResponse(error: TourServiceV1.TourOptimizationResult.ErrorType){
+            // Only send error response on node requests
+            if (nodeRequestUid != null) {
+                JmsEndpoints.node.topic(identityUid = Identity.Uid(nodeRecord.uid))
+                        .channel()
+                        .send(TourServiceV1.TourOptimizationResult(
+                                requestUid = nodeRequestUid,
+                                nodeUid = nodeRecord.uid,
+                                error = error
+                        ))
+            }
+        }
 
         try {
-            val tour = this.getById(tourRecord.id)
-
             this.optimize(
                     tour = tour,
                     options = options
@@ -480,20 +513,23 @@ class TourServiceV1
                                 JmsEndpoints.node.topic(identityUid = Identity.Uid(nodeRecord.uid))
                                         .channel()
                                         .send(TourServiceV1.TourOptimizationResult(
-                                                requestUid = null,
+                                                requestUid = nodeRequestUid,
                                                 nodeUid = nodeRecord.uid,
                                                 tour = tours.first()
                                         ))
                             },
                             onError = { e ->
                                 log.error(e.message, e)
+
+                                handleErrorResponse(TourServiceV1.TourOptimizationResult.ErrorType
+                                        .ROUTE_COULD_NOT_BE_DETERMINED)
                             }
                     )
-        } catch (e: Exception) {
-            throw RestProblem(
-                    status = Status.INTERNAL_SERVER_ERROR,
-                    detail = e.message
-            )
+        } catch(e: Throwable) {
+            handleErrorResponse(TourServiceV1.TourOptimizationResult.ErrorType
+                    .REMOTE_REQUEST_FAILED)
+
+            throw e
         }
     }
 
@@ -858,10 +894,15 @@ class TourServiceV1
             return
         }
 
-        this.optimizeForNode(
-                nodeUid = nodeUid,
-                options = message.options
-        )
+        try {
+            this.optimizeForNode(
+                    nodeUid = nodeUid,
+                    nodeRequestUid = message.requestUid,
+                    options = message.options
+            )
+        } catch(e: Throwable) {
+            log.error(e.message)
+        }
     }
 
     /**

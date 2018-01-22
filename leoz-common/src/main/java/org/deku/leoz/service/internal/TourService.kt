@@ -307,6 +307,8 @@ interface TourServiceV1 {
     ) {
         enum class ErrorType {
             INVALID_REQUEST,
+            REMOTE_REQUEST_FAILED,
+            IN_PROGRESS,
             ROUTE_COULD_NOT_BE_DETERMINED
         }
     }
