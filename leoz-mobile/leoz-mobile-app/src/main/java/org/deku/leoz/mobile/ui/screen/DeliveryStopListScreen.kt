@@ -20,6 +20,7 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
@@ -56,7 +57,6 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHolder
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
-import sx.log.slf4j.trace
 import sx.rx.ObservableRxProperty
 
 /**
@@ -272,14 +272,20 @@ class DeliveryStopListScreen
                         }
 
                         R.id.action_sort_optimize -> {
+                            var optimizationSubscription: Disposable? = null
+
                             val dialog = MaterialDialog.Builder(this.activity)
                                     .title(R.string.tour_optimization_in_progress)
                                     .content(R.string.please_wait)
                                     .cancelable(true)
                                     .progress(true, 0)
-                                    .build().also {
-                                it.show()
-                            }
+                                    .cancelListener {
+                                        optimizationSubscription?.dispose()
+                                    }
+                                    .build()
+                                    .also {
+                                        it.show()
+                                    }
 
                             fun onError() {
                                 this.activity.snackbarBuilder
@@ -289,7 +295,7 @@ class DeliveryStopListScreen
                                         .show()
                             }
 
-                            tourService.optimize(
+                            optimizationSubscription = tourService.optimize(
                                     omitAPpointments = true
                             )
                                     .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -320,7 +326,7 @@ class DeliveryStopListScreen
                                                                     )
                                                                 }
                                                     }
-                                                } catch(e: Throwable) {
+                                                } catch (e: Throwable) {
                                                     onError()
                                                 }
                                             }
