@@ -698,6 +698,8 @@ class TourServiceV1
                         options.appointments.shiftHoursFromNow?.toLong() ?: 0)
             }
 
+            val omitLoads = options.omitLoads ?: false
+
             it.deliverydata = this.stops
                     .map { stop ->
                         Routedeliveryinput().also {
@@ -709,7 +711,8 @@ class TourServiceV1
                                 it.housenumber = address.streetNo
                                 it.city = address.city
                                 it.postalcode = address.zipCode
-                                it.load = stop.weight?.let { (it * 100.0).toInt() }
+                                if (!omitLoads)
+                                    it.load = stop.weight?.let { (it * 100.0).toInt() }
                                 address.geoLocation?.also { geo ->
                                     it.lat = geo.latitude.toString()
                                     it.lng = geo.longitude.toString()
@@ -773,8 +776,8 @@ class TourServiceV1
                         }
                     }
 
-            it.vehcapacities = options.vehicles
-                    ?.map { (it.capacity * 100).toInt() }
+            if (!omitLoads)
+                it.vehcapacities = options.vehicles?.map { (it.capacity * 100).toInt() }
         }
     }
 

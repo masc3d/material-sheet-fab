@@ -230,7 +230,13 @@ interface TourServiceV1 {
                     value = "Vehicles to optimize for",
                     notes = "When this parameter is omitted, the tour will be optimized in place. " +
                             "When provided, new tours will be created for each vehicle.")
-            var vehicles: List<Vehicle>? = null
+            var vehicles: List<Vehicle>? = null,
+
+            @ApiModelProperty(position = 30,
+                    required = false,
+                    value = "Omit loads",
+                    notes = "Omits load parameters (on delivery/stop and vehicle level)")
+            var omitLoads: Boolean? = null
     ) {
         @Serializable(0xf045189c321341)
         @ApiModel(description = "Appointment options")

@@ -68,6 +68,7 @@ class TourService : MqHandler<Any> {
                                     requestUid = requestUid,
                                     nodeUid = identity.uid.value,
                                     options = TourServiceV1.TourOptimizationOptions().also {
+                                        it.omitLoads = true
                                         it.appointments.omit = omitAPpointments
                                     }
                             ).also {
