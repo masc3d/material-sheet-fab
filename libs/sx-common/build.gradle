@@ -12,7 +12,7 @@ buildscript {
         v_jsch = '0.1.54'
         v_jsch_proxy = '0.0.9'
         v_querydsl = '4.1.4'
-        v_kotlin = '1.2.20'
+        v_kotlin = '1.2.21'
         v_koptional = '1.3.0'
         v_requery = '1.5.0'
         v_resteasy = '4.0.0.Beta1'
