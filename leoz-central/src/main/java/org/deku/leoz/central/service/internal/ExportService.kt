@@ -85,7 +85,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             un.hasError -> {
                 throw RestProblem(
                         status = Response.Status.NOT_FOUND,
-                        title = ExportService.ResponseMsg.LlWrongCheckDigit.value //"Loadinglist - wrong check digit"
+                        title = ExportService.ResponseMsg.LL_WRONG_CHECKDIGIT.value //"Loadinglist - wrong check digit"
                 )
             }
         }
@@ -93,7 +93,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title = ExportService.ResponseMsg.LlNotValid.value//"Loadinglist not valid"
+                    title = ExportService.ResponseMsg.LL_NOT_VALID.value//"Loadinglist not valid"
             )
 
 
@@ -107,13 +107,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (!station.exportValuablesAllowed) {
                 throw RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = ExportService.ResponseMsg.ValNotAllowed.value//"Valuables not allowed"
+                        title = ExportService.ResponseMsg.VAL_NOT_ALLOWED.value//"Valuables not allowed"
                 )
             }
             if (!station.exportValuablesWithoutBagAllowed) {
                 throw RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = ExportService.ResponseMsg.ValNotAllowedWithoutBag.value //"Valuables not allowed without bag"
+                        title = ExportService.ResponseMsg.VAL_NOT_ALLOWED_WITHOUT_BAG.value //"Valuables not allowed without bag"
                 )
             }
         }
@@ -123,11 +123,11 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             //doppelt gescannt
             throw RestProblem(
                     status = Response.Status.OK,
-                    title = ExportService.ResponseMsg.ParcelAlreadyScanned.value//"Parcel already scanned"
+                    title = ExportService.ResponseMsg.PARCEL_ALREADY_SCANNED.value//"Parcel already scanned"
             )
         } else {
             //umbuchen auf andere ladeliste
-            title = ExportService.ResponseMsg.LlChanged.value//"Loadinglist changed"
+            title = ExportService.ResponseMsg.LL_CHANGED.value//"Loadinglist changed"
 
         }
 
@@ -145,13 +145,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (orders.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title = ExportService.ResponseMsg.NoOrdersFound.value//"No orders found"
+                    title = ExportService.ResponseMsg.NO_ORDERS_FOUND.value//"No orders found"
             )
         var allParcels = parcelRepository.getLoadedParcelsToExportByOrderids(orders.map { it.orderid.toLong() }.toList()).groupBy { it.orderid }
         if (allParcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title = ExportService.ResponseMsg.NoParcelsFound.value//"No parcels found"
+                    title = ExportService.ResponseMsg.NO_PARCELS_FOUND.value//"No parcels found"
             )
 
 
@@ -178,7 +178,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (orders.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title =ExportService.ResponseMsg.NoOrdersFound.value //"No orders found"
+                    title =ExportService.ResponseMsg.NO_ORDERS_FOUND.value //"No orders found"
             )
 
 
@@ -191,7 +191,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (allParcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title =ExportService.ResponseMsg.NoParcelsFound.value //"No parcels found"
+                    title =ExportService.ResponseMsg.NO_PARCELS_FOUND.value //"No parcels found"
             )
 
 
@@ -211,7 +211,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (parcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title = ExportService.ResponseMsg.NoParcelsFoundForStation.value//"No parcels found for this station"
+                    title = ExportService.ResponseMsg.NO_PARCELS_FOUND_FOR_STATION.value//"No parcels found for this station"
             )
         return parcels
 
@@ -230,7 +230,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             un.hasError -> {
                 throw RestProblem(
                         status = Response.Status.NOT_FOUND,
-                        title = ExportService.ResponseMsg.LlWrongCheckDigit.value//"Wrong check digit"
+                        title = ExportService.ResponseMsg.LL_WRONG_CHECKDIGIT.value//"Wrong check digit"
                 )
             }
         }
@@ -238,13 +238,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title = ExportService.ResponseMsg.LlNotValid.value//"Loadinglist not valid"
+                    title = ExportService.ResponseMsg.LL_NOT_VALID.value//"Loadinglist not valid"
             )
         val parcels = parcelRepository.getParcelsToExportByLoadingList(un.value.value.toLong())
         if (parcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title = ExportService.ResponseMsg.NoParcelsFoundForLL.value//"No parcels found for this list"
+                    title = ExportService.ResponseMsg.NO_PARCELS_FOUND_FOR_LL.value//"No parcels found for this list"
             )
         return parcels
     }
@@ -264,7 +264,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val backUnit = bag.unitNoBack
         backUnit ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title =ExportService.ResponseMsg.BagIdOkNoBack.value //"BagId found - no bagback-unit found"
+                title =ExportService.ResponseMsg.BAG_ID_OK_NO_BACK.value //"BagId found - no bagback-unit found"
         )
 
         if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
@@ -272,12 +272,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyExported.value//"BagId found - bag already exported"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_EXPORTED.value//"BagId found - bag already exported"
                 )
             } else {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyClosed.value//"BagId found - bag already closed - try to reopen"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_CLOSED.value//"BagId found - bag already closed - try to reopen"
                 )
             }
         }
@@ -286,7 +286,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             unBack.hasError -> {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagUnitWrongCheckDigit.value//"Bag-UnitNo wrong check digit"
+                        title = ExportService.ResponseMsg.BAG_UNIT_WRONG_CHECKDIGIT.value//"Bag-UnitNo wrong check digit"
                 )
             }
         }
@@ -294,13 +294,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagUnitNotValid.value//"Bag-UnitNo not valid"
+                    title = ExportService.ResponseMsg.BAG_UNIT_NOT_VALID.value//"Bag-UnitNo not valid"
             )
 
         if (unBack.value.value.toLong() != backUnit) {
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagBackUnitDismatch.value//"Bag-BackUnitNo dismatch"
+                    title = ExportService.ResponseMsg.BAG_BACK_UNIT_DISMATCH.value//"Bag-BackUnitNo dismatch"
             )
         }
         val unRedSeal = DekuUnitNumber.parseLabel(redSeal)
@@ -308,7 +308,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             unRedSeal.hasError -> {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.RedSealWrongDigit.value//"Wrong check digit"
+                        title = ExportService.ResponseMsg.RED_SEAL_WRONG_CHECKDIGIT.value//"Wrong check digit"
                 )
             }
         }
@@ -316,39 +316,39 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.RedSealNotValid.value//"Redseal not valid"
+                    title = ExportService.ResponseMsg.RED_SEAL_NOT_VALID.value//"Redseal not valid"
             )
         val recSeal = stationRepository.getSeal(unRedSeal.value.value.toLong())
         recSeal ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.RedSealNotFound.value//"RedSeal not found"
+                title = ExportService.ResponseMsg.RED_SEAL_NOT_FOUND.value//"RedSeal not found"
         )
         val lastDepot = recSeal.lastdepot
         lastDepot ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.NoStation.value//"No station"
+                title = ExportService.ResponseMsg.NO_STATION.value//"No station"
         )
         if (lastDepot.toInt() != stationNo) {
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.LastDepotStationMismatch.value//"Stationmismatch"
+                    title = ExportService.ResponseMsg.LAST_DEPOT_STATION_MISMATCH.value//"Stationmismatch"
             )
         }
         val lastStatus = recSeal.status
         lastStatus ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.SealStatusProblem.value//"Sealstatus-problem"
+                title = ExportService.ResponseMsg.SEAL_STATUS_PROBLEM.value//"Sealstatus-problem"
         )
         if (lastStatus.toInt() == 2) {
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.SealAlreadyInUse.value//"SealNo already in use"
+                    title = ExportService.ResponseMsg.SEAL_ALREADY_IN_USE.value//"SealNo already in use"
             )
         }
         if (lastStatus.toInt() != 1) {
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.SealStatusProblem.value//"Sealstatus problem"
+                    title = ExportService.ResponseMsg.SEAL_STATUS_PROBLEM.value//"Sealstatus problem"
             )
         }
 
@@ -409,7 +409,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val backUnit = bag.unitNoBack
         backUnit ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.BagIdOkNoBack.value//"BagId found - no bagback-unit found"
+                title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK.value//"BagId found - no bagback-unit found"
         )
 
         if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
@@ -417,7 +417,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyExported.value//"BagId found - bag already exported"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_EXPORTED.value//"BagId found - bag already exported"
                 )
             } else {
                 //update movepool
@@ -439,7 +439,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         } else {
             throw RestProblem(
                     status = Response.Status.OK,
-                    title =ExportService.ResponseMsg.BagIdOkAlreadyOpen.value //"BagId found - already open"
+                    title =ExportService.ResponseMsg.BAG_ID_OK_ALREADY_OPEN.value //"BagId found - already open"
             )
         }
 
@@ -455,7 +455,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val backUnit = bag.unitNoBack
         backUnit ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.BagIdOkNoBack.value//"BagId found - no bagback-unit found"
+                title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK.value//"BagId found - no bagback-unit found"
         )
 
         if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
@@ -463,12 +463,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyExported.value//"BagId found - bag already exported"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_EXPORTED.value//"BagId found - bag already exported"
                 )
             } else {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyClosed.value//"BagId found - bag already closed - try to reopen"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_CLOSED.value//"BagId found - bag already closed - try to reopen"
                 )
             }
         }
@@ -477,7 +477,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             unBack.hasError -> {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagUnitWrongCheckDigit.value//"Bag-UnitNo wrong check digit"
+                        title = ExportService.ResponseMsg.BAG_UNIT_WRONG_CHECKDIGIT.value//"Bag-UnitNo wrong check digit"
                 )
             }
         }
@@ -485,13 +485,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagUnitNotValid.value//"Bag-UnitNo not valid"
+                    title = ExportService.ResponseMsg.BAG_UNIT_NOT_VALID.value//"Bag-UnitNo not valid"
             )
 
         if (unBack.value.value.toLong() != backUnit) {
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagBackUnitDismatch.value//"Bag-BackUnitNo dismatch"
+                    title = ExportService.ResponseMsg.BAG_BACK_UNIT_DISMATCH.value//"Bag-BackUnitNo dismatch"
             )
         }
 
@@ -500,7 +500,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             un.hasError -> {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.LlWrongCheckDigit.value//"Loadinglist - wrong check digit"
+                        title = ExportService.ResponseMsg.LL_WRONG_CHECKDIGIT.value//"Loadinglist - wrong check digit"
                 )
             }
         }
@@ -508,13 +508,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.LlNotValid.value//"Loadinglist not valid"
+                    title = ExportService.ResponseMsg.LL_NOT_VALID.value//"Loadinglist not valid"
             )
 
         if (ExportService.Loadinglist(un.value.value.toLong()).loadinglistType != LoadinglistType.BAG)
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.LlWrongType.value//"Loadinglist not of Bag-Type"
+                    title = ExportService.ResponseMsg.LL_WRONG_TYPE.value//"Loadinglist not of Bag-Type"
             )
 
         val checklistBagBackUnit = parcelRepository.getParcelsByLoadingList(un.value.value.toLong())
@@ -523,12 +523,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (usedLoadinglistNoList.count() > 1)
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.LlUsedForMultipleBags.value//"Loadinglist used for multiple bags"
+                        title = ExportService.ResponseMsg.LL_USED_FOR_MULTIPLE_BAGS.value//"Loadinglist used for multiple bags"
                 )
             if (usedLoadinglistNoList.count() == 1 && usedLoadinglistNoList.first() != unBack.value.value.toLong())
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.LlAlreadyUsedForAnotherBag.value//"Loadinglist already used for another bag"
+                        title = ExportService.ResponseMsg.LL_ALREADY_USED_FOR_ANOTHER_BAG.value//"Loadinglist already used for another bag"
                 )
         }
         val checklistLoadinglistUnits = parcelRepository.findUnitsInBagBackByBagBackUnitNumber(unBack.value.value.toLong())
@@ -537,12 +537,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (usedBagBackUnitNoList.count() > 1)
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagBackUnitUsedForMultipleLl.value//"BagBackUnitNo used for multiple loadinglists"
+                        title = ExportService.ResponseMsg.BAG_BACK_UNIT_USED_FOR_MULTIPLE_LL.value//"BagBackUnitNo used for multiple loadinglists"
                 )
             if (usedBagBackUnitNoList.count() == 1 && usedBagBackUnitNoList.first() != un.value.value.toLong())
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagBackUnitAlreadyUsedForAnotherLl.value//"BagBackUnitNo already used for another loadinglist"
+                        title = ExportService.ResponseMsg.BAG_BACK_UNIT_ALREADY_USED_FOR_ANOTHER_LL.value//"BagBackUnitNo already used for another loadinglist"
                 )
         }
 
@@ -551,14 +551,14 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             unSeal.hasError -> {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.YellowSealWrongCheckDigit.value//"Yellow seal number - wrong check digit"
+                        title = ExportService.ResponseMsg.YELLOW_SEAL_WRONG_CHECKDIGIT.value//"Yellow seal number - wrong check digit"
                 )
             }
         }
         if (unSeal.value.type != UnitNumber.Type.BackSeal && unSeal.value.type != UnitNumber.Type.ReserveSeal)
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.YellowSealNotValid.value//"Yellow seal number not valid, scanned type: ${unSeal.value.type}"
+                    title = ExportService.ResponseMsg.YELLOW_SEAL_NOT_VALID.value//"Yellow seal number not valid, scanned type: ${unSeal.value.type}"
             )
 
         if (bag.sealNumberYellow != null) {
@@ -567,13 +567,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                     if (bag.sealNumberRed.toString().toLong() != unSeal.value.value.toLong()) {
                         throw RestProblem(
                                 status = Response.Status.CONFLICT,
-                                title = ExportService.ResponseMsg.SealMismatch.value//"Seal number mismatch"
+                                title = ExportService.ResponseMsg.SEAL_MISMATCH.value//"Seal number mismatch"
                         )
                     }
                 } else {
                     throw RestProblem(
                             status = Response.Status.CONFLICT,
-                            title = ExportService.ResponseMsg.SealMismatch.value//"Seal number mismatch"
+                            title = ExportService.ResponseMsg.SEAL_MISMATCH.value//"Seal number mismatch"
                     )
                 }
             }
@@ -582,13 +582,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 if (bag.sealNumberRed.toString().toLong() != unSeal.value.value.toLong()) {
                     throw RestProblem(
                             status = Response.Status.CONFLICT,
-                            title =ExportService.ResponseMsg.SealMismatch.value //"Seal number mismatch"
+                            title =ExportService.ResponseMsg.SEAL_MISMATCH.value //"Seal number mismatch"
                     )
                 }
             }
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.NoSealInBag.value//"No seal number in bag"
+                    title = ExportService.ResponseMsg.NO_SEAL_IN_BAG.value//"No seal number in bag"
             )
         }
 
@@ -602,7 +602,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (!station.exportValuablesAllowed) {
                 throw RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = ExportService.ResponseMsg.ValNotAllowed.value//"Valuables not allowed"
+                        title = ExportService.ResponseMsg.VAL_NOT_ALLOWED.value//"Valuables not allowed"
                 )
             }
 
@@ -610,7 +610,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (unitRecord.gewichteffektiv > maxWeightForParcelBag) {
                 throw RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = ExportService.ResponseMsg.WeightGreaterThanMax.value//"Weight > $maxWeightForParcelBag kg"
+                        title = ExportService.ResponseMsg.WEIGHT_GREATER_THAN_MAX.value//"Weight > $maxWeightForParcelBag kg"
                 )
             }
         }
@@ -622,11 +622,11 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             //doppelt gescannt
                 throw RestProblem(
                         status = Response.Status.OK,
-                        title = ExportService.ResponseMsg.ParcelAlreadyScanned.value//"Parcel already scanned"
+                        title = ExportService.ResponseMsg.PARCEL_ALREADY_SCANNED.value//"Parcel already scanned"
                 )
         } else {
             //umbuchen auf andere ladeliste
-            title = ExportService.ResponseMsg.LlChanged.value//"Loadinglist changed"
+            title = ExportService.ResponseMsg.LL_CHANGED.value//"Loadinglist changed"
 
         }
         val oldLoadinglist = unitRecord.ladelistennummerd?.toLong()?.toString() ?: ""
@@ -720,7 +720,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val backUnit = bag.unitNoBack
         backUnit ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.BagIdOkNoBack.value//"BagId found - no bagback-unit found"
+                title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK.value//"BagId found - no bagback-unit found"
         )
 
         if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
@@ -728,12 +728,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyExported.value//"BagId found - bag already exported"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_EXPORTED.value//"BagId found - bag already exported"
                 )
             } else {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyClosed.value//"BagId found - bag already closed - try to reopen"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_CLOSED.value//"BagId found - bag already closed - try to reopen"
                 )
             }
         }
@@ -742,7 +742,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             unBack.hasError -> {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagUnitWrongCheckDigit.value//"Bag-UnitNo wrong check digit"
+                        title = ExportService.ResponseMsg.BAG_UNIT_WRONG_CHECKDIGIT.value//"Bag-UnitNo wrong check digit"
                 )
             }
         }
@@ -750,13 +750,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagUnitNotValid.value//"Bag-UnitNo not valid"
+                    title = ExportService.ResponseMsg.BAG_UNIT_NOT_VALID.value//"Bag-UnitNo not valid"
             )
 
         if (unBack.value.value.toLong() != backUnit) {
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagBackUnitDismatch.value//"Bag-BackUnitNo dismatch"
+                    title = ExportService.ResponseMsg.BAG_BACK_UNIT_DISMATCH.value//"Bag-BackUnitNo dismatch"
             )
         }
 
@@ -765,7 +765,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             un.hasError -> {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.LlWrongCheckDigit.value//"Loadinglist - wrong check digit"
+                        title = ExportService.ResponseMsg.LL_WRONG_CHECKDIGIT.value//"Loadinglist - wrong check digit"
                 )
             }
         }
@@ -773,13 +773,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.LlNotValid.value//"Loadinglist not valid"
+                    title = ExportService.ResponseMsg.LL_NOT_VALID.value//"Loadinglist not valid"
             )
 
         if (ExportService.Loadinglist(un.value.value.toLong()).loadinglistType != LoadinglistType.BAG)
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.LlWrongType.value//"Loadinglist not of Bag-Type"
+                    title = ExportService.ResponseMsg.LL_WRONG_TYPE.value//"Loadinglist not of Bag-Type"
             )
 
         var sendStatusRequired = false
@@ -953,7 +953,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val backUnit = bag.unitNoBack
         backUnit ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.BagIdOkNoBack.value//"BagId found - no bagback-unit found"
+                title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK.value//"BagId found - no bagback-unit found"
         )
 
         if (bag.lastStation == 2) {
@@ -961,12 +961,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (statusRepository.statusExist(backUnit, Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)) {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyExported.value//"BagId found - bag already exported"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_EXPORTED.value//"BagId found - bag already exported"
                 )
             } else {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkAlreadyClosed.value//"BagId found - bag already closed - try to reopen"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_CLOSED.value//"BagId found - bag already closed - try to reopen"
                 )
             }
         }
@@ -982,7 +982,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             un.hasError -> {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdWrongCheckDigit.value//"BagId wrong check digit"
+                        title = ExportService.ResponseMsg.BAG_ID_WRONG_CHECKDIGIT.value//"BagId wrong check digit"
                 )
             }
         }
@@ -990,34 +990,34 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title =ExportService.ResponseMsg.BagIdNotValid.value //"BagId not valid"
+                    title =ExportService.ResponseMsg.BAG_ID_NOT_VALID.value //"BagId not valid"
             )
 
         val bag = stationRepository.getBag(un.value.value.toLong())?.toBag()
         bag ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
-                title = ExportService.ResponseMsg.BagIdNotFound.value//"BagId not found"
+                title = ExportService.ResponseMsg.BAG_ID_NOT_FOUND.value//"BagId not found"
         )
         //check bag
         bag.bagNumber ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.BagIdNull.value//"Bagnumber null"
+                title = ExportService.ResponseMsg.BAG_ID_NULL.value//"Bagnumber null"
         )
         bag.lastStation ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.BagIdWithoutLastStation.value//"BagId without lastStation"
+                title = ExportService.ResponseMsg.BAG_ID_WITHOUT_LAST_STATION.value//"BagId without lastStation"
         )
 
         if (!bag.movepool.equals("m")) {
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagIdNotInMove.value//"BagId not found in move-state"
+                    title = ExportService.ResponseMsg.BAG_ID_NOT_IN_MOVE.value//"BagId not found in move-state"
             )
         }
         if ((bag.lastStation != stationNo) && (bag.lastStation != 2)) {
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.LastDepotStationMismatch.value//"BagId found - station mismatch"
+                    title = ExportService.ResponseMsg.LAST_DEPOT_STATION_MISMATCH.value//"BagId found - station mismatch"
             )
         }
 
@@ -1039,7 +1039,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val oidBack = bag.orderdepotTohub
         oidBack ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.BagIdOkNoBackOrder.value//"BagId found - no bagback-order found"
+                title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK_ORDER.value//"BagId found - no bagback-order found"
         )
 
 
@@ -1047,7 +1047,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         bag.unitNoBack = backUnit
         backUnit ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title = ExportService.ResponseMsg.BagIdOkNoBack.value//"BagId found - no bagback-unit found"
+                title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK.value//"BagId found - no bagback-unit found"
         )
 
         val unUnBack = DekuUnitNumber.parse(backUnit.toString())
@@ -1059,18 +1059,18 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             val bagBackOrder = parcelRepository.getOrderById(oidBack)
             bagBackOrder ?: throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagIdOkNoBackOrder.value//"BagId found - bagback-order not found"
+                    title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK_ORDER.value//"BagId found - bagback-order not found"
             )
 
             bagBackOrder.depotnrabd ?: throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title = ExportService.ResponseMsg.BagIdOkBackOrderWithoutAbd.value //"BagId found - bagback-order without depotnrabd"
+                    title = ExportService.ResponseMsg.BAG_ID_OK_BACK_ORDER_WITHOUT_ABD.value //"BagId found - bagback-order without depotnrabd"
             )
 
             if (bagBackOrder.depotnrabd.toInt() != stationNo) {
                 throw RestProblem(
                         status = Response.Status.CONFLICT,
-                        title = ExportService.ResponseMsg.BagIdOkBackOrderAbdMismatch.value//"BagId found - bagback-order station mismatch depotnrabd"
+                        title = ExportService.ResponseMsg.BAG_ID_OK_BACK_ORDER_ABD_MISMATCH.value//"BagId found - bagback-order station mismatch depotnrabd"
                 )
             }
 
@@ -1131,18 +1131,18 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         if (unitRecords.count() == 0)
                             throw RestProblem(
                                     status = Response.Status.NOT_FOUND,
-                                    title = ExportService.ResponseMsg.ParcelNotFound.value//"Parcel not found"
+                                    title = ExportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
                             )
                         if (unitRecords.count() > 1) {
                             throw RestProblem(
                                     status = Response.Status.BAD_REQUEST,
-                                    title = ExportService.ResponseMsg.MoreParcelsForCreference.value//"More parcels found to this cReference"
+                                    title = ExportService.ResponseMsg.MORE_PARCELS_FOR_CREFERENCE.value//"More parcels found to this cReference"
                             )
                         }
                         if (unitRecords.count() == 0) {
                             throw RestProblem(
                                     status = Response.Status.NOT_FOUND,
-                                    title = ExportService.ResponseMsg.ParcelNotFound.value//"Parcel not found"
+                                    title = ExportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
                             )
                         }
                         dekuNo = unitRecords[0].colliebelegnr.toLong()
@@ -1161,25 +1161,25 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val unitRecord = parcelRepository.findParcelByUnitNumber(dekuNo)
         unitRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
-                title = ExportService.ResponseMsg.ParcelNotFound.value//"Parcel not found"
+                title = ExportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
         )
         if (unitRecord.erstlieferstatus.toInt() == 4) {
             throw RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = ExportService.ResponseMsg.ParcelDelivered.value//"Parcel delivered"
+                    title = ExportService.ResponseMsg.PARCEL_DELIVERED.value//"Parcel delivered"
             )
         }
 
         val orderRecord = parcelRepository.getOrderById(unitRecord.orderid.toLong())
         orderRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
-                title = ExportService.ResponseMsg.OrderNotFound.value//"Order not found"
+                title = ExportService.ResponseMsg.ORDER_NOT_FOUND.value//"Order not found"
         )
 
         if (orderRecord.kzTransportart.toInt() != 1) {
             throw RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = ExportService.ResponseMsg.NoONS.value//"No ONS"
+                    title = ExportService.ResponseMsg.NO_ONS.value//"No ONS"
             )
         }
         if (orderRecord.depotnrabd != stationNo) {
@@ -1187,7 +1187,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             if (!(stationNo == 800 && orderRecord.depotnrabd in (800..900))) {
                 throw RestProblem(
                         status = Response.Status.BAD_REQUEST,
-                        title = ExportService.ResponseMsg.StationDismatch.value//"Station dismatch"
+                        title = ExportService.ResponseMsg.STATION_DISMATCH.value//"Station dismatch"
                 )
             }
         }
@@ -1196,7 +1196,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (allUnitsOfOrder.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title = ExportService.ResponseMsg.NoParcelsFound.value//"Parcels not found"
+                    title = ExportService.ResponseMsg.NO_PARCELS_FOUND.value//"Parcels not found"
             )
         allUnitsOfOrder.forEach {
             if (it.erstlieferstatus.toInt() == 8 && it.erstlieferfehler.toInt() != 30)
@@ -1393,7 +1393,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (orderRecord.lockflag.toInt() == 3) {
             throw RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = ExportService.ResponseMsg.ParcelDeleted.value//"Parcel deleted"
+                    title = ExportService.ResponseMsg.PARCEL_DELETED.value//"Parcel deleted"
             )
         }
 //        if (unitRecord.erstlieferstatus.toInt() == 8 && unitRecord.erstlieferfehler.toInt() == 30) {
@@ -1405,7 +1405,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (orderRecord.verladedatum != workDate.toTimestamp()) {
             throw RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = ExportService.ResponseMsg.SendDateInvalid.value//"Invalid senddate"
+                    title = ExportService.ResponseMsg.SEND_DATE_INVALID.value//"Invalid senddate"
             )
         }
 
