@@ -110,17 +110,16 @@ class RestApiTest {
     }
 
     @Test
-    fun testAddressDelete() {
+    fun testAddressDeleteAll() {
         this.authorize()
 
-        val addressApi = restClient.proxy(AddressApi::class.java)
         val internalApi = restClient.proxy(InternalApi::class.java)
+        val addressApi = restClient.proxy(AddressApi::class.java)
 
-        addressApi.address.objects.forEach { address ->
-            log.trace { "Deleting address [${address.id}]" }
-
+        addressApi.address.objects.forEach {
+            log.trace("DELETING ADDRESS ${it.id}")
             try {
-                internalApi.deleteAddress(address.id)
+                internalApi.deleteAddress(it.id)
             } catch(e: Throwable) {
                 log.error(e.message)
             }
@@ -155,46 +154,12 @@ class RestApiTest {
     }
 
     @Test
-    fun testDeliveryCancelAll() {
-        this.authorize()
-
-        restClient.proxy(DeliveryApi::class.java).also { deliveryApi ->
-            deliveryApi.getDelivery("{}")
-                    .doOnNext {
-                        log.trace("fetched ${it.id}")
-                    }
-                    .subscribeOn(Schedulers.io().limit(4))
-                    .blockingSubscribe {
-                        log.trace("Cancelling delivery ${it.id}")
-                        try {
-                            deliveryApi.postCanceldeliveryById(it.id)
-                        } catch (e: Exception) {
-                            log.error(e.message)
-                        }
-                    }
-        }
-    }
-
-    @Test
     fun testDeliveryDeleteAll() {
         this.authorize()
 
-        val deliveryApi = restClient.proxy(DeliveryApi::class.java)
         val internalApi = restClient.proxy(InternalApi::class.java)
 
-        deliveryApi.getDelivery("{}")
-                .doOnNext {
-                    log.trace("fetched ${it.id}")
-                }
-                .subscribeOn(Schedulers.io().limit(4))
-                .blockingSubscribe {
-                    log.trace("Deleting delivery ${it.id}")
-                    try {
-                        internalApi.deleteDelivery((it.id))
-                    } catch (e: Exception) {
-                        log.error(e.message)
-                    }
-                }
+        internalApi.deleteDelivery("{}")
     }
 
     @Test
@@ -222,45 +187,11 @@ class RestApiTest {
     }
 
     @Test
-    fun testRouteCancelAll() {
-        this.authorize()
-
-        restClient.proxy(RouteApi::class.java).also { routeApi ->
-            routeApi.getRoute("{}")
-                    .doOnNext {
-                        log.trace("fetched ${it.id}")
-                    }
-                    .subscribeOn(Schedulers.io().limit(4))
-                    .blockingSubscribe {
-                        log.trace("Cancelling route ${it.id}")
-                        try {
-                            routeApi.postCancelrouteById(it.id)
-                        } catch (e: Exception) {
-                            log.error(e.message)
-                        }
-                    }
-        }
-    }
-
-
-    @Test
     fun testRouteDeleteAll() {
         this.authorize()
 
-        val routeApi = restClient.proxy(RouteApi::class.java)
         val internalApi = restClient.proxy(InternalApi::class.java)
-        routeApi.getRoute("{}")
-                .doOnNext {
-                    log.trace("fetched ${it.id}")
-                }
-                .subscribeOn(Schedulers.io().limit(4))
-                .blockingSubscribe {
-                    log.trace("Deleting route ${it.id}")
-                    try {
-                        internalApi.deleteRoute(it.id)
-                    } catch (e: Exception) {
-                        log.error(e.message)
-                    }
-                }
+
+        internalApi.deleteRoute("{}")
     }
 }

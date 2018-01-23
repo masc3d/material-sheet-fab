@@ -12,39 +12,58 @@ import javax.ws.rs.*
  * Created by masc on 13.01.18.
  */
 @Path("/api")
-@Api(value = "/", description = "")
 interface InternalApi {
     /**
-     * Delete address (id)
+     * Delete address by id
      */
     @DELETE
     @Path("/address/{id}")
     @Consumes("application/json")
     @Produces("application/json")
-    @ApiOperation(value = "Delete address (id)", tags = arrayOf("Address"))
-    @ApiResponses(value = [(ApiResponse(code = 200, message = "OK", response = Address::class)), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class)), (ApiResponse(code = 200, message = "Unexpected error", response = Error::class))])
-    fun deleteAddress(@PathParam("id") id: Int?): Address
+    fun deleteAddress(@PathParam("id") id: Int?)
 
     /**
-     * Delete address (id)
+     * Delete addresses
+     */
+    @DELETE
+    @Path("/address")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun deleteAddress(@QueryParam("q") q: String)
+
+    /**
+     * Delete delivery by id
      */
     @DELETE
     @Path("/delivery/{id}")
     @Consumes("application/json")
     @Produces("application/json")
-    @ApiOperation(value = "Delete delivery (id)", tags = arrayOf("Delivery"))
-    @ApiResponses(value = [(ApiResponse(code = 200, message = "OK", response = Address::class)), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class)), (ApiResponse(code = 200, message = "Unexpected error", response = Error::class))])
-    fun deleteDelivery(@PathParam("id") id: Int?): Address
+    fun deleteDelivery(@PathParam("id") id: Int?)
 
     /**
-     * Delete address (id)
+     * Delete deliveries
+     */
+    @DELETE
+    @Path("/delivery")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun deleteDelivery(@QueryParam("q") q: String)
+
+    /**
+     * Delete route by id
      */
     @DELETE
     @Path("/route/{id}")
     @Consumes("application/json")
     @Produces("application/json")
-    @ApiOperation(value = "Delete route (id)", tags = arrayOf("Route"))
-    @ApiResponses(value = [(ApiResponse(code = 200, message = "OK", response = Address::class)), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class)), (ApiResponse(code = 200, message = "Unexpected error", response = Error::class))])
-    fun deleteRoute(@PathParam("id") id: Int?): Address
+    fun deleteRoute(@PathParam("id") id: Int?)
 
+    /**
+     * Delete routes
+     */
+    @DELETE
+    @Path("/route")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun deleteRoute(@QueryParam("q") q: String)
 }
