@@ -16,9 +16,9 @@ import javax.ws.rs.Path
  * Created by masc on 01/11/2016.
  */
 @Named
-@Profile(org.deku.leoz.central.Application.Companion.PROFILE_CENTRAL)
-@Path("internal/v1/bundle")
-open class BundleServiceV1 : org.deku.leoz.node.service.internal.BundleServiceV1() {
+@Profile(Application.PROFILE_CENTRAL)
+@Path("internal/v2/bundle")
+open class BundleServiceV2 : org.deku.leoz.node.service.internal.BundleServiceV2() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Central db node table repository */
@@ -38,12 +38,3 @@ open class BundleServiceV1 : org.deku.leoz.node.service.internal.BundleServiceV1
         return rNode.versionAlias
     }
 }
-
-/**
- * Bundle service (leoz-central)
- * Created by masc on 01/11/2016.
- */
-@Named
-@Profile(Application.PROFILE_CENTRAL)
-@Path("internal/v2/bundle")
-class BundleServiceV2 : BundleServiceV2() {}

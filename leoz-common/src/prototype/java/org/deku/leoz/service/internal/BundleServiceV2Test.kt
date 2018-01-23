@@ -38,7 +38,7 @@ class BundleServiceV2Test {
 
     @Test
     fun testInfo() {
-        val bundleServiceV1: BundleServiceV1 = kodein.instance()
+        val bundleServiceV1: BundleServiceV2 = kodein.instance()
 
         log.info(bundleServiceV1.info(
                 "leoz-boot",
