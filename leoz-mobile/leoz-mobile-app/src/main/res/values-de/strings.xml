@@ -175,6 +175,8 @@
 
     <string name="number_short_no">Nr.</string>
 
+    <string name="optimize">Optimieren</string>
+
     <string name="order_list">Auftragsliste</string>
     <string name="order_not_on_delivery_list">Auftrag nicht auf Rollkarte</string>
     <string name="order_not_on_delivery_list_confirmation">Zugehörigen Auftrag speichern?</string>
@@ -277,6 +279,10 @@
     <string name="tour">Tour</string>
     <string name="tour_optimization_in_progress">Tour wird optimiert</string>
     <string name="tour_optimization_failed">Optimierung nicht erfolgreich</string>
+    <string name="tour_optimization_settings">Tour Optimierung</string>
+    <string name="tour_optimization_settings_omit_appointments">Termine ignorieren</string>
+    <string name="tour_optimization_settings_shift_appointments">Termine verschieben</string>
+    <string name="tour_optimization_settings_traffic">Verkehrslage</string>
 
     <string name="truck">LKW</string>
 

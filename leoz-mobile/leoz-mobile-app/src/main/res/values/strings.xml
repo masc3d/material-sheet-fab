@@ -183,7 +183,7 @@
 
     <string name="number_short_no">No.</string>
 
-    <string name="ok" translatable="false">OK</string>
+    <string name="optimize">Optimize</string>
 
     <string name="order_list">Order list</string>
     <string name="order_not_on_delivery_list">Order not on delivery list</string>
@@ -324,6 +324,10 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="tour">Tour</string>
     <string name="tour_optimization_in_progress">Optimizing tour</string>
     <string name="tour_optimization_failed">Tour optimization failed</string>
+    <string name="tour_optimization_settings">Optimization settings</string>
+    <string name="tour_optimization_settings_omit_appointments">Omit appointments</string>
+    <string name="tour_optimization_settings_traffic">Traffic</string>
+    <string name="tour_optimization_settings_shift_appointments">Shift appointments</string>
 
     <string name="truck">Truck</string>
 

@@ -340,10 +340,26 @@ class DeliveryStopListScreen
                             }
 
                             MaterialDialog.Builder(this.activity)
-                                    .title("Optimization settings")
-                                    .checkBoxPrompt("Omit appointments", false, { _, checked ->
-                                        options.appointments.omit = checked
-                                    })
+                                    .title(R.string.tour_optimization_settings)
+                                    .checkBoxPromptRes(
+                                            R.string.tour_optimization_settings_omit_appointments,
+                                            false,
+                                            { _, checked ->
+                                                options.appointments.omit = checked
+                                            })
+                                    .checkBoxPromptRes(
+                                            R.string.tour_optimization_settings_shift_appointments,
+                                            false,
+                                            { _, checked ->
+                                                options.appointments.shiftHoursFromNow = if (checked) 24 else null
+                                            })
+                                    .checkBoxPromptRes(
+                                            R.string.tour_optimization_settings_traffic,
+                                            true,
+                                            { _, checked ->
+                                                options.traffic = checked
+                                            }
+                                    )
                                     .cancelable(true)
                                     .positiveText("Optimize")
                                     .onPositive { dialog, which ->

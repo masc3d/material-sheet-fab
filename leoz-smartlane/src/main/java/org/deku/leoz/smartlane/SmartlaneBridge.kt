@@ -119,9 +119,14 @@ class SmartlaneBridge {
     /**
      * Optimize route
      * @param routingInput Smartlane routing input
+     * @param traffic Consider traffic
      * @return Observable
      */
-    fun optimizeRoute(routingInput: Routinginput): Observable<List<Route>> {
+    fun optimizeRoute(
+            routingInput: Routinginput,
+            traffic: Boolean = true
+    ): Observable<List<Route>> {
+
         val routeApiGeneric by lazy { this.proxy(RouteApiGeneric::class.java, customerId = customerId) }
         val routeApi by lazy { this.proxy(RouteApi::class.java, customerId = customerId) }
 
@@ -134,7 +139,8 @@ class SmartlaneBridge {
             log.trace("[${id}] Requesting route")
             // Start async route calculation
             routeApiGeneric.postCalcrouteOptimizedTimewindowAsync(
-                    body = routingInput
+                    body = routingInput,
+                    traffic = traffic
             )
         }
                 .flatMap { status ->

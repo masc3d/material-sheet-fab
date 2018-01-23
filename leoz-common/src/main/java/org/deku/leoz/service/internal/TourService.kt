@@ -238,7 +238,13 @@ interface TourServiceV1 {
                     required = false,
                     value = "Omit loads",
                     notes = "Omits load parameters (on delivery/stop and vehicle level)")
-            var omitLoads: Boolean? = null
+            var omitLoads: Boolean? = null,
+
+            @ApiModelProperty(position = 50,
+                    required = false,
+                    example = "true",
+                    value = "Consider traffic")
+            var traffic: Boolean = true
     ) {
         @Serializable(0xf045189c321341)
         @ApiModel(description = "Appointment options")
@@ -265,7 +271,7 @@ interface TourServiceV1 {
                 var shiftHoursFromNow: Int? = null
         )
 
-        @Serializable(0x4bcec10612464e )
+        @Serializable(0x4bcec10612464e)
         data class Vehicle(
                 @ApiModelProperty(position = 10,
                         required = false,
