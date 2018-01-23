@@ -16,6 +16,7 @@ import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TaskType
 import org.deku.leoz.service.internal.TourServiceV1
+import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.id
 import org.deku.leoz.smartlane.SmartlaneBridge
 import org.deku.leoz.smartlane.model.Inputaddress
@@ -780,22 +781,38 @@ class TourServiceV1
                     }
 
             // Set start address
-            val start = options.start ?: this.stops.firstOrNull()?.address
-            start?.also { startAddress ->
+            options.start?.also { startAddress ->
                 it.startaddress = Inputaddress().also {
                     it.street = startAddress.street
                     it.postalcode = startAddress.zipCode
                     it.city = startAddress.city
                     it.country = startAddress.countryCode
+                    it.housenumber = startAddress.streetNo
+                    startAddress.geoLocation?.also { location ->
+                        it.lat = location.latitude
+                        it.lng = location.longitude
+                    }
+                }
+            }
 
-                    //region TODO: workaround for smartlane issue, where start address not being properly recognized / placed at end of tour (omit geo & street no)
+            if (it.startaddress == null) {
+                this.stops.firstOrNull()?.address?.also { startAddress ->
+                    it.startaddress = Inputaddress().also {
+                        it.street = startAddress.street
+                        it.postalcode = startAddress.zipCode
+                        it.city = startAddress.city
+                        it.country = startAddress.countryCode
+
+                        //region TODO: workaround for smartlane issue, where start address not being properly recognized / placed at end of tour (omit geo & street no)
 //                    it.housenumber = startAddress.streetNo
 //                    startAddress.geoLocation?.also { location ->
 //                        it.lat = location.latitude
 //                        it.lng = location.longitude
 //                    }
-                    //endregion
+                        //endregion
+                    }
                 }
+
             }
 
             if (!omitLoads)
