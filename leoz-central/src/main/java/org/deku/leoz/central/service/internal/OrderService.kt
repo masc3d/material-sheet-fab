@@ -249,8 +249,18 @@ class OrderService : OrderService {
         p.number = toUnitNo(r.scanId)
         p.parcelType = ParcelType.valueMap.getValue(r.parcelType)
         p.lastDeliveryListId = r.lastDeliveryListId?.toInt()
-        p.isDelivered = r.deliveredStatus.toInt() == 4
+        if (DekuUnitNumber.parse(
+                toUnitNo(r.scanId)).value.type == UnitNumber.Type.Bag
+                //todo take list of alowed deliveryStations from sys_prperties
+                && r.deliveryStation == 956) {
+            p.isDelivered = false
+        } else {
+            p.isDelivered = r.deliveredStatus.toInt() == 4
+        }
         p.isMissing = r.deliveredStatus.toInt() == 8 && r.lastDeliveredEventReason.toInt() == 30
+        //-> 
+        // p.isMissing = r.isDamaged
+
         // TODO: expensive lookup per parcel! needs to be optimized
         p.isDamaged = statusRepository.statusExist(r.scanId.toLong(), "E", 8, 31)
         p.dimension.weight = r.dimentionWeight

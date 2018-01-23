@@ -382,6 +382,7 @@ open class ParcelProcessingService {
 
                         if (from != null) {
                             if (from.equals("956") || from.equals("909"))
+                            //todo take list of alowed deliveryStations from sys_prperties
                                 if (DekuUnitNumber.parse(parcelScan).value.type == UnitNumber.Type.Bag) {
                                     //if (parcelScan.startsWith("10071")) {
                                     val unitInBagUnitRecords = parcelRepository.findUnitsInBagByBagUnitNumber(parcelNo)
