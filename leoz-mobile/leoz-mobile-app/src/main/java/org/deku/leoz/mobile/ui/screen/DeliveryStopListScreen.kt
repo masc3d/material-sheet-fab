@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -273,100 +274,7 @@ class DeliveryStopListScreen
                         }
 
                         R.id.action_sort_optimize -> {
-                            var subscription: Disposable? = null
-
-                            val options = TourServiceV1.TourOptimizationOptions()
-
-                            fun optimize() {
-                                val progressDialog = MaterialDialog.Builder(this.activity)
-                                        .title(R.string.tour_optimization_in_progress)
-                                        .content(R.string.please_wait)
-                                        .cancelable(true)
-                                        .progress(true, 0)
-                                        .cancelListener {
-                                            subscription?.dispose()
-                                        }
-                                        .build()
-                                        .also { it.show() }
-
-                                fun onError() {
-                                    this.activity.snackbarBuilder
-                                            .message(R.string.tour_optimization_failed)
-                                            .duration(Snackbar.LENGTH_LONG)
-                                            .build()
-                                            .show()
-                                }
-
-                                subscription = tourService.optimize(
-                                        options = options
-                                )
-                                        // `Single`s that may be disposed before completion must be converted to observables
-                                        // in order to mitigate https://github.com/trello/RxLifecycle/issues/217
-                                        .toObservable()
-                                        .bindToLifecycle(this)
-                                        .observeOnMainThread()
-                                        .doFinally {
-                                            progressDialog.dismiss()
-                                        }
-                                        .subscribe { result ->
-                                            when {
-                                                result.error != null -> {
-                                                    onError()
-                                                }
-                                                else -> {
-                                                    try {
-                                                        result.tour?.also { optimizedTour ->
-                                                            val pendingStops = this.tour.pendingStops.blockingFirst().value
-
-                                                            optimizedTour.stops.map { optimizedStop ->
-                                                                pendingStops.first { it.tasks.first().order.id == optimizedStop.tasks.first().orderId }
-                                                            }
-                                                                    .also {
-                                                                        it.forEachIndexed { index, stopEntity ->
-                                                                            stopEntity.position = index.toDouble()
-                                                                        }
-
-                                                                        this.updateAdapterPositions(
-                                                                                pendingStops.sortedBy { it.position }
-                                                                        )
-                                                                    }
-                                                        }
-                                                    } catch (e: Throwable) {
-                                                        onError()
-                                                    }
-                                                }
-                                            }
-                                        }
-                            }
-
-                            MaterialDialog.Builder(this.activity)
-                                    .title(R.string.tour_optimization_settings)
-                                    .checkBoxPromptRes(
-                                            R.string.tour_optimization_settings_omit_appointments,
-                                            false,
-                                            { _, checked ->
-                                                options.appointments.omit = checked
-                                            })
-                                    .checkBoxPromptRes(
-                                            R.string.tour_optimization_settings_shift_appointments,
-                                            false,
-                                            { _, checked ->
-                                                options.appointments.shiftHoursFromNow = if (checked) 24 else null
-                                            })
-                                    .checkBoxPromptRes(
-                                            R.string.tour_optimization_settings_traffic,
-                                            true,
-                                            { _, checked ->
-                                                options.traffic = checked
-                                            }
-                                    )
-                                    .cancelable(true)
-                                    .positiveText("Optimize")
-                                    .onPositive { dialog, which ->
-                                        optimize()
-                                    }
-                                    .build()
-                                    .show()
+                            this.optimize()
                         }
 
                         R.id.action_done -> {
@@ -585,6 +493,122 @@ class DeliveryStopListScreen
         }
 
         this.editMode = false
+    }
+
+    /**
+     * Start optimization procedure
+     */
+    fun optimize() {
+        var subscription: Disposable? = null
+
+        val options = TourServiceV1.TourOptimizationOptions()
+
+        fun optimize() {
+            val progressDialog = MaterialDialog.Builder(this.activity)
+                    .title(R.string.tour_optimization_in_progress)
+                    .content(R.string.please_wait)
+                    .cancelable(true)
+                    .progress(true, 0)
+                    .cancelListener {
+                        subscription?.dispose()
+                    }
+                    .build()
+                    .also { it.show() }
+
+            fun onError() {
+                this.activity.snackbarBuilder
+                        .message(R.string.tour_optimization_failed)
+                        .duration(Snackbar.LENGTH_LONG)
+                        .build()
+                        .show()
+            }
+
+            subscription = tourService.optimize(
+                    options = options
+            )
+                    // `Single`s that may be disposed before completion must be converted to observables
+                    // in order to mitigate https://github.com/trello/RxLifecycle/issues/217
+                    .toObservable()
+                    .bindToLifecycle(this)
+                    .observeOnMainThread()
+                    .doFinally {
+                        progressDialog.dismiss()
+                    }
+                    .subscribeBy(
+                            onNext = { result ->
+                                when {
+                                    result.error != null -> {
+                                        onError()
+                                    }
+                                    else -> {
+                                        try {
+                                            result.tour?.also { optimizedTour ->
+                                                val pendingStops = this.tour.pendingStops.blockingFirst().value
+
+                                                optimizedTour.stops.map { optimizedStop ->
+                                                    pendingStops.first { it.tasks.first().order.id == optimizedStop.tasks.first().orderId }
+                                                }
+                                                        .also {
+                                                            it.forEachIndexed { index, stopEntity ->
+                                                                stopEntity.position = index.toDouble()
+                                                            }
+
+                                                            this.updateAdapterPositions(
+                                                                    pendingStops.sortedBy { it.position }
+                                                            )
+                                                        }
+                                            }
+                                        } catch (e: Throwable) {
+                                            onError()
+                                        }
+                                    }
+                                }
+                            },
+                            onError = {
+                                onError()
+                            }
+                    )
+        }
+
+        val settings = arrayOf(
+                R.string.tour_optimization_settings_omit_appointments,
+                R.string.tour_optimization_settings_shift_appointments,
+                R.string.tour_optimization_settings_traffic
+        )
+
+        MaterialDialog.Builder(this.activity)
+                .title(R.string.tour_optimization_settings)
+                .cancelable(true)
+                .positiveText("Optimize")
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .items(*settings.map { this.getText(it) }.toTypedArray())
+                .itemsCallbackMultiChoice(
+                        // Preselection
+                        arrayOf(settings.indexOf(R.string.tour_optimization_settings_traffic)),
+                        // Callback
+                        { _, which, text ->
+                            settings.forEachIndexed { index, i ->
+                                val checked = which.contains(index)
+
+                                when (i) {
+                                    R.string.tour_optimization_settings_omit_appointments ->
+                                        options.appointments.omit = checked
+
+                                    R.string.tour_optimization_settings_shift_appointments ->
+                                        options.appointments.shiftDaysFromNow = if (checked) 1 else null
+
+                                    R.string.tour_optimization_settings_traffic ->
+                                        options.traffic = checked
+                                }
+                            }
+
+                            optimize()
+
+                            true
+                        })
+
+                .build()
+                .show()
     }
 
     fun updateStops() {

@@ -268,7 +268,15 @@ interface TourServiceV1 {
                         notes = "When this parameter is provided, appointments times are shifted " +
                                 "relative to the current time (rounded to next full hour)",
                         example = "4")
-                var shiftHoursFromNow: Int? = null
+                var shiftHoursFromNow: Int? = null,
+
+                @ApiModelProperty(position = 40,
+                        required = false,
+                        value = "Shift appointment times in days",
+                        notes = "When this parameter is provided, appointments times are shifted " +
+                                "relative to the current day",
+                        example = "1")
+                var shiftDaysFromNow: Int? = null
         )
 
         @Serializable(0x4bcec10612464e)

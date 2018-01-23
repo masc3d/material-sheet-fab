@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.threeten.bp.Duration
 import org.threeten.bp.temporal.ChronoUnit
+import org.threeten.bp.temporal.Temporal
 import org.zalando.problem.Status
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
@@ -695,11 +696,6 @@ class TourServiceV1
             options: TourServiceV1.TourOptimizationOptions
     ): Routinginput {
         return Routinginput().also {
-            val shiftOffset by lazy {
-                Duration.ofHours(
-                        options.appointments.shiftHoursFromNow?.toLong() ?: 0)
-            }
-
             val omitLoads = options.omitLoads ?: false
 
             it.deliverydata = this.stops
@@ -745,24 +741,45 @@ class TourServiceV1
                                 }
                             }
 
-                            if (options.appointments.shiftHoursFromNow != null) {
-                                val earliestAppointmentTime by lazy {
-                                    (it.mapNotNull { it.pdtFrom }.min() ?: Date()).toLocalDateTime()
-                                }
+                            val earliestAppointmentTime by lazy {
+                                (it.mapNotNull { it.pdtFrom }.min() ?: Date()).toLocalDateTime()
+                            }
 
-                                fun Date.shiftAppointmentTime(): Date {
-                                    return now.toLocalDateTime()
-                                            // Round to next full hour
-                                            .truncatedTo(ChronoUnit.HOURS)
-                                            .plus(Duration.ofHours(1))
-                                            // Add duration between earlist appointment time and this one
-                                            .plus(Duration.between(
-                                                    earliestAppointmentTime,
-                                                    this.toLocalDateTime()))
-                                            // Add shift offset
-                                            .plus(shiftOffset)
-                                            .toDate()
+                            if (options.appointments.shiftHoursFromNow != null) {
+
+                                fun Date.shiftAppointmentTime(): Date =
+                                        now.toLocalDateTime()
+                                                // Round to next full hour
+                                                .truncatedTo(ChronoUnit.HOURS)
+                                                .plus(Duration.ofHours(1))
+                                                // Add duration between earlist appointment time and this one
+                                                .plus(Duration.between(
+                                                        earliestAppointmentTime,
+                                                        this.toLocalDateTime()))
+                                                // Add shift offset
+                                                .plus(Duration.ofHours(
+                                                        options.appointments.shiftHoursFromNow?.toLong() ?: 0))
+                                                .toDate()
+
+
+                                it.forEach {
+                                    it.pdtFrom = it.pdtFrom?.shiftAppointmentTime()
+                                    it.pdtTo = it.pdtTo?.shiftAppointmentTime()
                                 }
+                            }
+
+                            if (options.appointments.shiftDaysFromNow != null) {
+
+                                fun Date.shiftAppointmentTime(): Date =
+                                        this.toLocalDateTime()
+                                                .plusDays(
+                                                        Duration.between(
+                                                                earliestAppointmentTime,
+                                                                now.toLocalDateTime()
+                                                        ).toDays()
+                                                )
+                                                .plusDays(options.appointments.shiftDaysFromNow?.toLong() ?: 0)
+                                                .toDate()
 
                                 it.forEach {
                                     it.pdtFrom = it.pdtFrom?.shiftAppointmentTime()
