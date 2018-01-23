@@ -584,7 +584,10 @@ class DeliveryStopListScreen
                 .items(*settings.map { this.getText(it) }.toTypedArray())
                 .itemsCallbackMultiChoice(
                         // Preselection
-                        arrayOf(settings.indexOf(R.string.tour_optimization_settings_traffic)),
+                        arrayOf(
+                                R.string.tour_optimization_settings_traffic,
+                                R.string.tour_optimization_settings_shift_appointments
+                        ).map { settings.indexOf(it) }.toTypedArray(),
                         // Callback
                         { _, which, text ->
                             settings.forEachIndexed { index, i ->
