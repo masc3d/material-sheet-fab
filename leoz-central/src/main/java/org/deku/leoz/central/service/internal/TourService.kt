@@ -784,14 +784,17 @@ class TourServiceV1
             start?.also { startAddress ->
                 it.startaddress = Inputaddress().also {
                     it.street = startAddress.street
-                    it.housenumber = startAddress.streetNo
                     it.postalcode = startAddress.zipCode
                     it.city = startAddress.city
                     it.country = startAddress.countryCode
-                    startAddress.geoLocation?.also { location ->
-                        it.lat = location.latitude
-                        it.lng = location.longitude
-                    }
+
+                    //region TODO: workaround for smartlane issue, where start address not being properly recognized / placed at end of tour (omit geo & street no)
+//                    it.housenumber = startAddress.streetNo
+//                    startAddress.geoLocation?.also { location ->
+//                        it.lat = location.latitude
+//                        it.lng = location.longitude
+//                    }
+                    //endregion
                 }
             }
 
