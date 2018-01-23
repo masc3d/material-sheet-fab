@@ -7,6 +7,8 @@ import { TouroptimizingService } from './touroptimizing.service';
 import { TourListItem } from '../../core/models/tour-list-item.model';
 import { PrintingService } from '../../core/printing/printing.service';
 import { StoplistReportingService } from '../../core/reporting/stoplist-reporting.service';
+import { HttpParams } from '@angular/common/http';
+import { Tour } from '../../core/models/tour.model';
 
 @Component( {
   selector: 'app-touroptimizing',
@@ -16,12 +18,12 @@ import { StoplistReportingService } from '../../core/reporting/stoplist-reportin
 } )
 export class TouroptimizingComponent extends AbstractTranslateComponent implements OnInit {
 
-  deliverylists: Deliverylist[];
-  deliverylistsOrderCount: number;
-  deliverylistsParcelCount: number;
-  deliverylistsTotalWeight: number;
-  vehicleCount: number;
-  tours: TourListItem[];
+  // deliverylists: Deliverylist[];
+  toursOrderCount: number;
+  toursParcelCount: number;
+  toursTotalWeight: number;
+  // vehicleCount: number;
+  tours: Tour[];
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
@@ -34,75 +36,68 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
   ngOnInit() {
     super.ngOnInit();
 
-    this.deliverylistsOrderCount = 0;
-    this.deliverylistsParcelCount = 0;
-    this.deliverylistsTotalWeight = 0;
-    this.deliverylists = [];
-    this.touroptimizingService.deliverylists$
+    this.toursOrderCount = 0;
+    this.toursParcelCount = 0;
+    this.toursTotalWeight = 0;
+    // this.deliverylists = [];
+
+    this.tours = [];
+    this.touroptimizingService.tours$
       .takeUntil( this.ngUnsubscribe )
-      .subscribe( ( deliverylists: Deliverylist[] ) => {
-        this.deliverylists = deliverylists;
-        this.deliverylistsOrderCount = this.countOrders( deliverylists );
-        this.deliverylistsParcelCount = this.countParcels( deliverylists );
-        this.deliverylistsTotalWeight = this.sumWeights( deliverylists );
+      .subscribe( ( tours: Tour[] ) => {
+        this.tours = tours;
+        this.toursOrderCount = this.countOrders( tours );
+        this.toursParcelCount = this.countParcels( tours );
+        this.toursTotalWeight = this.sumWeights( tours );
         this.cd.markForCheck();
       } );
-    this.tours = [
-      <TourListItem> {
-        id: 123456789,
-        totalShipments: 33,
-        totalPackages: 49,
-        totalWeight: 234,
-        optimized: true,
-        time: '13:12',
-        distance: 99
-      }
-    ];
-    this.touroptimizingService.getDeliverylists();
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
+    this.touroptimizingService.getTours(currUser.user.debitorId, activeStation.stationNo );
   }
 
-  private sumWeights( deliverylists: Deliverylist[] ) {
-    return deliverylists.length > 0
-      ? deliverylists.map( ( d ) => d.totalWeight )
+  private sumWeights( tours: Tour[] ) {
+    return tours.length > 0
+      ? tours.map( ( d ) => d.totalWeight )
         .reduce( ( a, b ) => a + b )
       : 0;
   }
 
-  private countParcels( deliverylists: Deliverylist[] ) {
-    return deliverylists.length > 0
-      ? deliverylists.map( ( d ) => d.totalPackages )
+  private countParcels( tours: Tour[] ) {
+    return tours.length > 0
+      ? tours.map( ( d ) => d.totalPackages )
         .reduce( ( a, b ) => a + b )
       : 0;
   }
 
-  private countOrders( deliverylists: Deliverylist[] ) {
-    return deliverylists.length > 0
-      ? deliverylists.map( ( d ) => d.totalShipments )
+  private countOrders( tours: Tour[] ) {
+    return tours.length > 0
+      ? tours.map( ( d ) => d.totalShipments )
         .reduce( ( a, b ) => a + b )
       : 0;
   }
 
-  changeCheckAllDeliverylists( evt: { checked: boolean } ) {
-      this.touroptimizingService.switchSelectionAllDeliverylists(evt.checked);
+  changeCheckAllTours( evt: { checked: boolean } ) {
+      this.touroptimizingService.switchSelectionAllTours(evt.checked);
   }
 
-  optimizeDeliverylists() {
-    console.log( 'optimizeDeliverylists...' );
-    console.log( 'vehicleCount:', this.vehicleCount );
-    console.log( 'selectedIds:', this.deliverylists
+  optimizeTours() {
+    console.log( 'optimizeTours...' );
+    // console.log( 'vehicleCount:', this.vehicleCount );
+    console.log( 'selectedIds:', this.tours
       .filter( d => d.selected)
       .map(d => d.id) );
   }
 
-  printDeliveryLists() {
+  printStopLists() {
     console.log( 'printDeliveryLists...' );
-    const listsToPrint = this.deliverylists.filter( d => d.selected);
-    console.log( 'selected:', listsToPrint);
-
-    const filename = 'sl_' + listsToPrint.map( d => d.id ).join( '_' );
-   this.printingService.printReports( this.reportingService
-                  .generateReports( listsToPrint ),
-                filename, false );
+  //   const listsToPrint = this.deliverylists.filter( d => d.selected);
+  //   console.log( 'selected:', listsToPrint);
+  //
+  //   const filename = 'sl_' + listsToPrint.map( d => d.id ).join( '_' );
+  //  this.printingService.printReports( this.reportingService
+  //                 .generateReports( listsToPrint ),
+  //               filename, false );
   }
 
 }
