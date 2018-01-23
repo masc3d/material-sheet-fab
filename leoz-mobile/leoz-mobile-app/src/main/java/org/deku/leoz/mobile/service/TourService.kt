@@ -9,6 +9,8 @@ import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.TourServiceV1
+import org.deku.leoz.service.internal.entity.Address
+import org.deku.leoz.service.internal.entity.GeoLocation
 import org.slf4j.LoggerFactory
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
@@ -26,6 +28,7 @@ class TourService : MqHandler<Any> {
 
     private val identity: Identity by Kodein.global.lazy.instance()
     private val mqttEndpoints: MqttEndpoints by Kodein.global.lazy.instance()
+    private val locationCache: LocationCache by Kodein.global.lazy.instance()
 
     private val optimizedToursSubject = PublishSubject.create<TourServiceV1.TourOptimizationResult>()
     val optimizedTours = optimizedToursSubject.hide()
@@ -57,6 +60,15 @@ class TourService : MqHandler<Any> {
         options.omitLoads = true
         options.appointments.replaceDatesWithToday = true
 
+        locationCache.lastLocation?.also { lastLocation ->
+            options.start = Address().also {
+                it.geoLocation = GeoLocation(
+                        latitude = lastLocation.latitude,
+                        longitude = lastLocation.longitude
+                )
+            }
+        }
+
         return this.optimizedTours
                 // Ignore any response not referring to this request
                 .filter { it.requestUid == requestUid }
@@ -79,7 +91,7 @@ class TourService : MqHandler<Any> {
                     )
                 }
                 .doOnSuccess {
-                    log.trace { "Received optimization response [${it}]"}
+                    log.trace { "Received optimization response [${it}]" }
                 }
                 .timeout(2, TimeUnit.MINUTES)
     }

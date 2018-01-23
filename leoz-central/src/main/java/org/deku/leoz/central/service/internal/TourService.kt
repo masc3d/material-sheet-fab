@@ -779,20 +779,18 @@ class TourServiceV1
                         }
                     }
 
-            // When there's no appointments, set start address to first stop
-            val hasAppointments = it.deliverydata.any { it.pdtFrom != null || it.pdtTo != null }
-            if (!hasAppointments) {
-                this.stops.firstOrNull()?.address?.also { startAddress ->
-                    it.startaddress = Inputaddress().also {
-                        it.street = startAddress.street
-                        it.housenumber = startAddress.streetNo
-                        it.postalcode = startAddress.zipCode
-                        it.city = startAddress.city
-                        it.country = startAddress.countryCode
-                        startAddress.geoLocation?.also { location ->
-                            it.lat = location.latitude
-                            it.lng = location.longitude
-                        }
+            // Set start address
+            val start = options.start ?: this.stops.firstOrNull()?.address
+            start?.also { startAddress ->
+                it.startaddress = Inputaddress().also {
+                    it.street = startAddress.street
+                    it.housenumber = startAddress.streetNo
+                    it.postalcode = startAddress.zipCode
+                    it.city = startAddress.city
+                    it.country = startAddress.countryCode
+                    startAddress.geoLocation?.also { location ->
+                        it.lat = location.latitude
+                        it.lng = location.longitude
                     }
                 }
             }

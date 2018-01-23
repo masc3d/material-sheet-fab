@@ -217,20 +217,24 @@ interface TourServiceV1 {
     @Serializable(0xc41f67f95c2025)
     @ApiModel(description = "Tour optimization options")
     data class TourOptimizationOptions(
-
             @ApiModelProperty(position = 10,
+                    required = false,
+                    value = "Start address/location")
+            var start: Address? = null,
+
+            @ApiModelProperty(position = 20,
                     required = false,
                     value = "Appointment related options")
             var appointments: Appointments = Appointments(),
 
-            @ApiModelProperty(position = 20,
+            @ApiModelProperty(position = 30,
                     required = false,
                     value = "Vehicles to optimize for",
                     notes = "When this parameter is omitted, the tour will be optimized in place. " +
                             "When provided, new tours will be created for each vehicle.")
             var vehicles: List<Vehicle>? = null,
 
-            @ApiModelProperty(position = 30,
+            @ApiModelProperty(position = 40,
                     required = false,
                     value = "Omit loads",
                     notes = "Omits load parameters (on delivery/stop and vehicle level)")
