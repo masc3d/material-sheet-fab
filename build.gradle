@@ -13,7 +13,7 @@ buildscript {
         v_anko = '0.10.4'
         v_javamail = '1.6.0'
         v_junit = '4.12'
-        v_kotlin = '1.2.20'
+        v_kotlin = '1.2.21'
         v_material_dialogs = '0.9.6.0'
         v_ormlite = '5.0'
         v_paho = '1.2.0'
