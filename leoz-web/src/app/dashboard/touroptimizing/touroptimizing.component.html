@@ -1,52 +1,16 @@
 <!--<form style="padding-top: 10px" class="mbDashboardContent">-->
 <div class="ui-fluid mbDashboardContent" style="padding-top: 10px">
   <div class="ui-g" style="min-height: 465px;">
-    <div class="ui-g-12 ui-lg-4 shadow" style="padding:0; width: 32%; margin-left: 10px;">
+    <div class="ui-g-12 ui-lg-6 shadow" style="padding:0; width: 49%; margin-left: 10px;">
       <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-12">{{'deliverylists' | translate}}</div>
+        <div class="ui-g-12 ui-lg-12">{{'tourlists-basedon-deliverylists' | translate}}</div>
       </div>
-      <div class="ui-g" style="font-weight: bold;font-size:13px; padding-left: 3px;">
+      <div class="ui-g" style="font-weight: bold;font-size:14px; padding-left: 3px;">
         <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> (0)</div>
-        <div class="ui-g-12 ui-lg-2"><i class="fas fa-align-justify iconBlue"></i> ({{deliverylists.length}})</div>
-        <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S ({{deliverylistsOrderCount}})</div>
-        <div class="ui-g-12 ui-lg-3"><i class="fa-sum iconBlue"></i>&nbsp;P ({{deliverylistsParcelCount}})</div>
-        <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> ({{deliverylistsTotalWeight}})</div>
-      </div>
-      <hr/>
-      <div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">
-        <div *ngFor="let deliverylist of deliverylists">
-          <app-tourlistitem [listItem]="deliverylist" [faIcon]="'fa-align-justify'"></app-tourlistitem>
-        </div>
-      </div>
-      <div class="ui-g-12 ui-lg-4">
-        <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
-                        onIcon="far fa-check-square" offIcon="far fa-square"
-                        (onChange)="changeCheckAllDeliverylists($event)"></p-toggleButton>
-      </div>
-      <div class="ui-g-12 ui-lg-4">
-        <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"
-                (click)="optimizeDeliverylists()"></button>
-      </div>
-      <div class="ui-g-12 ui-lg-4">
-        <button pButton label="{{'print' | translate}}" type="button" icon="fas fa-print" iconPos="left"
-                (click)="printDeliveryLists()"></button>
-      </div>
-      <div class="ui-inputgroup ui-g-12 ui-lg-4">
-        <span class="ui-inputgroup-addon"><i class="fas fa-truck"></i></span>
-        <input type="text" pInputText [(ngModel)]="vehicleCount">
-      </div>
-    </div>
-
-    <div class="ui-g-12 ui-lg-4 shadow" style="padding:0; width: 32%; margin-left: 10px;">
-      <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-12">{{'tourlists' | translate}}</div>
-      </div>
-      <div class="ui-g" style="font-weight: bold;font-size:13px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> (89)</div>
-        <div class="ui-g-12 ui-lg-2"><i class="fas fa-truck iconBlue"></i> (12)</div>
-        <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S (456)</div>
-        <div class="ui-g-12 ui-lg-3"><i class="fa-sum iconBlue"></i>&nbsp;P (1296)</div>
-        <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> (5076)</div>
+        <div class="ui-g-12 ui-lg-2"><i class="fas fa-truck iconBlue"></i> ({{tours.length}})</div>
+        <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S ({{toursOrderCount}})</div>
+        <div class="ui-g-12 ui-lg-3"><i class="fa-sum iconBlue"></i>&nbsp;P ({{toursParcelCount}})</div>
+        <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> ({{toursTotalWeight}})</div>
       </div>
       <hr/>
       <div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">
@@ -56,20 +20,29 @@
       </div>
       <div class="ui-g-12 ui-lg-4">
         <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
-                        onIcon="far fa-check-square" offIcon="far fa-square"></p-toggleButton>
+                        onIcon="far fa-check-square" offIcon="far fa-square"
+                        (onChange)="changeCheckAllTours($event)"></p-toggleButton>
       </div>
       <div class="ui-g-12 ui-lg-4">
-        <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"></button>
+        <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"
+                (click)="optimizeTours()"></button>
       </div>
       <div class="ui-g-12 ui-lg-4">
-        <button pButton label="{{'print' | translate}}" type="button" icon="fas fa-print" iconPos="left"></button>
+        <button pButton label="{{'print' | translate}}" type="button" icon="fas fa-print" iconPos="left"
+                (click)="printStopLists()"></button>
       </div>
+      <!--not used for the moment-->
+      <!--<div class="ui-inputgroup ui-g-12 ui-lg-4">
+        <span class="ui-inputgroup-addon"><i class="fas fa-truck"></i></span>
+        <input type="text" pInputText [(ngModel)]="vehicleCount">
+      </div>-->
     </div>
-    <div class="ui-g-12 ui-lg-4 shadow" style="padding:0; width: 32%; margin-left: 10px;">
+
+    <div class="ui-g-12 ui-lg-6 shadow" style="padding:0; width: 49%; margin-left: 10px;">
       <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
         <div class="ui-g-12 ui-lg-12">{{'driverlists' | translate}}</div>
       </div>
-      <div class="ui-g" style="font-weight: bold;font-size:13px; padding-left: 3px;">
+      <div class="ui-g" style="font-weight: bold;font-size:14px; padding-left: 3px;">
         <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> (89)</div>
         <div class="ui-g-12 ui-lg-2"><i class="far fa-user iconBlue"></i> (12)</div>
         <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S (456)</div>
@@ -77,22 +50,22 @@
         <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> (5076)</div>
       </div>
       <hr/>
-      <div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">
-        <div *ngFor="let tour of tours">
-          <app-tourlistitem [listItem]="tour" [faIcon]="'fa-user'"></app-tourlistitem>
-        </div>
-      </div>
-      <div class="ui-g-12 ui-lg-4">
-        <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
-                        onIcon="far fa-check-square" offIcon="far fa-square"></p-toggleButton>
-      </div>
+      <!--<div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">-->
+        <!--<div *ngFor="let driver of drivers">-->
+          <!--<app-tourlistitem [listItem]="tour" [faIcon]="'fa-user'"></app-tourlistitem>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="ui-g-12 ui-lg-4">-->
+        <!--<p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"-->
+                        <!--onIcon="far fa-check-square" offIcon="far fa-square"></p-toggleButton>-->
+      <!--</div>-->
 
-      <div class="ui-g-12 ui-lg-4">
-        <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"></button>
-      </div>
-      <div class="ui-g-12 ui-lg-4">
-        <button pButton label="{{'print' | translate}}" type="button" icon="fas fa-print" iconPos="left"></button>
-      </div>
+      <!--<div class="ui-g-12 ui-lg-4">-->
+        <!--<button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"></button>-->
+      <!--</div>-->
+      <!--<div class="ui-g-12 ui-lg-4">-->
+        <!--<button pButton label="{{'print' | translate}}" type="button" icon="fas fa-print" iconPos="left"></button>-->
+      <!--</div>-->
     </div>
   </div>
 </div>

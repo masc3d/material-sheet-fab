@@ -407,6 +407,7 @@ export const LANG_DE_TRANS = {
   'all': 'Alle',
   'optimize': 'Optimieren',
   'driverlists': 'Fahrerlisten',
+  'tourlists-basedon-deliverylists': 'Tourliste(n) auf Grundlage der Rollkarte(n)',
   // pickupdispo
   'info': 'Info',
   'open_orders_max3days': 'Offene Aufträge (max. 3 Tage)',

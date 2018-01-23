@@ -3,7 +3,7 @@ export interface TourListItem {
   totalShipments?: number;
   totalPackages?: number;
   totalWeight?: number;
-  optimized?: boolean;
+  optimized?: string;
   time?: string;
   distance?: number;
   selected?: boolean;
