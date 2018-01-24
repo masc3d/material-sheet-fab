@@ -5,7 +5,7 @@ import android.support.design.widget.Snackbar
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.ui.Activity
+import org.deku.leoz.mobile.ui.core.Activity
 import org.slf4j.Logger
 import sx.android.isConnectivityProblem
 import sx.android.rx.observeOnMainThread

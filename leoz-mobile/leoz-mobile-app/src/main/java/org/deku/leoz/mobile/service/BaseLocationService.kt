@@ -24,7 +24,7 @@ import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.deku.leoz.mobile.settings.LocationSettings
-import org.deku.leoz.mobile.ui.activity.StartupActivity
+import org.deku.leoz.mobile.ui.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel

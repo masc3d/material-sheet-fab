@@ -7,7 +7,7 @@
 
         <variable
             name="stats"
-            type="org.deku.leoz.mobile.ui.screen.VehicleLoadingScreen.StatsViewModel"/>
+            type="org.deku.leoz.mobile.ui.process.VehicleLoadingScreen.StatsViewModel"/>
     </data>
 
     <LinearLayout

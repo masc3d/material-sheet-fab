@@ -6,8 +6,8 @@ import android.support.v7.widget.LinearLayoutManager
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import kotlinx.android.synthetic.main.dialog_whatsnew.view.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.ui.ChangelogItem
-import org.deku.leoz.mobile.ui.Dialog
+import org.deku.leoz.mobile.ui.core.ChangelogItem
+import org.deku.leoz.mobile.ui.core.Dialog
 import sx.LazyInstance
 
 /**

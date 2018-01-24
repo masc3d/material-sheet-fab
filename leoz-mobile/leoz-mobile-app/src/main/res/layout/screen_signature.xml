@@ -3,7 +3,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="org.deku.leoz.mobile.ui.screen.SignatureScreen">
+             tools:context="org.deku.leoz.mobile.ui.process.tour.stop.SignatureScreen">
 
     <!-- TODO: this screen needs redesign. relative layouts don't scale well across display sizes -->
     <RelativeLayout

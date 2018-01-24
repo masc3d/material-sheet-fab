@@ -133,7 +133,7 @@
 
                             </LinearLayout>
 
-                            <org.deku.leoz.mobile.ui.view.ServicesView
+                            <org.deku.leoz.mobile.ui.vm.ServicesView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="end|center_vertical"
@@ -145,7 +145,7 @@
                                 app:services="@{stop.services}"
                                 >
 
-                            </org.deku.leoz.mobile.ui.view.ServicesView>
+                            </org.deku.leoz.mobile.ui.vm.ServicesView>
 
                         </LinearLayout>
 

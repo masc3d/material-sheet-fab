@@ -3,13 +3,10 @@ package org.deku.leoz.mobile.ui.dialog
 import android.os.Bundle
 import android.view.View
 import eu.davidea.flexibleadapter.FlexibleAdapter
-import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
-import eu.davidea.viewholders.FlexibleViewHolder
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.ui.Dialog
+import org.deku.leoz.mobile.ui.core.Dialog
 import org.deku.leoz.model.VehicleType
 import sx.LazyInstance
-import sx.android.ui.flexibleadapter.SimpleVmHeaderItem
 import sx.android.ui.flexibleadapter.VmItem
 
 /**

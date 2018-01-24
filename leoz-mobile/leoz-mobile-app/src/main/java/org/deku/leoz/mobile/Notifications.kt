@@ -3,11 +3,10 @@ package org.deku.leoz.mobile
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
-import org.deku.leoz.mobile.ui.activity.StartupActivity
+import org.deku.leoz.mobile.ui.StartupActivity
 
 /**
  * Created by prangenberg on 08.11.17.

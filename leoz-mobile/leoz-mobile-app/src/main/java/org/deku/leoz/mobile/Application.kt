@@ -19,7 +19,7 @@ import org.deku.leoz.mobile.config.*
 import org.deku.leoz.mobile.settings.DebugSettings
 import org.deku.leoz.mobile.service.LocationService
 import org.deku.leoz.mobile.service.LocationServiceGMS
-import org.deku.leoz.mobile.ui.BaseActivity
+import org.deku.leoz.mobile.ui.core.BaseActivity
 import org.slf4j.LoggerFactory
 
 

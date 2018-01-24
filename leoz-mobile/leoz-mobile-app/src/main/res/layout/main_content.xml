@@ -5,7 +5,7 @@
     android:id="@+id/uxCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.MainActivity">
+    tools:context=".ui.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/uxAppBarLayout"
@@ -146,7 +146,7 @@
         app:layout_behavior="sx.android.view.behavior.MoveWithSnackbarBehavior"/>
 
     <!-- Action overlay view -->
-    <org.deku.leoz.mobile.ui.view.ActionOverlayView
+    <org.deku.leoz.mobile.ui.core.view.ActionOverlayView
         android:id="@+id/uxActionOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

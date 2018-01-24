@@ -6,7 +6,7 @@
 
         <variable
             name="stats"
-            type="org.deku.leoz.mobile.ui.screen.DeliveryStopProcessScreen.StatsViewModel"/>
+            type="org.deku.leoz.mobile.ui.process.tour.StopProcessScreen.StatsViewModel"/>
     </data>
 
     <LinearLayout
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context="org.deku.leoz.mobile.ui.screen.DeliveryStopProcessScreen">
+        tools:context="org.deku.leoz.mobile.ui.process.tour.StopProcessScreen">
 
         <include layout="@layout/item_stop"/>
 
