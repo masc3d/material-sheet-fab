@@ -1,27 +1,20 @@
-package org.deku.leoz.smartlane
+package org.deku.leoz.node.service.internal
 
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
-import org.deku.leoz.smartlane.api.AuthApi
-import org.deku.leoz.smartlane.api.PendingException
-import org.deku.leoz.smartlane.api.RouteApi
-import org.deku.leoz.smartlane.api.RouteApiGeneric
-import org.deku.leoz.smartlane.api.getProcessStatusById
-import org.deku.leoz.smartlane.api.postCalcrouteOptimizedTimewindowAsync
+import org.deku.leoz.smartlane.SmartlaneApi
+import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.Route
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
-import sx.rx.retryWith
-import sx.text.toHexString
 import java.net.URI
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -73,7 +66,7 @@ class SmartlaneBridge {
         private val jwtTokenInstance = LazyInstance({
             Observable.fromCallable {
                 // Authorize smartlane customer
-                log.trace("Authorizing [${customerId}]")
+                log.trace { "Authorizing [${customerId}]" }
 
                 this@SmartlaneBridge.restClient
                         .proxy(AuthApi::class.java,
@@ -127,50 +120,16 @@ class SmartlaneBridge {
             traffic: Boolean = true
     ): Observable<List<Route>> {
 
-        val routeApiGeneric by lazy { this.proxy(RouteApiGeneric::class.java, customerId = customerId) }
-        val routeApi by lazy { this.proxy(RouteApi::class.java, customerId = customerId) }
+        val routeApi by lazy { this.proxy(RouteExtendedApi::class.java, customerId = customerId) }
 
         val domain = domain(customerId)
-        val id = routingInput.hashCode().toHexString()
 
         // TODO: transform to single. only has a single result
 
-        return Observable.fromCallable {
-            log.trace("[${id}] Requesting route")
-            // Start async route calculation
-            routeApiGeneric.postCalcrouteOptimizedTimewindowAsync(
-                    body = routingInput,
-                    traffic = traffic
-            )
-        }
-                .flatMap { status ->
-                    Observable.fromCallable<RouteApiGeneric.RouteProcessStatus> {
-                        // Poll status
-                        log.trace("[${id}] Requesting status")
-                        routeApiGeneric.getProcessStatusById(
-                                processId = status.processId
-                        )
-                    }
-                            .retryWith(
-                                    count = 1000,
-                                    action = { _, e ->
-                                        when (e) {
-                                        // Retry when pending
-                                            is PendingException -> {
-                                                log.trace("[${id}] Pending")
-                                                Observable.timer(1, TimeUnit.SECONDS)
-                                            }
-                                            else -> throw e
-                                        }
-                                    }
-                            )
-                            .map {
-                                // Get the final result
-                                it.routeIds.map {
-                                    routeApi.getRouteById(it)
-                                }
-                            }
-                }
+        return routeApi.optimize(
+                routingInput = routingInput,
+                traffic = traffic
+        )
                 .subscribeOn(domain.scheduler)
     }
 }

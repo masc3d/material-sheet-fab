@@ -110,6 +110,17 @@ class RestApiTest {
     }
 
     @Test
+    fun testAddressSearch() {
+        this.authorize()
+
+        restClient.proxy(AddressApi::class.java).also {
+            log.trace {
+                it.getSearchaddress("{id:[523 TO 524]}", 1, false)
+            }
+        }
+    }
+
+    @Test
     fun testAddressDeleteAll() {
         this.authorize()
 
@@ -146,7 +157,7 @@ class RestApiTest {
         restClient.proxy(DeliveryApi::class.java).also {
             log.trace {
                 it.getDelivery("{}")
-                        .subscribe {
+                        .blockingSubscribe {
                             log.trace("Delivery ${it.id}")
                         }
             }

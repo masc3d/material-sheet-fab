@@ -15,10 +15,10 @@ import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TaskType
+import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.id
-import org.deku.leoz.smartlane.SmartlaneBridge
 import org.deku.leoz.smartlane.model.Inputaddress
 import org.deku.leoz.smartlane.model.Routedeliveryinput
 import org.deku.leoz.smartlane.model.Routinginput
@@ -295,6 +295,7 @@ class TourServiceV1
         try {
             log.info("Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] ")
 
+            // Schedule multiple optimizations
             Observable.mergeDelayError(ids.map { id ->
                 val tour = this.getById(id)
 
@@ -326,6 +327,7 @@ class TourServiceV1
                             },
                             onComplete = {
                                 log.info("Route optimization process completed")
+
                                 if (waitForCompletion) {
                                     response.resume(Response
                                             .status(Response.Status.OK)
@@ -335,6 +337,7 @@ class TourServiceV1
                             },
                             onError = { e ->
                                 log.error(e.message, e)
+
                                 if (waitForCompletion) {
                                     response.resume(RestProblem(
                                             status = Status.INTERNAL_SERVER_ERROR,

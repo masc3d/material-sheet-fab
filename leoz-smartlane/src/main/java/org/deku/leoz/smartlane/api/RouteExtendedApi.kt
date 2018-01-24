@@ -8,13 +8,16 @@ import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
 import org.deku.leoz.smartlane.SmartlaneApi
-import org.deku.leoz.smartlane.model.Delivery
 import org.deku.leoz.smartlane.model.Error
 import org.deku.leoz.smartlane.model.Processstatus
 import org.deku.leoz.smartlane.model.Route
 import org.deku.leoz.smartlane.model.Routemetadatas
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.trace
+import sx.rx.retryWith
+import sx.text.toHexString
+import java.util.concurrent.TimeUnit
 import javax.validation.Valid
 import javax.ws.rs.Consumes
 import javax.ws.rs.DefaultValue
@@ -28,39 +31,12 @@ import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 
 /**
- * Extension for fetching routes. Uses paging to prevent timeouts on large results.
- * Created by masc on 21.11.17.
- */
-fun RouteApi.getRoute(q: String): Observable<Route> {
-    val pagesize = 20
-
-    return Observable.create<Route> { emitter ->
-        this.getRoute(q, pagesize, 1).let { result ->
-            try {
-                result.objects.forEach { emitter.onNext(it) }
-
-                if (result.totalPages > 1) {
-                    (2..result.totalPages).map { page ->
-                        this.getRoute(q, pagesize, page)
-                                .objects.forEach { emitter.onNext(it) }
-                    }
-                }
-
-                emitter.onComplete()
-            } catch(e: Exception) {
-                emitter.onError(e)
-            }
-        }
-    }
-}
-
-/**
- * Manually maintained entry points delivering a generic response
+ * Extended smartlane route apiManually maintained entry points delivering a generic response
  * Created by masc on 17.11.17.
  */
 @Path("/api")
 @Api(value = "/", description = "")
-interface RouteApiGeneric {
+interface RouteExtendedApi : RouteApi {
 
     @ApiModel
     data class Status(
@@ -100,7 +76,7 @@ interface RouteApiGeneric {
     @Produces("application/json")
     @ApiOperation(value = "Calc route optimized timewindow", tags = arrayOf("Route"))
     @ApiResponses(value = [(ApiResponse(code = 200, message = "resulting route ids and (if reponse_data is set to 'base' or 'all'), also route payload data. 'all' also includes geo routestring of tour. Only relevant for synchroneous routing (else, see response status 202)", response = Routemetadatas::class)), (ApiResponse(code = 202, message = "process_id for started asynchroneous process. Can be used for async status polling via \"GET /api/process/status/<process_id>/final\"")), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class)), (ApiResponse(code = 200, message = "Unexpected error", response = Error::class))])
-    fun postCalcrouteOptimizedTimewindow(
+    fun postCalcrouteOptimizedTimewindowWithResponse(
             @Valid body: Routinginput,
             @QueryParam("truck") @DefaultValue("false") truck: Boolean?,
             @QueryParam("roundtrip") @DefaultValue("settings parameter for ROUNDTRIP_TOUR (which defaults to false)") roundtrip: Boolean?,
@@ -120,22 +96,49 @@ interface RouteApiGeneric {
     @Produces("application/json")
     @ApiOperation(value = "Process status (id,id)", tags = arrayOf("Route"))
     @ApiResponses(value = [(ApiResponse(code = 200, message = "If URL parameter 'response_data' is set to 'all' or 'base': current status of the requested action and also payload data of all calculated routes", response = Routemetadatas::class)), (ApiResponse(code = 202, message = "If URL parameter 'response_data' is set to a value which is NOT 'all' or 'base': current status of the requested action within the requested routing process", response = Processstatus::class)), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class)), (ApiResponse(code = 200, message = "Unexpected error", response = Error::class))])
-    fun getProcessStatusByIdById(
+    fun getProcessStatusByIdByIdWithResponse(
             @PathParam("process_id") processId: String,
             @PathParam("action_id") actionId: String,
             @QueryParam("response_data") @DefaultValue("false") responseData: String?)
             : Response
 }
 
-private val log = LoggerFactory.getLogger(RouteApiGeneric::class.java)
+private val log = LoggerFactory.getLogger(RouteExtendedApi::class.java)
 
 /** Exception thrown when process is pending */
 class PendingException : Exception()
 
 /**
- * Calc route optimized timewindow asynchronously
+ * Extension for fetching routes. Uses paging to prevent timeouts on large results.
+ * Created by masc on 21.11.17.
  */
-fun RouteApiGeneric.postCalcrouteOptimizedTimewindowAsync(
+fun RouteApi.getRoute(q: String): Observable<Route> {
+    val pagesize = 20
+
+    return Observable.create<Route> { emitter ->
+        this.getRoute(q, pagesize, 1).let { result ->
+            try {
+                result.objects.forEach { emitter.onNext(it) }
+
+                if (result.totalPages > 1) {
+                    (2..result.totalPages).map { page ->
+                        this.getRoute(q, pagesize, page)
+                                .objects.forEach { emitter.onNext(it) }
+                    }
+                }
+
+                emitter.onComplete()
+            } catch (e: Exception) {
+                emitter.onError(e)
+            }
+        }
+    }
+}
+
+/**
+ * Normalized route calculation entry point, handling response & status as expected
+ */
+fun RouteExtendedApi.postCalcrouteOptimizedTimewindowWithStatus(
         body: Routinginput,
         truck: Boolean = false,
         roundtrip: Boolean = false,
@@ -145,8 +148,8 @@ fun RouteApiGeneric.postCalcrouteOptimizedTimewindowAsync(
         numvehicles: Int = 0,
         assignDrivers: Boolean = false,
         strict: Boolean = false
-): RouteApiGeneric.Status {
-    return this.postCalcrouteOptimizedTimewindow(
+): RouteExtendedApi.Status {
+    return this.postCalcrouteOptimizedTimewindowWithResponse(
             body = body,
             truck = truck,
             roundtrip = roundtrip,
@@ -164,7 +167,7 @@ fun RouteApiGeneric.postCalcrouteOptimizedTimewindowAsync(
 
         when (it.status) {
             Response.Status.ACCEPTED.statusCode ->
-                it.readEntity(RouteApiGeneric.Status::class.java)
+                it.readEntity(RouteExtendedApi.Status::class.java)
 
             else ->
                 throw IllegalStateException("Unexpected status code ${it.status}")
@@ -172,10 +175,14 @@ fun RouteApiGeneric.postCalcrouteOptimizedTimewindowAsync(
     }
 }
 
-fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.RouteProcessStatus {
-    return this.getProcessStatusByIdById(
+/**
+ * Normalized process status request
+ * @param processId Process id
+ */
+fun RouteExtendedApi.getProcessStatusById(processId: String): RouteExtendedApi.RouteProcessStatus {
+    return this.getProcessStatusByIdByIdWithResponse(
             processId = processId,
-            actionId = RouteApiGeneric.ACTION_FINAL,
+            actionId = RouteExtendedApi.ACTION_FINAL,
             responseData = null
     )
             .let { rsp ->
@@ -185,24 +192,24 @@ fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.Rou
 
                 when (rsp.status) {
                     Response.Status.ACCEPTED.statusCode -> {
-                        val processStatus = rsp.readEntity(RouteApiGeneric.ProcessStatus::class.java)
+                        val processStatus = rsp.readEntity(RouteExtendedApi.ProcessStatus::class.java)
 
                         when (processStatus.status) {
                         // Operation still pending
-                            RouteApiGeneric.ProcessStatusType.STARTED -> {
+                            RouteExtendedApi.ProcessStatusType.STARTED -> {
                                 throw PendingException()
                             }
 
-                            RouteApiGeneric.ProcessStatusType.PENDING -> {
+                            RouteExtendedApi.ProcessStatusType.PENDING -> {
                                 throw PendingException()
                             }
 
                         // Operation completed
-                            RouteApiGeneric.ProcessStatusType.SUCCESS -> {
+                            RouteExtendedApi.ProcessStatusType.SUCCESS -> {
                                 // Parse route process status
                                 SmartlaneApi.mapper.treeToValue(
                                         processStatus.meta,
-                                        RouteApiGeneric.RouteProcessStatus::class.java
+                                        RouteExtendedApi.RouteProcessStatus::class.java
                                 ).also {
                                     if (it.success == false)
                                         throw IllegalStateException(it.message)
@@ -221,3 +228,70 @@ fun RouteApiGeneric.getProcessStatusById(processId: String): RouteApiGeneric.Rou
             }
 }
 
+/**
+ * Optimize route
+ * @param routingInput Smartlane routing input
+ * @param traffic Consider traffic
+ * @return Observable
+ */
+fun RouteExtendedApi.optimize(
+        routingInput: Routinginput,
+        truck: Boolean = false,
+        roundtrip: Boolean = false,
+        traffic: Boolean = true,
+        cancelroutes: Boolean = false,
+        vehicle: String? = null,
+        numvehicles: Int = 0,
+        assignDrivers: Boolean = false,
+        strict: Boolean = false
+): Observable<List<Route>> {
+
+    val id = routingInput.hashCode().toHexString()
+
+    return Observable.fromCallable {
+        log.trace { "[${id}] Requesting route" }
+
+        // Start async route calculation
+        this.postCalcrouteOptimizedTimewindowWithStatus(
+                body = routingInput,
+                truck = truck,
+                roundtrip = roundtrip,
+                traffic = traffic,
+                cancelroutes = cancelroutes,
+                vehicle = vehicle,
+                numvehicles = numvehicles,
+                assignDrivers = assignDrivers,
+                strict = strict
+        )
+    }
+            .flatMap { status ->
+                Observable.fromCallable<RouteExtendedApi.RouteProcessStatus> {
+                    // Poll status
+                    log.trace { "[${id}] Requesting status" }
+
+                    this.getProcessStatusById(
+                            processId = status.processId
+                    )
+                }
+                        .retryWith(
+                                count = Short.MAX_VALUE,
+                                action = { _, e ->
+                                    when (e) {
+                                    // Retry when pending
+                                        is PendingException -> {
+                                            log.trace { "[${id}] Pending" }
+
+                                            Observable.timer(1, TimeUnit.SECONDS)
+                                        }
+                                        else -> throw e
+                                    }
+                                }
+                        )
+                        .map {
+                            // Get the final result
+                            it.routeIds.map {
+                                this.getRouteById(it)
+                            }
+                        }
+            }
+}
