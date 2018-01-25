@@ -327,8 +327,14 @@ class UserService : UserService {
                 title = "not found")
 
         //if ((user.email != null) && (user.email != "@"))
-        if (user.email != "@")
+        if (user.email != "@") {
             rec.email = user.email
+            if (password == null)
+                throw RestProblem(
+                        status=Response.Status.CONFLICT,
+                        title="On login-change you have to provide a password"
+                )
+        }
         if (debitor != null)
             rec.debitorId = debitor
         if (alias != null)
