@@ -8,7 +8,6 @@ import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
-
 /**
  * Created by JT on 24.05.17.
  *

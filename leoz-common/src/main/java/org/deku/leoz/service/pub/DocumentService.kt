@@ -1,6 +1,7 @@
 package org.deku.leoz.service.pub
 
 import io.swagger.annotations.*
+import org.deku.leoz.service.internal.OrderService
 import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -48,7 +49,7 @@ interface DocumentService {
         @ApiModelProperty(position = 40, required = true, value = "Consignee")
         var consignee: LabelParticipant? = null
         @ApiModelProperty(position = 50, required = true, value = "Appointment")
-        var appointment: org.deku.leoz.service.internal.OrderService.Order.Appointment = org.deku.leoz.service.internal.OrderService.Order.Appointment()
+        var appointment: OrderService.Order.Appointment = OrderService.Order.Appointment()
     }
 
     @GET

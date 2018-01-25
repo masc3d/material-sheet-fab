@@ -41,45 +41,45 @@ class SmartlaneBridgeTest {
             }
     )
 
-    @Test
-    fun testRoute() {
-        Stopwatch.createStarted(this, "calculateRoute", {
-            bridge.optimizeRoute(
-                    routingInput = Routinginput().also {
-                        it.deliverydata = this.addresses.mapIndexed { index, address ->
-                            address.toRouteDeliveryInput(
-                                    customId = "DEKU_ADDRESS ${index}").also {
-                                it.pdtFrom = Date()
-                                it.pdtTo = Date().plusHours(4)
-                            }
-                        }
-                    }
-            )
-                    .blockingFirst()
-                    .also {
-                        log.trace { it }
-                    }
-        })
-    }
-
-    @Test
-    fun testRouteParallel() {
-        Stopwatch.createStarted(this, "calculateRoute", {
-            Observable.merge(
-                    (0..30).map {
-                        bridge.optimizeRoute(
-                                routingInput = Routinginput().also {
-                                    it.deliverydata = this.addresses.mapIndexed { index, address ->
-                                        address.toRouteDeliveryInput(
-                                                customId = "DEKU_ADDRESS ${index}")
-                                    }
-                                }
-                        )
-                    }
-            )
-                    .blockingSubscribe {
-                        log.trace("Processed ${it.map { it.id }}")
-                    }
-        })
-    }
+//    @Test
+//    fun testRoute() {
+//        Stopwatch.createStarted(this, "calculateRoute", {
+//            bridge.optimize(
+//                    routingInput = Routinginput().also {
+//                        it.deliverydata = this.addresses.mapIndexed { index, address ->
+//                            address.toRouteDeliveryInput(
+//                                    customId = "DEKU_ADDRESS ${index}").also {
+//                                it.pdtFrom = Date()
+//                                it.pdtTo = Date().plusHours(4)
+//                            }
+//                        }
+//                    }
+//            )
+//                    .blockingFirst()
+//                    .also {
+//                        log.trace { it }
+//                    }
+//        })
+//    }
+//
+//    @Test
+//    fun testRouteParallel() {
+//        Stopwatch.createStarted(this, "calculateRoute", {
+//            Observable.merge(
+//                    (0..30).map {
+//                        bridge.optimizeRoute(
+//                                routingInput = Routinginput().also {
+//                                    it.deliverydata = this.addresses.mapIndexed { index, address ->
+//                                        address.toRouteDeliveryInput(
+//                                                customId = "DEKU_ADDRESS ${index}")
+//                                    }
+//                                }
+//                        )
+//                    }
+//            )
+//                    .blockingSubscribe {
+//                        log.trace("Processed ${it.map { it.id }}")
+//                    }
+//        })
+//    }
 }

@@ -3,17 +3,28 @@ package org.deku.leoz.node.service.internal
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.service.internal.TourServiceV1
+import org.deku.leoz.service.internal.TourServiceV1.*
+import org.deku.leoz.service.internal.id
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
-import org.deku.leoz.smartlane.model.Route
+import org.deku.leoz.smartlane.model.Inputaddress
+import org.deku.leoz.smartlane.model.Routedeliveryinput
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
+import org.threeten.bp.Duration
+import org.threeten.bp.temporal.ChronoUnit
 import sx.LazyInstance
 import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
+import sx.time.replaceDate
+import sx.time.toDate
+import sx.time.toLocalDateTime
 import java.net.URI
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -110,15 +121,15 @@ class SmartlaneBridge {
     // TODO: transparently handle authentication failures/refresh token
 
     /**
-     * Optimize route
-     * @param routingInput Smartlane routing input
-     * @param traffic Consider traffic
-     * @return Observable
+     * Optimize a tour
+     * @param tour Tour to optimize
+     * @param options Optimization options
+     * @return Single observable of optimized tours
      */
-    fun optimizeRoute(
-            routingInput: Routinginput,
-            traffic: Boolean = true
-    ): Observable<List<Route>> {
+    fun optimize(
+            tour: Tour,
+            options: TourOptimizationOptions
+    ): Single<List<Tour>> {
 
         val routeApi by lazy { this.proxy(RouteExtendedApi::class.java, customerId = customerId) }
 
@@ -127,9 +138,184 @@ class SmartlaneBridge {
         // TODO: transform to single. only has a single result
 
         return routeApi.optimize(
-                routingInput = routingInput,
-                traffic = traffic
-        )
+                tour.toRoutingInput(
+                        options
+                ))
+                .map { routes ->
+                    val now = Date()
+                    routes.map { route ->
+                        val stops = route.deliveries
+                                .sortedBy { it.orderindex }
+                                .map { delivery ->
+                                    tour.stops.first { it.id == delivery.customId.toInt() }
+                                }
+
+                        val orders = stops
+                                .flatMap { it.tasks }
+                                .map { it.orderId }.distinct()
+                                .map { orderId -> tour.orders.first { it.id == orderId } }
+
+                        Tour(
+                                id = null,
+                                nodeUid = tour.nodeUid,
+                                userId = tour.userId,
+                                stationNo = tour.stationNo,
+                                deliverylistId = tour.deliverylistId,
+                                optimized = now,
+                                stops = stops,
+                                orders = orders
+                        )
+                    }
+                }
+                .firstOrError()
                 .subscribeOn(domain.scheduler)
+    }
+
+    /**
+     * Transform tour into smartlane routing input
+     */
+    private fun Tour.toRoutingInput(
+            options: TourOptimizationOptions
+    ): Routinginput {
+        return Routinginput().also {
+            val omitLoads = options.omitLoads ?: false
+
+            it.deliverydata = this.stops
+                    .map { stop ->
+                        Routedeliveryinput().also {
+                            stop.address?.also { address ->
+                                it.contactlastname = address.line1
+                                it.contactfirstname = address.line2
+                                it.contactcompany = address.line3
+                                it.street = address.street
+                                it.housenumber = address.streetNo
+                                it.city = address.city
+                                it.postalcode = address.zipCode
+                                address.geoLocation?.also { geo ->
+                                    it.lat = geo.latitude.toString()
+                                    it.lng = geo.longitude.toString()
+                                }
+                                address.countryCode = address.countryCode
+
+                                if (!omitLoads)
+                                    it.load = stop.weight?.let { (it * 100.0).toInt() }
+                            }
+
+                            // Track stop via custom id
+                            it.customId = stop.id?.toString()
+
+                            if (!options.appointments.omit) {
+                                it.pdtFrom = stop.appointmentStart
+                                it.pdtTo = stop.appointmentEnd
+                            }
+                        }
+                    }
+                    .also {
+                        // Current time
+                        val now = Date()
+
+                        if (!options.appointments.omit) {
+
+                            if (options.appointments.replaceDatesWithToday) {
+                                it.forEach {
+                                    it.pdtFrom = it.pdtFrom?.replaceDate(now)
+                                    it.pdtTo = it.pdtTo?.replaceDate(now)
+                                }
+                            }
+
+                            val earliestAppointmentTime by lazy {
+                                (it.mapNotNull { it.pdtFrom }.min() ?: Date()).toLocalDateTime()
+                            }
+
+                            if (options.appointments.shiftHoursFromNow != null) {
+
+                                fun Date.shiftAppointmentTime(): Date =
+                                        now.toLocalDateTime()
+                                                // Round to next full hour
+                                                .truncatedTo(ChronoUnit.HOURS)
+                                                .plus(Duration.ofHours(1))
+                                                // Add duration between earlist appointment time and this one
+                                                .plus(Duration.between(
+                                                        earliestAppointmentTime,
+                                                        this.toLocalDateTime()))
+                                                // Add shift offset
+                                                .plus(Duration.ofHours(
+                                                        options.appointments.shiftHoursFromNow?.toLong() ?: 0))
+                                                .toDate()
+
+
+                                it.forEach {
+                                    it.pdtFrom = it.pdtFrom?.shiftAppointmentTime()
+                                    it.pdtTo = it.pdtTo?.shiftAppointmentTime()
+                                }
+                            }
+
+                            if (options.appointments.shiftDaysFromNow != null) {
+
+                                fun Date.shiftAppointmentTime(): Date =
+                                        this.toLocalDateTime()
+                                                .plusDays(
+                                                        Duration.between(
+                                                                earliestAppointmentTime,
+                                                                now.toLocalDateTime()
+                                                        ).toDays()
+                                                )
+                                                .plusDays(options.appointments.shiftDaysFromNow?.toLong() ?: 0)
+                                                .toDate()
+
+                                it.forEach {
+                                    it.pdtFrom = it.pdtFrom?.shiftAppointmentTime()
+                                    it.pdtTo = it.pdtTo?.shiftAppointmentTime()
+                                }
+                            }
+
+                            // Sanity checks
+                            it.forEach {
+                                it.pdtTo = if (it.pdtTo != null && it.pdtTo > now) it.pdtTo else null
+                                it.pdtFrom = if (it.pdtTo != null) it.pdtFrom else null
+
+                                log.trace { "PDT ${it.pdtFrom} -> ${it.pdtTo}" }
+                            }
+                        }
+                    }
+
+            // Set start address
+            options.start?.also { startAddress ->
+                it.startaddress = Inputaddress().also {
+                    it.street = startAddress.street
+                    it.postalcode = startAddress.zipCode
+                    it.city = startAddress.city
+                    it.country = startAddress.countryCode
+                    it.housenumber = startAddress.streetNo
+                    startAddress.geoLocation?.also { location ->
+                        it.lat = location.latitude
+                        it.lng = location.longitude
+                    }
+                }
+            }
+
+            if (it.startaddress == null) {
+                this.stops.firstOrNull()?.address?.also { startAddress ->
+                    it.startaddress = Inputaddress().also {
+                        it.street = startAddress.street
+                        it.postalcode = startAddress.zipCode
+                        it.city = startAddress.city
+                        it.country = startAddress.countryCode
+
+                        //region TODO: workaround for smartlane issue, where start address not being properly recognized / placed at end of tour (omit geo & street no)
+//                    it.housenumber = startAddress.streetNo
+//                    startAddress.geoLocation?.also { location ->
+//                        it.lat = location.latitude
+//                        it.lng = location.longitude
+//                    }
+                        //endregion
+                    }
+                }
+
+            }
+
+            if (!omitLoads)
+                it.vehcapacities = options.vehicles?.map { (it.capacity * 100).toInt() }
+        }
     }
 }

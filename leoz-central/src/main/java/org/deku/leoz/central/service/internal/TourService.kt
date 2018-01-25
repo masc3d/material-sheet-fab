@@ -14,20 +14,14 @@ import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.model.TaskType
+import org.deku.leoz.model.*
+import org.deku.leoz.service.internal.TourServiceV1.*
 import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.internal.TourServiceV1
-import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.id
-import org.deku.leoz.smartlane.model.Inputaddress
-import org.deku.leoz.smartlane.model.Routedeliveryinput
-import org.deku.leoz.smartlane.model.Routinginput
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.threeten.bp.Duration
-import org.threeten.bp.temporal.ChronoUnit
-import org.threeten.bp.temporal.Temporal
 import org.zalando.problem.Status
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
@@ -62,59 +56,6 @@ class TourServiceV1
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    /**
-     * Tracks optimizations and provides notifications
-     */
-    private inner class Optimizations : Iterable<TourServiceV1.TourOptimizationStatus> {
-        /** Holds all current optimizations (by tour id) */
-        private val byId = ConcurrentHashMap<Int, TourServiceV1.TourOptimizationStatus>()
-
-        private val updatedSubject = PublishSubject.create<TourServiceV1.TourOptimizationStatus>()
-        /** Update notifications */
-        val updated = Observable
-                // Emit all current statuses initially
-                .fromIterable(this)
-                // ..followed by live updates
-                .concatWith(updatedSubject.hide())
-
-        /**
-         * Should be called when tour optimization is started
-         * @param tourRecord Tour record
-         */
-        fun onStart(id: Int) {
-            TourServiceV1.TourOptimizationStatus(id = id, inProgress = true).also { status ->
-                this.byId.set(id, status)
-                this.updatedSubject.onNext(status)
-            }
-        }
-
-        /**
-         * Should be called when tour optimization finishes
-         * @param tourRecord Tour record
-         */
-        fun onFinish(id: Int) {
-            // TODO: emit errors
-            TourServiceV1.TourOptimizationStatus(id = id, inProgress = false).also { status ->
-                this.byId.remove(id)
-                this.updatedSubject.onNext(status)
-            }
-        }
-
-        override fun iterator(): Iterator<TourServiceV1.TourOptimizationStatus> = this.byId.values.iterator()
-
-        init {
-            this.updated
-                    .subscribe {
-                        log.trace { "UPDATED ${it}" }
-                    }
-        }
-    }
-
-    /**
-     * Current optimizations
-     */
-    private val optimizations = Optimizations()
-
     //region Dependencices
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
@@ -134,7 +75,7 @@ class TourServiceV1
     private lateinit var orderService: OrderService
 
     @Inject
-    private lateinit var smartlaneBridge: SmartlaneBridge
+    private lateinit var smartlane: SmartlaneBridge
     //endregion
 
     /**
@@ -142,7 +83,7 @@ class TourServiceV1
      * @param tours Tours to create
      * @return Ids of created tours
      */
-    fun create(tours: Iterable<TourServiceV1.Tour>): List<Int> {
+    fun create(tours: Iterable<Tour>): List<Int> {
         return dsl.transactionResult { _ ->
             tours.map { tour ->
                 // Create new one if it doesn't exist
@@ -161,8 +102,8 @@ class TourServiceV1
                             it.position = (index + 1).toDouble()
                             it.orderId = task.orderId
                             it.orderTaskType = when (task.taskType) {
-                                TourServiceV1.Task.Type.DELIVERY -> TaskType.DELIVERY.value
-                                TourServiceV1.Task.Type.PICKUP -> TaskType.DELIVERY.value
+                                Task.Type.DELIVERY -> TaskType.DELIVERY.value
+                                Task.Type.PICKUP -> TaskType.DELIVERY.value
                             }
                             it.store()
                         }
@@ -174,6 +115,44 @@ class TourServiceV1
         }
     }
 
+    /**
+     * Update existing tour from optimized one
+     * @param tour Optimized tour
+     */
+    fun updateFromOptimizedTour(tour: Tour) {
+        dsl.transaction { _ ->
+            val tourId = tour.id ?: throw IllegalArgumentException("Tour id cannot be null")
+
+            val now = Date().toTimestamp()
+            val entryRecords = tourRepository.findEntriesById(tourId)
+
+            tour.stops
+                    .forEachIndexed { index, stop ->
+                        // Select stop tour entry which matches custom id
+                        val entryRecord = entryRecords.first { it.id == stop.id }
+
+                        val newPosition = (index + 1).toDouble()
+                        log.trace { "OPTIMIZATION POSITION UPDATE ${entryRecord.position} -> ${newPosition}" }
+
+                        // Update position for all entries on the same (positional) level
+                        val entryIds = entryRecords
+                                .filter { it.position == entryRecord.position }
+                                .map { it.id }
+
+                        dsl.update(TAD_TOUR_ENTRY)
+                                .set(TAD_TOUR_ENTRY.POSITION, newPosition)
+                                .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
+                                .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
+                                .execute()
+                    }
+
+            dsl.update(TAD_TOUR)
+                    .set(TAD_TOUR.OPTIMIZED, now)
+                    .where(TAD_TOUR.ID.eq(tourId))
+                    .execute()
+        }
+    }
+
     //region REST
     /**
      * Get tours
@@ -182,7 +161,7 @@ class TourServiceV1
             debitorId: Int?,
             stationNo: Int?,
             userId: Int?
-    ): List<TourServiceV1.Tour> {
+    ): List<Tour> {
         val tourRecords = dsl
                 .selectFrom(TAD_TOUR)
                 .where()
@@ -237,7 +216,7 @@ class TourServiceV1
     /**
      * Get tour by id
      */
-    override fun getById(id: Int): TourServiceV1.Tour {
+    override fun getById(id: Int): Tour {
         val tourRecord = tourRepository.findById(id)
                 ?: throw NoSuchElementException("No tour with id [${id}]")
 
@@ -253,7 +232,7 @@ class TourServiceV1
     /**
      * Get tour by node
      */
-    override fun getByNode(nodeUid: String): TourServiceV1.Tour {
+    override fun getByNode(nodeUid: String): Tour {
         val nodeId = this.nodeRepository.findByKeyStartingWith(nodeUid)?.nodeId
                 ?: throw NoSuchElementException("Unknown node uid ${nodeUid}")
 
@@ -266,7 +245,7 @@ class TourServiceV1
     /**
      * Get the (current) tour for a user
      */
-    override fun getByUser(userId: Int): TourServiceV1.Tour {
+    override fun getByUser(userId: Int): Tour {
         val tourRecord = tourRepository.findLatestByUserId(userId)
                 ?: throw NoSuchElementException("No assignable tour for user [${userId}]")
 
@@ -287,10 +266,10 @@ class TourServiceV1
     override fun optimize(
             ids: List<Int>,
             waitForCompletion: Boolean,
-            options: TourServiceV1.TourOptimizationOptions,
+            options: TourOptimizationOptions,
             response: AsyncResponse) {
 
-        data class Optimization(val tourId: Int, val result: List<TourServiceV1.Tour>)
+        data class Optimization(val tourId: Int, val result: List<Tour>)
 
         try {
             log.info("Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] ")
@@ -370,7 +349,7 @@ class TourServiceV1
     override fun optimize(
             id: Int,
             waitForCompletion: Boolean,
-            options: TourServiceV1.TourOptimizationOptions,
+            options: TourOptimizationOptions,
             response: AsyncResponse) {
 
         this.optimize(
@@ -453,7 +432,7 @@ class TourServiceV1
 
     override fun optimizeForNode(
             nodeUid: String,
-            options: TourServiceV1.TourOptimizationOptions
+            options: TourOptimizationOptions
     ) {
         try {
             this.optimizeForNode(
@@ -480,7 +459,7 @@ class TourServiceV1
     fun optimizeForNode(
             nodeUid: String,
             nodeRequestUid: String? = null,
-            options: TourServiceV1.TourOptimizationOptions
+            options: TourOptimizationOptions
     ) {
         val nodeRecord = dsl.selectFrom(MST_NODE)
                 .fetchByUid(nodeUid, strict = false)
@@ -496,12 +475,12 @@ class TourServiceV1
         val tour = this.getById(tourRecord.id)
 
         /** Handle error response on message based requests (nodeRequestUid was provided) */
-        fun handleErrorResponse(error: TourServiceV1.TourOptimizationResult.ErrorType) {
+        fun handleErrorResponse(error: TourOptimizationResult.ErrorType) {
             // Only send error response on node requests
             if (nodeRequestUid != null) {
                 JmsEndpoints.node.topic(identityUid = Identity.Uid(nodeRecord.uid))
                         .channel()
-                        .send(TourServiceV1.TourOptimizationResult(
+                        .send(TourOptimizationResult(
                                 requestUid = nodeRequestUid,
                                 nodeUid = nodeRecord.uid,
                                 error = error
@@ -518,7 +497,7 @@ class TourServiceV1
                             onSuccess = { tours ->
                                 JmsEndpoints.node.topic(identityUid = Identity.Uid(nodeRecord.uid))
                                         .channel()
-                                        .send(TourServiceV1.TourOptimizationResult(
+                                        .send(TourOptimizationResult(
                                                 requestUid = nodeRequestUid,
                                                 nodeUid = nodeRecord.uid,
                                                 tour = tours.first()
@@ -527,19 +506,19 @@ class TourServiceV1
                             onError = { e ->
                                 log.error(e.message, e)
 
-                                handleErrorResponse(TourServiceV1.TourOptimizationResult.ErrorType
+                                handleErrorResponse(TourOptimizationResult.ErrorType
                                         .ROUTE_COULD_NOT_BE_DETERMINED)
                             }
                     )
         } catch (e: Throwable) {
-            handleErrorResponse(TourServiceV1.TourOptimizationResult.ErrorType
+            handleErrorResponse(TourOptimizationResult.ErrorType
                     .REMOTE_REQUEST_FAILED)
 
             throw e
         }
     }
 
-    override fun create(deliverylistIds: List<Int>): List<TourServiceV1.Tour> {
+    override fun create(deliverylistIds: List<Int>): List<Tour> {
         val dlRecords = deliverylistRepository.findByIds(
                 deliverylistIds.map { it.toLong() }
         )
@@ -598,249 +577,89 @@ class TourServiceV1
 
     //region Optimization
     /**
+     * Tracks optimizations and provides notifications
+     */
+    inner class Optimizations : Iterable<TourOptimizationStatus> {
+        /** Holds all current optimizations (by tour id) */
+        private val byId = ConcurrentHashMap<Int, TourOptimizationStatus>()
+
+        private val updatedSubject = PublishSubject.create<TourOptimizationStatus>()
+        /** Update notifications */
+        val updated = Observable
+                // Emit all current statuses initially
+                .fromIterable(this)
+                // ..followed by live updates
+                .concatWith(updatedSubject.hide())
+
+        /**
+         * Should be called when tour optimization is started
+         * @param tourRecord Tour record
+         */
+        fun onStart(id: Int) {
+            TourOptimizationStatus(id = id, inProgress = true).also { status ->
+                this.byId.set(id, status)
+                this.updatedSubject.onNext(status)
+            }
+        }
+
+        /**
+         * Should be called when tour optimization finishes
+         * @param tourRecord Tour record
+         */
+        fun onFinish(id: Int) {
+            // TODO: emit errors
+            TourOptimizationStatus(id = id, inProgress = false).also { status ->
+                this.byId.remove(id)
+                this.updatedSubject.onNext(status)
+            }
+        }
+
+        override fun iterator(): Iterator<TourServiceV1.TourOptimizationStatus> = this.byId.values.iterator()
+
+        init {
+            this.updated
+                    .subscribe {
+                        log.trace { "UPDATED ${it}" }
+                    }
+        }
+    }
+
+    /**
+     * Pending optimizations
+     */
+    val optimizations = Optimizations()
+
+    /**
      * Optimize a tour
      * @param tour Tour to optimize
      * @param options Optimization options
      * @return Single observable of optimized tours
      */
     fun optimize(
-            tour: TourServiceV1.Tour,
-            options: TourServiceV1.TourOptimizationOptions
-    ): Single<List<TourServiceV1.Tour>> {
+            tour: Tour,
+            options: TourOptimizationOptions
+    ): Single<List<Tour>> {
         // Check if optimization for this tour is already in progress
         if (this.optimizations.any { it.id == tour.id })
             throw IllegalStateException("Optimization for tour [${tour.id}] already in progress")
 
         val tourId = tour.id!!
 
-        return this.smartlaneBridge.optimizeRoute(
-                tour.toRoutingInput(
-                        options
-                ))
+        return this.smartlane.optimize(
+                tour = tour,
+                options = options
+        )
                 .doOnSubscribe {
                     this.optimizations.onStart(tourId)
-                }
-                .map { routes ->
-                    val now = Date()
-                    routes.map { route ->
-                        val stops = route.deliveries
-                                .sortedBy { it.orderindex }
-                                .map { delivery ->
-                                    tour.stops.first { it.id == delivery.customId.toInt() }
-                                }
-
-                        val orders = stops
-                                .flatMap { it.tasks }
-                                .map { it.orderId }.distinct()
-                                .map { orderId -> tour.orders.first { it.id == orderId } }
-
-                        TourServiceV1.Tour(
-                                id = null,
-                                nodeUid = tour.nodeUid,
-                                userId = tour.userId,
-                                stationNo = tour.stationNo,
-                                deliverylistId = tour.deliverylistId,
-                                optimized = now,
-                                stops = stops,
-                                orders = orders
-                        )
-                    }
                 }
                 .doFinally {
                     this.optimizations.onFinish(tourId)
                 }
-                .firstOrError()
-    }
-
-    /**
-     * Update existing tour from optimized one
-     * @param tour Optimized tour
-     */
-    fun updateFromOptimizedTour(tour: TourServiceV1.Tour) {
-        dsl.transaction { _ ->
-            val tourId = tour.id ?: throw IllegalArgumentException("Tour id cannot be null")
-
-            val now = Date().toTimestamp()
-            val entryRecords = tourRepository.findEntriesById(tourId)
-
-            tour.stops
-                    .forEachIndexed { index, stop ->
-                        // Select stop tour entry which matches custom id
-                        val entryRecord = entryRecords.first { it.id == stop.id }
-
-                        val newPosition = (index + 1).toDouble()
-                        log.trace { "OPTIMIZATION POSITION UPDATE ${entryRecord.position} -> ${newPosition}" }
-
-                        // Update position for all entries on the same (positional) level
-                        val entryIds = entryRecords
-                                .filter { it.position == entryRecord.position }
-                                .map { it.id }
-
-                        dsl.update(TAD_TOUR_ENTRY)
-                                .set(TAD_TOUR_ENTRY.POSITION, newPosition)
-                                .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
-                                .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
-                                .execute()
-                    }
-
-            dsl.update(TAD_TOUR)
-                    .set(TAD_TOUR.OPTIMIZED, now)
-                    .where(TAD_TOUR.ID.eq(tourId))
-                    .execute()
-        }
     }
     //endregion
 
     //region Transformations
-    /**
-     * Transform tour into smartlane routing input
-     */
-    private fun TourServiceV1.Tour.toRoutingInput(
-            options: TourServiceV1.TourOptimizationOptions
-    ): Routinginput {
-        return Routinginput().also {
-            val omitLoads = options.omitLoads ?: false
-
-            it.deliverydata = this.stops
-                    .map { stop ->
-                        Routedeliveryinput().also {
-                            stop.address?.also { address ->
-                                it.contactlastname = address.line1
-                                it.contactfirstname = address.line2
-                                it.contactcompany = address.line3
-                                it.street = address.street
-                                it.housenumber = address.streetNo
-                                it.city = address.city
-                                it.postalcode = address.zipCode
-                                address.geoLocation?.also { geo ->
-                                    it.lat = geo.latitude.toString()
-                                    it.lng = geo.longitude.toString()
-                                }
-                                address.countryCode = address.countryCode
-
-                                if (!omitLoads)
-                                    it.load = stop.weight?.let { (it * 100.0).toInt() }
-                            }
-
-                            // Track stop via custom id
-                            it.customId = stop.id?.toString()
-
-                            if (!options.appointments.omit) {
-                                it.pdtFrom = stop.appointmentStart
-                                it.pdtTo = stop.appointmentEnd
-                            }
-                        }
-                    }
-                    .also {
-                        // Current time
-                        val now = Date()
-
-                        if (!options.appointments.omit) {
-
-                            if (options.appointments.replaceDatesWithToday) {
-                                it.forEach {
-                                    it.pdtFrom = it.pdtFrom?.replaceDate(now)
-                                    it.pdtTo = it.pdtTo?.replaceDate(now)
-                                }
-                            }
-
-                            val earliestAppointmentTime by lazy {
-                                (it.mapNotNull { it.pdtFrom }.min() ?: Date()).toLocalDateTime()
-                            }
-
-                            if (options.appointments.shiftHoursFromNow != null) {
-
-                                fun Date.shiftAppointmentTime(): Date =
-                                        now.toLocalDateTime()
-                                                // Round to next full hour
-                                                .truncatedTo(ChronoUnit.HOURS)
-                                                .plus(Duration.ofHours(1))
-                                                // Add duration between earlist appointment time and this one
-                                                .plus(Duration.between(
-                                                        earliestAppointmentTime,
-                                                        this.toLocalDateTime()))
-                                                // Add shift offset
-                                                .plus(Duration.ofHours(
-                                                        options.appointments.shiftHoursFromNow?.toLong() ?: 0))
-                                                .toDate()
-
-
-                                it.forEach {
-                                    it.pdtFrom = it.pdtFrom?.shiftAppointmentTime()
-                                    it.pdtTo = it.pdtTo?.shiftAppointmentTime()
-                                }
-                            }
-
-                            if (options.appointments.shiftDaysFromNow != null) {
-
-                                fun Date.shiftAppointmentTime(): Date =
-                                        this.toLocalDateTime()
-                                                .plusDays(
-                                                        Duration.between(
-                                                                earliestAppointmentTime,
-                                                                now.toLocalDateTime()
-                                                        ).toDays()
-                                                )
-                                                .plusDays(options.appointments.shiftDaysFromNow?.toLong() ?: 0)
-                                                .toDate()
-
-                                it.forEach {
-                                    it.pdtFrom = it.pdtFrom?.shiftAppointmentTime()
-                                    it.pdtTo = it.pdtTo?.shiftAppointmentTime()
-                                }
-                            }
-
-                            // Sanity checks
-                            it.forEach {
-                                it.pdtTo = if (it.pdtTo != null && it.pdtTo > now) it.pdtTo else null
-                                it.pdtFrom = if (it.pdtTo != null) it.pdtFrom else null
-
-                                log.trace { "PDT ${it.pdtFrom} -> ${it.pdtTo}" }
-                            }
-                        }
-                    }
-
-            // Set start address
-            options.start?.also { startAddress ->
-                it.startaddress = Inputaddress().also {
-                    it.street = startAddress.street
-                    it.postalcode = startAddress.zipCode
-                    it.city = startAddress.city
-                    it.country = startAddress.countryCode
-                    it.housenumber = startAddress.streetNo
-                    startAddress.geoLocation?.also { location ->
-                        it.lat = location.latitude
-                        it.lng = location.longitude
-                    }
-                }
-            }
-
-            if (it.startaddress == null) {
-                this.stops.firstOrNull()?.address?.also { startAddress ->
-                    it.startaddress = Inputaddress().also {
-                        it.street = startAddress.street
-                        it.postalcode = startAddress.zipCode
-                        it.city = startAddress.city
-                        it.country = startAddress.countryCode
-
-                        //region TODO: workaround for smartlane issue, where start address not being properly recognized / placed at end of tour (omit geo & street no)
-//                    it.housenumber = startAddress.streetNo
-//                    startAddress.geoLocation?.also { location ->
-//                        it.lat = location.latitude
-//                        it.lng = location.longitude
-//                    }
-                        //endregion
-                    }
-                }
-
-            }
-
-            if (!omitLoads)
-                it.vehcapacities = options.vehicles?.map { (it.capacity * 100).toInt() }
-        }
-    }
-
-    private fun Iterable<TadTourRecord>.toTours(): List<TourServiceV1.Tour> {
+    private fun Iterable<TadTourRecord>.toTours(): List<Tour> {
         TODO("not implemented")
     }
 
@@ -851,7 +670,7 @@ class TourServiceV1
      */
     private fun TadTourRecord.toTour(
             nodeUid: String? = null,
-            tourEntryRecordsByTourId: Map<Int, List<TadTourEntryRecord>>? = null): TourServiceV1.Tour {
+            tourEntryRecordsByTourId: Map<Int, List<TadTourEntryRecord>>? = null): Tour {
         val tourRecord = this
 
         @Suppress("NAME_SHADOWING")
@@ -876,7 +695,7 @@ class TourServiceV1
                 *orders.map { Pair(it.id, it) }.toTypedArray()
         )
 
-        return TourServiceV1.Tour(
+        return Tour(
                 id = tourRecord.id,
                 nodeUid = nodeUid,
                 userId = tourRecord.userId,
@@ -890,7 +709,7 @@ class TourServiceV1
                                 val taskType = TaskType.valueMap.getValue(task.orderTaskType)
                                 val order = ordersById.getValue(task.orderId)
 
-                                TourServiceV1.Task(
+                                Task(
                                         id = task.id,
                                         orderId = task.orderId,
                                         appointmentStart = when (taskType) {
@@ -902,13 +721,13 @@ class TourServiceV1
                                             TaskType.PICKUP -> order.pickupAppointment.dateEnd
                                         },
                                         taskType = when (taskType) {
-                                            TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
-                                            TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
+                                            TaskType.DELIVERY -> Task.Type.DELIVERY
+                                            TaskType.PICKUP -> Task.Type.PICKUP
                                         }
                                 )
                             }
 
-                            TourServiceV1.Stop(
+                            Stop(
                                     address = stop.value.first().let { task ->
                                         orders.first { it.id == task.orderId }.let {
                                             when (TaskType.valueMap.getValue(task.orderTaskType)) {
@@ -932,15 +751,15 @@ class TourServiceV1
 
     //region MQ handlers
     @MqHandler.Types(
-            TourServiceV1.TourUpdate::class,
-            TourServiceV1.TourOptimizationRequest::class
+            TourUpdate::class,
+            TourOptimizationRequest::class
     )
     override fun onMessage(message: Any, replyChannel: MqChannel?) {
         when (message) {
-            is TourServiceV1.TourUpdate -> {
+            is TourUpdate -> {
                 this.onMessage(message)
             }
-            is TourServiceV1.TourOptimizationRequest -> {
+            is TourOptimizationRequest -> {
                 this.onMessage(message)
             }
         }
@@ -949,7 +768,7 @@ class TourServiceV1
     /**
      * Tour optimization request message handler
      */
-    private fun onMessage(message: TourServiceV1.TourOptimizationRequest) {
+    private fun onMessage(message: TourOptimizationRequest) {
         val nodeUid = message.nodeUid ?: run {
             log.warn("Tour optimization request received without node uid")
             return
@@ -969,7 +788,7 @@ class TourServiceV1
     /**
      * Tour update message handler
      */
-    private fun onMessage(message: TourServiceV1.TourUpdate) {
+    private fun onMessage(message: TourUpdate) {
         log.trace { "Tour message ${message}" }
 
         val tour = message.tour ?: run {
@@ -1016,8 +835,8 @@ class TourServiceV1
                                 it.position = (index + 1).toDouble()
                                 it.orderId = task.orderId
                                 it.orderTaskType = when (task.taskType) {
-                                    TourServiceV1.Task.Type.DELIVERY -> TaskType.DELIVERY.value
-                                    TourServiceV1.Task.Type.PICKUP -> TaskType.DELIVERY.value
+                                    Task.Type.DELIVERY -> TaskType.DELIVERY.value
+                                    Task.Type.PICKUP -> TaskType.DELIVERY.value
                                 }
                                 it.store()
                             }
@@ -1025,5 +844,5 @@ class TourServiceV1
                     }
         }
     }
-//endregion
+    //endregion
 }
