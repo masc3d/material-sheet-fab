@@ -254,11 +254,16 @@ class TourServiceV1
 
     override fun delete(
             ids: List<Int>,
+            userId: Int?,
             stationNo: Int?) {
         this.tourRepository.delete(ids)
 
         stationNo?.also {
             this.tourRepository.deleteByStation(it)
+        }
+
+        userId?.also {
+            this.tourRepository.deleteByUser(it)
         }
     }
 

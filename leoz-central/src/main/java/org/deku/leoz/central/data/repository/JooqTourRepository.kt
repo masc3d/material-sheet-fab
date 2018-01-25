@@ -73,6 +73,16 @@ class JooqTourRepository {
     }
 
     /**
+     * Delete tour(s) by user
+     * @param userId User id
+     */
+    fun deleteByUser(userId: Int) {
+        this.delete(dsl.selectFrom(TAD_TOUR)
+                .where(TAD_TOUR.USER_ID.eq(userId))
+                .fetch(TAD_TOUR.ID))
+    }
+
+    /**
      * Delete tour(s) by station
      * @param stationNo Station no
      */
