@@ -36,7 +36,7 @@ import java.io.File
 class JgitTest {
 
     val vcsPath by lazy {
-        val path = File("").absoluteFile.parentFile
+        val path = File("").absoluteFile.parentFile.parentFile
         println("Repository path [${path}]")
         path
     }
