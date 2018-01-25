@@ -2,7 +2,6 @@ package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.net.MediaType
-import kotlinx.support.jdk7.use
 import org.apache.tika.mime.MimeType
 import org.apache.tika.mime.MimeTypes
 import org.deku.leoz.node.Storage

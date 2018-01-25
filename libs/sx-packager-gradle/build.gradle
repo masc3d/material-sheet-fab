@@ -51,7 +51,7 @@ dependencies {
             "org.threeten:threetenbp:1.3.6",
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-            "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$v_kotlin",
 
             "org.apache.commons:commons-compress:1.13",
             "commons-io:commons-io:2.6",

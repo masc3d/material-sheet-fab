@@ -61,7 +61,8 @@ dependencies {
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-            "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$v_kotlin",
 
             // Kodein
             "com.github.salomonbrys.kodein:kodein:$v_kodein",

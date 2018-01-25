@@ -1,6 +1,5 @@
 package org.deku.leoz.node.config
 
-import kotlinx.support.jdk7.use
 import org.deku.leoz.node.Storage
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.PersistenceUnitProperties

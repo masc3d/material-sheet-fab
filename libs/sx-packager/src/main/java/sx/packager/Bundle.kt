@@ -21,8 +21,7 @@ import javax.xml.bind.annotation.XmlAttribute
 import javax.xml.bind.annotation.XmlElement
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
-import kotlinx.support.jdk8.collections.*
-import kotlinx.support.jdk8.streams.toList
+import kotlin.streams.*
 
 /**
  * Represents a local/physical leoz bundle including a manifest containing metadata
