@@ -87,7 +87,9 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun delete(
             @QueryParam(ID) @ApiParam(value = "Tour id(s)")
-            ids: List<Int>
+            ids: List<Int>,
+            @QueryParam(STATION_NO) @ApiParam(value = "Station no")
+            stationNo: Int? = null
     )
 
     @PATCH

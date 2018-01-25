@@ -1,7 +1,8 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.mobile.Tables
+import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR
+import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR_ENTRY
 import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourEntryRecord
 import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourRecord
 import org.jooq.DSLContext
@@ -17,15 +18,15 @@ class JooqTourRepository {
     private lateinit var dsl: DSLContext
 
     fun findById(id: Int): TadTourRecord? =
-            dsl.fetchOne(Tables.TAD_TOUR, Tables.TAD_TOUR.ID.eq(id))
+            dsl.fetchOne(TAD_TOUR, TAD_TOUR.ID.eq(id))
 
     fun findByNodeId(nodeId: Int): TadTourRecord? =
-            dsl.fetchOne(Tables.TAD_TOUR, Tables.TAD_TOUR.NODE_ID.eq(nodeId))
+            dsl.fetchOne(TAD_TOUR, TAD_TOUR.NODE_ID.eq(nodeId))
 
     fun findLatestByUserId(userId: Int): TadTourRecord? {
-        return dsl.selectFrom(Tables.TAD_TOUR)
-                .where(Tables.TAD_TOUR.USER_ID.eq(userId))
-                .orderBy(Tables.TAD_TOUR.TIMESTAMP.desc())
+        return dsl.selectFrom(TAD_TOUR)
+                .where(TAD_TOUR.USER_ID.eq(userId))
+                .orderBy(TAD_TOUR.TIMESTAMP.desc())
                 .fetchAny()
     }
 
@@ -35,9 +36,9 @@ class JooqTourRepository {
      * @return Tour entries in positional order
      */
     fun findEntriesByIds(ids: Collection<Int>): List<TadTourEntryRecord> {
-        return dsl.selectFrom(Tables.TAD_TOUR_ENTRY)
-                .where(Tables.TAD_TOUR_ENTRY.TOUR_ID.`in`(ids))
-                .orderBy(Tables.TAD_TOUR_ENTRY.POSITION, Tables.TAD_TOUR_ENTRY.ID)
+        return dsl.selectFrom(TAD_TOUR_ENTRY)
+                .where(TAD_TOUR_ENTRY.TOUR_ID.`in`(ids))
+                .orderBy(TAD_TOUR_ENTRY.POSITION, TAD_TOUR_ENTRY.ID)
                 .toList()
     }
 
@@ -47,25 +48,37 @@ class JooqTourRepository {
      * @return Tour entries in positional order
      */
     fun findEntriesById(id: Int): List<TadTourEntryRecord> {
-        return dsl.selectFrom(Tables.TAD_TOUR_ENTRY)
-                .where(Tables.TAD_TOUR_ENTRY.TOUR_ID.eq(id))
-                .orderBy(Tables.TAD_TOUR_ENTRY.POSITION, Tables.TAD_TOUR_ENTRY.ID)
+        return dsl.selectFrom(TAD_TOUR_ENTRY)
+                .where(TAD_TOUR_ENTRY.TOUR_ID.eq(id))
+                .orderBy(TAD_TOUR_ENTRY.POSITION, TAD_TOUR_ENTRY.ID)
                 .toList()
     }
 
     /**
-     * Delete tour
-     * @param id Tour id
+     * Delete tour(s)
+     * @param ids Tour ids
      */
-    fun delete(id: Int) {
-        dsl.transaction { _ ->
-            dsl.deleteFrom(Tables.TAD_TOUR_ENTRY)
-                    .where(Tables.TAD_TOUR_ENTRY.TOUR_ID.eq(id))
-                    .execute()
+    fun delete(ids: List<Int>) {
+        if (ids.count() > 0) {
+            dsl.transaction { _ ->
+                dsl.deleteFrom(TAD_TOUR_ENTRY)
+                        .where(TAD_TOUR_ENTRY.TOUR_ID.`in`(ids))
+                        .execute()
 
-            dsl.deleteFrom(Tables.TAD_TOUR)
-                    .where(Tables.TAD_TOUR.ID.eq(id))
-                    .execute()
+                dsl.deleteFrom(TAD_TOUR)
+                        .where(TAD_TOUR.ID.`in`(ids))
+                        .execute()
+            }
         }
+    }
+
+    /**
+     * Delete tour(s) by station
+     * @param stationNo Station no
+     */
+    fun deleteByStation(stationNo: Int) {
+        this.delete(dsl.selectFrom(TAD_TOUR)
+                .where(TAD_TOUR.STATION_NO.eq(stationNo))
+                .fetch(TAD_TOUR.ID))
     }
 }
