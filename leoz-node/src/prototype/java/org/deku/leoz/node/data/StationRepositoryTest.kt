@@ -1,17 +1,13 @@
 package org.deku.leoz.node.data
 
-import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.DataTestConfiguration
-import org.deku.leoz.node.data.repository.master.StationRepository
+import org.deku.leoz.node.data.repository.StationRepository
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.PrototypeTest
-import sx.junit.StandardTest
 import javax.inject.Inject
 
 /**

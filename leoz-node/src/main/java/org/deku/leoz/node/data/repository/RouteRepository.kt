@@ -1,4 +1,4 @@
-package org.deku.leoz.node.data.repository.master
+package org.deku.leoz.node.data.repository
 
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.Param
@@ -10,9 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.QueryHints
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import sx.jpa.NamedQuery
-import sx.time.toTimestamp
 import java.sql.Timestamp
-import java.util.*
 import javax.inject.Inject
 import javax.persistence.EntityManager
 import javax.persistence.QueryHint

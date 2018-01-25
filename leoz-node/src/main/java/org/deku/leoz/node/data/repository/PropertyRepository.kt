@@ -1,4 +1,4 @@
-package org.deku.leoz.node.data.repository.system
+package org.deku.leoz.node.data.repository
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper

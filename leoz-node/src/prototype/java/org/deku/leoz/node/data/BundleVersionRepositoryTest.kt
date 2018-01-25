@@ -2,7 +2,7 @@ package org.deku.leoz.node.data
 
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.data.jpa.MstBundleVersion
-import org.deku.leoz.node.data.repository.master.BundleVersionRepository
+import org.deku.leoz.node.data.repository.BundleVersionRepository
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith

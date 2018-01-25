@@ -6,6 +6,9 @@ import org.deku.leoz.model.AdditionalInfo
 import org.deku.leoz.model.Event
 import org.deku.leoz.model.Reason
 import org.deku.leoz.node.Storage
+import org.deku.leoz.node.data.repository.CountryRepository
+import org.deku.leoz.node.data.repository.CountryRepositoryImpl
+import org.deku.leoz.node.data.repository.RouteRepository
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -20,7 +23,6 @@ import javax.inject.Inject
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
-import java.util.Base64
 
 @Category(StandardTest::class)
 @RunWith(SpringRunner::class)
@@ -39,9 +41,9 @@ import java.util.Base64
         org.deku.leoz.node.Storage::class,
         org.deku.leoz.central.service.internal.ParcelProcessingService::class,
         org.deku.leoz.central.service.internal.ConfigurationService::class,
-        org.deku.leoz.node.data.repository.master.RouteRepository::class,
-        org.deku.leoz.node.data.repository.master.CountryRepository::class,
-        org.deku.leoz.node.data.repository.master.CountryRepositoryImpl::class
+        RouteRepository::class,
+        CountryRepository::class,
+        CountryRepositoryImpl::class
 ))
 class ParcelServiceTest {
     @Inject

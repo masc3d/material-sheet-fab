@@ -1,4 +1,4 @@
-package org.deku.leoz.node.data.repository.master
+package org.deku.leoz.node.data.repository
 
 import com.google.common.collect.Lists
 import org.deku.leoz.node.data.jpa.*

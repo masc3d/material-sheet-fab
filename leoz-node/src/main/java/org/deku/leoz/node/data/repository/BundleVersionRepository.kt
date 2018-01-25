@@ -1,4 +1,4 @@
-package org.deku.leoz.node.data.repository.master
+package org.deku.leoz.node.data.repository
 
 import org.deku.leoz.node.data.jpa.MstBundleVersion
 import org.springframework.data.jpa.repository.JpaRepository

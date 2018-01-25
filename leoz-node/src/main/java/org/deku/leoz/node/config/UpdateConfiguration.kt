@@ -4,7 +4,7 @@ import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
-import org.deku.leoz.node.data.repository.system.*
+import org.deku.leoz.node.data.repository.*
 import org.deku.leoz.node.service.internal.AuthorizationClientService
 import sx.rs.client.RestClient
 import org.deku.leoz.service.internal.BundleServiceV2

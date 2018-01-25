@@ -2,15 +2,12 @@ package org.deku.leoz.node.data
 
 import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
-import com.querydsl.sql.Configuration
-import com.querydsl.sql.H2Templates
-import com.querydsl.sql.SQLQueryFactory
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstRoute
-import org.deku.leoz.node.data.repository.master.RouteRepository
+import org.deku.leoz.node.data.repository.RouteRepository
 import org.deku.leoz.node.data.jooq.Tables
 import org.eclipse.persistence.config.HintValues
 import org.eclipse.persistence.config.QueryHints
@@ -28,7 +25,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
 import sx.junit.PrototypeTest
-import sx.time.toTimestamp
 import java.sql.Timestamp
 import java.util.*
 import java.util.concurrent.Executors

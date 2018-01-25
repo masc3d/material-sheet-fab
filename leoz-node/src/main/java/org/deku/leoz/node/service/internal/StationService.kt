@@ -2,8 +2,8 @@ package org.deku.leoz.node.service.internal
 
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstStation
-import org.deku.leoz.node.data.repository.master.DebitorStationRepository
-import org.deku.leoz.node.data.repository.master.StationRepository
+import org.deku.leoz.node.data.repository.DebitorStationRepository
+import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation

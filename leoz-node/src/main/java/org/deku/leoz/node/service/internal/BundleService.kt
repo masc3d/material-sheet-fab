@@ -4,7 +4,7 @@ import io.swagger.annotations.Api
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
-import org.deku.leoz.node.data.repository.master.BundleVersionRepository
+import org.deku.leoz.node.data.repository.BundleVersionRepository
 import sx.rs.RestProblem
 import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo

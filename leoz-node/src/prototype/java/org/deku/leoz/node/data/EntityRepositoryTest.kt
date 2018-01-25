@@ -3,7 +3,6 @@ package org.deku.leoz.node.data
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.data.jpa.TadNodeGeoposition
 import org.deku.leoz.node.data.repository.EntityRepository
-import org.deku.leoz.node.data.repository.master.RouteRepository
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
