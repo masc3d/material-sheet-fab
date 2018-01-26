@@ -147,7 +147,7 @@ class SmartlaneBridge {
                         val stops = route.deliveries
                                 .sortedBy { it.orderindex }
                                 .map { delivery ->
-                                    tour.stops.first { it.id == delivery.customId.toInt() }
+                                    tour.stops.first { it.id == delivery.customId.toLong() }
                                 }
 
                         val orders = stops

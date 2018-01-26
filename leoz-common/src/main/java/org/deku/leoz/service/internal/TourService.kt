@@ -40,11 +40,11 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
-            debitorId: Int?,
+            debitorId: Long?,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
-            stationNo: Int?,
+            stationNo: Long?,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
-            userId: Int?
+            userId: Long?
     ): List<Tour>
 
     @GET
@@ -52,7 +52,7 @@ interface TourServiceV1 {
     @ApiOperation(value = "Get tour by id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getById(
             @PathParam(ID) @ApiParam(value = "Tour id", required = true)
-            id: Int
+            id: Long
     ): Tour
 
     @GET
@@ -68,7 +68,7 @@ interface TourServiceV1 {
     @ApiOperation(value = "Get (current) tour for a user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getByUser(
             @PathParam(USER_ID) @ApiParam(value = "User id")
-            userId: Int
+            userId: Long
     ): Tour
 
     @POST
@@ -78,7 +78,7 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun create(
             @ApiParam(value = "Source delivery list id(s)")
-            deliverylistIds: List<Int>
+            deliverylistIds: List<Long>
     ): List<Tour>
 
     @DELETE
@@ -87,11 +87,11 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun delete(
             @QueryParam(ID) @ApiParam(value = "Tour id(s)", required = false)
-            ids: List<Int>,
+            ids: List<Long>,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
-            userId: Int? = null,
+            userId: Long? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
-            stationNo: Int? = null
+            stationNo: Long? = null
     )
 
     @PATCH
@@ -100,7 +100,7 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun optimize(
             @QueryParam(ID) @ApiParam(value = "Tour id(s)")
-            ids: List<Int>,
+            ids: List<Long>,
             @QueryParam(WAIT_FOR_COMPLETION) @ApiParam(value = "Wait for optimization completion", example = "false")
             waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
@@ -114,7 +114,7 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun optimize(
             @PathParam(ID) @ApiParam(value = "Tour id")
-            id: Int,
+            id: Long,
             @QueryParam(WAIT_FOR_COMPLETION) @ApiParam(value = "Wait for optimization completion", example = "false")
             waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
@@ -132,7 +132,7 @@ interface TourServiceV1 {
     fun status(
             @QueryParam(STATION_NO)
             @ApiParam(value = "The station no to retrieve tour status updates for")
-            stationNo: Int,
+            stationNo: Long,
             @Context sink: SseEventSink,
             @Context sse: Sse
     )
@@ -156,15 +156,15 @@ interface TourServiceV1 {
     @ApiModel(description = "Tour")
     data class Tour(
             @ApiModelProperty(position = 10, required = false, value = "Tour id")
-            var id: Int? = null,
+            var id: Long? = null,
             @ApiModelProperty(position = 20, required = false, value = "Node this tour belongs to")
             var nodeUid: String? = null,
             @ApiModelProperty(position = 30, required = false, value = "User this tour belongs to")
-            var userId: Int? = null,
+            var userId: Long? = null,
             @ApiModelProperty(position = 40, required = false, value = "Station this tour belongs to")
-            var stationNo: Int? = null,
+            var stationNo: Long? = null,
             @ApiModelProperty(position = 50, required = false, value = "Delivery list this tour refers to")
-            var deliverylistId: Int? = null,
+            var deliverylistId: Long? = null,
             @ApiModelProperty(position = 60, required = true, value = "Orders referenced by this tour")
             var orders: List<OrderService.Order> = listOf(),
             @ApiModelProperty(position = 70, required = true, value = "Tour stop list")
@@ -201,7 +201,7 @@ interface TourServiceV1 {
              * The task id is optional when updating tours, as the entire tour will be replaced
              */
             @ApiModelProperty(position = 10, required = false, value = "Stop task id")
-            var id: Int? = null,
+            var id: Long? = null,
             @ApiModelProperty(position = 20, required = true, value = "Order id this task refers to")
             var orderId: Long = 0,
             @ApiModelProperty(position = 30, required = true, value = "Task type", example = "DELIVERY")
@@ -345,11 +345,11 @@ interface TourServiceV1 {
     @Serializable(0xdf5d24c36e52ac)
     data class TourOptimizationStatus(
             /** Tour id */
-            var id: Int = 0,
+            var id: Long = 0,
             /** Optimization progress */
             var inProgress: Boolean = false
     )
 }
 
 /** Stop id. Refers to the first task its tour entry (task) id */
-val TourServiceV1.Stop.id: Int? get() = this.tasks.firstOrNull()?.id
+val TourServiceV1.Stop.id: Long? get() = this.tasks.firstOrNull()?.id

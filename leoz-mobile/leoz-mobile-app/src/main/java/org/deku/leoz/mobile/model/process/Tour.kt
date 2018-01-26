@@ -70,7 +70,7 @@ class Tour : CompositeDisposableSupplier {
                     this.mqttEndpoints.central.main.channel().send(
                             TourServiceV1.TourUpdate(tour = TourServiceV1.Tour(
                                     nodeUid = identity.uid.value,
-                                    userId = login.authenticatedUser?.id ?: 0,
+                                    userId = login.authenticatedUser?.id?.toLong() ?: 0,
                                     stops = parcels.map { stop ->
                                         TourServiceV1.Stop(
                                                 tasks = stop.tasks.map {

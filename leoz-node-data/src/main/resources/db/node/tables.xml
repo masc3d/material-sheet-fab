@@ -14,6 +14,8 @@
     <table name="mst_station_sector" uid="0x0d1eaebfd81899" />
     <table name="lcl_property" uid="0xaa946790064006" />
     <table name="tad_node_geoposition" uid="0xaa946790064007" />
+    <table name="tad_tour" uid="0x08b6aa2cdefbb2" />
+    <table name="tad_tour_entry" uid="0x6c32a669a4a424" />
     <table name="mst_debitor_station" uid="0xaa946790064008" />
     <table name="mst_debitor" uid="0xaa946790064009" />
 </tables>

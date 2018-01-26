@@ -1,5 +1,8 @@
 package org.deku.leoz.central.service.internal
 
+import com.querydsl.core.types.dsl.Expressions.TRUE
+import com.querydsl.jpa.impl.JPADeleteClause
+import com.querydsl.jpa.impl.JPAQuery
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -7,17 +10,20 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
-import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR
-import org.deku.leoz.central.data.jooq.mobile.Tables.TAD_TOUR_ENTRY
-import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourEntryRecord
-import org.deku.leoz.central.data.jooq.mobile.tables.records.TadTourRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.model.*
-import org.deku.leoz.service.internal.TourServiceV1.*
+import org.deku.leoz.model.TaskType
+import org.deku.leoz.node.data.jpa.QTadTour.tadTour
+import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
+import org.deku.leoz.node.data.jpa.TadTour
+import org.deku.leoz.node.data.jpa.TadTourEntry
+import org.deku.leoz.node.data.repository.TadTourEntryRepository
+import org.deku.leoz.node.data.repository.TadTourRepository
+import org.deku.leoz.node.data.transaction
 import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.internal.TourServiceV1
+import org.deku.leoz.service.internal.TourServiceV1.*
 import org.deku.leoz.service.internal.id
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
@@ -29,12 +35,15 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
 import sx.rs.RestProblem
-import sx.time.*
+import sx.time.toTimestamp
+import sx.util.toNullable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
+import javax.persistence.EntityManagerFactory
+import javax.persistence.PersistenceUnit
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.core.MediaType
@@ -61,15 +70,23 @@ class TourServiceV1
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
 
+    @PersistenceUnit(name = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
+    private lateinit var entityManagerFactory: EntityManagerFactory
+
     // Repositories
     @Inject
     private lateinit var deliverylistRepository: JooqDeliveryListRepository
-    @Inject
-    private lateinit var tourRepository: JooqTourRepository
+    //    @Inject
+//    private lateinit var tourRepository: JooqTourRepository
     @Inject
     private lateinit var userRepository: JooqUserRepository
     @Inject
     private lateinit var nodeRepository: JooqNodeRepository
+
+    @Inject
+    private lateinit var tourRepo: TadTourRepository
+    @Inject
+    private lateinit var tourEntryRepo: TadTourEntryRepository
 
     @Inject
     private lateinit var orderService: OrderService
@@ -83,21 +100,30 @@ class TourServiceV1
      * @param tours Tours to create
      * @return Ids of created tours
      */
-    fun create(tours: Iterable<Tour>): List<Int> {
-        return dsl.transactionResult { _ ->
+    fun create(tours: Iterable<Tour>): List<Long> {
+        val em = this.entityManagerFactory.createEntityManager()
+
+        val now = Date()
+
+        return em.transaction {
             tours.map { tour ->
                 // Create new one if it doesn't exist
-                val tourRecord = dsl.newRecord(TAD_TOUR).also {
+                val tourRecord = TadTour().also {
                     it.userId = tour.userId
                     it.stationNo = tour.stationNo
                     it.deliverylistId = tour.deliverylistId
                     it.optimized = tour.optimized?.toTimestamp()
-                    it.store()
+                    it.uid = UUID.randomUUID().toString()
+                    it.timestamp = now.toTimestamp()
+
+                    em.persist(it)
+                    em.flush()
                 }
 
                 tour.stops.forEachIndexed { index, stop ->
                     stop.tasks.forEach { task ->
-                        dsl.newRecord(TAD_TOUR_ENTRY).also {
+
+                        TadTourEntry().also {
                             it.tourId = tourRecord.id
                             it.position = (index + 1).toDouble()
                             it.orderId = task.orderId
@@ -105,12 +131,15 @@ class TourServiceV1
                                 Task.Type.DELIVERY -> TaskType.DELIVERY.value
                                 Task.Type.PICKUP -> TaskType.DELIVERY.value
                             }
-                            it.store()
+                            it.uid = UUID.randomUUID().toString()
+                            it.timestamp = now.toTimestamp()
+
+                            em.persist(it)
                         }
                     }
                 }
 
-                tourRecord.id
+                tourRecord.id.toLong()
             }
         }
     }
@@ -120,11 +149,13 @@ class TourServiceV1
      * @param tour Optimized tour
      */
     fun updateFromOptimizedTour(tour: Tour) {
-        dsl.transaction { _ ->
+        val em = this.entityManagerFactory.createEntityManager()
+
+        em.transaction {
             val tourId = tour.id ?: throw IllegalArgumentException("Tour id cannot be null")
 
             val now = Date().toTimestamp()
-            val entryRecords = tourRepository.findEntriesById(tourId)
+            val entryRecords = tourEntryRepo.findAll(tadTourEntry.tourId.eq(tourId))
 
             tour.stops
                     .forEachIndexed { index, stop ->
@@ -139,17 +170,22 @@ class TourServiceV1
                                 .filter { it.position == entryRecord.position }
                                 .map { it.id }
 
-                        dsl.update(TAD_TOUR_ENTRY)
-                                .set(TAD_TOUR_ENTRY.POSITION, newPosition)
-                                .set(TAD_TOUR_ENTRY.TIMESTAMP, now)
-                                .where(TAD_TOUR_ENTRY.ID.`in`(entryIds))
-                                .execute()
+                        // TODO debug (modification of entry records must not modify iterated results)
+
+                        tourEntryRepo.findAll(tadTourEntry.id.`in`(entryIds))
+                                .forEach {
+                                    it.position
+                                    it.timestamp = now
+
+                                    em.merge(it)
+                                }
                     }
 
-            dsl.update(TAD_TOUR)
-                    .set(TAD_TOUR.OPTIMIZED, now)
-                    .where(TAD_TOUR.ID.eq(tourId))
-                    .execute()
+            tourRepo.findById(tourId).get().also {
+                it.optimized = now
+
+                em.merge(it)
+            }
         }
     }
 
@@ -158,36 +194,34 @@ class TourServiceV1
      * Get tours
      */
     override fun get(
-            debitorId: Int?,
-            stationNo: Int?,
-            userId: Int?
+            debitorId: Long?,
+            stationNo: Long?,
+            userId: Long?
     ): List<Tour> {
-        val tourRecords = dsl
-                .selectFrom(TAD_TOUR)
-                .where()
+        val tourRecords = this.tourRepo.findAll(TRUE
                 .let {
                     when {
-                        debitorId != null -> it.and(TAD_TOUR.USER_ID.`in`(
-                                userRepository.findUserIdsByDebitor(debitorId)
+                        debitorId != null -> it.and(tadTour.userId.`in`(
+                                userRepository.findUserIdsByDebitor(debitorId.toInt()).map { it.toLong() }
                         ))
                         else -> it
                     }
                 }
                 .let {
                     when {
-                        stationNo != null -> it.and(TAD_TOUR.STATION_NO.eq(stationNo))
+                        stationNo != null -> it.and(tadTour.stationNo.eq(stationNo))
                         else -> it
                     }
                 }
                 .let {
                     when {
-                        userId != null -> it.and(TAD_TOUR.USER_ID.eq(userId))
+                        userId != null -> it.and(tadTour.userId.eq(userId))
                         else -> it
                     }
                 }
-                .fetchArray()
+        )
                 .also {
-                    if (it.size == 0) {
+                    if (it.count() == 0) {
                         // No tour records in selection
                         throw NoSuchElementException()
                     }
@@ -199,11 +233,11 @@ class TourServiceV1
                 .where(MST_NODE.NODE_ID.`in`(
                         tourRecords.mapNotNull { it.nodeId }
                 ))
-                .associate { Pair(it.value1(), it.value2()) }
+                .associate { Pair(it.value1().toLong(), it.value2()) }
 
-        val tourEntriesByTourId = tourRepository
-                .findEntriesByIds(tourRecords.map { it.id })
-                .groupBy { it.tourId }
+        val tourEntriesByTourId =
+                tourEntryRepo.findAll(tadTourEntry.tourId.`in`(tourRecords.map { it.id }))
+                        .groupBy { it.tourId }
 
         return tourRecords.map {
             it.toTour(
@@ -213,16 +247,18 @@ class TourServiceV1
         }
     }
 
+
     /**
      * Get tour by id
      */
-    override fun getById(id: Int): Tour {
-        val tourRecord = tourRepository.findById(id)
+    override fun getById(id: Long): Tour {
+        val tourRecord = tourRepo.findById(id)
+                .toNullable()
                 ?: throw NoSuchElementException("No tour with id [${id}]")
 
         val nodeUid = tourRecord.nodeId?.let {
             dsl.selectFrom(MST_NODE)
-                    .fetchUidById(tourRecord.nodeId)
+                    .fetchUidById(tourRecord.nodeId.toInt())
                     ?: throw NoSuchElementException("No node uid for id [${tourRecord.nodeId}]")
         }
 
@@ -236,7 +272,9 @@ class TourServiceV1
         val nodeId = this.nodeRepository.findByKeyStartingWith(nodeUid)?.nodeId
                 ?: throw NoSuchElementException("Unknown node uid ${nodeUid}")
 
-        val tourRecord = tourRepository.findByNodeId(nodeId)
+        val tourRecord = tourRepo
+                .findOne(tadTour.nodeId.eq(nodeId.toLong()))
+                .toNullable()
                 ?: throw NoSuchElementException()
 
         return tourRecord.toTour(nodeUid)
@@ -245,25 +283,48 @@ class TourServiceV1
     /**
      * Get the (current) tour for a user
      */
-    override fun getByUser(userId: Int): Tour {
-        val tourRecord = tourRepository.findLatestByUserId(userId)
+    override fun getByUser(userId: Long): Tour {
+        val em = this.entityManagerFactory.createEntityManager()
+
+        // Get latest tour for user
+        val tourRecord = JPAQuery<TadTour>(em)
+                .from(tadTour)
+                .where(tadTour.userId.eq(userId))
+                .orderBy(tadTour.timestamp.desc())
+                .fetchFirst()
                 ?: throw NoSuchElementException("No assignable tour for user [${userId}]")
 
         return tourRecord.toTour()
     }
 
     override fun delete(
-            ids: List<Int>,
-            userId: Int?,
-            stationNo: Int?) {
-        this.tourRepository.delete(ids)
+            ids: List<Long>,
+            userId: Long?,
+            stationNo: Long?) {
 
-        stationNo?.also {
-            this.tourRepository.deleteByStation(it)
-        }
+        val em = this.entityManagerFactory.createEntityManager()
 
-        userId?.also {
-            this.tourRepository.deleteByUser(it)
+        em.transaction {
+            ids
+                    .plus(stationNo?.let {
+                        JPAQuery<TadTour>(em)
+                                .select(tadTour.id)
+                                .where(tadTour.stationNo.eq(it))
+                                .fetch()
+                    } ?: listOf())
+                    .plus(userId?.let {
+                        JPAQuery<TadTour>(em)
+                                .select(tadTour.id)
+                                .where(tadTour.userId.eq(it))
+                                .fetch()
+                    } ?: listOf())
+                    .also {
+                        if (it.count() > 0) {
+                            JPADeleteClause(em, tadTour)
+                                    .where(tadTour.id.`in`(it.distinct()))
+                                    .execute()
+                        }
+                    }
         }
     }
 
@@ -271,12 +332,12 @@ class TourServiceV1
      * Optimize tours
      */
     override fun optimize(
-            ids: List<Int>,
+            ids: List<Long>,
             waitForCompletion: Boolean,
             options: TourOptimizationOptions,
             response: AsyncResponse) {
 
-        data class Optimization(val tourId: Int, val result: List<Tour>)
+        data class Optimization(val tourId: Long, val result: List<Tour>)
 
         try {
             log.info("Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] ")
@@ -354,7 +415,7 @@ class TourServiceV1
      * @param response Asynchronous response
      */
     override fun optimize(
-            id: Int,
+            id: Long,
             waitForCompletion: Boolean,
             options: TourOptimizationOptions,
             response: AsyncResponse) {
@@ -366,14 +427,15 @@ class TourServiceV1
                 response = response)
     }
 
-    override fun status(stationNo: Int, sink: SseEventSink, sse: Sse) {
+    override fun status(stationNo: Long, sink: SseEventSink, sse: Sse) {
         var subscription: Disposable? = null
 
-        //this.stationRepository.findById(stationId)
+        val em = this.entityManagerFactory.createEntityManager()
 
-        val tourIds = dsl.selectFrom(TAD_TOUR)
-                .where(TAD_TOUR.STATION_NO.eq(stationNo))
-                .fetch(TAD_TOUR.ID)
+        val tourIds = JPAQuery<TadTour>(em)
+                .select(tadTour.id)
+                .where(tadTour.stationNo.eq(stationNo))
+                .fetch()
 
         // The status request uuid
         val uuid = "${UUID.randomUUID()}"
@@ -476,10 +538,11 @@ class TourServiceV1
             throw IllegalArgumentException("Multiple vehicles are not supported when " +
                     "optimizing a single (node related) tour")
 
-        val tourRecord = tourRepository.findByNodeId(nodeRecord.nodeId)
+        val tourRecord = tourRepo.findOne(tadTour.nodeId.eq(nodeRecord.nodeId.toLong()))
+                .toNullable()
                 ?: throw NoSuchElementException("No tour for this node")
 
-        val tour = this.getById(tourRecord.id)
+        val tour = this.getById(tourRecord.id.toLong())
 
         /** Handle error response on message based requests (nodeRequestUid was provided) */
         fun handleErrorResponse(error: TourOptimizationResult.ErrorType) {
@@ -525,49 +588,54 @@ class TourServiceV1
         }
     }
 
-    override fun create(deliverylistIds: List<Int>): List<Tour> {
-        val dlRecords = deliverylistRepository.findByIds(
-                deliverylistIds.map { it.toLong() }
-        )
+    override fun create(deliverylistIds: List<Long>): List<Tour> {
+        val dlRecords = deliverylistRepository
+                .findByIds(deliverylistIds)
 
-        dlRecords.map { it.id.toInt() }.let { deliverylistIds.subtract(it) }.also { missing ->
+        dlRecords.map { it.id.toLong() }.let { deliverylistIds.subtract(it) }.also { missing ->
             if (missing.count() > 0)
                 throw RestProblem(
                         status = Status.NOT_FOUND,
                         detail = "One or more delivery lists could not be found [${missing.joinToString(", ")}]")
         }
 
-        val dlDetailRecordsById = deliverylistRepository.findDetailsByIds(
-                deliverylistIds.map { it.toLong() }
-        )
+        val dlDetailRecordsById = deliverylistRepository
+                .findDetailsByIds(deliverylistIds)
                 .groupBy { it.id }
 
         val timestamp = Date().toTimestamp()
 
+        val em = this.entityManagerFactory.createEntityManager()
+
         // Create tour/entries from delivery list
-        val tours = dsl.transactionResult { _ ->
+        val tours = em.transaction {
             dlRecords.map { dlRecord ->
                 // Create new tour
-                val tourRecord = dsl.newRecord(TAD_TOUR).also {
+                val tourRecord = TadTour().also {
                     it.nodeId = null
                     it.userId = null
-                    it.stationNo = dlRecord.deliveryStation.toInt()
-                    it.deliverylistId = dlRecord.id.toInt()
+                    it.stationNo = dlRecord.deliveryStation.toLong()
+                    it.deliverylistId = dlRecord.id.toLong()
+                    it.uid = UUID.randomUUID().toString()
                     it.timestamp = timestamp
-                    it.store()
+
+                    em.persist(it)
+                    em.flush()
                 }
 
                 val dlDetailRecords = dlDetailRecordsById.getValue(dlRecord.id)
 
                 // Transform delivery list detail to tour entry record
                 val tourEntryRecords = dlDetailRecords.mapIndexed { index, dlDetailRecord ->
-                    dsl.newRecord(TAD_TOUR_ENTRY).also {
+                    TadTourEntry().also {
                         it.tourId = tourRecord.id
                         it.orderId = dlDetailRecord.orderId.toLong()
                         it.orderTaskType = TaskType.valueOf(dlDetailRecord.stoptype).value
                         it.position = (index + 1).toDouble()
+                        it.uid = UUID.randomUUID().toString()
                         it.timestamp = timestamp
-                        it.store()
+
+                        em.persist(it)
                     }
                 }
 
@@ -588,7 +656,7 @@ class TourServiceV1
      */
     inner class Optimizations : Iterable<TourOptimizationStatus> {
         /** Holds all current optimizations (by tour id) */
-        private val byId = ConcurrentHashMap<Int, TourOptimizationStatus>()
+        private val byId = ConcurrentHashMap<Long, TourOptimizationStatus>()
 
         private val updatedSubject = PublishSubject.create<TourOptimizationStatus>()
         /** Update notifications */
@@ -602,7 +670,7 @@ class TourServiceV1
          * Should be called when tour optimization is started
          * @param tourRecord Tour record
          */
-        fun onStart(id: Int) {
+        fun onStart(id: Long) {
             TourOptimizationStatus(id = id, inProgress = true).also { status ->
                 this.byId.set(id, status)
                 this.updatedSubject.onNext(status)
@@ -613,7 +681,7 @@ class TourServiceV1
          * Should be called when tour optimization finishes
          * @param tourRecord Tour record
          */
-        fun onFinish(id: Int) {
+        fun onFinish(id: Long) {
             // TODO: emit errors
             TourOptimizationStatus(id = id, inProgress = false).also { status ->
                 this.byId.remove(id)
@@ -666,33 +734,29 @@ class TourServiceV1
     //endregion
 
     //region Transformations
-    private fun Iterable<TadTourRecord>.toTours(): List<Tour> {
-        TODO("not implemented")
-    }
-
-    /**
-     * Transform tour/node record into service entity
-     * @param nodeUid OPTIONAL node record referring to this tour. If not provided it will be looked up.
-     * @param tourEntryRecordsByTourId OPTIONAL tour entry record map for fast lookups
-     */
-    private fun TadTourRecord.toTour(
+    private fun TadTour.toTour(
             nodeUid: String? = null,
-            tourEntryRecordsByTourId: Map<Int, List<TadTourEntryRecord>>? = null): Tour {
+            tourEntryRecordsByTourId: Map<Long, List<TadTourEntry>>? = null): Tour {
         val tourRecord = this
 
         @Suppress("NAME_SHADOWING")
         val nodeUid = this.nodeId?.let {
             nodeUid ?: dsl.select(MST_NODE.KEY)
                     .from(MST_NODE)
-                    .where(MST_NODE.NODE_ID.eq(tourRecord.nodeId))
+                    .where(MST_NODE.NODE_ID.eq(tourRecord.nodeId.toInt()))
                     .fetchOne().value1()
         }
 
         // Fetch tour entries. Equal positions represent stop tasks in order of PK
         val tourEntryRecords = if (tourEntryRecordsByTourId != null)
-            tourEntryRecordsByTourId.get(tourRecord.id) ?: listOf()
-        else
-            tourRepository.findEntriesById(tourRecord.id)
+            tourEntryRecordsByTourId.get(
+                    tourRecord.id
+            ) ?: listOf()
+        else {
+            tourEntryRepo.findAll(
+                    tadTourEntry.tourId.eq(tourRecord.id)
+            )
+        }
 
         val orders = this@TourServiceV1.orderService.getByIds(
                 tourEntryRecords.map { it.orderId }.distinct()
@@ -814,30 +878,34 @@ class TourServiceV1
                     return
                 }
 
+        val em = this.entityManagerFactory.createEntityManager()
+
         // Upsert stop list
-        dsl.transaction { _ ->
+        em.transaction {
             // Check for existing tour
-            val tourRecord = dsl.fetchOne(
-                    TAD_TOUR,
-                    TAD_TOUR.NODE_ID.eq(nodeId)
-            ) ?:
-            // Create new one if it doesn't exist
-            dsl.newRecord(TAD_TOUR).also {
-                it.userId = tour.userId
-                it.nodeId = nodeId
-                it.timestamp = message.timestamp.toTimestamp()
-                it.store()
-            }
+            val tourRecord = this.tourRepo.findOne(tadTour.nodeId.eq(nodeId.toLong()))
+                    .toNullable()
+                    ?:
+                    // Create new one if it doesn't exist
+                    TadTour().also {
+                        it.userId = tour.userId
+                        it.nodeId = nodeId.toLong()
+                        it.uid = UUID.randomUUID().toString()
+                        it.timestamp = message.timestamp.toTimestamp()
+
+                        em.persist(it)
+                        em.flush()
+                    }
 
             // Recreate tour entries from update
-            dsl.delete(TAD_TOUR_ENTRY)
-                    .where(TAD_TOUR_ENTRY.TOUR_ID.eq(tourRecord.id))
+            JPADeleteClause(em, tadTourEntry)
+                    .where(tadTourEntry.tourId.eq(tourRecord.id))
                     .execute()
 
             tour.stops
                     .forEachIndexed { index, stop ->
                         stop.tasks.forEach { task ->
-                            dsl.newRecord(TAD_TOUR_ENTRY).also {
+                            TadTourEntry().also {
                                 it.tourId = tourRecord.id
                                 it.position = (index + 1).toDouble()
                                 it.orderId = task.orderId
@@ -845,7 +913,10 @@ class TourServiceV1
                                     Task.Type.DELIVERY -> TaskType.DELIVERY.value
                                     Task.Type.PICKUP -> TaskType.DELIVERY.value
                                 }
-                                it.store()
+                                it.uid = UUID.randomUUID().toString()
+                                it.timestamp = message.timestamp.toTimestamp()
+
+                                em.persist(it)
                             }
                         }
                     }
