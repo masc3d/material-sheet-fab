@@ -1,6 +1,5 @@
-package org.deku.leoz.node.data
+package org.deku.leoz.node.data.jpa
 
-import com.querydsl.jpa.impl.JPAQuery
 import sx.annotationOfType
 import javax.persistence.EntityManager
 import javax.persistence.Table

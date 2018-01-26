@@ -253,8 +253,6 @@ dependencies {
             "io.socket:socket.io-client:$v_socketio",
 
             //region EVALUATION
-            "org.jinq:jinq-jpa:+",
-
             "com.jcraft:jsch:+",
 
             "org.aspectj:aspectjrt:$v_aspectj",

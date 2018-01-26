@@ -1,11 +1,9 @@
 package org.deku.leoz.node.service.internal.sync
 
-import org.deku.leoz.node.data.PersistenceUtil
+import org.deku.leoz.node.data.jpa.transaction
 import org.deku.leoz.node.data.repository.EntityRepository
-import org.deku.leoz.node.data.truncate
+import org.deku.leoz.node.data.jpa.truncate
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
-import org.slf4j.event.Level
-import sx.Stopwatch
 import sx.log.slf4j.debug
 import sx.log.slf4j.info
 import sx.mq.MqChannel
@@ -16,7 +14,6 @@ import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import java.util.concurrent.atomic.AtomicLong
 import javax.persistence.EntityManagerFactory
 
 /**
@@ -87,9 +84,9 @@ class EntityConsumer
                 val er = EntityRepository(em, entityType)
 
                 if (clean) {
-                    PersistenceUtil.transaction(em, {
+                    em.transaction {
                         em.truncate(entityType)
-                    })
+                    }
                 }
 
                 var syncId: Long? = null
@@ -104,9 +101,9 @@ class EntityConsumer
 
                 if (!er.hasSyncIdAttribute()) {
                     log.debug { lfmt("No timestamp attribute found -> removing all entities") }
-                    PersistenceUtil.transaction(em, {
+                    em.transaction {
                         em.truncate(entityType)
-                    })
+                    }
                 }
 
                 val sw = com.google.common.base.Stopwatch.createStarted()
@@ -134,7 +131,7 @@ class EntityConsumer
                             break
 
                         val emv = em!!
-                        PersistenceUtil.transaction(em) {
+                        em.transaction {
                             // Receive entities
                             var eos: Boolean
                             var lastJmsTimestamp: Long = 0

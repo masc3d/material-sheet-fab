@@ -1,6 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.node.Storage
+import org.deku.leoz.node.data.jpa.EclipseLinkCustomizer
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.PersistenceUnitProperties
 import org.eclipse.persistence.platform.database.H2Platform
@@ -232,7 +233,7 @@ open class PersistenceConfiguration {
             // Setup event listeners for all entity classes
             properties.set(
                     "${PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_}${bd.beanClassName}",
-                    org.deku.leoz.node.data.EclipseLinkCustomizer::class.java.canonicalName)
+                    EclipseLinkCustomizer::class.java.canonicalName)
         }
         //endregion
 

@@ -1,6 +1,6 @@
 package org.deku.leoz.central.service.internal.sync
 
-import org.deku.leoz.node.data.truncate
+import org.deku.leoz.node.data.jpa.truncate
 import org.jooq.Record
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier

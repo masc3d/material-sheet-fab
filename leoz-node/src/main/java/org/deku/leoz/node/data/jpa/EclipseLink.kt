@@ -1,4 +1,4 @@
-package org.deku.leoz.node.data
+package org.deku.leoz.node.data.jpa
 
 import org.eclipse.persistence.config.DescriptorCustomizer
 import org.eclipse.persistence.descriptors.ClassDescriptor

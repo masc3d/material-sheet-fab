@@ -1,10 +1,6 @@
 package org.deku.leoz.central.service.internal
 
 import com.querydsl.core.BooleanBuilder
-import com.querydsl.core.types.Expression
-import com.querydsl.core.types.dsl.BooleanExpression
-import com.querydsl.core.types.dsl.Expressions
-import com.querydsl.core.types.dsl.Expressions.TRUE
 import com.querydsl.jpa.impl.JPADeleteClause
 import com.querydsl.jpa.impl.JPAQuery
 import io.reactivex.Observable
@@ -14,7 +10,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
-import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
@@ -25,17 +20,15 @@ import org.deku.leoz.node.data.jpa.TadTour
 import org.deku.leoz.node.data.jpa.TadTourEntry
 import org.deku.leoz.node.data.repository.TadTourEntryRepository
 import org.deku.leoz.node.data.repository.TadTourRepository
-import org.deku.leoz.node.data.transaction
+import org.deku.leoz.node.data.jpa.transaction
 import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
 import org.deku.leoz.service.internal.id
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
 import org.springframework.beans.factory.annotation.Qualifier
 import org.zalando.problem.Status
-import sx.Stopwatch
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
