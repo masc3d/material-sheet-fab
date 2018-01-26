@@ -1,11 +1,10 @@
 package org.deku.leoz.smartlane.api
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
-import org.deku.leoz.smartlane.model.Address
-import org.deku.leoz.smartlane.model.Error
+import org.slf4j.LoggerFactory
+import sx.log.slf4j.trace
+import sx.rs.FlaskFilter
+import sx.rs.FlaskQuery
+import sx.rs.FlaskOperator
 import javax.ws.rs.*
 
 /**
@@ -66,4 +65,30 @@ interface InternalApi {
     @Consumes("application/json")
     @Produces("application/json")
     fun deleteRoute(@QueryParam("q") q: String)
+}
+
+private val log by lazy { LoggerFactory.getLogger(InternalApi::class.java) }
+
+fun InternalApi.deleteAddressesNotIn(ids: Iterable<Long>) {
+    val filter = FlaskFilter(
+            filters = listOf(
+                    FlaskQuery(
+                            name = "id",
+                            op = FlaskOperator.not_in,
+                            value = ids
+                    )
+            )
+    )
+
+    log.trace { filter.toJson() }
+
+    this.deleteAddress(q = filter.toJson())
+}
+
+fun InternalApi.deleteAllRoutes() {
+    this.deleteRoute(q = "{}")
+}
+
+fun InternalApi.deleteAllDeliveries() {
+    this.deleteDelivery(q = "{}")
 }

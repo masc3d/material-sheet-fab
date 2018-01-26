@@ -1,7 +1,5 @@
 package org.deku.leoz.smartlane
 
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.Address
 import org.junit.Test
@@ -9,7 +7,6 @@ import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
-import sx.rx.limit
 import java.net.URI
 
 /**
@@ -125,16 +122,8 @@ class RestApiTest {
         this.authorize()
 
         val internalApi = restClient.proxy(InternalApi::class.java)
-        val addressApi = restClient.proxy(AddressApi::class.java)
 
-        addressApi.address.objects.forEach {
-            log.trace("DELETING ADDRESS ${it.id}")
-            try {
-                internalApi.deleteAddress(it.id)
-            } catch(e: Throwable) {
-                log.error(e.message)
-            }
-        }
+        internalApi.deleteAddressesNotIn(listOf(1))
     }
 
     @Test
@@ -204,5 +193,20 @@ class RestApiTest {
         val internalApi = restClient.proxy(InternalApi::class.java)
 
         internalApi.deleteRoute("{}")
+    }
+
+    @Test
+    fun testClean() {
+        // Clean all data from smartlane container
+        this.authorize()
+
+        val internalApi = restClient.proxy(InternalApi::class.java)
+
+        internalApi.deleteAllDeliveries()
+        internalApi.deleteAllRoutes()
+        internalApi.deleteAddressesNotIn(
+                // Exclude the company/owner address id
+                listOf(1)
+        )
     }
 }
