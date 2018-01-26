@@ -1,5 +1,9 @@
 package org.deku.leoz.central.service.internal
 
+import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.types.Expression
+import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.core.types.dsl.Expressions.TRUE
 import com.querydsl.jpa.impl.JPADeleteClause
 import com.querydsl.jpa.impl.JPAQuery
@@ -79,8 +83,6 @@ class TourServiceV1
     // Repositories
     @Inject
     private lateinit var deliverylistRepository: JooqDeliveryListRepository
-    //    @Inject
-//    private lateinit var tourRepository: JooqTourRepository
     @Inject
     private lateinit var userRepository: JooqUserRepository
     @Inject
@@ -201,49 +203,55 @@ class TourServiceV1
             stationNo: Long?,
             userId: Long?
     ): List<Tour> {
-        val tourRecords = this.tourRepo.findAll(tadTour.isNotNull
-                .let {
-                    when {
-                        debitorId != null -> it.and(tadTour.userId.`in`(
-                                userRepository.findUserIdsByDebitor(debitorId.toInt()).map { it.toLong() }
-                        ))
-                        else -> it
-                    }
-                }
-                .let {
-                    when {
-                        stationNo != null -> it.and(tadTour.stationNo.eq(stationNo))
-                        else -> it
-                    }
-                }
-                .let {
-                    when {
-                        userId != null -> it.and(tadTour.userId.eq(userId))
-                        else -> it
-                    }
-                }
-        )
-                .also {
-                    if (it.count() == 0) {
-                        // No tour records in selection
-                        throw NoSuchElementException()
-                    }
-                }
+        val em = this.entityManagerFactory.createEntityManager()
+
+        val tourRecords =
+                this.tourRepo.findAll(BooleanBuilder()
+                        .let {
+                            when {
+                                debitorId != null -> it.and(tadTour.userId.`in`(
+                                        userRepository.findUserIdsByDebitor(debitorId.toInt()).map { it.toLong() }
+                                ))
+                                else -> it
+                            }
+                        }
+                        .let {
+                            when {
+                                stationNo != null -> it.and(tadTour.stationNo.eq(stationNo))
+                                else -> it
+                            }
+                        }
+                        .let {
+                            when {
+                                userId != null -> it.and(tadTour.userId.eq(userId))
+                                else -> it
+                            }
+                        }
+                )
+                        .also {
+                            if (it.count() == 0) {
+                                // No tour records in selection
+                                throw NoSuchElementException()
+                            }
+                        }
 
         // Pre-fetch relevant records
-        val nodeUidsById = dsl.select(MST_NODE.NODE_ID, MST_NODE.KEY)
-                .from(MST_NODE)
-                .where(MST_NODE.NODE_ID.`in`(
-                        tourRecords.mapNotNull { it.nodeId }
-                ))
-                .associate { Pair(it.value1().toLong(), it.value2()) }
+        val nodeUidsById =
+                dsl.select(MST_NODE.NODE_ID, MST_NODE.KEY)
+                        .from(MST_NODE)
+                        .where(MST_NODE.NODE_ID.`in`(
+                                tourRecords.mapNotNull { it.nodeId }
+                        ))
+                        .associate { Pair(it.value1().toLong(), it.value2()) }
 
-        val tourEntries = tourEntryRepo
-                .findAll(tadTourEntry.tourId.`in`(tourRecords.map { it.id }))
+        val tourEntries =
+                tourEntryRepo
+                        .findAll(tadTourEntry.tourId.`in`(tourRecords.map { it.id }))
 
-        val orders = this.orderService.getByIds(tourEntries
-                .map { it.orderId }
-                .distinct())
+        val orders =
+                this.orderService.getByIds(tourEntries
+                        .map { it.orderId }
+                        .distinct())
 
         return tourRecords.map {
             it.toTour(
@@ -253,7 +261,6 @@ class TourServiceV1
             )
         }
     }
-
 
     /**
      * Get tour by id
@@ -655,9 +662,9 @@ class TourServiceV1
 
         return tours.toList()
     }
-    //endregion
+//endregion
 
-    //region Optimization
+//region Optimization
     /**
      * Tracks optimizations and provides notifications
      */
@@ -738,7 +745,7 @@ class TourServiceV1
                     this.optimizations.onFinish(tourId)
                 }
     }
-    //endregion
+//endregion
 
     //region Transformations
     private fun TadTour.toTour(
@@ -828,7 +835,7 @@ class TourServiceV1
                         }
         )
     }
-    //endregion
+//endregion
 
     //region MQ handlers
     @MqHandler.Types(
@@ -932,5 +939,5 @@ class TourServiceV1
                     }
         }
     }
-    //endregion
+//endregion
 }
