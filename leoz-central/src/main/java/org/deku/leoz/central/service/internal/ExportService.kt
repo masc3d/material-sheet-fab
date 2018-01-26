@@ -167,8 +167,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     override fun getNewLoadinglistNo(): ExportService.Loadinglist {
         userService.get()
+        var loadlistNo: Long = 0
+        do {
+            loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 300000
+            var checklist = parcelRepository.getParcelsByLoadingList(loadlistNo)
+        } while (checklist.count() > 0)
 
-        return ExportService.Loadinglist(loadinglistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 300000)
+        return ExportService.Loadinglist(loadinglistNo = loadlistNo)
     }
 
     override fun getParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
@@ -178,7 +183,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (orders.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title =ExportService.ResponseMsg.NO_ORDERS_FOUND.value //"No orders found"
+                    title = ExportService.ResponseMsg.NO_ORDERS_FOUND.value //"No orders found"
             )
 
 
@@ -191,7 +196,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         if (allParcels.count() == 0)
             throw RestProblem(
                     status = Response.Status.NOT_FOUND,
-                    title =ExportService.ResponseMsg.NO_PARCELS_FOUND.value //"No parcels found"
+                    title = ExportService.ResponseMsg.NO_PARCELS_FOUND.value //"No parcels found"
             )
 
 
@@ -251,8 +256,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     override fun getNewBagLoadinglistNo(): ExportService.Loadinglist {
         userService.get()
-
-        return ExportService.Loadinglist(loadinglistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000)
+        var loadlistNo: Long = 0
+        do {
+            loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
+            var checklist = parcelRepository.getParcelsByLoadingList(loadlistNo)
+        } while (checklist.count() > 0)
+        return ExportService.Loadinglist(loadinglistNo = loadlistNo)
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
@@ -264,7 +273,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val backUnit = bag.unitNoBack
         backUnit ?: throw RestProblem(
                 status = Response.Status.CONFLICT,
-                title =ExportService.ResponseMsg.BAG_ID_OK_NO_BACK.value //"BagId found - no bagback-unit found"
+                title = ExportService.ResponseMsg.BAG_ID_OK_NO_BACK.value //"BagId found - no bagback-unit found"
         )
 
         if (bag.lastStation == 2 || bag.status == BagStatus.CLOSED_FROM_STATION || bag.status == BagStatus.CLOSED_FROM_HUB) {
@@ -439,7 +448,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         } else {
             throw RestProblem(
                     status = Response.Status.OK,
-                    title =ExportService.ResponseMsg.BAG_ID_OK_ALREADY_OPEN.value //"BagId found - already open"
+                    title = ExportService.ResponseMsg.BAG_ID_OK_ALREADY_OPEN.value //"BagId found - already open"
             )
         }
 
@@ -582,7 +591,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 if (bag.sealNumberRed.toString().toLong() != unSeal.value.value.toLong()) {
                     throw RestProblem(
                             status = Response.Status.CONFLICT,
-                            title =ExportService.ResponseMsg.SEAL_MISMATCH.value //"Seal number mismatch"
+                            title = ExportService.ResponseMsg.SEAL_MISMATCH.value //"Seal number mismatch"
                     )
                 }
             }
@@ -615,7 +624,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             }
         }
 
-        var title =""// "Ok"
+        var title = ""// "Ok"
         if (unitRecord.ladelistennummerd == null) {
         } else if (unitRecord.ladelistennummerd.toLong() == un.value.value.toLong()) {
             if (unitRecord.bagbelegnrc == unBack.value.value.toDouble())
@@ -990,7 +999,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
             throw RestProblem(
                     status = Response.Status.CONFLICT,
-                    title =ExportService.ResponseMsg.BAG_ID_NOT_VALID.value //"BagId not valid"
+                    title = ExportService.ResponseMsg.BAG_ID_NOT_VALID.value //"BagId not valid"
             )
 
         val bag = stationRepository.getBag(un.value.value.toLong())?.toBag()
