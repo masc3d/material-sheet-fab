@@ -241,9 +241,9 @@ class TourServiceV1
         val tourEntries = tourEntryRepo
                 .findAll(tadTourEntry.tourId.`in`(tourRecords.map { it.id }))
 
-        val orders = Stopwatch.createStarted(this, "ORDERS", Level.TRACE, {
-            this.orderService.getByIds(tourEntries.map { it.orderId }.distinct())
-        })
+        val orders = this.orderService.getByIds(tourEntries
+                .map { it.orderId }
+                .distinct())
 
         return tourRecords.map {
             it.toTour(
@@ -746,7 +746,7 @@ class TourServiceV1
             orderRecordsById: Map<Long, org.deku.leoz.service.internal.OrderService.Order>? = null,
             tourEntryRecordsByTourId: Map<Long, List<TadTourEntry>>? = null): Tour {
         val tourRecord = this
-        
+
         @Suppress("NAME_SHADOWING")
         val nodeUid = this.nodeId?.let {
             nodeUid ?: dsl.select(MST_NODE.KEY)
@@ -769,11 +769,10 @@ class TourServiceV1
         val ordersById = if (orderRecordsById != null)
             orderRecordsById
         else
-            Stopwatch.createStarted(this, "ORDERS (T)", Level.TRACE, {
-                this@TourServiceV1.orderService.getByIds(
-                        tourEntryRecords.map { it.orderId }.distinct()
-                )
-            }).associateBy { it.id }
+            this@TourServiceV1.orderService.getByIds(
+                    tourEntryRecords.map { it.orderId }.distinct()
+            )
+                    .associateBy { it.id }
 
         val orders = tourEntryRecords.map { it.orderId }.distinct().map { ordersById.getValue(it) }
 
