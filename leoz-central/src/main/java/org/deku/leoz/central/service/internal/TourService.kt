@@ -321,21 +321,27 @@ class TourServiceV1
         em.transaction {
             ids
                     .plus(stationNo?.let {
-                        JPAQuery<TadTour>(em)
+                        JPAQuery<TadTour>(em).from(tadTour)
                                 .select(tadTour.id)
                                 .where(tadTour.stationNo.eq(it))
                                 .fetch()
                     } ?: listOf())
                     .plus(userId?.let {
-                        JPAQuery<TadTour>(em)
+                        JPAQuery<TadTour>(em).from(tadTour)
                                 .select(tadTour.id)
                                 .where(tadTour.userId.eq(it))
                                 .fetch()
                     } ?: listOf())
                     .also {
                         if (it.count() > 0) {
+                            val tourIds = it.distinct()
+
+                            JPADeleteClause(em, tadTourEntry)
+                                    .where(tadTourEntry.tourId.`in`(tourIds))
+                                    .execute()
+
                             JPADeleteClause(em, tadTour)
-                                    .where(tadTour.id.`in`(it.distinct()))
+                                    .where(tadTour.id.`in`(tourIds))
                                     .execute()
                         }
                     }
