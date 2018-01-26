@@ -10,6 +10,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
@@ -27,8 +28,10 @@ import org.deku.leoz.service.internal.TourServiceV1.*
 import org.deku.leoz.service.internal.id
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 import org.springframework.beans.factory.annotation.Qualifier
 import org.zalando.problem.Status
+import sx.Stopwatch
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
@@ -198,7 +201,7 @@ class TourServiceV1
             stationNo: Long?,
             userId: Long?
     ): List<Tour> {
-        val tourRecords = this.tourRepo.findAll(TRUE
+        val tourRecords = this.tourRepo.findAll(tadTour.isNotNull
                 .let {
                     when {
                         debitorId != null -> it.and(tadTour.userId.`in`(
@@ -235,14 +238,18 @@ class TourServiceV1
                 ))
                 .associate { Pair(it.value1().toLong(), it.value2()) }
 
-        val tourEntriesByTourId =
-                tourEntryRepo.findAll(tadTourEntry.tourId.`in`(tourRecords.map { it.id }))
-                        .groupBy { it.tourId }
+        val tourEntries = tourEntryRepo
+                .findAll(tadTourEntry.tourId.`in`(tourRecords.map { it.id }))
+
+        val orders = Stopwatch.createStarted(this, "ORDERS", Level.TRACE, {
+            this.orderService.getByIds(tourEntries.map { it.orderId }.distinct())
+        })
 
         return tourRecords.map {
             it.toTour(
                     nodeUid = it.nodeId?.let { nodeId -> nodeUidsById.getValue(nodeId) },
-                    tourEntryRecordsByTourId = tourEntriesByTourId
+                    orderRecordsById = orders.associateBy { it.id },
+                    tourEntryRecordsByTourId = tourEntries.groupBy { it.tourId }
             )
         }
     }
@@ -736,9 +743,10 @@ class TourServiceV1
     //region Transformations
     private fun TadTour.toTour(
             nodeUid: String? = null,
+            orderRecordsById: Map<Long, org.deku.leoz.service.internal.OrderService.Order>? = null,
             tourEntryRecordsByTourId: Map<Long, List<TadTourEntry>>? = null): Tour {
         val tourRecord = this
-
+        
         @Suppress("NAME_SHADOWING")
         val nodeUid = this.nodeId?.let {
             nodeUid ?: dsl.select(MST_NODE.KEY)
@@ -758,13 +766,16 @@ class TourServiceV1
             )
         }
 
-        val orders = this@TourServiceV1.orderService.getByIds(
-                tourEntryRecords.map { it.orderId }.distinct()
-        )
+        val ordersById = if (orderRecordsById != null)
+            orderRecordsById
+        else
+            Stopwatch.createStarted(this, "ORDERS (T)", Level.TRACE, {
+                this@TourServiceV1.orderService.getByIds(
+                        tourEntryRecords.map { it.orderId }.distinct()
+                )
+            }).associateBy { it.id }
 
-        val ordersById = mapOf(
-                *orders.map { Pair(it.id, it) }.toTypedArray()
-        )
+        val orders = tourEntryRecords.map { it.orderId }.distinct().map { ordersById.getValue(it) }
 
         return Tour(
                 id = tourRecord.id,
