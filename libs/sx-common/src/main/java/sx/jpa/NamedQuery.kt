@@ -121,8 +121,11 @@ class NamedQuery<R, P>(
      * Creates an instance of this prepared query
      * @param block Block for conveniently setting query parameters
      */
-    fun create(block: (q: QueryParameterizer, p: P) -> Unit): QueryInstance {
-        val typedQuery = this@NamedQuery.entityManager.createNamedQuery(
+    fun create(
+            entityManager: EntityManager = this.entityManager,
+            block: (q: QueryParameterizer, p: P) -> Unit): QueryInstance {
+
+        val typedQuery = entityManager.createNamedQuery(
                 this@NamedQuery.jpql,
                 resultType)
 
