@@ -258,11 +258,7 @@ class OrderService : OrderService {
             p.isDelivered = r.deliveredStatus.toInt() == 4
         }
         p.isMissing = r.deliveredStatus.toInt() == 8 && r.lastDeliveredEventReason.toInt() == 30
-        //-> 
-        // p.isMissing = r.isDamaged
-
-        // TODO: expensive lookup per parcel! needs to be optimized
-        p.isDamaged = statusRepository.statusExist(r.scanId.toLong(), "E", 8, 31)
+        p.isDamaged = r.isDamaged.toInt() == -1  // is set form leo statusExport 1
         p.dimension.weight = r.dimentionWeight
         p.dimension.height = r.dimensionHeight.toInt()
         p.dimension.length = r.dimensionLength.toInt()
