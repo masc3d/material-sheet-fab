@@ -1,8 +1,6 @@
 package org.deku.leoz.central.service.internal
 
 import com.querydsl.core.BooleanBuilder
-import com.querydsl.jpa.impl.JPADeleteClause
-import com.querydsl.jpa.impl.JPAQuery
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -20,7 +18,7 @@ import org.deku.leoz.node.data.jpa.TadTour
 import org.deku.leoz.node.data.jpa.TadTourEntry
 import org.deku.leoz.node.data.repository.TadTourEntryRepository
 import org.deku.leoz.node.data.repository.TadTourRepository
-import org.deku.leoz.node.data.jpa.transaction
+import sx.persistence.transaction
 import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
@@ -34,6 +32,8 @@ import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
+import sx.persistence.querydsl.delete
+import sx.persistence.querydsl.from
 import sx.rs.RestProblem
 import sx.time.toTimestamp
 import sx.util.toNullable
@@ -294,8 +294,7 @@ class TourServiceV1
         val em = this.entityManagerFactory.createEntityManager()
 
         // Get latest tour for user
-        val tourRecord = JPAQuery<TadTour>(em)
-                .from(tadTour)
+        val tourRecord = em.from(tadTour)
                 .where(tadTour.userId.eq(userId))
                 .orderBy(tadTour.timestamp.desc())
                 .fetchFirst()
@@ -314,13 +313,13 @@ class TourServiceV1
         em.transaction {
             ids
                     .plus(stationNo?.let {
-                        JPAQuery<TadTour>(em).from(tadTour)
+                        em.from(tadTour)
                                 .select(tadTour.id)
                                 .where(tadTour.stationNo.eq(it))
                                 .fetch()
                     } ?: listOf())
                     .plus(userId?.let {
-                        JPAQuery<TadTour>(em).from(tadTour)
+                        em.from(tadTour)
                                 .select(tadTour.id)
                                 .where(tadTour.userId.eq(it))
                                 .fetch()
@@ -329,11 +328,11 @@ class TourServiceV1
                         if (it.count() > 0) {
                             val tourIds = it.distinct()
 
-                            JPADeleteClause(em, tadTourEntry)
+                            em.delete(tadTourEntry)
                                     .where(tadTourEntry.tourId.`in`(tourIds))
                                     .execute()
 
-                            JPADeleteClause(em, tadTour)
+                            em.delete(tadTour)
                                     .where(tadTour.id.`in`(tourIds))
                                     .execute()
                         }
@@ -445,7 +444,7 @@ class TourServiceV1
 
         val em = this.entityManagerFactory.createEntityManager()
 
-        val tourIds = JPAQuery<TadTour>(em)
+        val tourIds = em.from(tadTour)
                 .select(tadTour.id)
                 .where(tadTour.stationNo.eq(stationNo))
                 .fetch()
@@ -661,9 +660,9 @@ class TourServiceV1
 
         return tours.toList()
     }
-//endregion
+    //endregion
 
-//region Optimization
+    //region Optimization
     /**
      * Tracks optimizations and provides notifications
      */
@@ -744,7 +743,7 @@ class TourServiceV1
                     this.optimizations.onFinish(tourId)
                 }
     }
-//endregion
+    //endregion
 
     //region Transformations
     private fun TadTour.toTour(
@@ -914,7 +913,7 @@ class TourServiceV1
                     }
 
             // Recreate tour entries from update
-            JPADeleteClause(em, tadTourEntry)
+            em.delete(tadTourEntry)
                     .where(tadTourEntry.tourId.eq(tourRecord.id))
                     .execute()
 

@@ -1,8 +1,8 @@
 package org.deku.leoz.node.service.internal.sync
 
-import org.deku.leoz.node.data.jpa.transaction
+import sx.persistence.transaction
 import org.deku.leoz.node.data.repository.EntityRepository
-import org.deku.leoz.node.data.jpa.truncate
+import sx.persistence.truncate
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
 import sx.log.slf4j.debug
 import sx.log.slf4j.info

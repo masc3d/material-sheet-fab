@@ -15,7 +15,7 @@ class EclipseEventListener : DescriptorEventAdapter() {
 
     override fun postInsert(event: DescriptorEvent?) {
         super.postInsert(event)
-//        log.info("PREPERSIST ${event.toString()}")
+//        log.trace{ "PREPERSIST ${event.toString() }
     }
 }
 

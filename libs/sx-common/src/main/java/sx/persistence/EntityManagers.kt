@@ -1,8 +1,12 @@
-package org.deku.leoz.node.data.jpa
+package sx.persistence
 
 import sx.annotationOfType
 import javax.persistence.EntityManager
 import javax.persistence.Table
+
+/**
+ * Generic persistence extensionss
+ */
 
 /**
  * Truncate table using a native query
@@ -21,17 +25,16 @@ fun EntityManager.truncate(entityClass: Class<*>) {
  */
 @Throws(Exception::class)
 fun <T> EntityManager.transaction(block: () -> T): T {
-    val t: T
+    val result: T
     val et = this.transaction
+    et.begin()
     try {
-        et.begin()
-        t = block()
+        result = block()
         et.commit()
-    } catch (e: Exception) {
-        throw e
     } finally {
         if (et.isActive)
             et.rollback()
     }
-    return t
+    return result
 }
+
