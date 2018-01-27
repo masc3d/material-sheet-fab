@@ -23,7 +23,7 @@ class ShortDate {
         this.date = format.parse(localDate)
     }
 
-    @JvmOverloads constructor(localDate: Date = Date()) {
+    constructor(localDate: Date = Date()) {
         this.date = localDate
     }
 

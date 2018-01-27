@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
+import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
@@ -27,8 +28,10 @@ interface TourServiceV1 {
     companion object {
         const val ID = "id"
         const val DEBITOR_ID = "debitor-id"
+        const val FROM = "from"
         const val NODE_UID = "node-uid"
         const val STATION_NO = "station-no"
+        const val TO = "to"
         const val USER_ID = "user-id"
         const val WAIT_FOR_COMPLETION = "wait-for-completion"
     }
@@ -44,7 +47,11 @@ interface TourServiceV1 {
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
             stationNo: Long?,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
-            userId: Long?
+            userId: Long?,
+            @QueryParam(FROM)  @ApiParam(example ="2018-01-27", value = "From (tour) date", required = false)
+            from: ShortDate?,
+            @QueryParam(TO)  @ApiParam(example ="2018-01-27", value = "To (tour) date", required = false)
+            to: ShortDate?
     ): List<Tour>
 
     @GET
@@ -165,12 +172,16 @@ interface TourServiceV1 {
             var stationNo: Long? = null,
             @ApiModelProperty(position = 50, required = false, value = "Delivery list this tour refers to")
             var deliverylistId: Long? = null,
-            @ApiModelProperty(position = 60, required = true, value = "Orders referenced by this tour")
+            @ApiModelProperty(position = 60, required = true, value = "Tour date")
+            var date: ShortDate? = null,
+            @ApiModelProperty(position = 70, required = true, value = "Orders referenced by this tour")
             var orders: List<OrderService.Order> = listOf(),
-            @ApiModelProperty(position = 70, required = true, value = "Tour stop list")
+            @ApiModelProperty(position = 80, required = true, value = "Tour stop list")
             var stops: List<Stop> = listOf(),
-            @ApiModelProperty(position = 80, required = true, value = "Last optimization time")
-            var optimized: Date? = null
+            @ApiModelProperty(position = 90, required = true, value = "Last optimization time")
+            var optimized: Date? = null,
+            @ApiModelProperty(position = 100, required = true, value = "Creation date")
+            var created: Date? = null
     )
 
     @Serializable(0xc65eacc35a3d73)

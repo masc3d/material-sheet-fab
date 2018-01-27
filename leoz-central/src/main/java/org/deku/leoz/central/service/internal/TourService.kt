@@ -20,9 +20,11 @@ import org.deku.leoz.node.data.repository.TadTourEntryRepository
 import org.deku.leoz.node.data.repository.TadTourRepository
 import sx.persistence.transaction
 import org.deku.leoz.node.service.internal.SmartlaneBridge
+import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
 import org.deku.leoz.service.internal.id
+import org.deku.leoz.time.toShortTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -112,7 +114,9 @@ class TourServiceV1
                     it.deliverylistId = tour.deliverylistId
                     it.optimized = tour.optimized?.toTimestamp()
                     it.uid = UUID.randomUUID().toString()
-                    it.timestamp = now.toTimestamp()
+                    it.date = ShortDate(now).toString()
+                    it.created = now.toTimestamp()
+                    it.modified = now.toTimestamp()
 
                     em.persist(it)
                     em.flush()
@@ -172,7 +176,7 @@ class TourServiceV1
 
                         tourEntryRepo.findAll(tadTourEntry.id.`in`(entryIds))
                                 .forEach {
-                                    it.position
+                                    it.position = newPosition
                                     it.timestamp = now
 
                                     em.merge(it)
@@ -180,6 +184,7 @@ class TourServiceV1
                     }
 
             tourRepo.findById(tourId).get().also {
+                it.modified = now
                 it.optimized = now
 
                 em.merge(it)
@@ -194,7 +199,9 @@ class TourServiceV1
     override fun get(
             debitorId: Long?,
             stationNo: Long?,
-            userId: Long?
+            userId: Long?,
+            from: ShortDate?,
+            to: ShortDate?
     ): List<Tour> {
         val em = this.entityManagerFactory.createEntityManager()
 
@@ -217,6 +224,18 @@ class TourServiceV1
                         .let {
                             when {
                                 userId != null -> it.and(tadTour.userId.eq(userId))
+                                else -> it
+                            }
+                        }
+                        .let {
+                            when {
+                                from != null -> it.and(tadTour.date.goe(from.toString()))
+                                else -> it
+                            }
+                        }
+                        .let {
+                            when {
+                                to != null -> it.and(tadTour.date.loe(to.toString()))
                                 else -> it
                             }
                         }
@@ -296,7 +315,7 @@ class TourServiceV1
         // Get latest tour for user
         val tourRecord = em.from(tadTour)
                 .where(tadTour.userId.eq(userId))
-                .orderBy(tadTour.timestamp.desc())
+                .orderBy(tadTour.modified.desc())
                 .fetchFirst()
                 ?: throw NoSuchElementException("No assignable tour for user [${userId}]")
 
@@ -629,7 +648,9 @@ class TourServiceV1
                     it.stationNo = dlRecord.deliveryStation.toLong()
                     it.deliverylistId = dlRecord.id.toLong()
                     it.uid = UUID.randomUUID().toString()
-                    it.timestamp = timestamp
+                    it.date = ShortDate(timestamp).toString()
+                    it.created = timestamp
+                    it.modified = timestamp
 
                     em.persist(it)
                     em.flush()
@@ -787,6 +808,8 @@ class TourServiceV1
                 userId = tourRecord.userId,
                 stationNo = tourRecord.stationNo,
                 deliverylistId = tourRecord.deliverylistId,
+                created = tourRecord.created,
+                date = ShortDate(tourRecord.date),
                 optimized = tourRecord.optimized,
                 orders = orders,
                 stops = tourEntryRecords.groupBy { it.position }
@@ -906,7 +929,9 @@ class TourServiceV1
                         it.userId = tour.userId
                         it.nodeId = nodeId.toLong()
                         it.uid = UUID.randomUUID().toString()
-                        it.timestamp = message.timestamp.toTimestamp()
+                        it.date = ShortDate(message.timestamp).toString()
+                        it.created = message.timestamp.toTimestamp()
+                        it.modified = message.timestamp.toTimestamp()
 
                         em.persist(it)
                         em.flush()

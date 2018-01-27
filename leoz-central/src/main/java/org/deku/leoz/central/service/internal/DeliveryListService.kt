@@ -129,7 +129,8 @@ class DeliveryListService
         val l = DeliveryListService.DeliveryListInfo(
                 id = r.id.toLong(),
                 debitorId = r.debitorId,
-                date = ShortDate(r.deliveryListDate)
+                date = ShortDate(r.deliveryListDate),
+                modified = r.createDate
         )
         return l
     }
@@ -160,7 +161,8 @@ class DeliveryListService
                     info = DeliveryListService.DeliveryListInfo(
                             id = dlRecord.id.toLong(),
                             date = ShortDate(dlRecord.deliveryListDate),
-                            debitorId = dlRecord.debitorId
+                            debitorId = dlRecord.debitorId,
+                            modified = dlRecord.createDate
                     ),
                     orders = dlDetailRecords.map { orders.getValue(it.orderId.toLong()) },
                     stops = dlDetailRecordsByPosition.map { dlDetailsForStop ->

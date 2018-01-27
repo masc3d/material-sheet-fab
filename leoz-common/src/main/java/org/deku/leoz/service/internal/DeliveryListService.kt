@@ -5,6 +5,7 @@ import org.deku.leoz.config.Rest
 import org.deku.leoz.service.entity.ShortDate
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
+import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -55,7 +56,7 @@ interface DeliveryListService {
             //todo not jet implemented            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null,
             @QueryParam(DELIVERY_DATE) @ApiParam(example = "2017-08-10", value = "Delivery date", required = false)
             deliveryDate: ShortDate?)
-    : List<DeliveryListInfo>
+            : List<DeliveryListInfo>
 
     @ApiModel(description = "Delivery list")
     data class DeliveryList(
@@ -100,8 +101,10 @@ interface DeliveryListService {
             var id: Long = 0,
             @ApiModelProperty(example = "2017-08-10", position = 20, required = true, value = "Delivery list date")
             var date: ShortDate = ShortDate(),
-            @ApiModelProperty(example = "1020", position = 10, required = true, value = "Debitor id")
-            var debitorId: Long = 0
+            @ApiModelProperty(example = "1020", position = 30, required = true, value = "Debitor id")
+            var debitorId: Long = 0,
+            @ApiModelProperty(position = 40, value = "Modification timestamp")
+            var modified: Date? = null
     )
 
     /**
