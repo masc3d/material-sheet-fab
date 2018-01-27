@@ -36,7 +36,8 @@ enum class FlaskOperator(val value: String) {
 
     override fun toString(): String {
         return this.value
-    }}
+    }
+}
 
 data class FlaskFilter(
         val filters: List<FlaskQuery>
@@ -45,6 +46,8 @@ data class FlaskFilter(
     fun toJson(): String {
         return mapper.writeValueAsString(this)
     }
+
+    constructor(filter: FlaskQuery) : this(listOf(filter))
 }
 
 /**
