@@ -42,7 +42,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-version = '0.157-SNAPSHOT'
+version = '0.158-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
