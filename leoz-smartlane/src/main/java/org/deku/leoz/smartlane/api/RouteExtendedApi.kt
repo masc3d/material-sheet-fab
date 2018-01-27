@@ -15,6 +15,9 @@ import org.deku.leoz.smartlane.model.Routemetadatas
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
 import sx.log.slf4j.trace
+import sx.rs.FlaskFilter
+import sx.rs.FlaskOperator
+import sx.rs.FlaskQuery
 import sx.rx.retryWith
 import sx.text.toHexString
 import java.util.concurrent.TimeUnit
@@ -133,6 +136,16 @@ fun RouteApi.getRoute(q: String): Observable<Route> {
             }
         }
     }
+}
+
+fun RouteApi.getRouteByCustomId(customId: String): Observable<Route> {
+    return this.getRoute(
+            q = FlaskFilter(FlaskQuery(
+                    name = "custom_id",
+                    op = FlaskOperator.EQ,
+                    value = customId
+            )).toJson()
+    )
 }
 
 /**
