@@ -15,9 +15,11 @@ import org.deku.leoz.smartlane.model.Inputaddress
 import org.deku.leoz.smartlane.model.Routedeliveryinput
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.threeten.bp.Duration
 import org.threeten.bp.temporal.ChronoUnit
 import sx.LazyInstance
+import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
 import sx.time.replaceDate
@@ -27,6 +29,8 @@ import java.net.URI
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
+import javax.ws.rs.WebApplicationException
+import javax.ws.rs.core.Response
 import kotlin.concurrent.withLock
 
 /**
@@ -94,6 +98,10 @@ class SmartlaneBridge {
 
         val jwtToken
             get() = authorizationLock.withLock { this.jwtTokenInstance.get() }
+
+        fun resetToken() {
+            this.jwtTokenInstance.reset()
+        }
     }
 
     /** Map of customer specific smartlane domains */
@@ -118,7 +126,25 @@ class SmartlaneBridge {
                 jwtToken = this.domain(customerId).jwtToken)
     }
 
-    // TODO: transparently handle authentication failures/refresh token
+    /**
+     * Retries an operation which consumes smartlane REST apis in case of token expiry.
+     * The REST proxy creation must be part of the observable (not cached) for this extension to work.
+     */
+    fun <T> Observable<T>.retryOnTokenExpiry(domain: Domain): Observable<T> {
+        // Retry once with token reset when authorization error occurs
+        return this.retry(1, { e ->
+            if (e is WebApplicationException &&
+                    e.response.status == Response.Status.UNAUTHORIZED.statusCode) {
+
+                log.info { "Resetting expired authorization token" }
+                domain.resetToken()
+
+                true
+            } else {
+                false
+            }
+        })
+    }
 
     /**
      * Optimize a tour
@@ -130,17 +156,17 @@ class SmartlaneBridge {
             tour: Tour,
             options: TourOptimizationOptions
     ): Single<List<Tour>> {
-
-        val routeApi by lazy { this.proxy(RouteExtendedApi::class.java, customerId = customerId) }
-
         val domain = domain(customerId)
 
-        // TODO: transform to single. only has a single result
-
-        return routeApi.optimize(
-                tour.toRoutingInput(
-                        options
-                ))
+        return Observable.fromCallable {
+            // Create proxies within observable (@see #retryOnTokenExpiry)
+            this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+        }
+                .flatMap {
+                    it.optimize(tour.toRoutingInput(
+                            options
+                    ))
+                }
                 .map { routes ->
                     val now = Date()
                     routes.map { route ->
@@ -167,6 +193,7 @@ class SmartlaneBridge {
                         )
                     }
                 }
+                .retryOnTokenExpiry(domain)
                 .firstOrError()
                 .subscribeOn(domain.scheduler)
     }
