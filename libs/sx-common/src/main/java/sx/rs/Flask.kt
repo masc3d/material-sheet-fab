@@ -3,7 +3,9 @@ package sx.rs
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 
 /**
  * Support for flask filters commonly used in REST calls
@@ -14,23 +16,27 @@ import com.fasterxml.jackson.databind.ObjectMapper
 private val mapper by lazy {
     ObjectMapper().also {
         it.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        it.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true)
     }
 }
 
 enum class FlaskOperator(val value: String) {
-    eq("eq"),
-    neq("neq"),
-    gt("gt"),
-    lt("lt"),
-    ge("ge"),
-    le("le"),
-    `in`("in"),
-    not_in("not_in"),
-    is_null("is_null"),
-    is_not_null("is_not_null"),
-    has("has"),
-    any("any")
-}
+    EQ("eq"),
+    NEQ("neq"),
+    GT("gt"),
+    LT("lt"),
+    GE("ge"),
+    LE("le"),
+    IN("in"),
+    NOT_IN("not_in"),
+    IS_NULL("is_null"),
+    IS_NOT_NULL("is_not_null"),
+    HAS("has"),
+    ANY("any");
+
+    override fun toString(): String {
+        return this.value
+    }}
 
 data class FlaskFilter(
         val filters: List<FlaskQuery>

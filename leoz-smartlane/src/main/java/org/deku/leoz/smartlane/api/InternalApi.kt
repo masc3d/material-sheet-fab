@@ -74,7 +74,7 @@ fun InternalApi.deleteAddressesNotIn(ids: Iterable<Long>) {
             filters = listOf(
                     FlaskQuery(
                             name = "id",
-                            op = FlaskOperator.not_in,
+                            op = FlaskOperator.NOT_IN,
                             value = ids
                     )
             )
