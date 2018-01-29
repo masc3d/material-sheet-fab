@@ -164,6 +164,8 @@ interface TourServiceV1 {
     data class Tour(
             @ApiModelProperty(position = 10, required = false, value = "Tour id")
             var id: Long? = null,
+            @ApiModelProperty(position = 15, required = false, value = "Tour uid")
+            var uid: String? = null,
             @ApiModelProperty(position = 20, required = false, value = "Node this tour belongs to")
             var nodeUid: String? = null,
             @ApiModelProperty(position = 30, required = false, value = "User this tour belongs to")
@@ -213,6 +215,8 @@ interface TourServiceV1 {
              */
             @ApiModelProperty(position = 10, required = false, value = "Stop task id")
             var id: Long? = null,
+            @ApiModelProperty(position = 15, required = false, value = "Stop task uid")
+            var uid: String? = null,
             @ApiModelProperty(position = 20, required = true, value = "Order id this task refers to")
             var orderId: Long = 0,
             @ApiModelProperty(position = 30, required = true, value = "Task type", example = "DELIVERY")
@@ -364,3 +368,6 @@ interface TourServiceV1 {
 
 /** Stop id. Refers to the first task its tour entry (task) id */
 val TourServiceV1.Stop.id: Long? get() = this.tasks.firstOrNull()?.id
+
+/** Stop id. Refers to the first task its tour entry (task) id */
+val TourServiceV1.Stop.uid: String? get() = this.tasks.firstOrNull()?.uid

@@ -187,6 +187,18 @@ class RestApiTest {
     }
 
     @Test
+    fun testRouteGetByCustomId() {
+        this.authorize()
+
+        restClient.proxy(RouteExtendedApi::class.java).also { routeApi ->
+            log.trace {
+                routeApi.getRouteByCustomId("280")
+                        .blockingFirst()
+            }
+        }
+    }
+
+    @Test
     fun testRouteDeleteAll() {
         this.authorize()
 

@@ -9,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
 import org.deku.leoz.service.internal.id
+import org.deku.leoz.service.internal.uid
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.Inputaddress
@@ -173,7 +174,7 @@ class SmartlaneBridge {
                         val stops = route.deliveries
                                 .sortedBy { it.orderindex }
                                 .map { delivery ->
-                                    tour.stops.first { it.id == delivery.customId.toLong() }
+                                    tour.stops.first { it.uid == delivery.customId }
                                 }
 
                         val orders = stops
@@ -229,7 +230,7 @@ class SmartlaneBridge {
                             }
 
                             // Track stop via custom id
-                            it.customId = stop.id?.toString()
+                            it.customId = stop.uid
 
                             if (!options.appointments.omit) {
                                 it.pdtFrom = stop.appointmentStart

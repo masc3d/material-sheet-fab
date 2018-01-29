@@ -780,6 +780,7 @@ class TourServiceV1
 
         return Tour(
                 id = tourRecord.id,
+                uid = tourRecord.uid,
                 nodeUid = nodeUid,
                 userId = tourRecord.userId,
                 stationNo = tourRecord.stationNo,
@@ -796,6 +797,7 @@ class TourServiceV1
 
                                 Task(
                                         id = task.id,
+                                        uid = task.uid,
                                         orderId = task.orderId,
                                         appointmentStart = when (taskType) {
                                             TaskType.DELIVERY -> order.deliveryAppointment.dateStart
