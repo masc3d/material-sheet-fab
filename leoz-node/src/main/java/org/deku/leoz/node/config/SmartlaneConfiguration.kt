@@ -11,8 +11,4 @@ import org.springframework.context.annotation.Lazy
 @Configuration
 @Lazy(false)
 open class SmartlaneConfiguration {
-
-    @get:Bean
-    open val smartlaneBridge: SmartlaneBridge
-        get() = SmartlaneBridge()
 }

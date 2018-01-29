@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
 import org.deku.leoz.service.internal.id
@@ -30,6 +31,8 @@ import java.net.URI
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
+import javax.inject.Inject
+import javax.inject.Named
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 import kotlin.concurrent.withLock
@@ -38,6 +41,7 @@ import kotlin.concurrent.withLock
  * Bridge operations between leoz and smartlane
  * Created by masc on 15.11.17.
  */
+@Named
 class SmartlaneBridge {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -46,6 +50,9 @@ class SmartlaneBridge {
 
     /** Default customer id */
     private val customerId = "der-kurier-test"
+
+    @Inject
+    private lateinit var stationRepository: StationRepository
 
     /**
      * Rest client with connection pool for efficient use across all smartlane domains
@@ -323,23 +330,19 @@ class SmartlaneBridge {
             }
 
             if (it.startaddress == null) {
-                this.stops.firstOrNull()?.address?.also { startAddress ->
-                    it.startaddress = Inputaddress().also {
-                        it.street = startAddress.street
-                        it.postalcode = startAddress.zipCode
-                        it.city = startAddress.city
-                        it.country = startAddress.countryCode
-
-                        //region TODO: workaround for smartlane issue, where start address not being properly recognized / placed at end of tour (omit geo & street no)
-//                    it.housenumber = startAddress.streetNo
-//                    startAddress.geoLocation?.also { location ->
-//                        it.lat = location.latitude
-//                        it.lng = location.longitude
-//                    }
-                        //endregion
+                this.stationNo?.also { stationNo ->
+                    stationRepository.findByStation(stationNo.toInt())?.also { station ->
+                        it.startaddress = Inputaddress().also {
+                            it.street = station.street
+                            it.housenumber = station.houseNr
+                            it.postalcode = station.zip
+                            it.city = station.city
+                            it.country = station.country
+                            it.lat = station.posLat.takeIf { it != 0.0 }
+                            it.lng = station.posLong.takeIf { it != 0.0 }
+                        }
                     }
                 }
-
             }
 
             if (!omitLoads)
