@@ -3,6 +3,8 @@ package org.deku.leoz.central.data.repository
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Routines
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.counter
 import org.deku.leoz.time.toShortTime
@@ -39,11 +41,34 @@ class JooqFieldHistoryRepository {
 /**
  * Extension method for storing record with field history
  */
-fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory() {
+fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, changer: String, point: String) {
+
+    val dsl = this.configuration().dsl()
+
     this.fields().forEach {
         if (this.changed(it)) {
             // TODO: add field history record
 
+            val fieldHistoryRecord = dsl.newRecord(Tables.TBLFELDHISTORIE)
+            if (this is TblauftragcolliesRecord)
+                fieldHistoryRecord.orderid = this.orderid //this.field("orderid").getValue(this).toString().toLong().toDouble()
+            else if (this is TblauftragRecord)
+                fieldHistoryRecord.orderid = this.orderid
+            else
+                fieldHistoryRecord.orderid = 0.0
+            fieldHistoryRecord.belegnummer = unitNo.toDouble()
+            fieldHistoryRecord.feldname = it.name
+            fieldHistoryRecord.oldvalue = it.original(this)?.toString() ?: ""
+            fieldHistoryRecord.newvalue = it.getValue(this).toString()
+            fieldHistoryRecord.changer = changer
+            fieldHistoryRecord.point = point
+
+            if(fieldHistoryRecord.oldvalue!=fieldHistoryRecord.newvalue) {
+                fieldHistoryRecord.id = Routines.fTan(dsl.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
+                fieldHistoryRecord.store()
+            }
+
+            this.store(it)
         }
     }
 }
