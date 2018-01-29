@@ -2,13 +2,14 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
-import { Deliverylist } from '../../core/models/deliverylist.model';
 import { TouroptimizingService } from './touroptimizing.service';
-import { TourListItem } from '../../core/models/tour-list-item.model';
 import { PrintingService } from '../../core/printing/printing.service';
 import { StoplistReportingService } from '../../core/reporting/stoplist-reporting.service';
-import { HttpParams } from '@angular/common/http';
 import { Tour } from '../../core/models/tour.model';
+import { MsgService } from '../../shared/msg/msg.service';
+import { Observable } from 'rxjs/Observable';
+import { Message } from 'primeng/primeng';
+import { roundDecimals } from '../../core/math/roundDecimals';
 
 @Component( {
   selector: 'app-touroptimizing',
@@ -22,15 +23,19 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
   toursOrderCount: number;
   toursParcelCount: number;
   toursTotalWeight: number;
+  toursQuota: number;
   // vehicleCount: number;
   tours: Tour[];
+
+  msgs$: Observable<Message[]>;
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected touroptimizingService: TouroptimizingService,
+               protected msgService: MsgService,
                protected printingService: PrintingService,
-               protected reportingService: StoplistReportingService) {
-    super( translate, cd );
+               protected reportingService: StoplistReportingService ) {
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {
@@ -39,6 +44,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
     this.toursOrderCount = 0;
     this.toursParcelCount = 0;
     this.toursTotalWeight = 0;
+    this.toursQuota = 0;
     // this.deliverylists = [];
 
     this.tours = [];
@@ -48,56 +54,65 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         this.tours = tours;
         this.toursOrderCount = this.countOrders( tours );
         this.toursParcelCount = this.countParcels( tours );
-        this.toursTotalWeight = this.sumWeights( tours );
+        this.toursTotalWeight = roundDecimals( this.sumWeights( tours ), 100 );
+        this.toursQuota = this.getToursQuota( tours );
         this.cd.markForCheck();
       } );
-    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-    const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
-    this.touroptimizingService.getTours(currUser.user.debitorId, activeStation.stationNo );
+    this.touroptimizingService.getTours();
+  }
+
+  private getToursQuota( tours: Tour[] ) {
+    return tours.length > 0
+      ? roundDecimals((tours.filter( tour => tour.optimized ).length) / (tours.length) * 100, 1)
+      : 0;
   }
 
   private sumWeights( tours: Tour[] ) {
     return tours.length > 0
-      ? tours.map( ( d ) => d.totalWeight )
-        .reduce( ( a, b ) => a + b )
+      ? tours.map( ( tour: Tour ) => tour.totalWeight )
+        .reduce( ( a: number, b: number ) => a + b )
       : 0;
   }
 
   private countParcels( tours: Tour[] ) {
     return tours.length > 0
-      ? tours.map( ( d ) => d.totalPackages )
-        .reduce( ( a, b ) => a + b )
+      ? tours.map( ( tour: Tour ) => tour.totalPackages )
+        .reduce( ( a: number, b: number ) => a + b )
       : 0;
   }
 
   private countOrders( tours: Tour[] ) {
     return tours.length > 0
-      ? tours.map( ( d ) => d.totalShipments )
-        .reduce( ( a, b ) => a + b )
+      ? tours.map( ( tour: Tour ) => tour.totalShipments )
+        .reduce( ( a: number, b: number ) => a + b )
       : 0;
   }
 
   changeCheckAllTours( evt: { checked: boolean } ) {
-      this.touroptimizingService.switchSelectionAllTours(evt.checked);
+    this.touroptimizingService.switchSelectionAllTours( evt.checked );
   }
 
   optimizeTours() {
-    console.log( 'optimizeTours...' );
-    // console.log( 'vehicleCount:', this.vehicleCount );
-    console.log( 'selectedIds:', this.tours
-      .filter( d => d.selected)
-      .map(d => d.id) );
+    const selectedTourIds = this.tours
+      .filter( tour => tour.selected )
+      .map( tour => tour.id );
+    this.touroptimizingService.optimizeAndReinitTours( selectedTourIds );
+  }
+
+  resetTours() {
+    const tourIds = this.tours.map( tour => tour.id );
+    this.touroptimizingService.deleteAndReinitTours( tourIds );
   }
 
   printStopLists() {
-    console.log( 'printDeliveryLists...' );
-  //   const listsToPrint = this.deliverylists.filter( d => d.selected);
-  //   console.log( 'selected:', listsToPrint);
-  //
-  //   const filename = 'sl_' + listsToPrint.map( d => d.id ).join( '_' );
-  //  this.printingService.printReports( this.reportingService
-  //                 .generateReports( listsToPrint ),
-  //               filename, false );
+    console.log( 'printStopLists...' );
+    const listsToPrint = this.tours.filter( tour => tour.selected );
+    console.log( 'selected:', listsToPrint );
+
+    const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
+    this.printingService.printReports( this.reportingService
+        .generateReports( listsToPrint ),
+      filename, false );
   }
 
 }

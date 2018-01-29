@@ -7,6 +7,10 @@ import { InetConnectionService } from '../../core/inet-connection.service';
 import { WorkingdateService } from '../../core/workingdate.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Tour } from '../../core/models/tour.model';
+import { MsgService } from '../../shared/msg/msg.service';
+import { Observable } from 'rxjs/Observable';
+import { Message } from 'primeng/primeng';
+import { roundDecimals } from '../../core/math/roundDecimals';
 
 @Injectable()
 export class TouroptimizingService {
@@ -14,6 +18,8 @@ export class TouroptimizingService {
   protected allDeliverylistsUrl = `${environment.apiUrl}/internal/v1/deliverylist/info`; // ?=2018-01-12
   protected allToursUrl = `${environment.apiUrl}/internal/v1/tour`; // ?debitor-id=2052&station-no=100
   protected generateToursUrl = `${environment.apiUrl}/internal/v1/tour/deliverylist`; // POST body: [...deliverylistIds]
+  protected deleteToursUrl = `${environment.apiUrl}/internal/v1/tour`; // DELETE ?id=1&id=2
+  protected optimizeToursUrl = `${environment.apiUrl}/internal/v1/tour/optimize`; // PATCH ?id=1&id=2
 
   private toursSubject = new BehaviorSubject<Tour[]>( [] );
   public tours$ = this.toursSubject.asObservable().distinctUntilChanged();
@@ -22,48 +28,28 @@ export class TouroptimizingService {
   // private allDeliverylistsUrl: string;
 
   constructor( protected http: HttpClient,
+               protected msgService: MsgService,
                protected wds: WorkingdateService,
                protected ics: InetConnectionService ) {
   }
 
-  getTours( debitorId: number, stationNo: number ): void {
+  getTours(): void {
+    const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
     this.toursSubject.next( [] );
-    // this.allDeliverylistsUrl = `${environment.apiUrl}/internal/v1/deliverylist/station/${this.stationNo}`; // ?=100
     /**
-     * URL defekt liefert nie ein Ergebnis: internal/v1/tour; // ?debitor-id=2052&station-no=100
-     * => kann dann auch weggeworfen werden :)
+     * vorerst nur station-no übergeben, bis Service angepasst ist
      */
     this.http.get<Tour[]>( this.allToursUrl, {
       params: new HttpParams()
-        .set( 'debitor-id', debitorId.toString() )
-        .set( 'station-no', stationNo.toString() )
+        .set( 'station-no', activeStation.stationNo.toString() )
     } )
       .subscribe( ( tours ) => {
-          console.table( tours );
           if (tours.length === 0) {
             // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
             this.getDeliverylists( this.generateTours );
+          } else {
+            this.processTourData( this, tours );
           }
-          // tours.forEach( ( tour: TourListItem ) => {
-          //   this.getDeliverylistById( tour.id )
-          //     .subscribe( ( deliverylistById ) => {
-          //         deliverylistById.totalShipments = deliverylistById.orders.length;
-          //         deliverylistById.totalPackages = deliverylistById.orders
-          //           .map( o => o.parcels.length )
-          //           .reduce( ( a, b ) => a + b );
-          //         const parcels = deliverylistById.orders.map( o => o.parcels );
-          //         deliverylistById.totalWeight = [].concat(...parcels)
-          //           .map( p => p.dimension.weight)
-          //           .reduce( (a, b) => a + b);
-          //         deliverylistById.selected = false;
-          //         const tmpArr = [ ...this.toursSubject.getValue(), deliverylistById ];
-          //         this.toursSubject.next( tmpArr );
-          //       },
-          //       ( _ ) => {
-          //         this.ics.isOffline();
-          //         this.toursSubject.next( [] );
-          //       } );
-          // } );
         },
         ( error: HttpErrorResponse ) => {
           if (error.status === 404) {
@@ -73,6 +59,44 @@ export class TouroptimizingService {
             this.ics.isOffline();
             this.toursSubject.next( [] );
           }
+        } );
+  }
+
+  deleteAndReinitTours( tourIds: number[] ) {
+    let httpParams = new HttpParams();
+    tourIds.forEach( id => {
+      httpParams = httpParams.append( 'id', id.toString() );
+    } );
+
+    this.http.delete( this.deleteToursUrl, {
+      params: httpParams
+    } )
+      .subscribe( _ => this.getTours(),
+        error => console.log( error ) );
+
+  }
+
+  optimizeAndReinitTours( tourIds: number[] ) {
+    let httpParams = new HttpParams();
+    tourIds.forEach( id => {
+      httpParams = httpParams.append( 'id', id.toString() );
+    } );
+    httpParams = httpParams.append( 'wait-for-completion', 'true' );
+
+    const defaultBody = {
+      'start': {},
+      'appointments': {
+        'omit': false
+      },
+      'vehicles': [ {} ]
+    };
+
+    this.http.patch( this.optimizeToursUrl, defaultBody, {
+      params: httpParams
+    } )
+      .subscribe( _ => this.deleteAndReinitTours( tourIds ),
+        error => {
+          this.msgService.error( error.error.detail );
         } );
   }
 
@@ -102,25 +126,38 @@ export class TouroptimizingService {
       } );
   }
 
-  private generateTours( $this: TouroptimizingService, deliverylistIds: number[] ) {
-    $this.http.post<Tour[]>( $this.generateToursUrl, deliverylistIds ).subscribe( ( tours ) => {
-        $this.toursSubject.next(
-          tours.map( tour => {
-            tour.totalShipments = tour.orders.length;
-            tour.totalPackages = tour.orders
-              .map( o => o.parcels.length )
-              .reduce( ( a, b ) => a + b );
-            const parcels = tour.orders.map( o => o.parcels );
-            tour.totalWeight = [].concat( ...parcels )
-              .map( p => p.dimension.weight )
-              .reduce( ( a, b ) => a + b );
-            tour.selected = false;
-            return tour;
-          } ) );
-      },
-      ( _ ) => {
-        $this.ics.isOffline();
-        $this.toursSubject.next( [] );
-      } );
+  private generateTours = function ( $this: TouroptimizingService, deliverylistIds: number[] ) {
+    $this.http.post<Tour[]>( $this.generateToursUrl, deliverylistIds )
+      .subscribe( ( tours ) => {
+          $this.processTourData( $this, tours );
+        },
+        ( _ ) => {
+          $this.ics.isOffline();
+          $this.toursSubject.next( [] );
+        } );
+  };
+
+  private processTourData( $this: TouroptimizingService, tours ) {
+    $this.toursSubject.next(
+      tours.map( tour => {
+        tour.totalShipments = tour.orders.length;
+
+        tour.totalPackages = tour.orders
+          .map( o => o.parcels.length )
+          .reduce( ( a, b ) => a + b );
+        const parcels = tour.orders.map( o => o.parcels );
+        const mappedParcels = [].concat( ...parcels )
+          .map( p => p.dimension.weight );
+        tour.totalWeight = 0;
+        if (mappedParcels.length > 0) {
+          tour.totalWeight = roundDecimals( mappedParcels
+            .reduce( ( a, b ) => a + b ), 100 );
+        }
+        tour.selected = false;
+        return tour;
+      } ) );
   }
+
+
+
 }

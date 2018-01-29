@@ -1,12 +1,17 @@
 <!--<form style="padding-top: 10px" class="mbDashboardContent">-->
+<app-msg-box [msgs]="msgs$ | async"></app-msg-box>
 <div class="ui-fluid mbDashboardContent" style="padding-top: 10px">
   <div class="ui-g" style="min-height: 465px;">
     <div class="ui-g-12 ui-lg-6 shadow" style="padding:0; width: 49%; margin-left: 10px;">
       <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-12">{{'tourlists-basedon-deliverylists' | translate}}</div>
+        <div class="ui-g-12 ui-lg-8">{{'tourlists-basedon-deliverylists' | translate}}</div>
+        <div class="ui-g-12 ui-lg-4">
+          <button pButton label="{{'reset' | translate}}" type="button" icon="fas fa-undo-alt" iconPos="left"
+                  (click)="resetTours()"></button>
+        </div>
       </div>
       <div class="ui-g" style="font-weight: bold;font-size:14px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> (0)</div>
+        <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> ({{toursQuota}})</div>
         <div class="ui-g-12 ui-lg-2"><i class="fas fa-truck iconBlue"></i> ({{tours.length}})</div>
         <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S ({{toursOrderCount}})</div>
         <div class="ui-g-12 ui-lg-3"><i class="fa-sum iconBlue"></i>&nbsp;P ({{toursParcelCount}})</div>
@@ -43,11 +48,11 @@
         <div class="ui-g-12 ui-lg-12">{{'driverlists' | translate}}</div>
       </div>
       <div class="ui-g" style="font-weight: bold;font-size:14px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> (89)</div>
-        <div class="ui-g-12 ui-lg-2"><i class="far fa-user iconBlue"></i> (12)</div>
-        <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S (456)</div>
-        <div class="ui-g-12 ui-lg-3"><i class="fa-sum iconBlue"></i>&nbsp;P (1296)</div>
-        <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> (5076)</div>
+        <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> (0)</div>
+        <div class="ui-g-12 ui-lg-2"><i class="far fa-user iconBlue"></i> (0)</div>
+        <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S (0)</div>
+        <div class="ui-g-12 ui-lg-3"><i class="fa-sum iconBlue"></i>&nbsp;P (0)</div>
+        <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> (0)</div>
       </div>
       <hr/>
       <!--<div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">-->
