@@ -25,7 +25,8 @@ export class LoginComponent extends AbstractTranslateComponent implements OnInit
   private devUser = `${environment.devUser}`;
   private devPass = `${environment.devPass}`;
 
-  errMsgs$: Observable<Message[]>;
+  msgs$: Observable<Message[]>;
+
   loginForm: FormGroup;
 
   constructor( private fb: FormBuilder,
@@ -33,15 +34,12 @@ export class LoginComponent extends AbstractTranslateComponent implements OnInit
                private authenticationService: AuthenticationService,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
-               private msgService: MsgService ) {
-    super( translate, cd );
+               protected msgService: MsgService ) {
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {
     super.ngOnInit();
-
-    this.msgService.clear();
-    this.errMsgs$ = this.msgService.msgs$;
 
     // reset login status
     this.authenticationService.logout();

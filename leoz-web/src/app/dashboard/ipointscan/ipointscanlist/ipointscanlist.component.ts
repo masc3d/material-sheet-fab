@@ -9,6 +9,7 @@ import { TranslateService } from '../../../core/translate/translate.service';
 import { Package } from '../../../core/models/package.model';
 import { sumAndRound } from '../../../core/math/sumAndRound';
 import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
+import { MsgService } from '../../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-ipointscanlist',
@@ -29,8 +30,9 @@ export class IpointscanlistComponent extends AbstractTranslateComponent implemen
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                public router: Router ) {
-    super( translate, cd, () => {
+    super( translate, cd, msgService, () => {
       this.scanOptions = this.createScanOptions();
     } );
   }

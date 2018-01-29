@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy
 import { AbstractTranslateComponent } from '../../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../../core/translate/translate.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MsgService } from '../../../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-address',
@@ -24,11 +25,11 @@ export class AddressComponent extends AbstractTranslateComponent implements OnIn
 
   countryCodes = [];
 
-  constructor(private fb: FormBuilder,
-              public translate: TranslateService,
-              protected cd: ChangeDetectorRef ) {
-    super( translate, cd, () => {
-    } );
+  constructor( private fb: FormBuilder,
+               public translate: TranslateService,
+               protected cd: ChangeDetectorRef,
+               protected msgService: MsgService ) {
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {

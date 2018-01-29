@@ -1,4 +1,4 @@
-<app-msg-box [msgs]="errMsgs$ | async"></app-msg-box>
+<app-msg-box [msgs]="msgs$ | async"></app-msg-box>
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
   <input type="hidden" class="form-control" formControlName="emailOrigin">
   <div class="ui-fluid">

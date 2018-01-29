@@ -10,6 +10,7 @@ import 'rxjs/add/operator/filter';
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
 import { SelectItem } from 'primeng/primeng';
+import { MsgService } from '../../shared/msg/msg.service';
 
 
 
@@ -26,8 +27,9 @@ export class StateofshipmentsComponent extends AbstractTranslateComponent implem
 
   constructor( private fb: FormBuilder,
                public translate: TranslateService,
-               protected cd: ChangeDetectorRef ) {
-    super( translate, cd, () => {
+               protected cd: ChangeDetectorRef,
+               protected msgService: MsgService ) {
+    super( translate, cd, msgService, () => {
       this.actionOptions = this.createActionOptions();
     } );
   }

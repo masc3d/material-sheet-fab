@@ -4,13 +4,14 @@ import { MenuItem } from 'primeng/primeng';
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
 import { Station } from '../../core/auth/station.model';
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-export',
   template: `
     <p-tabMenu [model]="items"></p-tabMenu>
     <div style="border: 1px solid gray; padding: 5px" class="mbDashboardContent">
-        <router-outlet></router-outlet>
+      <router-outlet></router-outlet>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -20,8 +21,9 @@ export class ExportComponent extends AbstractTranslateComponent implements OnIni
   items: MenuItem[];
 
   constructor( protected translate: TranslateService,
-               protected cd: ChangeDetectorRef) {
-    super( translate, cd, () => this.items = this.createItems() );
+               protected cd: ChangeDetectorRef,
+               protected msgService: MsgService ) {
+    super( translate, cd, msgService, () => this.items = this.createItems() );
   }
 
   ngOnInit() {

@@ -63,11 +63,11 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
   multiSortMeta: SortMeta[] = [];
 
   constructor( private userService: UserService,
-               private msgService: MsgService,
                public translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                private roleGuard: RoleGuard ) {
-    super( translate, cd );
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {

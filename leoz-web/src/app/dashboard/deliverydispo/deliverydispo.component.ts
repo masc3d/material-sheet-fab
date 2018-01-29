@@ -5,6 +5,7 @@ import { AbstractTranslateComponent } from '../../core/translate/abstract-transl
 import { TranslateService } from '../../core/translate/translate.service';
 import { Shipment } from '../../core/models/shipment.model';
 import { Shipmentsums } from '../../core/models/shipmentsums.model';
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-deliverydispo',
@@ -29,8 +30,9 @@ export class DeliverydispoComponent extends AbstractTranslateComponent implement
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                public router: Router ) {
-    super( translate, cd, () => {
+    super( translate, cd, msgService, () => {
         this.deliveryDate = this.deliveryDate ? new Date( this.deliveryDate ) : new Date();
     } );
   }

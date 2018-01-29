@@ -13,6 +13,7 @@ import { RoleGuard } from '../../../core/auth/role.guard';
 import { UserService } from '../../user/user.service';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
+import { MsgService } from '../../../shared/msg/msg.service';
 
 interface CallbackArguments {
   driver: Driver;
@@ -110,10 +111,11 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
   constructor( private driverService: DriverService,
                private tourService: TourService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                private userService: UserService,
                protected translate: TranslateService,
                private roleGuard: RoleGuard ) {
-    super( translate, cd, () => {
+    super( translate, cd, msgService, () => {
       this.intervalOptions = this.createIntervalOptions();
       if (this.tourDate) {
         this.tourDate = new Date( this.tourDate );

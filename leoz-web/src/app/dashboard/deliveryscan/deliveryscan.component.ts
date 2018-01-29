@@ -10,6 +10,7 @@ import { KeyUpEventService } from '../../core/key-up-event.service';
 import { BrowserCheck } from '../../core/auth/browser-check';
 import { Package } from '../../core/models/package.model';
 import { Shipment } from '../../core/models/shipment.model';
+import { MsgService } from '../../shared/msg/msg.service';
 
 
 @Component( {
@@ -53,9 +54,10 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                private keyUpService: KeyUpEventService,
                private browserCheck: BrowserCheck ) {
-    super( translate, cd, () => {
+    super( translate, cd, msgService, () => {
       this.deliverylistOptions = this.createDeliverylistOptions();
       this.deliverydateOptions = this.createDeliverydateOptions();
       this.tourOptions = this.createTourOptions();

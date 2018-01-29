@@ -3,6 +3,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
 import { TranslateService } from '../../../core/translate/translate.service';
 import { ElectronService } from '../../../core/electron/electron.service';
 import PrinterInfo = Electron.PrinterInfo;
+import { MsgService } from '../../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-printer',
@@ -18,8 +19,9 @@ export class PrinterComponent extends AbstractTranslateComponent implements OnIn
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                private electronService: ElectronService ) {
-    super( translate, cd );
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {

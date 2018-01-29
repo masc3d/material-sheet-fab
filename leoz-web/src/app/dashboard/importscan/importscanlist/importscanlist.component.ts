@@ -8,6 +8,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
 import { TranslateService } from '../../../core/translate/translate.service';
 import { Shipment } from '../../../core/models/shipment.model';
 import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
+import { MsgService } from '../../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-importscanlist',
@@ -24,8 +25,9 @@ export class ImportscanlistComponent extends AbstractTranslateComponent implemen
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                public router: Router ) {
-    super( translate, cd, () => {
+    super( translate, cd, msgService, () => {
       this.scanOptions = this.createScanOptions();
     } );
   }

@@ -11,6 +11,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
 import { TranslateService } from '../../../core/translate/translate.service';
 import { DateMomentjsPipe } from '../../../core/translate/date-momentjs.pipe';
 import { GeoJsonTypes } from 'geojson';
+import { MsgService } from '../../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-tour-map',
@@ -63,9 +64,10 @@ export class TourMapComponent extends AbstractTranslateComponent implements OnIn
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                private tourService: TourService,
                private datePipe: DateMomentjsPipe ) {
-    super( translate, cd );
+    super( translate, cd, msgService );
   }
 
   ngOnInit(): void {

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { InetConnectionService } from '../../core/inet-connection.service';
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-statusbar',
@@ -38,8 +39,9 @@ export class StatusbarComponent extends AbstractTranslateComponent implements On
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                private ics: InetConnectionService ) {
-    super( translate, cd );
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {

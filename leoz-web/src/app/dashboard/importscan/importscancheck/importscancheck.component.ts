@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { Shipment } from '../../../core/models/shipment.model';
+import { MsgService } from '../../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-importscancheck',
@@ -20,9 +21,9 @@ export class ImportscancheckComponent extends AbstractTranslateComponent impleme
   constructor( private fb: FormBuilder,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                public router: Router ) {
-    super( translate, cd, () => {
-    } );
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {

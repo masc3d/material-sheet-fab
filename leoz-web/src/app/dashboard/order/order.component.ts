@@ -3,6 +3,7 @@ import { MenuItem } from 'primeng/primeng';
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-order',
@@ -20,8 +21,9 @@ export class OrderComponent extends AbstractTranslateComponent implements OnInit
   items: MenuItem[];
 
   constructor( protected translate: TranslateService,
-               protected cd: ChangeDetectorRef ) {
-    super( translate, cd, () => this.items = this.createItems() );
+               protected cd: ChangeDetectorRef,
+               protected msgService: MsgService ) {
+    super( translate, cd, msgService, () => this.items = this.createItems() );
   }
 
   ngOnInit() {

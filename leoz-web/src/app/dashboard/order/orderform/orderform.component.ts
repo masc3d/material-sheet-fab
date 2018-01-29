@@ -11,6 +11,7 @@ import 'rxjs/add/operator/filter';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
+import { MsgService } from '../../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-orderform',
@@ -32,9 +33,9 @@ export class OrderformComponent extends AbstractTranslateComponent implements On
 
   constructor( private fb: FormBuilder,
                public translate: TranslateService,
-               protected cd: ChangeDetectorRef ) {
-    super( translate, cd, () => {
-    } );
+               protected cd: ChangeDetectorRef,
+               protected msgService: MsgService ) {
+    super( translate, cd, msgService );
   }
 
   ngOnInit() {

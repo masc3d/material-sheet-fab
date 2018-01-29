@@ -12,6 +12,7 @@ import { Station } from '../../core/auth/station.model';
 import { Router } from '@angular/router';
 import { BagscanGuard } from '../../core/auth/bagscan.guard';
 import { ElectronService } from '../../core/electron/electron.service';
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-left-menu',
@@ -51,10 +52,10 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
                private router: Router,
                private bagscanGuard: BagscanGuard,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                protected translate: TranslateService,
                private electronService: ElectronService ) {
-    super( translate, cd, () => {
-      // this.items = this.createItems();
+    super( translate, cd, msgService, () => {
       if (this.usedMenu === 'leoz') {
         this.items = this.createItems();
       } else if (this.usedMenu === 'leo-old') {
@@ -361,18 +362,6 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
       label: this.translate.instant( 'communication' ),
       items: [
         {
-          label: this.translate.instant( 'directinfo-to-partner' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'supportrequest' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
           label: this.translate.instant( 'notification' ),
           icon: '',
           routerLink: '',
@@ -404,12 +393,6 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         },
         {
           label: this.translate.instant( 'documents' ),
-          icon: '',
-          routerLink: '',
-          command: closeMenu
-        },
-        {
-          label: this.translate.instant( 'calendar' ),
           icon: '',
           routerLink: '',
           command: closeMenu

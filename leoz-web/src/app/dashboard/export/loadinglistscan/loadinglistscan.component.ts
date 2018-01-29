@@ -21,6 +21,8 @@ import { BrowserCheck } from '../../../core/auth/browser-check';
 import { LoadinglistscanService } from './loadinglistscan.service';
 import { TYPE_VALUABLE } from '../../../core/constants';
 import { checkdigitInt25 } from '../../../core/math/checkdigitInt25';
+import { MsgService } from '../../../shared/msg/msg.service';
+import { roundDecimals } from '../../../core/math/roundDecimals';
 
 interface ScanMsg {
   packageId: string;
@@ -86,13 +88,14 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
                private loadinglistService: LoadinglistscanService,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                private datePipe: DatePipe,
                private keyUpService: KeyUpEventService,
                private soundService: SoundService,
                private reportingService: LoadinglistReportingService,
                private printingService: PrintingService,
                private browserCheck: BrowserCheck ) {
-    super( translate, cd, () => {
+    super( translate, cd, msgService, () => {
       this.loadlists = this.createLoadinglistItems( this.loadlistItems );
       this.exportdate = this.initExportdate();
     } );
@@ -439,7 +442,7 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     this.loadedPackcount = this.activeLoadinglist.packages.length;
     this.totalWeight = this.loadinglistService.sumWeights( this.activeLoadinglist.packages );
     this.freeWeight = this.loadinglistscanForm.get( 'payload' ).value
-      ? Math.round( (this.loadinglistscanForm.get( 'payload' ).value - this.totalWeight) * 10 ) / 10
+      ? roundDecimals(this.loadinglistscanForm.get( 'payload' ).value - this.totalWeight)
       : null;
     this.styleWeightExceeded = (this.freeWeight && this.freeWeight < 0) ? { 'color': 'red' } : {};
   }

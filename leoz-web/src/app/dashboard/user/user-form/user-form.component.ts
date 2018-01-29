@@ -37,6 +37,8 @@ import { InetConnectionService } from '../../../core/inet-connection.service';
 } )
 export class UserFormComponent extends AbstractTranslateComponent implements OnInit {
 
+  msgs$: Observable<Message[]>;
+
   dateFormatPrimeng: string;
 
   locale: any;
@@ -46,16 +48,15 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
   userForm: FormGroup;
   private loading = false;
-  public errMsgs$: Observable<Message[]>;
 
   constructor( private fb: FormBuilder,
                private userService: UserService,
-               private msgService: MsgService,
+               protected msgService: MsgService,
                private roleGuard: RoleGuard,
                protected cd: ChangeDetectorRef,
                protected translate: TranslateService,
                private ics: InetConnectionService ) {
-    super( translate, cd, () => {
+    super( translate, cd, msgService, () => {
       this.roleOptions = this.createRoleOptions();
       this.stateOptions = this.createStateOptions();
       const expiresOnControl = this.userForm.get( 'expiresOn' );
@@ -69,9 +70,6 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
     this.roleOptions = this.createRoleOptions();
     this.stateOptions = this.createStateOptions();
 
-    this.errMsgs$ = this.msgService.msgs$;
-
-    this.msgService.clear();
     this.userForm = this.fb.group( {
       emailOrigin: [ null ],
       firstName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],

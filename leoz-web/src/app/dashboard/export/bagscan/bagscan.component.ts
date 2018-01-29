@@ -27,6 +27,7 @@ import { PrintingService } from '../../../core/printing/printing.service';
 import { BagscanReportingService } from '../../../core/reporting/bagscan-reporting.service';
 import { TYPE_VALUABLE } from '../../../core/constants';
 import { ElectronService } from '../../../core/electron/electron.service';
+import { MsgService } from '../../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-bagscan',
@@ -88,12 +89,13 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
                private bagscanService: BagscanService,
                public translate: TranslateService,
                protected cd: ChangeDetectorRef,
+               protected msgService: MsgService,
                private keyUpService: KeyUpEventService,
                private soundService: SoundService,
                private reportingService: BagscanReportingService,
                private printingService: PrintingService,
                private electronService: ElectronService ) {
-    super( translate, cd, () => {
+    super( translate, cd, msgService, () => {
       this.baglists = this.createBaglistItems( this.baglistItems );
     } );
   }
