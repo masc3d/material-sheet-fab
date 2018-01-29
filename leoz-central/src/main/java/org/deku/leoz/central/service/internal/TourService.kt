@@ -24,7 +24,6 @@ import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
 import org.deku.leoz.service.internal.id
-import org.deku.leoz.time.toShortTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -38,6 +37,7 @@ import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
 import sx.rs.RestProblem
 import sx.time.toTimestamp
+import sx.util.letWithParamNotNull
 import sx.util.toNullable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -161,7 +161,6 @@ class TourServiceV1
 
             tour.stops
                     .forEachIndexed { index, stop ->
-                        // Select stop tour entry which matches custom id
                         val entryRecord = entryRecords.first { it.id == stop.id }
 
                         val newPosition = (index + 1).toDouble()
@@ -207,38 +206,15 @@ class TourServiceV1
 
         val tourRecords =
                 this.tourRepo.findAll(BooleanBuilder()
-                        .let {
-                            when {
-                                debitorId != null -> it.and(tadTour.userId.`in`(
-                                        userRepository.findUserIdsByDebitor(debitorId.toInt()).map { it.toLong() }
-                                ))
-                                else -> it
-                            }
-                        }
-                        .let {
-                            when {
-                                stationNo != null -> it.and(tadTour.stationNo.eq(stationNo))
-                                else -> it
-                            }
-                        }
-                        .let {
-                            when {
-                                userId != null -> it.and(tadTour.userId.eq(userId))
-                                else -> it
-                            }
-                        }
-                        .let {
-                            when {
-                                from != null -> it.and(tadTour.date.goe(from.toString()))
-                                else -> it
-                            }
-                        }
-                        .let {
-                            when {
-                                to != null -> it.and(tadTour.date.loe(to.toString()))
-                                else -> it
-                            }
-                        }
+                        .letWithParamNotNull(debitorId, {
+                            and(tadTour.userId.`in`(
+                                    userRepository.findUserIdsByDebitor(it.toInt()).map { it.toLong() }
+                            ))
+                        })
+                        .letWithParamNotNull(stationNo, { and(tadTour.stationNo.eq(it)) })
+                        .letWithParamNotNull(userId, { and(tadTour.userId.eq(it)) })
+                        .letWithParamNotNull(from, { and(tadTour.date.goe(it.toString())) })
+                        .letWithParamNotNull(to, { and(tadTour.date.loe(it.toString())) })
                 )
                         .also {
                             if (it.count() == 0) {
