@@ -60,7 +60,7 @@ dependencies {
             // Ini/conf file support
             "org.ini4j:ini4j:0.5.4",
 
-            "com.github.jnr:jnr-posix:3.0.43"
+            "com.github.jnr:jnr-posix:3.0.44"
     )
 
     testCompile(
