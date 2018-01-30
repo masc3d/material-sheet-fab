@@ -48,7 +48,7 @@ ext {
 
 buildscript {
     ext {
-        v_flyway = '5.0.6'
+        v_flyway = '5.0.7'
         v_mysql = '5.1.45'
 
         DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
