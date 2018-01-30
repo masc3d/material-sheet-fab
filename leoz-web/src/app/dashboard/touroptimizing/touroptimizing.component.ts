@@ -10,6 +10,7 @@ import { MsgService } from '../../shared/msg/msg.service';
 import { Observable } from 'rxjs/Observable';
 import { Message } from 'primeng/primeng';
 import { roundDecimals } from '../../core/math/roundDecimals';
+import { InetConnectionService } from '../../core/inet-connection.service';
 
 @Component( {
   selector: 'app-touroptimizing',
@@ -58,12 +59,31 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
         this.toursQuota = this.getToursQuota( tours );
         this.cd.markForCheck();
       } );
+    this.touroptimizingService.latestDeliverylistModification$
+      .takeUntil( this.ngUnsubscribe )
+      .subscribe( ( someTimestamp: number ) => {
+        if (this.tours && this.tours.length > 0
+          && new Date( this.tours[ 0 ].created ).getTime() < someTimestamp) {
+          console.log( '...tours potencially outdated' );
+        }
+      } );
     this.touroptimizingService.getTours();
+
+    // ALEX: better solution would be SSE
+    this.repeatCheckLatestModDate( this );
+  }
+
+  private repeatCheckLatestModDate( $this: TouroptimizingComponent ) {
+    setTimeout( function () {
+      $this.touroptimizingService.getDeliverylists( [ $this.touroptimizingService.latestModDate ] );
+      $this.msgService.info('unnötige peridische Requests besser durch SSE ersetzen');
+      $this.repeatCheckLatestModDate( $this );
+    }, 5000 );
   }
 
   private getToursQuota( tours: Tour[] ) {
     return tours.length > 0
-      ? roundDecimals((tours.filter( tour => tour.optimized ).length) / (tours.length) * 100, 1)
+      ? roundDecimals( (tours.filter( tour => tour.optimized ).length) / (tours.length) * 100, 1 )
       : 0;
   }
 

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { TourListItem } from '../../core/models/tour-list-item.model';
+import * as moment from 'moment';
 
 @Component( {
   selector: 'app-tourlistitem',
@@ -14,7 +15,8 @@ import { TourListItem } from '../../core/models/tour-list-item.model';
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas fa-balance-scale"></i></div>
       <div class="ui-g-12 ui-lg-1">{{listItem.totalWeight}}</div>
       <div class="ui-g-12 ui-lg-2">&nbsp;</div>
-      <div class="ui-g-12 ui-lg-6">&nbsp;</div>
+      <div class="ui-g-12 ui-lg-1">&nbsp;</div>
+      <div class="ui-g-12 ui-lg-5">{{formattedCreatetime}}</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="far fa-clock"></i></div>
       <div class="ui-g-12 ui-lg-1">{{listItem.time}}</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas fa-road"></i></div>
@@ -49,9 +51,14 @@ import { TourListItem } from '../../core/models/tour-list-item.model';
     }
   ` ]
 } )
-export class TourlistitemComponent {
-
+export class TourlistitemComponent implements OnInit{
   @Input() listItem: TourListItem;
+
   @Input() faIcon: string;
+  formattedCreatetime: string;
+
+  ngOnInit() {
+    this.formattedCreatetime = moment(this.listItem.created).format( 'YYYY-MM-DD HH:mm:ss' );
+  }
 
 }

@@ -24,6 +24,9 @@ export class TouroptimizingService {
   private toursSubject = new BehaviorSubject<Tour[]>( [] );
   public tours$ = this.toursSubject.asObservable().distinctUntilChanged();
 
+  private latestDeliverylistModificationSubject = new BehaviorSubject<number>( 0);
+  public latestDeliverylistModification$ = this.latestDeliverylistModificationSubject.asObservable().distinctUntilChanged();
+
   // private stationNo: string;
   // private allDeliverylistsUrl: string;
 
@@ -37,7 +40,7 @@ export class TouroptimizingService {
     const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
     this.toursSubject.next( [] );
     /**
-     * vorerst nur station-no übergeben, bis Service angepasst ist
+     * ALEX: vorerst nur station-no übergeben, bis Service angepasst ist
      */
     this.http.get<Tour[]>( this.allToursUrl, {
       params: new HttpParams()
@@ -46,7 +49,7 @@ export class TouroptimizingService {
       .subscribe( ( tours ) => {
           if (tours.length === 0) {
             // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
-            this.getDeliverylists( this.generateTours );
+            this.getDeliverylists( [this.generateTours, this.latestModDate] );
           } else {
             this.processTourData( this, tours );
           }
@@ -54,7 +57,7 @@ export class TouroptimizingService {
         ( error: HttpErrorResponse ) => {
           if (error.status === 404) {
             // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
-            this.getDeliverylists( this.generateTours );
+            this.getDeliverylists( [this.generateTours, this.latestModDate] );
           } else {
             this.ics.isOffline();
             this.toursSubject.next( [] );
@@ -106,9 +109,9 @@ export class TouroptimizingService {
     this.toursSubject.next( tmpArr );
   }
 
-  private getDeliverylists( successCallback: Function ) {
+  public getDeliverylists( successCallbacks: Function[] ) {
     /**
-     * alle aktuellen delivarylists holen
+     * ALEX: alle aktuellen delivarylists holen
      * URL internal/v1/deliverylist/info`; // ?=2018-01-12
      * liefert auch leere Rollkarten d.h. Deliverylist.orders.stops.tasks.removed = true
      * und kann nicht auf Stationsebene gefiltert werden
@@ -118,7 +121,7 @@ export class TouroptimizingService {
         .set( 'delivery-date', this.wds.deliveryDateForWS() )
     } ).subscribe( ( deliverylists ) => {
         // result => Touren generieren => this.toursSubject.next( result );
-        successCallback( this, deliverylists.map( dl => dl.id ) );
+        successCallbacks.forEach( successCallback => successCallback(this, deliverylists ) );
       },
       ( _ ) => {
         this.ics.isOffline();
@@ -126,8 +129,16 @@ export class TouroptimizingService {
       } );
   }
 
-  private generateTours = function ( $this: TouroptimizingService, deliverylistIds: number[] ) {
-    $this.http.post<Tour[]>( $this.generateToursUrl, deliverylistIds )
+  public latestModDate = function ( $this: TouroptimizingService, deliverylists: Deliverylist[] ) {
+    let latestModTimestamp = 0;
+    if(deliverylists.length > 0) {
+      latestModTimestamp = Math.max(...deliverylists.map(dl => new Date(dl.modified).getTime()));
+    }
+    $this.latestDeliverylistModificationSubject.next(latestModTimestamp);
+  };
+
+  private generateTours = function ( $this: TouroptimizingService, deliverylists: Deliverylist[] ) {
+    $this.http.post<Tour[]>( $this.generateToursUrl, deliverylists.map( dl => dl.id ) )
       .subscribe( ( tours ) => {
           $this.processTourData( $this, tours );
         },

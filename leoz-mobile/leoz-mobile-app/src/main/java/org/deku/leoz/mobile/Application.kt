@@ -112,7 +112,7 @@ open class Application : MultiDexApplication() {
     override fun onTerminate() {
         log.trace("ONTERMINATE")
 //        this.unregisterBroadcastReceiver()
-        stopLocationServices()
+        // stopLocationServices()
         super.onTerminate()
     }
 
@@ -167,12 +167,7 @@ open class Application : MultiDexApplication() {
 
     fun isServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.name == service.service.className) {
-                return true
-            }
-        }
-        return false
+        return manager.getRunningServices(Integer.MAX_VALUE).any { serviceClass.name == it.service.className }
     }
 
     /**
