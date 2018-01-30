@@ -616,7 +616,7 @@ abstract class Activity : BaseActivity(),
             }
 
             R.id.nav_logout -> {
-                (this.application as Application).stopLocationServices()
+                // (this.application as Application).stopLocationServices()
                 this.login.logout()
             }
         }
