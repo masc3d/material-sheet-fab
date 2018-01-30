@@ -28,6 +28,10 @@ export class MsgService {
     } ] );
   }
 
+  info( text: string ) {
+    this.msgsSubject.next( <Message[]>  [ { severity: 'info', summary: '', detail: this.translate.instant( text ) } ] );
+  }
+
   error( text: string ): void {
     this.msgsSubject.next( <Message[]>  [ { severity: 'warn', summary: '', detail: this.translate.instant( text ) } ] );
   }
