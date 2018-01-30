@@ -48,9 +48,9 @@ interface TourServiceV1 {
             stationNo: Long?,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
             userId: Long?,
-            @QueryParam(FROM)  @ApiParam(example ="2018-01-27", value = "From (tour) date", required = false)
+            @QueryParam(FROM) @ApiParam(example = "2018-01-27", value = "From (tour) date", required = false)
             from: ShortDate?,
-            @QueryParam(TO)  @ApiParam(example ="2018-01-27", value = "To (tour) date", required = false)
+            @QueryParam(TO) @ApiParam(example = "2018-01-27", value = "To (tour) date", required = false)
             to: ShortDate?
     ): List<Tour>
 
@@ -306,6 +306,8 @@ interface TourServiceV1 {
                         example = "500.0")
                 var capacity: Double = 500.0
         )
+
+
     }
 
     /**
@@ -329,7 +331,10 @@ interface TourServiceV1 {
             /** Node uid requesting optimization */
             var nodeUid: String? = null,
             /** Tour optimization options */
-            var options: TourOptimizationOptions = TourOptimizationOptions()
+            var options: TourOptimizationOptions = TourOptimizationOptions(),
+
+            /** Override start location with specific station address (for testing) */
+            var startStationNo: Int? = null
     )
 
     /**

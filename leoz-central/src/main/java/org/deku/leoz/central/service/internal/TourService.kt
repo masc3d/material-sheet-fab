@@ -16,6 +16,7 @@ import org.deku.leoz.node.data.jpa.QTadTour.tadTour
 import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
 import org.deku.leoz.node.data.jpa.TadTourEntry
+import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.node.data.repository.TadTourEntryRepository
 import org.deku.leoz.node.data.repository.TadTourRepository
 import sx.persistence.transaction
@@ -23,6 +24,8 @@ import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
+import org.deku.leoz.service.internal.entity.Address
+import org.deku.leoz.service.internal.entity.GeoLocation
 import org.deku.leoz.service.internal.id
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
@@ -87,6 +90,8 @@ class TourServiceV1
     private lateinit var tourRepo: TadTourRepository
     @Inject
     private lateinit var tourEntryRepo: TadTourEntryRepository
+    @Inject
+    private lateinit var stationRepo: StationRepository
 
     @Inject
     private lateinit var orderService: OrderService
@@ -859,6 +864,31 @@ class TourServiceV1
         val nodeUid = message.nodeUid ?: run {
             log.warn("Tour optimization request received without node uid")
             return
+        }
+
+        message.startStationNo?.also { stationNo ->
+            val station = stationRepo.findByStation(stationNo)
+            when (station) {
+                null -> log.warn("Station no [${stationNo}] doesn't exist")
+                else -> {
+                    // Override start address with station
+                    message.options.start = Address(
+                            street = station.street,
+                            streetNo = station.houseNr,
+                            zipCode = station.zip,
+                            countryCode = station.country,
+                            city = station.city,
+                            geoLocation = if (
+                                    station.posLat != null && station.posLong != null &&
+                                    station.posLat != 0.0 && station.posLong != 0.0)
+                                GeoLocation(
+                                        latitude = station.posLat,
+                                        longitude = station.posLong
+                                ) else null
+                    )
+                }
+            }
+
         }
 
         try {
