@@ -118,7 +118,7 @@ dependencies {
             "com.trello.rxlifecycle2:rxlifecycle-kotlin:$v_rxlifecycle",
             "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle",
             "com.trello.rxlifecycle2:rxlifecycle-android:$v_rxlifecycle",
-            "com.jakewharton.rxbinding2:rxbinding:2.0.0",
+            "com.jakewharton.rxbinding2:rxbinding:2.1.0",
 
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
