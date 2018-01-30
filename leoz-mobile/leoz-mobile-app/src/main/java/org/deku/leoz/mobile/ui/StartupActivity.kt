@@ -47,6 +47,7 @@ class StartupActivity : BaseActivity() {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
+    val locationSettings: LocationSettings by Kodein.global.lazy.instance()
 
     companion object {
         val EXTRA_ACTIVITY = "ACTIVITY"
@@ -85,6 +86,20 @@ class StartupActivity : BaseActivity() {
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
+
+        // Start location based services
+        when {
+            (locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationServiceGMS::class.java)) -> {
+                ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
+            }
+
+            (!locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationService::class.java)) -> {
+                ContextCompat.startForegroundService(this, Intent(applicationContext, LocationService::class.java))
+            }
+            else -> {
+                log.debug("LocationService already running.")
+            }
+        }
 
         if (!this.app.isInitialized) {
 
@@ -140,24 +155,8 @@ class StartupActivity : BaseActivity() {
                                     val identity: Identity = Kodein.global.instance()
                                     log.info(identity.toString())
 
-                                    val locationSettings: LocationSettings by Kodein.global.lazy.instance()
-
                                     // Initialize ThreeTen (java.time / JSR-310 compatibility drop-in)
                                     AndroidThreeTen.init(this.application)
-
-                                    // Start location based services
-                                    when {
-                                        (locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationServiceGMS::class.java)) -> {
-                                            ContextCompat.startForegroundService(this, Intent(applicationContext, LocationServiceGMS::class.java))
-                                        }
-
-                                        (!locationSettings.useGoogleLocationService && !this.app.isServiceRunning(LocationService::class.java)) -> {
-                                            ContextCompat.startForegroundService(this, Intent(applicationContext, LocationService::class.java))
-                                        }
-                                        else -> {
-                                            log.debug("LocationService already running.")
-                                        }
-                                    }
 
                                     // Write device management identity
                                     try {
