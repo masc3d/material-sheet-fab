@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui.process
 
+import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -25,12 +26,12 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
-import org.deku.leoz.mobile.BR
-import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.databinding.ScreenDeliveryStopListBinding
+import org.deku.leoz.mobile.databinding.ViewOptimizationOptionsBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
+import org.deku.leoz.mobile.model.OptimizationOptions
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
@@ -60,6 +61,7 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHolder
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
+import sx.log.slf4j.trace
 import sx.rx.ObservableRxProperty
 
 /**
@@ -79,6 +81,8 @@ class TourScreen
     private val feedback: Feedback by Kodein.global.lazy.instance()
 
     private val listener by lazy { this.activity as? Listener }
+
+    private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
 
     // Model classes
     private val db: Database by Kodein.global.lazy.instance()
@@ -502,7 +506,13 @@ class TourScreen
     fun optimize() {
         var subscription: Disposable? = null
 
+        /** Service layer optimization options */
         val options = TourServiceV1.TourOptimizationOptions()
+
+        /** Mobile optimization options (will be translated to service layer) */
+        val mobileOptions = sharedPrefs.getObject(
+                SharedPreference.OPTIMIZATION_OPTIONS.key,
+                OptimizationOptions::class.java)
 
         fun optimize() {
             val progressDialog = MaterialDialog.Builder(this.activity)
@@ -525,7 +535,8 @@ class TourScreen
             }
 
             subscription = tourService.optimize(
-                    options = options
+                    options = options,
+                    startStationNo = mobileOptions.stationNo
             )
                     // `Single`s that may be disposed before completion must be converted to observables
                     // in order to mitigate https://github.com/trello/RxLifecycle/issues/217
@@ -577,39 +588,34 @@ class TourScreen
                 R.string.tour_optimization_settings_traffic
         )
 
+
+        val optionsViewBinding = DataBindingUtil.inflate<ViewOptimizationOptionsBinding>(
+                this.layoutInflater,
+                R.layout.view_optimization_options,
+                null,
+                false)
+
+        optionsViewBinding.setVariable(BR.options, mobileOptions)
+        optionsViewBinding.executePendingBindings()
+
         MaterialDialog.Builder(this.activity)
                 .title(R.string.tour_optimization_settings)
                 .cancelable(true)
+                .customView(optionsViewBinding.root, true)
                 .positiveText("Optimize")
-                .inputType(InputType.TYPE_CLASS_TEXT)
-                .items(*settings.map { this.getText(it) }.toTypedArray())
-                .itemsCallbackMultiChoice(
-                        // Preselection
-                        arrayOf(
-                                R.string.tour_optimization_settings_traffic,
-                                R.string.tour_optimization_settings_shift_appointments
-                        ).map { settings.indexOf(it) }.toTypedArray(),
-                        // Callback
-                        { _, which, text ->
-                            settings.forEachIndexed { index, i ->
-                                val checked = which.contains(index)
+                .dismissListener {
+                    sharedPrefs.putObject(
+                            SharedPreference.OPTIMIZATION_OPTIONS.key,
+                            mobileOptions
+                    )
+                }
+                .onPositive { dialog, which ->
+                    options.appointments.omit = mobileOptions.omitAppointments
+                    options.appointments.shiftDaysFromNow = if (mobileOptions.shiftAppointments) 1 else null
+                    options.traffic = mobileOptions.traffic
 
-                                when (i) {
-                                    R.string.tour_optimization_settings_omit_appointments ->
-                                        options.appointments.omit = checked
-
-                                    R.string.tour_optimization_settings_shift_appointments ->
-                                        options.appointments.shiftDaysFromNow = if (checked) 1 else null
-
-                                    R.string.tour_optimization_settings_traffic ->
-                                        options.traffic = checked
-                                }
-                            }
-
-                            optimize()
-
-                            true
-                        })
+                    optimize()
+                }
 
                 .build()
                 .show()

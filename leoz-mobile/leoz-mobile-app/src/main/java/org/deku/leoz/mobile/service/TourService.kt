@@ -49,9 +49,11 @@ class TourService : MqHandler<Any> {
     /**
      * Performs an observable tour optimimzation
      * @param options Optimization options
+     * @param startStationNo Override route start with station number
      */
     fun optimize(
-            options: TourServiceV1.TourOptimizationOptions
+            options: TourServiceV1.TourOptimizationOptions,
+            startStationNo: Int? = null
     ): Single<TourServiceV1.TourOptimizationResult> {
         // Unique request id for message based request
         val requestUid = UUID.randomUUID().toString()
@@ -84,7 +86,8 @@ class TourService : MqHandler<Any> {
                             TourServiceV1.TourOptimizationRequest(
                                     requestUid = requestUid,
                                     nodeUid = identity.uid.value,
-                                    options = options
+                                    options = options,
+                                    startStationNo = startStationNo
                             ).also {
                                 log.trace { "Sending optimization request [${it}]" }
                             }

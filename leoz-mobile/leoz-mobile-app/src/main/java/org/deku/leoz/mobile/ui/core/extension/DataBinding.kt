@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.core.extension
 
 import android.databinding.BindingAdapter
+import android.databinding.InverseBindingAdapter
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.support.transition.TransitionManager
@@ -9,8 +10,10 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import org.slf4j.LoggerFactory
 import sx.android.view.CircularProgressView
+
 
 /**
  * Data binding adatpers
@@ -85,5 +88,16 @@ class DataBindingAdatpers {
         fun setProgress(view: CircularProgressView, progress: Float) {
             view.progress = progress
         }
+
+        @BindingAdapter("android:text")
+        @JvmStatic
+        fun setText(view: TextView, value: Int?) {
+            view.text = value?.toString()
+        }
+
+        @InverseBindingAdapter(attribute = "android:text")
+        @JvmStatic
+        fun getText(view: TextView): Int? =
+                try { view.text?.toString()?.toInt() } catch (e: Throwable) { null }
     }
 }

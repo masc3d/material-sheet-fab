@@ -142,6 +142,7 @@
 
     <string name="hint_field_mail">Email Address</string>
     <string name="hint_field_password">Password</string>
+    <string name="hint_field_station_no">Station No</string>
     <string name="hint_leadseal_white_not_yellow">Scan white lead-seal! Not yellow!</string>
     <string name="hint_not_available">Not available</string>
     <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>

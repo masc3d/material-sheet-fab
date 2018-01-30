@@ -24,6 +24,7 @@
                 android:layout_marginBottom="6dp"
                 android:layout_marginEnd="@dimen/margin"
                 app:srcCompat="@drawable/ic_email_black"
+                android:tint="@color/colorDarkGrey"
                 android:contentDescription="TODO"/>
 
             <android.support.design.widget.TextInputLayout
@@ -63,6 +64,7 @@
                 android:layout_marginBottom="6dp"
                 android:layout_marginEnd="@dimen/margin"
                 app:srcCompat="@drawable/ic_lock"
+                android:tint="@color/colorDarkGrey"
                 android:contentDescription="TODO"/>
 
             <android.support.design.widget.TextInputLayout
