@@ -93,6 +93,7 @@
 -dontwarn sx.jsch.**
 -dontwarn sx.junit.**
 -dontwarn sx.mq.**
+-dontwarn sx.persistence.querydsl.**
 -dontwarn sx.platform.**
 -dontwarn sx.rs.**
 -dontwarn sx.EmbeddedExecutable**
