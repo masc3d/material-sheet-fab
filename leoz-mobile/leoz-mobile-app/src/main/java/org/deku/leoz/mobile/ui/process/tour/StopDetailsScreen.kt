@@ -115,7 +115,7 @@ class StopDetailsScreen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
+        val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)!!
         binding.stop = StopViewModel(
                 isStateVisible = true,
                 stop = this.stop,

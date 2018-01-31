@@ -15,7 +15,7 @@ fun <T> ObservableField<T>.toObservable(): Observable<T> {
         val propertyChangedCallback = object : OnPropertyChangedCallback() {
             override fun onPropertyChanged(dataBindingObservable: android.databinding.Observable, propertyId: Int) {
                 if (dataBindingObservable === this) {
-                    it.onNext(this@toObservable.get())
+                    it.onNext(this@toObservable.get()!!)
                 }
             }
         }
@@ -27,6 +27,6 @@ fun <T> ObservableField<T>.toObservable(): Observable<T> {
         }
 
         // Initial/behavioral emission
-        it.onNext(this.get())
+        it.onNext(this.get()!!)
     }
 }

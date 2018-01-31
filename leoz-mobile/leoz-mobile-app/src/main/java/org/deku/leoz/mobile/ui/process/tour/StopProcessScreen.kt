@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui.process.tour
 
+import android.annotation.SuppressLint
 import android.databinding.BaseObservable
 import android.databinding.DataBindingUtil
 import android.graphics.Color
@@ -41,17 +42,17 @@ import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.mobile
-import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.DeliveryStop
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.toMaterialSimpleListItem
 import org.deku.leoz.mobile.settings.DebugSettings
+import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.extension.inflateMenu
-import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.deku.leoz.mobile.ui.process.TourScreen
 import org.deku.leoz.mobile.ui.process.tour.stop.*
@@ -354,7 +355,7 @@ class StopProcessScreen :
 
         closeStopMenu.findItem(R.id.action_deliver_postbox).isVisible =
                 this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
-                        !this.deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+                !this.deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
 
         this.actionItems = listOf(
                 ActionItem(
@@ -385,7 +386,7 @@ class StopProcessScreen :
         )
         //endregion
 
-        val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)
+        val binding = DataBindingUtil.bind<ItemStopBinding>(this.uxStopItem)!!
         binding.stop = StopViewModel(
                 isStateVisible = true,
                 stop = this.stop,
@@ -398,6 +399,7 @@ class StopProcessScreen :
         super.onDestroyView()
     }
 
+    @SuppressLint("CheckResult")
     override fun onResume() {
         super.onResume()
 
@@ -794,7 +796,7 @@ class StopProcessScreen :
                         // Parcel does not belong to this delivery stop, ask for stop merge
                         feedback.warning()
 
-                        var runnable: Runnable?
+                        val runnable: Runnable?
                         var reverseRunnable: Runnable? = null
                         val animationHandler = Handler()
 
@@ -823,57 +825,53 @@ class StopProcessScreen :
                                 .negativeText(android.R.string.no)
                                 .build()
 
-                        val customView = dialog.customView
-                        val sourceContainer = customView?.findViewById<LinearLayout>(R.id.uxSourceStopContainer)
-                        val targetContainer = customView?.findViewById<LinearLayout>(R.id.uxtargetStopContainer)
-                        val sourceView = customView?.findViewById<View>(R.id.uxSourceStop)
-                        val targetView = customView?.findViewById<View>(R.id.uxTargetStop)
+                        val customView = dialog.customView!!
+                        val sourceContainer = customView.findViewById<LinearLayout>(R.id.uxSourceStopContainer)!!
+                        val targetContainer = customView.findViewById<LinearLayout>(R.id.uxtargetStopContainer)!!
+                        val sourceView = customView.findViewById<View>(R.id.uxSourceStop)!!
+                        val targetView = customView.findViewById<View>(R.id.uxTargetStop)!!
 
                         runnable = Runnable {
-                            if (sourceContainer != null && targetContainer != null) {
-                                sourceContainer.animate()
-                                        .alpha(0f)
-                                        .translationY(100f)
-                                        .setDuration(1500)
-                                        .setStartDelay(2000)
-                                        .withEndAction(reverseRunnable)
-                                        .start()
+                            sourceContainer.animate()
+                                    .alpha(0f)
+                                    .translationY(100f)
+                                    .setDuration(1500)
+                                    .setStartDelay(2000)
+                                    .withEndAction(reverseRunnable)
+                                    .start()
 
-                                targetContainer.animate()
-                                        .translationY(-100f)
-                                        .setDuration(1500)
-                                        .setStartDelay(2000)
-                                        .withEndAction(reverseRunnable)
-                                        .start()
-                            }
+                            targetContainer.animate()
+                                    .translationY(-100f)
+                                    .setDuration(1500)
+                                    .setStartDelay(2000)
+                                    .withEndAction(reverseRunnable)
+                                    .start()
                         }
 
                         reverseRunnable = Runnable {
-                            if (sourceContainer != null && targetContainer != null) {
-                                sourceContainer.animate()
-                                        .alpha(1f)
-                                        .translationY(0f)
-                                        .setDuration(500)
-                                        .setStartDelay(1000)
-                                        .withEndAction(runnable)
-                                        .start()
+                            sourceContainer.animate()
+                                    .alpha(1f)
+                                    .translationY(0f)
+                                    .setDuration(500)
+                                    .setStartDelay(1000)
+                                    .withEndAction(runnable)
+                                    .start()
 
-                                targetContainer.animate()
-                                        .translationY(0f)
-                                        .setDuration(500)
-                                        .setStartDelay(1000)
-                                        .withEndAction(runnable)
-                                        .start()
-                            }
+                            targetContainer.animate()
+                                    .translationY(0f)
+                                    .setDuration(500)
+                                    .setStartDelay(1000)
+                                    .withEndAction(runnable)
+                                    .start()
                         }
 
-                        val bindingSourceStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(sourceView)
+                        val bindingSourceStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(sourceView)!!
                         bindingSourceStop.stop = StopViewModel(
                                 stop = sourceStop,
                                 timerEvent = Observable.empty()
                         )
 
-                        val bindingTargetStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(targetView)
+                        val bindingTargetStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(targetView)!!
                         bindingTargetStop.stop = StopViewModel(
                                 stop = this.deliveryStop.entity,
                                 timerEvent = Observable.empty()

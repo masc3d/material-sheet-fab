@@ -308,18 +308,18 @@ abstract class Activity : BaseActivity(),
         this.setContentView(R.layout.main)
 
         //region Manual bindings
-        DataBindingUtil.bind<ViewUpdateIndicatorBinding>(this.uxUpdateIndicator).also {
+        DataBindingUtil.bind<ViewUpdateIndicatorBinding>(this.uxUpdateIndicator)?.also {
             it.updateService = UpdateServiceViewModel(this.updateService)
         }
 
-        DataBindingUtil.bind<ViewMqIndicatorBinding>(this.uxMqIndicator).also {
+        DataBindingUtil.bind<ViewMqIndicatorBinding>(this.uxMqIndicator)?.also {
             it.mqStatistics = MqStatisticsViewModel(
                     mqttDispatcher = this.mqttDispatcher,
                     mqttEndpoints = this.mqttEndpoints
             )
         }
 
-        DataBindingUtil.bind<ViewConnectivityIndicatorBinding>(this.uxConnectivityIndicator).also {
+        DataBindingUtil.bind<ViewConnectivityIndicatorBinding>(this.uxConnectivityIndicator)?.also {
             it.connectivity = ConnectivityViewModel(this.connectivity)
         }
         //endregion
