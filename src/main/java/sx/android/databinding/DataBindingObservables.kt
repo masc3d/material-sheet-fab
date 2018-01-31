@@ -72,7 +72,7 @@ fun <T> ObservableField<T>.toObservable(): io.reactivex.Observable<T> {
 
         val callback = object : Observable.OnPropertyChangedCallback() {
             override fun onPropertyChanged(observable: android.databinding.Observable, i: Int) {
-                e.onNext(this@toObservable.get())
+                e.onNext(this@toObservable.get()!!)
             }
         }
 
