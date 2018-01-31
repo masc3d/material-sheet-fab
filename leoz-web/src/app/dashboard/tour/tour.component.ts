@@ -8,7 +8,7 @@ import { Message } from 'primeng/primeng';
   template: `
     <h2>{{'tour' | translate}}</h2>
     <div class="mbDashboardContent">
-      <app-msg-box [msgs]="msgs$ | async"></app-msg-box>
+      <app-msg-box [msgs]="msgs$ | async" [sticky]="false"></app-msg-box>
       <app-tour-driver-list></app-tour-driver-list>
       <app-tour-map></app-tour-map>
     </div>

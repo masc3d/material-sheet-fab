@@ -1,5 +1,5 @@
 <!--<form style="padding-top: 10px" class="mbDashboardContent">-->
-<app-msg-box [msgs]="msgs$ | async"></app-msg-box>
+<app-msg-box [msgs]="msgs$ | async" [sticky]="true"></app-msg-box>
 <div class="ui-fluid mbDashboardContent" style="padding-top: 10px">
   <div class="ui-g" style="min-height: 465px;">
     <div class="ui-g-12 ui-lg-6 shadow" style="padding:0; width: 49%; margin-left: 10px;">
@@ -26,7 +26,7 @@
       <div class="ui-g-12 ui-lg-4">
         <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
                         onIcon="far fa-check-square" offIcon="far fa-square"
-                        (onChange)="changeCheckAllTours($event)"></p-toggleButton>
+                        [(ngModel)]="checkAll" (onChange)="changeCheckAllTours($event)"></p-toggleButton>
       </div>
       <div class="ui-g-12 ui-lg-4">
         <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"

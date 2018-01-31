@@ -587,3 +587,9 @@ input[pinputtext]{
 .ui-tabmenu-nav {
   border: none;
 }
+// to close growl on click
+.ui-growl-icon-close {
+  width: 100%;
+  height: 100%;
+  background-image: none!important;
+}

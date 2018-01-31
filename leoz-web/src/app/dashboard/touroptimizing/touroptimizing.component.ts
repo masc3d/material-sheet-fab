@@ -18,8 +18,11 @@ import { InetConnectionService } from '../../core/inet-connection.service';
   styleUrls: [ './touroptimizing.css' ],
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
+
 export class TouroptimizingComponent extends AbstractTranslateComponent implements OnInit {
 
+
+  checkAll: boolean;
   // deliverylists: Deliverylist[];
   toursOrderCount: number;
   toursParcelCount: number;
@@ -64,7 +67,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
       .subscribe( ( someTimestamp: number ) => {
         if (this.tours && this.tours.length > 0
           && new Date( this.tours[ 0 ].created ).getTime() < someTimestamp) {
-          console.log( '...tours potencially outdated' );
+          this.msgService.info('tours-most-likely-outdated');
         }
       } );
     this.touroptimizingService.getTours();
@@ -76,7 +79,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
   private repeatCheckLatestModDate( $this: TouroptimizingComponent ) {
     setTimeout( function () {
       $this.touroptimizingService.getDeliverylists( [ $this.touroptimizingService.latestModDate ] );
-      $this.msgService.info('unnötige peridische Requests besser durch SSE ersetzen');
+      // $this.msgService.info('unnötige periodische Requests besser durch SSE ersetzen');
       $this.repeatCheckLatestModDate( $this );
     }, 5000 );
   }
@@ -117,6 +120,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
       .filter( tour => tour.selected )
       .map( tour => tour.id );
     this.touroptimizingService.optimizeAndReinitTours( selectedTourIds );
+    this.checkAll = false;
   }
 
   resetTours() {

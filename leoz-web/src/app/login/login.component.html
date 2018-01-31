@@ -3,7 +3,7 @@
     <div class="content-header">
       <h2>{{'login' | translate}}</h2>
     </div>
-    <app-msg-box [msgs]="msgs$ | async"></app-msg-box>
+    <app-msg-box [msgs]="msgs$ | async" [sticky]="false"></app-msg-box>
     <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
       <div class="ui-fluid">
         <div class="ui-g">
