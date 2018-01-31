@@ -56,7 +56,7 @@ buildscript {
         // masc20180118. TODO: 2.1.0 snapshot required for kt-1.2.21 compat
         v_spring_data_jpa = '2.1.0.DATAJPA-1234-SNAPSHOT'
         v_spring_data_commons = '2.1.0.DATACMNS-1245-SNAPSHOT'
-        v_springboot = '2.0.0.M7'
+        v_springboot = '2.0.0.RC1'
         v_sshd = '1.2.0'
         v_swagger = '1.5.18'
         v_swagger_codegen = '2.3.1'
