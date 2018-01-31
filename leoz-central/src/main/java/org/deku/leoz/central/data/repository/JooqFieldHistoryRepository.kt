@@ -46,7 +46,7 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
     val dsl = this.configuration().dsl()
 
     this.fields().forEach {
-        if (this.changed(it)) {
+        if (this.changed(it)) {//changed!=modified
             // TODO: add field history record
 
             val fieldHistoryRecord = dsl.newRecord(Tables.TBLFELDHISTORIE)
@@ -59,11 +59,11 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
             fieldHistoryRecord.belegnummer = unitNo.toDouble()
             fieldHistoryRecord.feldname = it.name
             fieldHistoryRecord.oldvalue = it.original(this)?.toString() ?: ""
-            fieldHistoryRecord.newvalue = it.getValue(this).toString()
+            fieldHistoryRecord.newvalue = it.getValue(this)?.toString() ?:"null"
             fieldHistoryRecord.changer = changer
             fieldHistoryRecord.point = point
 
-            if(fieldHistoryRecord.oldvalue!=fieldHistoryRecord.newvalue) {
+            if (fieldHistoryRecord.oldvalue != fieldHistoryRecord.newvalue) {
                 fieldHistoryRecord.id = Routines.fTan(dsl.configuration(), counter.FIELD_HISTORY.value).toInt().toUInteger()
                 fieldHistoryRecord.store()
             }
@@ -71,4 +71,8 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
             this.store(it)
         }
     }
+}
+
+fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistoryExportservice(unitNo: Long) {
+    this.storeWithHistory(unitNo, "WEB", "EX")
 }

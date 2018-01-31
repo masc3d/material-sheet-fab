@@ -383,31 +383,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 .execute()
 
 
-        val oldOrderSeal = orderRecord.plombennra?.toLong()?.toString() ?: ""
         orderRecord.plombennra = unRedSeal.value.value.toDouble()
-        if (orderRecord.store() > 0)
-            fieldHistoryRepository.addEntry(
-                    orderId = unitRecord.orderid.toLong(),
-                    unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "plombennra",
-                    oldValue = oldOrderSeal,
-                    newValue = unRedSeal.value.value.toString(),
-                    changer = "WEB",
-                    point = "EX"
-            )
+        orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
 
-        val oldUnitSeal = unitRecord.plombennrc?.toLong()?.toString() ?: ""
+
         unitRecord.plombennrc = unRedSeal.value.value.toDouble()
-        if (unitRecord.store() > 0)
-            fieldHistoryRepository.addEntry(
-                    orderId = unitRecord.orderid.toLong(),
-                    unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "plombennrc",
-                    oldValue = oldUnitSeal,
-                    newValue = unRedSeal.value.value.toString(),
-                    changer = "WEB",
-                    point = "EX"
-            )
+        unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
@@ -638,83 +619,24 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             title = ExportService.ResponseMsg.LL_CHANGED.value//"Loadinglist changed"
 
         }
-        val oldLoadinglist = unitRecord.ladelistennummerd?.toLong()?.toString() ?: ""
         unitRecord.ladelistennummerd = un.value.value.toDouble()
-        if (unitRecord.store() > 0) {
-            fieldHistoryRepository.addEntry(
-                    orderId = unitRecord.orderid.toLong(),
-                    unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "ladelistennummerd",
-                    oldValue = oldLoadinglist,
-                    newValue = un.value.value,
-                    changer = "WEB",
-                    point = "EX"
-            )
-        }
 
         //export erst beim schließen
         //exportUnit(ExportUnitAndOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
 
         if (unitRecord.bagbelegnrc == null || unitRecord.bagbelegnrc != unBack.value.value.toDouble()) {
-            val oldBagUnitNo = unitRecord.bagbelegnrc?.toLong()?.toString() ?: ""
             unitRecord.bagbelegnrc = unBack.value.value.toDouble()
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "bagbelegnrc",
-                        oldValue = oldBagUnitNo,
-                        newValue = unBack.value.value.toString(),
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
         }
         if (unitRecord.bagidnrc == null || unitRecord.bagidnrc != bag.bagNumber!!.toDouble()) {
-            val oldBagNo = unitRecord.bagidnrc?.toLong()?.toString() ?: ""
             unitRecord.bagidnrc = bag.bagNumber!!.toDouble()
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "bagidnrc",
-                        oldValue = oldBagNo,
-                        newValue = bag.bagNumber.toString(),
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
         }
         if (unitRecord.plombennrc == null || unitRecord.plombennrc != unSeal.value.value.toDouble()) {
-            val oldSealNo = unitRecord.plombennrc?.toLong()?.toString() ?: ""
             unitRecord.plombennrc = unSeal.value.value.toDouble()
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "plombennrc",
-                        oldValue = oldSealNo,
-                        newValue = unSeal.value.value.toString(),
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
         }
         if (unitRecord.beladelinie == null || unitRecord.beladelinie != bag.bagNumber!!.toDouble()) {
-            val oldLoad = unitRecord.beladelinie?.toLong()?.toString() ?: ""
             unitRecord.beladelinie = bag.bagNumber!!.toDouble()
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "beladelinie",
-                        oldValue = oldLoad,
-                        newValue = bag.bagNumber.toString(),
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
         }
+        unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
         return mapper.writeValueAsString(title)
@@ -808,124 +730,39 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 .execute()
 
         if (orderRecord.colliesgesamt != 1.toShort()) {
-            val oldCollies = orderRecord.colliesgesamt?.toString() ?: ""
             orderRecord.colliesgesamt = 1
-            if (orderRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "colliesgesamt",
-                        oldValue = oldCollies,
-                        newValue = "1",
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
+            orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         }
 
         bag.ordersToexport = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
         if (bag.ordersToexport.count() == 0) {//backsending empty bag -> weight=1
             if (unitRecord.gewichteffektiv != 1.0) {
-                val oldWeightEff = unitRecord.gewichteffektiv.toString()
                 unitRecord.gewichteffektiv = 1.0
-                if (unitRecord.store() > 0) {
-                    sendStatusRequired = true
-                    fieldHistoryRepository.addEntry(
-                            orderId = unitRecord.orderid.toLong(),
-                            unitNo = unitRecord.colliebelegnr.toLong(),
-                            fieldName = "gewichteffektiv",
-                            oldValue = oldWeightEff,
-                            newValue = "1",
-                            changer = "WEB",
-                            point = "EX"
-                    )
-                }
             }
             if (unitRecord.gewichtreal != 1.0) {
-                val oldWeightReal = unitRecord.gewichtreal.toString()
                 unitRecord.gewichtreal = 1.0
-                if (unitRecord.store() > 0) {
-                    sendStatusRequired = true
-                    fieldHistoryRepository.addEntry(
-                            orderId = unitRecord.orderid.toLong(),
-                            unitNo = unitRecord.colliebelegnr.toLong(),
-                            fieldName = "gewichtreal",
-                            oldValue = oldWeightReal,
-                            newValue = "1",
-                            changer = "WEB",
-                            point = "EX"
-                    )
-                }
 
             }
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
 
             if (orderRecord.gewichtgesamt != 1.0) {
-                val oldWeight = orderRecord.gewichtgesamt?.toString() ?: ""
                 orderRecord.gewichtgesamt = 1.0
-                if (orderRecord.store() > 0) {
-                    sendStatusRequired = true
-                    fieldHistoryRepository.addEntry(
-                            orderId = unitRecord.orderid.toLong(),
-                            unitNo = unitRecord.colliebelegnr.toLong(),
-                            fieldName = "gewichtgesamt",
-                            oldValue = oldWeight,
-                            newValue = "1",
-                            changer = "WEB",
-                            point = "EX"
-                    )
-                }
+                orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
             }
 
         } else {//weight correction
             val weightRealSum = bag.ordersToexport.sumByDouble { it.parcels.sumByDouble { it.realWeight } }
             if (orderRecord.gewichtgesamt != weightRealSum) {
-                val oldWeight = orderRecord.gewichtgesamt?.toString() ?: ""
                 orderRecord.gewichtgesamt = weightRealSum
-                if (orderRecord.store() > 0) {
-                    sendStatusRequired = true
-                    fieldHistoryRepository.addEntry(
-                            orderId = unitRecord.orderid.toLong(),
-                            unitNo = unitRecord.colliebelegnr.toLong(),
-                            fieldName = "gewichtgesamt",
-                            oldValue = oldWeight,
-                            newValue = weightRealSum.toString(),
-                            changer = "WEB",
-                            point = "EX"
-                    )
-                }
+                orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
             }
             if (unitRecord.gewichtreal != weightRealSum) {
-                val oldWeightReal = unitRecord.gewichtreal.toString()
                 unitRecord.gewichtreal = weightRealSum
-                if (unitRecord.store() > 0) {
-                    sendStatusRequired = true
-                    fieldHistoryRepository.addEntry(
-                            orderId = unitRecord.orderid.toLong(),
-                            unitNo = unitRecord.colliebelegnr.toLong(),
-                            fieldName = "gewichtreal",
-                            oldValue = oldWeightReal,
-                            newValue = weightRealSum.toString(),
-                            changer = "WEB",
-                            point = "EX"
-                    )
-                }
             }
             if (unitRecord.gewichteffektiv != weightRealSum) {
-                val oldWeightEff = unitRecord.gewichteffektiv.toString()
                 unitRecord.gewichteffektiv = weightRealSum
-                if (unitRecord.store() > 0) {
-                    sendStatusRequired = true
-                    fieldHistoryRepository.addEntry(
-                            orderId = unitRecord.orderid.toLong(),
-                            unitNo = unitRecord.colliebelegnr.toLong(),
-                            fieldName = "gewichteffektiv",
-                            oldValue = oldWeightEff,
-                            newValue = weightRealSum.toString(),
-                            changer = "WEB",
-                            point = "EX"
-                    )
-                }
             }
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
             bag.ordersToexport.forEach { parcels ->
                 parcels.parcels.forEach {
                     val inBagexportUnitOrder = getAndCheckUnit(DekuUnitNumber.parse(it.parcelNo.toString().padStart(11, '0')).value.label, stationNo)
@@ -938,19 +775,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
         if (sendStatusRequired) {
             if (orderRecord.sendstatus.toInt() != 0) {
-                val oldSendstate = orderRecord.sendstatus?.toString() ?: ""
                 orderRecord.sendstatus = 0
-                if (orderRecord.store() > 0) {
-                    fieldHistoryRepository.addEntry(
-                            orderId = unitRecord.orderid.toLong(),
-                            unitNo = unitRecord.colliebelegnr.toLong(),
-                            fieldName = "sendstatus",
-                            oldValue = oldSendstate,
-                            newValue = "0",
-                            changer = "WEB",
-                            point = "EX"
-                    )
-                }
+                orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
             }
         }
     }
@@ -1273,60 +1099,27 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         )
                         val routing = routingService.request(routingRequest)
                         if (orderRecord.verladedatum.toTimestamp() != routing.sendDate!!.date.toTimestamp()) {
-                            val oldSendDate = orderRecord.verladedatum?.toGregorianLongDateString() ?: ""
 
                             orderRecord.verladedatum = routing.sendDate!!.date.toTimestamp()
                             //orderRecord.feiertag_1 = routing.sendDate!!.date.toLocalDate().dayOfWeek.toString()
                             orderRecord.feiertag_1 = routing.sendDate!!.date.toLocalDate().dayOfWeek.getDisplayName(TextStyle.FULL, Locale.GERMAN)
                             orderRecord.feiertagshls = DayTypeKey.valueOf(routing.sender!!.dayType.toUpperCase()).value
-                            if (orderRecord.store() > 0) {
-                                fieldHistoryRepository.addEntry(
-                                        orderId = unitRecord.orderid.toLong(),
-                                        unitNo = unitRecord.colliebelegnr.toLong(),
-                                        fieldName = "verladedatum",
-                                        oldValue = oldSendDate,
-                                        newValue = routing.sendDate!!.date.toTimestamp().toGregorianLongDateString(),
-                                        changer = "WEB",
-                                        point = "EX"
-                                )
-                            }
+                            orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
                         }
 //                        if (orderRecord.dtauslieferung == null
 //                                || orderRecord.dtauslieferung.toTimestamp() != routing.deliveryDate!!.date.toTimestamp()
 //                                ) {
                         //if (doUpdateDelivery) {
                         if (doUpdateDelivery || orderRecord.dtauslieferung.toTimestamp() < routing.deliveryDate!!.date.toTimestamp()) {
-                            val oldDeliveryDate = orderRecord.dtauslieferung?.toGregorianLongDateString() ?: ""
                             orderRecord.dtauslieferung = routing.deliveryDate!!.date.toTimestamp()
                             //orderRecord.feiertag_2 = routing.deliveryDate!!.date.toLocalDate().dayOfWeek.toString()
                             orderRecord.feiertag_2 = routing.deliveryDate!!.date.toLocalDate().dayOfWeek.getDisplayName(TextStyle.FULL, Locale.GERMAN)
                             orderRecord.feiertagshld = DayTypeKey.valueOf(routing.consignee!!.dayType.toUpperCase()).value
-                            if (orderRecord.store() > 0) {
-                                fieldHistoryRepository.addEntry(
-                                        orderId = unitRecord.orderid.toLong(),
-                                        unitNo = unitRecord.colliebelegnr.toLong(),
-                                        fieldName = "dtauslieferung",
-                                        oldValue = oldDeliveryDate,
-                                        newValue = routing.deliveryDate!!.date.toTimestamp().toGregorianLongDateString(),
-                                        changer = "WEB",
-                                        point = "EX"
-                                )
-                            }
+                            orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
                         }
                         if (orderRecord.sendstatus.toInt() != 0) {
-                            val oldSendstate = orderRecord.sendstatus?.toString() ?: ""
                             orderRecord.sendstatus = 0
-                            if (orderRecord.store() > 0) {
-                                fieldHistoryRepository.addEntry(
-                                        orderId = unitRecord.orderid.toLong(),
-                                        unitNo = unitRecord.colliebelegnr.toLong(),
-                                        fieldName = "sendstatus",
-                                        oldValue = oldSendstate,
-                                        newValue = "0",
-                                        changer = "WEB",
-                                        point = "EX"
-                                )
-                            }
+                            orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
                         }
 
                     }
@@ -1336,49 +1129,14 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                         //sendstatus=0 if !=0
                         //collies korregieren falls erstlieferstatus=0 oder 8-30
                         orderRecord.lockflag = 0
-                        if (orderRecord.store() > 0) {
-                            fieldHistoryRepository.addEntry(
-                                    orderId = unitRecord.orderid.toLong(),
-                                    unitNo = unitRecord.colliebelegnr.toLong(),
-                                    fieldName = "lockflag",
-                                    oldValue = "3",
-                                    newValue = "0",
-                                    changer = "WEB",
-                                    point = "EX"
-                            )
-                        }
                         if (!orderRecord.sdgstatus.equals("S", true)) {
-                            val oldSdgstate = orderRecord.sdgstatus ?: ""
                             orderRecord.sdgstatus = "S"
-                            if (orderRecord.store() > 0) {
-                                fieldHistoryRepository.addEntry(
-                                        orderId = unitRecord.orderid.toLong(),
-                                        unitNo = unitRecord.colliebelegnr.toLong(),
-                                        fieldName = "sdgstatus",
-                                        oldValue = oldSdgstate,
-                                        newValue = "S",
-                                        changer = "WEB",
-                                        point = "EX"
-                                )
-                            }
                         }
                         if (orderRecord.sendstatus.toInt() != 0) {
-                            val oldSendstate = orderRecord.sendstatus.toString()
                             orderRecord.sendstatus = 0
-                            if (orderRecord.store() > 0) {
-                                fieldHistoryRepository.addEntry(
-                                        orderId = unitRecord.orderid.toLong(),
-                                        unitNo = unitRecord.colliebelegnr.toLong(),
-                                        fieldName = "sendstatus",
-                                        oldValue = oldSendstate,
-                                        newValue = "0",
-                                        changer = "WEB",
-                                        point = "EX"
-                                )
-                            }
                         }
 
-
+                        orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
                     }
 //                    allUnitsOfOrder.forEach {
 //                        if (it.erstlieferstatus.toInt() == 8 && it.erstlieferfehler.toInt() == 30){
@@ -1428,95 +1186,29 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         val orderRecord = eu.order
 
         if (unitRecord.ladelistennummerd == null || unitRecord.ladelistennummerd.toLong() != loadingListNo) {
-            val oldLoadinglist = unitRecord.ladelistennummerd?.toLong()?.toString() ?: ""
             unitRecord.ladelistennummerd = loadingListNo.toDouble()
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "ladelistennummerd",
-                        oldValue = oldLoadinglist,
-                        newValue = loadingListNo.toString(),
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         }
         val workDate = bagServiceCentral.getWorkingDate()
         if (unitRecord.dtausgangdepot2 == null || unitRecord.dtausgangdepot2 != workDate.toTimestamp()) {
-            val oldDtAusgangDepot2 = unitRecord.dtausgangdepot2?.toGregorianLongDateString() ?: ""
             unitRecord.dtausgangdepot2 = workDate.toTimestamp()
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "dtausgangdepot2",
-                        oldValue = oldDtAusgangDepot2,
-                        newValue = workDate.toTimestamp().toGregorianLongDateString(),
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         }
         if (unitRecord.tournr2 == null || unitRecord.tournr2 != 0) {
-            val oldTour2 = unitRecord.tournr2?.toString() ?: ""
             unitRecord.tournr2 = 0
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "tournr2",
-                        oldValue = oldTour2,
-                        newValue = "0",
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         }
         if (unitRecord.iScan == null || unitRecord.iScan != -1) {
-            val oldIscan = unitRecord.iScan?.toString() ?: ""
             unitRecord.iScan = -1
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "iScan",
-                        oldValue = oldIscan,
-                        newValue = "-1",
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         }
         if (unitRecord.nued2h2 == null || unitRecord.nued2h2 != -1) {
-            val oldNueD2H2 = unitRecord.nued2h2?.toString() ?: ""
             unitRecord.nued2h2 = -1
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "nued2h2",
-                        oldValue = oldNueD2H2,
-                        newValue = "-1",
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         }
         if (unitRecord.nueh2d2 == null || unitRecord.nueh2d2 != -1) {
-            val oldNueH2D2 = unitRecord.nueh2d2?.toString() ?: ""
             unitRecord.nueh2d2 = -1
-            if (unitRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "nueh2d2",
-                        oldValue = oldNueH2D2,
-                        newValue = "-1",
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         }
         val scanTs = Date()
         val infotext = "WebExport"
@@ -1557,66 +1249,19 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
 
         if (orderRecord.service.toLong() and 134217728.toLong() == 134217728.toLong()) {
-            val oldService = orderRecord.service.toString()
             orderRecord.service = (orderRecord.service.toLong() - 134217728.toLong()).toInt().toUInteger()
-            if (orderRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "service",
-                        oldValue = oldService,
-                        newValue = orderRecord.service.toString(),
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
             if (orderRecord.empfaenger != null && orderRecord.empfaenger.isNotEmpty()) {
-                val oldRecipient = orderRecord.empfaenger
                 orderRecord.empfaenger = null
-                if (orderRecord.store() > 0) {
-                    fieldHistoryRepository.addEntry(
-                            orderId = unitRecord.orderid.toLong(),
-                            unitNo = unitRecord.colliebelegnr.toLong(),
-                            fieldName = "empfaenger",
-                            oldValue = oldRecipient,
-                            newValue = "null",
-                            changer = "WEB",
-                            point = "EX"
-                    )
-                }
             }
+
         }
 
         if (orderRecord.uploadstatus == null || orderRecord.uploadstatus.toInt() != 1) {
-            val oldUploadstatus = orderRecord.uploadstatus?.toString() ?: ""
             orderRecord.uploadstatus = 1
-            if (orderRecord.store() > 0) {
-                fieldHistoryRepository.addEntry(
-                        orderId = unitRecord.orderid.toLong(),
-                        unitNo = unitRecord.colliebelegnr.toLong(),
-                        fieldName = "uploadstatus",
-                        oldValue = oldUploadstatus,
-                        newValue = "1",
-                        changer = "WEB",
-                        point = "EX"
-                )
-            }
         }
 
-        val oldDtSendad2z = orderRecord.dtsendad2z?.toGregorianLongDateTimeString() ?: ""
         orderRecord.dtsendad2z = Date().toTimestamp()
-        if (orderRecord.store() > 0) {
-            fieldHistoryRepository.addEntry(
-                    orderId = unitRecord.orderid.toLong(),
-                    unitNo = unitRecord.colliebelegnr.toLong(),
-                    fieldName = "dtsendad2z",
-                    oldValue = oldDtSendad2z,
-                    newValue = orderRecord.dtsendad2z.toGregorianLongDateTimeString(),
-                    changer = "WEB",
-                    point = "EX"
-            )
-        }
-
+        orderRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
         return ExportUnitOrder(unitRecord, orderRecord)
     }
 

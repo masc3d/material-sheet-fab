@@ -4,6 +4,7 @@ import org.deku.leoz.central.config.DataTestConfiguration
 import org.deku.leoz.central.data.repository.JooqFieldHistoryRepository
 import org.deku.leoz.central.data.repository.JooqParcelRepository
 import org.deku.leoz.central.data.repository.storeWithHistory
+import org.deku.leoz.central.data.repository.storeWithHistoryExportservice
 import org.deku.leoz.model.VehicleType
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -25,8 +26,7 @@ JooqParcelRepository::class
     ]
 )
 class FieldHistoryTest {
-    @Inject
-    private lateinit var fieldHistoryRepository: JooqFieldHistoryRepository
+
 
     @Inject
     private lateinit var parcelRepository: JooqParcelRepository
@@ -36,7 +36,18 @@ fun writeWithHistory(){
         val unitRecord = parcelRepository.findParcelByUnitNumber(2041018753)
         unitRecord ?: return
 
-        unitRecord.tournr2=5
+        unitRecord.tournr2+=1
         unitRecord.storeWithHistory(unitRecord.colliebelegnr.toLong(),"WEBB","EXX")
     }
+
+    @Test
+    fun writeWithHistoryExportservice(){
+        val unitRecord = parcelRepository.findParcelByUnitNumber(2041018753)
+        unitRecord ?: return
+
+        unitRecord.tournr2+=1
+        unitRecord.bemerkung=if(unitRecord.bemerkung==null)unitRecord.tournr2.toString() else unitRecord.bemerkung+unitRecord.tournr2.toString()
+        unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
+    }
 }
+
