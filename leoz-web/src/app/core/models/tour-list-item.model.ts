@@ -1,5 +1,6 @@
 export interface TourListItem {
   id?: number;
+  deliverylistId?: number;
   totalShipments?: number;
   totalPackages?: number;
   totalWeight?: number;
