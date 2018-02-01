@@ -127,7 +127,7 @@ class TourServiceV1
                     it.stationNo = tour.stationNo
                     it.deliverylistId = tour.deliverylistId
                     it.optimized = tour.optimized?.toTimestamp()
-                    it.uid = this.createUid()
+                    it.uid = tour.uid ?: this.createUid()
                     it.date = ShortDate(now).toString()
                     it.created = now.toTimestamp()
                     it.modified = now.toTimestamp()
@@ -147,7 +147,7 @@ class TourServiceV1
                                 Task.Type.DELIVERY -> TaskType.DELIVERY.value
                                 Task.Type.PICKUP -> TaskType.DELIVERY.value
                             }
-                            it.uid = this.createUid()
+                            it.uid = task.uid ?: this.createUid()
                             it.timestamp = now.toTimestamp()
 
                             em.persist(it)
@@ -755,7 +755,8 @@ class TourServiceV1
 
         return this.smartlane.optimize(
                 tour = tour,
-                options = options
+                options = options,
+                uidSupplier = { this.createUid() }
         )
                 .doOnSubscribe {
                     this.optimizations.onStart(tourId)

@@ -7,6 +7,7 @@ import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
+import sx.util.hashWithSha1
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.container.AsyncResponse

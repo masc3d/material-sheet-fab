@@ -14,6 +14,7 @@ import org.deku.leoz.service.internal.uid
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.Inputaddress
+import org.deku.leoz.smartlane.model.Route
 import org.deku.leoz.smartlane.model.Routedeliveryinput
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
@@ -120,7 +121,8 @@ class SmartlaneBridge {
 
     /**
      * Get rest client proxy for specific customer.
-     * This method will authenticate synchronously if necessary.
+     * This method will authenticate synchronously (via `Domain`) if necessary.
+     *
      * @param serviceClass Service class
      * @param customerId Smartlane customer id
      */
@@ -128,14 +130,15 @@ class SmartlaneBridge {
         return this.restClient.proxy(
                 serviceClass,
                 path = customerId,
-                jwtToken = this.domain(customerId).jwtToken)
+                jwtToken = { this.domain(customerId).jwtToken }
+        )
     }
 
     /**
      * Retries an operation which consumes smartlane REST apis in case of token expiry.
      * The REST proxy creation must be part of the observable (not cached) for this extension to work.
      */
-    fun <T> Observable<T>.retryOnTokenExpiry(domain: Domain): Observable<T> {
+    private fun <T> Observable<T>.retryOnTokenExpiry(domain: Domain): Observable<T> {
         // Retry once with token reset when authorization error occurs
         return this.retry(1, { e ->
             if (e is WebApplicationException &&
@@ -155,23 +158,21 @@ class SmartlaneBridge {
      * Optimize a tour
      * @param tour Tour to optimize
      * @param options Optimization options
+     * @param uidSupplier A supplier generating uid's for newly created tours
      * @return Single observable of optimized tours
      */
     fun optimize(
             tour: Tour,
-            options: TourOptimizationOptions
+            options: TourOptimizationOptions,
+            uidSupplier: () -> String
     ): Single<List<Tour>> {
         val domain = domain(customerId)
 
-        return Observable.fromCallable {
-            // Create proxies within observable (@see #retryOnTokenExpiry)
-            this.proxy(RouteExtendedApi::class.java, customerId = customerId)
-        }
-                .flatMap {
-                    it.optimize(tour.toRoutingInput(
-                            options
-                    ))
-                }
+        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+
+        return routeApi.optimize(tour.toRoutingInput(
+                options
+        ))
                 .map { routes ->
                     val now = Date()
                     routes.map { route ->
@@ -186,8 +187,18 @@ class SmartlaneBridge {
                                 .map { it.orderId }.distinct()
                                 .map { orderId -> tour.orders.first { it.id == orderId } }
 
+                        val uid = uidSupplier()
+
+                        routeApi.patchRouteById(
+                            route.id,
+                                Route().also {
+                                    it.customId = uid
+                                }
+                        )
+
                         Tour(
                                 id = null,
+                                uid = uid,
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
                                 stationNo = tour.stationNo,
@@ -196,6 +207,7 @@ class SmartlaneBridge {
                                 stops = stops,
                                 orders = orders
                         )
+                        // TODO: update smartlane route custom ids with generated uids
                     }
                 }
                 .retryOnTokenExpiry(domain)
