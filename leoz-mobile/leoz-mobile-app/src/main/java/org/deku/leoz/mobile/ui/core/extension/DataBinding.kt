@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import org.slf4j.LoggerFactory
 import sx.android.view.CircularProgressView
+import sx.log.slf4j.trace
 
 
 /**
@@ -79,8 +80,10 @@ class DataBindingAdatpers {
         @BindingAdapter("animatedVisibility")
         @JvmStatic
         fun animatedVisibility(view: View, visibility: Int) {
-            TransitionManager.beginDelayedTransition(view.parent as ViewGroup)
-            view.visibility = visibility
+            if (view.visibility != visibility) {
+                TransitionManager.beginDelayedTransition(view.parent as ViewGroup)
+                view.visibility = visibility
+            }
         }
 
         @BindingAdapter("cpv_progress")
