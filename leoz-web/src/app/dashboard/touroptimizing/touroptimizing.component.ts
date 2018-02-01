@@ -124,6 +124,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
   }
 
   resetTours() {
+    this.msgService.clear();
     const tourIds = this.tours.map( tour => tour.id );
     this.touroptimizingService.deleteAndReinitTours( tourIds );
   }
