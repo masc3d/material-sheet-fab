@@ -27,6 +27,8 @@ import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.ui.StartupActivity
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.slf4j.LoggerFactory
+import sx.android.getDrawableCompat
+import sx.android.toBitmap
 import sx.mq.mqtt.channel
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -93,6 +95,7 @@ abstract class BaseLocationService: Service() {
         builder.setContentTitle(getString(R.string.app_name_long))
                 .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
                 .setAutoCancel(true)
+                .setLargeIcon(this.getDrawableCompat(R.drawable.ic_launcher).toBitmap())
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pendingIntent)

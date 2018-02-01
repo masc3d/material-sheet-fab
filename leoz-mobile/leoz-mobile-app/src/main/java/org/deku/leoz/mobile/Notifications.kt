@@ -3,10 +3,13 @@ package org.deku.leoz.mobile
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import org.deku.leoz.mobile.ui.StartupActivity
+import sx.android.getDrawableCompat
+import sx.android.toBitmap
 
 /**
  * Created by prangenberg on 08.11.17.
@@ -45,6 +48,7 @@ class Notifications(val context: Context) {
         val notification = builder.setContentTitle(this.context.getString(R.string.app_name_long))
                 .setContentText("${this.context.getString(R.string.app_name)} ${this.context.getString(R.string.running)}")
                 .setAutoCancel(true)
+                .setLargeIcon(this.context.getDrawableCompat(R.drawable.ic_launcher).toBitmap())
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pendingIntent)
