@@ -43,7 +43,7 @@
                     android:layout_height="match_parent"
                     android:contentDescription="TODO"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/img_street_1"/>
+                    android:src="@mipmap/img_street_1"/>
 
                 <!-- Header overlay -->
                 <FrameLayout

@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="50.384" height="51.125" viewBox="0, 0, 50.384, 51.125">
-  <defs>
-    <linearGradient id="Gradient_1" gradientUnits="userSpaceOnUse" x1="25.155" y1="1.006" x2="26.239" y2="50.116">
-      <stop offset="0.017" stop-color="#4070A3" stop-opacity="0.855"/>
-      <stop offset="1" stop-color="#284C74"/>
-    </linearGradient>
-  </defs>
-  <g id="surface1" transform="translate(-0.5, 0)">
-    <g>
-      <path d="M25.692,50.125 C12.331,50.125 1.5,39.128 1.5,25.563 C1.5,11.997 12.331,1 25.692,1 C39.053,1 49.884,11.997 49.884,25.563 C49.884,39.128 39.053,50.125 25.692,50.125 z" fill="url(#Gradient_1)"/>
-      <path d="M25.692,50.125 C12.331,50.125 1.5,39.128 1.5,25.563 C1.5,11.997 12.331,1 25.692,1 C39.053,1 49.884,11.997 49.884,25.563 C49.884,39.128 39.053,50.125 25.692,50.125 z" fill-opacity="0" stroke="#A1A1A1" stroke-width="1.5" stroke-opacity="0.341"/>
-    </g>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="108pt" height="108pt" viewBox="0 0 108 108" version="1.1">
+<defs>
+<linearGradient id="linear0" gradientUnits="userSpaceOnUse" x1="25.155001" y1="1.006" x2="26.239" y2="50.116001" >
+<stop offset="0.017" style="stop-color:rgb(25.098039%,43.921569%,63.921569%);stop-opacity:0.854902;"/>
+<stop offset="1" style="stop-color:rgb(15.686275%,29.803922%,45.490196%);stop-opacity:1;"/>
+</linearGradient>
+</defs>
+<g id="surface1">
+<path style="fill-rule:nonzero;fill:url(#linear0);stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(63.137255%,63.137255%,63.137255%);stroke-opacity:0.341176;stroke-miterlimit:4;" d="M 25.691696 50.125651 C 12.330874 50.125651 1.500072 39.128038 1.500072 25.562717 C 1.500072 11.997396 12.330874 0.999783 25.691696 0.999783 C 39.052517 0.999783 49.883319 11.997396 49.883319 25.562717 C 49.883319 39.128038 39.052517 50.125651 25.691696 50.125651 Z M 25.691696 50.125651 " transform="matrix(2.16,0,0,2.117647,-1.08,0)"/>
+</g>
 </svg>

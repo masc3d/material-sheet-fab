@@ -27,11 +27,11 @@ object Headers {
     }
 
     val street: Drawable
-        get() = createHeaderDrawable(R.drawable.img_street_1, 0.8)
+        get() = createHeaderDrawable(R.mipmap.img_street_1, 0.8)
 
     val cash: Drawable
-        get() = createHeaderDrawable(R.drawable.img_money, 0.3)
+        get() = createHeaderDrawable(R.mipmap.img_money, 0.3)
 
     val parcels: Drawable
-        get() = createHeaderDrawable(R.drawable.img_parcels_1, 0.3)
+        get() = createHeaderDrawable(R.mipmap.img_parcels_1, 0.3)
 }

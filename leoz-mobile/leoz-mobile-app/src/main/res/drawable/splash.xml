@@ -21,6 +21,6 @@
     <item android:top="0dp">
         <bitmap
             android:gravity="center"
-            android:src="@drawable/img_splash"/>
+            android:src="@mipmap/img_splash"/>
     </item>
 </layer-list>
