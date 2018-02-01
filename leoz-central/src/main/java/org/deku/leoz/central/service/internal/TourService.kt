@@ -6,6 +6,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
+import org.apache.commons.codec.digest.DigestUtils
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
 import org.deku.leoz.central.data.repository.*
@@ -39,9 +40,13 @@ import sx.mq.jms.channel
 import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
 import sx.rs.RestProblem
+import sx.text.toHexString
 import sx.time.toTimestamp
+import sx.util.hashWithSha1
 import sx.util.letWithParamNotNull
+import sx.util.toByteArray
 import sx.util.toNullable
+import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -100,6 +105,8 @@ class TourServiceV1
     private lateinit var smartlane: SmartlaneBridge
     //endregion
 
+    fun createUid(): String = UUID.randomUUID().hashWithSha1(10)
+
     /**
      * Create new tours from domain instance(s)
      * @param tours Tours to create
@@ -118,7 +125,7 @@ class TourServiceV1
                     it.stationNo = tour.stationNo
                     it.deliverylistId = tour.deliverylistId
                     it.optimized = tour.optimized?.toTimestamp()
-                    it.uid = UUID.randomUUID().toString()
+                    it.uid = this.createUid()
                     it.date = ShortDate(now).toString()
                     it.created = now.toTimestamp()
                     it.modified = now.toTimestamp()
@@ -138,7 +145,7 @@ class TourServiceV1
                                 Task.Type.DELIVERY -> TaskType.DELIVERY.value
                                 Task.Type.PICKUP -> TaskType.DELIVERY.value
                             }
-                            it.uid = UUID.randomUUID().toString()
+                            it.uid = this.createUid()
                             it.timestamp = now.toTimestamp()
 
                             em.persist(it)
@@ -546,16 +553,6 @@ class TourServiceV1
                 .fetchByUid(nodeUid, strict = false)
                 ?: throw NoSuchElementException("Node not found")
 
-        if (options.vehicles?.count() ?: 0 > 1)
-            throw IllegalArgumentException("Multiple vehicles are not supported when " +
-                    "optimizing a single (node related) tour")
-
-        val tourRecord = tourRepo.findOne(tadTour.nodeId.eq(nodeRecord.nodeId.toLong()))
-                .toNullable()
-                ?: throw NoSuchElementException("No tour for this node")
-
-        val tour = this.getById(tourRecord.id.toLong())
-
         /** Handle error response on message based requests (nodeRequestUid was provided) */
         fun handleErrorResponse(error: TourOptimizationResult.ErrorType) {
             // Only send error response on node requests
@@ -571,6 +568,16 @@ class TourServiceV1
         }
 
         try {
+            if (options.vehicles?.count() ?: 0 > 1)
+                throw IllegalArgumentException("Multiple vehicles are not supported when " +
+                        "optimizing a single (node related) tour")
+
+            val tourRecord = tourRepo.findOne(tadTour.nodeId.eq(nodeRecord.nodeId.toLong()))
+                    .toNullable()
+                    ?: throw NoSuchElementException("No tour for node [${nodeUid}]")
+
+            val tour = this.getById(tourRecord.id.toLong())
+
             this.optimize(
                     tour = tour,
                     options = options
@@ -628,7 +635,7 @@ class TourServiceV1
                     it.userId = null
                     it.stationNo = dlRecord.deliveryStation.toLong()
                     it.deliverylistId = dlRecord.id.toLong()
-                    it.uid = UUID.randomUUID().toString()
+                    it.uid = this.createUid()
                     it.date = ShortDate(timestamp).toString()
                     it.created = timestamp
                     it.modified = timestamp
@@ -646,7 +653,7 @@ class TourServiceV1
                         it.orderId = dlDetailRecord.orderId.toLong()
                         it.orderTaskType = TaskType.valueOf(dlDetailRecord.stoptype).value
                         it.position = (index + 1).toDouble()
-                        it.uid = UUID.randomUUID().toString()
+                        it.uid = this.createUid()
                         it.timestamp = timestamp
 
                         em.persist(it)
@@ -936,7 +943,7 @@ class TourServiceV1
                     TadTour().also {
                         it.userId = tour.userId
                         it.nodeId = nodeId.toLong()
-                        it.uid = UUID.randomUUID().toString()
+                        it.uid = this.createUid()
                         it.date = ShortDate(message.timestamp).toString()
                         it.created = message.timestamp.toTimestamp()
                         it.modified = message.timestamp.toTimestamp()
@@ -961,7 +968,7 @@ class TourServiceV1
                                     Task.Type.DELIVERY -> TaskType.DELIVERY.value
                                     Task.Type.PICKUP -> TaskType.DELIVERY.value
                                 }
-                                it.uid = UUID.randomUUID().toString()
+                                it.uid = this.createUid()
                                 it.timestamp = message.timestamp.toTimestamp()
 
                                 em.persist(it)
