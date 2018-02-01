@@ -147,8 +147,13 @@ class RestEasyClient(
                 .build()
     }
 
+    /**
+     * Create service proxy
+     */
     override fun <T> proxy(serviceClass: Class<T>): T {
-        return this.proxy(serviceClass, null, null)
+        return this.proxy(
+                serviceClass = serviceClass,
+                path = null)
     }
 
     fun createUri(path: String? = null): URI =
@@ -158,38 +163,42 @@ class RestEasyClient(
                 this.baseUri
 
     /**
-     * Create service proxy
-     * @param path Optinoal path override
+     * Create target for consumers which require connection pooling on customized requests
+     *
+     * @param path Optional path override
      * @param jwtToken Optional jwt token override
      */
-    fun target(path: String? = null, jwtToken: String? = null): ResteasyWebTarget {
+    private fun target(path: String? = null, jwtToken: () -> String? = { null }): ResteasyWebTarget {
         val webTarget: ClientWebTarget = this.client.target(
                 this.createUri(path)
         ) as ClientWebTarget
 
-        // return webTarget.proxy(serviceClass)
-        // masc20170329. for compatibility with spring-boot-devtools restart, need to use the serviceclass' classloader
-        // to avoid `IllegalArgumentException` `is not visible from class loader`
         return webTarget
                 .register(object : ClientRequestFilter {
                     override fun filter(requestContext: ClientRequestContext) {
-                        if (jwtToken != null)
-                            requestContext.headers.add("Authorization", "JWT ${jwtToken}")
+                        jwtToken()?.also {
+                            requestContext.headers.add("Authorization", "JWT ${it}")
+                        }
                     }
                 })
     }
 
     /**
-     * Create service proxy
-     * @param path Optinoal path override
+     * Create proxy for consumers which require connection pooling on customized requests
+     *
+     * @param serviceClass Service class
+     * @param path Optional path override
      * @param jwtToken Optional jwt token override
      */
-    fun <T> proxy(serviceClass: Class<T>, path: String? = null, jwtToken: String? = null): T {
+    fun <T> proxy(serviceClass: Class<T>, path: String? = null, jwtToken: () -> String? = { null }): T {
         return this.target(
                 path = path,
                 jwtToken = jwtToken
         )
                 .proxyBuilder(serviceClass)
+                // return webTarget.proxy(serviceClass)
+                // masc20170329. for compatibility with spring-boot-devtools restart, need to use the serviceclass' classloader
+                // to avoid `IllegalArgumentException` `is not visible from class loader`
                 .classloader(serviceClass.classLoader)
                 .build()
     }
