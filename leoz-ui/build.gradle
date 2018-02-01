@@ -9,7 +9,7 @@ mainClassName = "org.deku.leoz.ui.Application"
 
 buildscript {
     ext {
-        v_grizzly = '2.4.2'
+        v_grizzly = '2.4.3'
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
@@ -65,11 +65,10 @@ dependencies {
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
 
             // REST client
-//            "org.jboss.resteasy:resteasy-client:$v_resteasy",
-//            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
             "org.glassfish.jersey.core:jersey-client:$v_jersey",
             "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey",
             "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey",
+            "org.glassfish.jersey.inject:jersey-hk2:$v_jersey",
 
             // jackson JSON serializer
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",

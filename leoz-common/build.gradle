@@ -126,6 +126,7 @@ dependencies {
             "org.glassfish.jersey.core:jersey-client:$v_jersey",
             "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey",
             "org.glassfish.jersey.media:jersey-media-sse:$v_jersey",
+            "org.glassfish.jersey.inject:jersey-hk2:$v_jersey",
 
             // RESTeasy client
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
