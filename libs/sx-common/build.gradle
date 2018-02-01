@@ -52,6 +52,7 @@ dependencies {
     compile(
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
@@ -125,6 +126,9 @@ dependencies {
 
             // JUnit
             "junit:junit:4.12",
+
+            // Digest utils (security)
+            "commons-codec:commons-codec:1.11"
     )
 
     testCompile(
