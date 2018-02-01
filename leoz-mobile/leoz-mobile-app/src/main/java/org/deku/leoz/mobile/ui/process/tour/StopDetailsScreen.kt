@@ -22,7 +22,7 @@ import eu.davidea.flexibleadapter.SelectableAdapter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.item_stop.*
-import kotlinx.android.synthetic.main.screen_delivery_detail.*
+import kotlinx.android.synthetic.main.screen_tour_stop_detail.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
@@ -110,7 +110,7 @@ class StopDetailsScreen
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
             // Inflate the layout for this fragment
-            inflater.inflate(R.layout.screen_delivery_detail, container, false)
+            inflater.inflate(R.layout.screen_tour_stop_detail, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

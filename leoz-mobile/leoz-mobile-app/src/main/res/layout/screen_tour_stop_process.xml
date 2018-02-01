@@ -19,7 +19,7 @@
         <include layout="@layout/item_stop"/>
 
         <include
-            layout="@layout/view_delivery_stop_stats"
+            layout="@layout/view_tour_stop_stats"
             bind:stats="@{stats}"
             />
 

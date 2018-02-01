@@ -13,7 +13,7 @@ import com.github.salomonbrys.kodein.lazy
 import com.neovisionaries.i18n.CountryCode
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import kotlinx.android.synthetic.main.screen_signature.*
+import kotlinx.android.synthetic.main.screen_tour_stop_signature.*
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
@@ -92,7 +92,7 @@ class SignatureScreen
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? =
             // Inflate the layout for this fragment
-            inflater.inflate(R.layout.screen_signature, container, false)
+            inflater.inflate(R.layout.screen_tour_stop_signature, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

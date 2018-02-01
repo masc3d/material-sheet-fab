@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,9 +24,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
-import kotlinx.android.synthetic.main.screen_delivery_stop_list.*
+import kotlinx.android.synthetic.main.screen_tour.*
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.databinding.ScreenDeliveryStopListBinding
+import org.deku.leoz.mobile.databinding.ScreenTourBinding
 import org.deku.leoz.mobile.databinding.ViewOptimizationOptionsBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
@@ -61,7 +60,6 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHolder
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.ext.customizeScrollBehavior
-import sx.log.slf4j.trace
 import sx.rx.ObservableRxProperty
 
 /**
@@ -322,9 +320,9 @@ class TourScreen
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val binding: ScreenDeliveryStopListBinding = DataBindingUtil.inflate(
+        val binding: ScreenTourBinding = DataBindingUtil.inflate(
                 inflater,
-                R.layout.screen_delivery_stop_list,
+                R.layout.screen_tour,
                 container,
                 false)
 
@@ -638,7 +636,7 @@ class TourScreen
         // Items
         adapter.addItem(
                 SimpleVmHeaderItem<StopListStatisticsViewModel>(
-                        view = R.layout.view_delivery_stop_list_stats,
+                        view = R.layout.view_tour_stats,
                         variable = BR.stats,
                         viewModel = StopListStatisticsViewModel(
                                 context = this.context,

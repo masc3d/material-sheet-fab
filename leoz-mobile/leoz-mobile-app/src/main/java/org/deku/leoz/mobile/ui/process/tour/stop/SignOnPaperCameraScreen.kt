@@ -2,7 +2,7 @@ package org.deku.leoz.mobile.ui.process.tour.stop
 
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.view_delivery_sign_on_paper.view.*
+import kotlinx.android.synthetic.main.screen_tour_stop_sign_on_paper.view.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.parceler.Parcel
@@ -25,7 +25,7 @@ class SignOnPaperCameraScreen : BaseCameraScreen<SignOnPaperCameraScreen.Paramet
 
     override fun createOverlayView(viewGroup: ViewGroup): View? {
         return this.activity.layoutInflater
-                .inflate(R.layout.view_delivery_sign_on_paper, viewGroup, false)
+                .inflate(R.layout.screen_tour_stop_sign_on_paper, viewGroup, false)
                 .also {
                     it.uxName.text = this.parameters.name
                     it.alpha = 0.75F

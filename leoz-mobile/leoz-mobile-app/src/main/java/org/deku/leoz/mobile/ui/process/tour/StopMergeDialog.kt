@@ -14,7 +14,7 @@ import org.deku.leoz.mobile.model.repository.StopRepository
 /**
  * Created by prangenberg on 06.11.17.
  */
-class StopMergeDialog(context: Context): AlertDialog(context, R.layout.dialog_stop_merge) { //Dialog(R.layout.dialog_stop_merge) {
+class StopMergeDialog(context: Context): AlertDialog(context, R.layout.dialog_tour_stop_merge) { //Dialog(R.layout.dialog_tour_stop_merge) {
 
     companion object {
         private val stopRepository: StopRepository by Kodein.global.lazy.instance()

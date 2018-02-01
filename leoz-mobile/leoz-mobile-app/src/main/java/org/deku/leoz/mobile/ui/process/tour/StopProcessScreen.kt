@@ -28,13 +28,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_stop.*
-import kotlinx.android.synthetic.main.screen_delivery_process.*
+import kotlinx.android.synthetic.main.screen_tour_stop_process.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding
-import org.deku.leoz.mobile.databinding.ScreenDeliveryProcessBinding
+import org.deku.leoz.mobile.databinding.ScreenTourStopProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.OrderEntity
@@ -321,9 +321,9 @@ class StopProcessScreen :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val binding: ScreenDeliveryProcessBinding = DataBindingUtil.inflate(
+        val binding: ScreenTourStopProcessBinding = DataBindingUtil.inflate(
                 inflater,
-                R.layout.screen_delivery_process,
+                R.layout.screen_tour_stop_process,
                 container, false)
 
         // Setup bindings
@@ -804,7 +804,7 @@ class StopProcessScreen :
                                 .title(R.string.title_stop_merge)
                                 .iconRes(R.drawable.ic_merge)
                                 .cancelable(true)
-                                .customView(R.layout.dialog_stop_merge, true)
+                                .customView(R.layout.dialog_tour_stop_merge, true)
                                 .positiveText(R.string.proceed)
                                 .onPositive { _, _ ->
                                     db.store.withTransaction {

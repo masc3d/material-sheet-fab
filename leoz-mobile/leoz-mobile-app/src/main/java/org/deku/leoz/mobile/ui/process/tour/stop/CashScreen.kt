@@ -13,7 +13,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.screen_cash.*
+import kotlinx.android.synthetic.main.screen_tour_stop_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Tour
@@ -104,7 +104,7 @@ class CashScreen : ScreenFragment<Any>() {
     override fun onCreateView(inflater: android.view.LayoutInflater, container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? =
             // Inflate the layout for this fragment
-            inflater.inflate(org.deku.leoz.mobile.R.layout.screen_cash, container, false)
+            inflater.inflate(org.deku.leoz.mobile.R.layout.screen_tour_stop_cash, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
