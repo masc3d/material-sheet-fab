@@ -13,6 +13,7 @@ import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TaskType
+import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QTadTour.tadTour
 import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
@@ -20,6 +21,7 @@ import org.deku.leoz.node.data.jpa.TadTourEntry
 import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.node.data.repository.TadTourEntryRepository
 import org.deku.leoz.node.data.repository.TadTourRepository
+import org.deku.leoz.node.data.repository.toAddress
 import sx.persistence.transaction
 import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.entity.ShortDate
@@ -741,6 +743,16 @@ class TourServiceV1
 
         val tourId = tour.id!!
 
+        if (options.start == null) {
+            // Complement start address if applicable
+            tour.stationNo?.also { stationNo ->
+                val station = this.stationRepo.findByStation(stationNo.toInt())
+                        ?: throw NoSuchElementException("Station no [${stationNo}] doesn't exist")
+
+                options.start = station.toAddress()
+            }
+        }
+
         return this.smartlane.optimize(
                 tour = tour,
                 options = options
@@ -879,23 +891,9 @@ class TourServiceV1
                 null -> log.warn("Station no [${stationNo}] doesn't exist")
                 else -> {
                     // Override start address with station
-                    message.options.start = Address(
-                            street = station.street,
-                            streetNo = station.houseNr,
-                            zipCode = station.zip,
-                            countryCode = station.country,
-                            city = station.city,
-                            geoLocation = if (
-                                    station.posLat != null && station.posLong != null &&
-                                    station.posLat != 0.0 && station.posLong != 0.0)
-                                GeoLocation(
-                                        latitude = station.posLat,
-                                        longitude = station.posLong
-                                ) else null
-                    )
+                    message.options.start = station.toAddress()
                 }
             }
-
         }
 
         try {
@@ -977,5 +975,5 @@ class TourServiceV1
                     }
         }
     }
-//endregion
+    //endregion
 }

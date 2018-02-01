@@ -2,6 +2,8 @@ package org.deku.leoz.node.data.repository
 
 import com.google.common.collect.Lists
 import org.deku.leoz.node.data.jpa.*
+import org.deku.leoz.service.internal.entity.Address
+import org.deku.leoz.service.internal.entity.GeoLocation
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import javax.inject.Inject
@@ -90,4 +92,23 @@ class StationRepositoryImpl : StationRepositoryExtension {
         ).toList()
     }
 }
+
+/**
+ * Convert station record to domain address
+ */
+fun MstStation.toAddress(): Address =
+        Address(
+                street = this.street,
+                streetNo = this.houseNr,
+                zipCode = this.zip,
+                countryCode = this.country,
+                city = this.city,
+                geoLocation = if (
+                        this.posLat != null && this.posLong != null &&
+                        this.posLat != 0.0 && this.posLong != 0.0)
+                    GeoLocation(
+                            latitude = this.posLat,
+                            longitude = this.posLong
+                    ) else null
+        )
 

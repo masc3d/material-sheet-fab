@@ -51,9 +51,6 @@ class SmartlaneBridge {
     /** Default customer id */
     private val customerId = "der-kurier-test"
 
-    @Inject
-    private lateinit var stationRepository: StationRepository
-
     /**
      * Rest client with connection pool for efficient use across all smartlane domains
      */
@@ -318,29 +315,13 @@ class SmartlaneBridge {
             options.start?.also { startAddress ->
                 it.startaddress = Inputaddress().also {
                     it.street = startAddress.street
+                    it.housenumber = startAddress.streetNo
                     it.postalcode = startAddress.zipCode
                     it.city = startAddress.city
                     it.country = startAddress.countryCode
-                    it.housenumber = startAddress.streetNo
                     startAddress.geoLocation?.also { location ->
                         it.lat = location.latitude
                         it.lng = location.longitude
-                    }
-                }
-            }
-
-            if (it.startaddress == null) {
-                this.stationNo?.also { stationNo ->
-                    stationRepository.findByStation(stationNo.toInt())?.also { station ->
-                        it.startaddress = Inputaddress().also {
-                            it.street = station.street
-                            it.housenumber = station.houseNr
-                            it.postalcode = station.zip
-                            it.city = station.city
-                            it.country = station.country
-                            it.lat = station.posLat.takeIf { it != 0.0 }
-                            it.lng = station.posLong.takeIf { it != 0.0 }
-                        }
                     }
                 }
             }
