@@ -9,14 +9,13 @@ import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
+import org.deku.leoz.service.internal.UserService
+import org.deku.leoz.service.internal.entity.GeoLocation
 import org.deku.leoz.service.internal.id
 import org.deku.leoz.service.internal.uid
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
-import org.deku.leoz.smartlane.model.Inputaddress
-import org.deku.leoz.smartlane.model.Route
-import org.deku.leoz.smartlane.model.Routedeliveryinput
-import org.deku.leoz.smartlane.model.Routinginput
+import org.deku.leoz.smartlane.model.*
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.threeten.bp.Duration
@@ -25,6 +24,7 @@ import sx.LazyInstance
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
+import sx.text.toHexString
 import sx.time.replaceDate
 import sx.time.toDate
 import sx.time.toLocalDateTime
@@ -155,6 +155,48 @@ class SmartlaneBridge {
     }
 
     /**
+     * Update a drivers geo position
+     * @param email User / driver email
+     * @param geoLocation Driver's geo location
+     */
+    fun putDriverPosition(
+            email: String,
+            geoLocation: GeoLocation
+    ) {
+
+    }
+
+    /**
+     * Updates or inserts a smartlane driver
+     * @param User User to put as driver
+     */
+    fun putDriver(
+            user: UserService.User
+    ): Completable {
+        val domain = domain(customerId)
+
+        return Observable.fromCallable {
+            val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
+
+            val srcDriver = user.toDriver()
+            val dstDriver = driverApi.getDriverByEmail(user.email)
+
+            if (dstDriver != null) {
+                driverApi.patchDriverById(
+                        srcDriver,
+                        dstDriver.id
+                )
+            } else {
+                driverApi.postDriver(
+                        srcDriver
+                )
+            }
+        }
+                .retryOnTokenExpiry(domain)
+                .ignoreElements()
+    }
+
+    /**
      * Optimize a tour
      * @param tour Tour to optimize
      * @param options Optimization options
@@ -187,8 +229,10 @@ class SmartlaneBridge {
                                 .map { it.orderId }.distinct()
                                 .map { orderId -> tour.orders.first { it.id == orderId } }
 
+                        // Generate uid for new tour
                         val uid = uidSupplier()
 
+                        // Update smartlane route custom ids with generated uids
                         routeApi.patchRouteById(
                             route.id,
                                 Route().also {
@@ -207,7 +251,6 @@ class SmartlaneBridge {
                                 stops = stops,
                                 orders = orders
                         )
-                        // TODO: update smartlane route custom ids with generated uids
                     }
                 }
                 .retryOnTokenExpiry(domain)
@@ -215,8 +258,27 @@ class SmartlaneBridge {
                 .subscribeOn(domain.scheduler)
     }
 
+
+    /**
+     * Transform domain user to smartlane driver
+     */
+    private fun UserService.User.toDriver(): Driver {
+        return Driver().also {
+            it.companyId = 1
+            it.vehicle = "car"
+            it.usertype = "driver"
+            it.email = this.email
+            it.firstname = this.firstName
+            it.lastname = this.lastName
+            it.mobilenr = this.phoneMobile ?: "n/a"
+            it.isActive = this.active
+            it.htmlcolor = this.email.hashCode().toHexString().take(6)
+        }
+    }
+
     /**
      * Transform tour into smartlane routing input
+     * @param options Optimization options
      */
     private fun Tour.toRoutingInput(
             options: TourOptimizationOptions

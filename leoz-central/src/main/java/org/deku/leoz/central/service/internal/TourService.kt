@@ -580,6 +580,18 @@ class TourServiceV1
 
             val tour = this.getById(tourRecord.id.toLong())
 
+            val userId = tour.userId?.toInt()
+                    ?: throw IllegalArgumentException("Node tour is missing user id")
+
+            val userRecord = this.userRepository.findById(userId)
+                    ?: throw IllegalArgumentException("Invalid user id [${userId}]")
+
+            // Update smartlane driver
+            this.smartlane.putDriver(
+                    user = userRecord.toUser()
+            )
+                    .blockingAwait()
+
             this.optimize(
                     tour = tour,
                     options = options
@@ -882,7 +894,7 @@ class TourServiceV1
      */
     private fun onMessage(message: TourOptimizationRequest) {
         val nodeUid = message.nodeUid ?: run {
-            log.warn("Tour optimization request received without node uid")
+            log.warn("Missing node uid")
             return
         }
 
