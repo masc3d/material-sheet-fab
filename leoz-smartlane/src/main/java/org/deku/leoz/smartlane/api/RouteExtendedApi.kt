@@ -22,26 +22,17 @@ import sx.rx.retryWith
 import sx.text.toHexString
 import java.util.concurrent.TimeUnit
 import javax.validation.Valid
-import javax.ws.rs.Consumes
-import javax.ws.rs.DefaultValue
-import javax.ws.rs.GET
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.PathParam
-import javax.ws.rs.Produces
-import javax.ws.rs.QueryParam
-import javax.ws.rs.WebApplicationException
+import javax.ws.rs.*
 import javax.ws.rs.core.Response
 
 /**
- * Extended smartlane route apiManually maintained entry points delivering a generic response
+ * Extended smartlane route api
  * Created by masc on 17.11.17.
  */
+
 @Path("/api")
-@Api(value = "/", description = "")
 interface RouteExtendedApi : RouteApi {
 
-    @ApiModel
     data class Status(
             var status: String = "",
             var message: String = "",
@@ -55,13 +46,11 @@ interface RouteExtendedApi : RouteApi {
         SUCCESS("SUCCESS")
     }
 
-    @ApiModel
     data class ProcessStatus(
             var status: ProcessStatusType? = null,
             var meta: JsonNode? = null
     )
 
-    @ApiModel
     data class RouteProcessStatus(
             var message: String = "",
             var success: Boolean = false,
@@ -77,8 +66,6 @@ interface RouteExtendedApi : RouteApi {
     @Path("/calcroute/optimized/timewindow")
     @Consumes("application/json")
     @Produces("application/json")
-    @ApiOperation(value = "Calc route optimized timewindow", tags = arrayOf("Route"))
-    @ApiResponses(value = [(ApiResponse(code = 200, message = "resulting route ids and (if reponse_data is set to 'base' or 'all'), also route payload data. 'all' also includes geo routestring of tour. Only relevant for synchroneous routing (else, see response status 202)", response = Routemetadatas::class)), (ApiResponse(code = 202, message = "process_id for started asynchroneous process. Can be used for async status polling via \"GET /api/process/status/<process_id>/final\"")), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class)), (ApiResponse(code = 200, message = "Unexpected error", response = Error::class))])
     fun postCalcrouteOptimizedTimewindowWithResponse(
             @Valid body: Routinginput,
             @QueryParam("truck") @DefaultValue("false") truck: Boolean?,
@@ -97,13 +84,29 @@ interface RouteExtendedApi : RouteApi {
     @Path("/process/status/{process_id}/{action_id}")
     @Consumes("application/json")
     @Produces("application/json")
-    @ApiOperation(value = "Process status (id,id)", tags = arrayOf("Route"))
-    @ApiResponses(value = [(ApiResponse(code = 200, message = "If URL parameter 'response_data' is set to 'all' or 'base': current status of the requested action and also payload data of all calculated routes", response = Routemetadatas::class)), (ApiResponse(code = 202, message = "If URL parameter 'response_data' is set to a value which is NOT 'all' or 'base': current status of the requested action within the requested routing process", response = Processstatus::class)), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class)), (ApiResponse(code = 200, message = "Unexpected error", response = Error::class))])
     fun getProcessStatusByIdByIdWithResponse(
             @PathParam("process_id") processId: String,
             @PathParam("action_id") actionId: String,
             @QueryParam("response_data") @DefaultValue("false") responseData: String?)
             : Response
+
+    /**
+     * Delete route by id
+     */
+    @DELETE
+    @Path("/route/{id}")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun deleteRoute(@PathParam("id") id: Int?)
+
+    /**
+     * Delete routes
+     */
+    @DELETE
+    @Path("/route")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun deleteRoute(@QueryParam("q") q: String)
 }
 
 private val log = LoggerFactory.getLogger(RouteExtendedApi::class.java)
@@ -146,6 +149,10 @@ fun RouteApi.getRouteByCustomId(customId: String): Observable<Route> {
                     value = customId
             )).toJson()
     )
+}
+
+fun RouteExtendedApi.deleteAll() {
+    this.deleteRoute(q = "{}")
 }
 
 /**

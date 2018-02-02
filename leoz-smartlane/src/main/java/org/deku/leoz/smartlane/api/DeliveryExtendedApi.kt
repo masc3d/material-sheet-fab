@@ -4,6 +4,34 @@ import io.reactivex.Observable
 import org.deku.leoz.smartlane.model.Deliveries
 import org.deku.leoz.smartlane.model.Delivery
 import org.slf4j.LoggerFactory
+import javax.ws.rs.*
+
+
+/**
+ * Extended smartlane delivery api
+ * Created by masc on 13.01.18.
+ */
+
+@Path("/api")
+interface DeliveryExtendedApi : DeliveryApi {
+    /**
+     * Delete delivery by id
+     */
+    @DELETE
+    @Path("/delivery/{id}")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun deleteDelivery(@PathParam("id") id: Int?)
+
+    /**
+     * Delete deliveries
+     */
+    @DELETE
+    @Path("/delivery")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun deleteDelivery(@QueryParam("q") q: String)
+}
 
 /**
  * Extension for fetching deliveries. Uses paging to prevent timeouts on large results.
@@ -29,4 +57,8 @@ fun DeliveryApi.getDelivery(q: String): Observable<Delivery> {
             emitter.onError(e)
         }
     }
+}
+
+fun DeliveryExtendedApi.deleteAll() {
+    this.deleteDelivery(q = "{}")
 }

@@ -1,6 +1,5 @@
 package org.deku.leoz.smartlane.api
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
@@ -11,6 +10,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 
+@Path("/")
 interface AuthApi {
 
     data class Request(
@@ -32,7 +32,5 @@ interface AuthApi {
     @Path("/auth")
     @Consumes("application/json")
     @Produces("application/json")
-    @ApiOperation(value = "Auth", tags = arrayOf("Authorization"))
-    @ApiResponses(value = [(ApiResponse(code = 200, message = "OK", response = Response::class)), (ApiResponse(code = 403, message = "A failure message caused by missing authorization (403 forbidden)", response = String::class)), (ApiResponse(code = 422, message = "A failure message caused by unprocessable input (e.g. no data found for input parameters)", response = String::class))])
     fun auth(@Valid body: Request): Response
 }

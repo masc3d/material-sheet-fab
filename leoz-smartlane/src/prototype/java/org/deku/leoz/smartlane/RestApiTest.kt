@@ -122,7 +122,7 @@ class RestApiTest {
     fun testAddressDeleteAll() {
         this.authorize()
 
-        val internalApi = restClient.proxy(InternalApi::class.java)
+        val internalApi = restClient.proxy(AddressExtendedApi::class.java)
 
         internalApi.deleteAddressesNotIn(listOf(1))
     }
@@ -158,7 +158,7 @@ class RestApiTest {
     fun testDeliveryDeleteAll() {
         this.authorize()
 
-        val internalApi = restClient.proxy(InternalApi::class.java)
+        val internalApi = restClient.proxy(DeliveryExtendedApi::class.java)
 
         internalApi.deleteDelivery("{}")
     }
@@ -203,7 +203,7 @@ class RestApiTest {
     fun testRouteDeleteAll() {
         this.authorize()
 
-        val internalApi = restClient.proxy(InternalApi::class.java)
+        val internalApi = restClient.proxy(RouteExtendedApi::class.java)
 
         internalApi.deleteRoute("{}")
     }
@@ -213,13 +213,16 @@ class RestApiTest {
         // Clean all data from smartlane container
         this.authorize()
 
-        val internalApi = restClient.proxy(InternalApi::class.java)
+        val deliveryApi = restClient.proxy(DeliveryExtendedApi::class.java)
+        val routeApi = restClient.proxy(RouteExtendedApi::class.java)
+        val addressApi = restClient.proxy(AddressExtendedApi::class.java)
+        val driverApi = restClient.proxy(DriverExtendedApi::class.java)
 
-        internalApi.deleteAllDeliveries()
-        internalApi.deleteAllRoutes()
+        deliveryApi.deleteAll()
+        routeApi.deleteAll()
         // TODO currently defunct @smartlane
-        // internalApi.deleteAllDrivers()
-        internalApi.deleteAddressesNotIn(
+        // driverApi.deleteAllDrivers()
+        addressApi.deleteAddressesNotIn(
                 // Exclude the company/owner address id
                 listOf(1)
         )
@@ -255,5 +258,14 @@ class RestApiTest {
                     it.htmlcolor = "000000"
                 }
         )
+    }
+
+    @Test
+    fun testDriverDeleteAll() {
+        this.authorize()
+
+        val internalApi = restClient.proxy(DriverExtendedApi::class.java)
+
+        internalApi.deleteAll()
     }
 }
