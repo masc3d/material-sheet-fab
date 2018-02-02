@@ -65,6 +65,15 @@ interface InternalApi {
     @Consumes("application/json")
     @Produces("application/json")
     fun deleteRoute(@QueryParam("q") q: String)
+
+    /**
+     * Delete drivers
+     */
+    @DELETE
+    @Path("/driver")
+    @Consumes("application/json")
+    @Produces("application/json")
+    fun deleteDriver(@QueryParam("q") q: String)
 }
 
 private val log by lazy { LoggerFactory.getLogger(InternalApi::class.java) }
@@ -91,4 +100,8 @@ fun InternalApi.deleteAllRoutes() {
 
 fun InternalApi.deleteAllDeliveries() {
     this.deleteDelivery(q = "{}")
+}
+
+fun InternalApi.deleteAllDrivers() {
+    this.deleteDriver(q = "{}")
 }

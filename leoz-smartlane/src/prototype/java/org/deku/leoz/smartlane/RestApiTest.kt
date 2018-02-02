@@ -2,6 +2,7 @@ package org.deku.leoz.smartlane
 
 import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.Address
+import org.deku.leoz.smartlane.model.Driver
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
@@ -216,9 +217,43 @@ class RestApiTest {
 
         internalApi.deleteAllDeliveries()
         internalApi.deleteAllRoutes()
+        // TODO currently defunct @smartlane
+        // internalApi.deleteAllDrivers()
         internalApi.deleteAddressesNotIn(
                 // Exclude the company/owner address id
                 listOf(1)
+        )
+    }
+
+    @Test
+    fun testDriverGet() {
+        this.authorize()
+
+        val driverApi = restClient.proxy(DriverApi::class.java)
+
+        log.trace {
+            driverApi.getDriverByEmail("masc@disappear.de")
+        }
+    }
+
+    @Test
+    fun testDriverPost() {
+        this.authorize()
+
+        val driverApi = restClient.proxy(DriverApi::class.java)
+
+        driverApi.postDriver(
+                Driver().also {
+                    it.companyId = 1
+                    it.firstname = "first"
+                    it.lastname = "lst"
+                    it.email = "meh@meh.com"
+                    it.usertype = "driver"
+                    it.vehicle = "car"
+                    it.isActive = false
+                    it.mobilenr = "0000"
+                    it.htmlcolor = "000000"
+                }
         )
     }
 }
