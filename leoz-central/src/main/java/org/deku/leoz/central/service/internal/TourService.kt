@@ -6,14 +6,12 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import org.apache.commons.codec.digest.DigestUtils
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TaskType
-import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QTadTour.tadTour
 import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
@@ -22,12 +20,10 @@ import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.node.data.repository.TadTourEntryRepository
 import org.deku.leoz.node.data.repository.TadTourRepository
 import org.deku.leoz.node.data.repository.toAddress
-import sx.persistence.transaction
 import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
-import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
 import org.deku.leoz.service.internal.id
 import org.jooq.DSLContext
@@ -41,17 +37,16 @@ import sx.mq.MqHandler
 import sx.mq.jms.channel
 import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
+import sx.persistence.transaction
 import sx.rs.RestProblem
-import sx.text.toHexString
 import sx.time.toTimestamp
 import sx.util.hashWithSha1
 import sx.util.letWithParamNotNull
-import sx.util.toByteArray
 import sx.util.toNullable
-import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
+import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
 import javax.persistence.EntityManagerFactory
@@ -102,12 +97,38 @@ class TourServiceV1
 
     @Inject
     private lateinit var orderService: OrderService
+    @Inject
+    private lateinit var locationService: LocationServiceV2
 
     @Inject
     private lateinit var smartlane: SmartlaneBridge
     //endregion
 
     fun createUid(): String = UUID.randomUUID().hashWithSha1(10)
+
+    @PostConstruct
+    fun onInitialize() {
+        // Location received event
+        this.locationService.locationReceived
+                .subscribe { gpsMessage ->
+                    try {
+                        val userId = gpsMessage.userId ?: run { return@subscribe }
+
+                        val user = this.userRepository.findById(userId)
+                                ?: throw NoSuchElementException("User id [${userId}]")
+
+                        this.smartlane.putDriverPosition(
+                                email = user.email,
+                                position = gpsMessage.lastDataPoint
+                        )
+                                .subscribeBy(
+                                        onError = { e -> log.error(e.message, e) }
+                                )
+                    } catch(e: Throwable) {
+                        log.error(e.message, e)
+                    }
+                }
+    }
 
     /**
      * Create new tours from domain instance(s)

@@ -8,6 +8,7 @@ import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
+import kotlin.NoSuchElementException
 
 /**
  * Location service V2
@@ -68,7 +69,13 @@ interface LocationServiceV2 {
             var userId: Int? = null,
             var nodeKey: String? = null,
             var dataPoints: Array<GpsDataPoint>? = null
-    )
+    ) {
+        /**
+         * Last (most recent) gps data point of this message
+         */
+        val lastDataPoint: LocationServiceV2.GpsDataPoint
+            get() = this.dataPoints?.last() ?: throw NoSuchElementException()
+    }
 
     /**
      * Get location

@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal
 
+import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadNodeGeopositionRecord
@@ -47,6 +48,10 @@ class LocationServiceV2 :
 
     @Inject
     private lateinit var nodeRepository: JooqNodeRepository
+
+    private val locationReceivedSubject = PublishSubject.create<LocationServiceV2.GpsMessage>()
+    /** Location received event */
+    val locationReceived = locationReceivedSubject.hide()
 
     fun TadNodeGeopositionRecord.toGpsData(): LocationServiceV2.GpsDataPoint {
         val gpsPoint = LocationServiceV2.GpsDataPoint(
@@ -420,6 +425,7 @@ class LocationServiceV2 :
         return check
     }
 
+    //region MQ handler
     /**
      * Location service message handler
      */
@@ -432,6 +438,8 @@ class LocationServiceV2 :
                 status = Response.Status.BAD_REQUEST)
 
         log.trace { "Received ${dataPoints.count()} from [${message.nodeKey}] user [${message.userId}]" }
+
+        this.locationReceivedSubject.onNext(message)
 
         dataPoints.forEach {
             val r = dsl.newRecord(Tables.TAD_NODE_GEOPOSITION)
@@ -451,4 +459,6 @@ class LocationServiceV2 :
             posRepository.save(r)
         }
     }
+
+    //endergion
 }

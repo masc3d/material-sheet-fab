@@ -7,12 +7,9 @@ import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.node.data.repository.StationRepository
-import org.deku.leoz.service.internal.TourServiceV1
+import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.TourServiceV1.*
-import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.entity.GeoLocation
-import org.deku.leoz.service.internal.id
-import org.deku.leoz.service.internal.uid
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.*
@@ -36,6 +33,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
+import kotlin.NoSuchElementException
 import kotlin.concurrent.withLock
 
 /**
@@ -157,13 +155,36 @@ class SmartlaneBridge {
     /**
      * Update a drivers geo position
      * @param email User / driver email
-     * @param geoLocation Driver's geo location
+     * @param position Driver's geo position
      */
     fun putDriverPosition(
             email: String,
-            geoLocation: GeoLocation
-    ) {
+            position: LocationServiceV2.GpsDataPoint
+    ): Completable {
+        val domain = domain(customerId)
 
+        return Observable.fromCallable {
+            val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
+
+            val driver = driverApi.getDriverByEmail(email)
+                ?: throw NoSuchElementException("Driver not found")
+
+            driverApi.postDrivertracking(Drivertracking().also {
+                it.driverId = driver.id
+                it.position = Location().also {
+                    it.type = "Point"
+                    it.coordinates = listOf(
+                            position.latitude?.toBigDecimal(),
+                            position.longitude?.toBigDecimal()
+                    )
+                }
+                it.timestamp = position.time
+
+                log.trace { "Put driver tracking ${it}"}
+            })
+        }
+                .retryOnTokenExpiry(domain)
+                .ignoreElements()
     }
 
     /**
