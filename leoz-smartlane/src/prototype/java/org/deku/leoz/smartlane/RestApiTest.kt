@@ -217,11 +217,12 @@ class RestApiTest {
         val routeApi = restClient.proxy(RouteExtendedApi::class.java)
         val addressApi = restClient.proxy(AddressExtendedApi::class.java)
         val driverApi = restClient.proxy(DriverExtendedApi::class.java)
+        val drivertrackingApi = restClient.proxy(DrivertrackingExtendedApi::class.java)
 
         deliveryApi.deleteAll()
         routeApi.deleteAll()
-        // TODO currently defunct @smartlane
-        // driverApi.deleteAllDrivers()
+        drivertrackingApi.deleteAll()
+        driverApi.deleteAll()
         addressApi.deleteAddressesNotIn(
                 // Exclude the company/owner address id
                 listOf(1)
