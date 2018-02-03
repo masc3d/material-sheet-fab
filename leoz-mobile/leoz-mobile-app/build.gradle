@@ -243,7 +243,7 @@ dependencies {
             "io.requery:requery:$v_requery",
             "io.requery:requery-kotlin:$v_requery",
             "io.requery:requery-android:$v_requery",
-            "io.requery:sqlite-android:3.21.0",
+            "io.requery:sqlite-android:3.22.0",
 
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
