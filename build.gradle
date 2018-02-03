@@ -149,7 +149,7 @@ dependencies {
             "com.eightbitlab:blurview:1.3.4",
 
             // Requery sqlite
-            "io.requery:sqlite-android:3.21.0",
+            "io.requery:sqlite-android:3.22.0",
 
             // GMS
             "com.google.android.gms:play-services-location:$v_android_gms",
