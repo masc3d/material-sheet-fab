@@ -14,7 +14,8 @@ import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
-import sx.mq.Channels
+import sx.log.slf4j.info
+import sx.mq.TestChannels
 import sx.mq.config.MqTestConfiguration
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.message.TestMessage
@@ -36,7 +37,7 @@ class MqttDispatcherTest {
     fun setup() {
         // Add composite destination, forwarding topic messages to queue
         val d = CompositeTopic()
-        d.name = Channels.testQueueForwarder.destinationName
+        d.name = TestChannels.testQueueForwarder.destinationName
         d.forwardTo = listOf(MqttTest.Jms.testQueue.destination)
         d.isForwardOnly = true
 
@@ -80,7 +81,7 @@ class MqttDispatcherTest {
         }
 
         val testQueue by lazy {
-            Channels.testQueue.toMqtt(
+            TestChannels.testQueue.toMqtt(
                     context
             )
         }
@@ -110,6 +111,11 @@ class MqttDispatcherTest {
             }
         })
 
-
+        Mqtt.dispatcher.statisticsUpdateEvent
+                .doOnNext {
+                    //log.info { it }
+                }
+                .takeUntil { it.values.all { it == 0 }  }
+                .blockingSubscribe()
     }
 }

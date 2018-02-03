@@ -6,7 +6,7 @@ import sx.io.serialization.gzip
 /**
  * Created by masc on 22.05.17.
  */
-object Channels {
+object TestChannels {
     /** Topic channel for testing notifications */
     val testTopic by lazy {
         MqEndpoint(

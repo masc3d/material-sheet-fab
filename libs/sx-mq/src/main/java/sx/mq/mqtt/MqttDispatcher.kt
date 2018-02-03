@@ -12,6 +12,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.Stopwatch
+import sx.log.slf4j.info
+import sx.log.slf4j.trace
 import sx.rx.limit
 import sx.rx.retryWithExponentialBackoff
 import sx.rx.toHotCache
@@ -37,6 +39,7 @@ class MqttDispatcher(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val lock = ReentrantLock()
+    private val statsLock = ReentrantLock()
 
     /** Statistics update event. Provides a map of topic -> count */
     val statisticsUpdateEvent by lazy { this.statisticsUpdatEventSubject.hide() }
@@ -92,11 +95,13 @@ class MqttDispatcher(
      * @param messageAmountAdded Amount of messages added. This can be a negative value when messages have been removed
      */
     private fun updateStatistics(topicName: String, messageAmountAdded: Int) {
-        val count = this.statistics.getOrPut(topicName, { 0 })
-        this.statistics.put(topicName, count + messageAmountAdded)
+        synchronized(this.statistics) {
+            val count = this.statistics.getOrPut(topicName, { 0 })
+            this.statistics.put(topicName, count + messageAmountAdded)
 
-        // Emit a copy of the statistics map
-        this.statisticsUpdatEventSubject.onNext(this.statistics.toMap())
+            // Emit a copy of the statistics map
+            this.statisticsUpdatEventSubject.onNext(this.statistics.toMap())
+        }
     }
 
     /**
@@ -130,6 +135,42 @@ class MqttDispatcher(
         this.dequeue()
     }
 
+    /**
+     * Publish observable persistent messages to wire
+     */
+    private fun Observable<MqttPersistentMessage>.publishToWire(): Observable<MqttPersistentMessage> {
+        return this.concatMap { m ->
+            // Map each persisted message to publish/remove flow (sequentially)
+            this@MqttDispatcher.client
+                    .publish(m.topicName, m.toMqttMessage())
+                    .doOnSubscribe {
+                        log.trace { "Publishing [${m.topicName}] [m${m.persistentId}]" }
+                    }
+                    .concatWith(
+                            Completable.fromAction {
+                                // Remove from persistence when publish was successful
+                                this@MqttDispatcher.persistence.remove(m)
+
+                                this@MqttDispatcher.updateStatistics(
+                                        topicName = m.topicName,
+                                        messageAmountAdded = -1
+                                )
+
+                                log.trace { "Removed [m${m.persistentId}]" }
+                            }
+                                    .subscribeOn(this@MqttDispatcher.dequeuScheduler)
+                    )
+                    .subscribeOn(this@MqttDispatcher.dequeuScheduler)
+                    .blockingAwait()
+
+            Observable.just(m)
+        }
+    }
+
+    /**
+     * Start dequeue subscription.
+     * In case a subscription is already active, the old one will be disposed accordingly.
+     */
     private fun dequeue() {
         val sw = Stopwatch.createUnstarted()
         var count: Int = 0
@@ -141,45 +182,18 @@ class MqttDispatcher(
                 .concatMap { trigger ->
                     log.trace("Starting dequeue flow")
                     this.persistence.get()
-                            .doOnSubscribe {
-                                count = 0
-                                sw.reset(); sw.start()
-                            }
-                            .doOnNext {
-                                count++
-                            }
-                            .concatMap { m ->
-                                // Map each persisted message to publish/remove flow (sequentially)
-                                this.client
-                                        .publish(m.topicName, m.toMqttMessage())
-                                        .doOnSubscribe {
-                                            log.trace("Publishing [m${m.persistentId}]")
-                                        }
-                                        .concatWith(
-                                                Completable.fromAction {
-                                                    // Remove from persistence when publish was successful
-                                                    this.persistence.remove(m)
+                            // Counters
+                            .doOnSubscribe { count = 0; sw.reset(); sw.start() }
+                            .doOnNext { count++ }
 
-                                                    this.updateStatistics(
-                                                            topicName = m.topicName,
-                                                            messageAmountAdded = -1
-                                                    )
+                            // Actual publishing
+                            .publishToWire()
 
-                                                    log.trace("Removed [m${m.persistentId}]")
-                                                }
-                                                        .subscribeOn(this@MqttDispatcher.dequeuScheduler)
-                                        )
-                                        .toSingleDefault(m)
-                                        .subscribeOn(this.dequeuScheduler)
-                                        .blockingGet()
+                            .doOnComplete { if (count > 0) log.info { "Dequeued ${count} in [${sw}]" } }
 
-                                Observable.just(m)
-                            }
-                            .doOnComplete {
-                                if (count > 0)
-                                    log.info("Dequeued ${count} in [${sw}]")
-                            }
+                            // Triggers should not be processed concurrently
                             .subscribeOn(scheduler.limit(1))
+
                             // Map processed batch back to trigger unit
                             .ignoreElements()
                             .toSingleDefault(trigger)
@@ -266,7 +280,7 @@ class MqttDispatcher(
             // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
             this.connectionSubscription = Completable
                     .defer {
-                        log.info("Attempting connection to ${this.client.uri}")
+                        log.info { "Attempting connection to ${this.client.uri}" }
                         this.client.connect()
                     }
                     .onErrorComplete {

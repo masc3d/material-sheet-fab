@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.mq.MqChannel
 import sx.mq.MqHandler
-import sx.mq.Channels
+import sx.mq.TestChannels
 import sx.mq.config.MqTestConfiguration
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
@@ -44,7 +44,7 @@ class MqttTest {
     fun setup() {
         // Add composite destination, forwarding topic messages to queue
         val d = CompositeTopic()
-        d.name = Channels.testQueueForwarder.destinationName
+        d.name = TestChannels.testQueueForwarder.destinationName
         d.forwardTo = listOf(Jms.testQueue.destination)
         d.isForwardOnly = true
 
@@ -72,19 +72,19 @@ class MqttTest {
         }
 
         val testQueue by lazy {
-            Channels.testQueue.toJms(
+            TestChannels.testQueue.toJms(
                     context = this.context
             )
         }
 
         val testTopic by lazy {
-            Channels.testTopic.toJms(
+            TestChannels.testTopic.toJms(
                     context = this.context
             )
         }
 
         val testQueueForwarder by lazy {
-            Channels.testQueueForwarder.toJms(
+            TestChannels.testQueueForwarder.toJms(
                     context = this.context
             )
         }
@@ -112,14 +112,14 @@ class MqttTest {
         }
 
         val testQueueForwarder by lazy {
-            Channels.testQueueForwarder.toMqtt(
+            TestChannels.testQueueForwarder.toMqtt(
                     context = this.context,
                     qos = 2
             )
         }
 
         val testTopic by lazy {
-            Channels.testTopic.toMqtt(
+            TestChannels.testTopic.toMqtt(
                     context = this.context
             )
         }
