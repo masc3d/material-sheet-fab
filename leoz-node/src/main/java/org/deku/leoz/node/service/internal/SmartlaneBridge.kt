@@ -153,41 +153,6 @@ class SmartlaneBridge {
     }
 
     /**
-     * Update a drivers geo position
-     * @param email User / driver email
-     * @param position Driver's geo position
-     */
-    fun putDriverPosition(
-            email: String,
-            position: LocationServiceV2.GpsDataPoint
-    ): Completable {
-        val domain = domain(customerId)
-
-        return Observable.fromCallable {
-            val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
-
-            val driver = driverApi.getDriverByEmail(email)
-                ?: throw NoSuchElementException("Driver not found")
-
-            driverApi.postDrivertracking(Drivertracking().also {
-                it.driverId = driver.id
-                it.position = Location().also {
-                    it.type = "Point"
-                    it.coordinates = listOf(
-                            position.latitude?.toBigDecimal(),
-                            position.longitude?.toBigDecimal()
-                    )
-                }
-                it.timestamp = position.time
-
-                log.trace { "Put driver tracking ${it}"}
-            })
-        }
-                .retryOnTokenExpiry(domain)
-                .ignoreElements()
-    }
-
-    /**
      * Updates or inserts a smartlane driver
      * @param User User to put as driver
      */
@@ -212,6 +177,41 @@ class SmartlaneBridge {
                         srcDriver
                 )
             }
+        }
+                .retryOnTokenExpiry(domain)
+                .ignoreElements()
+    }
+
+    /**
+     * Update a drivers geo position
+     * @param email User / driver email
+     * @param position Driver's geo position
+     */
+    fun putDriverPosition(
+            email: String,
+            position: LocationServiceV2.GpsDataPoint
+    ): Completable {
+        val domain = domain(customerId)
+
+        return Observable.fromCallable {
+            val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
+
+            val driver = driverApi.getDriverByEmail(email)
+                    ?: throw NoSuchElementException("Driver not found")
+
+            driverApi.postDrivertracking(Drivertracking().also {
+                it.driverId = driver.id
+                it.position = Location().also {
+                    it.type = "Point"
+                    it.coordinates = listOf(
+                            position.latitude?.toBigDecimal(),
+                            position.longitude?.toBigDecimal()
+                    )
+                }
+                it.timestamp = position.time
+
+                log.trace { "Put driver tracking ${it}"}
+            })
         }
                 .retryOnTokenExpiry(domain)
                 .ignoreElements()
