@@ -3,7 +3,7 @@ package org.deku.leoz.central.service.zalando.v1
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat
+import com.fasterxml.jackson.databind.util.StdDateFormat
 import org.deku.leoz.central.service.zalando.CarrierIntegrationService
 import org.deku.leoz.node.rest.ObjectMapperProvider
 import org.deku.leoz.service.zalando.entity.DeliveryOption
@@ -59,7 +59,7 @@ class DeliveryOptionTest {
         val jnode: JsonNode = this.objectMapper.readTree(oJson)
         val jDateString = jnode.get("cut_off").textValue()
 
-        Assert.assertEquals(jDateString, ISO8601DateFormat().format(d))
+        Assert.assertEquals(jDateString, StdDateFormat().format(d))
     }
 
     // TODO test freezes
