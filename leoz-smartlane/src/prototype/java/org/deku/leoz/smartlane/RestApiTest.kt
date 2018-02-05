@@ -230,13 +230,24 @@ class RestApiTest {
     }
 
     @Test
-    fun testDriverGet() {
+    fun testDriverGetByEmail() {
         this.authorize()
 
         val driverApi = restClient.proxy(DriverApi::class.java)
 
         log.trace {
             driverApi.getDriverByEmail("masc@disappear.de")
+        }
+    }
+
+    @Test
+    fun testDriverGet() {
+        this.authorize()
+
+        val driverApi = restClient.proxy(DriverApi::class.java)
+
+        log.trace {
+            driverApi.getDriver("{}", true, true, true)
         }
     }
 
