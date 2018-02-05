@@ -15,6 +15,7 @@ import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import sx.junit.PrototypeTest
 import sx.junit.StandardTest
 import sx.time.toTimestamp
 import java.util.*
@@ -24,7 +25,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-@Category(StandardTest::class)
+@Category(PrototypeTest::class)
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,

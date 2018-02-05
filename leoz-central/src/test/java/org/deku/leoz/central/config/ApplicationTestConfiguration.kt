@@ -21,6 +21,11 @@ import javax.annotation.PostConstruct
 @Lazy(false)
 open class ApplicationTestConfiguration : ApplicationConfiguration() {
 
+    init {
+        Kodein.global.mutable = true
+        Kodein.global.clear()
+    }
+
     @PostConstruct
     open fun onInitialize() {
         Kodein.global.addImport(ApplicationConfiguration.module)

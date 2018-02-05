@@ -24,6 +24,8 @@ import javax.inject.Inject
 import javax.ws.rs.core.MediaType
 import org.deku.leoz.node.Storage
 import org.h2.util.ToDateParser.toDate
+import org.junit.Ignore
+import sx.junit.PrototypeTest
 import java.awt.Color
 import java.io.FileOutputStream
 import sx.time.toDate
@@ -31,7 +33,7 @@ import sx.time.toLocalDate
 import java.io.FileInputStream
 import java.util.Spliterators.iterator
 
-@Category(StandardTest::class)
+@Category(PrototypeTest::class)
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
@@ -45,19 +47,13 @@ import java.util.Spliterators.iterator
 ))
 
 
-class convertSVGTest {
-
+class SvgConversionTest {
 
     @Inject
     private lateinit var storage: Storage
 
     @Inject
     lateinit var parcelService: org.deku.leoz.central.service.internal.ParcelServiceV1
-
-    @Test
-    fun SVG_2_JPG_ConvertTest() {
-        //transSvg2Jpg
-    }
 
     @Test
     fun Bulg_SVG_convert() {
