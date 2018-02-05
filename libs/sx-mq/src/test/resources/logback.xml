@@ -10,6 +10,6 @@
     </root>
 
     <logger name="ROOT" level="INFO" />
-    <logger name="sx.mq" level="DEBUG" />
+    <logger name="sx.mq" level="INFO" />
     <logger name="org.apache.activemq.artemis" level="INFO" />
 </configuration>

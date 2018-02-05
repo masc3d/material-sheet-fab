@@ -2,7 +2,9 @@ package sx.mq.mqtt
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
+import io.reactivex.exceptions.CompositeException
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -17,9 +19,7 @@ import sx.log.slf4j.trace
 import sx.rx.limit
 import sx.rx.retryWithExponentialBackoff
 import sx.rx.toHotCache
-import java.lang.Thread.MIN_PRIORITY
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -50,15 +50,19 @@ class MqttDispatcher(
         Schedulers.from(this.executorService)
     }
 
-    /** Specific dequeue scheduler, single-threaded, low priority */
-    private val dequeuScheduler by lazy {
-        Schedulers.from(Executors.newFixedThreadPool(1, {
-            Thread(it).also {
-                it.name = "mqtt-dispatcher-${it.id}"
-                it.priority = MIN_PRIORITY
+    /** Schedulers by topic for parallels processing */
+    private var schedulers = mutableMapOf<String, Scheduler>()
+
+    /**
+     * Get scheduler by topic
+     * @param topic Topic name
+     */
+    private fun scheduler(topic: String): Scheduler =
+            synchronized(schedulers) {
+                schedulers.getOrPut(topic, {
+                    this.scheduler.limit(maxConcurrency = 1)
+                })
             }
-        }))
-    }
 
     /** Statistics/message count cache by topic name */
     private var statistics by Delegates.observable<MutableMap<String, Int>>(
@@ -158,9 +162,7 @@ class MqttDispatcher(
 
                                 log.trace { "Removed [m${m.persistentId}]" }
                             }
-                                    .subscribeOn(this@MqttDispatcher.dequeuScheduler)
                     )
-                    .subscribeOn(this@MqttDispatcher.dequeuScheduler)
                     .blockingAwait()
 
             Observable.just(m)
@@ -172,35 +174,46 @@ class MqttDispatcher(
      * In case a subscription is already active, the old one will be disposed accordingly.
      */
     private fun dequeue() {
-        val sw = Stopwatch.createUnstarted()
-        var count: Int = 0
-
         // This observable never completes, as it's subject based.
         this.dequeueSubscription = this.dequeueTrigger
                 // Throttle trigger events as each message publish emits
                 .throttleLast(1, TimeUnit.SECONDS)
                 .concatMap { trigger ->
-                    log.trace("Starting dequeue flow")
-                    this.persistence.get()
-                            // Counters
-                            .doOnSubscribe { count = 0; sw.reset(); sw.start() }
-                            .doOnNext { count++ }
+                    val topics = this.persistence.getTopics()
 
-                            // Actual publishing
-                            .publishToWire()
+                    Observable.mergeDelayError(
+                            topics.map { topic ->
+                                val sw = Stopwatch.createUnstarted()
+                                var count: Int = 0
 
-                            .doOnComplete { if (count > 0) log.info { "Dequeued ${count} in [${sw}]" } }
+                                log.trace("Starting dequeue flow for [${topic}]")
+                                this.persistence.get(topic)
+                                        // Counters
+                                        .doOnSubscribe { count = 0; sw.reset(); sw.start() }
+                                        .doOnNext { count++ }
 
-                            // Triggers should not be processed concurrently
-                            .subscribeOn(scheduler.limit(1))
+                                        // Actual publishing
+                                        .publishToWire()
 
-                            // Map processed batch back to trigger unit
-                            .ignoreElements()
-                            .toSingleDefault(trigger)
-                            .toObservable()
+                                        .doOnComplete { if (count > 0) log.info { "Dequeued ${count} in [${sw}]" } }
+
+                                        // Subscribe on topic specific scheduler
+                                        .subscribeOn(this.scheduler(topic))
+
+                                        // Map processed batch back to trigger unit
+                                        .ignoreElements()
+                                        .toSingleDefault(trigger)
+                                        .toObservable()
+                            }
+                    )
                 }
                 .subscribeBy(onError = { e ->
-                    log.error("Dequeue terminated with error [${e.message}]")
+                    val message = when (e) {
+                        is CompositeException -> e.exceptions.map { it.message }.joinToString(",")
+                        else -> e.message
+                    }
+
+                    log.error("Dequeue terminated with error [${message}]")
                 })
     }
 

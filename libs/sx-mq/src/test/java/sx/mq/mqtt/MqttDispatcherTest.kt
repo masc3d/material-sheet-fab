@@ -4,6 +4,9 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.Completable
+import io.reactivex.CompletableSource
+import io.reactivex.Observable
 import org.apache.activemq.broker.region.virtual.CompositeTopic
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
@@ -20,6 +23,7 @@ import sx.mq.config.MqTestConfiguration
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.message.TestMessage
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by masc on 21.05.17.
@@ -85,6 +89,12 @@ class MqttDispatcherTest {
                     context
             )
         }
+
+        val testQueue2 by lazy {
+            TestChannels.testQueue2.toMqtt(
+                    context
+            )
+        }
     }
 
     @Test
@@ -101,21 +111,42 @@ class MqttDispatcherTest {
 
     @Test
     fun testPublish() {
+        val publisher = Observable
+                .interval(1, TimeUnit.SECONDS)
+                .take(20)
+                .doOnNext {
+                    Stopwatch.createStarted("publish", { log.info(it) }, { _, _ ->
+                        for (i in 0..5000) {
+                            Mqtt.testQueue.channel().send(TestMessage())
+                        }
+                        for (i in 0..10) {
+                            Mqtt.testQueue2.channel().send(TestMessage())
+                        }
+                    })
+                }
+                .doOnComplete {
+                    log.info { "PUBLISHER COMPLETED" }
+                }
+
         Mqtt.dispatcher.connect()
 
-        Thread.sleep(1000)
-
-        Stopwatch.createStarted("publish", { log.info(it) }, { _, _ ->
-            for (i in 0..10000) {
-                Mqtt.testQueue.channel().send(TestMessage())
-            }
-        })
-
         Mqtt.dispatcher.statisticsUpdateEvent
-                .doOnNext {
-                    //log.info { it }
+                .map { it.get(Mqtt.testQueue2.topicName) == 0 }
+                .distinctUntilChanged()
+                .filter { it == true }
+                .subscribe {
+                    log.info { "QUEUE2 DONE" }
                 }
-                .takeUntil { it.values.all { it == 0 }  }
-                .blockingSubscribe()
+
+        // Wait for completion
+        Completable.concat(listOf(
+                // Wait for publisher to complete
+                publisher.ignoreElements(),
+                // And then for statistics to indicate everything has been processed
+                Mqtt.dispatcher.statisticsUpdateEvent
+                        .takeUntil { it.values.all { it == 0 } }
+                        .ignoreElements()
+        ))
+                .blockingAwait()
     }
 }

@@ -27,6 +27,16 @@ object TestChannels {
         )
     }
 
+    /** Queue channel for testing queues with topic forwarding via mqtt */
+    val testQueue2 by lazy {
+        MqEndpoint(
+                destinationName = "test.queue2",
+                destinationType = DestinationType.Queue,
+                persistent = true,
+                serializer = KryoSerializer().gzip
+        )
+    }
+
     /** Virtual topic used for mqtt clients to post to queue */
     val testQueueForwarder by lazy {
         MqEndpoint(
