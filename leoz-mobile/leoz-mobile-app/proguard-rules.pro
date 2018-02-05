@@ -68,6 +68,7 @@
 -dontwarn com.fasterxml.jackson.**
 -dontwarn com.github.davidmoten.rx.**
 -dontwarn com.github.salomonbrys.kodein.**
+-dontwarn com.google.auto.**
 -dontwarn com.google.common.**
 -dontwarn com.sun.mail.**
 -dontwarn com.trello.rxlifecycle.**
@@ -80,6 +81,7 @@
 -dontwarn okio.**
 -dontwarn org.apache.commons.logging.**
 -dontwarn org.apache.cxf.jaxrs.**
+-dontwarn org.apache.commons.codec.**
 -dontwarn org.eclipse.persistence.**
 -dontwarn org.flywaydb.**
 -dontwarn org.ini4j.spi.**
