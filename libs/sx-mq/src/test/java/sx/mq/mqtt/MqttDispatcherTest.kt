@@ -32,6 +32,8 @@ class MqttDispatcherTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
+        Kodein.global.mutable = true
+        Kodein.global.clear()
         Kodein.global.addImport(MqTestConfiguration.module)
     }
 
@@ -113,13 +115,13 @@ class MqttDispatcherTest {
     fun testPublish() {
         val publisher = Observable
                 .interval(1, TimeUnit.SECONDS)
-                .take(20)
+                .take(5)
                 .doOnNext {
                     Stopwatch.createStarted("publish", { log.info(it) }, { _, _ ->
-                        for (i in 0..5000) {
+                        for (i in 0..250) {
                             Mqtt.testQueue.channel().send(TestMessage())
                         }
-                        for (i in 0..10) {
+                        for (i in 0..5) {
                             Mqtt.testQueue2.channel().send(TestMessage())
                         }
                     })
