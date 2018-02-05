@@ -8,12 +8,14 @@ import io.reactivex.exceptions.CompositeException
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttException.REASON_CODE_CLIENT_CONNECTED
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.Stopwatch
+import sx.log.slf4j.debug
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.rx.limit
@@ -120,9 +122,9 @@ class MqttDispatcher(
         }
 
     /**
-     * Dequeue trigger subject
+     * Observable dequeue topic trigger, emitting topic names
      */
-    private val dequeueTrigger = BehaviorSubject.createDefault<Unit>(Unit).toSerialized()
+    private val dequeueTopicTrigger = PublishSubject.create<String>()
     /**
      * The current dequeue subscription.
      * Setting this property to null will cancel/dispose the subscription
@@ -175,18 +177,18 @@ class MqttDispatcher(
      */
     private fun dequeue() {
         // This observable never completes, as it's subject based.
-        this.dequeueSubscription = this.dequeueTrigger
-                // Throttle trigger events as each message publish emits
-                .throttleLast(1, TimeUnit.SECONDS)
-                .concatMap { trigger ->
-                    val topics = this.persistence.getTopics()
+        this.dequeueSubscription = this.dequeueTopicTrigger
+                .groupBy { it }
+                .flatMap { topicTrigger ->
+                    val topic = topicTrigger.key ?: throw NoSuchElementException()
 
-                    Observable.mergeDelayError(
-                            topics.map { topic ->
+                    topicTrigger
+                            .throttleLast(1, TimeUnit.SECONDS)
+                            .concatMap { trigger ->
                                 val sw = Stopwatch.createUnstarted()
                                 var count: Int = 0
 
-                                log.trace("Starting dequeue flow for [${topic}]")
+                                log.debug { "Starting dequeue flow for [${topic}]" }
                                 this.persistence.get(topic)
                                         // Counters
                                         .doOnSubscribe { count = 0; sw.reset(); sw.start() }
@@ -205,7 +207,7 @@ class MqttDispatcher(
                                         .toSingleDefault(trigger)
                                         .toObservable()
                             }
-                    )
+
                 }
                 .subscribeBy(onError = { e ->
                     val message = when (e) {
@@ -235,7 +237,7 @@ class MqttDispatcher(
 
             if (this.isConnected) {
                 // Trigger dequeue flow
-                this.dequeueTrigger.onNext(Unit)
+                this.dequeueTopicTrigger.onNext(topicName)
             }
         }
                 .toHotCache(scheduler)
