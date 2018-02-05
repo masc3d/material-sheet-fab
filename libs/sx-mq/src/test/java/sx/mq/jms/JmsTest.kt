@@ -6,7 +6,9 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.junit.After
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
+import sx.junit.StandardTest
 import sx.log.slf4j.info
 import sx.mq.MqBroker
 import sx.mq.config.MqTestConfiguration
@@ -16,10 +18,13 @@ import javax.jms.DeliveryMode
 /**
  * Created by masc on 20/02/16.
  */
+@Category(StandardTest::class)
 class JmsTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
+        Kodein.global.mutable = true
+        Kodein.global.clear()
         Kodein.global.addImport(MqTestConfiguration.module)
     }
 

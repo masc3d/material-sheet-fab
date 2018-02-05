@@ -15,8 +15,10 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.junit.StandardTest
 import sx.log.slf4j.info
 import sx.mq.TestChannels
 import sx.mq.config.MqTestConfiguration
@@ -28,6 +30,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by masc on 21.05.17.
  */
+@Category(StandardTest::class)
 class MqttDispatcherTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 

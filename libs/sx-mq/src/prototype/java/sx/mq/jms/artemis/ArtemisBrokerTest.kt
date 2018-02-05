@@ -6,13 +6,16 @@ import org.apache.activemq.artemis.api.jms.JMSFactoryType
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.springframework.jms.connection.CachingConnectionFactory
+import sx.junit.PrototypeTest
 import sx.mq.MqBroker
 import java.io.File
 
 /**
  * Created by masc on 05/10/2016.
  */
+@Category(PrototypeTest::class)
 class ArtemisBrokerTest {
     val BROKER_USERNAME = "admin"
     val BROKER_PASWORD = "admin"

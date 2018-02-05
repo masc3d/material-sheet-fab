@@ -11,8 +11,11 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
+import sx.junit.PrototypeTest
+import sx.junit.StandardTest
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.TestChannels
@@ -31,10 +34,13 @@ import java.util.concurrent.Executors
  * Mqtt prototype tests
  * Created by masc on 05.05.17.
  */
+@Category(PrototypeTest::class)
 class MqttTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
+        Kodein.global.mutable = true
+        Kodein.global.clear()
         Kodein.global.addImport(MqTestConfiguration.module)
     }
 
@@ -93,7 +99,7 @@ class MqttTest {
     object Mqtt {
         val connectOptions: MqttConnectOptions by lazy {
             val mqttConnectOptions = MqttConnectOptions()
-            mqttConnectOptions.isCleanSession = false
+            mqttConnectOptions.isCleanSession = true
             mqttConnectOptions.userName = MqTestConfiguration.USERNAME
             mqttConnectOptions.password = MqTestConfiguration.PASSWORD.toCharArray()
             mqttConnectOptions

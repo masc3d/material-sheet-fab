@@ -5,12 +5,15 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
+import sx.junit.PrototypeTest
 import sx.mq.config.MqTestConfiguration
 
 /**
  * Created by masc on 07.05.17.
  */
+@Category(PrototypeTest::class)
 class ActiveMQBrokerTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 
