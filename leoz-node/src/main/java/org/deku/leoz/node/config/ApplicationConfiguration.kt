@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.SystemInformation
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
@@ -44,6 +45,9 @@ open class ApplicationConfiguration {
 
     @get:Bean
     open val app: Application by lazy { Kodein.global.instance<Application>() }
+
+    @get:Bean
+    open val identity: Identity by lazy { this.app.identity }
 
     @get:Bean
     open val systemInformation: SystemInformation by lazy { Kodein.global.instance<SystemInformation>() }

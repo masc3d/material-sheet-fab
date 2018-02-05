@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.TourServiceV1.*
@@ -49,6 +50,9 @@ class SmartlaneBridge {
 
     /** Default customer id */
     private val customerId = "der-kurier-test"
+
+    @Inject
+    private lateinit var identity: Identity
 
     /**
      * Rest client with connection pool for efficient use across all smartlane domains
@@ -165,7 +169,8 @@ class SmartlaneBridge {
             val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
 
             val srcDriver = user.toDriver()
-            val dstDriver = driverApi.getDriverByEmail(user.email)
+            // Use srcdriver email for lookup, as it's sugared with identity
+            val dstDriver = driverApi.getDriverByEmail(srcDriver.email)
 
             if (dstDriver != null) {
                 driverApi.patchDriverById(
@@ -288,7 +293,7 @@ class SmartlaneBridge {
             it.companyId = 1
             it.vehicle = "car"
             it.usertype = "driver"
-            it.email = this.email
+            it.email = "${this.email}@${identity.shortUid}"
             it.firstname = this.firstName
             it.lastname = this.lastName
             it.mobilenr = this.phoneMobile ?: "n/a"
