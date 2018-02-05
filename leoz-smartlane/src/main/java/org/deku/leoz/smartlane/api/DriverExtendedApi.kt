@@ -4,6 +4,7 @@ import org.deku.leoz.smartlane.model.Driver
 import sx.rs.FlaskOperator
 import sx.rs.FlaskQuery
 import javax.ws.rs.*
+import javax.ws.rs.core.Response
 
 /**
  * Smartlane driver api extensions
@@ -40,5 +41,13 @@ fun DriverApi.getDriverByEmail(email: String): Driver? {
 }
 
 fun DriverExtendedApi.deleteAll() {
-    this.deleteDriver(q = "{}")
+    try {
+        this.deleteDriver(q = "{}")
+    } catch(e: WebApplicationException) {
+        when (e.response.status) {
+        // Expected response when query doesn't match anything to delete
+            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
+            else -> throw e
+        }
+    }
 }

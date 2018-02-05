@@ -1,6 +1,7 @@
 package org.deku.leoz.smartlane.api
 
 import javax.ws.rs.*
+import javax.ws.rs.core.Response
 
 /**
  * Smartlane drivertracking api extensions
@@ -20,5 +21,13 @@ interface DrivertrackingExtendedApi : DriverApi{
 }
 
 fun DrivertrackingExtendedApi.deleteAll() {
-    this.deleteDrivertracking(q = "{}")
+    try {
+        this.deleteDrivertracking(q = "{}")
+    } catch(e: WebApplicationException) {
+        when (e.response.status) {
+        // Expected response when query doesn't match anything to delete
+            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
+            else -> throw e
+        }
+    }
 }

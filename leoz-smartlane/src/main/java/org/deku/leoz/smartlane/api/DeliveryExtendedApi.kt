@@ -5,6 +5,7 @@ import org.deku.leoz.smartlane.model.Deliveries
 import org.deku.leoz.smartlane.model.Delivery
 import org.slf4j.LoggerFactory
 import javax.ws.rs.*
+import javax.ws.rs.core.Response
 
 
 /**
@@ -60,5 +61,13 @@ fun DeliveryApi.getDelivery(q: String): Observable<Delivery> {
 }
 
 fun DeliveryExtendedApi.deleteAll() {
-    this.deleteDelivery(q = "{}")
+    try {
+        this.deleteDelivery(q = "{}")
+    } catch(e: WebApplicationException) {
+        when (e.response.status) {
+            // Expected response when query doesn't match anything to delete
+            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
+            else -> throw e
+        }
+    }
 }

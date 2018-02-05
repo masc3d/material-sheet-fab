@@ -4,6 +4,7 @@ import sx.rs.FlaskFilter
 import sx.rs.FlaskOperator
 import sx.rs.FlaskQuery
 import javax.ws.rs.*
+import javax.ws.rs.core.Response
 
 /**
  * Extended smartlane address api
@@ -42,5 +43,13 @@ fun AddressExtendedApi.deleteAddressesNotIn(ids: Iterable<Long>) {
             )
     )
 
-    this.delete(q = filter.toJson())
+    try {
+        this.delete(q = filter.toJson())
+    } catch(e: WebApplicationException) {
+        when (e.response.status) {
+        // Expected response when query doesn't match anything to delete
+            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
+            else -> throw e
+        }
+    }
 }
