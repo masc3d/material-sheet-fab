@@ -130,7 +130,6 @@ class MqttDispatcher(
             when (it) {
                 is MqttRxClient.Status.ConnectionLost -> {
                     log.warn("Connection lost [${it.cause?.message ?: "-"}]")
-                    this.dequeueSubscription = null
                     this@MqttDispatcher.connect()
                 }
 
@@ -181,11 +180,11 @@ class MqttDispatcher(
      */
     private fun trigger(topicName: String? = null) {
         when {
-            // Trigger specific topic
+        // Trigger specific topic
             topicName != null -> {
                 this.dequeueTopicTriggerSubject.onNext(topicName)
             }
-            // Trigger all topics
+        // Trigger all topics
             else -> this.persistence.getTopics().forEach {
                 this.dequeueTopicTriggerSubject.onNext(it)
             }
@@ -237,7 +236,7 @@ class MqttDispatcher(
                             }
                 }
                 .doFinally {
-                    log.error("Dequeue completed unexpectedly")
+                    log.info("Dequeue terminated")
                 }
                 .subscribe()
     }
