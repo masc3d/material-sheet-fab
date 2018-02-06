@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.types.Predicate
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -24,7 +25,6 @@ import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
-import org.deku.leoz.service.internal.entity.GeoLocation
 import org.deku.leoz.service.internal.id
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
@@ -38,6 +38,7 @@ import sx.mq.jms.channel
 import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
 import sx.persistence.transaction
+import sx.persistence.withEntityManager
 import sx.rs.RestProblem
 import sx.time.toTimestamp
 import sx.util.hashWithSha1
@@ -78,7 +79,7 @@ class TourServiceV1
     private lateinit var dsl: DSLContext
 
     @PersistenceUnit(name = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
-    private lateinit var entityManagerFactory: EntityManagerFactory
+    private lateinit var emf: EntityManagerFactory
 
     // Repositories
     @Inject
@@ -112,20 +113,29 @@ class TourServiceV1
         this.locationService.locationReceived
                 .subscribe { gpsMessage ->
                     try {
-                        val userId = gpsMessage.userId ?: run { return@subscribe }
+                        val userId = gpsMessage.userId ?: run {
+                            // Skip location updates without user id
+                            return@subscribe
+                        }
 
-                        val user = this.userRepository.findById(userId)
-                                ?: throw NoSuchElementException("User id [${userId}]")
+                        this.emf.withEntityManager { em ->
+                            if (!tourRepo.exists(tadTour.userId.eq(userId.toLong())))
+                            // Skip when there's no tour for this user
+                                return@withEntityManager
 
-                        val positions = gpsMessage.dataPoints?.toList() ?: listOf()
+                            val user = this.userRepository.findById(userId)
+                                    ?: throw NoSuchElementException("User id [${userId}]")
 
-                        this.smartlane.putDriverPosition(
-                                email = user.email,
-                                positions = positions
-                        )
-                                .subscribeBy(
-                                        onError = { e -> log.error(e.message, e) }
-                                )
+                            val positions = gpsMessage.dataPoints?.toList() ?: listOf()
+
+                            this.smartlane.putDriverPosition(
+                                    email = user.email,
+                                    positions = positions
+                            )
+                                    .subscribeBy(
+                                            onError = { e -> log.error(e.message, e) }
+                                    )
+                        }
                     } catch (e: Throwable) {
                         log.error(e.message, e)
                     }
@@ -138,11 +148,9 @@ class TourServiceV1
      * @return Ids of created tours
      */
     fun create(tours: Iterable<Tour>): List<Long> {
-        val em = this.entityManagerFactory.createEntityManager()
-
         val now = Date()
 
-        return em.transaction {
+        return emf.transaction { em ->
             tours.map { tour ->
                 // Create new one if it doesn't exist
                 val tourRecord = TadTour().also {
@@ -188,9 +196,7 @@ class TourServiceV1
      * @param tour Optimized tour
      */
     fun updateFromOptimizedTour(tour: Tour) {
-        val em = this.entityManagerFactory.createEntityManager()
-
-        em.transaction {
+        emf.transaction { em ->
             val tourId = tour.id ?: throw IllegalArgumentException("Tour id cannot be null")
 
             val now = Date().toTimestamp()
@@ -239,8 +245,6 @@ class TourServiceV1
             from: ShortDate?,
             to: ShortDate?
     ): List<Tour> {
-        val em = this.entityManagerFactory.createEntityManager()
-
         val tourRecords =
                 this.tourRepo.findAll(BooleanBuilder()
                         .letWithParamNotNull(debitorId, {
@@ -323,16 +327,16 @@ class TourServiceV1
      * Get the (current) tour for a user
      */
     override fun getByUser(userId: Long): Tour {
-        val em = this.entityManagerFactory.createEntityManager()
+        return this.emf.withEntityManager { em ->
+            // Get latest tour for user
+            val tourRecord = em.from(tadTour)
+                    .where(tadTour.userId.eq(userId))
+                    .orderBy(tadTour.modified.desc())
+                    .fetchFirst()
+                    ?: throw NoSuchElementException("No assignable tour for user [${userId}]")
 
-        // Get latest tour for user
-        val tourRecord = em.from(tadTour)
-                .where(tadTour.userId.eq(userId))
-                .orderBy(tadTour.modified.desc())
-                .fetchFirst()
-                ?: throw NoSuchElementException("No assignable tour for user [${userId}]")
-
-        return tourRecord.toTour()
+            tourRecord.toTour()
+        }
     }
 
     override fun delete(
@@ -340,9 +344,7 @@ class TourServiceV1
             userId: Long?,
             stationNo: Long?) {
 
-        val em = this.entityManagerFactory.createEntityManager()
-
-        em.transaction {
+        emf.transaction { em ->
             ids
                     .plus(stationNo?.let {
                         em.from(tadTour)
@@ -474,73 +476,73 @@ class TourServiceV1
     override fun status(stationNo: Long, sink: SseEventSink, sse: Sse) {
         var subscription: Disposable? = null
 
-        val em = this.entityManagerFactory.createEntityManager()
+        this.emf.withEntityManager { em ->
+            val tourIds = em.from(tadTour)
+                    .select(tadTour.id)
+                    .where(tadTour.stationNo.eq(stationNo))
+                    .fetch()
 
-        val tourIds = em.from(tadTour)
-                .select(tadTour.id)
-                .where(tadTour.stationNo.eq(stationNo))
-                .fetch()
+            // The status request uuid
+            val uuid = "${UUID.randomUUID()}"
 
-        // The status request uuid
-        val uuid = "${UUID.randomUUID()}"
+            /** Helper to close down (with optional error) */
+            fun close(error: Throwable? = null) {
+                subscription?.dispose()
+                sink.close()
 
-        /** Helper to close down (with optional error) */
-        fun close(error: Throwable? = null) {
-            subscription?.dispose()
-            sink.close()
+                log.info { "SSE CLOSED [${uuid}] ${error?.message ?: ""}" }
+            }
 
-            log.info { "SSE CLOSED [${uuid}] ${error?.message ?: ""}" }
-        }
+            subscription = Observable.merge(
+                    // Emit interval based (ping) event in order to detect remote disconnection
+                    Observable.interval(1, TimeUnit.MINUTES)
+                            .map { sse.newEventBuilder().id(uuid).build() }
+                    ,
+                    // Listen for updates
+                    this.optimizations.updated
+                            .filter { tourIds.contains(it.id) }
+                            .doOnSubscribe {
+                                log.trace { "SSE SUBSCRIBED [${uuid}]" }
+                            }
+                            .doOnComplete {
+                                log.trace { "SSE COMPLETED [${uuid}]" }
+                            }
+                            .doOnDispose {
+                                log.trace { "SSE DISPOSED [${uuid}]" }
+                            }
+                            .map { status ->
+                                // Build SSE event from status update
+                                sse.newEventBuilder()
+                                        .id(uuid)
+                                        .mediaType(MediaType.APPLICATION_JSON_TYPE)
+                                        .data(status.javaClass, status)
+                                        .build()
+                            }
+            )
+                    .takeUntil { sink.isClosed }
+                    .subscribe { event ->
+                        try {
+                            // Send SSE event for each update
+                            sink.send(event)
+                                    .whenComplete { result, e ->
+                                        val error: Throwable? = when {
+                                            result is Throwable -> result
+                                            e != null -> e
+                                            else -> null
+                                        }
 
-        subscription = Observable.merge(
-                // Emit interval based (ping) event in order to detect remote disconnection
-                Observable.interval(1, TimeUnit.MINUTES)
-                        .map { sse.newEventBuilder().id(uuid).build() }
-                ,
-                // Listen for updates
-                this.optimizations.updated
-                        .filter { tourIds.contains(it.id) }
-                        .doOnSubscribe {
-                            log.trace { "SSE SUBSCRIBED [${uuid}]" }
-                        }
-                        .doOnComplete {
-                            log.trace { "SSE COMPLETED [${uuid}]" }
-                        }
-                        .doOnDispose {
-                            log.trace { "SSE DISPOSED [${uuid}]" }
-                        }
-                        .map { status ->
-                            // Build SSE event from status update
-                            sse.newEventBuilder()
-                                    .id(uuid)
-                                    .mediaType(MediaType.APPLICATION_JSON_TYPE)
-                                    .data(status.javaClass, status)
-                                    .build()
-                        }
-        )
-                .takeUntil { sink.isClosed }
-                .subscribe { event ->
-                    try {
-                        // Send SSE event for each update
-                        sink.send(event)
-                                .whenComplete { result, e ->
-                                    val error: Throwable? = when {
-                                        result is Throwable -> result
-                                        e != null -> e
-                                        else -> null
+                                        if (error != null)
+                                            close(error)
                                     }
-
-                                    if (error != null)
-                                        close(error)
-                                }
-                                .exceptionally { e ->
-                                    close(e)
-                                    null
-                                }
-                    } catch (e: Throwable) {
-                        close(e)
+                                    .exceptionally { e ->
+                                        close(e)
+                                        null
+                                    }
+                        } catch (e: Throwable) {
+                            close(e)
+                        }
                     }
-                }
+        }
     }
 
     override fun optimizeForNode(
@@ -661,46 +663,46 @@ class TourServiceV1
 
         val timestamp = Date().toTimestamp()
 
-        val em = this.entityManagerFactory.createEntityManager()
-
-        // Create tour/entries from delivery list
-        val tours = em.transaction {
-            dlRecords.map { dlRecord ->
-                // Create new tour
-                val tourRecord = TadTour().also {
-                    it.nodeId = null
-                    it.userId = null
-                    it.stationNo = dlRecord.deliveryStation.toLong()
-                    it.deliverylistId = dlRecord.id.toLong()
-                    it.uid = this.createUid()
-                    it.date = ShortDate(timestamp).toString()
-                    it.created = timestamp
-                    it.modified = timestamp
-
-                    em.persist(it)
-                    em.flush()
-                }
-
-                val dlDetailRecords = dlDetailRecordsById.getValue(dlRecord.id)
-
-                // Transform delivery list detail to tour entry record
-                val tourEntryRecords = dlDetailRecords.mapIndexed { index, dlDetailRecord ->
-                    TadTourEntry().also {
-                        it.tourId = tourRecord.id
-                        it.orderId = dlDetailRecord.orderId.toLong()
-                        it.orderTaskType = TaskType.valueOf(dlDetailRecord.stoptype).value
-                        it.position = (index + 1).toDouble()
+        val tours = this.emf.withEntityManager { em ->
+            // Create tour/entries from delivery list
+            em.transaction {
+                dlRecords.map { dlRecord ->
+                    // Create new tour
+                    val tourRecord = TadTour().also {
+                        it.nodeId = null
+                        it.userId = null
+                        it.stationNo = dlRecord.deliveryStation.toLong()
+                        it.deliverylistId = dlRecord.id.toLong()
                         it.uid = this.createUid()
-                        it.timestamp = timestamp
+                        it.date = ShortDate(timestamp).toString()
+                        it.created = timestamp
+                        it.modified = timestamp
 
                         em.persist(it)
+                        em.flush()
                     }
-                }
 
-                // TODO: optimize performance: using iterable conversion extension
-                tourRecord.toTour(
-                        tourEntryRecordsByTourId = mapOf(Pair(tourRecord.id, tourEntryRecords))
-                )
+                    val dlDetailRecords = dlDetailRecordsById.getValue(dlRecord.id)
+
+                    // Transform delivery list detail to tour entry record
+                    val tourEntryRecords = dlDetailRecords.mapIndexed { index, dlDetailRecord ->
+                        TadTourEntry().also {
+                            it.tourId = tourRecord.id
+                            it.orderId = dlDetailRecord.orderId.toLong()
+                            it.orderTaskType = TaskType.valueOf(dlDetailRecord.stoptype).value
+                            it.position = (index + 1).toDouble()
+                            it.uid = this.createUid()
+                            it.timestamp = timestamp
+
+                            em.persist(it)
+                        }
+                    }
+
+                    // TODO: optimize performance: using iterable conversion extension
+                    tourRecord.toTour(
+                            tourEntryRecordsByTourId = mapOf(Pair(tourRecord.id, tourEntryRecords))
+                    )
+                }
             }
         }
 
@@ -965,10 +967,8 @@ class TourServiceV1
                     return
                 }
 
-        val em = this.entityManagerFactory.createEntityManager()
-
         // Upsert stop list
-        em.transaction {
+        emf.transaction {em ->
             // Check for existing tour
             val tourRecord = this.tourRepo.findOne(tadTour.nodeId.eq(nodeId.toLong()))
                     .toNullable()
