@@ -26,6 +26,7 @@ fun EntityManager.truncate(entityClass: Class<*>) {
 @Throws(Exception::class)
 fun <T> EntityManager.transaction(block: () -> T): T {
     val result: T
+
     val et = this.transaction
     et.begin()
     try {
@@ -35,6 +36,7 @@ fun <T> EntityManager.transaction(block: () -> T): T {
         if (et.isActive)
             et.rollback()
     }
+
     return result
 }
 

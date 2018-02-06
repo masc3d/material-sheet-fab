@@ -21,3 +21,16 @@ fun <T> EntityManagerFactory.withEntityManager(block: (em: EntityManager) -> T):
         }
     }
 }
+
+/**
+ * Creates a new entity manager and a transaction which spans the lifecycle of this entity manager
+ * @param block Block to run within a transaction
+ */
+fun <T> EntityManagerFactory.transaction(block: (em: EntityManager) -> T): T {
+    return this.withEntityManager { em ->
+        em.transaction {
+            block(em)
+        }
+    }
+}
+
