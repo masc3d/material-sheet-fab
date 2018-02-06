@@ -29,6 +29,7 @@ import sx.time.toLocalDateTime
 import java.net.URI
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 import javax.inject.Named
@@ -190,35 +191,52 @@ class SmartlaneBridge {
     /**
      * Update a drivers geo position
      * @param email User / driver email
-     * @param position Driver's geo position
+     * @param positions Driver's geo positions
      */
     fun putDriverPosition(
             email: String,
-            position: LocationServiceV2.GpsDataPoint
+            positions: Iterable<LocationServiceV2.GpsDataPoint>
     ): Completable {
         val domain = domain(customerId)
 
-        return Observable.fromCallable {
+        val driver = Observable.fromCallable {
             val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
 
-            val driver = driverApi.getDriverByEmail(email)
+            driverApi.getDriverByEmail(
+                    email = this.formatEmail(email)
+            )
                     ?: throw NoSuchElementException("Driver not found")
-
-            driverApi.postDrivertracking(Drivertracking().also {
-                it.driverId = driver.id
-                it.position = Location().also {
-                    it.type = "Point"
-                    it.coordinates = listOf(
-                            position.latitude?.toBigDecimal(),
-                            position.longitude?.toBigDecimal()
-                    )
-                }
-                it.timestamp = position.time
-
-                log.trace { "Put driver tracking ${it}"}
-            })
         }
                 .retryOnTokenExpiry(domain)
+                .blockingFirst()
+
+        return Observable
+                .fromIterable(positions)
+                // Take it slow with position batch updates, to avoid smartlane request limit
+                .window(1, TimeUnit.SECONDS, 10)
+                .flatMap { positionWindow ->
+                    positionWindow.flatMap { position ->
+                        Observable.fromCallable {
+                            val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
+
+                            driverApi.postDrivertracking(Drivertracking().also {
+                                it.driverId = driver.id
+                                it.position = Location().also {
+                                    it.type = "Point"
+                                    it.coordinates = listOf(
+                                            position.latitude?.toBigDecimal(),
+                                            position.longitude?.toBigDecimal()
+                                    )
+                                }
+                                it.timestamp = position.time
+
+                                log.trace { "Put driver tracking ${it}" }
+                            })
+                        }
+                                .retryOnTokenExpiry(domain)
+                    }
+                }
+                .subscribeOn(domain.scheduler)
                 .ignoreElements()
     }
 
@@ -260,7 +278,7 @@ class SmartlaneBridge {
 
                         // Update smartlane route custom ids with generated uids
                         routeApi.patchRouteById(
-                            route.id,
+                                route.id,
                                 Route().also {
                                     it.customId = uid
                                 }
@@ -284,6 +302,10 @@ class SmartlaneBridge {
                 .subscribeOn(domain.scheduler)
     }
 
+    /**
+     * Formats an email to include identity
+     */
+    private fun formatEmail(email: String) = "${email}@${identity.shortUid}"
 
     /**
      * Transform domain user to smartlane driver
@@ -293,7 +315,7 @@ class SmartlaneBridge {
             it.companyId = 1
             it.vehicle = "car"
             it.usertype = "driver"
-            it.email = "${this.email}@${identity.shortUid}"
+            it.email = formatEmail(this.email)
             it.firstname = this.firstName
             it.lastname = this.lastName
             it.mobilenr = this.phoneMobile ?: "n/a"

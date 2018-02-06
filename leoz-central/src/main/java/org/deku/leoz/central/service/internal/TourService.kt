@@ -117,14 +117,16 @@ class TourServiceV1
                         val user = this.userRepository.findById(userId)
                                 ?: throw NoSuchElementException("User id [${userId}]")
 
+                        val positions = gpsMessage.dataPoints?.toList() ?: listOf()
+
                         this.smartlane.putDriverPosition(
                                 email = user.email,
-                                position = gpsMessage.lastDataPoint
+                                positions = positions
                         )
                                 .subscribeBy(
                                         onError = { e -> log.error(e.message, e) }
                                 )
-                    } catch(e: Throwable) {
+                    } catch (e: Throwable) {
                         log.error(e.message, e)
                     }
                 }
@@ -892,7 +894,7 @@ class TourServiceV1
                         }
         )
     }
-//endregion
+    //endregion
 
     //region MQ handlers
     @MqHandler.Types(
