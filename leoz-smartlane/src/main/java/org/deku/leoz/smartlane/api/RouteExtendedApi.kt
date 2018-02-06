@@ -219,6 +219,7 @@ fun RouteExtendedApi.getProcessStatusById(processId: String): RouteExtendedApi.R
                     throw WebApplicationException(rsp)
 
                 when (rsp.status) {
+                    Response.Status.OK.statusCode,
                     Response.Status.ACCEPTED.statusCode -> {
                         val processStatus = rsp.readEntity(RouteExtendedApi.ProcessStatus::class.java)
 
