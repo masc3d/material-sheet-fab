@@ -3,9 +3,9 @@ package sx.mq.mqtt
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.exceptions.CompositeException
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -18,9 +18,7 @@ import sx.Stopwatch
 import sx.log.slf4j.debug
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
-import sx.rx.limit
-import sx.rx.retryWithExponentialBackoff
-import sx.rx.toHotCache
+import sx.rx.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
@@ -37,7 +35,8 @@ class MqttDispatcher(
         private val client: MqttRxClient,
         private val persistence: IMqttPersistence,
         private val executorService: ExecutorService
-) : IMqttRxClient {
+) : IMqttRxClient, AutoCloseable {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val lock = ReentrantLock()
@@ -74,26 +73,6 @@ class MqttDispatcher(
                 this.statisticsUpdatEventSubject.onNext(v.toMap())
             })
 
-    init {
-        // Get current statistics initially from persistence layer
-        this.statistics = this.persistence.count().toMutableMap()
-
-        this.client.statusEvent.subscribe { it ->
-            when (it) {
-                is MqttRxClient.Status.ConnectionLost -> {
-                    log.warn("Connection lost [${it.cause?.message ?: "-"}]")
-                    this.dequeueSubscription = null
-                    this@MqttDispatcher.connect()
-                }
-
-                is MqttRxClient.Status.ConnectionComplete -> {
-                    log.info("Connection established")
-                    this.dequeue()
-                }
-            }
-        }
-    }
-
     /**
      * Internal helper for maintaining statistics.
      * Updates counter cache and emits event.
@@ -121,10 +100,16 @@ class MqttDispatcher(
             field = value
         }
 
+    val compositeDisposable = CompositeDisposable()
+
     /**
      * Observable dequeue topic trigger, emitting topic names
      */
-    private val dequeueTopicTrigger = PublishSubject.create<String>()
+    private val dequeueTopicTriggerSubject = PublishSubject.create<String>()
+
+    private val dequeueTopicTrigger = dequeueTopicTriggerSubject
+            .hide()
+
     /**
      * The current dequeue subscription.
      * Setting this property to null will cancel/dispose the subscription
@@ -138,7 +123,26 @@ class MqttDispatcher(
         }
 
     init {
-        this.dequeue()
+        // Get current statistics initially from persistence layer
+        this.statistics = this.persistence.count().toMutableMap()
+
+        this.client.statusEvent.subscribe { it ->
+            when (it) {
+                is MqttRxClient.Status.ConnectionLost -> {
+                    log.warn("Connection lost [${it.cause?.message ?: "-"}]")
+                    this.dequeueSubscription = null
+                    this@MqttDispatcher.connect()
+                }
+
+                is MqttRxClient.Status.ConnectionComplete -> {
+                    log.info("Connection established")
+                    this.trigger()
+                }
+            }
+        }
+
+        this.startDequeue()
+        this.trigger()
     }
 
     /**
@@ -172,10 +176,27 @@ class MqttDispatcher(
     }
 
     /**
+     * Trigger dequeue
+     * @param topicName Topic to trigger dequeue for. Omitting this parameter triggers all topics
+     */
+    private fun trigger(topicName: String? = null) {
+        when {
+            // Trigger specific topic
+            topicName != null -> {
+                this.dequeueTopicTriggerSubject.onNext(topicName)
+            }
+            // Trigger all topics
+            else -> this.persistence.getTopics().forEach {
+                this.dequeueTopicTriggerSubject.onNext(it)
+            }
+        }
+    }
+
+    /**
      * Start dequeue subscription.
      * In case a subscription is already active, the old one will be disposed accordingly.
      */
-    private fun dequeue() {
+    private fun startDequeue() {
         // This observable never completes, as it's subject based.
         this.dequeueSubscription = this.dequeueTopicTrigger
                 .groupBy { it }
@@ -204,19 +225,21 @@ class MqttDispatcher(
 
                                         // Map processed batch back to trigger unit
                                         .ignoreElements()
-                                        .toSingleDefault(trigger)
-                                        .toObservable()
+                                        .toObservable<Unit>()
                             }
+                            .onErrorReturn { e ->
+                                val message = when (e) {
+                                    is CompositeException -> e.exceptions.map { it.message }.joinToString(",")
+                                    else -> e.message
+                                }
 
+                                log.error("Dequeue encountered error [${message}]")
+                            }
                 }
-                .subscribeBy(onError = { e ->
-                    val message = when (e) {
-                        is CompositeException -> e.exceptions.map { it.message }.joinToString(",")
-                        else -> e.message
-                    }
-
-                    log.error("Dequeue terminated with error [${message}]")
-                })
+                .doFinally {
+                    log.error("Dequeue completed unexpectedly")
+                }
+                .subscribe()
     }
 
     /**
@@ -237,7 +260,7 @@ class MqttDispatcher(
 
             if (this.isConnected) {
                 // Trigger dequeue flow
-                this.dequeueTopicTrigger.onNext(topicName)
+                this.trigger(topicName)
             }
         }
                 .toHotCache(scheduler)
@@ -322,4 +345,13 @@ class MqttDispatcher(
      */
     val isConnected: Boolean
         get() = this.client.isConnected
+
+    /**
+     * Close down dispatcher
+     */
+    override fun close() {
+        this.client.disconnect(true)
+        // Dispose the dequeue subscription
+        this.dequeueSubscription = null
+    }
 }
