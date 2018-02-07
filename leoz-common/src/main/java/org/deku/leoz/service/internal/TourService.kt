@@ -130,6 +130,24 @@ interface TourServiceV1 {
             @Suspended response: AsyncResponse
     )
 
+    @PATCH
+    @Path("/node/{${NODE_UID}}/optimize")
+    @ApiOperation(
+            value = "Optimize tour for a (mobile) node",
+            notes = "Starts the optimization process" +
+                    " and sends a tour update (message) to the node which owns the tour when complete." +
+                    " Central entities won't be updated as this is the responsibility of the node" +
+                    " once the user has accepted the optimized tour.",
+            authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun optimizeForNode(
+            @PathParam(NODE_UID) @ApiParam(value = "Mobile node id")
+            nodeUid: String,
+            @ApiParam(value = "Tour optimization options")
+            options: TourOptimizationOptions
+    )
+
+
+    @Deprecated("Superseded by `subscribe`")
     @GET
     @Path("/optimize/status/sse")
     @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -145,20 +163,19 @@ interface TourServiceV1 {
             @Context sse: Sse
     )
 
-    @PATCH
-    @Path("/node/{${NODE_UID}}/optimize")
+    @GET
+    @Path("/subscribe/sse")
+    @Produces(MediaType.SERVER_SENT_EVENTS)
     @ApiOperation(
-            value = "Optimize tour for a (mobile) node",
-            notes = "Starts the optimization process" +
-                    " and sends a tour update (message) to the node which owns the tour when complete." +
-                    " Central entities won't be updated as this is the responsibility of the node" +
-                    " once the user has accepted the optimized tour.",
+            value = "Subscribe to tour updates",
+            notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun optimizeForNode(
-            @PathParam(NODE_UID) @ApiParam(value = "Mobile node id")
-            nodeUid: String,
-            @ApiParam(value = "Tour optimization options")
-            options: TourOptimizationOptions
+    fun subscribe(
+            @QueryParam(STATION_NO)
+            @ApiParam(value = "The station no to get tour updates for")
+            stationNo: Long,
+            @Context sink: SseEventSink,
+            @Context sse: Sse
     )
 
     @ApiModel(description = "Tour")
@@ -376,6 +393,17 @@ interface TourServiceV1 {
             var id: Long = 0,
             /** Optimization progress */
             var inProgress: Boolean = false
+    )
+
+    /**
+     * Tour update subscription
+     * TODO: generalize
+     */
+    @Serializable(0x5e37fb2d93c1b9)
+    data class TourSubscription(
+            var added: List<Tour>? = null,
+            var udpated: List<Tour>? = null,
+            var deleted: List<Long>? = null
     )
 }
 

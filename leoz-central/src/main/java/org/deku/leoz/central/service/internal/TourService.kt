@@ -40,6 +40,7 @@ import sx.persistence.querydsl.from
 import sx.persistence.transaction
 import sx.persistence.withEntityManager
 import sx.rs.RestProblem
+import sx.rs.push
 import sx.time.toTimestamp
 import sx.util.hashWithSha1
 import sx.util.letWithParamNotNull
@@ -56,7 +57,9 @@ import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+import javax.ws.rs.sse.OutboundSseEvent
 import javax.ws.rs.sse.Sse
+import javax.ws.rs.sse.SseEvent
 import javax.ws.rs.sse.SseEventSink
 import kotlin.NoSuchElementException
 
@@ -118,26 +121,24 @@ class TourServiceV1
                             return@subscribe
                         }
 
-                        this.emf.withEntityManager { em ->
-                            if (!tourRepo.exists(tadTour.userId.eq(userId.toLong())))
-                            // Skip when there's no tour for this user
-                                return@withEntityManager
+                        if (!tourRepo.exists(tadTour.userId.eq(userId.toLong())))
+                        // Skip when there's no tour for this user
+                            return@subscribe
 
-                            val user = this.userRepository.findById(userId)
-                                    ?: throw NoSuchElementException("User id [${userId}]")
+                        val user = this.userRepository.findById(userId)
+                                ?: throw NoSuchElementException("User id [${userId}]")
 
-                            val positions = gpsMessage.dataPoints?.toList() ?: listOf()
+                        val positions = gpsMessage.dataPoints?.toList() ?: listOf()
 
-                            this.smartlane.putDriverPosition(
-                                    email = user.email,
-                                    positions = positions
-                            )
-                                    .subscribeBy(
-                                            onError = { e -> log.error(e.message, e) }
-                                    )
-                        }
+                        this.smartlane.putDriverPosition(
+                                email = user.email,
+                                positions = positions
+                        )
+                                .subscribeBy(
+                                        onError = { e -> log.error(e.message, e) }
+                                )
                     } catch (e: Throwable) {
-                        log.error(e.message, e)
+                        log.error("Location push to routing provider failed. node [${gpsMessage.nodeKey}], user [${gpsMessage.userId}]: ${e.message}")
                     }
                 }
     }
@@ -474,75 +475,20 @@ class TourServiceV1
                 response = response)
     }
 
-    override fun status(stationNo: Long, sink: SseEventSink, sse: Sse) {
-        var subscription: Disposable? = null
 
+    override fun status(stationNo: Long, sink: SseEventSink, sse: Sse) {
         this.emf.withEntityManager { em ->
             val tourIds = em.from(tadTour)
                     .select(tadTour.id)
                     .where(tadTour.stationNo.eq(stationNo))
                     .fetch()
 
-            // The status request uuid
-            val uuid = "${UUID.randomUUID()}"
-
-            /** Helper to close down (with optional error) */
-            fun close(error: Throwable? = null) {
-                subscription?.dispose()
-                sink.close()
-
-                log.info { "SSE CLOSED [${uuid}] ${error?.message ?: ""}" }
-            }
-
-            subscription = Observable.merge(
-                    // Emit interval based (ping) event in order to detect remote disconnection
-                    Observable.interval(1, TimeUnit.MINUTES)
-                            .map { sse.newEventBuilder().id(uuid).build() }
-                    ,
-                    // Listen for updates
-                    this.optimizations.updated
-                            .filter { tourIds.contains(it.id) }
-                            .doOnSubscribe {
-                                log.trace { "SSE SUBSCRIBED [${uuid}]" }
-                            }
-                            .doOnComplete {
-                                log.trace { "SSE COMPLETED [${uuid}]" }
-                            }
-                            .doOnDispose {
-                                log.trace { "SSE DISPOSED [${uuid}]" }
-                            }
-                            .map { status ->
-                                // Build SSE event from status update
-                                sse.newEventBuilder()
-                                        .id(uuid)
-                                        .mediaType(MediaType.APPLICATION_JSON_TYPE)
-                                        .data(status.javaClass, status)
-                                        .build()
-                            }
+            sink.push(
+                    sse = sse,
+                    events = this.optimizations.updated
+                            .filter { tourIds.contains(it.id) },
+                    onError = { log.error(it.message) }
             )
-                    .takeUntil { sink.isClosed }
-                    .subscribe { event ->
-                        try {
-                            // Send SSE event for each update
-                            sink.send(event)
-                                    .whenComplete { result, e ->
-                                        val error: Throwable? = when {
-                                            result is Throwable -> result
-                                            e != null -> e
-                                            else -> null
-                                        }
-
-                                        if (error != null)
-                                            close(error)
-                                    }
-                                    .exceptionally { e ->
-                                        close(e)
-                                        null
-                                    }
-                        } catch (e: Throwable) {
-                            close(e)
-                        }
-                    }
         }
     }
 
@@ -562,6 +508,10 @@ class TourServiceV1
                     detail = e.message
             )
         }
+    }
+
+    override fun subscribe(stationNo: Long, sink: SseEventSink, sse: Sse) {
+        TODO("not implemented")
     }
 
     /**
@@ -968,7 +918,7 @@ class TourServiceV1
                 }
 
         // Upsert stop list
-        emf.transaction {em ->
+        emf.transaction { em ->
             // Check for existing tour
             val tourRecord = this.tourRepo.findOne(tadTour.nodeId.eq(nodeId.toLong()))
                     .toNullable()
