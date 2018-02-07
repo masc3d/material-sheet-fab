@@ -54,6 +54,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( tours: Tour[] ) => {
         this.tours = this.processTourchanges( this.tours, tours );
+        this.tours.sort( (a, b) => a.id > b.id ? -1 : 1);
         this.toursOrderCount = this.countOrders( tours );
         this.toursParcelCount = this.countParcels( tours );
         this.toursTotalWeight = roundDecimals( this.sumWeights( tours ), 100 );
