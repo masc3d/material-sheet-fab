@@ -7,7 +7,6 @@ import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
-import sx.util.hashWithSha1
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.container.AsyncResponse
@@ -155,6 +154,9 @@ interface TourServiceV1 {
             value = "Get tour status updates",
             notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiResponses(
+            ApiResponse(code = 200, response = TourOptimizationStatus::class, message = "Tour optimization status")
+    )
     fun status(
             @QueryParam(STATION_NO)
             @ApiParam(value = "The station no to retrieve tour status updates for")
@@ -170,6 +172,9 @@ interface TourServiceV1 {
             value = "Subscribe to tour updates",
             notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiResponses(
+            ApiResponse(code = 200, response = SubscriptionEvent::class, message= "Tour service subscription event")
+    )
     fun subscribe(
             @QueryParam(STATION_NO)
             @ApiParam(value = "The station no to get tour updates for")
@@ -388,6 +393,7 @@ interface TourServiceV1 {
      * Tour optimization status
      */
     @Serializable(0xdf5d24c36e52ac)
+    @ApiModel(description = "Tour optimization status")
     data class TourOptimizationStatus(
             /** Tour id */
             var id: Long = 0,
@@ -396,13 +402,14 @@ interface TourServiceV1 {
     )
 
     /**
-     * Tour update subscription
+     * Tour update / subscription event
      * TODO: generalize
      */
     @Serializable(0x5e37fb2d93c1b9)
-    data class TourSubscription(
-            var added: List<Tour>? = null,
-            var udpated: List<Tour>? = null,
+    @ApiModel(description = "Tour service subscription event")
+    data class SubscriptionEvent(
+            var stationNo: Long? = null,
+            var items: List<Tour>? = null,
             var deleted: List<Long>? = null
     )
 }

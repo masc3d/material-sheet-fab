@@ -1,10 +1,9 @@
 package org.deku.leoz.central.service.internal
 
 import com.querydsl.core.BooleanBuilder
-import com.querydsl.core.types.Predicate
+import com.querydsl.core.Tuple
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.config.PersistenceConfiguration
@@ -30,7 +29,6 @@ import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.zalando.problem.Status
-import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -47,7 +45,6 @@ import sx.util.letWithParamNotNull
 import sx.util.toNullable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
@@ -55,11 +52,8 @@ import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
 import javax.ws.rs.Path
 import javax.ws.rs.container.AsyncResponse
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import javax.ws.rs.sse.OutboundSseEvent
 import javax.ws.rs.sse.Sse
-import javax.ws.rs.sse.SseEvent
 import javax.ws.rs.sse.SseEventSink
 import kotlin.NoSuchElementException
 
@@ -108,6 +102,10 @@ class TourServiceV1
     private lateinit var smartlane: SmartlaneBridge
     //endregion
 
+    private val updatedSubject = PublishSubject.create<SubscriptionEvent>()
+    /** Tour update / subscription event */
+    val updated = this.updatedSubject.hide()
+
     fun createUid(): String = UUID.randomUUID().hashWithSha1(10)
 
     @PostConstruct
@@ -152,45 +150,56 @@ class TourServiceV1
         val now = Date()
 
         return emf.transaction { em ->
-            tours.map { tour ->
-                // Create new one if it doesn't exist
-                val tourRecord = TadTour().also {
-                    it.userId = tour.userId
-                    it.stationNo = tour.stationNo
-                    it.parentId = tour.parentId
-                    it.customId = tour.customId
-                    it.optimized = tour.optimized?.toTimestamp()
-                    it.uid = tour.uid ?: this.createUid()
-                    it.date = ShortDate(now).toString()
-                    it.created = now.toTimestamp()
-                    it.modified = now.toTimestamp()
-
-                    em.persist(it)
-                    em.flush()
-                }
-
-                tour.stops.forEachIndexed { index, stop ->
-                    stop.tasks.forEach { task ->
-
-                        TadTourEntry().also {
-                            it.tourId = tourRecord.id
-                            it.position = (index + 1).toDouble()
-                            it.orderId = task.orderId
-                            it.orderTaskType = when (task.taskType) {
-                                Task.Type.DELIVERY -> TaskType.DELIVERY.value
-                                Task.Type.PICKUP -> TaskType.DELIVERY.value
-                            }
-                            it.uid = task.uid ?: this.createUid()
-                            it.timestamp = now.toTimestamp()
+            tours
+                    .map { tour ->
+                        // Create new one if it doesn't exist
+                        val tourRecord = TadTour().also {
+                            it.userId = tour.userId
+                            it.stationNo = tour.stationNo
+                            it.parentId = tour.parentId
+                            it.customId = tour.customId
+                            it.optimized = tour.optimized?.toTimestamp()
+                            it.uid = tour.uid ?: this.createUid()
+                            it.date = ShortDate(now).toString()
+                            it.created = now.toTimestamp()
+                            it.modified = now.toTimestamp()
 
                             em.persist(it)
+                            em.flush()
                         }
-                    }
-                }
 
-                tourRecord.id.toLong()
-            }
+                        tour.stops.forEachIndexed { index, stop ->
+                            stop.tasks.forEach { task ->
+
+                                TadTourEntry().also {
+                                    it.tourId = tourRecord.id
+                                    it.position = (index + 1).toDouble()
+                                    it.orderId = task.orderId
+                                    it.orderTaskType = when (task.taskType) {
+                                        Task.Type.DELIVERY -> TaskType.DELIVERY.value
+                                        Task.Type.PICKUP -> TaskType.DELIVERY.value
+                                    }
+                                    it.uid = task.uid ?: this.createUid()
+                                    it.timestamp = now.toTimestamp()
+
+                                    em.persist(it)
+                                }
+                            }
+                        }
+
+                        tourRecord.id.toLong()
+                    }
         }
+                .also {
+                    tours
+                            .groupBy { it.stationNo }
+                            .forEach { stationNo, tours ->
+                                this.updatedSubject.onNext(SubscriptionEvent(
+                                        stationNo = stationNo,
+                                        items = tours.toList()
+                                ))
+                            }
+                }
     }
 
     /**
@@ -234,6 +243,12 @@ class TourServiceV1
                 em.merge(it)
             }
         }
+                .also {
+                    this.updatedSubject.onNext(SubscriptionEvent(
+                            stationNo = tour.stationNo,
+                            items = listOf(tour)
+                    ))
+                }
     }
 
     //region REST
@@ -347,22 +362,28 @@ class TourServiceV1
             stationNo: Long?) {
 
         emf.transaction { em ->
-            ids
+            em.from(tadTour)
+                    .select(tadTour.id, tadTour.stationNo)
+                    .where(tadTour.id.`in`(ids))
+                    .fetch()
                     .plus(stationNo?.let {
                         em.from(tadTour)
-                                .select(tadTour.id)
+                                .select(tadTour.id, tadTour.stationNo)
                                 .where(tadTour.stationNo.eq(it))
                                 .fetch()
+
                     } ?: listOf())
                     .plus(userId?.let {
                         em.from(tadTour)
-                                .select(tadTour.id)
+                                .select(tadTour.id, tadTour.stationNo)
                                 .where(tadTour.userId.eq(it))
                                 .fetch()
-                    } ?: listOf())
-                    .also {
-                        if (it.count() > 0) {
-                            val tourIds = it.distinct()
+                    } ?: listOf<Tuple>())
+                    .also { records ->
+                        if (records.count() > 0) {
+                            val tourIds = records
+                                    .map { it.get(tadTour.id) }
+                                    .distinct()
 
                             em.delete(tadTourEntry)
                                     .where(tadTourEntry.tourId.`in`(tourIds))
@@ -374,6 +395,16 @@ class TourServiceV1
                         }
                     }
         }
+                .also { records ->
+                    records
+                            .groupBy { it.get(tadTour.stationNo) }
+                            .forEach { stationNo, records ->
+                                this.updatedSubject.onNext(SubscriptionEvent(
+                                        stationNo = stationNo,
+                                        deleted = records.map { it.get(tadTour.id)!! }
+                                ))
+                            }
+                }
     }
 
     /**
@@ -508,10 +539,6 @@ class TourServiceV1
                     detail = e.message
             )
         }
-    }
-
-    override fun subscribe(stationNo: Long, sink: SseEventSink, sse: Sse) {
-        TODO("not implemented")
     }
 
     /**
@@ -654,8 +681,29 @@ class TourServiceV1
                 }
             }
         }
+                .also {tours ->
+                    tours
+                            .groupBy { it.stationNo }
+                            .forEach { stationNo, tours ->
+                                this.updatedSubject.onNext(SubscriptionEvent(
+                                        stationNo = stationNo,
+                                        items = tours
+                                ))
+                            }
+                }
 
         return tours.toList()
+    }
+
+    override fun subscribe(stationNo: Long, sink: SseEventSink, sse: Sse) {
+        this.emf.withEntityManager { em ->
+            sink.push(
+                    sse = sse,
+                    events = this.updated
+                            .filter { it.stationNo == stationNo },
+                    onError = { log.error(it.message) }
+            )
+        }
     }
     //endregion
 
