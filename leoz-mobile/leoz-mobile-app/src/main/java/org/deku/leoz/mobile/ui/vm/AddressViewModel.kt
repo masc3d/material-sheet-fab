@@ -11,19 +11,19 @@ import org.deku.leoz.mobile.model.entity.hasValidPhoneNumber
 class AddressViewModel(val address: Address) : BaseObservable() {
 
     val line1: String
-        get() = this.address.line1
+        get() = this.address.line1.capitalize()
 
     val line2: String
-        get() = this.address.line2
+        get() = this.address.line2.capitalize()
 
     val line3: String
-        get() = this.address.line3
+        get() = this.address.line3.capitalize()
 
     val street: String
-        get() = "${this.address.street} ${this.address.streetNo}"
+        get() = "${this.address.street} ${this.address.streetNo}".capitalize()
 
     val city: String
-        get() = "${this.address.countryCode}-${this.address.zipCode} ${this.address.city}"
+        get() = "${this.address.countryCode}-${this.address.zipCode} ${this.address.city}".capitalize()
 
     val hasAddressLine2
         get() = !this.address.line2.isBlank()
