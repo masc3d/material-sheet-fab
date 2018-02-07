@@ -10,6 +10,7 @@ import {
 import * as moment from 'moment';
 
 import { TourListItem } from '../../core/models/tour-list-item.model';
+import { TouroptimizingComponent } from './touroptimizing.component';
 
 @Component( {
   selector: 'app-tourlistitem',
@@ -43,6 +44,10 @@ import { TourListItem } from '../../core/models/tour-list-item.model';
       <div class="ui-g-12 ui-lg-1">
         <p-checkbox name="optimize" [(ngModel)]="listItem.selected" binary="true"></p-checkbox>
       </div>
+      <div class="ui-g-12 ui-lg-1">
+        <i (click)="parent.deleteTour(listItem.id)" class="far fa-trash-alt" aria-hidden="true"></i>
+      </div>
+
     </div>
   `,
   styles: [ `
@@ -89,6 +94,7 @@ import { TourListItem } from '../../core/models/tour-list-item.model';
 } )
 export class TourlistitemComponent implements OnInit {
 
+  @Input() parent: TouroptimizingComponent;
   @Input() listItem: TourListItem;
   @Input() faIcon: string;
   formattedCreatetime: string;

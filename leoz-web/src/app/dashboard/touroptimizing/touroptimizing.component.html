@@ -24,7 +24,7 @@
       <hr/>
       <div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">
         <div *ngFor="let tour of tours">
-          <app-tourlistitem [listItem]="tour" [faIcon]="'fa-truck'"></app-tourlistitem>
+          <app-tourlistitem [listItem]="tour" [faIcon]="'fa-truck'" [parent]="this"></app-tourlistitem>
         </div>
       </div>
       <div class="ui-g-12 ui-lg-4">

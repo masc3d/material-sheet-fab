@@ -131,6 +131,10 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
     this.checkAll = false;
   }
 
+  deleteTour(tourId) {
+    this.touroptimizingService.deleteAndReinitTours( [tourId] );
+  }
+
   printStopLists() {
     const listsToPrint = this.tours.filter( tour => tour.selected );
 

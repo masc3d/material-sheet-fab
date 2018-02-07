@@ -98,7 +98,7 @@ export class TouroptimizingService {
     this.http.patch( this.optimizeToursUrl, defaultBody, {
       params: httpParams
     } )
-      .subscribe( _ => this.deleteAndReinitTours( tourIds ),
+      .subscribe( _ => this.getTours(), // this.deleteAndReinitTours( tourIds ),
         error => {
           this.msgService.error( error.error.detail );
         } );
