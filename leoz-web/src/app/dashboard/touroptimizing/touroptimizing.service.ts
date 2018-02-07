@@ -39,7 +39,7 @@ export class TouroptimizingService {
 
   getTours(): void {
     const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
-    this.toursSubject.next( [] );
+    // this.toursSubject.next( [] );
     /**
      * ALEX: vorerst nur station-no übergeben, bis Service angepasst ist
      */

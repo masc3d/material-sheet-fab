@@ -53,7 +53,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
     this.touroptimizingService.tours$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( tours: Tour[] ) => {
-        this.tours = this.processTourchanges( this.tours, tours );
+        this.tours = tours;
         this.tours.sort( (a, b) => a.id > b.id ? -1 : 1);
         this.toursOrderCount = this.countOrders( tours );
         this.toursParcelCount = this.countParcels( tours );
@@ -73,13 +73,6 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
 
     // ALEX: better solution would be SSE
     // this.touroptimizingService.repeatCheckLatestModDate();
-  }
-
-  private processTourchanges( prevTours: Tour[], newTours: Tour[] ) {
-    // new tours
-    // deleted tours
-    // changed tours
-    return newTours;
   }
 
   private getToursQuota( tours: Tour[] ) {
