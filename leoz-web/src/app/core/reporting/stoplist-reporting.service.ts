@@ -33,7 +33,7 @@ export class StoplistReportingService extends ReportingService {
           doc.setFontSize( 12 );
           doc.text( `${data[ 'tourID' ]} (${data[ 'tourIDValue' ]})`, offsetX, offsetY + 15 );
 
-          doc.text( `${data[ 'deliverylistID' ]} ${data[ 'curentUserMail' ]}`, offsetX + 70, offsetY + 15 );
+          doc.text( `${data[ 'deliverylistID' ] ? data[ 'deliverylistID' ] : ''} ${data[ 'curentUserMail' ]}`, offsetX + 70, offsetY + 15 );
           doc.text( `${data[ 'status' ]}`, offsetX, offsetY + 20 );
           doc.text( `${data[ 'optimization' ]}`, offsetX + 70, offsetY + 20 );
 
