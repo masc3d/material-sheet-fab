@@ -8,7 +8,7 @@ buildscript {
         v_android_buildtools = '27.0.3'
         v_android_support = '27.0.2'
         v_android_test = '1.0.1'
-        v_artemis = '1.5.4'
+        v_artemis = '2.4.0'
         v_apache_cxf = '3.2.2'
         v_apache_httpclient = '4.5.5'
         v_apache_tika = '1.17'
