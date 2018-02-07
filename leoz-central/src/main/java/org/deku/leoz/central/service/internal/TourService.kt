@@ -156,7 +156,8 @@ class TourServiceV1
                 val tourRecord = TadTour().also {
                     it.userId = tour.userId
                     it.stationNo = tour.stationNo
-                    it.deliverylistId = tour.deliverylistId
+                    it.parentId = tour.parentId
+                    it.customId = tour.customId
                     it.optimized = tour.optimized?.toTimestamp()
                     it.uid = tour.uid ?: this.createUid()
                     it.date = ShortDate(now).toString()
@@ -672,7 +673,8 @@ class TourServiceV1
                         it.nodeId = null
                         it.userId = null
                         it.stationNo = dlRecord.deliveryStation.toLong()
-                        it.deliverylistId = dlRecord.id.toLong()
+                        it.parentId = null
+                        it.customId = dlRecord.id.toString()
                         it.uid = this.createUid()
                         it.date = ShortDate(timestamp).toString()
                         it.created = timestamp
@@ -846,7 +848,8 @@ class TourServiceV1
                 nodeUid = nodeUid,
                 userId = tourRecord.userId,
                 stationNo = tourRecord.stationNo,
-                deliverylistId = tourRecord.deliverylistId,
+                parentId = tourRecord.parentId,
+                customId = tourRecord.customId,
                 created = tourRecord.created,
                 date = ShortDate(tourRecord.date),
                 optimized = tourRecord.optimized,
@@ -986,6 +989,7 @@ class TourServiceV1
                         em.flush()
                     }
 
+            // TODO: update position instead of replace, to prevent losing optimization metadata on tour entry / stop level
             // Recreate tour entries from update
             em.delete(tadTourEntry)
                     .where(tadTourEntry.tourId.eq(tourRecord.id))

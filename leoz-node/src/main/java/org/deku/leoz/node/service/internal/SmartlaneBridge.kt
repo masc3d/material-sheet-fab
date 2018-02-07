@@ -290,7 +290,7 @@ class SmartlaneBridge {
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
                                 stationNo = tour.stationNo,
-                                deliverylistId = tour.deliverylistId,
+                                parentId = tour.id,
                                 optimized = now,
                                 stops = stops,
                                 orders = orders

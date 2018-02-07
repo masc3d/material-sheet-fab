@@ -173,8 +173,15 @@ interface TourServiceV1 {
             var userId: Long? = null,
             @ApiModelProperty(position = 40, required = false, value = "Station this tour belongs to")
             var stationNo: Long? = null,
-            @ApiModelProperty(position = 50, required = false, value = "Delivery list this tour refers to")
-            var deliverylistId: Long? = null,
+            @ApiModelProperty(position = 45, required = false,
+                    value = "Parent id. Refers to the original tour in case" +
+                            "this tour was created as an optimization result")
+            var parentId: Long? = null,
+            @ApiModelProperty(position = 50, required = false, value = "Custom id for this tour")
+            var customId: String? = null,
+            @Deprecated("Will be replaced with customid")
+            @ApiModelProperty(position = 55, required = false, value = "Delivery list this tour refers to")
+            var deliverylistId: Long? = customId?.toLongOrNull(),
             @ApiModelProperty(position = 60, required = true, value = "Tour date")
             var date: ShortDate? = null,
             @ApiModelProperty(position = 70, required = true, value = "Orders referenced by this tour")
