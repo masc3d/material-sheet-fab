@@ -11,6 +11,7 @@ import { DeliverylistItem } from '../models/deliverylist.item.model';
 import { Tour } from '../models/tour.model';
 import { roundDecimals } from '../math/roundDecimals';
 import { TourListItem } from '../models/tour-list-item.model';
+import { Package } from '../models/package.model';
 
 @Injectable()
 export class StoplistReportingService extends ReportingService {
@@ -51,7 +52,7 @@ export class StoplistReportingService extends ReportingService {
           return doc;
         },
         reportFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
-          offsetY += 30;
+          offsetY += 80;
           doc.setFontSize( 10 );
           doc.setFontType( 'bold' );
           doc.text( `${data[ 'nameOfDriver' ]}:`, offsetX, offsetY ); // 150
@@ -135,18 +136,20 @@ export class StoplistReportingService extends ReportingService {
 
   private buildPageContent( tour: Tour ): ReportPart[] {
     const stopListRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
+
       doc.setFontSize( 8 );
       doc.setFontType( 'bold' );
       // doc.text( `tour.id: ${tour.id}`, offsetX, offsetY );
-
       doc.setFontType( 'normal' );
+
       tour.orders.forEach( ( dli: DeliverylistItem ) => {
-        offsetY += 8;
-        // doc.text( `dli.parcels.length: ${dli.parcels.length}`, offsetX, offsetY );
+        offsetY += 10;
         doc.text( `${dli.deliveryAddress.line1}`, offsetX, offsetY );
         doc.text( `${dli.deliveryAddress.street} ${dli.deliveryAddress.streetNo}`, offsetX + 40, offsetY );
         doc.text( `${dli.deliveryAddress.zipCode} ${dli.deliveryAddress.city}`, offsetX + 95, offsetY );
-        doc.text( `${dli.parcels.length} Anzahl Pkst, Termine`, offsetX, offsetY + 4 );
+        doc.text( `Pkst: ${dli.parcels.length}`, offsetX + 40, offsetY + 4 );
+        doc.text( `Termin: ${moment(dli.deliveryAppointment.dateStart).format( 'HH:mm' )}`, offsetX + 95, offsetY + 4 );
+        doc.text( `bis ${moment(dli.deliveryAppointment.dateEnd).format( 'HH:mm' )}`, offsetX + 115, offsetY + 4 );
       } );
       return doc;
     };

@@ -9,4 +9,6 @@ export interface TourListItem {
   time?: string;
   distance?: number;
   selected?: boolean;
+  outdated?: boolean;
+  state?: string;
 }

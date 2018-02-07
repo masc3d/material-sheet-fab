@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
@@ -10,7 +10,6 @@ import { MsgService } from '../../shared/msg/msg.service';
 import { Observable } from 'rxjs/Observable';
 import { Message } from 'primeng/primeng';
 import { roundDecimals } from '../../core/math/roundDecimals';
-import { InetConnectionService } from '../../core/inet-connection.service';
 
 @Component( {
   selector: 'app-touroptimizing',
@@ -20,7 +19,6 @@ import { InetConnectionService } from '../../core/inet-connection.service';
 } )
 
 export class TouroptimizingComponent extends AbstractTranslateComponent implements OnInit {
-
 
   checkAll: boolean;
   // deliverylists: Deliverylist[];
@@ -55,7 +53,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
     this.touroptimizingService.tours$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( tours: Tour[] ) => {
-        this.tours = tours;
+        this.tours = this.processTourchanges( this.tours, tours );
         this.toursOrderCount = this.countOrders( tours );
         this.toursParcelCount = this.countParcels( tours );
         this.toursTotalWeight = roundDecimals( this.sumWeights( tours ), 100 );
@@ -67,21 +65,20 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
       .subscribe( ( someTimestamp: number ) => {
         if (this.tours && this.tours.length > 0
           && new Date( this.tours[ 0 ].created ).getTime() < someTimestamp) {
-          this.msgService.info('tours-most-likely-outdated');
+          this.msgService.info( 'tours-most-likely-outdated' );
         }
       } );
     this.touroptimizingService.getTours();
 
     // ALEX: better solution would be SSE
-    this.repeatCheckLatestModDate( this );
+    // this.touroptimizingService.repeatCheckLatestModDate();
   }
 
-  private repeatCheckLatestModDate( $this: TouroptimizingComponent ) {
-    setTimeout( function () {
-      $this.touroptimizingService.getDeliverylists( [ $this.touroptimizingService.latestModDate ] );
-      // $this.msgService.info('unnötige periodische Requests besser durch SSE ersetzen');
-      $this.repeatCheckLatestModDate( $this );
-    }, 5000 );
+  private processTourchanges( prevTours: Tour[], newTours: Tour[] ) {
+    // new tours
+    // deleted tours
+    // changed tours
+    return newTours;
   }
 
   private getToursQuota( tours: Tour[] ) {
@@ -123,21 +120,23 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
     this.checkAll = false;
   }
 
+  getTours() {
+    this.touroptimizingService.getTours();
+  }
+
   resetTours() {
     this.msgService.clear();
     const tourIds = this.tours.map( tour => tour.id );
     this.touroptimizingService.deleteAndReinitTours( tourIds );
+    this.checkAll = false;
   }
 
   printStopLists() {
-    console.log( 'printStopLists...' );
     const listsToPrint = this.tours.filter( tour => tour.selected );
-    console.log( 'selected:', listsToPrint );
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
     this.printingService.printReports( this.reportingService
         .generateReports( listsToPrint ),
       filename, false );
   }
-
 }

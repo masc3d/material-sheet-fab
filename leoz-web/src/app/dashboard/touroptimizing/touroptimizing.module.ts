@@ -11,11 +11,10 @@ import {
 } from 'primeng/primeng';
 
 import { SharedModule } from '../../shared/shared.module';
-import { DatePipe } from '@angular/common';
 import { TouroptimizingRoutingModule } from './touroptimizing-routing.module';
 import { TouroptimizingComponent } from './touroptimizing.component';
-import { TouroptimizingService } from './touroptimizing.service';
 import { TourlistitemComponent } from './tourlistitem.component';
+import { TouroptimizingService } from './touroptimizing.service';
 
 @NgModule( {
   imports: [
@@ -35,8 +34,7 @@ import { TourlistitemComponent } from './tourlistitem.component';
     TouroptimizingComponent
   ],
   providers: [
-    TouroptimizingService,
-    DatePipe,
+    TouroptimizingService
     // use fake backend
     // fakeBackendProvider,
     // MockBackend,

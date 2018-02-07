@@ -8,8 +8,6 @@ import { WorkingdateService } from '../../core/workingdate.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Tour } from '../../core/models/tour.model';
 import { MsgService } from '../../shared/msg/msg.service';
-import { Observable } from 'rxjs/Observable';
-import { Message } from 'primeng/primeng';
 import { roundDecimals } from '../../core/math/roundDecimals';
 
 @Injectable()
@@ -24,8 +22,10 @@ export class TouroptimizingService {
   private toursSubject = new BehaviorSubject<Tour[]>( [] );
   public tours$ = this.toursSubject.asObservable().distinctUntilChanged();
 
-  private latestDeliverylistModificationSubject = new BehaviorSubject<number>( 0);
+  private latestDeliverylistModificationSubject = new BehaviorSubject<number>( 0 );
   public latestDeliverylistModification$ = this.latestDeliverylistModificationSubject.asObservable().distinctUntilChanged();
+
+  private latestDeliverylists: Deliverylist[];
 
   // private stationNo: string;
   // private allDeliverylistsUrl: string;
@@ -34,6 +34,7 @@ export class TouroptimizingService {
                protected msgService: MsgService,
                protected wds: WorkingdateService,
                protected ics: InetConnectionService ) {
+    this.latestDeliverylists = [];
   }
 
   getTours(): void {
@@ -49,15 +50,15 @@ export class TouroptimizingService {
       .subscribe( ( tours ) => {
           if (tours.length === 0) {
             // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
-            this.getDeliverylists( [this.generateTours, this.latestModDate] );
+            this.getDeliverylists( [ this.generateTours, this.latestModDate ] );
           } else {
-            this.processTourData( this, tours );
+            this.getDeliverylists( [ this.latestModDate, (_) => this.toursSubject.next( this.processTourData( tours ) ) ] );
           }
         },
         ( error: HttpErrorResponse ) => {
           if (error.status === 404) {
             // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
-            this.getDeliverylists( [this.generateTours, this.latestModDate] );
+            this.getDeliverylists( [ this.generateTours, this.latestModDate ] );
           } else {
             this.ics.isOffline();
             this.toursSubject.next( [] );
@@ -120,8 +121,9 @@ export class TouroptimizingService {
       params: new HttpParams()
         .set( 'delivery-date', this.wds.deliveryDateForWS() )
     } ).subscribe( ( deliverylists ) => {
+        this.latestDeliverylists = deliverylists;
         // result => Touren generieren => this.toursSubject.next( result );
-        successCallbacks.forEach( successCallback => successCallback(this, deliverylists ) );
+        successCallbacks.forEach( successCallback => successCallback( deliverylists ) );
       },
       ( _ ) => {
         this.ics.isOffline();
@@ -129,46 +131,45 @@ export class TouroptimizingService {
       } );
   }
 
-  public latestModDate = function ( $this: TouroptimizingService, deliverylists: Deliverylist[] ) {
+  public latestModDate = ( deliverylists: Deliverylist[] ) => {
     let latestModTimestamp = 0;
-    if(deliverylists.length > 0) {
-      latestModTimestamp = Math.max(...deliverylists.map(dl => new Date(dl.modified).getTime()));
+    if (deliverylists.length > 0) {
+      latestModTimestamp = Math.max( ...deliverylists.map( dl => new Date( dl.modified ).getTime() ) );
     }
-    $this.latestDeliverylistModificationSubject.next(latestModTimestamp);
+    this.latestDeliverylistModificationSubject.next( latestModTimestamp );
   };
 
-  private generateTours = function ( $this: TouroptimizingService, deliverylists: Deliverylist[] ) {
-    $this.http.post<Tour[]>( $this.generateToursUrl, deliverylists.map( dl => dl.id ) )
+  private generateTours = ( deliverylists: Deliverylist[] ) => {
+    this.http.post<Tour[]>( this.generateToursUrl, deliverylists.map( dl => dl.id ) )
       .subscribe( ( tours ) => {
-          $this.processTourData( $this, tours );
+          this.toursSubject.next( this.processTourData( tours ) );
         },
         ( _ ) => {
-          $this.ics.isOffline();
-          $this.toursSubject.next( [] );
+          this.ics.isOffline();
+          this.toursSubject.next( [] );
         } );
   };
 
-  private processTourData( $this: TouroptimizingService, tours ) {
-    $this.toursSubject.next(
-      tours.map( tour => {
-        tour.totalShipments = tour.orders.length;
+  private processTourData( tours: Tour[] ): Tour[] {
+    return tours.map( tour => {
+      tour.totalShipments = tour.orders.length;
 
-        tour.totalPackages = tour.orders
-          .map( o => o.parcels.length )
-          .reduce( ( a, b ) => a + b );
-        const parcels = tour.orders.map( o => o.parcels );
-        const mappedParcels = [].concat( ...parcels )
-          .map( p => p.dimension.weight );
-        tour.totalWeight = 0;
-        if (mappedParcels.length > 0) {
-          tour.totalWeight = roundDecimals( mappedParcels
-            .reduce( ( a, b ) => a + b ), 100 );
-        }
-        tour.selected = false;
-        return tour;
-      } ) );
+      tour.totalPackages = tour.orders
+        .map( o => o.parcels.length )
+        .reduce( ( a, b ) => a + b );
+      const parcels = tour.orders.map( o => o.parcels );
+      const mappedParcels = [].concat( ...parcels )
+        .map( p => p.dimension.weight );
+      tour.totalWeight = 0;
+      if (mappedParcels.length > 0) {
+        tour.totalWeight = roundDecimals( mappedParcels
+          .reduce( ( a, b ) => a + b ), 100 );
+      }
+      tour.selected = false;
+      const dl = this.latestDeliverylists.filter( deliverylist => deliverylist.id === tour.deliverylistId );
+      tour.state = dl.length > 0 && dl[ 0 ].modified > tour.created ? 'changed' : 'new';
+      return tour;
+    } );
   }
-
-
 
 }
