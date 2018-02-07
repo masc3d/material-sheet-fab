@@ -670,11 +670,8 @@ class TourServiceV1
                 dlRecords.map { dlRecord ->
                     // Create new tour
                     val tourRecord = TadTour().also {
-                        it.nodeId = null
-                        it.userId = null
                         it.stationNo = dlRecord.deliveryStation.toLong()
-                        it.parentId = null
-                        it.customId = dlRecord.id.toString()
+                        it.customId = dlRecord.id.toLong().toString()
                         it.uid = this.createUid()
                         it.date = ShortDate(timestamp).toString()
                         it.created = timestamp
