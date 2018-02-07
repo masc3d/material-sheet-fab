@@ -28,8 +28,12 @@ export class MsgService {
     } ] );
   }
 
-  info( text: string ) {
-    this.msgsSubject.next( <Message[]>  [ { severity: 'info', summary: '', detail: this.translate.instant( text ) } ] );
+  info( text: string, withSpinner: boolean = false ) {
+    let detail = this.translate.instant( text );
+    if (withSpinner) {
+      detail += '  <i class="fas fa-spinner fa-spin"></i>';
+    }
+    this.msgsSubject.next( <Message[]>  [ { severity: 'info', summary: '', detail: detail } ] );
   }
 
   error( text: string ): void {
@@ -41,7 +45,7 @@ export class MsgService {
     try {
       let json;
       if (resp instanceof HttpResponse) {
-        json = JSON.parse(resp.body);
+        json = JSON.parse( resp.body );
       } else {
         json = resp.error;
       }

@@ -95,10 +95,14 @@ export class TouroptimizingService {
       'vehicles': [ {} ]
     };
 
+    this.msgService.info( 'optimization_progress', true );
     this.http.patch( this.optimizeToursUrl, defaultBody, {
       params: httpParams
     } )
-      .subscribe( _ => this.getTours(), // this.deleteAndReinitTours( tourIds ),
+      .subscribe( _ => {
+        this.getTours(); // this.deleteAndReinitTours( tourIds )
+          this.msgService.clear();
+        },
         error => {
           this.msgService.error( error.error.detail );
         } );

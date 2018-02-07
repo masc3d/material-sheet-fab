@@ -410,6 +410,7 @@ export const LANG_EN_TRANS = {
   'tourlists-basedon-deliverylists': 'Tourlist(s) based on Deliverylist(s)',
   'tours-most-likely-outdated': 'There has been a change in your deliverylists. ' +
                                 'To make sure you are up to date, you should press "reset"',
+  'optimization_progress': 'Optimization in progress...',
   // pickupdispo
   'info': 'Info',
   'open_orders_max3days': 'Open Orders (max. 3 days)',
