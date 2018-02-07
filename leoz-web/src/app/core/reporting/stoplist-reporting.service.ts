@@ -52,7 +52,7 @@ export class StoplistReportingService extends ReportingService {
           return doc;
         },
         reportFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
-          offsetY += 80;
+          offsetY += 5;
           doc.setFontSize( 10 );
           doc.setFontType( 'bold' );
           doc.text( `${data[ 'nameOfDriver' ]}:`, offsetX, offsetY ); // 150
@@ -84,7 +84,7 @@ export class StoplistReportingService extends ReportingService {
           return doc;
         },
         report = new Report( 'stoplist-report', 10, 10,
-          new ReportPart( 57, reportHeaderRenderFunction,
+          new ReportPart( 35, reportHeaderRenderFunction,
             {
               report_tourplan: this.translate.instant( 'report_tourplan' ),
               tourlist_Date_Short: moment().format( this.dateFormatShort ),
@@ -153,7 +153,7 @@ export class StoplistReportingService extends ReportingService {
       } );
       return doc;
     };
-    return [ new ReportPart( null, stopListRenderFunction, tour ) ];
+    return [ new ReportPart( (10 + tour.orders.length * 10), stopListRenderFunction, tour ) ];
   }
 
 }
