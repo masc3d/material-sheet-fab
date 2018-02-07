@@ -4,7 +4,7 @@
       <h2>{{'login' | translate}}</h2>
     </div>
     <app-msg-box [msgs]="msgs$ | async" [sticky]="false"></app-msg-box>
-    <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
+    <form *ngIf="browserCheck.isAllowed; else allowedBrowsersHint" [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
       <div class="ui-fluid">
         <div class="ui-g">
           <div class="ui-g-12">
@@ -33,5 +33,9 @@
         </div>
       </div>
     </form>
+    <ng-template #allowedBrowsersHint>
+      {{ 'Seams that your using a strange Browser...' | translate }}
+    </ng-template>
+
   </div>
 </div>

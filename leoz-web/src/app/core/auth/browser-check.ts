@@ -2,6 +2,7 @@ export class BrowserCheck {
 
   browser: string;
   version: number;
+  isAllowed = true; // ALEX default sollte wenn die Browserweiche fertig ist false sein
 
   constructor() {
     const ua = window.navigator.userAgent;
@@ -30,6 +31,7 @@ export class BrowserCheck {
       // IE 10 or older => return version number
       this.version = parseInt( ua.substring( msie + 5, ua.indexOf( '.', msie ) ), 10 );
       this.browser = 'IE';
+      this.isAllowed = true;
     }
 
     if (ua.indexOf( 'Trident/' ) > 0) {
@@ -37,6 +39,7 @@ export class BrowserCheck {
       const rv = ua.indexOf( 'rv:' );
       this.version = parseInt( ua.substring( rv + 3, ua.indexOf( '.', rv ) ), 10 );
       this.browser = 'IE';
+      this.isAllowed = true;
     }
 
     const edge = ua.indexOf( 'Edge/' );
@@ -44,6 +47,9 @@ export class BrowserCheck {
       // Edge (IE 12+) => return version number
       this.version = parseInt( ua.substring( edge + 5, ua.indexOf( '.', edge ) ), 10 );
       this.browser = 'Edge';
+      this.isAllowed = true;
     }
+
+    // ALEX isAllowed auch bei Firefox, Chrome, Opera, Safari
   }
 }

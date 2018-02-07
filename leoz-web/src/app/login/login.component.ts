@@ -12,6 +12,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { AbstractTranslateComponent } from '../core/translate/abstract-translate.component';
 import { TranslateService } from '../core/translate/translate.service';
+import { BrowserCheck } from '../core/auth/browser-check';
 
 @Component( {
   selector: 'app-login',
@@ -34,7 +35,8 @@ export class LoginComponent extends AbstractTranslateComponent implements OnInit
                private authenticationService: AuthenticationService,
                protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
-               protected msgService: MsgService ) {
+               protected msgService: MsgService,
+               protected browserCheck: BrowserCheck ) {
     super( translate, cd, msgService );
   }
 
