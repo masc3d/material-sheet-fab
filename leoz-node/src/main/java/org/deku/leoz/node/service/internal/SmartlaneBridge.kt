@@ -305,7 +305,7 @@ class SmartlaneBridge {
     /**
      * Formats an email to include identity
      */
-    private fun formatEmail(email: String) = "${email}@${identity.shortUid}"
+    private fun formatEmail(email: String) = "${email} ${identity.shortUid}"
 
     /**
      * Transform domain user to smartlane driver
