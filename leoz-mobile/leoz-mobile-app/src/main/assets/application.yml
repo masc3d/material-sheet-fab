@@ -65,7 +65,7 @@ tour:
    # Tour optimization settings
    optimization:
       # Toggle optimization availability
-      enabled: false
+      enabled: true
 
 # Developer/debug settings
 debug:
