@@ -58,4 +58,8 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
     override fun setProperties(parcel: ImportService.Parcel, stationNo: Int): ImportService.Parcel {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
+    override fun getParcel(scanCode: String): ImportService.Parcel {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

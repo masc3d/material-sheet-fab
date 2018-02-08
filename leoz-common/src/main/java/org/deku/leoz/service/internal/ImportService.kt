@@ -22,23 +22,22 @@ interface ImportService {
         const val STATION_NO = "station-no"
         const val DELIVERY_DATE = "delivery-date"
         const val SCANCODE = "parcel-no-or-reference"
-        const val PARCEL = "parcel"
     }
 
     @Serializable(0x3472fac6b461d8)
     data class Order(
             var orderId: Long = 0,
-            //var deliveryAddress: Address = Address(),
-            var deliveryZip: String = "",//nicht die ganze Adresse - soll minimalisitisch gehalten werden
-            var deliveryCity: String = "",
+            var deliveryAddress: Address = Address(),
+//            var deliveryZip: String = "",//nicht die ganze Adresse - soll minimalisitisch gehalten werden
+//            var deliveryCity: String = "",
             var deliveryStation: Int = 0,
             var deliveryDate: java.sql.Date? = null,
-            var sealNumber: DekuUnitNumber? = null,
+            var sealNumber: Long? = null,
             var parcels: List<Parcel> = listOf()
 
     )
 
-    @ApiModel(description = "Parcel Model")
+    @ApiModel(description = "Parcel Model", value = "Import Parcel")
     @Serializable(0xc70cdcb9c5731f)
     data class Parcel(
             @get:ApiModelProperty(example = "1234567898", required = true, value = "Order id")
@@ -91,11 +90,17 @@ interface ImportService {
     ): Parcel
 
     @PATCH
-    @Path("/setProperties")
+    @Path("/set-properties")
     @ApiOperation(value = "Set properties", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun setProperties(
             @ApiParam(value = "Parcel") parcel: Parcel,
             @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): Parcel
 
+    @GET
+    @Path("/{$SCANCODE}")
+    @ApiOperation(value = "Get parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getParcel(
+            @PathParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = ""
+    ): Parcel
 }
