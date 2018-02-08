@@ -1,5 +1,8 @@
 package org.deku.leoz.central.service.internal
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.Tuple
 import io.reactivex.Observable
@@ -12,6 +15,8 @@ import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TaskType
+import org.deku.leoz.model.TourRouteMeta
+import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.node.data.jpa.QTadTour.tadTour
 import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
@@ -100,6 +105,15 @@ class TourServiceV1
 
     @Inject
     private lateinit var smartlane: SmartlaneBridge
+
+    /** Object mapper used for (de-)serializing (route) metas from/to persistence store */
+    private val objectMapper: ObjectMapper by lazy {
+        ObjectMapper().also {
+            it.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            it.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true)
+            it.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        }
+    }
     //endregion
 
     private val updatedSubject = PublishSubject.create<SubscriptionEvent>()
@@ -164,12 +178,20 @@ class TourServiceV1
                             it.created = now.toTimestamp()
                             it.modified = now.toTimestamp()
 
+                            tour.route?.also { route ->
+                                it.routeMeta = this.objectMapper.writeValueAsString(route)
+                            }
+
                             em.persist(it)
                             em.flush()
                         }
 
                         tour.stops.forEachIndexed { index, stop ->
-                            stop.tasks.forEach { task ->
+                            val route = stop.route?.let {
+                                this.objectMapper.writeValueAsString(it)
+                            }
+
+                            stop.tasks.forEachIndexed { index, task ->
 
                                 TadTourEntry().also {
                                     it.tourId = tourRecord.id
@@ -181,6 +203,9 @@ class TourServiceV1
                                     }
                                     it.uid = task.uid ?: this.createUid()
                                     it.timestamp = now.toTimestamp()
+
+                                    if (index == 0)
+                                        it.routeMeta = route
 
                                     em.persist(it)
                                 }
@@ -234,11 +259,19 @@ class TourServiceV1
 
                                     em.merge(it)
                                 }
+
+                        entryRecord.routeMeta = stop.route?.let {
+                            this.objectMapper.writeValueAsString(it)
+                        }
                     }
 
             tourRepo.findById(tourId).get().also {
                 it.modified = now
                 it.optimized = now
+
+                it.routeMeta = tour.route?.let {
+                    this.objectMapper.writeValueAsString(tour.route)
+                }
 
                 em.merge(it)
             }
@@ -681,7 +714,7 @@ class TourServiceV1
                 }
             }
         }
-                .also {tours ->
+                .also { tours ->
                     tours
                             .groupBy { it.stationNo }
                             .forEach { stationNo, tours ->
@@ -849,6 +882,9 @@ class TourServiceV1
                 date = ShortDate(tourRecord.date),
                 optimized = tourRecord.optimized,
                 orders = orders,
+                route = tourRecord.routeMeta?.let {
+                    objectMapper.readValue(it, TourRouteMeta::class.java)
+                },
                 stops = tourEntryRecords.groupBy { it.position }
                         .map { stop ->
                             val tasks = stop.value.map { task ->
@@ -889,7 +925,10 @@ class TourServiceV1
                                     weight = tasks
                                             .map { ordersById.getValue(it.orderId) }
                                             .flatMap { it.parcels }
-                                            .sumByDouble { it.dimension.weight }
+                                            .sumByDouble { it.dimension.weight },
+                                    route = stop.value.first().routeMeta?.let {
+                                        this@TourServiceV1.objectMapper.readValue(it, TourStopRouteMeta::class.java)
+                                    }
                             )
                         }
         )

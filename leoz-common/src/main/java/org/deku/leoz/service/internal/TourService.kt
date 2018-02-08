@@ -3,6 +3,8 @@ package org.deku.leoz.service.internal
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
+import org.deku.leoz.model.TourRouteMeta
+import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
@@ -173,7 +175,7 @@ interface TourServiceV1 {
             notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(
-            ApiResponse(code = 200, response = SubscriptionEvent::class, message= "Tour service subscription event")
+            ApiResponse(code = 200, response = SubscriptionEvent::class, message = "Tour service subscription event")
     )
     fun subscribe(
             @QueryParam(STATION_NO)
@@ -210,10 +212,14 @@ interface TourServiceV1 {
             var orders: List<OrderService.Order> = listOf(),
             @ApiModelProperty(position = 80, required = true, value = "Tour stop list")
             var stops: List<Stop> = listOf(),
-            @ApiModelProperty(position = 90, required = true, value = "Last optimization time")
+            @ApiModelProperty(position = 90, required = false, value = "Last optimization time")
             var optimized: Date? = null,
             @ApiModelProperty(position = 100, required = true, value = "Creation date")
-            var created: Date? = null
+            var created: Date? = null,
+
+            @ApiModelProperty(position = 110, required = false,
+                    value = "Tour level route informations. Available when the tour was optimized")
+            var route: TourRouteMeta? = null
     )
 
     @Serializable(0xc65eacc35a3d73)
@@ -233,7 +239,11 @@ interface TourServiceV1 {
             var appointmentEnd: Date? = null,
 
             @ApiModelProperty(position = 50, required = false, value = "Stop weight")
-            var weight: Double? = null
+            var weight: Double? = null,
+
+            @ApiModelProperty(position = 60, required = false,
+                    value = "Stop level route information. Available when the tour was optimized")
+            var route: TourStopRouteMeta? = null
     )
 
     @Serializable(0x8eeb2fbff14af5)
