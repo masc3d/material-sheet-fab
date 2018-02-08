@@ -10,6 +10,7 @@ import { MsgService } from '../../shared/msg/msg.service';
 import { Observable } from 'rxjs/Observable';
 import { Message } from 'primeng/primeng';
 import { roundDecimals } from '../../core/math/roundDecimals';
+import { BrowserCheck } from '../../core/auth/browser-check';
 
 @Component( {
   selector: 'app-touroptimizing',
@@ -31,18 +32,22 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
 
   msgs$: Observable<Message[]>;
 
+  notMicrodoof: boolean;
+
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected touroptimizingService: TouroptimizingService,
                protected msgService: MsgService,
                protected printingService: PrintingService,
-               protected reportingService: StoplistReportingService ) {
+               protected reportingService: StoplistReportingService,
+               private browserCheck: BrowserCheck ) {
     super( translate, cd, msgService );
   }
 
   ngOnInit() {
     super.ngOnInit();
 
+    this.notMicrodoof = this.browserCheck.browser === 'handsome Browser';
     this.toursOrderCount = 0;
     this.toursParcelCount = 0;
     this.toursTotalWeight = 0;
@@ -54,7 +59,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( tours: Tour[] ) => {
         this.tours = tours;
-        this.tours.sort( (a, b) => a.id > b.id ? -1 : 1);
+        this.tours.sort( ( a, b ) => a.id > b.id ? -1 : 1 );
         this.toursOrderCount = this.countOrders( tours );
         this.toursParcelCount = this.countParcels( tours );
         this.toursTotalWeight = roundDecimals( this.sumWeights( tours ), 100 );
@@ -125,16 +130,24 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
     this.checkAll = false;
   }
 
-  deleteTour(tourId) {
-    this.touroptimizingService.deleteAndReinitTours( [tourId] );
+  deleteTour( tourId ) {
+    this.touroptimizingService.deleteAndReinitTours( [ tourId ] );
   }
 
-  printStopLists() {
+  preview() {
+    this.reporting( false );
+  }
+
+  saving() {
+    this.reporting( true );
+  }
+
+  reporting( saving: boolean ) {
     const listsToPrint = this.tours.filter( tour => tour.selected );
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
     this.printingService.printReports( this.reportingService
         .generateReports( listsToPrint ),
-      filename, false );
+      filename, saving );
   }
 }

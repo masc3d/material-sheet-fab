@@ -52,7 +52,7 @@ export class TouroptimizingService {
             // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
             this.getDeliverylists( [ this.generateTours, this.latestModDate ] );
           } else {
-            this.getDeliverylists( [ this.latestModDate, (_) => this.toursSubject.next( this.processTourData( tours ) ) ] );
+            this.getDeliverylists( [ this.latestModDate, ( _ ) => this.toursSubject.next( this.processTourData( tours ) ) ] );
           }
         },
         ( error: HttpErrorResponse ) => {
@@ -76,7 +76,10 @@ export class TouroptimizingService {
       params: httpParams
     } )
       .subscribe( _ => this.getTours(),
-        error => console.log( error ) );
+        error => {
+          this.getTours();
+          console.log( error );
+        } );
 
   }
 
@@ -100,7 +103,7 @@ export class TouroptimizingService {
       params: httpParams
     } )
       .subscribe( _ => {
-        this.getTours(); // this.deleteAndReinitTours( tourIds )
+          this.getTours(); // this.deleteAndReinitTours( tourIds )
           this.msgService.clear();
         },
         error => {
@@ -144,6 +147,7 @@ export class TouroptimizingService {
   };
 
   private generateTours = ( deliverylists: Deliverylist[] ) => {
+    // ALEX nur ausführen wenn deliverylists.length > 0
     this.http.post<Tour[]>( this.generateToursUrl, deliverylists.map( dl => dl.id ) )
       .subscribe( ( tours ) => {
           this.toursSubject.next( this.processTourData( tours ) );
