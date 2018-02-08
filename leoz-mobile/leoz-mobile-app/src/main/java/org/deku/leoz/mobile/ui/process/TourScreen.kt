@@ -39,6 +39,7 @@ import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.service.TourService
+import org.deku.leoz.mobile.settings.TourSettings
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.extension.inflateMenu
@@ -81,6 +82,7 @@ class TourScreen
     private val listener by lazy { this.activity as? Listener }
 
     private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
+    private val tourSettings: TourSettings by Kodein.global.lazy.instance()
 
     // Model classes
     private val db: Database by Kodein.global.lazy.instance()
@@ -375,7 +377,11 @@ class TourScreen
                         colorRes = R.color.colorAccent,
                         iconRes = android.R.drawable.ic_menu_sort_by_size,
                         iconTintRes = android.R.color.black,
-                        menu = this.activity.inflateMenu(R.menu.menu_delivery_list_sort),
+                        menu = this.activity.inflateMenu(R.menu.menu_delivery_list_sort).also {
+                            it.findItem(R.id.action_sort_optimize).setVisible(
+                                tourSettings.optimization.enabled
+                            )
+                        },
                         visible = false
                 )
         )

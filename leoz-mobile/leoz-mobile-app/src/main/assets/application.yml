@@ -60,6 +60,13 @@ location:
    useGoogleLocationService: true
    smallestDisplacement: 250
 
+# Tour related settings
+tour:
+   # Tour optimization settings
+   optimization:
+      # Toggle optimization availability
+      enabled: false
+
 # Developer/debug settings
 debug:
    enabled: false
