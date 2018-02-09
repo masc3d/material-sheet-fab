@@ -509,34 +509,11 @@ open class ParcelProcessingService {
                                 //TODO WLtransfer Auslieferung nach Abrechnung
                             }
                             if (firstDeliveryStatus.toInt() == 0) {
-                                val oldDeliveryStatus = parcelRecord.lieferstatus?.toString() ?: ""
-                                val oldDeliveryError = parcelRecord.lieferfehler?.toString() ?: ""
                                 parcelRecord.lieferstatus = r.kzStatus.toShort()
+                                parcelRecord.erstlieferstatus = r.kzStatus.toShort()
                                 parcelRecord.lieferfehler = r.fehlercode.toShort()
-                                if (parcelRecord.store() > 0) {
-                                    if (!oldDeliveryStatus.equals(parcelRecord.lieferstatus.toString())) {
-                                        fieldHistoryRepository.addEntry(
-                                                orderId = parcelRecord.orderid.toLong(),
-                                                unitNo = parcelRecord.colliebelegnr.toLong(),
-                                                fieldName = "lieferstatus",
-                                                oldValue = oldDeliveryStatus,
-                                                newValue = parcelRecord.lieferstatus.toString(),
-                                                changer = "Z",
-                                                point = "PP"
-                                        )
-                                    }
-                                    if (!oldDeliveryError.equals(parcelRecord.lieferfehler.toString())) {
-                                        fieldHistoryRepository.addEntry(
-                                                orderId = parcelRecord.orderid.toLong(),
-                                                unitNo = parcelRecord.colliebelegnr.toLong(),
-                                                fieldName = "lieferfehler",
-                                                oldValue = oldDeliveryError,
-                                                newValue = parcelRecord.lieferfehler.toString(),
-                                                changer = "Z",
-                                                point = "PP"
-                                        )
-                                    }
-                                }
+                                parcelRecord.erstlieferfehler = r.fehlercode.toShort()
+                                parcelRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
                             }
                         }
                         /*val addInfo = it.additionalInfo

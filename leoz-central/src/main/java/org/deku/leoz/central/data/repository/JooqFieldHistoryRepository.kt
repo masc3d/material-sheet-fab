@@ -76,3 +76,7 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
 fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistoryExportservice(unitNo: Long) {
     this.storeWithHistory(unitNo, "WEB", "EX")
 }
+
+fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistoryParcelprocessing(unitNo: Long) {
+    this.storeWithHistory(unitNo, "Z", "PP")
+}
