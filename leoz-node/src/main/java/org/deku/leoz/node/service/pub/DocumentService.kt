@@ -1,8 +1,5 @@
 package org.deku.leoz.node.service.pub
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
 import com.neovisionaries.i18n.CountryCode
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -17,9 +14,15 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.font.PDFont
 import org.apache.pdfbox.pdmodel.font.PDType1Font
-import org.deku.leoz.node.Storage
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
+import org.deku.leoz.model.DekuUnitNumber
+import org.krysalis.barcode4j.ChecksumMode
+import org.krysalis.barcode4j.impl.int2of5.Interleaved2Of5Bean
+import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider
 import org.slf4j.LoggerFactory
 import java.awt.Color
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,6 +37,7 @@ class DocumentService: DocumentService {
 
     private val PPI: Float = 72f
     private val PPM: Float = 1 / (10 * 2.54f) * PPI
+    val dpi = 300
 
     override fun printParcelLabel(labelRequest: DocumentService.LabelRequest?, parcelId: Long?, parcelNo: String?): Response {
 
@@ -77,25 +81,34 @@ class DocumentService: DocumentService {
         document.addPage(page)
         val contentStream = PDPageContentStream(document, page)
 
-        contentStream.setNonStrokingColor(Color.BLACK);
+        contentStream.setNonStrokingColor(Color.BLACK)
 
-//        contentStream.addRect(0.8f, 5.5f, 2.36f, 0.6f)
-//        contentStream.fill()
+        val out: ByteArrayOutputStream = ByteArrayOutputStream()
+        val itfBean = Interleaved2Of5Bean().also {
+            it.checksumMode = ChecksumMode.CP_IGNORE
+            it.wideFactor = 1.8
+            it.doQuietZone(true)
+            it.fontSize = 2.0
+        }
 
-        contentStream.writeText(
-                text = request.parcelNumber,
-                xOffset = 1f * PPI,
-                yOffset = 4.88f * PPI
-        )
+        val canvas = BitmapCanvasProvider(
+                out, "image/x-png", dpi, BufferedImage.TYPE_BYTE_GRAY, false, 0)
 
-        contentStream.writeText(
+        itfBean.generateBarcode(canvas, DekuUnitNumber.parse(request.parcelNumber).value.label)
+        canvas.finish()
+
+        val barcodeImage: PDImageXObject = PDImageXObject.createFromByteArray(document, out.toByteArray(), null)
+
+        contentStream.drawImage(barcodeImage, 0.6f * PPI, 4.8f * PPI, 2.9f * PPI, 0.8f * PPI)
+
+        contentStream.addText(
                 text = "Gewicht",
                 xOffset = 1f * PPI,
-                yOffset = 4.68f * PPI,
+                yOffset = 4.8f * PPI,
                 size = 10f
         )
 
-        contentStream.writeText(
+        contentStream.addText(
                 text = "Sendungsnummer: ${request.orderNumber}",
                 xOffset = 1f * PPI,
                 yOffset = 4.40f * PPI,
@@ -103,111 +116,92 @@ class DocumentService: DocumentService {
                 size = 8f
         )
 
-        contentStream.writeLine(0.4f * PPI, 4.3f * PPI, 3.6f * PPI, 4.3f * PPI)
+        contentStream.putLine(0.4f * PPI, 4.3f * PPI, 3.6f * PPI, 4.3f * PPI)
 
-        contentStream.writeText(
+        contentStream.addText(
                 text = "NST 1    ${request.consignee.stationNo}",
-                xOffset = 1f * PPI,
-                yOffset = 4.13f * PPI,
+                xOffset = 1.5f * PPI,
+                yOffset = 4.125f * PPI,
                 font = PDType1Font.HELVETICA_BOLD,
                 size = 12f
         )
 
-        contentStream.writeLine(0.4f * PPI, 4.1f * PPI, 3.6f * PPI, 4.1f * PPI)
+        contentStream.putLine(0.4f * PPI, 4.05f * PPI, 3.6f * PPI, 4.05f * PPI)
 
-        contentStream.writeText(
+        contentStream.addText(
                 text = "Absender 1           Auftraggeber: ${request.clientStationNo}            Abholer: ${request.clientStationNo}",
                 xOffset = 0.4f * PPI,
                 yOffset = 3.78f * PPI,
                 font = PDType1Font.HELVETICA_BOLD
         )
 
-//        contentStream.writeText(
-//                text = "${request.consignor.name1}",
-//                xOffset = 0.4f * PPI,
-//                yOffset = 3.6f * PPI
-//        )
+        contentStream.addParagraph(
+                xOffset = 0.4f * PPI,
+                yOffset = 3.6f * PPI,
+                font = PDType1Font.HELVETICA,
+                size = 7f,
+                text = arrayOf(
+                        "${request.consignor.name1}",
+                        "${request.consignor.name2}",
+                        "${request.consignor.name3}           Tel.: ${request.consignor.phone}",
+                        "${request.consignor.street} ${request.consignor.streetNo}"
+                ))
 
-        contentStream.writeParagraph(xOffset = 0.4f * PPI, yOffset = 3.6f * PPI, font = PDType1Font.HELVETICA, size = 7f, text = arrayOf("${request.consignor.name1}", "${request.consignor.name2}", "${request.consignor.name3}           Tel.: ${request.consignor.phone}"))
+        contentStream.addText(
+                text = "${request.consignor.street} ${request.consignor.streetNo}",
+                xOffset = 0.4f * PPI,
+                yOffset = 3.3f * PPI
+        )
 
-//        contentStream.beginText()
-//        contentStream.setFont( font, 7f )
-//        contentStream.moveTextPositionByAmount( 0.4f * PPI, 3.5f * PPI )
-//        contentStream.showText( "${request.consignor.name2}" )
-//        contentStream.endText()
-//
-//        contentStream.beginText()
-//        contentStream.setFont( font, 7f )
-//        contentStream.moveTextPositionByAmount( 0.4f * PPI, 3.4f * PPI )
-//        contentStream.showText( "${request.consignor.name3}           Tel.: ${request.consignor.phone}" )
-//        contentStream.endText()
+        contentStream.addText(
+                font = PDType1Font.HELVETICA_BOLD,
+                text = "${request.consignor.country} - ${request.consignor.zipCode} ${request.consignor.city}",
+                xOffset = 0.4f * PPI,
+                yOffset = 3.2f * PPI
+        )
 
-        contentStream.beginText()
-        contentStream.setFont( font, 7f )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 3.3f * PPI )
-        contentStream.showText( "${request.consignor.street} ${request.consignor.streetNo}" )
-        contentStream.endText()
+        contentStream.addText(
+                font = PDType1Font.HELVETICA_BOLD,
+                size = 15f,
+                text = "${if (request.appointment.notBeforeStart) "F " else ""}${SimpleDateFormat("dd.MM.yyyy    HH:mm", CountryCode.valueOf(request.consignee.country).toLocale()).format(request.appointment.dateStart) } - ${SimpleDateFormat("HH:mm", CountryCode.valueOf(request.consignee.country).toLocale()).format(request.appointment.dateEnd)}",
+                xOffset = 0.4f * PPI,
+                yOffset = 2.9f * PPI
+        )
 
-        contentStream.beginText()
-        contentStream.setFont( PDType1Font.HELVETICA_BOLD, 7f )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 3.2f * PPI )
-        contentStream.showText( "${request.consignor.country} - ${request.consignor.zipCode} ${request.consignor.city}" )
-        contentStream.endText()
+        contentStream.addText(
+                font = PDType1Font.HELVETICA_BOLD,
+                size = 9f,
+                text = "Empfänger",
+                xOffset = 0.4f * PPI,
+                yOffset = 2.7f * PPI
+        )
 
-        contentStream.beginText()
-        contentStream.setFont( PDType1Font.HELVETICA_BOLD, 15f )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 2.9f * PPI )
-        contentStream.showText( "${if (request.appointment.notBeforeStart) "F " else ""}${SimpleDateFormat("dd.MM.yyyy    HH:mm", CountryCode.valueOf(request.consignee.country).toLocale()).format(request.appointment.dateStart) } - ${SimpleDateFormat("HH:mm", CountryCode.valueOf(request.consignee.country).toLocale()).format(request.appointment.dateEnd)}" )
-        contentStream.endText()
+        contentStream.addParagraph(
+                xOffset = 0.4f * PPI,
+                yOffset = 2.55f * PPI,
+                font = PDType1Font.HELVETICA,
+                size = 9f,
+                spacing = 0.15f * PPI,
+                text = arrayOf(
+                        "${request.consignee.name1}",
+                        "${request.consignee.name2}",
+                        "${request.consignee.name3}",
+                        "Tel.: ${request.consignee.phone}",
+                        "${request.consignee.street} ${request.consignee.streetNo}"
+                ))
 
-        val fontSizeConsignee = 9f
-
-        contentStream.beginText()
-        contentStream.setFont( PDType1Font.HELVETICA_BOLD, fontSizeConsignee )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 2.7f * PPI )
-        contentStream.showText( "Empfänger" )
-        contentStream.endText()
-
-        contentStream.beginText()
-        contentStream.setFont( font, fontSizeConsignee )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 2.55f * PPI )
-        contentStream.showText( "${request.consignee.name1}" )
-        contentStream.endText()
-
-        contentStream.beginText()
-        contentStream.setFont( font, fontSizeConsignee )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 2.4f * PPI )
-        contentStream.showText( "${request.consignee.name2}" )
-        contentStream.endText()
-
-        contentStream.beginText()
-        contentStream.setFont( font, fontSizeConsignee )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 2.25f * PPI )
-        contentStream.showText( "${request.consignee.name3}" )
-        contentStream.endText()
-
-        contentStream.beginText()
-        contentStream.setFont( font, fontSizeConsignee )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 2.1f * PPI )
-        contentStream.showText( "Tel.:${request.consignee.phone}" )
-        contentStream.endText()
-
-        contentStream.beginText()
-        contentStream.setFont( font, fontSizeConsignee )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 1.95f * PPI )
-        contentStream.showText( "${request.consignee.street} ${request.consignor.streetNo}" )
-        contentStream.endText()
-
-        contentStream.beginText()
-        contentStream.setFont( PDType1Font.HELVETICA_BOLD, fontSizeConsignee )
-        contentStream.moveTextPositionByAmount( 0.4f * PPI, 1.8f * PPI )
-        contentStream.showText( "${request.consignee.country} - ${request.consignor.zipCode} ${request.consignor.city}" )
-        contentStream.endText()
+        contentStream.addText(
+                font = PDType1Font.HELVETICA_BOLD,
+                size = 9f,
+                text = "${request.consignee.country} - ${request.consignor.zipCode} ${request.consignor.city}",
+                xOffset = 0.4f * PPI,
+                yOffset = 1.8f * PPI
+        )
 
         // Make sure that the content stream is closed:
         contentStream.close()
 
-// Save the results and ensure that the document is properly closed:
+        // Save the results and ensure that the document is properly closed:
         document.save(documentFile)
         document.close()
 
@@ -215,7 +209,7 @@ class DocumentService: DocumentService {
     }
 }
 
-fun PDPageContentStream.writeText(text: String, xOffset: Float, yOffset: Float, size: Float = 7f, font: PDFont = PDType1Font.HELVETICA) {
+fun PDPageContentStream.addText(text: String, xOffset: Float, yOffset: Float, size: Float = 7f, font: PDFont = PDType1Font.HELVETICA) {
     this.beginText()
     this.setFont(font, size)
     this.newLineAtOffset(xOffset, yOffset)
@@ -223,27 +217,20 @@ fun PDPageContentStream.writeText(text: String, xOffset: Float, yOffset: Float, 
     this.endText()
 }
 
-fun PDPageContentStream.writeText(text: String, size: Float = 7f, font: PDFont = PDType1Font.HELVETICA) {
-    this.beginText()
-    this.setFont(font, size)
-    this.newLine()
-    this.showText(text)
-    this.endText()
-}
-
-fun PDPageContentStream.writeLine(startX: Float, startY: Float, endX: Float, endY: Float) {
+fun PDPageContentStream.putLine(startX: Float, startY: Float, endX: Float, endY: Float) {
     this.moveTo(startX, startY)
     this.lineTo(endX, endY)
     this.stroke()
 }
 
-fun PDPageContentStream.writeParagraph(xOffset: Float, yOffset: Float, gap: Float = 0.1f, font: PDFont = PDType1Font.HELVETICA, size: Float = 7f, text: Array<String>) {
+fun PDPageContentStream.addParagraph(xOffset: Float, yOffset: Float, spacing: Float = 0.1f * 72f, font: PDFont = PDType1Font.HELVETICA, size: Float = 7f, text: Array<String>) {
+    var y = yOffset
     for ((i, line) in text.withIndex()) {
         this.beginText()
         if (i != 0)
-            yOffset -= gap
+            y -= spacing
 
-        this.newLineAtOffset(xOffset, yOffset)
+        this.newLineAtOffset(xOffset, y)
         this.setFont(font, size)
         this.showText(line)
         this.endText()

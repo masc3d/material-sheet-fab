@@ -29,8 +29,8 @@ open class DocumentTestService {
                             notBeforeStart = true
                     )
                     it.clientStationNo = "999"
-                    it.orderNumber = "1234567890"
-                    it.parcelNumber = "1234567891"
+                    it.orderNumber = "21850041041"
+                    it.parcelNumber = "21850041042"
                     it.parcelAmount = 3
                     it.parcelPosition = 2
                     it.consignee = org.deku.leoz.service.pub.DocumentService.LabelRequest.LabelParticipant().also {
