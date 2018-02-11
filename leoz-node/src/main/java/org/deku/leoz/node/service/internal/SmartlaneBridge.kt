@@ -12,6 +12,7 @@ import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.TourServiceV1.*
+import org.deku.leoz.service.internal.TourServiceV1.TourOptimizationOptions.Vehicle.Companion.DEFAULT_CAPACITY
 import org.deku.leoz.service.internal.entity.GeoLocation
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
@@ -258,10 +259,19 @@ class SmartlaneBridge {
 
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
 
-        return routeApi.optimize(tour.toRoutingInput(
-                options
-        ))
+        val vehicleCount = options.vehicles?.count() ?: 1
+
+        return routeApi.optimize(
+                routingInput = tour.toRoutingInput(
+                        options
+                ),
+                numvehicles = vehicleCount
+        )
                 .map { routes ->
+                    if (routes.count() > vehicleCount)
+                        throw IllegalStateException("Amount of optimized routes [${routes.count()}] is not supposed " +
+                                "to exceed number of vehicles [${vehicleCount}]")
+
                     val now = Date()
                     routes.map { route ->
                         val stops = route.deliveries
