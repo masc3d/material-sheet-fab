@@ -97,7 +97,7 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun delete(
             @QueryParam(ID) @ApiParam(value = "Tour id(s)", required = false)
-            ids: List<Long>,
+            ids: List<Long>?,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
             userId: Long?,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)

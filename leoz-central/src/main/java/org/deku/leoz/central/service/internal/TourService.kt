@@ -388,7 +388,7 @@ class TourServiceV1
     }
 
     override fun delete(
-            ids: List<Long>,
+            ids: List<Long>?,
             userId: Long?,
             stationNo: Long?,
             includeRelated: Boolean) {
@@ -396,7 +396,14 @@ class TourServiceV1
         emf.transaction { em ->
             em.from(tadTour)
                     .select(tadTour.id, tadTour.stationNo)
-                    .where(tadTour.id.`in`(ids))
+                    .let {
+                        when {
+                            ids != null && ids.count() > 0 -> {
+                                it.where(tadTour.id.`in`(ids))
+                            }
+                            else -> it
+                        }
+                    }
                     .fetch()
                     .plus(stationNo?.let {
                         em.from(tadTour)
