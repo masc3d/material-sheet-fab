@@ -54,7 +54,10 @@ abstract class MqListener
      * @param e Error
      */
     protected open fun onError(e: Throwable) {
-        log.error(e.message, e)
+        when (e) {
+            is HandlingException -> log.error(e.message)
+            else -> log.error(e.message, e)
+        }
     }
 
     /**

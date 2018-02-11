@@ -51,12 +51,6 @@ open class SimpleJmsListener(endpoint: JmsEndpoint)
                     if (session.transacted)
                         session.commit()
                 } catch (e: Throwable) {
-                    // TODO: verify if exception is routed to onException handler when not caught here
-                    when (e) {
-                        is MqListener.HandlingException -> log.error(e.message)
-                        else -> log.error(e.message, e)
-                    }
-
                     if (session.transacted) {
                         try {
                             session.rollback()
@@ -64,6 +58,8 @@ open class SimpleJmsListener(endpoint: JmsEndpoint)
                             log.error(e.message, e)
                         }
                     }
+
+                    this@SimpleJmsListener.onError(e)
                 }
             }
         }
