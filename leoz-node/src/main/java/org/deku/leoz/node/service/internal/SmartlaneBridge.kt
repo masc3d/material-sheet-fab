@@ -243,6 +243,28 @@ class SmartlaneBridge {
                 .ignoreElements()
     }
 
+    fun deleteRoute(uid: String): Completable {
+        val domain = domain(customerId)
+
+        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+        val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId = customerId)
+
+        return routeApi.getRouteByCustomId(uid)
+                .doOnNext {
+                    deliveryApi.delete(it.deliveries.map { it.id })
+                    routeApi.deleteRoute(it.id)
+                }
+                .retryOnTokenExpiry(domain)
+                .ignoreElements()
+                .onErrorComplete { e ->
+                    when (e) {
+                        is NoSuchElementException -> true
+                        else -> false
+                    }
+
+                }
+    }
+
     /**
      * Optimize a tour
      * @param tour Tour to optimize
@@ -259,6 +281,7 @@ class SmartlaneBridge {
 
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
 
+        val inPlaceUpdate = options.vehicles == null
         val vehicleCount = options.vehicles?.count() ?: 1
 
         return routeApi.optimize(
@@ -297,10 +320,18 @@ class SmartlaneBridge {
                                 .map { it.orderId }.distinct()
                                 .map { orderId -> tour.orders.first { it.id == orderId } }
 
-                        // Generate uid for new tour
-                        val uid = uidSupplier()
+                        val uid: String
+                        if (inPlaceUpdate) {
+                            uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
 
-                        // Update smartlane route custom ids with generated uids
+                            this.deleteRoute(uid = uid)
+                                    .blockingAwait()
+                        } else {
+                            // Generate uid for new tour
+                            uid = uidSupplier()
+                        }
+
+                        // Update smartlane route custom id with tour uid
                         routeApi.patchRouteById(
                                 route.id,
                                 Route().also {

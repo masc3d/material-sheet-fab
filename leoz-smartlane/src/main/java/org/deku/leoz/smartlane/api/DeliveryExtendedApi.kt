@@ -4,6 +4,9 @@ import io.reactivex.Observable
 import org.deku.leoz.smartlane.model.Deliveries
 import org.deku.leoz.smartlane.model.Delivery
 import org.slf4j.LoggerFactory
+import sx.rs.FlaskFilter
+import sx.rs.FlaskOperator
+import sx.rs.FlaskQuery
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
 
@@ -54,7 +57,7 @@ fun DeliveryApi.getDelivery(q: String): Observable<Delivery> {
                 }
             }
             emitter.onComplete()
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             emitter.onError(e)
         }
     }
@@ -63,9 +66,27 @@ fun DeliveryApi.getDelivery(q: String): Observable<Delivery> {
 fun DeliveryExtendedApi.deleteAll() {
     try {
         this.deleteDelivery(q = "{}")
-    } catch(e: WebApplicationException) {
+    } catch (e: WebApplicationException) {
         when (e.response.status) {
-            // Expected response when query doesn't match anything to delete
+        // Expected response when query doesn't match anything to delete
+            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
+            else -> throw e
+        }
+    }
+}
+
+fun DeliveryExtendedApi.delete(ids: List<Int>) {
+    try {
+        this.deleteDelivery(q = FlaskFilter(
+                filter = FlaskQuery(
+                        name = "id",
+                        op = FlaskOperator.IN,
+                        value = ids
+                )).toJson()
+        )
+    } catch (e: WebApplicationException) {
+        when (e.response.status) {
+        // Expected response when query doesn't match anything to delete
             Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
             else -> throw e
         }
