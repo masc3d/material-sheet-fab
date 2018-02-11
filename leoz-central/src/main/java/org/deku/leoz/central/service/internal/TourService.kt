@@ -250,8 +250,6 @@ class TourServiceV1
                                 .filter { it.position == entryRecord.position }
                                 .map { it.id }
 
-                        // TODO debug (modification of entry records must not modify iterated results)
-
                         tourEntryRepo.findAll(tadTourEntry.id.`in`(entryIds))
                                 .forEach {
                                     it.position = newPosition
@@ -392,7 +390,8 @@ class TourServiceV1
     override fun delete(
             ids: List<Long>,
             userId: Long?,
-            stationNo: Long?) {
+            stationNo: Long?,
+            includeRelated: Boolean) {
 
         emf.transaction { em ->
             em.from(tadTour)
@@ -412,6 +411,21 @@ class TourServiceV1
                                 .where(tadTour.userId.eq(it))
                                 .fetch()
                     } ?: listOf<Tuple>())
+                    .let {
+                        when (includeRelated) {
+                            true -> {
+                                val tourIds = it.map { it.get(tadTour.id) }
+
+                                it.plus(
+                                        em.from(tadTour)
+                                                .select(tadTour.id, tadTour.stationNo)
+                                                .where(tadTour.parentId.`in`(tourIds))
+                                                .fetch()
+                                )
+                            }
+                            false -> it
+                        }
+                    }
                     .also { records ->
                         if (records.count() > 0) {
                             val tourIds = records

@@ -31,6 +31,7 @@ interface TourServiceV1 {
         const val ID = "id"
         const val DEBITOR_ID = "debitor-id"
         const val FROM = "from"
+        const val INCLUDE_RELATED = "include-related"
         const val NODE_UID = "node-uid"
         const val STATION_NO = "station-no"
         const val TO = "to"
@@ -98,9 +99,11 @@ interface TourServiceV1 {
             @QueryParam(ID) @ApiParam(value = "Tour id(s)", required = false)
             ids: List<Long>,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
-            userId: Long? = null,
+            userId: Long?,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
-            stationNo: Long? = null
+            stationNo: Long?,
+            @QueryParam(INCLUDE_RELATED) @ApiParam(value = "Inlcude related tours (eg. split optimized tours)", required = false, defaultValue = "false")
+            includeRelated: Boolean
     )
 
     @PATCH
@@ -344,8 +347,12 @@ interface TourServiceV1 {
                         required = false,
                         value = "Vehicle capacity in kg",
                         example = "500.0")
-                var capacity: Double = 500.0
-        )
+                var capacity: Double = DEFAULT_CAPACITY
+        ) {
+            companion object {
+                val DEFAULT_CAPACITY: Double = 500.0
+            }
+        }
 
 
     }
