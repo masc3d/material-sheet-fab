@@ -23,7 +23,7 @@ buildscript {
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.6.0'
         v_parceler = '1.1.10'
-        v_roboelectric = '3.6.1'
+        v_roboelectric = '3.7'
         v_rxlifecycle = '2.2.1'
         v_stetho = '1.5.0'
         v_truetime = '3.3'

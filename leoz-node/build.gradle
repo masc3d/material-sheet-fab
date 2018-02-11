@@ -240,7 +240,7 @@ dependencies {
 
             // hawt.io
             "io.hawt:hawtio-springboot:2.0.0",
-            "org.jolokia:jolokia-spring:1.4.0",
+            "org.jolokia:jolokia-spring:1.5.0",
 
             // serialization
             "com.esotericsoftware:kryo:$v_kryo",
