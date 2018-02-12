@@ -218,14 +218,14 @@ fun Completable.retryWithExponentialBackoff(
  * A safe wrapper for callables with support for null values
  * @return Observable emitting the callables result or an empty observable if the result was null
  */
-fun <T> Callable<T>.toObservable(): Observable<T> {
-    return Observable.fromPublisher<T> {p ->
+fun <T> Callable<T?>.toObservable(): Observable<T> {
+    return Observable.fromPublisher<T> { p ->
         try {
             this.call()?.also {
                 p.onNext(it)
             }
             p.onComplete()
-        } catch(e: Throwable) {
+        } catch (e: Throwable) {
             p.onError(e)
         }
     }
