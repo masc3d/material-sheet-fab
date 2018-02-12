@@ -18,7 +18,9 @@ import sx.Stopwatch
 import sx.log.slf4j.debug
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
-import sx.rx.*
+import sx.rx.limit
+import sx.rx.retryWithExponentialBackoff
+import sx.rx.toHotCache
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
@@ -204,20 +206,27 @@ class MqttDispatcher(
 
                     topicTrigger
                             .throttleLast(1, TimeUnit.SECONDS)
+                            .doOnNext {
+                                log.debug { "Topic triggered [${it}|" }
+                            }
                             .concatMap { trigger ->
                                 val sw = Stopwatch.createUnstarted()
                                 var count: Int = 0
 
-                                log.debug { "Starting dequeue flow for [${topic}]" }
                                 this.persistence.get(topic)
                                         // Counters
-                                        .doOnSubscribe { count = 0; sw.reset(); sw.start() }
+                                        .doOnSubscribe {
+                                            count = 0; sw.reset(); sw.start()
+                                            log.debug { "Starting dequeue flow for [${topic}]" }
+                                        }
                                         .doOnNext { count++ }
 
                                         // Actual publishing
                                         .publishToWire()
 
-                                        .doOnComplete { if (count > 0) log.info { "Dequeued ${count} in [${sw}]" } }
+                                        .doOnComplete {
+                                            log.info { "Dequeued ${count} in [${sw}]" }
+                                        }
 
                                         // Subscribe on topic specific scheduler
                                         .subscribeOn(this.scheduler(topic))
