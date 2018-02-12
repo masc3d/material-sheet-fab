@@ -1,9 +1,7 @@
 package org.deku.leoz.node.service.internal
 
-import io.reactivex.Completable
-import io.reactivex.Flowable
+import io.reactivex.*
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
@@ -22,12 +20,14 @@ import sx.io.serialization.Serializable
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
+import sx.rx.toObservable
 import sx.text.toHexString
 import sx.time.replaceDate
 import sx.time.toDate
 import sx.time.toLocalDateTime
 import java.net.URI
 import java.util.*
+import java.util.concurrent.Callable
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
@@ -233,16 +233,16 @@ class SmartlaneBridge {
                 this.formatEmail(email),
                 // Default value -> determine driver (id)
                 {
-                    Observable.fromCallable {
-
+                    Callable {
                         driverApi.getDriverByEmail(
                                 email = this.formatEmail(email)
                         )
                                 ?.id
                     }
+                            .toObservable()
                             .retryOnTokenExpiry(domain)
                             .subscribeOn(domain.scheduler)
-                            .blockingFirst()
+                            .blockingFirst(null)
                 }
         )
     }
