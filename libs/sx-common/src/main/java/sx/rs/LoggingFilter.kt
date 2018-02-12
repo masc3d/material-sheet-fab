@@ -19,15 +19,18 @@ import javax.ws.rs.ext.WriterInterceptorContext
 class LoggingFilter  : ClientRequestFilter, ClientResponseFilter, WriterInterceptor {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    companion object {
+        /** The maximum entity size to log */
+        val DEFAULT_MAX_ENTITY_SIZE = Int.MAX_VALUE
+    }
+
     /**
      * Logging stream
      */
     private inner class LoggingStream constructor(
-            private val inner: OutputStream) : OutputStream() {
-
-        private val DEFAULT_MAX_ENTITY_SIZE = 8 * 1024
-
-        private val maxEntitySize: Int = DEFAULT_MAX_ENTITY_SIZE
+            private val inner: OutputStream,
+            private val maxEntitySize: Int = DEFAULT_MAX_ENTITY_SIZE
+    ) : OutputStream() {
 
         /** Stream content */
         val content: StringBuilder by lazy {
@@ -58,32 +61,38 @@ class LoggingFilter  : ClientRequestFilter, ClientResponseFilter, WriterIntercep
     override fun aroundWriteTo(context: WriterInterceptorContext) {
         context.proceed()
 
-        val stream = context.outputStream as LoggingStream
-        if (stream.length > 0) {
-            log.trace { "REQUEST ${stream.content}" }
+        if (this.log.isTraceEnabled) {
+            val stream = context.outputStream as LoggingStream
+            if (stream.length > 0) {
+                log.trace { "REQUEST ${stream.content}" }
+            }
         }
     }
 
     override fun filter(requestContext: ClientRequestContext) {
-        //region Request logging
-        log.trace { requestContext.uri }
+        if (this.log.isTraceEnabled) {
+            //region Request logging
+            log.trace { requestContext.uri }
 
-        if (requestContext.hasEntity()) {
-            log.trace { "REQUEST ENTITY ${requestContext.entity}" }
+            if (requestContext.hasEntity()) {
+                log.trace { "REQUEST ENTITY ${requestContext.entity}" }
 
-            requestContext.entityStream = LoggingStream(requestContext.entityStream)
+                requestContext.entityStream = LoggingStream(requestContext.entityStream)
+            }
+            //endregion
         }
-        //endregion
     }
 
     override fun filter(requestContext: ClientRequestContext, responseContext: ClientResponseContext) {
-        //region Response logging
-        log.trace {
-            val data = responseContext.entityStream?.readBytes()
-            responseContext.entityStream = data?.let { ByteArrayInputStream(data) }
+        if (this.log.isTraceEnabled) {
+            //region Response logging
+            log.trace {
+                val data = responseContext.entityStream?.readBytes()
+                responseContext.entityStream = data?.let { ByteArrayInputStream(data) }
 
-            "RESPONSE ${data?.toString(charset = Charsets.UTF_8)}"
+                "RESPONSE ${data?.toString(charset = Charsets.UTF_8)}"
+            }
+            //endregion
         }
-        //endregion
     }
 }
