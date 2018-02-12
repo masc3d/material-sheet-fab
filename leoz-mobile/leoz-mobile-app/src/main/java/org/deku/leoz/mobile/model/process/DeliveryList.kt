@@ -206,7 +206,13 @@ class DeliveryList : CompositeDisposableSupplier {
         return Observable.fromCallable {
             val orderService = Kodein.global.instance<OrderService>()
 
-            val orders = orderService.get(parcelScan = unitNumber.value)
+            val orders = orderService.get(
+                    labelRef = null,
+                    custRef = null,
+                    parcelScan = unitNumber.value,
+                    // Api key will be injected via header
+                    apiKey = null
+            )
                     .distinctOrders()
                     .map { it.toOrder() }
 
