@@ -122,7 +122,7 @@ class OrderService : OrderService {
     }
 
     //todo include send_date
-    fun Order.findOrderDebitorId(pickupDeliver: Type): Int {
+    fun Order.findOrderDebitorId(pickupDeliver: Type): Int? {
         val station: Int
 
         when (pickupDeliver) {
@@ -130,7 +130,7 @@ class OrderService : OrderService {
             Type.DELIVERY -> station = this.deliveryStation
         }
 
-        return stationRepository.findDebitor(station)
+        return  stationRepository.findById(station)?.debitorId
     }
 
     enum class Type {
