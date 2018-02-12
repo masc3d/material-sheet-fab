@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/distinctUntilChanged';
 
-import { Message } from 'primeng/primeng';
+import { Message } from 'primeng/components/common/api';
 
 import { TranslateService } from '../../core/translate/translate.service';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 @Injectable()
 export class MsgService {

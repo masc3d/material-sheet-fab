@@ -5,7 +5,7 @@ import { AuthenticationService } from '../core/auth/authentication.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/takeUntil';
 
-import { Message } from 'primeng/primeng';
+import { Message } from 'primeng/api';
 
 import { MsgService } from '../shared/msg/msg.service';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';

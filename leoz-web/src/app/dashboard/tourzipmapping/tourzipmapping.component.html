@@ -1,18 +1,25 @@
 <div class="ui-fluid" style="padding-top: 10px;" class="mbDashboardContent">
-
-  <p-dataTable resizableColumns="false" responsive="true"
-               [emptyMessage]="'noDataAvailable' | translate"
-               [style]="{'min-height': '465px', 'height': 'calc(100vh - 296px)'}">
-    <p-header>
+  <p-table [responsive]="true" [style]="{'min-height': '465px', 'height': 'calc(100vh - 296px)'}">
+    <ng-template pTemplate="caption">
       {{ 'tourzipmapping' | translate }}
-    </p-header>
-    <p-column field="tour" header="{{'tour' | translate}}" [sortable]="true"></p-column>
-    <p-column field="driverNo" header="{{'driverNo' | translate}}" [sortable]="true"></p-column>
-    <p-column field="drivername" header="{{'drivername' | translate}}" [sortable]="true"></p-column>
-    <p-column field="fromZip" header="{{'fromZip' | translate}}" [sortable]="true"></p-column>
-    <p-column field="toZip" header="{{'toZip' | translate}}" [sortable]="true"></p-column>
-  </p-dataTable>
-
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>{{'tour' | translate}}</th>
+        <th>{{'driverNo' | translate}}</th>
+        <th>{{'drivername' | translate}}</th>
+        <th>{{'fromZip' | translate}}</th>
+        <th>{{'toZip' | translate}}</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="5">
+          {{'noDataAvailable' | translate}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
   <div class="ui-g" style="padding-top: 50px;">
     <div class="ui-g-12 ui-lg-12">
       <hr/>

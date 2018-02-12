@@ -1,18 +1,16 @@
 import { NgModule } from '@angular/core';
 
-import {
-  ButtonModule,
-  CalendarModule,
-  CheckboxModule,
-  DataTableModule,
-  DropdownModule,
-  FieldsetModule,
-  InputTextareaModule,
-  InputTextModule,
-  ProgressBarModule,
-  RadioButtonModule,
-  TabViewModule
-} from 'primeng/primeng';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DropdownModule } from 'primeng/dropdown';
+import { FieldsetModule } from 'primeng/fieldset';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputTextModule } from 'primeng/inputtext';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { TabViewModule } from 'primeng/tabview';
 
 import { SharedModule } from '../../../shared/shared.module';
 import { LoadinglistscanRoutingModule } from './loadinglistscan-routing.module';
@@ -23,7 +21,7 @@ import { LoadinglistscanService } from './loadinglistscan.service';
 @NgModule( {
   imports: [
     SharedModule,
-    DataTableModule,
+    TableModule,
     FieldsetModule,
     InputTextModule,
     DropdownModule,

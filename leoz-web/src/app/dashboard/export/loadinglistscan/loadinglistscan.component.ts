@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/filter';
 
-import { SelectItem } from 'primeng/primeng';
+import { SelectItem } from 'primeng/api';
 
 import { Exportlist } from '../exportlist.model';
 import { Package } from '../../../core/models/package.model';
@@ -296,7 +296,9 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
   }
 
   public onRowClick( event ) {
+    console.log('anfang');
     this.latestMarkedIndex = this.openPackagesArr.indexOf( event.data );
+    console.log('this.latestMarkedIndex',this.latestMarkedIndex);
   }
 
   public newLoadlist() {

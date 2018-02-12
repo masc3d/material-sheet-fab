@@ -1,18 +1,17 @@
 import { NgModule } from '@angular/core';
 
+import { TabMenuModule } from 'primeng/tabmenu';
+
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DropdownModule } from 'primeng/dropdown';
+import { FieldsetModule } from 'primeng/fieldset';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { TabViewModule } from 'primeng/tabview';
+
 import { SharedModule } from '../../../shared/shared.module';
 import { OrderformRoutingModule } from './orderform-routing.module';
 import { OrderformComponent } from './orderform.component';
-import {
-  ButtonModule,
-  CheckboxModule,
-  DataTableModule,
-  DropdownModule,
-  FieldsetModule,
-  RadioButtonModule,
-  TabViewModule,
-  TabMenuModule
-} from 'primeng/primeng';
 import { AddressComponent } from './address/address.component';
 import { TimewindowsComponent } from './timewindows/timewindows.component';
 import { ServicesComponent } from './services/services.component';
@@ -28,7 +27,6 @@ import { PackagesRowComponent } from './packages/packages.row.component';
   imports: [
     SharedModule,
     OrderformRoutingModule,
-    DataTableModule,
     TabMenuModule,
     TabViewModule,
     DropdownModule,

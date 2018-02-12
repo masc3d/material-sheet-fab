@@ -7,9 +7,11 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import 'rxjs/add/operator/filter';
+
+import { SelectItem } from 'primeng/api';
+
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
-import { SelectItem } from 'primeng/primeng';
 import { MsgService } from '../../shared/msg/msg.service';
 
 

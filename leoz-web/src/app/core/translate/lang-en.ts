@@ -9,6 +9,7 @@ export const LANG_EN_TRANS = {
   'password': 'Password',
   'password is required': 'Password is required',
   'loggedinas': 'Logged in as',
+  'On login-change you have to provide a password': 'On login-change you have to provide a password',
   // menu
   'home': 'Home',
   'loadingscan': 'Loadingscan',
@@ -168,6 +169,7 @@ export const LANG_EN_TRANS = {
   'notOnLoadlist': 'not yet on loadlist',
   'onLoadlist': 'already loaded',
   'noDataAvailable': 'no data available',
+  'no activeLoadinglist': 'no loadlist selected',
   // stationloading form - bagscan
   'openOnBaglist': 'not yet on baglist',
   'bagInformation': 'Bag Information',

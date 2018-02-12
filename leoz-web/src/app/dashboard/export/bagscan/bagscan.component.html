@@ -78,26 +78,43 @@
       <div class="ui-g-12 ui-lg-6" style="padding: 0; border:1px solid darkgrey">
         <div class="ui-g-12 ui-g-nopad">
           <p style="text-align: center">{{'openOnBaglist' | translate}} {{openPackcount}}</p>
-          <p-dataTable [value]="lazyOpenPackages" resizableColumns="true" responsive="true"
-                       scrollable="true" scrollHeight="300px" [rows]="20" virtualScroll="virtualScroll"
-                       [totalRecords]="openPackcount" loadingIcon="fa-spinner"
-                       [lazy]="true" (onLazyLoad)="loadOpenPackagesLazy($event)" [loading]="loading"
-                       [emptyMessage]="'noDataAvailable' | translate">
-            <p-column field="parcelNo" header="{{'parcelno' | translate}}" [sortable]="false"></p-column>
-            <p-column field="zip" header="{{'zip' | translate}}" [sortable]="false"></p-column>
-            <p-column field="realWeight" header="{{'weight' | translate}}" [sortable]="false"></p-column>
-            <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}" [sortable]="false"></p-column>
-            <p-column field="wrapperType" header="{{'valore' | translate}}" [sortable]="false">
-              <ng-template let-package="rowData" pTemplate="body">
+          <p-table [value]="lazyOpenPackages" resizableColumns="true" responsive="true"
+                   scrollable="true" scrollHeight="300px" [rows]="20" virtualScroll="virtualScroll"
+                   [totalRecords]="openPackcount" loadingIcon="fa-spinner"
+                   [lazy]="true" (onLazyLoad)="loadOpenPackagesLazy($event)" [loading]="loading">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{'parcelno' | translate}}</th>
+                <th>{{'zip' | translate}}</th>
+                <th>{{'weight' | translate}}</th>
+                <th>{{'devliveryStation' | translate}}</th>
+                <th>{{'valore' | translate}}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-package>
+              <tr>
+                <td>{{package.parcelNo}}</td>
+                <td>{{package.zip}}</td>
+                <td>{{package.realWeight}}</td>
+                <td>{{package.devliveryStation}}</td>
+                <td>
                     <span *ngIf="isValuable(package); else noValuable">
                       {{ 'yes' | translate }}
                     </span>
-                <ng-template #noValuable>
-                  {{ 'no' | translate }}
-                </ng-template>
-              </ng-template>
-            </p-column>
-          </p-dataTable>
+                  <ng-template #noValuable>
+                    {{ 'no' | translate }}
+                  </ng-template>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td [attr.colspan]="5">
+                  {{'noDataAvailable' | translate}}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
         </div>
       </div>
 
