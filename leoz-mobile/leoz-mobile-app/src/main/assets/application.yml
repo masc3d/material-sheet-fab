@@ -2,7 +2,7 @@
 logging:
    level:
       ROOT: INFO
-      sx.mq: INFO
+      sx.mq: DEBUG
 
 # User settings
 user:
