@@ -395,7 +395,7 @@ class TourServiceV1
 
         emf.transaction { em ->
             em.from(tadTour)
-                    .select(tadTour.id, tadTour.stationNo)
+                    .select(tadTour.id, tadTour.stationNo, tadTour.uid)
                     .let {
                         when {
                             ids != null && ids.count() > 0 -> {
@@ -407,14 +407,14 @@ class TourServiceV1
                     .fetch()
                     .plus(stationNo?.let {
                         em.from(tadTour)
-                                .select(tadTour.id, tadTour.stationNo)
+                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
                                 .where(tadTour.stationNo.eq(it))
                                 .fetch()
 
                     } ?: listOf())
                     .plus(userId?.let {
                         em.from(tadTour)
-                                .select(tadTour.id, tadTour.stationNo)
+                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
                                 .where(tadTour.userId.eq(it))
                                 .fetch()
                     } ?: listOf<Tuple>())
@@ -425,7 +425,7 @@ class TourServiceV1
 
                                 it.plus(
                                         em.from(tadTour)
-                                                .select(tadTour.id, tadTour.stationNo)
+                                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
                                                 .where(tadTour.parentId.`in`(tourIds))
                                                 .fetch()
                                 )
@@ -446,6 +446,11 @@ class TourServiceV1
                             em.delete(tadTour)
                                     .where(tadTour.id.`in`(tourIds))
                                     .execute()
+
+                            this.smartlane.deleteRoutes(
+                                    uids = records.map { it.get(tadTour.uid)!! }
+                            )
+                                    .subscribeBy(onError = { e -> log.error(e.message, e) })
                         }
                     }
         }

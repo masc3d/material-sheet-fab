@@ -9,16 +9,12 @@ import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
-import org.deku.leoz.node.data.repository.StationRepository
 import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.TourServiceV1.*
-import org.deku.leoz.service.internal.TourServiceV1.TourOptimizationOptions.Vehicle.Companion.DEFAULT_CAPACITY
-import org.deku.leoz.service.internal.entity.GeoLocation
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.*
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.threeten.bp.Duration
 import org.threeten.bp.temporal.ChronoUnit
 import sx.LazyInstance
@@ -239,20 +235,25 @@ class SmartlaneBridge {
                                 .retryOnTokenExpiry(domain)
                     }
                 }
-                .subscribeOn(domain.scheduler)
                 .ignoreElements()
+                .subscribeOn(domain.scheduler)
     }
 
-    fun deleteRoute(uid: String): Completable {
+    /**
+     * Delete smartlane routes
+     */
+    fun deleteRoutes(uids: List<String>): Completable {
         val domain = domain(customerId)
 
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
         val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId = customerId)
 
-        return routeApi.getRouteByCustomId(uid)
+        return routeApi.getRouteByCustomId(*uids.toTypedArray())
+                .toList()
+                .toObservable()
                 .doOnNext {
-                    deliveryApi.delete(it.deliveries.map { it.id })
-                    routeApi.deleteRoute(it.id)
+                    deliveryApi.delete(it.flatMap { it.deliveries }.map { it.id })
+                    routeApi.delete(it.map { it.id })
                 }
                 .retryOnTokenExpiry(domain)
                 .ignoreElements()
@@ -261,8 +262,8 @@ class SmartlaneBridge {
                         is NoSuchElementException -> true
                         else -> false
                     }
-
                 }
+                .subscribeOn(domain.scheduler)
     }
 
     /**
@@ -324,7 +325,7 @@ class SmartlaneBridge {
                         if (inPlaceUpdate) {
                             uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
 
-                            this.deleteRoute(uid = uid)
+                            this.deleteRoutes(uids = listOf(uid))
                                     .blockingAwait()
                         } else {
                             // Generate uid for new tour
