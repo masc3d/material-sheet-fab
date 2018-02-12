@@ -403,9 +403,9 @@ class SmartlaneBridge {
                     .map { stop ->
                         Routedeliveryinput().also {
                             stop.address?.also { address ->
-                                it.contactlastname = address.line1
-                                it.contactfirstname = address.line2
-                                it.contactcompany = address.line3
+                                it.contactcompany = address.line1
+                                it.contactlastname = address.line2
+                                it.notes = address.line3
                                 it.street = address.street
                                 it.housenumber = address.streetNo
                                 it.city = address.city
