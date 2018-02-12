@@ -300,13 +300,15 @@ class SmartlaneBridge {
     /**
      * Delete smartlane routes
      */
-    fun deleteRoutes(uids: List<String>): Completable {
+    fun deleteRoutes(tours: List<Tour>): Completable {
         val domain = domain(customerId)
 
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
         val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId = customerId)
 
-        return routeApi.getRouteByCustomId(*uids.toTypedArray())
+        return routeApi.getRouteByCustomId(
+                *tours.map { it.smartlaneCustomId }.toTypedArray()
+        )
                 .toList()
                 .toObservable()
                 .doOnNext {
@@ -383,7 +385,7 @@ class SmartlaneBridge {
                         if (inPlaceUpdate) {
                             uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
 
-                            this.deleteRoutes(uids = listOf(uid))
+                            this.deleteRoutes(listOf(tour))
                                     .blockingAwait()
                         } else {
                             // Generate uid for new tour

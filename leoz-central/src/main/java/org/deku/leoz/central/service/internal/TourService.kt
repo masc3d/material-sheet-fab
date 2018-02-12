@@ -446,7 +446,12 @@ class TourServiceV1
                                     .execute()
 
                             this.smartlane.deleteRoutes(
-                                    uids = records.map { it.get(tadTour.uid)!! }
+                                    tours = records.map {
+                                        Tour(
+                                                id = it.get(tadTour.id),
+                                                uid = it.get(tadTour.uid)
+                                        )
+                                    }
                             )
                                     .subscribeBy(onError = { e -> log.error(e.message, e) })
                         }
