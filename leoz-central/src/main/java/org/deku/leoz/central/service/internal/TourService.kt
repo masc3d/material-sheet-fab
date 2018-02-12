@@ -133,22 +133,20 @@ class TourServiceV1
                             return@subscribe
                         }
 
-                        if (!tourRepo.exists(tadTour.userId.eq(userId.toLong())))
-                        // Skip when there's no tour for this user
-                            return@subscribe
-
                         val user = this.userRepository.findById(userId)
                                 ?: throw NoSuchElementException("User id [${userId}]")
 
-                        val positions = gpsMessage.dataPoints?.toList() ?: listOf()
+                        if (smartlane.hasDriver(user.email)) {
+                            val positions = gpsMessage.dataPoints?.toList() ?: listOf()
 
-                        this.smartlane.putDriverPosition(
-                                email = user.email,
-                                positions = positions
-                        )
-                                .subscribeBy(
-                                        onError = { e -> log.error(e.message, e) }
-                                )
+                            this.smartlane.putDriverPosition(
+                                    email = user.email,
+                                    positions = positions
+                            )
+                                    .subscribeBy(
+                                            onError = { e -> log.error(e.message, e) }
+                                    )
+                        }
                     } catch (e: Throwable) {
                         log.error("Location push to routing provider failed. node [${gpsMessage.nodeKey}], user [${gpsMessage.userId}]: ${e.message}")
                     }
