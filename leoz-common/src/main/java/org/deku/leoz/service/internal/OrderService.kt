@@ -32,14 +32,6 @@ interface OrderService {
      * Get order by id
      * @param id Order id
      */
-
-    @GET
-    @Path("/{$ORDERID}")
-    @ApiOperation(value = "Get order by order ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getById(
-            @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long
-    ): Order
-
     @GET
     @Path("/{$ORDERID}")
     @ApiOperation(value = "Get order by order ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
@@ -54,24 +46,13 @@ interface OrderService {
      * @param custRef Custom reference (optional query param)
      * @param ref Order reference (optional query param)
      */
-
     @GET
     @Path("/")
     @ApiOperation(value = "Get orders", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
-            @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
-            @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
-            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String? = null
-    ): List<Order>
-
-
-    @GET
-    @Path("/")
-    @ApiOperation(value = "Get orders", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun get(
-            @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
-            @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
-            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String? = null,
+            @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String?,
+            @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String?,
+            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String?,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
     ): List<Order>
 

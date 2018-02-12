@@ -26,20 +26,10 @@ class OrderService : OrderService {
     private lateinit var orderRepository: JooqOrderRepository
 
     @Inject
-    private lateinit var parcelRepository: JooqParcelRepository
-
-    @Inject
-    private lateinit var statusRepository: JooqStatusRepository
-
-    @Inject
     private lateinit var userRepository: JooqUserRepository
 
     @Inject
     private lateinit var stationRepository: JooqStationRepository
-
-    override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
-        return get(labelRef, custRef, parcelScan, null)
-    }
 
     override fun get(labelRef: String?, custRef: String?, parcelScan: String?, apiKey: String?): List<OrderService.Order> {
         val orders: List<Order>
@@ -81,10 +71,6 @@ class OrderService : OrderService {
         }
 
         return orders
-    }
-
-    override fun getById(id: Long): OrderService.Order {
-        return getById(id, null)
     }
 
     override fun getById(id: Long, apiKey: String?): OrderService.Order {
