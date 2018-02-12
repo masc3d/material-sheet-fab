@@ -4,7 +4,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/takeUntil';
 
-import { Message, SelectItem } from 'primeng/primeng';
+import { Message } from 'primeng/components/common/api';
+import { SelectItem } from 'primeng/api';
 
 import { User } from '../user.model';
 import { UserService } from '../user.service';

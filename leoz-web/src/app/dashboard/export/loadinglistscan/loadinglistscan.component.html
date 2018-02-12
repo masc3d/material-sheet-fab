@@ -149,29 +149,146 @@
                   {{'notOnLoadlist' | translate}} {{openPackcount}} (F12)
                 </ng-template>
               </p>
-              <p-dataTable [value]="openPackages$ | async" resizableColumns="true" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate" selectionMode="multiple"
-                           [(selection)]="selectedPackages" (onRowClick)="onRowClick($event)">
-                <p-column field="parcelNo" header="{{'parcelno' | translate}}" [sortable]="true"></p-column>
-                <p-column field="zip" header="{{'zip' | translate}}" [sortable]="true"></p-column>
-                <p-column field="city" header="{{'city' | translate}}" [sortable]="true"></p-column>
-                <p-column field="devliveryStation" header="{{'devliveryStation' | translate}}"
-                          [sortable]="true"></p-column>
-                <p-column field="loadinglistNo" header="{{'loadinglist' | translate}}" [sortable]="true"></p-column>
-                <p-column field="typeOfPackaging" header="{{'valore' | translate}}" [sortable]="true">
-                  <ng-template let-package="rowData" pTemplate="body">
+              <p-table [value]="openPackages$ | async" resizableColumns="true" responsive="true"
+                       selectionMode="multiple" [(selection)]="selectedPackages" (onRowSelect)="onRowClick($event)">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th [pSortableColumn]="'parcelNo'">
+                      {{'parcelno' | translate}}
+                      <p-sortIcon [field]="'parcelNo'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'zip'">
+                      {{'zip' | translate}}
+                      <p-sortIcon [field]="'zip'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'city'">
+                      {{'city' | translate}}
+                      <p-sortIcon [field]="'city'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'devliveryStation'">
+                      {{'devliveryStation' | translate}}
+                      <p-sortIcon [field]="'devliveryStation'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'loadinglistNo'">
+                      {{'loadinglist' | translate}}
+                      <p-sortIcon [field]="'loadinglistNo'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'typeOfPackaging'">
+                      {{'valore' | translate}}
+                      <p-sortIcon [field]="'typeOfPackaging'"></p-sortIcon>
+                    </th>
+                  </tr>
+                </ng-template>
+
+
+                <ng-template pTemplate="body" let-package let-columns="columns" let-rowIndex="rowIndex">
+                  <tr [pSelectableRow]="package" [pSelectableRowIndex]="rowIndex">
+                    <td>{{package.parcelNo}}</td>
+                    <td>{{package.zip}}</td>
+                    <td>{{package.city}}</td>
+                    <td>{{package.devliveryStation}}</td>
+                    <td>{{package.loadinglistNo}}</td>
+                    <td>
                     <span *ngIf="isValuable(package); else noValuable">
                       {{ 'yes' | translate }}
                     </span>
-                    <ng-template #noValuable>
-                      {{ 'no' | translate }}
-                    </ng-template>
-                  </ng-template>
-                </p-column>
-              </p-dataTable>
+                      <ng-template #noValuable>
+                        {{ 'no' | translate }}
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-template>
+
+
+<!--
+                <ng-template pTemplate="body" let-package>
+                  <tr>
+                    <td>{{package.parcelNo}}</td>
+                    <td>{{package.zip}}</td>
+                    <td>{{package.city}}</td>
+                    <td>{{package.devliveryStation}}</td>
+                    <td>{{package.loadinglistNo}}</td>
+                    <td>
+                    <span *ngIf="isValuable(package); else noValuable">
+                      {{ 'yes' | translate }}
+                    </span>
+                      <ng-template #noValuable>
+                        {{ 'no' | translate }}
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-template>-->
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="6">
+                      {{'noDataAvailable' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-tabPanel>
             <p-tabPanel header="{{'loaded' | translate}}">
               <p style="text-align: center">{{'onLoadlist' | translate}} {{loadedPackcount}}</p>
+
+              <p-table [value]="loadedPackages$ | async" resizableColumns="true" responsive="true">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th [pSortableColumn]="'parcelNo'">
+                      {{'parcelno' | translate}}
+                      <p-sortIcon [field]="'parcelNo'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'zip'">
+                      {{'zip' | translate}}
+                      <p-sortIcon [field]="'zip'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'city'">
+                      {{'city' | translate}}
+                      <p-sortIcon [field]="'city'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'devliveryStation'">
+                      {{'devliveryStation' | translate}}
+                      <p-sortIcon [field]="'devliveryStation'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'loadinglistNo'">
+                      {{'loadinglist' | translate}}
+                      <p-sortIcon [field]="'loadinglistNo'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'typeOfPackaging'">
+                      {{'valore' | translate}}
+                      <p-sortIcon [field]="'typeOfPackaging'"></p-sortIcon>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-package>
+                  <tr>
+                    <td>{{package.parcelNo}}</td>
+                    <td>{{package.zip}}</td>
+                    <td>{{package.city}}</td>
+                    <td>{{package.devliveryStation}}</td>
+                    <td>{{package.loadinglistNo}}</td>
+                    <td>
+                    <span *ngIf="isValuable(package); else noValuable">
+                      {{ 'yes' | translate }}
+                    </span>
+                      <ng-template #noValuable>
+                        {{ 'no' | translate }}
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="6">
+                      {{'noDataAvailable' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+
+
+            <!--
+
+
               <p-dataTable [value]="loadedPackages$ | async" resizableColumns="true" responsive="true"
                            [emptyMessage]="'noDataAvailable' | translate">
                 <p-column field="parcelNo" header="{{'parcelno' | translate}}" [sortable]="true"></p-column>
@@ -191,6 +308,8 @@
                   </ng-template>
                 </p-column>
               </p-dataTable>
+              -->
+
             </p-tabPanel>
           </p-tabView>
         </p-fieldset>

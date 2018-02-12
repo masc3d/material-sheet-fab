@@ -7,11 +7,13 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/filter';
 
-import { LazyLoadEvent, SelectItem } from 'primeng/primeng';
+import { LazyLoadEvent, SelectItem } from 'primeng/api';
+import { ElectronService } from '../../../core/electron/electron.service';
 
 import { Exportlist } from '../exportlist.model';
 import { Package } from '../../../core/models/package.model';
@@ -22,11 +24,9 @@ import { BagIdChangeResponse } from './bag-id-change-response';
 import { KeyUpEventService } from '../../../core/key-up-event.service';
 import { SoundService } from '../../../core/sound.service';
 import { BagData } from './bagdata.model';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { BagscanReportingService } from '../../../core/reporting/bagscan-reporting.service';
 import { TYPE_VALUABLE } from '../../../core/constants';
-import { ElectronService } from '../../../core/electron/electron.service';
 import { MsgService } from '../../../shared/msg/msg.service';
 
 @Component( {

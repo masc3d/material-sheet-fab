@@ -9,6 +9,7 @@ export const LANG_DE_TRANS = {
   'password': 'Kennwort',
   'password is required': 'Kennwort muss angegeben werden',
   'loggedinas': 'Angemeldet als',
+  'On login-change you have to provide a password': 'Bei Änderungen geben Sie bitte Ihr Passwort ein.',
   // menu
   'home': 'Startseite',
   'loadingscan': 'Beladescan',
@@ -168,6 +169,7 @@ export const LANG_DE_TRANS = {
   'notOnLoadlist': 'noch nicht auf Ladeliste',
   'onLoadlist': 'bereits geladen',
   'noDataAvailable': 'keine Einträge vorhanden',
+  'no activeLoadinglist': 'keine Ladeliste ausgewählt',
   // stationloading form - bagscan
   'openOnBaglist': 'noch nicht auf Bagliste',
   'bagInformation': 'Bag Information',

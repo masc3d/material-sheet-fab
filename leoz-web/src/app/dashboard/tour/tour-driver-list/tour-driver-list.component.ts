@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/timer';
 
-import { SelectItem } from 'primeng/primeng';
+import { SelectItem } from 'primeng/api';
 
 import { Driver } from '../driver.model';
 import { TourService } from '../tour.service';
@@ -62,27 +62,55 @@ interface CallbackArguments {
         </div>
       </div>
     </div>
-    <p-dataTable *ngIf="tableIsVisible" [value]="drivers$ | async | driverfilter: [filterName]" resizableColumns="true"
-                 [responsive]="true" sortField="lastName" [sortOrder]="1">
-      <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
-      <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
-      <p-column field="phone" header="{{'phoneoffice' | translate}}" [sortable]="true"></p-column>
-      <p-column field="mobile" header="{{'phonemobile' | translate}}" [sortable]="true"></p-column>
-      <p-column header="">
-        <ng-template let-driver="rowData" pTemplate="body">
-          <span (click)="showPositionPeriodically(driver)">
-            <i class="fas fa-crosshairs fa-fw" aria-hidden="true"></i>
-          </span>
-          <span (click)="showRoutePeriodically(driver)">
-            <i class="fas fa-road fa-fw" aria-hidden="true"></i>
-          </span>
-        </ng-template>
-      </p-column>
-    </p-dataTable>
+    <p-table *ngIf="tableIsVisible" [value]="drivers$ | async | driverfilter: [filterName]"
+             [responsive]="true" sortField="lastName">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>{{'firstname' | translate}}</th>
+          <th [pSortableColumn]="'lastName'">
+            {{'surname' | translate}}
+            <p-sortIcon [field]="'lastName'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'phone'">
+            {{'phoneoffice' | translate}}
+            <p-sortIcon [field]="'phone'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'phoneMobile'">
+            {{'phonemobile' | translate}}
+            <p-sortIcon [field]="'phoneMobile'"></p-sortIcon>
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-driver>
+        <tr>
+          <td>{{driver.firstName}}</td>
+          <td>{{driver.lastName}}</td>
+          <td>{{driver.phone}}</td>
+          <td>{{driver.phoneMobile}}</td>
+          <td>
+            <span (click)="showPositionPeriodically(driver)">
+              <i class="fas fa-crosshairs fa-fw" aria-hidden="true"></i>
+            </span>
+            <span (click)="showRoutePeriodically(driver)">
+              <i class="fas fa-road fa-fw" aria-hidden="true"></i>
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="5">
+            {{'noDataAvailable' | translate}}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 export class TourDriverListComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
+
   intervalOptions: SelectItem[];
   refreshOptions: SelectItem[];
   selectedInterval = 24;

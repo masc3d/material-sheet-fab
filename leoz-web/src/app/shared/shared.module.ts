@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { GrowlModule } from 'primeng/primeng';
+import { GrowlModule } from 'primeng/growl';
 
 import { TopBarComponent } from '../top-bar/top-bar.component';
 import { TranslateModule } from '../core/translate/translate.module';

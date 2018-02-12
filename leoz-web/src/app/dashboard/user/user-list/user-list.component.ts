@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
+import { SortMeta } from 'primeng/api';
+
 import { UserService } from '../user.service';
 import { User } from '../user.model';
 import { MsgService } from '../../../shared/msg/msg.service';
@@ -8,50 +10,77 @@ import { TranslateService } from '../../../core/translate/translate.service';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { PermissionCheck } from '../../../core/auth/permission-check';
 import { RoleGuard } from '../../../core/auth/role.guard';
-import { SortMeta } from 'primeng/primeng';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 @Component( {
   selector: 'app-user-list',
   template: `
-    <p-dataTable [value]="users$ | async | userfilter" resizableColumns="true" [responsive]="true"
-                 sortMode="multiple" [multiSortMeta]="multiSortMeta">
-      <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
-      <p-column field="lastName" header="{{'surname' | translate}}" sortable="true"></p-column>
-      <p-column field="role" header="{{'role' | translate}}" [sortable]="true">
-        <ng-template let-user="rowData" pTemplate="body">
-          {{ translate.role(user.role) }}
+    <p-table [value]="users$ | async | userfilter" resizableColumns="true"
+             [responsive]="true" sortField="lastName">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>{{'firstname' | translate}}</th>
+            <th [pSortableColumn]="'lastName'">
+              {{'surname' | translate}}
+              <p-sortIcon [field]="'lastName'"></p-sortIcon>
+            </th>
+            <th [pSortableColumn]="'role'">
+              {{'role' | translate}}
+              <p-sortIcon [field]="'role'"></p-sortIcon>
+            </th>
+            <th [pSortableColumn]="'email'">
+              {{'email' | translate}}
+              <p-sortIcon [field]="'email'"></p-sortIcon>
+            </th>
+            <th>{{'phoneoffice' | translate}}</th>
+            <th>{{'phonemobile' | translate}}</th>
+            <th [pSortableColumn]="'active'">
+              {{'active' | translate}}
+              <p-sortIcon [field]="'active'"></p-sortIcon>
+            </th>
+            <th [pSortableColumn]="'expiresOn'">
+              {{'expires_on' | translate}}
+              <p-sortIcon [field]="'expiresOn'"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
         </ng-template>
-      </p-column>
-      <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
-      <p-column field="phone" header="{{'phoneoffice' | translate}}"></p-column>
-      <p-column field="phoneMobile" header="{{'phonemobile' | translate}}"></p-column>
-      <p-column field="active" header="{{'active' | translate}}" sortable="true">
-        <ng-template let-user="rowData" pTemplate="body">
-          <span *ngIf="user.active; else inactivePart">
-            {{ 'yes' | translate }}
-          </span>
-          <ng-template #inactivePart>
-            {{ 'no' | translate }}
-          </ng-template>
-        </ng-template>
-      </p-column>
-      <p-column field="expiresOn" header="{{'expires_on' | translate}}" sortable="true">
-        <ng-template let-user="rowData" pTemplate="body">
-          {{user.expiresOn | date:dateFormat}}
-        </ng-template>
-      </p-column>
-      <p-column header="">
-        <ng-template let-user="rowData" pTemplate="body">
+
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td>{{user.firstName}}</td>
+          <td>{{user.lastName}}</td>
+          <td>{{user.role}}</td>
+          <td>{{user.email}}</td>
+          <td>{{user.phone}}</td>
+          <td>{{user.phoneMobile}}</td>
+          <td>
+            <span *ngIf="user.active; else inactivePart">
+              {{ 'yes' | translate }}
+            </span>
+            <ng-template #inactivePart>
+              {{ 'no' | translate }}
+            </ng-template>
+          </td>
+          <td>{{user.expiresOn | date:dateFormat}}</td>
+          <td>
           <span (click)="selected(user)">
           <i *ngIf="myself(user) || checkPermission(user)" class="fas fa-pencil-alt" aria-hidden="true"></i>
           </span>
-          <span (click)="deactivate(user)">
+            <span (click)="deactivate(user)">
           <i *ngIf="checkPermission(user)" class="far fa-trash-alt" aria-hidden="true"></i>
           </span>
-        </ng-template>
-      </p-column>
-    </p-dataTable>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="9">
+            {{'noDataAvailable' | translate}}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 } )

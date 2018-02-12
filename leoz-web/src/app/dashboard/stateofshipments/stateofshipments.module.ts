@@ -1,15 +1,12 @@
 import { NgModule } from '@angular/core';
 
-import {
-  ButtonModule,
-  CheckboxModule,
-  DataTableModule,
-  DropdownModule,
-  FieldsetModule,
-  RadioButtonModule,
-  TabViewModule,
-  TabMenuModule
-} from 'primeng/primeng';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DropdownModule } from 'primeng/dropdown';
+import { FieldsetModule } from 'primeng/fieldset';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { TabViewModule } from 'primeng/tabview';
+
 import { SharedModule } from '../../shared/shared.module';
 import { StateofshipmentsComponent } from './stateofshipments.component';
 import { StateofshipmentsRoutingModule } from './stateofshipments-routing.module';
@@ -18,8 +15,6 @@ import { InfoComponent } from './info/info.component';
 @NgModule( {
   imports: [
     SharedModule,
-    DataTableModule,
-    TabMenuModule,
     TabViewModule,
     DropdownModule,
     FieldsetModule,

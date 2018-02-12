@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 
-import {
-  ButtonModule,
-  CheckboxModule,
-  DataScrollerModule,
-  DataTableModule,
-  InputTextModule
-} from 'primeng/primeng';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
+import { DataScrollerModule } from 'primeng/datascroller';
 
 import { SharedModule } from '../../shared/shared.module';
 import { DatePipe } from '@angular/common';
@@ -17,7 +15,7 @@ import { TourzipmappingComponent } from './tourzipmapping.component';
 @NgModule( {
   imports: [
     SharedModule,
-    DataTableModule,
+    TableModule,
     InputTextModule,
     ButtonModule,
     CheckboxModule,
