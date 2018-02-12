@@ -36,6 +36,7 @@ import javax.inject.Named
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 import kotlin.NoSuchElementException
+import kotlin.collections.HashMap
 import kotlin.concurrent.withLock
 
 /**
@@ -218,7 +219,7 @@ class SmartlaneBridge {
     }
 
     /** Driver id by email. Also caches misses (-> null) */
-    private val driverIdByEmail = ConcurrentHashMap<String, Int?>()
+    private val driverIdByEmail = mutableMapOf<String, Int?>()
 
     /**
      * Get driver id with caching support
@@ -229,22 +230,24 @@ class SmartlaneBridge {
 
         val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
 
-        return this.driverIdByEmail.getOrPut(
-                this.formatEmail(email),
-                // Default value -> determine driver (id)
-                {
-                    Callable {
-                        driverApi.getDriverByEmail(
-                                email = this.formatEmail(email)
-                        )
-                                ?.id
+        return synchronized(this.driverIdByEmail) {
+            this.driverIdByEmail.getOrPut(
+                    this.formatEmail(email),
+                    // Default value -> determine driver (id)
+                    {
+                        Callable {
+                            driverApi.getDriverByEmail(
+                                    email = this.formatEmail(email)
+                            )
+                                    ?.id
+                        }
+                                .toObservable()
+                                .retryOnTokenExpiry(domain)
+                                .subscribeOn(domain.scheduler)
+                                .blockingFirst(null)
                     }
-                            .toObservable()
-                            .retryOnTokenExpiry(domain)
-                            .subscribeOn(domain.scheduler)
-                            .blockingFirst(null)
-                }
-        )
+            )
+        }
     }
 
     /**
