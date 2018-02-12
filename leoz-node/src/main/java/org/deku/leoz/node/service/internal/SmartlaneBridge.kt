@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import org.threeten.bp.temporal.ChronoUnit
 import sx.LazyInstance
+import sx.io.serialization.Serializable
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
@@ -122,6 +123,35 @@ class SmartlaneBridge {
     }
 
     /**
+     * Smartlane custom id
+     */
+    @Serializable
+    private data class CustomId(
+            /** Domain tour id */
+            val id: Long,
+            /** Domain tour uid. Required for uniquely mapping tours in shared container */
+            val uid: String
+    ) {
+        /** Serialize to smartlane */
+        fun serialize(): String =
+                "${id}/${uid}"
+
+        companion object {
+            /** Deserialize from smartlane */
+            fun deserialize(value: String) {
+                value.split("/")
+                        .map { it.trim() }
+                        .let {
+                            CustomId(
+                                    id = it.get(0).toLong(),
+                                    uid = it.get(1)
+                            )
+                        }
+            }
+        }
+    }
+
+    /**
      * Get rest client proxy for specific customer.
      * This method will authenticate synchronously (via `Domain`) if necessary.
      *
@@ -169,7 +199,7 @@ class SmartlaneBridge {
             val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
 
             val srcDriver = user.toDriver()
-            // Use srcdriver email for lookup, as it's sugared with identity
+            // Use srcdriver email with sugared identity (instead of email on domain user level)
             val dstDriver = driverApi.getDriverByEmail(srcDriver.email)
 
             if (dstDriver != null) {
@@ -187,6 +217,42 @@ class SmartlaneBridge {
                 .ignoreElements()
     }
 
+    /** Driver id by email. Also caches misses (-> null) */
+    private val driverIdByEmail = ConcurrentHashMap<String, Int?>()
+
+    /**
+     * Get driver id with caching support
+     * @param email User / driver email
+     */
+    private fun getDriverId(email: String): Int? {
+        val domain = domain(customerId)
+
+        val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
+
+        return this.driverIdByEmail.getOrPut(
+                this.formatEmail(email),
+                // Default value -> determine driver (id)
+                {
+                    Observable.fromCallable {
+
+                        driverApi.getDriverByEmail(
+                                email = this.formatEmail(email)
+                        )
+                                ?.id
+                    }
+                            .retryOnTokenExpiry(domain)
+                            .subscribeOn(domain.scheduler)
+                            .blockingFirst()
+                }
+        )
+    }
+
+    /**
+     * Indicates if a driver is known @smartlane
+     */
+    fun hasDriver(email: String): Boolean =
+            this.getDriverId(email) != null
+
     /**
      * Update a drivers geo position
      * @param email User / driver email
@@ -198,16 +264,8 @@ class SmartlaneBridge {
     ): Completable {
         val domain = domain(customerId)
 
-        val driver = Observable.fromCallable {
-            val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
-
-            driverApi.getDriverByEmail(
-                    email = this.formatEmail(email)
-            )
-                    ?: throw NoSuchElementException("Driver not found")
-        }
-                .retryOnTokenExpiry(domain)
-                .blockingFirst()
+        val driverId = this.getDriverId(email)
+                ?: throw NoSuchElementException("Driver not found")
 
         return Observable
                 .fromIterable(positions)
@@ -219,7 +277,7 @@ class SmartlaneBridge {
                             val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
 
                             driverApi.postDrivertracking(Drivertracking().also {
-                                it.driverId = driver.id
+                                it.driverId = driverId
                                 it.position = Location().also {
                                     it.type = "Point"
                                     it.coordinates = listOf(
@@ -336,7 +394,7 @@ class SmartlaneBridge {
                         routeApi.patchRouteById(
                                 route.id,
                                 Route().also {
-                                    it.customId = uid
+                                    it.customId = tour.smartlaneCustomId
                                 }
                         )
 
@@ -388,6 +446,16 @@ class SmartlaneBridge {
             it.htmlcolor = this.email.hashCode().toHexString().take(6)
         }
     }
+
+    /**
+     * Smartlane custom id extension
+     */
+    private val Tour.smartlaneCustomId: String
+        get() = CustomId(
+                id = this.id!!,
+                uid = this.uid!!
+        )
+                .serialize()
 
     /**
      * Transform tour into smartlane routing input
