@@ -13,9 +13,9 @@ import javax.ws.rs.Path
 class ApplicationService : org.deku.leoz.node.service.internal.ApplicationService() {
 
     @Inject
-    private lateinit var databaseSyncService: DatabaseSyncService
+    private lateinit var mDatabaseSyncService: DatabaseSyncService
 
     override fun syncWithCentralDatabase(clean: Boolean) {
-        this.databaseSyncService.startSync(clean = clean)
+        this.mDatabaseSyncService.startSync(clean = clean)
     }
 }

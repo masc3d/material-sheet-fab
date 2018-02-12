@@ -26,13 +26,13 @@ class DatabaseSyncTest {
     private val log = LoggerFactory.getLogger(DatabaseSyncTest::class.java)
 
     @Inject
-    private lateinit var databaseSync: DatabaseSyncService
+    private lateinit var dbSync: DatabaseSyncService
 
     @Test
     fun test() {
         val sw = Stopwatch.createStarted()
         try {
-            this.databaseSync.sync(true)
+            this.dbSync.sync(true)
         } finally {
             log.info(String.format("Took %s", sw.toString()))
         }

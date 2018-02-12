@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal.sync
 
+import io.reactivex.subjects.PublishSubject
 import sx.persistence.truncate
 import org.jooq.Record
 import org.slf4j.LoggerFactory
@@ -65,35 +66,34 @@ constructor(
 
     /**
      * Database sync preset
-     * @param <TEntity>             Type of destiantion JPA entity
-     * @param <TCentralRecord>      Type of source JOOQ record
-     * @property sourceTable           JOOQ source table
-     * @property sourceTableSyncIdField      JOOQ source sync id field
-     * @property destQdslEntityPath    Destination QueryDSL entity table path
-     * @property destQdslSyncIdPath Destination QueryDSL sync id field path
-     * @property conversionFunction    Conversion function JOOQ record -> JPA entity
+     * @param <TEntity> Type of destiantion JPA entity
+     * @param <TCentralRecord> Type of source JOOQ record
+     * @property srcJooqTable JOOQ source table
+     * @property srcJooqSyncIdField JOOQ source sync id field
+     * @property dstJpaEntityPath Destination QueryDSL entity table path
+     * @property dstJpaSyncIdPath Destination QueryDSL sync id field path
+     * @property transformation    Conversion function JOOQ record -> JPA entity
      */
     open class SimplePreset<TCentralRecord : org.jooq.Record, TEntity>(
-            val sourceTable: org.jooq.impl.TableImpl<TCentralRecord>,
-            val sourceTableSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
-            val destQdslEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
-            val destQdslSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
-            val conversionFunction: (TCentralRecord) -> TEntity
+            val srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
+            val srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
+            val dstJpaEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
+            val dstJpaSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
+            val transformation: (TCentralRecord) -> TEntity
     ) : Preset {
         override fun toString(): String =
-                "Preset [${sourceTable.name} -> ${destQdslEntityPath.metadata.name}]"
+                "Preset [${srcJooqTable.name} -> ${dstJpaEntityPath.metadata.name}]"
 
     }
 
     //region Events
-    interface EventListener : sx.event.EventListener {
-        /** Emitted when entities have been updated  */
-        fun onUpdate(entityType: Class<out Any?>, currentSyncId: Long?)
-    }
+    data class UpdateEvent(
+            val entityType: Class<out Any?>,
+            val syncId: Long?
+    )
 
-    private val eventDispatcher = sx.event.EventDispatcher.Companion.createThreadSafe<EventListener>()
-    open val eventDelegate: sx.event.EventDelegate<EventListener>
-        get() = eventDispatcher
+    private val updatedSubject = PublishSubject.create<UpdateEvent>()
+    open val updated = this.updatedSubject.hide()
     //endregion
 
     @PersistenceContext
@@ -112,7 +112,8 @@ constructor(
     private lateinit var syncJooqRepository: org.deku.leoz.central.data.repository.JooqSyncRepository
 
     @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
-    @Synchronized open fun sync(clean: Boolean) {
+    @Synchronized
+    open fun sync(clean: Boolean) {
         val sw = com.google.common.base.Stopwatch.createStarted()
 
         val syncIdMap = this.syncJooqRepository
@@ -152,15 +153,15 @@ constructor(
             // Stopwatch
             val sw = com.google.common.base.Stopwatch.createStarted()
             // Log formatter
-            val lfmt = { s: String -> "[${p.destQdslEntityPath.type.name}] ${s} $sw" }
+            val lfmt = { s: String -> "[${p.dstJpaEntityPath.type.name}] ${s} $sw" }
 
             entityManager.flushMode = javax.persistence.FlushModeType.COMMIT
 
-            if (deleteBeforeUpdate || p.destQdslSyncIdPath == null) {
+            if (deleteBeforeUpdate || p.dstJpaSyncIdPath == null) {
                 transactionJpa.execute<Any> { _ ->
                     log.info(lfmt("Deleting all entities"))
 
-                    entityManager.truncate(p.destQdslEntityPath.type)
+                    entityManager.truncate(p.dstJpaEntityPath.type)
 
                     entityManager.flush()
                     entityManager.clear()
@@ -170,17 +171,18 @@ constructor(
             // TODO. optimize by preparing query or at least caching the querydsl instance
             // Get latest timestamp
             var destMaxSyncId: Long? = null
-            if (p.destQdslSyncIdPath != null) {
+            if (p.dstJpaSyncIdPath != null) {
                 // Query embedded database table for latest timestamp
                 destMaxSyncId = com.querydsl.jpa.impl.JPAQuery<Any>(entityManager)
-                        .from(p.destQdslEntityPath)
-                        .select(p.destQdslSyncIdPath.max())
+                        .from(p.dstJpaEntityPath)
+                        .select(p.dstJpaSyncIdPath.max())
                         .fetchFirst()
             }
 
             // TODO. optimize by using jooq prepared statements
             if (destMaxSyncId != null) {
-                val maxSyncId = syncIdMap.get(p.sourceTable.name) ?: throw IllegalStateException("No sync id map entry for [${p.sourceTable.name}]")
+                val maxSyncId = syncIdMap.get(p.srcJooqTable.name)
+                        ?: throw IllegalStateException("No sync id map entry for [${p.srcJooqTable.name}]")
                 if (maxSyncId == destMaxSyncId) {
                     log.trace(lfmt("sync-id uptodate [${destMaxSyncId}]"))
                     return
@@ -193,8 +195,8 @@ constructor(
                 // Read source records newer than destination timestamp
                 val source = syncJooqRepository.findNewerThan(
                         destMaxSyncId,
-                        p.sourceTable,
-                        p.sourceTableSyncIdField)
+                        p.srcJooqTable,
+                        p.srcJooqSyncIdField)
 
                 if (source.hasNext()) {
                     // Save to destination/jpa
@@ -215,7 +217,7 @@ constructor(
                             // Fetch next record
                             val record = source.fetchNext()
                             // Convert to entity
-                            val entity = p.conversionFunction(record)
+                            val entity = p.transformation(record)
                             // Store entity
                             entityManager.merge(entity)
 
@@ -235,26 +237,28 @@ constructor(
 
                         jpaTransactionManager.commit(transaction)
 
-                    } catch(e: Throwable) {
+                    } catch (e: Throwable) {
                         jpaTransactionManager.rollback(transaction)
                         throw e
                     }
 
                     // Re-query destination timestamp
-                    if (p.destQdslSyncIdPath != null) {
+                    if (p.dstJpaSyncIdPath != null) {
                         // Query embedded database for updated latest timestamp
                         destMaxSyncId = com.querydsl.jpa.impl.JPAQuery<Any>(entityManager)
-                                .from(p.destQdslEntityPath)
-                                .select(p.destQdslSyncIdPath.max())
+                                .from(p.dstJpaEntityPath)
+                                .select(p.dstJpaSyncIdPath.max())
                                 .fetchFirst()
                     }
                     log.info(lfmt("Updated ${count} entities [${destMaxSyncId}]"))
 
                     // Emit update event
-                    eventDispatcher.emit { e ->
-                        // Emit event
-                        e.onUpdate(p.destQdslEntityPath.type, destMaxSyncId)
-                    }
+                    this.updatedSubject.onNext(
+                            UpdateEvent(
+                                    entityType = p.dstJpaEntityPath.type,
+                                    syncId = destMaxSyncId
+                            )
+                    )
                 } else {
                     log.trace(lfmt("Uptodate [${destMaxSyncId}]"))
                 }

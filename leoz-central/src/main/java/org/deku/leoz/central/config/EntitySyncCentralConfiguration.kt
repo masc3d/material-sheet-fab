@@ -1,6 +1,5 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.Application
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.config.JmsEndpoints
@@ -33,7 +32,7 @@ open class EntitySyncCentralConfiguration {
     private lateinit var entityManagerFactory: EntityManagerFactory
 
     @Inject
-    private lateinit var databaseSyncService: DatabaseSyncService
+    private lateinit var dbSyncService: DatabaseSyncService
 
     /** Entity publisher */
     private lateinit var entityPublisher: EntityPublisher
@@ -52,13 +51,6 @@ open class EntitySyncCentralConfiguration {
         }
     }
 
-    /** Database sync event listener */
-    private val databaseSyncEvent = object : DatabaseSyncService.EventListener {
-        override fun onUpdate(entityType: Class<out Any?>, currentSyncId: Long?) {
-            this@EntitySyncCentralConfiguration.entityPublisher.publish(entityType, currentSyncId);
-        }
-    }
-
     @PostConstruct
     fun onInitialize() {
         // Setup entity publisher
@@ -69,7 +61,10 @@ open class EntitySyncCentralConfiguration {
                 listenerExecutor = this.executorService)
 
         // Wire database sync event
-        this.databaseSyncService.eventDelegate.add(databaseSyncEvent)
+        this.dbSyncService.updated
+                .subscribe {
+                    entityPublisher.publish(it.entityType, it.syncId)
+                }
 
         // Wire broker event
         this.mqConfigration.broker.delegate.add(brokerEventListener)
