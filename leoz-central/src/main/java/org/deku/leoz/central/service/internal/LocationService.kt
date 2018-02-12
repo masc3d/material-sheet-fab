@@ -14,7 +14,9 @@ import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.model.VehicleType
+import org.deku.leoz.service.internal.LocationServiceV1
 import org.deku.leoz.service.internal.LocationServiceV2
+import org.deku.leoz.service.internal.TourServiceV1
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.time.toTimestamp
@@ -32,7 +34,7 @@ import java.text.SimpleDateFormat
 @Path("internal/v2/location")
 class LocationServiceV2 :
         org.deku.leoz.service.internal.LocationServiceV2,
-        MqHandler<LocationServiceV2.GpsMessage> {
+        MqHandler<Any> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -429,34 +431,46 @@ class LocationServiceV2 :
     /**
      * Location service message handler
      */
-    override fun onMessage(message: LocationServiceV2.GpsMessage, replyChannel: MqChannel?) {
+    //region MQ handlers
+    @MqHandler.Types(
+            LocationServiceV1.GpsMessage::class,
+            LocationServiceV2.GpsMessage::class
+    )
+    override fun onMessage(message: Any, replyChannel: MqChannel?) {
         // TODO: from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
 
-        val dataPoints = message.dataPoints?.toList()
-                ?: throw RestProblem(
-                detail = "Missing data points",
-                status = Response.Status.BAD_REQUEST)
+        when (message) {
+            is LocationServiceV2.GpsMessage -> {
+                val dataPoints = message.dataPoints?.toList()
+                        ?: throw RestProblem(
+                                detail = "Missing data points",
+                                status = Response.Status.BAD_REQUEST)
 
-        log.trace { "Received ${dataPoints.count()} from [${message.nodeKey}] user [${message.userId}]" }
+                log.trace { "Received ${dataPoints.count()} from [${message.nodeKey}] user [${message.userId}]" }
 
-        this.locationReceivedSubject.onNext(message)
+                this.locationReceivedSubject.onNext(message)
 
-        dataPoints.forEach {
-            val r = dsl.newRecord(Tables.TAD_NODE_GEOPOSITION)
+                dataPoints.forEach {
+                    val r = dsl.newRecord(Tables.TAD_NODE_GEOPOSITION)
 
-            r.userId = message.userId
-            r.nodeId = nodeRepository.findByKey(message.nodeKey ?: "")?.nodeId
-            r.latitude = it.latitude
-            r.longitude = it.longitude
-            r.positionDatetime = it.time?.toTimestamp()
-            r.speed = it.speed?.toDouble()
-            r.bearing = it.bearing?.toDouble()
-            r.altitude = it.altitude
-            r.accuracy = it.accuracy?.toDouble()
-            r.vehicleType = it.vehicleType?.value?.toUpperCase()
+                    r.userId = message.userId
+                    r.nodeId = nodeRepository.findByKey(message.nodeKey ?: "")?.nodeId
+                    r.latitude = it.latitude
+                    r.longitude = it.longitude
+                    r.positionDatetime = it.time?.toTimestamp()
+                    r.speed = it.speed?.toDouble()
+                    r.bearing = it.bearing?.toDouble()
+                    r.altitude = it.altitude
+                    r.accuracy = it.accuracy?.toDouble()
+                    r.vehicleType = it.vehicleType?.value?.toUpperCase()
 //r.debitorId=
 //todo
-            posRepository.save(r)
+                    posRepository.save(r)
+                }
+            }
+            is LocationServiceV1.GpsMessage -> {
+                log.warn { "Received deprecated location message from node [${message.nodeId}] user [${message.userId}]"}
+            }
         }
     }
 

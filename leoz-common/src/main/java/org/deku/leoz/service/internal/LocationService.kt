@@ -11,6 +11,24 @@ import javax.ws.rs.core.MediaType
 import kotlin.NoSuchElementException
 
 /**
+ * Location service V1
+ */
+interface LocationServiceV1 {
+    /**
+     * GPS message sent by nodes/devices
+     */
+    @Serializable(0xd307ea744273ae)
+    @Deprecated(message = "This object is deprecated and replaced in LocationServiceV2.",
+            replaceWith = ReplaceWith(expression = "LocationServiceV2.GpsMessage"),
+            level = DeprecationLevel.WARNING)
+    data class GpsMessage(
+            var userId: Int? = null,
+            var nodeId: String? = null,
+            var dataPoints: Array<LocationServiceV2.GpsDataPoint>? = null
+    )
+}
+
+/**
  * Location service V2
  * Created by helke on 24.05.17.
  */
