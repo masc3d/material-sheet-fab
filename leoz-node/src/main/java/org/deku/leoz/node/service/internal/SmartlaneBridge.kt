@@ -137,8 +137,8 @@ class SmartlaneBridge {
             private val SEPARATOR = "/"
 
             /** Deserialize from smartlane */
-            fun deserialize(value: String) {
-                value.split(SEPARATOR)
+            fun deserialize(value: String): CustomId {
+                return value.split(SEPARATOR)
                         .map { it.trim() }
                         .let {
                             when (it.size) {
@@ -212,6 +212,7 @@ class SmartlaneBridge {
             val driverApi = this.proxy(DriverApi::class.java, customerId = customerId)
 
             val srcDriver = user.toDriver()
+
             // Use srcdriver email with sugared identity (instead of email on domain user level)
             val dstDriver = driverApi.getDriverByEmail(srcDriver.email)
 
@@ -321,12 +322,8 @@ class SmartlaneBridge {
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
         val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId = customerId)
 
-        return routeApi.getRouteByCustomIdSubstring(
-                *tours.map {
-                    // Only consider uid when deleting
-                    CustomId(uid = it.uid!!).serialize()
-                }.toTypedArray()
-        )
+        return this.getRoutes(tours)
+                // Collect for batch deletion
                 .toList()
                 .toObservable()
                 .doOnNext {
@@ -342,6 +339,97 @@ class SmartlaneBridge {
                     }
                 }
                 .subscribeOn(domain.scheduler)
+    }
+
+    /**
+     * Get routes from tours
+     * @param tours Tours
+     */
+    private fun getRoutes(tours: List<Tour>): Observable<Route> {
+        val domain = domain(customerId)
+
+        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+
+        return routeApi.getRouteByCustomIdSubstring(
+                *tours.map {
+                    CustomId(uid = it.uid!!).serialize()
+                }.toTypedArray()
+        )
+                .retryOnTokenExpiry(domain)
+                .subscribeOn(domain.scheduler)
+    }
+
+    /**
+     * Update smartlane routes from tours
+     * TODO: limited support, currently only custom ids are updated
+     * @param tours Tours
+     */
+    fun updateRoutes(tours: List<Tour>): Completable {
+        val domain = domain(customerId)
+
+        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+
+        return this.getRoutes(tours)
+                .doOnNext { route ->
+                    val customId = CustomId.deserialize(route.customId)
+
+                    // Backreference tours from parsed custom id
+                    tours.firstOrNull { it.uid == customId.uid }
+                            ?.also { tour ->
+                                // Update route with complete custom id
+                                routeApi.patchRouteById(
+                                        route.id,
+                                        Route().also {
+                                            it.customId = CustomId(
+                                                    id = tour.id,
+                                                    uid = tour.uid!!
+                                            ).serialize()
+                                        }
+                                )
+                            }
+                }
+                .retryOnTokenExpiry(domain)
+                .ignoreElements()
+                .onErrorComplete { e ->
+                    when (e) {
+                        is NoSuchElementException -> true
+                        else -> false
+                    }
+                }
+                .subscribeOn(domain.scheduler)
+    }
+
+    /**
+     * Assign driver to route
+     * @param email User / driver email
+     * @param tour Tour to assign driver to
+     */
+    fun assignDriver(
+            email: String,
+            tour: Tour
+    ): Completable {
+        val domain = domain(customerId)
+
+        val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
+
+        return this.getDriverId(email)
+                ?.let { driverId ->
+                    this.getRoutes(listOf(tour))
+                            .firstElement()
+                            .doOnSuccess { route ->
+                                routeApi.patchRouteById(
+                                        route.id,
+                                        Route().also {
+                                            it.driverId = driverId
+                                        }
+                                )
+                            }
+                            .toObservable()
+                            .retryOnTokenExpiry(domain)
+                            .ignoreElements()
+                            .subscribeOn(domain.scheduler)
+                }
+                ?: Completable.error(NoSuchElementException("Driver [${email}] not found"))
     }
 
     /**

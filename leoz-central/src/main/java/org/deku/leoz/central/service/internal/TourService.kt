@@ -508,7 +508,16 @@ class TourServiceV1
 
                                 if (options.vehicles?.count() ?: 0 > 0) {
                                     // Create tours from optimized results
-                                    this.create(tours)
+                                    this.create(tours).also {
+                                        // Update custom ids @smartlane
+                                        this.smartlane.updateRoutes(
+                                                tours = it.mapIndexed { index, id ->
+                                                    Tour(id = id, uid = tours[index].uid)
+                                                }
+                                        )
+                                                .subscribeBy(onError = { e -> log.error(e.message, e) })
+                                    }
+
                                 } else {
                                     this.updateFromOptimizedTour(tours.first())
                                 }
@@ -663,13 +672,21 @@ class TourServiceV1
             )
                     .subscribeBy(
                             onSuccess = { tours ->
+                                val optimizedTour = tours.first()
+
                                 JmsEndpoints.node.topic(identityUid = Identity.Uid(nodeRecord.uid))
                                         .channel()
                                         .send(TourOptimizationResult(
                                                 requestUid = nodeRequestUid,
                                                 nodeUid = nodeRecord.uid,
-                                                tour = tours.first()
+                                                tour = optimizedTour
                                         ))
+
+                                this.smartlane.assignDriver(
+                                        email = userRecord.email,
+                                        tour = optimizedTour
+                                )
+                                        .subscribeBy({ e -> log.error(e.message, e) })
                             },
                             onError = { e ->
                                 log.error(e.message, e)
