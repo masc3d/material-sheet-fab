@@ -184,16 +184,15 @@ class TourServiceV1
                             em.flush()
                         }
 
-                        tour.stops.forEachIndexed { index, stop ->
+                        tour.stops.forEachIndexed { stopIndex, stop ->
                             val route = stop.route?.let {
                                 this.objectMapper.writeValueAsString(it)
                             }
 
-                            stop.tasks.forEachIndexed { i, task ->
-
+                            stop.tasks.forEachIndexed { taskIndex, task ->
                                 TadTourEntry().also {
                                     it.tourId = tourRecord.id
-                                    it.position = (i + 1).toDouble()
+                                    it.position = (stopIndex + 1).toDouble()
                                     it.orderId = task.orderId
                                     it.orderTaskType = when (task.taskType) {
                                         Task.Type.DELIVERY -> TaskType.DELIVERY.value
@@ -202,7 +201,7 @@ class TourServiceV1
                                     it.uid = task.uid ?: this.createUid()
                                     it.timestamp = now.toTimestamp()
 
-                                    if (index == 0)
+                                    if (taskIndex == 0)
                                         it.routeMeta = route
 
                                     em.persist(it)
