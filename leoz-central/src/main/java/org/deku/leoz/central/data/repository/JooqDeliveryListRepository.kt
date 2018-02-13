@@ -33,10 +33,10 @@ open class JooqDeliveryListRepository {
                 TAD_V_DELIVERYLIST.ID.`in`(ids.map { it.toDouble() }))
     }
 
-    fun findByStationId(stationId: Int): List<TadVDeliverylistRecord> {
+    fun findByStationNo(stationNo: Int): List<TadVDeliverylistRecord> {
         return dsl.fetch(
                 TAD_V_DELIVERYLIST,
-                TAD_V_DELIVERYLIST.DELIVERY_STATION.eq(stationId.toDouble()))
+                TAD_V_DELIVERYLIST.DELIVERY_STATION.eq(stationNo.toDouble()))
     }
 
     fun findInfoByDate(deliveryDate: Date): List<TadVDeliverylistRecord> {

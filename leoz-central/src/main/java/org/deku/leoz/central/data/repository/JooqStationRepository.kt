@@ -41,6 +41,9 @@ open class JooqStationRepository {
     fun findById(id: Int): TbldepotlisteRecord? =
             dsl.fetchOne(TBLDEPOTLISTE, TBLDEPOTLISTE.ID.eq(id))
 
+    fun findByStationNo(stationNo: Int): TbldepotlisteRecord? =
+            dsl.fetchOne(TBLDEPOTLISTE, TBLDEPOTLISTE.DEPOTNR.eq(stationNo))
+
     fun findByDebitorId(debitorId: Int): List<TbldepotlisteRecord> =
             dsl.fetch(TBLDEPOTLISTE, TBLDEPOTLISTE.DEBITOR_ID.eq(debitorId)).toList()
 

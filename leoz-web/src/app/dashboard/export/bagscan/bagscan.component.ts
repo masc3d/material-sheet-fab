@@ -102,7 +102,8 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
 
   ngOnInit() {
     super.ngOnInit();
-    this.loading = true;
+    this.loading = false;
+    // this.loading = true;
 
     this.displayEmergencySealBlock = false;
 
@@ -116,16 +117,11 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.chargingLevelStyle = 'chargeLvlRed';
     this.setEmptyBagIdChangedResp();
 
-    this.bagscanService.openPackages$
+    this.openPackages$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( packages: Package[] ) => {
         this.openPackagesArr = packages;
         this.openPackcount = this.openPackagesArr.length;
-        this.loading = false;
-        if (this.openPackagesArr.length > 0) {
-          this.loadOpenPackagesLazy( null );
-        }
-        console.log( 'this.bagscanService.openPackages$ changed......' );
       } );
 
     this.bagscanService.allPackages$
@@ -167,7 +163,7 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
     this.bagscanService.activeLoadinglist$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( activeLoadinglist: Exportlist ) => {
-        console.log('this.activeBaglist changed...', activeLoadinglist);
+        // console.log('this.activeBaglist changed...', activeLoadinglist);
         this.activeBaglist = activeLoadinglist;
         this.calcStats();
       } );
@@ -215,16 +211,19 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
   }
 
   loadOpenPackagesLazy( event: LazyLoadEvent ) {
-    console.log( 'LazyLoadEvent: ', event );
+    console.log( 'pre loadOpenPackagesLazy LazyLoadEvent: ', event );
+    console.log( 'this.openPackagesArr: ', this.openPackagesArr );
     this.loading = true;
     if (this.openPackagesArr.length > 0) {
       const startIndex = event ? event.first : 0;
-      const rows = event ? event.rows : 40;
+      const rows = event ? event.rows : 20;
       this.lazyOpenPackages = this.openPackagesArr.slice( startIndex, startIndex + rows );
       console.log( 'this.lazyOpenPackages:', this.lazyOpenPackages );
     }
     this.loading = false;
     this.cd.markForCheck();
+    console.log( 'post loadOpenPackagesLazy LazyLoadEvent: ', event );
+    // this.cd.detectChanges();
   }
 
   private registerKeyboardEvents() {

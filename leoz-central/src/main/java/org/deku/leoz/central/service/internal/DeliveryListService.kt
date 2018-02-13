@@ -82,15 +82,16 @@ class DeliveryListService
         return dlRecord.toDeliveryList()
     }
 
-    override fun getByStationId(stationId: Int?): List<DeliveryListService.DeliveryList> {
-        stationId ?: throw RestProblem(status = Status.BAD_REQUEST)
+    //getByStationNo
+    override fun getByStationId(stationNo: Int?): List<DeliveryListService.DeliveryList> {
+        stationNo ?: throw RestProblem(status = Status.BAD_REQUEST)
 
-        val station = stationRepository.findById(stationId) ?: throw RestProblem(status = Status.NOT_FOUND)
+        val station = stationRepository.findByStationNo(stationNo) ?: throw RestProblem(status = Status.NOT_FOUND)
 
         this.assertOwner(station.debitorId)
 
         return this.deliveryListRepository
-                .findByStationId(stationId)
+                .findByStationNo(stationNo)
                 .toDeliveryLists()
     }
 
