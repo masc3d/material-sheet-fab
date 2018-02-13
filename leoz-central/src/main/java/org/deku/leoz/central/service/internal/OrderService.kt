@@ -123,14 +123,13 @@ class OrderService : OrderService {
 
     //todo include send_date
     fun Order.findOrderDebitorId(pickupDeliver: Type): Int? {
-        val station: Int
+        val stationNo: Int
 
         when (pickupDeliver) {
-            Type.PICKUP -> station = this.pickupStation
-            Type.DELIVERY -> station = this.deliveryStation
+            Type.PICKUP -> stationNo = this.pickupStation
+            Type.DELIVERY -> stationNo = this.deliveryStation
         }
-
-        return  stationRepository.findById(station)?.debitorId
+        return  stationRepository.findByStationNo(stationNo)?.debitorId
     }
 
     enum class Type {
