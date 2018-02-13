@@ -212,7 +212,6 @@ constructor(
 
                     transactionJpa.execute<Any> { _ ->
                         em.persist(it)
-                        em.flush()
                     }
                 }
 
@@ -224,7 +223,6 @@ constructor(
 
                 transactionJpa.execute<Any> { _ ->
                     em.merge(localSync)
-                    em.flush()
                 }
 
                 notify()
