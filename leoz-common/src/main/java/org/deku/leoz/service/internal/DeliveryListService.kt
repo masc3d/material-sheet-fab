@@ -30,8 +30,19 @@ interface DeliveryListService {
     companion object {
         const val ID = "id"
         const val STATION_ID = "station-id"
+        const val STATION_NO = "station-no"
         const val DELIVERY_DATE = "delivery-date"
     }
+
+    @GET
+    @Path("/")
+    @ApiOperation(value = "Get delivery list(s)", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun get(
+            @QueryParam(STATION_ID) @ApiParam(example = "20", value = "Station id", required = false)
+            stationId: Int?,
+            @QueryParam(STATION_NO) @ApiParam(example = "20", value = "Station no", required = false)
+            stationNo: Int?
+    ): List<DeliveryList>
 
     @GET
     @Path("/{${ID}}")
@@ -43,9 +54,9 @@ interface DeliveryListService {
 
     @GET
     @Path("/station/{${STATION_ID}}")
-    @ApiOperation(value = "Get delivery list(s)", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get delivery list(s) by station id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getByStationId(
-            @PathParam(STATION_ID) @ApiParam(example = "89586115", value = "Station id", required = false)
+            @PathParam(STATION_ID) @ApiParam(example = "20", value = "Station id", required = false)
             stationId: Int?
     ): List<DeliveryList>
 

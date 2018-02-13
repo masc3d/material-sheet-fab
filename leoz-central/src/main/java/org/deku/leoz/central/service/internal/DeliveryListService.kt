@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory
 import org.zalando.problem.Status
 import sx.mq.MqChannel
 import sx.mq.MqHandler
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -82,16 +81,26 @@ class DeliveryListService
         return dlRecord.toDeliveryList()
     }
 
-    //getByStationNo
-    override fun getByStationId(stationNo: Int?): List<DeliveryListService.DeliveryList> {
-        stationNo ?: throw RestProblem(status = Status.BAD_REQUEST)
+    override fun getByStationId(stationId: Int?): List<DeliveryListService.DeliveryList> {
+        stationId ?: throw RestProblem(status = Status.BAD_REQUEST)
 
-        val station = stationRepository.findByStationNo(stationNo) ?: throw RestProblem(status = Status.NOT_FOUND)
+        return this.get(
+                stationId = stationId,
+                stationNo = null)
+    }
+
+    override fun get(stationId: Int?, stationNo: Int?): List<DeliveryListService.DeliveryList> {
+        val station = when {
+            stationId != null -> stationRepository.findById(stationId)
+            stationNo != null -> stationRepository.findByStationNo(stationNo)
+            else -> null
+        }
+                ?: throw NoSuchElementException()
 
         this.assertOwner(station.debitorId)
 
         return this.deliveryListRepository
-                .findByStationNo(stationNo)
+                .findByStationNo(station.depotnr)
                 .toDeliveryLists()
     }
 
