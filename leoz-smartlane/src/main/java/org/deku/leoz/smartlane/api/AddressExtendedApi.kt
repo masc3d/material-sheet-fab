@@ -2,7 +2,7 @@ package org.deku.leoz.smartlane.api
 
 import sx.rs.FlaskFilter
 import sx.rs.FlaskOperator
-import sx.rs.FlaskQuery
+import sx.rs.FlaskPredicate
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
 
@@ -35,7 +35,7 @@ interface AddressExtendedApi : AddressApi {
 fun AddressExtendedApi.deleteAddressesNotIn(ids: Iterable<Long>) {
     val filter = FlaskFilter(
             filters = listOf(
-                    FlaskQuery(
+                    FlaskPredicate(
                             name = "id",
                             op = FlaskOperator.NOT_IN,
                             value = ids

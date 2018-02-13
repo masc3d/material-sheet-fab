@@ -133,7 +133,11 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.2.3"
+            "ch.qos.logback:logback-classic:1.2.3",
+
+            // Jackson
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
     )
 }
 

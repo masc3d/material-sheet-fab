@@ -1,12 +1,10 @@
 package org.deku.leoz.smartlane.api
 
 import io.reactivex.Observable
-import org.deku.leoz.smartlane.model.Deliveries
 import org.deku.leoz.smartlane.model.Delivery
-import org.slf4j.LoggerFactory
 import sx.rs.FlaskFilter
 import sx.rs.FlaskOperator
-import sx.rs.FlaskQuery
+import sx.rs.FlaskPredicate
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
 
@@ -78,7 +76,7 @@ fun DeliveryExtendedApi.deleteAll() {
 fun DeliveryExtendedApi.delete(ids: List<Int>) {
     try {
         this.deleteDelivery(q = FlaskFilter(
-                filter = FlaskQuery(
+                expression = FlaskPredicate(
                         name = "id",
                         op = FlaskOperator.IN,
                         value = ids

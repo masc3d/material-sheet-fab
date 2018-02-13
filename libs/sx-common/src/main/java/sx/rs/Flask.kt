@@ -2,8 +2,6 @@ package sx.rs
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonValue
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 
@@ -20,6 +18,20 @@ private val mapper by lazy {
     }
 }
 
+/**
+ * Flask operator
+ *
+ * one of
+ * ==, eq, equals, equals_to
+ * !=, neq, does_not_equal, not_equal_to
+ * >, gt, <, lt
+ * >=, ge, gte, geq, <=, le, lte, leq
+ * in, not_in
+ * is_null, is_not_null
+ * like
+ * has
+ * any
+ **/
 enum class FlaskOperator(val value: String) {
     EQ("eq"),
     NEQ("neq"),
@@ -31,6 +43,7 @@ enum class FlaskOperator(val value: String) {
     NOT_IN("not_in"),
     IS_NULL("is_null"),
     IS_NOT_NULL("is_not_null"),
+    LIKE("like"),
     HAS("has"),
     ANY("any");
 
@@ -39,36 +52,30 @@ enum class FlaskOperator(val value: String) {
     }
 }
 
+/**
+ * Flask filter which can be serialized to json
+ */
 data class FlaskFilter(
-        val filters: List<FlaskQuery>
+        val filters: List<FlaskExpression>
 ) {
     /** Convert filter to json */
     fun toJson(): String {
         return mapper.writeValueAsString(this)
     }
 
-    constructor(filter: FlaskQuery) : this(listOf(filter))
+    constructor(expression: FlaskExpression) : this(listOf(expression))
 }
 
+interface FlaskExpression
+
 /**
- * A flash filter which can be serialized to json
+ * Flask predicate
  * Created by masc on 26.01.18.
  */
-data class FlaskQuery(
+data class FlaskPredicate(
         /** The source field */
         val name: String,
-        /** Operator
-         * one of
-         * ==, eq, equals, equals_to
-         * !=, neq, does_not_equal, not_equal_to
-         * >, gt, <, lt
-         * >=, ge, gte, geq, <=, le, lte, leq
-         * in, not_in
-         * is_null, is_not_null
-         * like
-         * has
-         * any
-         **/
+        /** Operator */
         val op: FlaskOperator,
 
         // Value and field are mutually exclusive
@@ -78,7 +85,8 @@ data class FlaskQuery(
         val value: Any? = null,
         /** Target field */
         val field: String? = null
-) {
+) : FlaskExpression {
+
     init {
         if (value != null && field != null)
             throw IllegalArgumentException("Value and field are mutually exclusive")
@@ -87,3 +95,22 @@ data class FlaskQuery(
             throw IllegalArgumentException("One of value or field has to be provided")
     }
 }
+
+/**
+ * Boolean flask expression
+ */
+data class FlaskBooleanExpression(
+        val or: List<FlaskExpression>? = null,
+        val and: List<FlaskExpression>? = null
+) : FlaskExpression {
+
+    init {
+        if (or != null && and != null)
+            throw IllegalArgumentException("Boolean expression fields are mutually exclusive")
+
+        if (or == null && and == null)
+            throw IllegalArgumentException("One of the boolean expression fields has to be provided")
+    }
+}
+
+// TODO: flask builder

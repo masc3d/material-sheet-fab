@@ -2,7 +2,7 @@ package org.deku.leoz.smartlane.api
 
 import org.deku.leoz.smartlane.model.Driver
 import sx.rs.FlaskOperator
-import sx.rs.FlaskQuery
+import sx.rs.FlaskPredicate
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
 
@@ -29,7 +29,7 @@ interface DriverExtendedApi : DriverApi{
  */
 fun DriverApi.getDriverByEmail(email: String): Driver? {
     return this.getDriver(sx.rs.FlaskFilter(
-            FlaskQuery(
+            FlaskPredicate(
                     name = "email",
                     op = FlaskOperator.EQ,
                     value = email)

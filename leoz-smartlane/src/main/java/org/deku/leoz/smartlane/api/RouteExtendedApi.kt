@@ -2,22 +2,15 @@ package org.deku.leoz.smartlane.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.reactivex.Observable
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
 import org.deku.leoz.smartlane.SmartlaneApi
-import org.deku.leoz.smartlane.model.Error
-import org.deku.leoz.smartlane.model.Processstatus
 import org.deku.leoz.smartlane.model.Route
-import org.deku.leoz.smartlane.model.Routemetadatas
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
 import sx.log.slf4j.trace
+import sx.rs.FlaskBooleanExpression
 import sx.rs.FlaskFilter
 import sx.rs.FlaskOperator
-import sx.rs.FlaskQuery
+import sx.rs.FlaskPredicate
 import sx.rx.retryWith
 import sx.text.toHexString
 import java.util.concurrent.TimeUnit
@@ -141,9 +134,13 @@ fun RouteApi.getRoute(q: String): Observable<Route> {
     }
 }
 
+/**
+ * Get route(s) by custom id(s) (precise match)
+ * @param customId Custom id
+ */
 fun RouteApi.getRouteByCustomId(vararg customId: String): Observable<Route> {
     return this.getRoute(
-            q = FlaskFilter(FlaskQuery(
+            q = FlaskFilter(FlaskPredicate(
                     name = "custom_id",
                     op = FlaskOperator.IN,
                     value = customId.toList()
@@ -154,7 +151,7 @@ fun RouteApi.getRouteByCustomId(vararg customId: String): Observable<Route> {
 fun RouteExtendedApi.delete(ids: List<Int>) {
     try {
         this.deleteRoute(q = FlaskFilter(
-                filter = FlaskQuery(
+                expression = FlaskPredicate(
                         name = "id",
                         op = FlaskOperator.IN,
                         value = ids
@@ -169,6 +166,9 @@ fun RouteExtendedApi.delete(ids: List<Int>) {
     }
 }
 
+/**
+ * Delete all routes
+ */
 fun RouteExtendedApi.deleteAll() {
     try {
         this.deleteRoute(q = "{}")
