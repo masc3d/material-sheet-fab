@@ -898,13 +898,17 @@ class TourServiceV1
         val tourEntryRecords = if (tourEntryRecordsByTourId != null)
             tourEntryRecordsByTourId.get(
                     tourRecord.id
-            ) ?: listOf()
+            )
+                    ?.sortedBy { it.position }
+                    ?: listOf()
         else {
             tourEntryRepo.findAll(
-                    tadTourEntry.tourId.eq(tourRecord.id)
+                    tadTourEntry.tourId.eq(tourRecord.id),
+                    tadTourEntry.position.asc()
             )
         }
 
+        // Order lookup table by id
         val ordersById = if (orderRecordsById != null)
             orderRecordsById
         else
@@ -913,7 +917,9 @@ class TourServiceV1
             )
                     .associateBy { it.id }
 
-        val orders = tourEntryRecords.map { it.orderId }.distinct().map { ordersById.getValue(it) }
+        // Gather orders for this tour
+        val orders = tourEntryRecords.map { it.orderId }.distinct()
+                .map { ordersById.getValue(it) }
 
         return Tour(
                 id = tourRecord.id,
