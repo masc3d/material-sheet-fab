@@ -148,6 +148,27 @@ fun RouteApi.getRouteByCustomId(vararg customId: String): Observable<Route> {
     )
 }
 
+/**
+ * Get route by custom id substring
+ * @param customId Custom id (substring)
+ */
+fun RouteApi.getRouteByCustomIdSubstring(vararg customId: String): Observable<Route> {
+    return this.getRoute(
+            q = FlaskFilter(FlaskBooleanExpression(
+                    or = customId.map {
+                        FlaskPredicate(
+                                name = "custom_id",
+                                op = FlaskOperator.LIKE,
+                                value = "%${it}%"
+                        )
+                    }
+            )).toJson()
+    )
+}
+
+/**
+ * Delete routes by id
+ */
 fun RouteExtendedApi.delete(ids: List<Int>) {
     try {
         this.deleteRoute(q = FlaskFilter(

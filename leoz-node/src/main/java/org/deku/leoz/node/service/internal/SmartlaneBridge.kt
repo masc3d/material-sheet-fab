@@ -129,27 +129,39 @@ class SmartlaneBridge {
     @Serializable
     private data class CustomId(
             /** Domain tour id */
-            val id: Long,
+            val id: Long? = null,
             /** Domain tour uid. Required for uniquely mapping tours in shared container */
             val uid: String
     ) {
-        /** Serialize to smartlane */
-        fun serialize(): String =
-                "${id}/${uid}"
-
         companion object {
+            private val SEPARATOR = "/"
+
             /** Deserialize from smartlane */
             fun deserialize(value: String) {
-                value.split("/")
+                value.split(SEPARATOR)
                         .map { it.trim() }
                         .let {
-                            CustomId(
-                                    id = it.get(0).toLong(),
-                                    uid = it.get(1)
-                            )
+                            when (it.size) {
+                            // Custom id with uid only
+                                1 -> CustomId(
+                                        uid = it.get(0))
+                                else -> CustomId(
+                                        id = it.get(0).toLong(),
+                                        uid = it.get(1))
+                            }
                         }
             }
         }
+
+        /** Serialize to smartlane */
+        fun serialize(): String =
+                if (id == null)
+                    uid
+                else
+                    arrayOf(id, uid).joinToString(SEPARATOR)
+
+        override fun toString(): String =
+                this.serialize()
     }
 
     /**
@@ -309,8 +321,11 @@ class SmartlaneBridge {
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
         val deliveryApi = this.proxy(DeliveryExtendedApi::class.java, customerId = customerId)
 
-        return routeApi.getRouteByCustomId(
-                *tours.map { it.smartlaneCustomId }.toTypedArray()
+        return routeApi.getRouteByCustomIdSubstring(
+                *tours.map {
+                    // Only consider uid when deleting
+                    CustomId(uid = it.uid!!).serialize()
+                }.toTypedArray()
         )
                 .toList()
                 .toObservable()
@@ -345,7 +360,7 @@ class SmartlaneBridge {
 
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
 
-        val inPlaceUpdate = options.vehicles == null
+        val inPlaceUpdate = (options.vehicles?.count() ?: 0) == 0
         val vehicleCount = options.vehicles?.count() ?: 1
 
         return routeApi.optimize(
@@ -360,6 +375,7 @@ class SmartlaneBridge {
                                 "to exceed number of vehicles [${vehicleCount}]")
 
                     val now = Date()
+
                     routes.map { route ->
                         val stops = route.deliveries
                                 .sortedBy { it.orderindex }
@@ -384,27 +400,23 @@ class SmartlaneBridge {
                                 .map { it.orderId }.distinct()
                                 .map { orderId -> tour.orders.first { it.id == orderId } }
 
+                        // Determine optimized tour id / uid
+                        val id: Long?
                         val uid: String
-                        if (inPlaceUpdate) {
-                            uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
-
-                            this.deleteRoutes(listOf(tour))
-                                    .blockingAwait()
-                        } else {
-                            // Generate uid for new tour
-                            uid = uidSupplier()
+                        when (inPlaceUpdate) {
+                            true -> {
+                                uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
+                                id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
+                            }
+                            false -> {
+                                // Generate uid for new tour
+                                uid = uidSupplier()
+                                id = null
+                            }
                         }
 
-                        // Update smartlane route custom id with tour uid
-                        routeApi.patchRouteById(
-                                route.id,
-                                Route().also {
-                                    it.customId = tour.smartlaneCustomId
-                                }
-                        )
-
                         Tour(
-                                id = null,
+                                id = id,
                                 uid = uid,
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
@@ -424,6 +436,24 @@ class SmartlaneBridge {
                                 )
                         )
                     }
+                            .also { optimizedTours ->
+                                // Delete previous routes relating to optimized tours
+                                this.deleteRoutes(optimizedTours)
+                                        .blockingAwait()
+
+                                // Update smartlane routes custom id with tour uid
+                                optimizedTours.forEachIndexed { index, optimizedTour ->
+                                    routeApi.patchRouteById(
+                                            routes[index].id,
+                                            Route().also {
+                                                it.customId = CustomId(
+                                                        id = optimizedTour.id,
+                                                        uid = optimizedTour.uid!!
+                                                ).serialize()
+                                            }
+                                    )
+                                }
+                            }
                 }
                 .retryOnTokenExpiry(domain)
                 .firstOrError()
@@ -451,16 +481,6 @@ class SmartlaneBridge {
             it.htmlcolor = this.email.hashCode().toHexString().take(6)
         }
     }
-
-    /**
-     * Smartlane custom id extension
-     */
-    private val Tour.smartlaneCustomId: String
-        get() = CustomId(
-                id = this.id!!,
-                uid = this.uid!!
-        )
-                .serialize()
 
     /**
      * Transform tour into smartlane routing input
