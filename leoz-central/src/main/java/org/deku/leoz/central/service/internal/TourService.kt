@@ -189,11 +189,11 @@ class TourServiceV1
                                 this.objectMapper.writeValueAsString(it)
                             }
 
-                            stop.tasks.forEachIndexed { index, task ->
+                            stop.tasks.forEachIndexed { i, task ->
 
                                 TadTourEntry().also {
                                     it.tourId = tourRecord.id
-                                    it.position = (index + 1).toDouble()
+                                    it.position = (i + 1).toDouble()
                                     it.orderId = task.orderId
                                     it.orderTaskType = when (task.taskType) {
                                         Task.Type.DELIVERY -> TaskType.DELIVERY.value
@@ -460,10 +460,10 @@ class TourServiceV1
                 .also { records ->
                     records
                             .groupBy { it.get(tadTour.stationNo) }
-                            .forEach { stationNo, records ->
+                            .forEach { stationNo, groupedRecords ->
                                 this.updatedSubject.onNext(SubscriptionEvent(
                                         stationNo = stationNo,
-                                        deleted = records.map { it.get(tadTour.id)!! }
+                                        deleted = groupedRecords.map { it.get(tadTour.id)!! }
                                 ))
                             }
                 }
@@ -763,10 +763,10 @@ class TourServiceV1
                 .also { tours ->
                     tours
                             .groupBy { it.stationNo }
-                            .forEach { stationNo, tours ->
+                            .forEach { stationNo, groupedTours ->
                                 this.updatedSubject.onNext(SubscriptionEvent(
                                         stationNo = stationNo,
-                                        items = tours
+                                        items = groupedTours
                                 ))
                             }
                 }

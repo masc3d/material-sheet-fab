@@ -83,7 +83,7 @@ interface TourServiceV1 {
 
     @POST
     @Path("/deliverylist")
-    @ApiOperation(value = "Create a new tour from delivery lists",
+    @ApiOperation(value = "Create new tour(s) from delivery list(s)",
             notes = "The tours created will be owned by the same station",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun create(
