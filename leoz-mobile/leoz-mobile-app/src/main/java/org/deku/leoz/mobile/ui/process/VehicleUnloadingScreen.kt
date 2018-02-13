@@ -209,7 +209,7 @@ class VehicleUnloadingScreen :
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
         this.menu = this.inflateMenu(R.menu.menu_vehicleunloading).also {
-            if (this.debugSettings.enabled) {
+            if (this.debugSettings.syntheticAidcEnabled) {
                 it.add(0, R.id.action_vehicle_unloading_dev_mark_all_unloaded, 0, "Mark all as unloaded").also {
                     it.setIcon(R.drawable.ic_dev)
                 }
