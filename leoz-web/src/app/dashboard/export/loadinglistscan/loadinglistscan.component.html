@@ -149,8 +149,9 @@
                   {{'notOnLoadlist' | translate}} {{openPackcount}} (F12)
                 </ng-template>
               </p>
-              <p-table [value]="openPackages$ | async" resizableColumns="true" responsive="true"
-                       selectionMode="multiple" [(selection)]="selectedPackages" (onRowSelect)="onRowClick($event)">
+              <p-table [value]="openPackages$ | async" [responsive]="true"
+                       [scrollable]="true" scrollHeight="250px"
+                       selectionMode="multiple" [(selection)]="selectedPackages" (onRowSelect)="onRowSelect($event)">
                 <ng-template pTemplate="header">
                   <tr>
                     <th [pSortableColumn]="'parcelNo'">
@@ -198,26 +199,6 @@
                     </td>
                   </tr>
                 </ng-template>
-
-
-<!--
-                <ng-template pTemplate="body" let-package>
-                  <tr>
-                    <td>{{package.parcelNo}}</td>
-                    <td>{{package.zip}}</td>
-                    <td>{{package.city}}</td>
-                    <td>{{package.devliveryStation}}</td>
-                    <td>{{package.loadinglistNo}}</td>
-                    <td>
-                    <span *ngIf="isValuable(package); else noValuable">
-                      {{ 'yes' | translate }}
-                    </span>
-                      <ng-template #noValuable>
-                        {{ 'no' | translate }}
-                      </ng-template>
-                    </td>
-                  </tr>
-                </ng-template>-->
                 <ng-template pTemplate="emptymessage">
                   <tr>
                     <td [attr.colspan]="6">

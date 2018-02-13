@@ -295,10 +295,8 @@ export class LoadinglistscanComponent extends AbstractTranslateComponent impleme
     this.latestDirection = direction;
   }
 
-  public onRowClick( event ) {
-    console.log('anfang');
+  public onRowSelect( event ) {
     this.latestMarkedIndex = this.openPackagesArr.indexOf( event.data );
-    console.log('this.latestMarkedIndex',this.latestMarkedIndex);
   }
 
   public newLoadlist() {

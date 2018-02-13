@@ -78,10 +78,8 @@
       <div class="ui-g-12 ui-lg-6" style="padding: 0; border:1px solid darkgrey">
         <div class="ui-g-12 ui-g-nopad">
           <p style="text-align: center">{{'openOnBaglist' | translate}} {{openPackcount}}</p>
-          <p-table [value]="lazyOpenPackages" resizableColumns="true" responsive="true"
-                   scrollable="true" scrollHeight="300px" [rows]="20" virtualScroll="virtualScroll"
-                   [totalRecords]="openPackcount" loadingIcon="fa-spinner"
-                   [lazy]="true" (onLazyLoad)="loadOpenPackagesLazy($event)" [loading]="loading">
+          <p-table [value]="openPackages$ | async" [responsive]="true"
+                   [scrollable]="true" scrollHeight="250px">
             <ng-template pTemplate="header">
               <tr>
                 <th>{{'parcelno' | translate}}</th>
