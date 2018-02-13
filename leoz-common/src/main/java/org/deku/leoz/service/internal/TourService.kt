@@ -281,7 +281,9 @@ interface TourServiceV1 {
     data class TourOptimizationOptions(
             @ApiModelProperty(position = 10,
                     required = false,
-                    value = "Start address/location")
+                    value = "Start address/location",
+                    notes = "When this parameter is omitted, the start address will default to " +
+                            "the station address this tour refers to.")
             var start: Address? = null,
 
             @ApiModelProperty(position = 20,
