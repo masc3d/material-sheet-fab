@@ -2,6 +2,7 @@ package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.Tables.SYS_SYNC
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
 import org.deku.leoz.central.data.prepared
 import org.jooq.Cursor
@@ -34,14 +35,14 @@ class JooqSyncRepository {
      */
     private val qFindSyncIdByTableName by lazy {
         dsl
-                .select(Tables.SYS_SYNC.SYNC_ID)
-                .from(Tables.SYS_SYNC)
-                .where(Tables.SYS_SYNC.TABLE_NAME.eq(
-                        DSL.param(Tables.SYS_SYNC.TABLE_NAME.name, String::class.java)))
+                .select(SYS_SYNC.SYNC_ID)
+                .from(SYS_SYNC)
+                .where(SYS_SYNC.TABLE_NAME.eq(
+                        DSL.param(SYS_SYNC.TABLE_NAME.name, String::class.java)))
     }
 
     private val qFindAll by lazy {
-        dsl.selectFrom(Tables.SYS_SYNC)
+        dsl.selectFrom(SYS_SYNC)
     }
 
     /**
@@ -50,11 +51,10 @@ class JooqSyncRepository {
      */
     fun findSyncIdByTableName(tableName: String): Long? {
         return this.qFindSyncIdByTableName.prepared {
-            val query = it.bind(Tables.SYS_SYNC.TABLE_NAME.name, tableName)
+            val query = it.bind(SYS_SYNC.TABLE_NAME.name, tableName)
 
             query.fetchOne()?.value1()
         }
-
     }
 
     /**
@@ -89,5 +89,18 @@ class JooqSyncRepository {
                 .resultSetType(ResultSet.TYPE_FORWARD_ONLY)
                 .fetchSize(Int.MIN_VALUE)
                 .fetchLazy()
+    }
+
+    /**
+     * Find maximum sync id for central table
+     * @param table Jooq table
+     * @param field Jooq sync id field
+     */
+    fun <TRecord : Record> findMaxSyncId(
+            table: TableImpl<Record>,
+            field: TableField<out Record, Long>
+    ): Long? {
+        return dsl.selectFrom(table)
+                .fetchOne(field.max())
     }
 }

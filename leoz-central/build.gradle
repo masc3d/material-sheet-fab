@@ -259,6 +259,7 @@ jooq {
                         'f_.*',
                         'hubfahrzeugbeladung',
                         'mst_.*',
+                        'rkkopf',
                         'scaerror',
                         'sdd_.*',
                         'sectiondepotlist',
