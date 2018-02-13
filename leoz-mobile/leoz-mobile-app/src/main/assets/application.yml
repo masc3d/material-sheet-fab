@@ -69,7 +69,7 @@ tour:
 
 # Developer/debug settings
 debug:
-   enabled: false
+   enabled: true
    allow-developer-options: true
    # By default free screen rotation is not allowed and controlled per screen
    user-screen-rotation: false
