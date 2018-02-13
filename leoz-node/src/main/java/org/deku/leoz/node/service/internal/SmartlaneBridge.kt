@@ -36,7 +36,6 @@ import javax.inject.Named
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 import kotlin.NoSuchElementException
-import kotlin.collections.HashMap
 import kotlin.concurrent.withLock
 
 /**
@@ -183,7 +182,7 @@ class SmartlaneBridge {
      * Retries an operation which consumes smartlane REST apis in case of token expiry.
      * The REST proxy creation must be part of the observable (not cached) for this extension to work.
      */
-    private fun <T> Observable<T>.retryOnTokenExpiry(domain: Domain): Observable<T> {
+    private fun <T> Observable<T>.composeRest(domain: Domain): Observable<T> {
         // Retry once with token reset when authorization error occurs
         return this.retry(1, { e ->
             if (e is WebApplicationException &&
@@ -197,6 +196,7 @@ class SmartlaneBridge {
                 false
             }
         })
+                .subscribeOn(domain.scheduler)
     }
 
     /**
@@ -227,7 +227,7 @@ class SmartlaneBridge {
                 )
             }
         }
-                .retryOnTokenExpiry(domain)
+                .composeRest(domain)
                 .ignoreElements()
     }
 
@@ -255,8 +255,7 @@ class SmartlaneBridge {
                                     ?.id
                         }
                                 .toObservable()
-                                .retryOnTokenExpiry(domain)
-                                .subscribeOn(domain.scheduler)
+                                .composeRest(domain)
                                 .blockingFirst(null)
                     }
             )
@@ -306,7 +305,7 @@ class SmartlaneBridge {
                                 log.trace { "Put driver tracking ${it}" }
                             })
                         }
-                                .retryOnTokenExpiry(domain)
+                                .composeRest(domain)
                     }
                 }
                 .ignoreElements()
@@ -330,7 +329,7 @@ class SmartlaneBridge {
                     deliveryApi.delete(it.flatMap { it.deliveries }.map { it.id })
                     routeApi.delete(it.map { it.id })
                 }
-                .retryOnTokenExpiry(domain)
+                .composeRest(domain)
                 .ignoreElements()
                 .onErrorComplete { e ->
                     when (e) {
@@ -338,7 +337,6 @@ class SmartlaneBridge {
                         else -> false
                     }
                 }
-                .subscribeOn(domain.scheduler)
     }
 
     /**
@@ -355,8 +353,7 @@ class SmartlaneBridge {
                     CustomId(uid = it.uid!!).serialize()
                 }.toTypedArray()
         )
-                .retryOnTokenExpiry(domain)
-                .subscribeOn(domain.scheduler)
+                .composeRest(domain)
     }
 
     /**
@@ -388,7 +385,7 @@ class SmartlaneBridge {
                                 )
                             }
                 }
-                .retryOnTokenExpiry(domain)
+                .composeRest(domain)
                 .ignoreElements()
                 .onErrorComplete { e ->
                     when (e) {
@@ -396,7 +393,6 @@ class SmartlaneBridge {
                         else -> false
                     }
                 }
-                .subscribeOn(domain.scheduler)
     }
 
     /**
@@ -425,9 +421,8 @@ class SmartlaneBridge {
                                 )
                             }
                             .toObservable()
-                            .retryOnTokenExpiry(domain)
+                            .composeRest(domain)
                             .ignoreElements()
-                            .subscribeOn(domain.scheduler)
                 }
                 ?: Completable.error(NoSuchElementException("Driver [${email}] not found"))
     }
@@ -543,9 +538,8 @@ class SmartlaneBridge {
                                 }
                             }
                 }
-                .retryOnTokenExpiry(domain)
+                .composeRest(domain)
                 .firstOrError()
-                .subscribeOn(domain.scheduler)
     }
 
     /**
