@@ -19,8 +19,6 @@ import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.time.toShortTime
-import org.deku.leoz.time.toGregorianLongDateString
-import org.deku.leoz.time.toGregorianLongDateTimeString
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -187,7 +185,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             )
 
 
-        val allParcels = parcelRepository.getParcelsToExportByOrderids(orders
+        val allParcels = parcelRepository.getParcelsNotDeliveredByOrderids(orders
                 .map { it.orderid.toLong() }
                 .toList()
         )
@@ -962,7 +960,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 val gun = GlsUnitNumber.parseLabel(scanCode)
                 when {
                     gun.hasError -> {
-                        val unitRecords = parcelRepository.getParcelsByCreferenceAndStation(stationNo, scanCode)
+                        val unitRecords = parcelRepository.getExportParcelsByCreferenceAndStation(stationNo, scanCode)
                         if (unitRecords.count() == 0)
                             throw RestProblem(
                                     status = Response.Status.NOT_FOUND,

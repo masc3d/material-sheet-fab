@@ -16,6 +16,7 @@ import org.deku.leoz.model.maxWeightForParcelBag
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.ExportService
+import org.deku.leoz.service.internal.ImportService
 import org.jooq.types.UInteger
 import sx.time.toSqlDate
 import sx.time.toTimestamp
@@ -222,7 +223,7 @@ class JooqParcelRepository {
 
     }
 
-    fun getParcelsToExportByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
+    fun getParcelsNotDeliveredByOrderids(orderIds: List<Long>): List<TblauftragcolliesRecord> {
 //        return dsl.select()
 //                .from(Tables.TBLAUFTRAGCOLLIES)
 //                .where(
@@ -284,7 +285,7 @@ class JooqParcelRepository {
         )
     }
 
-    fun getParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord> {
+    fun getExportParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord> {
         val unitRecords: List<TblauftragcolliesRecord>
         if (station == 800) {
             unitRecords = dsl.fetch(
@@ -304,6 +305,33 @@ class JooqParcelRepository {
         }
         return unitRecords
     }
+
+    fun getImportParcelsByCreferenceAndStation(station: Int, cReference: String): List<TblauftragcolliesRecord> {
+        val unitRecords: List<TblauftragcolliesRecord>
+
+        unitRecords = dsl.fetch(
+                Tables.TBLAUFTRAGCOLLIES,
+                Tables.TBLAUFTRAGCOLLIES.MYDEPOTID2.eq(station)
+                        .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))
+        )
+
+
+        return unitRecords
+    }
+
+    fun getOrdersToImportByStation(station: Int, deliveryDate: LocalDate = java.time.LocalDateTime.now().workDate()): List<TblauftragRecord> {
+        return dsl.fetch(
+                Tables.TBLAUFTRAG,
+                Tables.TBLAUFTRAG.DEPOTNRLD.eq(station)
+                        .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
+                        .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
+                        .and(Tables.TBLAUFTRAG.EMPFAENGER.isNull)
+                        //.and(Tables.TBLAUFTRAG.KZ_TRANSPORTART.eq(1.toUByte()))//ONS
+                        .and(Tables.TBLAUFTRAG.DTAUSLIEFERUNG.eq(deliveryDate.toTimestamp()))
+        )
+
+    }
+
 }
 
 fun TblauftragRecord.toOrderToExport(): ExportService.Order {
@@ -336,5 +364,39 @@ fun TblauftragcolliesRecord.toParcelToExport(): ExportService.Parcel {
             cReference = this.creferenz
 
     )
+    return parcel
+}
+
+fun TblauftragRecord.toOrderToImport(): ImportService.Order {
+    val order = ImportService.Order(
+            orderId = this.orderid.toLong(),
+            deliveryAddress = Address(
+                    countryCode = this.landd ?: "",
+                    zipCode = this.plzd ?: "",
+                    city = this.ortd
+            ),
+            deliveryStation = this.depotnrld,
+            deliveryDate = this.dtauslieferung?.toTimestamp()?.toSqlDate(),
+            sealNumber = this.plombennra?.toLong()
+    )
+    return order
+}
+
+fun TblauftragcolliesRecord.toParcelToImport(): ImportService.Parcel {
+    val parcel = ImportService.Parcel(
+            orderId = this.orderid.toLong(),
+            parcelNo = this.colliebelegnr.toLong(),
+            cartageNote = this.rollkartennummerd?.toLong(),
+            realWeight = this.gewichtreal,
+            volWeight = this.gewichtlbh,
+            length = this.laenge.toInt(),
+            width = this.breite.toInt(),
+            height = this.hoehe.toInt(),
+            dateOfStationIn = this.dteingangdepot2?.toTimestamp()?.toSqlDate(),
+            cReference = this.creferenz,
+            tourNo = this.tournr2,
+            isDamaged = this.isDamaged != 0
+    )
+
     return parcel
 }

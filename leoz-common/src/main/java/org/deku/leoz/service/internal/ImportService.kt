@@ -21,7 +21,7 @@ interface ImportService {
     companion object {
         const val STATION_NO = "station-no"
         const val DELIVERY_DATE = "delivery-date"
-        const val SCANCODE = "parcel-no-or-reference"
+        const val SCANCODE = "scancode"
     }
 
     @Serializable(0x3472fac6b461d8)
@@ -51,11 +51,11 @@ interface ImportService {
             @get:ApiModelProperty(example = "4.4", required = false, value = "Volume weight")
             var volWeight: Double = 0.0,
             @get:ApiModelProperty(example = "20", required = false, value = "Length")
-            var length: Double = 0.0,
+            var length: Int = 0,
             @get:ApiModelProperty(example = "30", required = false, value = "Width")
-            var width: Double = 0.0,
+            var width: Int = 0,
             @get:ApiModelProperty(example = "40", required = false, value = "Height")
-            var height: Double = 0.0,
+            var height: Int = 0,
             @get:ApiModelProperty(example = "08/09/2017", required = false, value = "Date of station in")
             var dateOfStationIn: java.sql.Date? = null,
             @get:ApiModelProperty(example = "abcdef", required = false, value = "Reference")
@@ -67,10 +67,18 @@ interface ImportService {
             @get:ApiModelProperty(example = "true", required = false, value = "Is damaged")
             var isDamaged: Boolean = false,
             @get:ApiModelProperty(example = "true", required = false, value = "Is wrong station")
-            var isWrongStation: Boolean = false,
+            var isWrongLoaded: Boolean = false,
             @get:ApiModelProperty(example = "true", required = false, value = "Is wrong routed")
             var isWrongRouted: Boolean = false
     )
+    enum class ResponseMsg(val value: String) {
+        PARCEL_ALREADY_SCANNED("Parcel already scanned"),
+        PARCEL_NOT_FOUND("Parcel not found"),
+        NO_PARCELS_FOUND("No parcels found"),
+        MORE_PARCELS_FOR_CREFERENCE("More parcels found to this cReference"),
+        ORDER_NOT_FOUND("Order not found"),
+        NO_ORDERS_FOUND("No orders found")
+    }
 
     @GET
     @Path("/station/{$STATION_NO}/order")
@@ -101,6 +109,7 @@ interface ImportService {
     @Path("/{$SCANCODE}")
     @ApiOperation(value = "Get parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getParcel(
-            @PathParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = ""
+            @PathParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = "",
+            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
     ): Parcel
 }
