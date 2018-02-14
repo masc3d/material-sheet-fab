@@ -1,9 +1,7 @@
 package sx.jooq
 
 import io.reactivex.Observable
-import java.io.OutputStream
-import javax.ws.rs.WebApplicationException
-import javax.ws.rs.core.StreamingOutput
+import io.reactivex.schedulers.Schedulers
 import org.jooq.*
 import org.jooq.conf.ParamType
 import org.jooq.conf.Settings
@@ -49,7 +47,7 @@ fun <R : Record> Select<R>.dump(): Observable<String> {
             )
     )
 
-    return io.reactivex.Observable.fromIterable(
+    return Observable.fromIterable(
             this
                     .resultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY)
                     .resultSetType(java.sql.ResultSet.TYPE_FORWARD_ONLY)
@@ -75,5 +73,4 @@ fun <R : Record> Select<R>.dump(): Observable<String> {
             .doFinally {
                 dsl.close()
             }
-            .subscribeOn(io.reactivex.schedulers.Schedulers.computation())
 }
