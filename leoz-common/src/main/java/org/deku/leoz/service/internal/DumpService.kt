@@ -8,6 +8,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 import javax.ws.rs.core.StreamingOutput
 
 /**
@@ -16,7 +17,7 @@ import javax.ws.rs.core.StreamingOutput
  */
 @Path("internal/v1/dump")
 @Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.TEXT_PLAIN)
+@Produces(MediaType.APPLICATION_OCTET_STREAM)
 @Api(value = "Dump operations")
 @ApiKey(false)
 interface DumpService {
@@ -30,7 +31,7 @@ interface DumpService {
     @GET
     @Path("/central/station")
     @ApiOperation(value = "Dump central stations")
-    fun dumpCentralStations(): StreamingOutput
+    fun dumpCentralStations(): Response
 
     /**
      * Dump routes
@@ -38,5 +39,5 @@ interface DumpService {
     @GET
     @Path("/central/route")
     @ApiOperation(value = "Dump central routes")
-    fun dumpCentralRoutes(): StreamingOutput
+    fun dumpCentralRoutes(): Response
 }
