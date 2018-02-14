@@ -77,25 +77,3 @@ fun <R : Record> Select<R>.dump(): Observable<String> {
             }
             .subscribeOn(io.reactivex.schedulers.Schedulers.computation())
 }
-
-/**
- * Convert observable strings to streaming output
- */
-fun Observable<String>.toStreamingOutput(): StreamingOutput {
-    return object : StreamingOutput {
-        override fun write(output: OutputStream) {
-            try {
-                val writer = output.buffered().writer()
-
-                // There's no non-blocking in jax/rs :/
-                this@toStreamingOutput
-                        .doOnNext { writer.write(it) }
-                        .doFinally { writer.flush() }
-                        .blockingSubscribe()
-
-            } catch (e: Throwable) {
-                throw WebApplicationException(e)
-            }
-        }
-    }
-}
