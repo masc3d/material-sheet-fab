@@ -276,7 +276,8 @@ jooq {
                         'usystblzaehler',
                         'tad_.*',
                         'tblfeldhistorie',
-                        'tblmailqueue'
+                        'tblmailqueue',
+                        'tblroutendepot'
 
                 ].join('|')
             }

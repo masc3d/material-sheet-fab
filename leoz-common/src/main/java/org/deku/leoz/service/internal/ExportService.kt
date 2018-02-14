@@ -25,7 +25,7 @@ interface ExportService {
         const val BAG_BACK_NO = "bagback-no"
         const val STATION_NO = "station-no"
         const val LOADINGLIST_NO = "loadinglist-no"
-        const val SCANCODE = "parcel-no-or-reference"
+        const val SCANCODE = "scancode"
         const val BAG_ID = "bag-id"
         const val REDSEAL = "redseal"
         const val TEXT = "text"
