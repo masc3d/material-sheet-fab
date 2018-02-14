@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Profile
 import org.zalando.problem.Status
 import sx.packager.BundleRepository
 import sx.platform.OperatingSystem
+import sx.rs.attachment
 import java.io.File
 import java.util.*
 import javax.inject.Inject
@@ -21,7 +22,6 @@ import javax.inject.Named
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
-import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
@@ -133,10 +133,9 @@ open class BundleServiceV2 : BundleServiceV2 {
                     status = Response.Status.NOT_FOUND,
                     title = "No such file")
 
-        return Response
-                .ok(downloadFile, MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${downloadFile.name}\"")
-                .header(HttpHeaders.CONTENT_LENGTH, downloadFile.length().toString())
+
+        return Response.ok()
+                .attachment(downloadFile)
                 .build()
     }
 
