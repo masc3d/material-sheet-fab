@@ -14,8 +14,8 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "User operations")
-@ApiKey(true)
+@Api(value = "User operations", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+@ApiKey
 interface UserService {
     companion object {
         //const val ID = "id"
@@ -115,7 +115,7 @@ interface UserService {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "Get user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get user")
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
@@ -124,7 +124,7 @@ interface UserService {
 
     @GET
     @Path("/{$USER_ID}")
-    @ApiOperation(value = "Get user by ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get user by ID")
     fun getById(
             @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
@@ -136,7 +136,7 @@ interface UserService {
      */
     @POST
     @Path("/")
-    @ApiOperation(value = "Create user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Create user")
     fun create(
             @ApiParam(value = "User") user: User,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
@@ -152,7 +152,7 @@ interface UserService {
      */
     @PUT
     @Path("/")
-    @ApiOperation(value = "Update user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Update user")
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
                @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
@@ -160,12 +160,12 @@ interface UserService {
 
     @POST
     @Path("/{$USER_ID}/sendAppLink")
-    @ApiOperation(value = "Send App download-link", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Send App download-link")
     fun sendDownloadLink(@PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int): Boolean
 
     @PATCH
     @Path("/{$USER_ID}/changePassword")
-    @ApiOperation(value = "Change users password", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Change users password")
     fun changePassword(
             @ApiParam(value = "old_password") oldPassword: String,
             @ApiParam(value = "new_password") newPassword: String
@@ -173,18 +173,18 @@ interface UserService {
 
     @GET
     @Path("/auth")
-    @ApiOperation(value = "Get auth user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get auth user")
     fun get(): User
 
     @GET
     @Path("/{$USER_ID}/configuration")
-    @ApiOperation(value = "Get user configuration by user-id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get user configuration by user-id")
     fun getConfigurationById(
             @PathParam(value = USER_ID) userId: Int
     ): String
 
     @GET
     @Path("/auth/configuration")
-    @ApiOperation(value = "Get user configuration for current user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get user configuration for current user")
     fun getCurrentUserConfiguration(): String
 }
