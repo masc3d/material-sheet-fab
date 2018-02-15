@@ -27,7 +27,7 @@ import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 /**
- * TODO test apikey-user ->berechtigung (API keys should be verified on higher level -> {@link ApiKeyRequestFilter})
+ * User service
  * Created by helke on 15.05.17.
  */
 @Named
