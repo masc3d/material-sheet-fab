@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.rest.authorizedUser
@@ -12,6 +13,7 @@ import sx.jooq.dump
 import sx.log.slf4j.trace
 import sx.rs.attachment
 import sx.rs.toStreamingOutput
+import sx.rx.limit
 import sx.rx.subscribeOn
 import sx.time.toTimestamp
 import sx.util.letWithParamNotNull
@@ -53,7 +55,7 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
         val filename = "${name}-${timestampFormat.format(Date())}.sql"
 
         return this
-                .subscribeOn(executorService)
+                .subscribeOn(Schedulers.from(executorService).limit(1))
                 .toStreamingOutput()
                 .let {
                     Response.ok()
