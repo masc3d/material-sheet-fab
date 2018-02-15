@@ -7,7 +7,7 @@ import org.deku.leoz.model.UserRole
  */
 
 /**
- * Restrict access by role
+ * Restrict access by authorized user role
  * @param role User role
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
