@@ -106,8 +106,7 @@ interface LocationServiceV2 {
             @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
             @QueryParam(FROM) @ApiParam(value = "from", example = "05/31/2017 00:30:00 +0100") from: Date? = null,
-            @QueryParam(TO) @ApiParam(value = "to") to: Date? = null,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @QueryParam(TO) @ApiParam(value = "to") to: Date? = null
     ): List<GpsData>
 
     /**
@@ -120,8 +119,7 @@ interface LocationServiceV2 {
     fun getRecent(
             @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @QueryParam(DURATION) @ApiParam(value = "Duration in Minutes") duration: Int? = null,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @QueryParam(DURATION) @ApiParam(value = "Duration in Minutes") duration: Int? = null
     ): List<GpsData>
 
     @GET
