@@ -18,8 +18,8 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/order")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Order service")
-@ApiKey(false)
+@Api(value = "Order service", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+@ApiKey
 interface OrderService {
     companion object {
         const val PARCELSCAN = "parcel-scan"
@@ -34,7 +34,7 @@ interface OrderService {
      */
     @GET
     @Path("/{$ORDERID}")
-    @ApiOperation(value = "Get order by order ID", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get order by order ID")
     fun getById(
             @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long,
             @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
@@ -48,7 +48,7 @@ interface OrderService {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "Get orders", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiOperation(value = "Get orders")
     fun get(
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String?,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String?,

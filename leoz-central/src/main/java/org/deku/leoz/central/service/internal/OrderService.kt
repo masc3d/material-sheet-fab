@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.central.rest.restrictByDebitor
 import org.deku.leoz.model.*
 import sx.rs.RestProblem
 import org.deku.leoz.service.internal.OrderService
@@ -10,7 +11,9 @@ import org.deku.leoz.service.internal.OrderService.Order
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 
 /**
@@ -31,6 +34,9 @@ class OrderService : OrderService {
     @Inject
     private lateinit var stationRepository: JooqStationRepository
 
+    @Context
+    private lateinit var httpRequest: HttpServletRequest
+
     override fun get(labelRef: String?, custRef: String?, parcelScan: String?, apiKey: String?): List<OrderService.Order> {
         val orders: List<Order>
 
@@ -43,22 +49,8 @@ class OrderService : OrderService {
                         title = "Order not found",
                         status = Response.Status.NOT_FOUND)
 
-                apiKey
-                        ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
+                httpRequest.restrictByDebitor { order.findOrderDebitorId(Type.DELIVERY) }
 
-                val authorizedUserRecord = userRepository.findByKey(apiKey)
-                authorizedUserRecord ?:
-                        throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-                /**
-                 * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
-                 * ADMIN-User are allowed to access every order.
-                 */
-                if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-                    //todo include send_date (JT)
-                    if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
-                        throw RestProblem(status = Response.Status.FORBIDDEN)
-                }
                 orders = listOf(order)
             }
             else -> TODO("Handle other query types here")
@@ -81,22 +73,7 @@ class OrderService : OrderService {
                 title = "Order not found",
                 status = Response.Status.NOT_FOUND)
 
-        apiKey
-                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?:
-                throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        /**
-         * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
-         * ADMIN-User are allowed to access every order.
-         */
-        if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-            //todo include send_date (JT)
-            if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
-                throw RestProblem(status = Response.Status.FORBIDDEN)
-        }
+        httpRequest.restrictByDebitor { order.findOrderDebitorId(Type.DELIVERY) }
 
         order.parcels = this.orderRepository
                 .findParcelsByOrderId(order.id)
