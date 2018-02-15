@@ -4,6 +4,7 @@ version '0.1'
 buildscript {
     ext {
         v_kotlin = '1.2.21'
+        v_sshd = '1.7.0'
     }
 
     repositories {
@@ -55,8 +56,7 @@ dependencies {
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-            // Mina/SSHD
-            project(':mina-sshd-core')
+            "org.apache.sshd:sshd-core:$v_sshd",
     )
 
     testCompile(
