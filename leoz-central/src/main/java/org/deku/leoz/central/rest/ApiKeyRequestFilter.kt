@@ -102,7 +102,7 @@ val HttpServletRequest.authorizedUser: UserService.User
  * @param debitorId The debitor id to check against
  * @throws WebApplicationException If authorized user's debitor id doesn't match
  */
-fun HttpServletRequest.restrictByDebitor(debitorId: () -> Int) {
+fun HttpServletRequest.restrictByDebitor(debitorId: () -> Int?) {
     val user = this.authorizedUser
     val userRole = user.role
 
