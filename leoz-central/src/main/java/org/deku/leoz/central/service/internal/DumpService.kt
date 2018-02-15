@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.rest.authorizedUser
+import org.deku.leoz.service.entity.ShortDate
 import org.jooq.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -12,6 +13,8 @@ import sx.log.slf4j.trace
 import sx.rs.attachment
 import sx.rs.toStreamingOutput
 import sx.rx.subscribeOn
+import sx.time.toTimestamp
+import sx.util.letWithParamNotNull
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -43,14 +46,13 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
     private val timestampFormat by lazy { SimpleDateFormat("yyyyMMddHHmmss") }
 
     /**
-     * Transform jooq select to streaming REST response
+     * Transform observable (sql statement) strings to streaming REST response
      * @param name Base name of response attachment
      */
-    private fun <R : Record> Select<R>.toResponse(name: String = "dump"): Response {
+    private fun Observable<String>.toResponse(name: String = "dump"): Response {
         val filename = "${name}-${timestampFormat.format(Date())}.sql"
 
         return this
-                .dump()
                 .subscribeOn(executorService)
                 .toStreamingOutput()
                 .let {
@@ -58,6 +60,16 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
                             .attachment(entity = it, filename = filename)
                             .build()
                 }
+    }
+
+    /**
+     * Transform jooq select to streaming REST response
+     * @param name Base name of response attachment
+     */
+    private fun <R : Record> Select<R>.toResponse(name: String = "dump"): Response {
+        return this
+                .dump()
+                .toResponse(name)
     }
 
     override fun dumpCentralStations(): Response {
@@ -68,5 +80,47 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
     override fun dumpCentralRoutes(): Response {
         return dsl.selectFrom(MST_ROUTE)
                 .toResponse("mst_route")
+    }
+
+    override fun dumpDeliveryLists(stationNo: Int?, from: ShortDate?, to: ShortDate?): Response {
+        val rkIds = dsl.select(RKKOPF.ID)
+                .from(RKKOPF)
+                .where()
+                .letWithParamNotNull(stationNo, {
+                    and(RKKOPF.LIEFERDEPOT.eq(it.toDouble()))
+                })
+                .letWithParamNotNull(from, {
+                    and(RKKOPF.ROLLKARTENDATUM.ge(it.date.toTimestamp()))
+                })
+                .letWithParamNotNull(to, {
+                    and(RKKOPF.ROLLKARTENDATUM.le(it.date.toTimestamp()))
+                })
+                .fetch(RKKOPF.ID)
+                .toList()
+
+        val orderIds = dsl.select(RKDETAILS.ORDERID)
+                .from(RKDETAILS)
+                .where(RKDETAILS.RK_ID.`in`(rkIds))
+                .fetch(RKDETAILS.ORDERID)
+                .toList()
+
+        return Observable.concat(
+                dsl.selectFrom(RKKOPF)
+                        .where(RKKOPF.ID.`in`(rkIds))
+                        .dump(),
+
+                dsl.selectFrom(RKDETAILS)
+                        .where(RKDETAILS.RK_ID.`in`(rkIds))
+                        .dump(),
+
+                dsl.selectFrom(TBLAUFTRAG)
+                        .where(TBLAUFTRAG.ORDERID.`in`(orderIds))
+                        .dump(),
+
+                dsl.selectFrom(TBLAUFTRAGCOLLIES)
+                        .where(TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds))
+                        .dump()
+        )
+                .toResponse("deliverylist")
     }
 }
