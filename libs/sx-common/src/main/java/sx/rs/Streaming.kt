@@ -1,11 +1,8 @@
 package sx.rs
 
-import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.ObservableOperator
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
-import java.io.IOException
+import io.reactivex.observers.DefaultObserver
+import org.slf4j.LoggerFactory
 import java.io.OutputStream
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.StreamingOutput
@@ -18,6 +15,8 @@ import javax.ws.rs.core.StreamingOutput
  * Convert observable strings to jax/rs streaming output
  */
 fun Observable<String>.toStreamingOutput(): StreamingOutput {
+    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+
     return object : StreamingOutput {
         override fun write(output: OutputStream) {
             try {
@@ -27,12 +26,9 @@ fun Observable<String>.toStreamingOutput(): StreamingOutput {
 
                 this@toStreamingOutput
                         .lift<String> {
-                            object : Observer<String> {
-                                var d: Disposable? = null
-
+                            object : DefaultObserver<String>() {
                                 // Pass-through
                                 override fun onComplete() { it.onComplete() }
-                                override fun onSubscribe(d: Disposable) { this.d = d; it.onSubscribe(d) }
                                 override fun onError(e: Throwable) { it.onError(e) }
 
                                 override fun onNext(t: String) {
@@ -40,8 +36,10 @@ fun Observable<String>.toStreamingOutput(): StreamingOutput {
                                         writer.write(t)
                                         it.onNext(t)
                                     } catch (e: Throwable) {
-                                        // Ignore errors on writing, immediately dispose upstream and complete
-                                        d?.dispose()
+                                        log.error(e.message, e)
+                                        // On write errors, immediately dispose upstream
+                                        this.cancel()
+                                        // ..and complete instead
                                         it.onComplete()
                                     }
                                 }
