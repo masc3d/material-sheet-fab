@@ -38,6 +38,7 @@
     "@fortawesome/fontawesome-free-webfonts": "1.0.1",
     "@yaga/leaflet-ng2": "1.0.0-rc9",
     "core-js": "2.5.3",
+    "event-source-polyfill": "0.0.12",
     "io-barcode": "1.3.0",
     "jspdf": "1.3.5",
     "moment": "2.20.1",

@@ -413,6 +413,12 @@ export const LANG_EN_TRANS = {
   'tours-most-likely-outdated': 'There has been a change in your deliverylists. ' +
                                 'To make sure you are up to date, you should press "reset"',
   'optimization_progress': 'Optimization in progress...',
+  'optimizing_optimized_tours_not_possible': 'Optimizing optimized tours not possible',
+  // report report_tourplan
+  'report_tourplan': 'Tour Plan',
+  'tourID': 'Tour No.',
+  'optimized': 'optimized',
+  'not_optimized': 'not optimized',
   // pickupdispo
   'info': 'Info',
   'open_orders_max3days': 'Open Orders (max. 3 days)',

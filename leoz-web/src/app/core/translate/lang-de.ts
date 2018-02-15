@@ -413,6 +413,12 @@ export const LANG_DE_TRANS = {
   'tours-most-likely-outdated': 'Ihre Rollkarten haben sich geändert. ' +
                                 'Um sicherzustellen, dass Sie auf dem neuesten Stand sind, sollten Sie "reset" drücken',
   'optimization_progress': 'Optimierung läuft...',
+  'optimizing_optimized_tours_not_possible': 'Optimierung optimierter Touren nicht möglich',
+  // report report_tourplan
+  'report_tourplan': 'Tourenplan',
+  'tourID': 'Tour Nr.',
+  'optimized': 'optimiert',
+  'not_optimized': 'nicht optimiert',
   // pickupdispo
   'info': 'Info',
   'open_orders_max3days': 'Offene Aufträge (max. 3 Tage)',

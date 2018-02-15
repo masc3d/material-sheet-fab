@@ -52,7 +52,7 @@ export class StoplistReportingService extends ReportingService {
           return doc;
         },
         reportFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
-          offsetY += 5;
+/*          offsetY += 5;
           doc.setFontSize( 10 );
           doc.setFontType( 'bold' );
           doc.text( `${data[ 'nameOfDriver' ]}:`, offsetX, offsetY ); // 150
@@ -73,7 +73,7 @@ export class StoplistReportingService extends ReportingService {
           doc.line( offsetX + 130, offsetY, offsetX + 190, offsetY );
 
           offsetY += 5;
-          doc.text( `${data[ 'llDriver' ]}`, offsetX + 105, offsetY );
+          doc.text( `${data[ 'llDriver' ]}`, offsetX + 105, offsetY );*/
           return doc;
         },
         pageFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {

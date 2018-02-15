@@ -23,6 +23,9 @@
       </div>
       <hr/>
       <div style="height:520px; padding:0 3px 3px 3px;overflow-y: scroll;">
+        <div *ngIf="toursLoading$ | async" style="text-align: center">
+          <i style="font-size: 5rem; opacity: .1;" class="fas fa-spinner fa-spin"></i>
+        </div>
         <div *ngFor="let tour of tours">
           <app-tourlistitem [listItem]="tour" [faIcon]="'fa-truck'" [parent]="this"></app-tourlistitem>
         </div>

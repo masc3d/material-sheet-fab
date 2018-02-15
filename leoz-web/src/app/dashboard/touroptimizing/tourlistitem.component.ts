@@ -27,7 +27,14 @@ import { TouroptimizingComponent } from './touroptimizing.component';
       <div class="ui-g-12 ui-lg-1">{{listItem.totalWeight}}</div>
       <div class="ui-g-12 ui-lg-3">{{formattedCreatetime}}</div>
       <div class="ui-g-12 ui-lg-1">&nbsp;</div>
-      <div class="ui-g-12 ui-lg-2" style="font-weight: bold">{{listItem.deliverylistId}}</div>
+      <div class="ui-g-12 ui-lg-2" style="font-weight: bold">
+        <span *ngIf="listItem.deliverylistId; else parentID">
+          {{listItem.deliverylistId}}
+        </span>
+        <ng-template #parentID>
+          P: {{listItem.parentId}}
+        </ng-template>
+      </div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="far fa-clock"></i></div>
       <div class="ui-g-12 ui-lg-1">{{listItem.time}}</div>
       <div class="ui-g-12 ui-lg-1 iconBlue"><i class="fas fa-road"></i></div>
@@ -39,7 +46,6 @@ import { TouroptimizingComponent } from './touroptimizing.component';
         <ng-template #notOptimized>
           <i class="fas fa-sync" style="color: #ff0000;"></i>
         </ng-template>
-
       </div>
       <div class="ui-g-12 ui-lg-1">
         <p-checkbox name="optimize" [(ngModel)]="listItem.selected" binary="true"></p-checkbox>
