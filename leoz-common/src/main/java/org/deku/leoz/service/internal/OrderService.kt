@@ -36,8 +36,7 @@ interface OrderService {
     @Path("/{$ORDERID}")
     @ApiOperation(value = "Get order by order ID")
     fun getById(
-            @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: Long
     ): Order
 
     /**
@@ -52,8 +51,7 @@ interface OrderService {
     fun get(
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String?,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String?,
-            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String?,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @QueryParam(PARCELSCAN) @ApiParam(value = "Parcel scan reference") parcelScan: String?
     ): List<Order>
 
     @ApiModel(description = "Order Model")

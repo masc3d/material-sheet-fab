@@ -29,15 +29,12 @@ class OrderService : OrderService {
     private lateinit var orderRepository: JooqOrderRepository
 
     @Inject
-    private lateinit var userRepository: JooqUserRepository
-
-    @Inject
     private lateinit var stationRepository: JooqStationRepository
 
     @Context
     private lateinit var httpRequest: HttpServletRequest
 
-    override fun get(labelRef: String?, custRef: String?, parcelScan: String?, apiKey: String?): List<OrderService.Order> {
+    override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
         val orders: List<Order>
 
         when {
@@ -65,7 +62,7 @@ class OrderService : OrderService {
         return orders
     }
 
-    override fun getById(id: Long, apiKey: String?): OrderService.Order {
+    override fun getById(id: Long): OrderService.Order {
 
         val order = this.orderRepository.findById(id)
                 ?.toOrder()

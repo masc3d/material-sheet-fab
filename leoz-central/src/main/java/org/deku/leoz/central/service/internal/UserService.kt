@@ -54,7 +54,7 @@ class UserService : UserService {
     @Context
     private lateinit var httpRequest: HttpServletRequest
 
-    override fun get(email: String?, debitorId: Int?, apiKey: String?): List<User> {
+    override fun get(email: String?, debitorId: Int?): List<User> {
         var debitor_id = debitorId
 
         val authorizedUser = httpRequest.authorizedUser
@@ -119,7 +119,7 @@ class UserService : UserService {
     }
 
 
-    override fun create(user: User, apiKey: String?, stationMatchcode: String?, debitorNr: Long?, sendAppLink: Boolean) {
+    override fun create(user: User, stationMatchcode: String?, debitorNr: Long?, sendAppLink: Boolean) {
 
         val rec = userRepository.findByMail(user.email)
         if (rec != null) {
@@ -141,10 +141,10 @@ class UserService : UserService {
 
         }
 
-        update(email = user.email, user = user, apiKey = apiKey, sendAppLink = sendAppLink)
+        update(email = user.email, user = user, sendAppLink = sendAppLink)
     }
 
-    override fun update(email: String, user: User, apiKey: String?, sendAppLink: Boolean) {
+    override fun update(email: String, user: User, sendAppLink: Boolean) {
         val authorizedUser = httpRequest.authorizedUser
 
         var debitor = user.debitorId
@@ -342,13 +342,13 @@ class UserService : UserService {
         }
     }
 
-    override fun getById(userId: Int, apiKey: String?): User {
+    override fun getById(userId: Int): User {
         val u = userRepository.findById(userId) ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
                 title = "User with ID [$userId] not found"
         )
 
-        return this.get(email = u.email, apiKey = apiKey).first()
+        return this.get(email = u.email).first()
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {

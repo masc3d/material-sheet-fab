@@ -118,16 +118,14 @@ interface UserService {
     @ApiOperation(value = "Get user")
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
-            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null
     ): List<User>
 
     @GET
     @Path("/{$USER_ID}")
     @ApiOperation(value = "Get user by ID")
     fun getById(
-            @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @PathParam(USER_ID) @ApiParam(value = "Users identifier") userId: Int
     ): User
 
     /**
@@ -139,7 +137,6 @@ interface UserService {
     @ApiOperation(value = "Create user")
     fun create(
             @ApiParam(value = "User") user: User,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
             @QueryParam(value = STATION_MATCHCODE) @ApiParam(value = "Station Matchcode", example = "011", required = false) stationMatchcode: String? = null,
             @QueryParam(value = DEBITOR_NR) @ApiParam(value = "Debitor No.", example = "12345678", required = false) debitorNr: Long? = null,
             @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "true") @DefaultValue("true") sendAppLink: Boolean = true
@@ -155,7 +152,6 @@ interface UserService {
     @ApiOperation(value = "Update user")
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
-               @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?,
                @QueryParam(value = SEND_APP_LINK_SMS) @ApiParam(value = "Send App link via SMS to the User?", required = false, defaultValue = "false", hidden = true) @DefaultValue("false") sendAppLink: Boolean = false)
 
     @POST
