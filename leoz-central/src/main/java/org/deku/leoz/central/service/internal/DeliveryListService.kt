@@ -4,8 +4,8 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylis
 import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
 import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
-import org.deku.leoz.config.Rest
-import org.deku.leoz.model.UserRole
+import org.deku.leoz.central.rest.authorizedUser
+import org.deku.leoz.central.rest.restrictByDebitor
 import sx.rs.RestProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
@@ -15,9 +15,9 @@ import sx.mq.MqChannel
 import sx.mq.MqHandler
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
-import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 /**
@@ -33,7 +33,7 @@ class DeliveryListService
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Context
-    private lateinit var httpHeaders: HttpHeaders
+    private lateinit var httpRequest: HttpServletRequest
 
     @Inject
     private lateinit var deliveryListRepository: JooqDeliveryListRepository
@@ -47,27 +47,6 @@ class DeliveryListService
     @Inject
     private lateinit var userRepository: JooqUserRepository
 
-    /**
-     * Asserts that the user (=apiKey) is entitled to access data for this debitor
-     * @throws RestProblem if no authorized
-     */
-    fun assertOwner(debitorId: Int) {
-        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        /**
-         * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
-         * ADMIN-User are allowed to access every delivery-list.
-         */
-        if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-            if (debitorId.toInt() != authorizedUserRecord.debitorId)
-                throw RestProblem(status = Response.Status.FORBIDDEN)
-        }
-    }
-
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
         val dlRecord: TadVDeliverylistRecord?
 
@@ -76,7 +55,7 @@ class DeliveryListService
                 title = "DeliveryList not found",
                 status = Response.Status.NOT_FOUND)
 
-        this.assertOwner(dlRecord.debitorId.toInt())
+        this.httpRequest.restrictByDebitor { dlRecord.debitorId.toInt() }
 
         return dlRecord.toDeliveryList()
     }
@@ -97,7 +76,7 @@ class DeliveryListService
         }
                 ?: throw NoSuchElementException()
 
-        this.assertOwner(station.debitorId)
+        this.httpRequest.restrictByDebitor { station.debitorId }
 
         return this.deliveryListRepository
                 .findByStationNo(station.depotnr)
@@ -105,22 +84,20 @@ class DeliveryListService
     }
 
     override fun getInfo(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
-        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
+        val authorizedUser = httpRequest.authorizedUser
+        val debitorId = authorizedUser.debitorId
+            ?: throw IllegalArgumentException("User [${authorizedUser.id}] is missing debitor")
 
         val dlInfos = when {
             deliveryDate != null -> {
                 deliveryListRepository.findInfoByDateDebitorList(
                         deliveryDate = deliveryDate.date,
-                        debitorId = authorizedUserRecord.debitorId
+                        debitorId = debitorId
                 )
             }
             else -> {
                 deliveryListRepository.findInfoByDebitor(
-                        debitorId = authorizedUserRecord.debitorId
+                        debitorId = debitorId
                 )
             }
         }
