@@ -209,9 +209,7 @@ class DeliveryList : CompositeDisposableSupplier {
             val orders = orderService.get(
                     labelRef = null,
                     custRef = null,
-                    parcelScan = unitNumber.value,
-                    // Api key will be injected via header
-                    apiKey = null
+                    parcelScan = unitNumber.value
             )
                     .distinctOrders()
                     .map { it.toOrder() }
