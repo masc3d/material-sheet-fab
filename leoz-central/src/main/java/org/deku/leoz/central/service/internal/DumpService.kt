@@ -3,10 +3,12 @@ package org.deku.leoz.central.service.internal
 import io.reactivex.Observable
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
+import org.deku.leoz.central.rest.authorizedUser
 import org.jooq.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.jooq.dump
+import sx.log.slf4j.trace
 import sx.rs.attachment
 import sx.rs.toStreamingOutput
 import sx.rx.subscribeOn
@@ -15,8 +17,10 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.*
+import javax.ws.rs.core.Context
 
 
 /**
@@ -34,8 +38,6 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
 
     @Inject
     private lateinit var executorService: ExecutorService
-
-    // TODO: security: only admin role
 
     /** Timestamp format used for dumps */
     private val timestampFormat by lazy { SimpleDateFormat("yyyyMMddHHmmss") }

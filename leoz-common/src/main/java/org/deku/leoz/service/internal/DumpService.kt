@@ -2,6 +2,10 @@ package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.Authorization
+import org.deku.leoz.config.Rest
+import org.deku.leoz.model.UserRole
+import org.deku.leoz.rest.RestrictRoles
 import sx.rs.auth.ApiKey
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
@@ -18,8 +22,9 @@ import javax.ws.rs.core.StreamingOutput
 @Path("internal/v1/dump")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
-@Api(value = "Dump operations")
-@ApiKey(false)
+@Api(value = "Dump operations", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+@ApiKey
+@RestrictRoles(UserRole.ADMIN)
 interface DumpService {
     companion object {
         val STATION_NO = "station-no"
