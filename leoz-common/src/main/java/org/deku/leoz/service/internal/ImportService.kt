@@ -47,30 +47,31 @@ interface ImportService {
             @get:ApiModelProperty(example = "10586136", required = false, value = "Cartage note")
             var cartageNote: Long? = null,
             @get:ApiModelProperty(example = "1.5", required = false, value = "Weight")
-            var realWeight: Double = 0.0,
+            var realWeight: Double? = null,
             @get:ApiModelProperty(example = "4.4", required = false, value = "Volume weight")
-            var volWeight: Double = 0.0,
+            var volWeight: Double? = null,
             @get:ApiModelProperty(example = "20", required = false, value = "Length")
-            var length: Int = 0,
+            var length: Int? = null,
             @get:ApiModelProperty(example = "30", required = false, value = "Width")
-            var width: Int = 0,
+            var width: Int? = null,
             @get:ApiModelProperty(example = "40", required = false, value = "Height")
-            var height: Int = 0,
+            var height: Int? = null,
             @get:ApiModelProperty(example = "08/09/2017", required = false, value = "Date of station in")
             var dateOfStationIn: java.sql.Date? = null,
             @get:ApiModelProperty(example = "abcdef", required = false, value = "Reference")
             var cReference: String? = null,
             @get:ApiModelProperty(example = "541", required = false, value = "Tour")
-            var tourNo: Int = 0,
+            var tourNo: Int? = null,
             @get:ApiModelProperty(example = "true", required = false, value = "Is missing")
-            var isMissing: Boolean = false,
+            var isMissing: Boolean? = null,
             @get:ApiModelProperty(example = "true", required = false, value = "Is damaged")
-            var isDamaged: Boolean = false,
+            var isDamaged: Boolean? = null,
             @get:ApiModelProperty(example = "true", required = false, value = "Is wrong station")
-            var isWrongLoaded: Boolean = false,
+            var isWrongLoaded: Boolean? = null,
             @get:ApiModelProperty(example = "true", required = false, value = "Is wrong routed")
-            var isWrongRouted: Boolean = false
+            var isWrongRouted: Boolean? = null
     )
+
     enum class ResponseMsg(val value: String) {
         PARCEL_ALREADY_SCANNED("Parcel already scanned"),
         PARCEL_NOT_FOUND("Parcel not found"),
@@ -101,8 +102,8 @@ interface ImportService {
     @Path("/set-properties")
     @ApiOperation(value = "Set properties", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun setProperties(
-            @ApiParam(value = "Parcel") parcel: Parcel,
-            @QueryParam(STATION_NO) @ApiParam(value = "Station number", example = "220", required = true) stationNo: Int
+            @ApiParam(value = "Parcel") parcel: Parcel
+
     ): Parcel
 
     @GET
