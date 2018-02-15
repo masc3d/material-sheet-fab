@@ -14,8 +14,8 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/import")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Import service")
-@ApiKey(false)
+@Api(value = "Import service", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+@ApiKey
 interface ImportService {
 
     companion object {

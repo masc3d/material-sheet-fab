@@ -17,6 +17,9 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
+import org.deku.leoz.central.rest.authorizedUser
+import javax.servlet.http.HttpServletRequest
+import javax.ws.rs.core.Context
 
 @Named
 @Path("internal/v1/import")
@@ -30,8 +33,8 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
 
-    @Inject
-    private lateinit var userService: UserService
+//    @Inject
+//    private lateinit var userService: UserService
     @Inject
     private lateinit var parcelRepository: JooqParcelRepository
     @Inject
@@ -39,8 +42,12 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
     @Inject
     private lateinit var statusRepository: JooqStatusRepository
 
+    @Context
+    private lateinit var httpRequest: HttpServletRequest
+
     override fun getParcelsToImportByStationNo(stationNo: Int, deliveryDate: Date?): List<ImportService.Order> {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val orders = if (deliveryDate != null) parcelRepository.getOrdersToImportByStation(stationNo, deliveryDate.toLocalDate()) else parcelRepository.getOrdersToImportByStation(station = stationNo)
         if (orders.count() == 0)
@@ -86,7 +93,8 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun setProperties(parcel: ImportService.Parcel): ImportService.Parcel {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
         val parcelOriginal = getParcel(parcel.parcelNo)
         val unitRecord = parcelRepository.findParcelByUnitNumber(parcel.parcelNo)
         unitRecord ?: throw RestProblem(
@@ -157,7 +165,8 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
     }
 
     override fun getParcel(scanCode: String, stationNo: Int): ImportService.Parcel {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val un = DekuUnitNumber.parseLabel(scanCode)
         var dekuNo: Long?
