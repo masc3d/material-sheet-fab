@@ -20,9 +20,7 @@ fun Observable<String>.toStreamingOutput(): StreamingOutput {
     return object : StreamingOutput {
         override fun write(output: OutputStream) {
             try {
-                val writer = output.buffered().writer()
-
-                // There's no non-blocking in jax/rs :/
+                val writer = output.writer()
 
                 this@toStreamingOutput
                         .lift<String> {
@@ -34,6 +32,8 @@ fun Observable<String>.toStreamingOutput(): StreamingOutput {
                                 override fun onNext(t: String) {
                                     try {
                                         writer.write(t)
+                                        // Flush is essential on every write (at least for resteasy)
+                                        writer.flush()
                                         it.onNext(t)
                                     } catch (e: Throwable) {
                                         log.error(e.message, e)
@@ -45,14 +45,9 @@ fun Observable<String>.toStreamingOutput(): StreamingOutput {
                                 }
                             }
                         }
-                        .doFinally {
-                            try {
-                                writer.flush()
-                            } catch (e: Throwable) {
-                                // Ignore errors on flushing
-                            }
-                        }
+                        // There's no non-blocking in jax/rs :/
                         .blockingSubscribe()
+
             } catch (e: Throwable) {
                 throw WebApplicationException(e)
             }
