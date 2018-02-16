@@ -6,6 +6,8 @@ import org.jooq.*
 import org.jooq.conf.ParamType
 import org.jooq.conf.Settings
 import org.jooq.impl.DSL
+import java.sql.ResultSet.CONCUR_READ_ONLY
+import java.sql.ResultSet.TYPE_FORWARD_ONLY
 
 /**
  * Created by masc on 14.02.18.
@@ -25,6 +27,7 @@ fun <R : Record> DSLContext.replace(table: Table<R>, vararg values: List<Any>): 
                     table,
                     DSL.list(table.fields().map { it.unqualifiedName })
             ).plus(
+                    // Format values
                     values.map { DSL.list(it.map(DSL::`val`)) }
             )
     )
@@ -50,9 +53,9 @@ fun <R : Record> Select<R>.dump(): Observable<String> {
     return Observable.fromIterable(
             // Prepare and fetch jooq cursor
             this
-                    .resultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY)
-                    .resultSetType(java.sql.ResultSet.TYPE_FORWARD_ONLY)
-                    .fetchSize(kotlin.Int.MIN_VALUE)
+                    .resultSetConcurrency(CONCUR_READ_ONLY)
+                    .resultSetType(TYPE_FORWARD_ONLY)
+                    .fetchSize(Int.MIN_VALUE)
                     .fetchLazy()
     )
             // Buffer records per statement
@@ -71,7 +74,7 @@ fun <R : Record> Select<R>.dump(): Observable<String> {
                             record.fields().map { it.getValue(record) }
                         }.toTypedArray()
                 )
-                        .getSQL(ParamType.INLINED)
+                        .getSQL(ParamType.INLINED) + ";\n"
             }
             .doFinally {
                 dsl.close()
