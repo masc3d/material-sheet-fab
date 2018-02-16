@@ -26,6 +26,9 @@ server:
         # Resolved by simply just having one certificate in the keystore (removed self-signed)
         key-alias: le-1d4811c9-e696-4106-bfb2-03eb9d72bf6b
         key-password: FzgPjlHg4We3
+        protocol: TLSv1.2
+        enabled-protocols: TLSv1.1,TLSv1.2
+        #ciphers: DHE_RSA_AES256_GCM_SHA384,DHE_RSA_AES128_GCM_SHA256,ECDHE_RSA_AES256_GCM_SHA384,ECDHE_RSA_AES128_GCM_SHA256,DHE_RSA_AES256_SHA256,DHE_RSA_AES128_SHA256,ECDHE_RSA_AES256_SHA384,ECDHE_RSA_AES128_SHA256,ECDHE_RSA_AES256_SHA,ECDHE_RSA_AES128_SHA,DHE_RSA_AES256_SHA,DHE_RSA_AES128_SHA
 
 # Central datasource
 persistence:

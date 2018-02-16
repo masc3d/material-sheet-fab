@@ -30,8 +30,11 @@ import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
+import org.deku.leoz.central.rest.authorizedUser
 
 @Named
 @Path("internal/v1/export")
@@ -70,11 +73,15 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     @Inject
     private lateinit var statusRepository: JooqStatusRepository
 
+    @Context
+    private lateinit var httpRequest: HttpServletRequest
+
     data class ExportUnitOrder(val unit: TblauftragcolliesRecord, val order: TblauftragRecord)
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun export(scanCode: String, loadingListNo: String, stationNo: Int): String {
-        userService.get()
+        val authorizedUser = httpRequest.authorizedUser
+        //userService.get()
 
         //check stationNo in user-stationsAllowed
 
@@ -137,7 +144,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getLoadedParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val orders = if (sendDate != null) parcelRepository.getOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrdersToExportByStation(station = stationNo)
         if (orders.count() == 0)
@@ -164,7 +172,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getNewLoadinglistNo(): ExportService.Loadinglist {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
         var loadlistNo: Long = 0
         do {
             loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 300000
@@ -175,7 +184,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val orders = if (sendDate != null) parcelRepository.getOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrdersToExportByStation(station = stationNo)
         if (orders.count() == 0)
@@ -208,7 +218,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getParcelsToExportInBagByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val parcels = if (sendDate != null) parcelRepository.getParcelsToExportInBagByStation(stationNo, sendDate = sendDate.toLocalDate()) else parcelRepository.getParcelsToExportInBagByStation(station = stationNo)
         if (parcels.count() == 0)
@@ -221,13 +232,14 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getCountToSendBackByStation(stationNo: Int): Int {
-        userService.get()
-
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
         return bagService.getCountToSendBackByStation(stationNo)
     }
 
     override fun getParcelsToExportByLoadingList(loadinglistNo: String): List<ExportService.Order> {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
         val un = DekuUnitNumber.parseLabel(loadinglistNo)
         when {
             un.hasError -> {
@@ -253,7 +265,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getNewBagLoadinglistNo(): ExportService.Loadinglist {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
         var loadlistNo: Long = 0
         do {
             loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
@@ -264,8 +277,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun setBagStationExportRedSeal(bagID: String, bagBackUnitNo: String, stationNo: Int, redSeal: String, text: String) {
-        userService.get()
-
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -391,7 +404,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun reopenBagStationExport(bagID: String, stationNo: Int) {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -436,8 +450,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun fillBagStationExport(bagID: String, bagBackUnitNo: String, stationNo: Int, unitNo: String, loadingListNo: String, yellowSealNo: String): String {
-        userService.get()
-
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -642,8 +656,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun closeBagStationExport(bagID: String, bagBackUnitNo: String, stationNo: Int, loadingListNo: String) {
-        userService.get()
-
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -780,7 +794,8 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getBag(stationNo: Int, bagID: String): ExportService.Bag {
-        userService.get()
+        //userService.get()
+        val authorizedUser = httpRequest.authorizedUser
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack

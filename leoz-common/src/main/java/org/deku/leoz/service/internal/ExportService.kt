@@ -17,8 +17,8 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/export")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Export service")
-@ApiKey(false)
+@Api(value = "Export service", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+@ApiKey
 interface ExportService {
 
     companion object {
