@@ -48,18 +48,21 @@ fun <R : Record> Select<R>.dump(): Observable<String> {
     )
 
     return Observable.fromIterable(
+            // Prepare and fetch jooq cursor
             this
                     .resultSetConcurrency(java.sql.ResultSet.CONCUR_READ_ONLY)
                     .resultSetType(java.sql.ResultSet.TYPE_FORWARD_ONLY)
                     .fetchSize(kotlin.Int.MIN_VALUE)
                     .fetchLazy()
     )
+            // Buffer records per statement
             .buffer(100)
+            // Create statement from record batch
             .map { records ->
                 // Determine table name from record
                 val table = (records.get(0) as? TableRecord<*>)
                         ?.getTable()
-                        ?: throw IllegalArgumentException("Select does not contain table records")
+                        ?: throw IllegalArgumentException("Dump requires table records")
 
                 // Generate statement
                 dsl.replace(
