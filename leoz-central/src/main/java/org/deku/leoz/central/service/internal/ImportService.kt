@@ -2,9 +2,9 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.central.data.toDoubleWithTwoDecimalDigits
 import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.ImportService
-import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -17,7 +17,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
-import org.deku.leoz.central.rest.authorizedUser
+import java.math.BigDecimal
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.core.Context
 
@@ -33,8 +33,6 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
 
-//    @Inject
-//    private lateinit var userService: UserService
     @Inject
     private lateinit var parcelRepository: JooqParcelRepository
     @Inject
@@ -46,8 +44,6 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
     private lateinit var httpRequest: HttpServletRequest
 
     override fun getParcelsToImportByStationNo(stationNo: Int, deliveryDate: Date?): List<ImportService.Order> {
-        //userService.get()
-        val authorizedUser = httpRequest.authorizedUser
 
         val orders = if (deliveryDate != null) parcelRepository.getOrdersToImportByStation(stationNo, deliveryDate.toLocalDate()) else parcelRepository.getOrdersToImportByStation(station = stationNo)
         if (orders.count() == 0)
@@ -80,7 +76,7 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun import(scanCode: String, stationNo: Int): ImportService.Parcel {
         val parcel = getParcel(scanCode, stationNo)
-        statusRepository.insertStatus(parcel.parcelNo, Date(), Event.IMPORT_RECEIVE, Reason.NORMAL, importServiceInfotext, stationNo.toString())
+        statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.IMPORT_RECEIVE, Reason.NORMAL, importServiceInfotext, stationNo.toString())
         val unitRecord = parcelRepository.findParcelByUnitNumber(parcel.parcelNo)
         unitRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
@@ -93,30 +89,25 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun setProperties(parcel: ImportService.Parcel): ImportService.Parcel {
-        //userService.get()
-        val authorizedUser = httpRequest.authorizedUser
         val parcelOriginal = getParcel(parcel.parcelNo)
         val unitRecord = parcelRepository.findParcelByUnitNumber(parcel.parcelNo)
         unitRecord ?: throw RestProblem(
                 status = Response.Status.NOT_FOUND,
                 title = ImportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
         )
-        val parcelIsDamaged=parcel.isDamaged
+        val parcelIsDamaged = parcel.isDamaged
         if (parcelIsDamaged != null) {
             if (parcelOriginal.isDamaged != parcelIsDamaged) {
                 unitRecord.isDamaged = if (parcelIsDamaged) -1 else 0
                 unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
                 if (parcelIsDamaged) {
-                    statusRepository.statusExist(parcel.parcelNo, Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.PARCEL_DAMAGED.oldValue).also {
-                        if (!it)
-                            statusRepository.insertStatus(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.PARCEL_DAMAGED, importServiceInfotext, unitRecord.mydepotid2.toString())
-                    }
+                    statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.PARCEL_DAMAGED, importServiceInfotext, unitRecord.mydepotid2.toString())
 
                 }
             }
         }
-        val parcelIsMissing=parcel.isMissing
-        if(parcelIsMissing!=null) {
+        val parcelIsMissing = parcel.isMissing
+        if (parcelIsMissing != null) {
             if (parcelOriginal.isMissing != parcelIsMissing && parcelIsMissing) {
                 //PASreset=true
                 //if PAScleared WLtransfer
@@ -125,24 +116,18 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
                     unitRecord.lieferfehler = Reason.PARCEL_MISSING.oldValue.toShort()
                     unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
                 }
-                statusRepository.statusExist(parcel.parcelNo, Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.PARCEL_MISSING.oldValue).also {
-                    if (!it)
-                        statusRepository.insertStatus(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.PARCEL_MISSING, importServiceInfotext, unitRecord.mydepotid2.toString())
-                }
+                statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.PARCEL_MISSING, importServiceInfotext, unitRecord.mydepotid2.toString())
 
             }
         }
-        val parcelIsWrongLoaded=parcel.isWrongLoaded
-        if(parcelIsWrongLoaded!=null) {
+        val parcelIsWrongLoaded = parcel.isWrongLoaded
+        if (parcelIsWrongLoaded != null) {
             if (parcelOriginal.isWrongLoaded != parcelIsWrongLoaded && parcelIsWrongLoaded) {
-                statusRepository.statusExist(parcel.parcelNo, Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.WRONG_LOADED.oldValue).also {
-                    if (!it)
-                        statusRepository.insertStatus(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.WRONG_LOADED, importServiceInfotext, unitRecord.mydepotid2.toString())
-                }
+                statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.WRONG_LOADED, importServiceInfotext, unitRecord.mydepotid2.toString())
             }
         }
-        val parcelIsWrongRouted=parcel.isWrongRouted
-        if(parcelIsWrongRouted!=null) {
+        val parcelIsWrongRouted = parcel.isWrongRouted
+        if (parcelIsWrongRouted != null) {
             if (parcelOriginal.isWrongRouted != parcelIsWrongRouted && parcelIsWrongRouted) {
                 //PASreset=true
                 //if PAScleared WLtransfer
@@ -151,22 +136,126 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
                     unitRecord.lieferfehler = Reason.WRONG_ROUTING.oldValue.toShort()
                     unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
                 }
-                statusRepository.statusExist(parcel.parcelNo, Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.WRONG_ROUTING.oldValue).also {
-                    if (!it)
-                        statusRepository.insertStatus(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.WRONG_ROUTING, importServiceInfotext, unitRecord.mydepotid2.toString())
-                }
+                statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.WRONG_ROUTING, importServiceInfotext, unitRecord.mydepotid2.toString())
             }
         }
 
-        //toDo gewichtskorrektur
+        val orderRecord = parcelRepository.getOrderById(unitRecord.orderid.toLong())
+        orderRecord ?: throw RestProblem(
+                status = Response.Status.NOT_FOUND,
+                title = ImportService.ResponseMsg.ORDER_NOT_FOUND.value//"Order not found"
+        )
+        var parcelWeightChanged = false
+        var parcelVolWeightChanged = false
+        var parcelLengthChanged = false
+        var parcelWidthChanged = false
+        var parcelHeightChanged = false
+        var parcelEffWeightChanged = false
+        val parcelWeight = parcel.realWeight ?: 0.0
+        val parcelLength = parcel.length ?: 0
+        val parcelWidth = parcel.width ?: 0
+        val parcelHeight = parcel.height ?: 0
+        var parcelEffWeight = 0.0
+        var orderSumWeight = orderRecord.gewichtgesamt ?: 0.0
+        if (parcelWeight > 0 && parcelWeight != parcelOriginal.realWeight) {
+            parcelWeightChanged = true
+        }
+
+        if (parcelLength > 0 && parcelLength != parcelOriginal.length) {
+            parcelLengthChanged = true
+        }
+
+        if (parcelWidth > 0 && parcelWidth != parcelOriginal.width) {
+            parcelWidthChanged = true
+        }
+        if (parcelHeight > 0 && parcelHeight != parcelOriginal.height) {
+            parcelHeightChanged = true
+        }
+
+        //val parcelVolWeight = BigDecimal((parcelLength * parcelWidth * parcelHeight) / 6000).setScale(2,BigDecimal.ROUND_HALF_UP).toDouble()
+        val parcelVolWeight = BigDecimal((parcelLength * parcelWidth * parcelHeight) / 6000).toDoubleWithTwoDecimalDigits()
+        if (parcelVolWeight > 0) {
+            if (parcelVolWeight != parcelOriginal.volWeight) {
+                parcelVolWeightChanged = true
+            }
+        } else {
+            parcelLengthChanged = false
+            parcelWidthChanged = false
+            parcelHeightChanged = false
+        }
+        if (parcelWeightChanged) {
+            if (parcelVolWeightChanged) {
+                if (parcelVolWeight > parcelWeight) {
+                    parcelEffWeight = parcelVolWeight
+                } else {
+                    parcelEffWeight = parcelWeight
+                }
+            } else {
+                if (parcelOriginal.volWeight!! > parcelWeight) {
+                    parcelEffWeight = parcelOriginal.volWeight!!
+                } else {
+                    parcelEffWeight = parcelWeight
+                }
+            }
+        } else {
+            if (parcelVolWeightChanged) {
+                if (parcelVolWeight > parcelOriginal.realWeight!!) {
+                    parcelEffWeight = parcelVolWeight
+                } else {
+                    parcelEffWeight = parcelOriginal.realWeight!!
+                }
+            } else {
+                parcelEffWeight = 0.0
+            }
+        }
+        if (parcelEffWeight > 0.0) {
+            if (parcelEffWeight != parcelOriginal.volWeight!!) {
+                parcelEffWeightChanged = true
+            }
+        }
+        if (parcelWeightChanged || parcelLengthChanged || parcelWidthChanged || parcelHeightChanged || parcelVolWeightChanged || parcelEffWeightChanged) {
+            statusRepository.insertStatus(parcel.parcelNo, Date(), Event.ADJUSTMENT_WEIGHT, Reason.NORMAL, importServiceInfotext, unitRecord.mydepotid2.toString())
+            if (parcelWeightChanged)
+                unitRecord.gewichtreal = parcelWeight
+            if (parcelLengthChanged)
+                unitRecord.laenge = parcelLength.toShort()
+            if (parcelWidthChanged)
+                unitRecord.breite = parcelWidth.toShort()
+            if (parcelHeightChanged)
+                unitRecord.hoehe = parcelHeight.toShort()
+            if (parcelVolWeightChanged)
+                unitRecord.gewichtlbh = parcelVolWeight
+            if (parcelEffWeightChanged)
+                unitRecord.gewichteffektiv = parcelEffWeight
+            unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
+        }
+        val newSumWeightReal = parcelRepository.getSumUnitRealWeight(unitRecord.orderid.toLong())?.toDoubleWithTwoDecimalDigits()
+        newSumWeightReal ?: throw RestProblem(
+                status = Response.Status.NOT_FOUND,
+                title = ImportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
+        )
+        val newSumWeightVol = parcelRepository.getSumUnitVolWeight(unitRecord.orderid.toLong())?.toDoubleWithTwoDecimalDigits()
+        newSumWeightVol ?: throw RestProblem(
+                status = Response.Status.NOT_FOUND,
+                title = ImportService.ResponseMsg.PARCEL_NOT_FOUND.value//"Parcel not found"
+        )
+        val newOrderSumWeight: Double
+        if (newSumWeightReal > newSumWeightVol)
+            newOrderSumWeight = newSumWeightReal
+        else
+            newOrderSumWeight = newSumWeightVol
+        if (orderSumWeight != newOrderSumWeight) {
+            orderRecord.sendstatus = 0
+            orderRecord.gewichtgesamt = newOrderSumWeight
+            orderRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
+        }
+
 
         return getParcel(parcel.parcelNo)
 
     }
 
     override fun getParcel(scanCode: String, stationNo: Int): ImportService.Parcel {
-        //userService.get()
-        val authorizedUser = httpRequest.authorizedUser
 
         val un = DekuUnitNumber.parseLabel(scanCode)
         var dekuNo: Long?

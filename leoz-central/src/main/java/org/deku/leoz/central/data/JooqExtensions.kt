@@ -6,6 +6,7 @@ import org.jooq.ResultQuery
 import org.jooq.exception.DataAccessException
 import org.jooq.types.UByte
 import org.jooq.types.UInteger
+import java.math.BigDecimal
 
 /**
  * Helper for executing a prepared statement and making sure the statement is closed when
@@ -44,4 +45,7 @@ fun Int.toUInteger(): UInteger {
 }
 fun Int.toUByte(): UByte {
     return UByte.valueOf(this)
+}
+fun BigDecimal.toDoubleWithTwoDecimalDigits():Double{
+    return this.setScale(2,BigDecimal.ROUND_HALF_UP).toDouble()
 }

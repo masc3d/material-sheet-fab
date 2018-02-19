@@ -17,10 +17,12 @@ import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.ImportService
+import org.jooq.impl.DSL.sum
 import org.jooq.types.UInteger
 import sx.time.toSqlDate
 import sx.time.toTimestamp
 import sx.time.workDate
+import java.math.BigDecimal
 import java.time.LocalDate
 
 
@@ -330,6 +332,16 @@ class JooqParcelRepository {
                         .and(Tables.TBLAUFTRAG.DTAUSLIEFERUNG.eq(deliveryDate.toTimestamp()))
         )
 
+    }
+    fun getSumUnitRealWeight(orderId:Long):BigDecimal?{
+        return dsl.select(sum(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL)).
+                from(Tables.TBLAUFTRAGCOLLIES).
+                where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble()))?.fetchOne(0, BigDecimal::class.java)
+    }
+    fun getSumUnitVolWeight(orderId:Long):BigDecimal?{
+        return dsl.select(sum(Tables.TBLAUFTRAGCOLLIES.GEWICHTLBH)).
+                from(Tables.TBLAUFTRAGCOLLIES).
+                where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble()))?.fetchOne(0, BigDecimal::class.java)
     }
 
 }

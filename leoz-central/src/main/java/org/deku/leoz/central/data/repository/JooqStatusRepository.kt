@@ -53,6 +53,14 @@ class JooqStatusRepository {
         r.store()
     }
 
+    fun createIfNotExists(unitNo: Long, statusTimestamp:Date, event:Event, reason: Reason=Reason.NORMAL, info:String="", creatorStation:String,text:String?=null,longitude:Double?=null, latitude:Double?=null)
+    {
+        statusExist(unitNo, event.creator.toString(), event.concatId, reason.oldValue).also {
+            if (!it)
+                insertStatus(unitNo, statusTimestamp, event, reason, info, creatorStation,text,longitude,latitude)
+        }
+    }
+
 }
 
 fun TblstatusRecord.setDate(date: Date) {
