@@ -57,10 +57,11 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
 
         val userRole = user?.role
 
-        // Set authorized user on request level
+        // Store authorized user domain object on http request level for consumers (eg. services)
         this.httpRequest.setAttribute(REQUEST_AUTHORIZED_USER, user)
 
         if (user != null) {
+            // Check for user activity & expiry
             if (!(user.active ?: false)) {
                 throw RestProblem(
                         title = "User [${user.id}] has been deactivated",
@@ -80,9 +81,10 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
                         return false
                 }
 
-        // Check for node key
-        if (user == null)
+        if (user == null) {
+            // Fallback to node api key check
             return nodeJooqRepository.hasAuthorizedKey(apiKey)
+        }
 
         // All checks passed, permission granted
         return true
