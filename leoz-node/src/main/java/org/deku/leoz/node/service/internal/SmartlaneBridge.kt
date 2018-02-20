@@ -505,6 +505,7 @@ class SmartlaneBridge {
                                 userId = tour.userId,
                                 stationNo = tour.stationNo,
                                 parentId = tour.id,
+                                date = tour.date,
                                 optimized = now,
                                 stops = stops,
                                 orders = orders,
@@ -573,6 +574,7 @@ class SmartlaneBridge {
     ): Routinginput {
         return Routinginput().also {
             val omitLoads = options.omitLoads ?: false
+            val vehicleCount = options.vehicles?.count() ?: 0
 
             it.deliverydata = this.stops
                     .map { stop ->
@@ -688,7 +690,7 @@ class SmartlaneBridge {
                 }
             }
 
-            if (!omitLoads)
+            if (!omitLoads || vehicleCount > 0)
                 it.vehcapacities = options.vehicles?.map { (it.capacity * 100).toInt() }
         }
     }
