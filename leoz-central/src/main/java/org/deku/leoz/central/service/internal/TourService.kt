@@ -157,7 +157,7 @@ class TourServiceV1
                 }
     }
 
-    @Scheduled(cron = "* * */4 * * *")
+    @Scheduled(cron = "0 0 */2 * * *")
     fun clean() {
         val expiry = Date()
                 .plusDays(-1)
@@ -182,6 +182,9 @@ class TourServiceV1
             tours: Iterable<Tour>
     ): List<Tour> {
         val now = Date().toTimestamp()
+
+        if (tours.count() == 0)
+            return
 
         return emf.transaction { em ->
             tours
@@ -335,6 +338,7 @@ class TourServiceV1
     //region REST
     /**
      * Get tours
+     * @throws NoSuchElementException When no tours have been found
      */
     override fun get(
             ids: List<Long>?,

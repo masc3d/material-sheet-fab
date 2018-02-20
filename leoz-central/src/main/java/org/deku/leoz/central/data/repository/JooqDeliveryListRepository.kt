@@ -1,13 +1,13 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.dekuclient.Tables.TAD_V_DELIVERYLIST
-import org.deku.leoz.central.data.jooq.dekuclient.Tables.TAD_V_DELIVERYLIST_DETAILS
+import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistDetailsRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.time.toTimestamp
+import java.sql.Timestamp
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -71,5 +71,19 @@ open class JooqDeliveryListRepository {
                 .where(TAD_V_DELIVERYLIST_DETAILS.ID.`in`(ids.map { it.toDouble() }))
                 .orderBy(TAD_V_DELIVERYLIST_DETAILS.ID, TAD_V_DELIVERYLIST_DETAILS.ORDER_POSITION)
                 .toList()
+    }
+
+    /**
+     * Find delivery list ids newer than specific criteria
+     * @param syncId sync id
+     * @param created created date
+     */
+    fun findNewerThan(
+            syncId: Long,
+            created: Timestamp): List<Long> {
+        return dsl.select(RKKOPF.ID).from(RKKOPF)
+                .where(RKKOPF.SYNC_ID.gt(syncId)).and(RKKOPF.DRUCKZEIT.ge(created))
+                .fetch(RKKOPF.ID)
+                .map { it.toLong() }
     }
 }

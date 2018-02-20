@@ -1,18 +1,25 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.data.jooq.dekuclient.Tables.RKKOPF
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
 import org.deku.leoz.central.data.repository.JooqStationRepository
-import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.rest.authorizedUser
 import org.deku.leoz.central.rest.restrictByDebitor
+import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
+import org.deku.leoz.model.TaskType
 import sx.rs.RestProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
+import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import org.zalando.problem.Status
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.time.plusDays
+import sx.time.toTimestamp
+import java.util.*
+import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
@@ -42,10 +49,74 @@ class DeliveryListService
     private lateinit var stationRepository: JooqStationRepository
 
     @Inject
-    private lateinit var orderService: org.deku.leoz.central.service.internal.OrderService
+    private lateinit var orderService: OrderService
 
     @Inject
-    private lateinit var userRepository: JooqUserRepository
+    private lateinit var databaseSyncService: DatabaseSyncService
+
+    @Inject
+    private lateinit var tourService: org.deku.leoz.central.service.internal.TourServiceV1
+
+    @PostConstruct
+    fun onInitialize() {
+        this.databaseSyncService.notifications
+                .filter { it.tableName == RKKOPF.name }
+                .subscribe {
+                    this.onUpdate(
+                            this.deliveryListRepository
+                                    .findNewerThan(
+                                            syncId = it.syncId,
+                                            // Only notify about recent delivery lists
+                                            created = Date().plusDays(-1).toTimestamp()
+                                    )
+                    )
+                }
+    }
+
+    /**
+     * Delivery list update handler
+     */
+    private fun onUpdate(deliverylistIds: List<Long>) {
+        //region Convert delivery lists to tours
+        val dlRecords = deliveryListRepository
+                .findByIds(deliverylistIds)
+
+        if (dlRecords.count() == 0)
+            return
+
+        val dlDetailRecordsByDlId = deliveryListRepository
+                .findDetailsByIds(deliverylistIds)
+                .groupBy { it.id }
+
+        this.tourService.put(tours = dlRecords.map { dlRecord ->
+            TourServiceV1.Tour(
+                    stationNo = dlRecord.deliveryStation.toLong(),
+                    customId = dlRecord.id.toLong().toString(),
+                    date = ShortDate(dlRecord.deliveryListDate),
+                    stops = dlDetailRecordsByDlId.getValue(dlRecord.id)
+                            .sortedBy { it.orderPosition }
+                            .groupBy { it.orderPosition }
+                            .map { dlStop ->
+                                TourServiceV1.Stop(
+                                        tasks = dlStop.value
+                                                .distinctBy { it.orderId.toString() + it.stoptype }
+                                                .map { dlDetailRecord ->
+                                                    TourServiceV1.Task(
+                                                            orderId = dlDetailRecord.orderId.toLong(),
+                                                            taskType = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
+                                                                TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
+                                                                TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                            }
+                                                    )
+                                                }
+
+                                )
+
+                            }
+            )
+        })
+        //endregion
+    }
 
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
         val dlRecord: TadVDeliverylistRecord?
@@ -86,7 +157,7 @@ class DeliveryListService
     override fun getInfo(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
         val authorizedUser = httpRequest.authorizedUser
         val debitorId = authorizedUser.debitorId
-            ?: throw IllegalArgumentException("User [${authorizedUser.id}] is missing debitor")
+                ?: throw IllegalArgumentException("User [${authorizedUser.id}] is missing debitor")
 
         val dlInfos = when {
             deliveryDate != null -> {

@@ -32,7 +32,7 @@ open class EntitySyncCentralConfiguration {
     private lateinit var entityManagerFactory: EntityManagerFactory
 
     @Inject
-    private lateinit var dbSyncService: DatabaseSyncService
+    private lateinit var dbsync: DatabaseSyncService
 
     /** Entity publisher */
     private lateinit var entityPublisher: EntityPublisher
@@ -61,7 +61,7 @@ open class EntitySyncCentralConfiguration {
                 listenerExecutor = this.executorService)
 
         // Wire database sync event
-        this.dbSyncService.updated
+        this.dbsync.updates
                 .subscribe {
                     entityPublisher.publish(it.entityType, it.syncId)
                 }
