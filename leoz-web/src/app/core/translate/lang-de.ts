@@ -33,6 +33,7 @@ export const LANG_DE_TRANS = {
   'datafilter': 'Datenfilter',
   'record-delivery-data': 'Lieferdatenerfassung',
   'forStation': 'für Station',
+  'favourites': 'Favoriten',
   // 'statistics': 'Statistiken', (see below)
   'pod-reprints': 'Rollkarten Nachdruck',
   'client-management': 'Kundenverwaltung',

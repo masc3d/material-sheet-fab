@@ -337,6 +337,12 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
           icon: 'far fa-smile',
           routerLink: 'user',
           command: closeMenu
+        },
+        {
+          label: this.translate.instant( 'favourites' ),
+          icon: '',
+          routerLink: 'favourites',
+          command: closeMenu
         } ];
       if (this.electronService.isElectron()) {
         officeManagementItems.push( {

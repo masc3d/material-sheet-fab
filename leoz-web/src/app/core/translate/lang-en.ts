@@ -33,6 +33,7 @@ export const LANG_EN_TRANS = {
   'datafilter': 'Datafilter',
   'record-delivery-data': 'Deliverydata recording',
   'forStation': 'for Station',
+  'favourites': 'Favourites',
   // 'statistics': 'Statistics', (see below)
   'pod-reprints': 'Deliverylist reprint',
   'client-management': 'Client management',
