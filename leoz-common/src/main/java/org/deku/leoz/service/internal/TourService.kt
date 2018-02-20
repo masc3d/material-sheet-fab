@@ -45,6 +45,8 @@ interface TourServiceV1 {
             value = "Get tour(s)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
+            @QueryParam(ID) @ApiParam(value = "Ids", required = false)
+            ids: List<Long>?,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
             debitorId: Long?,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
