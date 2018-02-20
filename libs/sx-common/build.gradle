@@ -141,7 +141,8 @@ dependencies {
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
-            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson"
     )
 }
 
