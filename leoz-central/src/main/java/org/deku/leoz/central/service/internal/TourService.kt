@@ -29,7 +29,6 @@ import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
-import org.deku.leoz.service.internal.id
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -38,6 +37,7 @@ import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
+import sx.persistence.querydsl.batchDelete
 import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
 import sx.persistence.transaction
@@ -484,13 +484,14 @@ class TourServiceV1
                                     .map { it.get(tadTour.id) }
                                     .distinct()
 
-                            em.delete(tadTourEntry)
-                                    .where(tadTourEntry.tourId.`in`(tourIds))
-                                    .execute()
+                            em.delete(
+                                    tadTourEntry,
+                                    tadTourEntry.tourId.`in`(tourIds))
 
-                            em.delete(tadTour)
-                                    .where(tadTour.id.`in`(tourIds))
-                                    .execute()
+                            em.delete(
+                                    tadTour,
+                                    tadTour.id.`in`(tourIds)
+                            )
 
                             this.smartlane.deleteRoutes(
                                     tours = records.map {
