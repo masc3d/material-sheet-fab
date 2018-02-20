@@ -46,17 +46,17 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
             @QueryParam(ID) @ApiParam(value = "Ids", required = false)
-            ids: List<Long>?,
+            ids: List<Long>? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
-            debitorId: Long?,
+            debitorId: Long? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
-            stationNo: Long?,
+            stationNo: Long? = null,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
-            userId: Long?,
+            userId: Long? = null,
             @QueryParam(FROM) @ApiParam(example = "2018-01-27", value = "From (tour) date", required = false)
-            from: ShortDate?,
+            from: ShortDate? = null,
             @QueryParam(TO) @ApiParam(example = "2018-01-27", value = "To (tour) date", required = false)
-            to: ShortDate?
+            to: ShortDate? = null
     ): List<Tour>
 
     @GET
@@ -99,13 +99,13 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun delete(
             @QueryParam(ID) @ApiParam(value = "Tour id(s)", required = false)
-            ids: List<Long>?,
+            ids: List<Long>? = null,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
-            userId: Long?,
+            userId: Long? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
-            stationNo: Long?,
+            stationNo: Long? = null,
             @QueryParam(INCLUDE_RELATED) @ApiParam(value = "Inlcude related tours (eg. split optimized tours)", required = false, defaultValue = "false")
-            includeRelated: Boolean
+            includeRelated: Boolean? = null
     )
 
     @PATCH

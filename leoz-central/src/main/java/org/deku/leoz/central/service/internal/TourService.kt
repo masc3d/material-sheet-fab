@@ -32,6 +32,7 @@ import org.deku.leoz.service.internal.TourServiceV1.*
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.scheduling.annotation.Scheduled
 import org.zalando.problem.Status
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
@@ -44,6 +45,9 @@ import sx.persistence.transaction
 import sx.persistence.withEntityManager
 import sx.rs.RestProblem
 import sx.rs.push
+import sx.time.minusHours
+import sx.time.plusDays
+import sx.time.plusMinutes
 import sx.time.toTimestamp
 import sx.util.hashWithSha1
 import sx.util.letWithParamNotNull
@@ -153,18 +157,21 @@ class TourServiceV1
                 }
     }
 
-    /**
-     * Get tours by id(s)
-     */
-    fun get(ids: List<Long>): List<Tour> {
-        return this.get(
-                ids = ids,
-                debitorId = null,
-                stationNo = null,
-                userId = null,
-                from = null,
-                to = null
-        )
+    @Scheduled(cron = "* * */4 * * *")
+    fun clean() {
+        val expiry = Date()
+                .plusDays(-1)
+                .toTimestamp()
+
+        emf.withEntityManager { em ->
+            this.delete(ids = em.from(tadTour).select(tadTour.id)
+                    .where(tadTour.created.lt(expiry))
+                    .fetch()
+                    .also {
+                        log.info("Removing expired tours [${it.joinToString(", ")}]")
+                    }
+            )
+        }
     }
 
     /**
@@ -436,14 +443,14 @@ class TourServiceV1
             ids: List<Long>?,
             userId: Long?,
             stationNo: Long?,
-            includeRelated: Boolean) {
+            includeRelated: Boolean?) {
 
         emf.transaction { em ->
             em.from(tadTour)
                     .select(tadTour.id, tadTour.stationNo, tadTour.uid)
                     .let {
                         when {
-                            ids != null && ids.count() > 0 -> {
+                            ids != null -> {
                                 it.where(tadTour.id.`in`(ids))
                             }
                             else -> it
@@ -464,7 +471,7 @@ class TourServiceV1
                                 .fetch()
                     } ?: listOf<Tuple>())
                     .let {
-                        when (includeRelated) {
+                        when (includeRelated ?: false) {
                             true -> {
                                 val tourIds = it.map { it.get(tadTour.id) }
 
@@ -785,14 +792,14 @@ class TourServiceV1
                                                 tasks = dlStop.value
                                                         .distinctBy { it.orderId.toString() + it.stoptype }
                                                         .map { dlDetailRecord ->
-                                                    Task(
-                                                            orderId = dlDetailRecord.orderId.toLong(),
-                                                            taskType = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
-                                                                TaskType.PICKUP -> Task.Type.PICKUP
-                                                                TaskType.DELIVERY -> Task.Type.DELIVERY
-                                                            }
-                                                    )
-                                                }
+                                                            Task(
+                                                                    orderId = dlDetailRecord.orderId.toLong(),
+                                                                    taskType = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
+                                                                        TaskType.PICKUP -> Task.Type.PICKUP
+                                                                        TaskType.DELIVERY -> Task.Type.DELIVERY
+                                                                    }
+                                                            )
+                                                        }
 
                                         )
 
