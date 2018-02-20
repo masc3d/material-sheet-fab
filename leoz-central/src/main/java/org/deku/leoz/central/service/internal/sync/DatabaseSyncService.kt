@@ -1,5 +1,7 @@
 package org.deku.leoz.central.service.internal.sync
 
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.data.repository.JooqSyncRepository
 import org.deku.leoz.node.data.jpa.LclSync
@@ -16,13 +18,12 @@ import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
 import sx.Stopwatch
 import sx.persistence.querydsl.from
-import sx.persistence.transaction
 import sx.persistence.truncate
 import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
 import javax.inject.Inject
 import javax.inject.Named
-import javax.persistence.EntityManagerFactory
+import javax.management.Notification
 import javax.persistence.PersistenceContext
 
 /** Base interface for all sync presets */
@@ -109,23 +110,48 @@ constructor(
     }
 
     //region Events
-    /** Update event */
+    /**
+     * Synchronisation update event
+     * @param entityType the entity type that has been synchronized
+     * @param syncId current sync id
+     */
     data class UpdateEvent(
             val entityType: Class<out Any?>,
             val syncId: Long?
     )
 
-    private val updatedSubject = PublishSubject.create<UpdateEvent>()
-    open val updated = this.updatedSubject.hide()
+    private val updatesSubject = PublishSubject.create<UpdateEvent>()
+    open val updates = this.updatesSubject.hide()
 
-    /** Modification event */
-    data class ModificationEvent(
+    /**
+     * Notification event
+     * @param tableName updated table
+     * @param syncId current sync id
+     **/
+    data class NotificationEvent(
             val tableName: String,
             val syncId: Long
     )
 
-    private val modifiedSubject = PublishSubject.create<ModificationEvent>()
-    open val modified = this.modifiedSubject.hide()
+    private val notificationsSubject = PublishSubject.create<NotificationEvent>()
+
+    /**
+     * Observable notifications
+     */
+    open val notifications =
+            Observable.defer<NotificationEvent> {
+                Observable.fromIterable(
+                        this.syncRepository.findAll().map {
+                            NotificationEvent(
+                                    tableName = it.tableName,
+                                    syncId = it.syncId
+                            )
+                        }
+                )
+            }
+                    .concatWith(
+                            this.notificationsSubject
+                    )
     //endregion
 
     @PersistenceContext
@@ -151,7 +177,7 @@ constructor(
     @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     @Synchronized
     open fun sync(clean: Boolean) {
-        val sw = com.google.common.base.Stopwatch.createStarted()
+        val sw = Stopwatch.createStarted()
 
         val syncIdMap = this.syncJooqRepository
                 .findAll()
@@ -167,12 +193,14 @@ constructor(
                         this.update(
                                 preset = it as SyncPreset<Record, Any>,
                                 syncIdMap = syncIdMap,
-                                deleteBeforeUpdate = clean)
+                                clean = clean
+                        )
                     }
                     is NotifyPreset<*> -> {
                         this.update(
                                 preset = it as NotifyPreset<Record>,
-                                syncIdMap = syncIdMap
+                                syncIdMap = syncIdMap,
+                                clean = clean
                         )
                     }
                 }
@@ -188,9 +216,14 @@ constructor(
      * Update from notify preset
      */
     open fun update(preset: NotifyPreset<Record>,
-                    syncIdMap: Map<String, Long>) {
+                    syncIdMap: Map<String, Long>,
+                    clean: Boolean) {
 
         val tableName = preset.srcJooqTable.name
+
+        if (clean) {
+            syncRepository.deleteAll()
+        }
 
         val dbSyncId = syncIdMap.get(tableName)
                 ?: return
@@ -199,7 +232,7 @@ constructor(
                 lclSync.tableName.eq(tableName))
                 .toNullable()
 
-        fun notify() = this.modifiedSubject.onNext(ModificationEvent(
+        fun notify() = this.notificationsSubject.onNext(NotificationEvent(
                 tableName = tableName,
                 syncId = dbSyncId)
         )
@@ -232,11 +265,11 @@ constructor(
 
     /**
      * Update from sync preset
-     * @param deleteBeforeUpdate    Delete all records before updating
+     * @param clean delete all records before updating
      */
     open fun update(preset: SyncPreset<Record, Any>,
                     syncIdMap: Map<String, Long>,
-                    deleteBeforeUpdate: Boolean
+                    clean: Boolean
     ) {
         val p = preset
 
@@ -247,7 +280,7 @@ constructor(
 
         em.flushMode = javax.persistence.FlushModeType.COMMIT
 
-        if (deleteBeforeUpdate || p.dstJpaSyncIdPath == null) {
+        if (clean || p.dstJpaSyncIdPath == null) {
             transactionJpa.execute<Any> { _ ->
                 log.info(lfmt("Deleting all entities"))
 
@@ -341,7 +374,7 @@ constructor(
                 log.info(lfmt("Updated ${count} entities [${destMaxSyncId}]"))
 
                 // Emit update event
-                this.updatedSubject.onNext(
+                this.updatesSubject.onNext(
                         UpdateEvent(
                                 entityType = p.dstJpaEntityPath.type,
                                 syncId = destMaxSyncId
