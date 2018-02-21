@@ -76,13 +76,13 @@ open class JooqDeliveryListRepository {
     /**
      * Find delivery list ids newer than specific criteria
      * @param syncId sync id
-     * @param created created date
+     * @param date created date
      */
     fun findNewerThan(
             syncId: Long,
-            created: Timestamp): List<Long> {
+            date: Timestamp): List<Long> {
         return dsl.select(RKKOPF.ROLLKARTENNUMMER).from(RKKOPF)
-                .where(RKKOPF.SYNC_ID.gt(syncId)).and(RKKOPF.DRUCKZEIT.ge(created))
+                .where(RKKOPF.SYNC_ID.gt(syncId)).and(RKKOPF.ROLLKARTENDATUM.ge(date))
                 .fetch(RKKOPF.ROLLKARTENNUMMER)
                 .map { it.toLong() }
     }
