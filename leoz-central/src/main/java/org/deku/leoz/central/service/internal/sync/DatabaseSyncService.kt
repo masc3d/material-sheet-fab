@@ -1,7 +1,6 @@
 package org.deku.leoz.central.service.internal.sync
 
 import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.data.repository.JooqSyncRepository
 import org.deku.leoz.node.data.jpa.LclSync
@@ -23,7 +22,6 @@ import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
 import javax.inject.Inject
 import javax.inject.Named
-import javax.management.Notification
 import javax.persistence.PersistenceContext
 
 /** Base interface for all sync presets */
@@ -126,11 +124,12 @@ constructor(
     /**
      * Notification event
      * @param tableName updated table
-     * @param syncId current sync id
+     * @param localSyncId Current local sync id
      **/
     data class NotificationEvent(
             val tableName: String,
-            val syncId: Long
+            val localSyncId: Long,
+            val syncId: Long? = null
     )
 
     private val notificationsSubject = PublishSubject.create<NotificationEvent>()
@@ -144,7 +143,7 @@ constructor(
                         this.syncRepository.findAll().map {
                             NotificationEvent(
                                     tableName = it.tableName,
-                                    syncId = it.syncId
+                                    localSyncId = it.syncId
                             )
                         }
                 )
@@ -221,45 +220,43 @@ constructor(
 
         val tableName = preset.srcJooqTable.name
 
-        if (clean) {
-            syncRepository.deleteAll()
-        }
+        transactionJpa.execute<Any> { _ ->
+            if (clean) {
+                syncRepository.deleteAll()
+            }
 
-        val dbSyncId = syncIdMap.get(tableName)
-                ?: return
+            val dbSyncId = syncIdMap.get(tableName)
+                    ?: return@execute null
 
-        val localSync = syncRepository.findOne(
-                lclSync.tableName.eq(tableName))
-                .toNullable()
+            val localSync = syncRepository.findOne(
+                    lclSync.tableName.eq(tableName)
+            )
+                    .toNullable()
+                    // Create new local sync record
+                    ?: LclSync().also {
+                        it.tableName = tableName
+                        it.syncId = -1
 
-        fun notify() = this.notificationsSubject.onNext(NotificationEvent(
-                tableName = tableName,
-                syncId = dbSyncId)
-        )
-
-        when {
-            localSync == null -> {
-                LclSync().also {
-                    it.tableName = tableName
-                    it.syncId = dbSyncId
-
-                    transactionJpa.execute<Any> { _ ->
                         em.persist(it)
                     }
-                }
 
-                notify()
-            }
+            val localSyncId: Long
 
-            dbSyncId > localSync.syncId -> {
+            if (dbSyncId > localSync.syncId) {
+                localSyncId = localSync.syncId
+
+                this.notificationsSubject.onNext(NotificationEvent(
+                        tableName = tableName,
+                        localSyncId = localSyncId,
+                        syncId = dbSyncId)
+                )
+
+                // Update local sync record
                 localSync.syncId = dbSyncId
-
-                transactionJpa.execute<Any> { _ ->
-                    em.merge(localSync)
-                }
-
-                notify()
+                em.merge(localSync)
             }
+
+            null
         }
     }
 
