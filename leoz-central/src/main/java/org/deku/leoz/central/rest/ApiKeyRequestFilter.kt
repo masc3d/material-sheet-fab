@@ -1,5 +1,6 @@
 package org.deku.leoz.central.rest
 
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.toUser
@@ -7,6 +8,7 @@ import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.rest.RestrictRoles
 import org.deku.leoz.service.internal.UserService
+import org.springframework.context.annotation.Profile
 import sx.reflect.allInterfaces
 import sx.rs.RestProblem
 import sx.rs.auth.ApiKeyRequestFilterBase
@@ -24,11 +26,11 @@ import javax.ws.rs.ext.Provider
  * Global leoz API key request filter
  * Created by masc on 08.07.15.
  */
+@Profile(Application.PROFILE_CENTRAL)
 @Named
 @Provider
-class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
-        apiKeyParameterName = Rest.API_KEY) {
-
+class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter()
+{
     @Inject
     private lateinit var nodeJooqRepository: JooqNodeRepository
 
@@ -37,10 +39,6 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
 
     @Context
     private lateinit var httpRequest: HttpServletRequest
-
-    companion object {
-        const val REQUEST_AUTHORIZED_USER = "AUTHORIZED_USER"
-    }
 
     /**
      * Returns either method or class level annotation
@@ -88,28 +86,5 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
 
         // All checks passed, permission granted
         return true
-    }
-}
-
-/**
- * Authorized user
- * @throws WebApplicationException with Status.UNAUTHORIZED when there's no authorized user
- */
-val HttpServletRequest.authorizedUser: UserService.User
-    get() = this.getAttribute(ApiKeyRequestFilter.REQUEST_AUTHORIZED_USER) as UserService.User?
-            ?: throw WebApplicationException(Response.Status.UNAUTHORIZED)
-
-/**
- * Restrict access by debitor
- * @param debitorId The debitor id to check against
- * @throws WebApplicationException If authorized user's debitor id doesn't match
- */
-fun HttpServletRequest.restrictByDebitor(debitorId: () -> Int?) {
-    val user = this.authorizedUser
-    val userRole = user.role
-
-    if (userRole == null || UserRole.valueOf(userRole) != UserRole.ADMIN) {
-        if (this.authorizedUser.debitorId != debitorId.invoke())
-            throw WebApplicationException(Response.Status.FORBIDDEN)
     }
 }

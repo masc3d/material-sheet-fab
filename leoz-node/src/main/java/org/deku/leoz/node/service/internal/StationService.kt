@@ -4,14 +4,17 @@ import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstStation
 import org.deku.leoz.node.data.repository.DebitorStationRepository
 import org.deku.leoz.node.data.repository.StationRepository
+import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
 import sx.rs.RestProblem
 import org.deku.leoz.service.internal.entity.Station
 import org.deku.leoz.service.internal.entity.StationV2
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.HttpHeaders
@@ -23,7 +26,7 @@ import javax.ws.rs.core.Response
 @Named
 @Path("internal/v1/station")
 class StationService : org.deku.leoz.service.internal.StationService {
-    private val log = org.slf4j.LoggerFactory.getLogger(org.deku.leoz.node.service.internal.StationService::class.java)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Context
     private lateinit var httpHeaders: HttpHeaders
@@ -34,13 +37,12 @@ class StationService : org.deku.leoz.service.internal.StationService {
     @Inject
     private lateinit var debitorStationRepository: DebitorStationRepository
 
-    @Inject
-    private lateinit var userService: UserService
-
-    //@Inject
-    //private lateinit var userRepository: UserJooqRepository
+    @Context
+    private lateinit var httpRequest: HttpServletRequest
 
     override fun get(): Array<Station> {
+        // TODO: verify / filter result by authorized user debitor
+
         val stations = stationRepository.findAll()
         return stations
                 .map { it.toStation() }
@@ -48,12 +50,46 @@ class StationService : org.deku.leoz.service.internal.StationService {
     }
 
     override fun find(query: String): Array<Station> {
+        // TODO: verify / filter result by authorized user debitor
+
         val stations = stationRepository.findWithQuery(query)
         return stations
                 .map { it.toStation() }
                 .toTypedArray()
     }
 
+    /** */
+    override fun getByStationNo(stationNo: Int): StationV2 {
+        // TODO: verify / filter result by authorized user debitor
+        val station = stationRepository
+                .findByStation(stationNo)
+                ?: throw RestProblem(status = Response.Status.NOT_FOUND, title = "Station not found")
+
+
+        return station.toStationV2()
+    }
+
+    /** */
+    override fun getByDebitorId(debitorId: Int): Array<StationV2> {
+        val stationIds = debitorStationRepository
+                .findStationIdsByDebitorid(debitorId)
+                .also {
+                    if (it.count() == 0)
+                        throw RestProblem(status = Response.Status.NOT_FOUND, title = "Station IDs not found")
+                }
+
+        val stations = stationRepository
+                .findAll(QMstStation.mstStation
+                        .stationId.`in`(*stationIds.toTypedArray()))
+                .also {
+                    if (it.count() == 0)
+                        throw RestProblem(status = Response.Status.NOT_FOUND, title = "Stations not found")
+                }
+
+        return stations.map { s -> s.toStationV2() }.toTypedArray()
+    }
+
+    //region Transformations
     /**
      * Convert to service result
      */
@@ -95,47 +131,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
         )
         return stationV2
     }
-
-    /** */
-    override fun getByStationNo(stationNo: Int): StationV2 {
-        //userService.get()
-
-        val station = stationRepository
-                .findByStation(stationNo)
-                ?: throw RestProblem(status = Response.Status.NOT_FOUND, title = "Station not found")
-
-        return station.toStationV2()
-    }
-
-    /** */
-    override fun getByDebitorId(debitorId: Int): Array<StationV2> {
-        //userService.get()
-
-        val stationIds = debitorStationRepository
-                .findStationIdsByDebitorid(debitorId)
-                .also {
-                    if (it.count() == 0)
-                        throw RestProblem(status = Response.Status.NOT_FOUND, title = "Station IDs not found")
-                }
-
-        val stations = stationRepository
-                .findAll(QMstStation.mstStation
-                        .stationId.`in`(*stationIds.toTypedArray()))
-                .also {
-                    if (it.count() == 0)
-                        throw RestProblem(status = Response.Status.NOT_FOUND, title = "Stations not found")
-                }
-
-        return stations.map { s -> s.toStationV2() }.toTypedArray()
-    }
-
-    override fun getByDebitorId(): Array<StationV2> {
-        val user = userService.get()
-
-        val debitorId = user.debitorId
-        debitorId ?: throw RestProblem(status = Response.Status.BAD_REQUEST, title = "user without debitor")
-        return getByDebitorId(debitorId)
-    }
+    //endregion
 }
 
 

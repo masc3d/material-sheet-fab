@@ -4,8 +4,8 @@ import org.deku.leoz.central.data.jooq.dekuclient.Tables.RKKOPF
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
 import org.deku.leoz.central.data.repository.JooqStationRepository
-import org.deku.leoz.central.rest.authorizedUser
-import org.deku.leoz.central.rest.restrictByDebitor
+import org.deku.leoz.node.rest.authorizedUser
+import org.deku.leoz.node.rest.restrictByDebitor
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.deku.leoz.model.TaskType
 import sx.rs.RestProblem
@@ -67,8 +67,8 @@ class DeliveryListService
                             this.deliveryListRepository
                                     .findNewerThan(
                                             syncId = it.localSyncId,
-                                            // Only notify about recent delivery lists
-                                            created = Date().plusDays(-1).toTimestamp()
+                                            // Only handle updates for recent delivery lists
+                                            date = Date().plusDays(-100).toTimestamp()
                                     )
                     )
                 }

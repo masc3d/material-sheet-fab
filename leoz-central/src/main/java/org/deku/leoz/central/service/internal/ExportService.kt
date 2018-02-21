@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
-import org.deku.leoz.central.rest.authorizedUser
+import org.deku.leoz.node.rest.authorizedUser
 
 @Named
 @Path("internal/v1/export")

@@ -7,7 +7,7 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadNodeGeoposit
 import org.deku.leoz.central.data.repository.JooqGeopositionRepository
 import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
-import org.deku.leoz.central.rest.authorizedUser
+import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.model.VehicleType
 import org.deku.leoz.service.internal.LocationServiceV1

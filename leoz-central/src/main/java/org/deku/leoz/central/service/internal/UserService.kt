@@ -6,7 +6,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.setHashedPassword
-import org.deku.leoz.central.rest.authorizedUser
+import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.AllowedStations
 import sx.rs.RestProblem
@@ -20,10 +20,8 @@ import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.model.UserRole
 import org.slf4j.LoggerFactory
 import java.util.*
-import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.core.Context
-import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 /**
@@ -373,17 +371,13 @@ class UserService : UserService {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun get(): User {
-        val authorizedUser = httpRequest.authorizedUser
-
-        return authorizedUser
-    }
-
     override fun getConfigurationById(userId: Int): String {
         return configurationService.getUserConfiguration(userId)
     }
 
     override fun getCurrentUserConfiguration(): String {
-        return configurationService.getUserConfiguration(this.get().id ?: throw RestProblem(status = Response.Status.NOT_FOUND))
+        val authorizedUser = httpRequest.authorizedUser
+
+        return configurationService.getUserConfiguration(authorizedUser.id ?: throw RestProblem(status = Response.Status.NOT_FOUND))
     }
 }

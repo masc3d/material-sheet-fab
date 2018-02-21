@@ -3,7 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.central.rest.restrictByDebitor
+import org.deku.leoz.node.rest.restrictByDebitor
 import org.deku.leoz.model.*
 import sx.rs.RestProblem
 import org.deku.leoz.service.internal.OrderService

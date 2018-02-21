@@ -168,11 +168,6 @@ interface UserService {
     )
 
     @GET
-    @Path("/auth")
-    @ApiOperation(value = "Get auth user")
-    fun get(): User
-
-    @GET
     @Path("/{$USER_ID}/configuration")
     @ApiOperation(value = "Get user configuration by user-id")
     fun getConfigurationById(

@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
-import org.deku.leoz.central.rest.authorizedUser
+import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.entity.ShortDate
 import org.jooq.*
 import org.slf4j.LoggerFactory

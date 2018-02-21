@@ -14,14 +14,14 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/station")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Station operations")
+@Api(value = "Station operations", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+@ApiKey
 interface StationService {
 
     companion object {
         const val STATION_NO = "station-no"
         const val DEBITOR_ID = "debitor-id"
     }
-
 
     @GET
     @Path("/")
@@ -38,7 +38,6 @@ interface StationService {
     @GET
     @Path("/{$STATION_NO}")
     @ApiOperation(value = "get station", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    @ApiKey
     fun getByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
     ): StationV2
@@ -46,15 +45,8 @@ interface StationService {
 
     @GET
     @Path("/debitor/{$DEBITOR_ID}")
-    @ApiOperation(value = "get stations by debitor-id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    @ApiKey
+    @ApiOperation(value = "get stations by debitor-id")
     fun getByDebitorId(
             @PathParam(DEBITOR_ID) @ApiParam(value = "debitor id", example = "3", required = true) debitorId: Int
     ): Array<StationV2>
-
-    @GET
-    @Path("/debitor")
-    @ApiOperation(value = "get stations by debitor-id of auth-user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    @ApiKey
-    fun getByDebitorId(): Array<StationV2>
 }
