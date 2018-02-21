@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
+import org.deku.leoz.model.Interval
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.internal.*
@@ -466,14 +467,11 @@ class SmartlaneBridge {
                                     tour.stops.first { it.uid == delivery.customId }
                                             .also {
                                                 it.route = TourStopRouteMeta(
-                                                        etaFrom = delivery.etaFrom,
-                                                        etaTo = delivery.etaTo,
-                                                        driverFrom = delivery.ddtFrom,
-                                                        driverTo = delivery.ddtTo,
-                                                        estimatedStayLength = delivery.els,
+                                                        eta = Interval(delivery.etaFrom, delivery.etaTo),
+                                                        driver = Interval(delivery.ddtFrom, delivery.ddtTo),
+                                                        delivery = Interval(delivery.deliveryFrom, delivery.deliveryTo),
                                                         stayLengtH = delivery.als?.toInt(),
-                                                        targetFrom = delivery.tdtFrom,
-                                                        targetTo = delivery.tdtTo
+                                                        target = Interval(delivery.tdtFrom, delivery.tdtTo)
                                                 )
                                             }
                                 }
@@ -512,8 +510,7 @@ class SmartlaneBridge {
 
                                 route = TourRouteMeta(
                                         start = route.ast,
-                                        targetFrom = route.tstFrom,
-                                        targetTo = route.tstTo,
+                                        target = Interval(route.tstFrom, route.tstTo),
                                         distance = route.distance?.let { it.toDouble() / 1000 },
                                         totalDuration = route.grossDuration,
                                         drivingTime = route.netDuration
