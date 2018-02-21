@@ -171,28 +171,31 @@ open class ParcelProcessingService {
 //                        for (i in 0..uids.size - 1) {
 //                            val damagedFileUID = uids[i]
 //                        }
-                        val rDamaged = dsl.newRecord(Tables.TBLSTATUS)
-
-                        rDamaged.packstuecknummer = r.packstuecknummer
-                        rDamaged.datum = r.datum
-                        rDamaged.zeit = r.zeit
-                        rDamaged.poslat = r.poslat
-                        rDamaged.poslong = r.poslong
-                        rDamaged.infotext = r.infotext
-
-                        val damaged_event = Event.DELIVERY_FAIL
-                        rDamaged.kzStatuserzeuger = damaged_event.creator.toString()
-                        rDamaged.kzStatus = damaged_event.concatId.toUInteger()
-                        rDamaged.timestamp2 = r.timestamp2
-                        val damaged_reason = Reason.PARCEL_DAMAGED
-                        rDamaged.fehlercode = damaged_reason.oldValue.toUInteger()
-
-                        rDamaged.erzeugerstation = r.erzeugerstation
-
-                        statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.PARCEL_DAMAGED.oldValue).also {
-                            if (it == false)
-                                rDamaged.store()
-                        }
+//                        val rDamaged = dsl.newRecord(Tables.TBLSTATUS)
+//
+//                        rDamaged.packstuecknummer = r.packstuecknummer
+//                        rDamaged.datum = r.datum
+//                        rDamaged.zeit = r.zeit
+//                        rDamaged.poslat = r.poslat
+//                        rDamaged.poslong = r.poslong
+//                        rDamaged.infotext = r.infotext
+//
+//                        val damaged_event = Event.DELIVERY_FAIL
+//                        rDamaged.kzStatuserzeuger = damaged_event.creator.toString()
+//                        rDamaged.kzStatus = damaged_event.concatId.toUInteger()
+//                        rDamaged.timestamp2 = r.timestamp2
+//                        val damaged_reason = Reason.PARCEL_DAMAGED
+//                        rDamaged.fehlercode = damaged_reason.oldValue.toUInteger()
+//
+//                        rDamaged.erzeugerstation = r.erzeugerstation
+//
+//                        statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.DELIVERY_FAIL.creator.toString(), Event.DELIVERY_FAIL.concatId, Reason.PARCEL_DAMAGED.oldValue).also {
+//                            if (it == false)
+//                                rDamaged.store()
+//                        }
+                        statusRepository.createIfNotExists(parcelRecord.colliebelegnr.toLong(), it.scanned, Event.DELIVERY_FAIL, Reason.PARCEL_DAMAGED, infotext, r.erzeugerstation, r.text, r.poslong, r.poslat)
+                        parcelRecord.isDamaged = -1
+                        parcelRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
                     }
                 }
 
@@ -299,85 +302,87 @@ open class ParcelProcessingService {
                         r.text = textForStatus
                         val textForOrder = if (recipientInfo.toString().length > 35) recipientInfo.toString().substring(0, 35) else recipientInfo.toString()
 
-                        val oldValue = parcelRecord.lieferstatus
+                        //val oldValue = parcelRecord.lieferstatus
                         parcelRecord.lieferstatus = r.kzStatus.toShort() //4
                         parcelRecord.erstlieferstatus = r.kzStatus.toShort()
-                        if (parcelRecord.store() > 0) {
+                        parcelRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
+//                        if (parcelRecord.store() > 0) {
+//
+//                            fieldHistoryRepository.addEntry(
+//                                    orderId = parcelRecord.orderid.toLong(),
+//                                    unitNo = parcelRecord.colliebelegnr.toLong(),
+//                                    fieldName = "lieferstatus",
+//                                    oldValue = oldValue?.toString() ?: "",
+//                                    newValue = r.kzStatus.toString(),
+//                                    changer = "Z",
+//                                    point = "PP"
+//                            )
+//                        }
 
-                            fieldHistoryRepository.addEntry(
-                                    orderId = parcelRecord.orderid.toLong(),
-                                    unitNo = parcelRecord.colliebelegnr.toLong(),
-                                    fieldName = "lieferstatus",
-                                    oldValue = oldValue?.toString() ?: "",
-                                    newValue = r.kzStatus.toString(),
-                                    changer = "Z",
-                                    point = "PP"
-                            )
-                        }
-
-                        val oldRecipient = orderRecord.empfaenger ?: ""
-                        //orderRecord.empfaenger = r.text
+                        //val oldRecipient = orderRecord.empfaenger ?: ""
                         orderRecord.empfaenger = textForOrder
                         //if (orderRecord.store() > 0 && !oldRecipient.equals(r.text)) {
-                        if (orderRecord.store() > 0 && !oldRecipient.equals(textForOrder)) {
-
-                            fieldHistoryRepository.addEntry(
-                                    orderId = parcelRecord.orderid.toLong(),
-                                    unitNo = parcelRecord.colliebelegnr.toLong(),
-                                    fieldName = "empfaenger",
-                                    oldValue = oldRecipient,
-                                    //newValue = r.text,
-                                    newValue = textForOrder,
-                                    changer = "Z",
-                                    point = "PP"
-                            )
-                        }
+                        orderRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
+//                        if (orderRecord.store() > 0 && !oldRecipient.equals(textForOrder)) {
+//
+//                            fieldHistoryRepository.addEntry(
+//                                    orderId = parcelRecord.orderid.toLong(),
+//                                    unitNo = parcelRecord.colliebelegnr.toLong(),
+//                                    fieldName = "empfaenger",
+//                                    oldValue = oldRecipient,
+//                                    //newValue = r.text,
+//                                    newValue = textForOrder,
+//                                    changer = "Z",
+//                                    point = "PP"
+//                            )
+//                        }
                         //if (!orderRecord.empfaenger.equals(r.text)) {
                         if (!orderRecord.empfaenger.equals(textForOrder)) {
                             //TODO WLtransfer ASD D in Auftrag gescheitert
                         }
 
-                        val oldDeliveryDate: String
-                        if (orderRecord.dtauslieferdatum == null) {
-                            oldDeliveryDate = ""
-                        } else {
-                            oldDeliveryDate = orderRecord.dtauslieferdatum.toGregorianLongDateString()
-                        }
-                        val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
+//                        val oldDeliveryDate: String
+//                        if (orderRecord.dtauslieferdatum == null) {
+//                            oldDeliveryDate = ""
+//                        } else {
+//                            oldDeliveryDate = orderRecord.dtauslieferdatum.toGregorianLongDateString()
+//                        }
+//                        val oldDeliveryTime = orderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
                         val deliveryTime = it.scanned.toTimeWithoutDate()
                         val deliveryDate = it.scanned.toDateWithoutTime()
 
                         orderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
                         orderRecord.dtauslieferzeit = deliveryTime.toTimestamp()
-                        if (orderRecord.store() > 0) {
-                            if (oldDeliveryTime != it.scanned.toTimestamp().toShortTime().toString()) {
-
-                                fieldHistoryRepository.addEntry(
-                                        orderId = parcelRecord.orderid.toLong(),
-                                        unitNo = parcelRecord.colliebelegnr.toLong(),
-                                        fieldName = "dtauslieferzeit",
-                                        oldValue = oldDeliveryTime,
-                                        newValue = it.scanned.toTimestamp().toShortTime().toString(),
-                                        changer = "Z",
-                                        point = "PP"
-                                )
-
-                            }
-                            if (oldDeliveryDate != it.scanned.toGregorianLongDateString()) {
-
-
-                                fieldHistoryRepository.addEntry(
-                                        orderId = parcelRecord.orderid.toLong(),
-                                        unitNo = parcelRecord.colliebelegnr.toLong(),
-                                        fieldName = "dtauslieferdatum",
-                                        oldValue = oldDeliveryDate,
-                                        newValue = it.scanned.toGregorianLongDateString(),
-                                        changer = "Z",
-                                        point = "PP"
-                                )
-                            }
-
-                        }
+                        orderRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
+//                        if (orderRecord.store() > 0) {
+//                            if (oldDeliveryTime != it.scanned.toTimestamp().toShortTime().toString()) {
+//
+//                                fieldHistoryRepository.addEntry(
+//                                        orderId = parcelRecord.orderid.toLong(),
+//                                        unitNo = parcelRecord.colliebelegnr.toLong(),
+//                                        fieldName = "dtauslieferzeit",
+//                                        oldValue = oldDeliveryTime,
+//                                        newValue = it.scanned.toTimestamp().toShortTime().toString(),
+//                                        changer = "Z",
+//                                        point = "PP"
+//                                )
+//
+//                            }
+//                            if (oldDeliveryDate != it.scanned.toGregorianLongDateString()) {
+//
+//
+//                                fieldHistoryRepository.addEntry(
+//                                        orderId = parcelRecord.orderid.toLong(),
+//                                        unitNo = parcelRecord.colliebelegnr.toLong(),
+//                                        fieldName = "dtauslieferdatum",
+//                                        oldValue = oldDeliveryDate,
+//                                        newValue = it.scanned.toGregorianLongDateString(),
+//                                        changer = "Z",
+//                                        point = "PP"
+//                                )
+//                            }
+//
+//                        }
                         //
 
                         if (from != null) {
@@ -414,84 +419,85 @@ open class ParcelProcessingService {
                                                 //TODO WLtransfer Auslieferdaten nach Abrechnung
                                             }
                                             it.bmpfilename = parcelRecord.bmpfilename
-                                            val unitInBagOldValue = it.lieferstatus
+                                            //val unitInBagOldValue = it.lieferstatus
                                             it.lieferstatus = r.kzStatus.toShort() //4
-                                            if (it.store() > 0) {
+                                            it.storeWithHistoryParcelprocessing(it.colliebelegnr.toLong())
+//                                            if (it.store() > 0) {
+//
+//
+//                                                fieldHistoryRepository.addEntry(
+//                                                        orderId = it.orderid.toLong(),
+//                                                        unitNo = it.colliebelegnr.toLong(),
+//                                                        fieldName = "lieferstatus",
+//                                                        oldValue = unitInBagOldValue?.toString() ?: "",
+//                                                        newValue = r.kzStatus.toString(),
+//                                                        changer = "Z",
+//                                                        point = "PP"
+//                                                )
+//                                            }
 
-
-                                                fieldHistoryRepository.addEntry(
-                                                        orderId = it.orderid.toLong(),
-                                                        unitNo = it.colliebelegnr.toLong(),
-                                                        fieldName = "lieferstatus",
-                                                        oldValue = unitInBagOldValue?.toString() ?: "",
-                                                        newValue = r.kzStatus.toString(),
-                                                        changer = "Z",
-                                                        point = "PP"
-                                                )
-                                            }
-
-                                            val unitInBagOldRecipient = unitInBagOrderRecord.empfaenger ?: ""
-                                            //unitInBagOrderRecord.empfaenger = r.text
+                                            //val unitInBagOldRecipient = unitInBagOrderRecord.empfaenger ?: ""
                                             unitInBagOrderRecord.empfaenger = textForOrder
-                                            //if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(r.text)) {
-                                            if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(textForOrder)) {
 
-                                                fieldHistoryRepository.addEntry(
-                                                        orderId = it.orderid.toLong(),
-                                                        unitNo = it.colliebelegnr.toLong(),
-                                                        fieldName = "empfaenger",
-                                                        oldValue = unitInBagOldRecipient,
-                                                        //newValue = r.text,
-                                                        newValue = textForOrder,
-                                                        changer = "Z",
-                                                        point = "PP"
-                                                )
-                                            }
+//                                            if (unitInBagOrderRecord.store() > 0 && !unitInBagOldRecipient.equals(textForOrder)) {
+//
+//                                                fieldHistoryRepository.addEntry(
+//                                                        orderId = it.orderid.toLong(),
+//                                                        unitNo = it.colliebelegnr.toLong(),
+//                                                        fieldName = "empfaenger",
+//                                                        oldValue = unitInBagOldRecipient,
+//                                                        //newValue = r.text,
+//                                                        newValue = textForOrder,
+//                                                        changer = "Z",
+//                                                        point = "PP"
+//                                                )
+//                                            }
                                             //if (!unitInBagOrderRecord.empfaenger.equals(r.text)) {
                                             if (!unitInBagOrderRecord.empfaenger.equals(textForOrder)) {
                                                 //TODO WLtransfer ASD D in Auftrag gescheitert
                                             }
 
-                                            val unitInBagOldDeliveryDate: String
-                                            if (unitInBagOrderRecord.dtauslieferdatum == null) {
-                                                unitInBagOldDeliveryDate = ""
-                                            } else {
-                                                unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toGregorianLongDateString()
-                                            }
-                                            val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
+//                                            val unitInBagOldDeliveryDate: String
+//                                            if (unitInBagOrderRecord.dtauslieferdatum == null) {
+//                                                unitInBagOldDeliveryDate = ""
+//                                            } else {
+//                                                unitInBagOldDeliveryDate = unitInBagOrderRecord.dtauslieferdatum.toGregorianLongDateString()
+//                                            }
+//                                            val unitInBagOldDeliveryTime = unitInBagOrderRecord.dtauslieferzeit?.toShortTime()?.toString() ?: ""
 
 
                                             unitInBagOrderRecord.dtauslieferdatum = deliveryDate.toTimestamp()
                                             unitInBagOrderRecord.dtauslieferzeit = deliveryTime.toTimestamp()
-                                            if (unitInBagOrderRecord.store() > 0) {
-                                                if (unitInBagOldDeliveryTime != deliveryTime.toTimestamp().toShortTime().toString()) {
-
-
-                                                    fieldHistoryRepository.addEntry(
-                                                            orderId = it.orderid.toLong(),
-                                                            unitNo = it.colliebelegnr.toLong(),
-                                                            fieldName = "dtauslieferzeit",
-                                                            oldValue = unitInBagOldDeliveryTime,
-                                                            newValue = deliveryTime.toTimestamp().toShortTime().toString(),
-                                                            changer = "Z",
-                                                            point = "PP"
-                                                    )
-                                                }
-                                                if (unitInBagOldDeliveryDate != deliveryDate.toGregorianLongDateString()) {
-
-
-                                                    fieldHistoryRepository.addEntry(
-                                                            orderId = it.orderid.toLong(),
-                                                            unitNo = it.colliebelegnr.toLong(),
-                                                            fieldName = "dtauslieferdatum",
-                                                            oldValue = unitInBagOldDeliveryDate,
-                                                            newValue = deliveryDate.toGregorianLongDateString(),
-                                                            changer = "Z",
-                                                            point = "PP"
-                                                    )
-                                                }
-
-                                            }
+                                            unitInBagOrderRecord.storeWithHistoryParcelprocessing(it.colliebelegnr.toLong())
+//                                            if (unitInBagOrderRecord.store() > 0) {
+//                                                if (unitInBagOldDeliveryTime != deliveryTime.toTimestamp().toShortTime().toString()) {
+//
+//
+//                                                    fieldHistoryRepository.addEntry(
+//                                                            orderId = it.orderid.toLong(),
+//                                                            unitNo = it.colliebelegnr.toLong(),
+//                                                            fieldName = "dtauslieferzeit",
+//                                                            oldValue = unitInBagOldDeliveryTime,
+//                                                            newValue = deliveryTime.toTimestamp().toShortTime().toString(),
+//                                                            changer = "Z",
+//                                                            point = "PP"
+//                                                    )
+//                                                }
+//                                                if (unitInBagOldDeliveryDate != deliveryDate.toGregorianLongDateString()) {
+//
+//
+//                                                    fieldHistoryRepository.addEntry(
+//                                                            orderId = it.orderid.toLong(),
+//                                                            unitNo = it.colliebelegnr.toLong(),
+//                                                            fieldName = "dtauslieferdatum",
+//                                                            oldValue = unitInBagOldDeliveryDate,
+//                                                            newValue = deliveryDate.toGregorianLongDateString(),
+//                                                            changer = "Z",
+//                                                            point = "PP"
+//                                                    )
+//                                                }
+//
+//                                            }
 
                                         }
                                     }
@@ -509,12 +515,15 @@ open class ParcelProcessingService {
                                 //TODO WLtransfer Auslieferung nach Abrechnung
                             }
                             if (firstDeliveryStatus.toInt() == 0) {
-                                parcelRecord.lieferstatus = r.kzStatus.toShort()
+
                                 parcelRecord.erstlieferstatus = r.kzStatus.toShort()
-                                parcelRecord.lieferfehler = r.fehlercode.toShort()
                                 parcelRecord.erstlieferfehler = r.fehlercode.toShort()
-                                parcelRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
+
                             }
+                            parcelRecord.lieferstatus = r.kzStatus.toShort()
+                            parcelRecord.lieferfehler = r.fehlercode.toShort()
+                            parcelRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
+
                         }
                         /*val addInfo = it.additionalInfo
                     if (addInfo != null) {
@@ -538,6 +547,8 @@ open class ParcelProcessingService {
                             }*/
                             }
                             Reason.PARCEL_DAMAGED -> {
+                                parcelRecord.isDamaged = -1
+                                parcelRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
                                 /*when (addInfo) {
                                 is AdditionalInfo.DamagedInfo -> {
                                     r.text = addInfo.description ?: ""
@@ -556,28 +567,29 @@ open class ParcelProcessingService {
                     Event.IMPORT_RECEIVE -> {
 
 
-                        val oldValue: String//= parcelRecord.dteingangdepot2
-                        if (parcelRecord.dteingangdepot2 == null) {
-                            oldValue = ""
-                        } else {
-                            oldValue = parcelRecord.dteingangdepot2.toGregorianLongDateString()
-                        }
+//                        val oldValue: String//= parcelRecord.dteingangdepot2
+//                        if (parcelRecord.dteingangdepot2 == null) {
+//                            oldValue = ""
+//                        } else {
+//                            oldValue = parcelRecord.dteingangdepot2.toGregorianLongDateString()
+//                        }
                         val importDate = it.scanned.toDateWithoutTime()
                         parcelRecord.dteingangdepot2 = importDate.toTimestamp()// it.time.toTimestamp()
-                        if (parcelRecord.store() > 0) {
-                            if (oldValue != it.scanned.toGregorianLongDateString()) {
-
-                                fieldHistoryRepository.addEntry(
-                                        orderId = parcelRecord.orderid.toLong(),
-                                        unitNo = parcelRecord.colliebelegnr.toLong(),
-                                        fieldName = "dteingangdepot2",
-                                        oldValue = oldValue,
-                                        newValue = it.scanned.toGregorianLongDateString(),
-                                        changer = "Z",
-                                        point = "PP"
-                                )
-                            }
-                        }
+                        parcelRecord.storeWithHistoryParcelprocessing(parcelRecord.colliebelegnr.toLong())
+//                        if (parcelRecord.store() > 0) {
+//                            if (oldValue != it.scanned.toGregorianLongDateString()) {
+//
+//                                fieldHistoryRepository.addEntry(
+//                                        orderId = parcelRecord.orderid.toLong(),
+//                                        unitNo = parcelRecord.colliebelegnr.toLong(),
+//                                        fieldName = "dteingangdepot2",
+//                                        oldValue = oldValue,
+//                                        newValue = it.scanned.toGregorianLongDateString(),
+//                                        changer = "Z",
+//                                        point = "PP"
+//                                )
+//                            }
+//                        }
                     }
                     Event.IN_DELIVERY -> {
                         //ticket #260

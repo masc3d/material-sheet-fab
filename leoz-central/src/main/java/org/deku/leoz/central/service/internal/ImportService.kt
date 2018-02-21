@@ -112,10 +112,12 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
                 //PASreset=true
                 //if PAScleared WLtransfer
                 if (unitRecord.erstlieferstatus.toInt() == 0) {
-                    unitRecord.lieferstatus = Event.DELIVERY_FAIL.concatId.toShort()
-                    unitRecord.lieferfehler = Reason.PARCEL_MISSING.oldValue.toShort()
-                    unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
+                    unitRecord.erstlieferstatus = Event.DELIVERY_FAIL.concatId.toShort()
+                    unitRecord.erstlieferfehler = Reason.PARCEL_MISSING.oldValue.toShort()
                 }
+                unitRecord.lieferstatus = Event.DELIVERY_FAIL.concatId.toShort()
+                unitRecord.lieferfehler = Reason.PARCEL_MISSING.oldValue.toShort()
+                unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
                 statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.PARCEL_MISSING, importServiceInfotext, unitRecord.mydepotid2.toString())
 
             }
@@ -123,6 +125,13 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
         val parcelIsWrongLoaded = parcel.isWrongLoaded
         if (parcelIsWrongLoaded != null) {
             if (parcelOriginal.isWrongLoaded != parcelIsWrongLoaded && parcelIsWrongLoaded) {
+                if (unitRecord.erstlieferstatus.toInt() == 0) {
+                    unitRecord.erstlieferstatus = Event.DELIVERY_FAIL.concatId.toShort()
+                    unitRecord.erstlieferfehler = Reason.WRONG_LOADED.oldValue.toShort()
+                }
+                unitRecord.lieferstatus = Event.DELIVERY_FAIL.concatId.toShort()
+                unitRecord.lieferfehler = Reason.WRONG_LOADED.oldValue.toShort()
+                unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
                 statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.WRONG_LOADED, importServiceInfotext, unitRecord.mydepotid2.toString())
             }
         }
@@ -132,10 +141,12 @@ open class ImportService : org.deku.leoz.service.internal.ImportService {
                 //PASreset=true
                 //if PAScleared WLtransfer
                 if (unitRecord.erstlieferstatus.toInt() == 0) {
-                    unitRecord.lieferstatus = Event.DELIVERY_FAIL.concatId.toShort()
-                    unitRecord.lieferfehler = Reason.WRONG_ROUTING.oldValue.toShort()
-                    unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
+                    unitRecord.erstlieferstatus = Event.DELIVERY_FAIL.concatId.toShort()
+                    unitRecord.erstlieferfehler = Reason.WRONG_ROUTING.oldValue.toShort()
                 }
+                unitRecord.lieferstatus = Event.DELIVERY_FAIL.concatId.toShort()
+                unitRecord.lieferfehler = Reason.WRONG_ROUTING.oldValue.toShort()
+                unitRecord.storeWithHistoryImportservice(unitRecord.colliebelegnr.toLong())
                 statusRepository.createIfNotExists(parcel.parcelNo, Date(), Event.DELIVERY_FAIL, Reason.WRONG_ROUTING, importServiceInfotext, unitRecord.mydepotid2.toString())
             }
         }

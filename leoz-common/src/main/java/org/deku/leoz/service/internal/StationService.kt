@@ -1,8 +1,10 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.*
+import org.deku.leoz.config.Rest
 import org.deku.leoz.service.internal.entity.Station
 import org.deku.leoz.service.internal.entity.StationV2
+import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -35,7 +37,8 @@ interface StationService {
 
     @GET
     @Path("/{$STATION_NO}")
-    @ApiOperation(value = "get station")
+    @ApiOperation(value = "get station", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiKey
     fun getByStationNo(
             @PathParam(STATION_NO) @ApiParam(value = "station number", example = "220", required = true) stationNo: Int
     ): StationV2
@@ -43,13 +46,15 @@ interface StationService {
 
     @GET
     @Path("/debitor/{$DEBITOR_ID}")
-    @ApiOperation(value = "get stations by debitor-id")
+    @ApiOperation(value = "get stations by debitor-id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiKey
     fun getByDebitorId(
             @PathParam(DEBITOR_ID) @ApiParam(value = "debitor id", example = "3", required = true) debitorId: Int
     ): Array<StationV2>
 
     @GET
     @Path("/debitor")
-    @ApiOperation(value = "get stations by debitor-id of auth-user")
+    @ApiOperation(value = "get stations by debitor-id of auth-user", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @ApiKey
     fun getByDebitorId(): Array<StationV2>
 }

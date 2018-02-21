@@ -1196,9 +1196,9 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
         val scanTs = Date()
         val infotext = "WebExport"
-        statusRepository.createIfNotExists(unitRecord.colliebelegnr.toLong(),scanTs,Event.EXPORT_RECEIVE,Reason.NORMAL,infotext,stationNo.toString())
+        statusRepository.createIfNotExists(unitRecord.colliebelegnr.toLong(), scanTs, Event.EXPORT_RECEIVE, Reason.NORMAL, infotext, stationNo.toString())
 
-        statusRepository.createIfNotExists(unitRecord.colliebelegnr.toLong(),scanTs,Event.EXPORT_LOADED,Reason.NORMAL,infotext,stationNo.toString())
+        statusRepository.createIfNotExists(unitRecord.colliebelegnr.toLong(), scanTs, Event.EXPORT_LOADED, Reason.NORMAL, infotext, stationNo.toString())
 
 
         if (orderRecord.service.toLong() and 134217728.toLong() == 134217728.toLong()) {
