@@ -14,6 +14,7 @@ import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import org.zalando.problem.Status
+import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.time.plusDays
@@ -65,7 +66,7 @@ class DeliveryListService
                     this.onUpdate(
                             this.deliveryListRepository
                                     .findNewerThan(
-                                            syncId = it.syncId,
+                                            syncId = it.localSyncId,
                                             // Only notify about recent delivery lists
                                             created = Date().plusDays(-1).toTimestamp()
                                     )
@@ -87,6 +88,14 @@ class DeliveryListService
         val dlDetailRecordsByDlId = deliveryListRepository
                 .findDetailsByIds(deliverylistIds)
                 .groupBy { it.id }
+
+        // Tour service has no notion of delivery lists, providing dl ids as custom ids
+        val customIds = dlRecords.map { it.id.toLong().toString() }
+        log.info { "Converting delivery list(s) to tour(s) [${customIds.joinToString(", ")}]" }
+
+        this.tourService.delete(
+                customIds = customIds
+        )
 
         this.tourService.put(tours = dlRecords.map { dlRecord ->
             TourServiceV1.Tour(

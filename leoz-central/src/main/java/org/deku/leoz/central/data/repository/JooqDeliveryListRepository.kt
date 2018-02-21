@@ -81,9 +81,9 @@ open class JooqDeliveryListRepository {
     fun findNewerThan(
             syncId: Long,
             created: Timestamp): List<Long> {
-        return dsl.select(RKKOPF.ID).from(RKKOPF)
+        return dsl.select(RKKOPF.ROLLKARTENNUMMER).from(RKKOPF)
                 .where(RKKOPF.SYNC_ID.gt(syncId)).and(RKKOPF.DRUCKZEIT.ge(created))
-                .fetch(RKKOPF.ID)
+                .fetch(RKKOPF.ROLLKARTENNUMMER)
                 .map { it.toLong() }
     }
 }
