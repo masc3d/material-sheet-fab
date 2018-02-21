@@ -1631,7 +1631,7 @@ paths:
           description: Routing Parameters
           required: true
           schema:
-            $ref: "#/definitions/Routinginput"
+            $ref: "#/definitions/Routinginput"         
         - in: query
           name: truck
           description: "indicates if a special route for trucks shall be calculated. In this case, truck restrictions on the respective roads will be respected. The resulting tour will not lead through truck restricted road sections. Default: false"
@@ -3229,14 +3229,6 @@ definitions:
         type: string
         format: date-time
         description: planned delivery time to
-      eta_from:
-        type: string
-        format: date-time
-        description: estimated time of arrival time window start
-      eta_to:
-        type: string
-        format: date-time
-        description: estimated time of arrival time window end
       tdt_from:
         type: string
         format: date-time
@@ -3253,6 +3245,18 @@ definitions:
         type: string
         format: date-time
         description: driver delivery target time to
+      delivery_interval:
+        description: "Delivery interval"
+        type: array
+        items:
+          type: string
+          format: date-time
+      eta_interval:
+        description: "Estimated time of arrival interval"
+        type: array
+        items:
+          type: string
+          format: date-time
       ata:
         type: string
         format: date-time
@@ -3359,6 +3363,10 @@ definitions:
         default: company depot location
         type: integer
         format: int32
+      start_time:
+        description: "An optional predefined starting time for the route. It is only used if no delivery time window is set which always would have a higher priority"
+        type: string
+        format: dateTime        
       startaddress:
         description: "Address object. Either complete Address data (city, street, ...) or geo positions lat and lng (see 'Inputaddress'). It defines the starting point of the tour. Default is the standard company / depot address. Either 'startaddress_id' (see above) or 'startaddress' or none of both can be given. If both are provided, only startaddress is used."
         $ref: '#/definitions/Inputaddress'

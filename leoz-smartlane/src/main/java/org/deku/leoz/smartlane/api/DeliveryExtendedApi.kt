@@ -5,6 +5,7 @@ import org.deku.leoz.smartlane.model.Delivery
 import sx.rs.FlaskFilter
 import sx.rs.FlaskOperator
 import sx.rs.FlaskPredicate
+import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
 
@@ -90,3 +91,15 @@ fun DeliveryExtendedApi.delete(ids: List<Int>) {
         }
     }
 }
+
+val Delivery.etaFrom: Date?
+    get() = this.etaInterval.getOrNull(0)
+
+val Delivery.etaTo: Date?
+    get() = this.etaInterval.getOrNull(1)
+
+val Delivery.deliveryFrom: Date?
+    get() = this.deliveryInterval.getOrNull(0)
+
+val Delivery.deliveryTo: Date?
+    get() = this.deliveryInterval.getOrNull(1)
