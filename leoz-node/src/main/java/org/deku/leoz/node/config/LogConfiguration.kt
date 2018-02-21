@@ -1,20 +1,22 @@
 package org.deku.leoz.node.config
 
-import com.github.salomonbrys.kodein.*
+import ch.qos.logback.classic.Level
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
-import org.slf4j.bridge.SLF4JBridgeHandler
 import sx.log.slf4j.installJulBridge
+import sx.logback.IgnoreFilter
+import sx.logback.IgnoreFilterCondition
 import sx.mq.MqBroker
 import sx.mq.jms.channel
-import java.util.logging.Level
-import java.util.logging.LogManager
-import java.util.logging.Logger
 
 /**
  * Log configuration.
@@ -31,6 +33,22 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
             }
         }
     }
+
+    /** List of static ignore conditions */
+    private val ignoreConditions = listOf(
+            // Error thrown by resteasy-4.0 (beta) when SSE connection breaks (trivial)
+            IgnoreFilterCondition(
+                    level = Level.ERROR,
+                    name = "org.apache.activemq.broker.TransportConnector",
+                    message = "RESTEASY002030: Failed to write event org.jboss.resteasy.plugins.providers.sse"
+            ),
+            // Error thrown by activemq on remote node connection / quality issues (trivial)
+            IgnoreFilterCondition(
+                    level = Level.ERROR,
+                    name = "org.jboss.resteasy.resteasy_jaxrs.i18n",
+                    message = "Could not accept connection  : {}"
+            )
+    )
 
     /** Jms log appender */
     private var logMqAppender: LogMqAppender? = null
@@ -56,7 +74,9 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
 
                 }
                 appender.start()
-                if (false/**ActiveMQConfiguration.broker.isStarted*/) {
+                if (false
+                /**ActiveMQConfiguration.broker.isStarted*/
+                ) {
                     appender.dispatcher.start()
                 }
             } else {
@@ -87,7 +107,8 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
 
     init {
         JmsConfiguration.broker.delegate.add(
-                this.brokerEventListener)
+                this.brokerEventListener
+        )
     }
 
     /**
@@ -111,6 +132,14 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
             if (JmsConfiguration.broker.isStarted)
                 appender.dispatcher.start()
             this.rootLogger.addAppender(this.logMqAppender)
+        }
+
+        val ignoreFilter = IgnoreFilter(
+                this.ignoreConditions
+        )
+
+        this.rootLogger.iteratorForAppenders().forEach {
+            it.addFilter(ignoreFilter)
         }
     }
 
