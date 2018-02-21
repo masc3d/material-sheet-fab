@@ -35,7 +35,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
     private lateinit var debitorStationRepository: DebitorStationRepository
 
     @Inject
-    private lateinit var userService:UserService
+    private lateinit var userService: UserService
 
     //@Inject
     //private lateinit var userRepository: UserJooqRepository
@@ -98,7 +98,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
     /** */
     override fun getByStationNo(stationNo: Int): StationV2 {
-        userService.get()
+        //userService.get()
 
         val station = stationRepository
                 .findByStation(stationNo)
@@ -109,7 +109,7 @@ class StationService : org.deku.leoz.service.internal.StationService {
 
     /** */
     override fun getByDebitorId(debitorId: Int): Array<StationV2> {
-        userService.get()
+        //userService.get()
 
         val stationIds = debitorStationRepository
                 .findStationIdsByDebitorid(debitorId)
@@ -130,11 +130,11 @@ class StationService : org.deku.leoz.service.internal.StationService {
     }
 
     override fun getByDebitorId(): Array<StationV2> {
-        val user=userService.get()
+        val user = userService.get()
 
-        val debitorId=user.debitorId
+        val debitorId = user.debitorId
         debitorId ?: throw RestProblem(status = Response.Status.BAD_REQUEST, title = "user without debitor")
-        return getByDebitorId(debitorId )
+        return getByDebitorId(debitorId)
     }
 }
 
