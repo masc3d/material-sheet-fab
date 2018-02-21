@@ -38,16 +38,13 @@ import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
-import sx.persistence.querydsl.batchDelete
 import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
 import sx.persistence.transaction
 import sx.persistence.withEntityManager
 import sx.rs.RestProblem
 import sx.rs.push
-import sx.time.minusHours
 import sx.time.plusDays
-import sx.time.plusMinutes
 import sx.time.toTimestamp
 import sx.util.hashWithSha1
 import sx.util.letWithParamNotNull
@@ -184,7 +181,7 @@ class TourServiceV1
         val now = Date().toTimestamp()
 
         if (tours.count() == 0)
-            return
+            return listOf()
 
         return emf.transaction { em ->
             tours
@@ -447,6 +444,7 @@ class TourServiceV1
             ids: List<Long>?,
             userId: Long?,
             stationNo: Long?,
+            customIds: List<String>?,
             includeRelated: Boolean?) {
 
         emf.transaction { em ->
@@ -461,6 +459,12 @@ class TourServiceV1
                         }
                     }
                     .fetch()
+                    .plus(userId?.let {
+                        em.from(tadTour)
+                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
+                                .where(tadTour.userId.eq(it))
+                                .fetch()
+                    } ?: listOf<Tuple>())
                     .plus(stationNo?.let {
                         em.from(tadTour)
                                 .select(tadTour.id, tadTour.stationNo, tadTour.uid)
@@ -468,12 +472,12 @@ class TourServiceV1
                                 .fetch()
 
                     } ?: listOf())
-                    .plus(userId?.let {
+                    .plus(customIds?.let {
                         em.from(tadTour)
                                 .select(tadTour.id, tadTour.stationNo, tadTour.uid)
-                                .where(tadTour.userId.eq(it))
+                                .where(tadTour.customId.`in`(it))
                                 .fetch()
-                    } ?: listOf<Tuple>())
+                    } ?: listOf())
                     .let {
                         when (includeRelated ?: false) {
                             true -> {

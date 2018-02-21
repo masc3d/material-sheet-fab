@@ -29,6 +29,7 @@ import javax.ws.rs.sse.SseEventSink
 interface TourServiceV1 {
     companion object {
         const val ID = "id"
+        const val CUSTOM_ID = "custom-id"
         const val DEBITOR_ID = "debitor-id"
         const val FROM = "from"
         const val INCLUDE_RELATED = "include-related"
@@ -105,6 +106,8 @@ interface TourServiceV1 {
             userId: Long? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
             stationNo: Long? = null,
+            @QueryParam(CUSTOM_ID) @ApiParam(value = "Custom id", required = false)
+            customIds: List<String>? = null,
             @QueryParam(INCLUDE_RELATED) @ApiParam(value = "Inlcude related tours (eg. split optimized tours)", required = false, defaultValue = "false")
             includeRelated: Boolean? = null
     )
