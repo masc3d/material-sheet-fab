@@ -347,7 +347,12 @@ class TourServiceV1
     ): List<Tour> {
         val tourRecords =
                 this.tourRepo.findAll(BooleanBuilder()
-                        .letWithParamNotNull(ids, { and(tadTour.id.`in`(ids)) })
+                        .let {
+                            if (ids?.count() ?: 0 > 0)
+                                it.and(tadTour.id.`in`(ids))
+                            else
+                                it
+                        }
                         .letWithParamNotNull(debitorId, {
                             and(tadTour.userId.`in`(
                                     userRepository.findUserIdsByDebitor(it.toInt()).map { it.toLong() }
