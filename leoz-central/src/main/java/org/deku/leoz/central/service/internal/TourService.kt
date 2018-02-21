@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.querydsl.core.BooleanBuilder
@@ -109,10 +110,11 @@ class TourServiceV1
 
     /** Object mapper used for (de-)serializing (route) metas from/to persistence store */
     private val objectMapper: ObjectMapper by lazy {
-        ObjectMapper().also {
-            it.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            it.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true)
-            it.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        ObjectMapper().apply {
+            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true)
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         }
     }
     //endregion
