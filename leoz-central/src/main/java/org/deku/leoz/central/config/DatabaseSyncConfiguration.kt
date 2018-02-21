@@ -307,7 +307,8 @@ open class DatabaseSyncConfiguration {
         if (ActiveMQBroker.instance.isStarted)
             brokerEventListener.onStart()
 
-        dbSyncService.interval = Duration.ofMinutes(1)
+        // TODO: requires capability to control sync per table to prevent constant lookups on frequently changing tables
+        dbSyncService.interval = Duration.ofSeconds(5)
     }
 
     /** Broker event listener  */

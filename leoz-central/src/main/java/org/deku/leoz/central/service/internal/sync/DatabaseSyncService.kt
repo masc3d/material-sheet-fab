@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
 import sx.Stopwatch
+import sx.log.slf4j.debug
 import sx.persistence.querydsl.from
 import sx.persistence.truncate
 import sx.util.toNullable
@@ -208,7 +209,7 @@ constructor(
             }
         }
 
-        log.info("Database sync took " + sw.toString())
+        log.debug { "Database sync took " + sw.toString() }
     }
 
     /**
