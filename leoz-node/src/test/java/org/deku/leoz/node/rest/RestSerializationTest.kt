@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.StdDateFormat
+import org.deku.leoz.service.pub.RoutingService
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -11,7 +12,10 @@ import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import org.zalando.problem.Status
 import sx.junit.StandardTest
+import sx.log.slf4j.info
+import sx.rs.RestProblem
 import java.time.ZonedDateTime
 import java.util.*
 import javax.inject.Inject
@@ -82,5 +86,18 @@ class RestSerializationTest {
 
         val d = this.objectMapper.readValue(oJson, Enum1::class.java)
         Assert.assertEquals(d, Enum1.TEST1)
+    }
+
+    @Test
+    fun testRestProblem() {
+        val o = RestProblem(
+                status = Status.NOT_FOUND,
+                detail = "Detail message",
+                parameters = mapOf("code" to 1000)
+        )
+
+        log.info {
+            this.objectMapper.writeValueAsString(o)
+        }
     }
 }
