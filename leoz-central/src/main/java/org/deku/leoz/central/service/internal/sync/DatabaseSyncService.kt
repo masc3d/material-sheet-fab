@@ -240,14 +240,10 @@ constructor(
                         em.persist(it)
                     }
 
-            val localSyncId: Long
-
             if (dbSyncId > localSync.syncId) {
-                localSyncId = localSync.syncId
-
                 this.notificationsSubject.onNext(NotificationEvent(
                         tableName = tableName,
-                        localSyncId = localSyncId,
+                        localSyncId = localSync.syncId,
                         syncId = dbSyncId)
                 )
 
