@@ -1,9 +1,11 @@
 package org.deku.leoz.mobile.ui.process
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -12,6 +14,7 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
@@ -20,9 +23,11 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.core.Fragment
+import org.deku.leoz.mobile.ui.dialog.PrivacyDisclaimerDialog
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.hideSoftInput
+import java.lang.IllegalStateException
 import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
@@ -36,6 +41,8 @@ class LoginFragment : Fragment<Any>() {
 
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
+
+    private var privacyDisclaimerAccepted = false
 
     interface Listener {
         /** Called when it's appropriate to show progress indication */
@@ -105,7 +112,8 @@ class LoginFragment : Fragment<Any>() {
                         // Verify all fields
                         if (listOf(
                                 validateMailAddress(),
-                                validatePassword()
+                                validatePassword(),
+                                queryPrivacyConfirmation()
                         ).any { it == false }) {
                             throw IllegalArgumentException("Validation failed")
                         }
@@ -200,5 +208,32 @@ class LoginFragment : Fragment<Any>() {
         this.uxMailaddress.setText(email)
         this.uxPassword.setText(password)
         this.syntheticLoginSubject.onNext(Unit)
+    }
+
+    private fun queryPrivacyConfirmation(): Completable {
+        return Completable.create {
+            val completable = it
+
+            MaterialDialog.Builder(this.context).also {
+                it.title("Datenschutzerklärung")
+                it.checkBoxPrompt("Ich Akzeptiere die Erklärung", false, { _, checked ->
+                    privacyDisclaimerAccepted = checked
+                })
+                it.content(R.string.privacy_disclaimer_text)
+                it.cancelable(false)
+                it.positiveText("Weiter")
+                it.negativeText("Abbrechen")
+                it.onPositive { dialog, which ->
+                    if (!privacyDisclaimerAccepted) {
+                        completable.onError(IllegalStateException("Privacy disclaimer must be accepted to continue"))
+                    } else {
+                        completable.onComplete()
+                    }
+                }
+                it.onNegative { dialog, which ->
+                    completable.onError(IllegalStateException("Privacy disclaimer must be accepted to continue"))
+                }
+            }.show()
+        }
     }
 }
