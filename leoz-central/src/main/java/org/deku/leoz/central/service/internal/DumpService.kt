@@ -4,35 +4,32 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
-import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.entity.ShortDate
-import org.jooq.*
+import org.jooq.DSLContext
+import org.jooq.Record
+import org.jooq.Select
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import sx.jooq.dump
-import sx.log.slf4j.trace
 import sx.rs.attachment
 import sx.rs.toStreamingOutput
 import sx.rx.limit
-import sx.rx.subscribeOn
 import sx.time.toTimestamp
 import sx.util.letWithParamNotNull
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import javax.inject.Inject
-import javax.inject.Named
-import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
-import javax.ws.rs.core.*
-import javax.ws.rs.core.Context
+import javax.ws.rs.core.Response
 
 
 /**
  * Dump service
  * Created by masc on 14.02.18.
  */
-@Named
+@Component
 @Path("internal/v1/dump")
 class DumpService : org.deku.leoz.service.internal.DumpService {
     private val log = LoggerFactory.getLogger(this.javaClass)

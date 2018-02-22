@@ -6,17 +6,17 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylis
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import sx.time.toTimestamp
 import java.sql.Timestamp
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Created by JT on 12.07.17.
  */
-@Named
-open class JooqDeliveryListRepository {
+@Component
+class JooqDeliveryListRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext

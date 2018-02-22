@@ -4,11 +4,11 @@ import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
+import org.deku.leoz.node.data.jooq.Tables
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repository.RouteRepository
-import org.deku.leoz.node.data.jooq.Tables
 import org.eclipse.persistence.config.HintValues
 import org.eclipse.persistence.config.QueryHints
 import org.eclipse.persistence.sessions.factories.SessionManager
@@ -42,7 +42,7 @@ import javax.sql.DataSource
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(DataTestConfiguration::class))
 @Category(PrototypeTest::class)
-open class QueryPerformanceTest {
+class QueryPerformanceTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @PersistenceContext

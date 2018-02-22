@@ -1,33 +1,31 @@
 package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.config.ParcelServiceConfiguration
+import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
-import org.deku.leoz.time.toTimeWithoutDate
 import org.deku.leoz.time.toDateWithoutTime
-import org.deku.leoz.time.toShortTime
-import org.deku.leoz.time.toGregorianLongDateString
+import org.deku.leoz.time.toTimeWithoutDate
 import org.jooq.DSLContext
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sx.time.toTimestamp
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Named
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.util.*
+import javax.inject.Inject
 
 
-@Named
-open class ParcelProcessingService {
+@Component
+class ParcelProcessingService {
 
     class ParcelProcessingException(message: String, inner: Throwable? = null) : Exception(message, inner)
 
@@ -62,7 +60,7 @@ open class ParcelProcessingService {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun processMessages() {
+    fun processMessages() {
         if (parcelServiceSettings.skipParcelProcessing) {
             log.trace("Parcel processing is disabled")
             return
@@ -87,7 +85,7 @@ open class ParcelProcessingService {
 
                 when (parcel) {
                     0.toLong() -> {
-                        log.info("parcelId=0,messageID=${it.id.toString()}")
+                        log.info("parcelId=0,messageID=${it.id}")
                         it.isProccessed = 1
                         it.store()
                         //return@forEach
@@ -98,7 +96,7 @@ open class ParcelProcessingService {
                 }
 
                 if (parcelRecord == null) {
-                    log.info("parcelId=$parcel,messageID=${it.id.toString()} no parcelRecord")
+                    log.info("parcelId=$parcel,messageID=${it.id} no parcelRecord")
                     it.isProccessed = 1
                     it.store()
                     //return@forEach
@@ -106,7 +104,7 @@ open class ParcelProcessingService {
                 }
                 val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
                 if (orderRecord == null) {
-                    log.info("parcelId=$parcel,messageID=${it.id.toString()} no orderRecord")
+                    log.info("parcelId=$parcel,messageID=${it.id} no orderRecord")
                     it.isProccessed = 1
                     it.store()
                     //return@forEach
@@ -203,7 +201,7 @@ open class ParcelProcessingService {
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
                     if (pictureUID == null) {
-                        log.info("parcelId=$parcel,messageID=${it.id.toString()} pictureID null")
+                        log.info("parcelId=$parcel,messageID=${it.id} pictureID null")
                         //return@forEach
                         continue@loop
                     }

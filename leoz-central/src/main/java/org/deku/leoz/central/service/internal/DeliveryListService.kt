@@ -4,25 +4,25 @@ import org.deku.leoz.central.data.jooq.dekuclient.Tables.RKKOPF
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
 import org.deku.leoz.central.data.repository.JooqStationRepository
-import org.deku.leoz.node.rest.authorizedUser
-import org.deku.leoz.node.rest.restrictByDebitor
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.deku.leoz.model.TaskType
-import sx.rs.RestProblem
+import org.deku.leoz.node.rest.authorizedUser
+import org.deku.leoz.node.rest.restrictByDebitor
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.rs.RestProblem
 import sx.time.plusDays
 import sx.time.toTimestamp
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response
 /**
  * Created by JT on 12.07.17.
  */
-@Named
+@Component
 //@ApiKey(false) custom API Key Check
 @Path("internal/v1/deliverylist")
 class DeliveryListService

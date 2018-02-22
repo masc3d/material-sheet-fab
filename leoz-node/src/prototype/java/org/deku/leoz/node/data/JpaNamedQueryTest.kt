@@ -1,6 +1,5 @@
 package org.deku.leoz.node.data
 
-import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.data.jpa.MstStation
@@ -25,7 +24,7 @@ import javax.persistence.PersistenceContext
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(DataTestConfiguration::class))
 @Category(PrototypeTest::class)
-open class JpaNamedQueryTest {
+class JpaNamedQueryTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @PersistenceContext

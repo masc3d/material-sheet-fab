@@ -1,32 +1,24 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SsoPMov
-import org.deku.leoz.central.data.jooq.dekuclient.tables.SsoSMov
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SsoSMovepool
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SsoPMovRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SsoSMovepoolRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TbldepotlisteRecord
-import org.deku.leoz.model.BagStatus
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.stereotype.Component
 import sx.time.toTimestamp
 import java.util.*
-
 import javax.inject.Inject
-import javax.inject.Named
-
-import org.deku.leoz.service.internal.BagService
-import org.deku.leoz.service.internal.ExportService
 
 /**
  * Created by masc on 07.05.15.
  */
-@Named
-open class JooqStationRepository {
+@Component
+class JooqStationRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext

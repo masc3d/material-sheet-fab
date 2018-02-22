@@ -9,17 +9,13 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.JooqMessagesRepository
 import org.deku.leoz.central.data.repository.JooqNodeRepository
-import org.deku.leoz.model.AdditionalInfo
-import org.deku.leoz.model.Event
-import org.deku.leoz.model.FileName
-import org.deku.leoz.model.Location
-import org.deku.leoz.model.ParcelDeliveryAdditionalinfo
-import org.deku.leoz.model.Reason
+import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sx.io.serialization.Serializable
 import sx.log.slf4j.debug
@@ -29,17 +25,11 @@ import sx.mq.MqHandler
 import sx.time.toTimestamp
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import java.nio.file.Files
 import java.util.*
 import javax.imageio.ImageIO
 import javax.inject.Inject
-import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
 
@@ -48,9 +38,9 @@ import javax.ws.rs.core.MediaType
  * Parcel service v1 implementation
  * Created by JT on 17.07.17.
  */
-@Named
+@Component
 @Path("internal/v1/parcel")
-open class ParcelServiceV1 :
+class ParcelServiceV1 :
         org.deku.leoz.service.internal.ParcelServiceV1,
         MqHandler<ParcelServiceV1.ParcelMessage> {
 

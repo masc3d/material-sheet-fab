@@ -10,18 +10,15 @@ import io.swagger.models.auth.In
 import org.deku.leoz.config.Rest
 import org.deku.leoz.service.zalando.Package
 import org.slf4j.LoggerFactory
-import javax.inject.Inject
-import javax.inject.Named
+import org.springframework.stereotype.Component
 import javax.servlet.ServletConfig
-import javax.servlet.ServletContext
 import javax.servlet.http.HttpServlet
-import javax.ws.rs.core.Context
 
 /**
  * Public API documentation context/configuration
  * Created by masc on 20.05.15.
  */
-@Named
+@Component
 class SwaggerBootstrapServlet : HttpServlet() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

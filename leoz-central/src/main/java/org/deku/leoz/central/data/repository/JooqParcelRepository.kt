@@ -1,35 +1,32 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.springframework.beans.factory.annotation.Qualifier
-import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragcolliesRecord
-import org.jooq.DSLContext
-import javax.inject.Inject
-import javax.inject.Named
-import org.deku.leoz.central.data.jooq.dekuclient.tables.Tblauftragcollies
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
-import org.deku.leoz.central.data.jooq.dekuclient.tables.Tblauftrag
+import org.deku.leoz.central.data.jooq.dekuclient.tables.Tblauftragcollies
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecord
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.central.data.toUByte
-import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.maxWeightForParcelBag
-import org.deku.leoz.service.internal.ParcelServiceV1
-import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.ImportService
+import org.deku.leoz.service.internal.entity.Address
+import org.jooq.DSLContext
 import org.jooq.impl.DSL.sum
 import org.jooq.types.UInteger
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import sx.time.toSqlDate
 import sx.time.toTimestamp
 import sx.time.workDate
 import java.math.BigDecimal
 import java.time.LocalDate
+import javax.inject.Inject
 
 
 /**
  * Created by JT on 18.07.17.
  */
-@Named
+@Component
 class JooqParcelRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)

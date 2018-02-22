@@ -7,14 +7,15 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadNodeGeoposit
 import org.deku.leoz.central.data.repository.JooqGeopositionRepository
 import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
-import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.model.VehicleType
+import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.internal.LocationServiceV1
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import sx.log.slf4j.trace
 import sx.log.slf4j.warn
 import sx.mq.MqChannel
@@ -26,7 +27,6 @@ import sx.time.toTimestamp
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response
 /**
  * Location service v2
  */
-@Named
+@Component
 @Path("internal/v2/location")
 class LocationServiceV2 :
         org.deku.leoz.service.internal.LocationServiceV2,

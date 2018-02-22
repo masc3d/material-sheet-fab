@@ -3,43 +3,39 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SsoSMovepoolRecord
-import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.central.data.repository.JooqHistoryRepository
+import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.deku.leoz.model.BagStatus
-import org.deku.leoz.node.rest.ServiceException
-import org.deku.leoz.service.internal.BagService.ErrorCode
-import org.jooq.DSLContext
-import org.jooq.types.UInteger
-import org.springframework.beans.factory.annotation.Qualifier
-import sx.time.toDate
-import sx.time.toSqlDate
-import sx.time.toTimestamp
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Named
-import javax.ws.rs.BadRequestException
-import javax.ws.rs.Path
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
+import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.BagService
-import org.deku.leoz.service.internal.ExportService
+import org.deku.leoz.service.internal.BagService.ErrorCode
 import org.deku.leoz.service.internal.entity.BagDiff
 import org.deku.leoz.service.internal.entity.BagInitRequest
 import org.deku.leoz.service.internal.entity.BagResponse
 import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 import org.deku.leoz.service.pub.RoutingService
+import org.jooq.DSLContext
+import org.jooq.types.UInteger
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import sx.rs.RestProblem
-import sx.time.toLocalDate
-import sx.time.workDate
+import sx.time.*
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.*
+import javax.inject.Inject
+import javax.ws.rs.BadRequestException
+import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
 /**
  * Bundle service (leoz-central)
  * Created by masc on 01/11/2016.
  **/
-@Named
+@Component
 @Path("internal/v1/bag")
 class BagService : BagService {
     //private val log = LoggerFactory.getLogger(this.javaClass)

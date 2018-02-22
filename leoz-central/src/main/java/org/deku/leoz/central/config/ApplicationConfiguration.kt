@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Profile
  */
 @Configuration
 @Profile(Application.PROFILE_CENTRAL)
-open class ApplicationConfiguration {
+class ApplicationConfiguration {
     companion object {
         val module = Kodein.Module {
             bind<Application>() with eagerSingleton {
@@ -41,14 +41,14 @@ open class ApplicationConfiguration {
     }
 
     @get:Bean
-    open val storage: Storage = Kodein.global.instance()
+    val storage: Storage = Kodein.global.instance()
 
     @get:Bean
-    open val logConfiguration: LogConfiguration = Kodein.global.instance()
+    val logConfiguration: LogConfiguration = Kodein.global.instance()
 
     @get:Bean
-    open val app: Application = Kodein.global.instance()
+    val app: Application = Kodein.global.instance()
 
     @get:Bean
-    open val identity: Identity by lazy { this.app.identity }
+    val identity: Identity by lazy { this.app.identity }
 }

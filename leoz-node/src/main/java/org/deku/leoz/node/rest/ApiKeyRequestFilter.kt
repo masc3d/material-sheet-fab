@@ -3,29 +3,26 @@ package org.deku.leoz.node.rest
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.Application
-import org.deku.leoz.rest.RestrictRoles
 import org.deku.leoz.service.internal.UserService
 import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Component
 import sx.reflect.allInterfaces
-import sx.rs.RestProblem
 import sx.rs.auth.ApiKeyRequestFilterBase
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.container.ResourceInfo
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.Provider
+
 /**
  * Global leoz API key request filter
  * Created by masc on 08.07.15.
  */
 @Profile(Application.PROFILE_CLIENT_NODE)
-@Named
+@Component
 @Provider
-open class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
+class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
         apiKeyParameterName = Rest.API_KEY) {
 
     @Context

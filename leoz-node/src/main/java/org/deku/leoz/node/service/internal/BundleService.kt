@@ -5,24 +5,23 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.BundleVersionRepository
-import sx.rs.RestProblem
-import org.deku.leoz.service.internal.update.BundleUpdateService
-import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.BundleServiceV2
+import org.deku.leoz.service.internal.entity.update.UpdateInfo
+import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.packager.BundleRepository
 import sx.platform.OperatingSystem
+import sx.rs.RestProblem
 import sx.rs.attachment
 import java.io.File
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 
@@ -30,11 +29,11 @@ import javax.ws.rs.core.Response
  * BundleService implementation
  * Created by masc on 01/11/2016.
  */
-@Named
+@Component
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v2/bundle")
 @Api(value = "Bundle operations")
-open class BundleServiceV2 : BundleServiceV2 {
+class BundleServiceV2 : BundleServiceV2 {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -56,7 +55,7 @@ open class BundleServiceV2 : BundleServiceV2 {
     /**
      * Look up version alias by node key
      */
-    open fun aliasByNodeKey(nodeKey: String): String {
+    fun aliasByNodeKey(nodeKey: String): String {
         // Implemented only in leoz-central
         throw UnsupportedOperationException("Node key lookup not supported")
     }

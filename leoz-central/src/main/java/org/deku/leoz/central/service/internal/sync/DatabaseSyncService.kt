@@ -9,6 +9,7 @@ import org.deku.leoz.node.data.repository.SyncRepository
 import org.jooq.Record
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.TransactionStatus
@@ -22,11 +23,10 @@ import sx.persistence.truncate
 import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
 import javax.inject.Inject
-import javax.inject.Named
 import javax.persistence.PersistenceContext
 
 /** Base interface for all sync presets */
-interface Preset {}
+interface Preset
 
 /**
  * Preset for synchronizing jooq/jdbc records to jpa entities
@@ -39,7 +39,7 @@ interface Preset {}
  * @property dstJpaSyncIdPath Destination QueryDSL sync id field path
  * @property transformation    Conversion function JOOQ record -> JPA entity
  */
-open class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
+class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
         val srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
         val srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
         val dstJpaEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
@@ -55,7 +55,7 @@ open class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
  * @property srcJooqTable JOOQ source table
  * @property srcJooqSyncIdField JOOQ source sync id field
  */
-open class NotifyPreset<TCentralRecord : org.jooq.Record>(
+class NotifyPreset<TCentralRecord : org.jooq.Record>(
         val srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
         val srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?
 ) : Preset {
@@ -67,8 +67,8 @@ open class NotifyPreset<TCentralRecord : org.jooq.Record>(
  * Database sync service
  * Created by masc on 15.05.15.
  */
-@Named
-open class DatabaseSyncService
+@Component
+class DatabaseSyncService
 @Inject
 constructor(
         private val exceutorService: ScheduledExecutorService,
@@ -102,7 +102,7 @@ constructor(
     /**
      * Embedded service class
      */
-    protected open val service = Service()
+    protected val service = Service()
 
     companion object {
         private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
@@ -120,7 +120,7 @@ constructor(
     )
 
     private val updatesSubject = PublishSubject.create<UpdateEvent>()
-    open val updates = this.updatesSubject.hide()
+    val updates = this.updatesSubject.hide()
 
     /**
      * Notification event
@@ -138,7 +138,7 @@ constructor(
     /**
      * Observable notifications
      */
-    open val notifications =
+    val notifications =
             Observable.defer<NotificationEvent> {
                 Observable.fromIterable(
                         this.syncRepository.findAll().map {
@@ -176,7 +176,7 @@ constructor(
     @Suppress("UNCHECKED_CAST")
     @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     @Synchronized
-    open fun sync(clean: Boolean) {
+    fun sync(clean: Boolean) {
         val sw = Stopwatch.createStarted()
 
         val syncIdMap = this.syncJooqRepository
@@ -215,7 +215,7 @@ constructor(
     /**
      * Update from notify preset
      */
-    open fun update(preset: NotifyPreset<Record>,
+    fun update(preset: NotifyPreset<Record>,
                     syncIdMap: Map<String, Long>,
                     clean: Boolean) {
 
@@ -261,7 +261,7 @@ constructor(
      * Update from sync preset
      * @param clean delete all records before updating
      */
-    open fun update(preset: SyncPreset<Record, Any>,
+    fun update(preset: SyncPreset<Record, Any>,
                     syncIdMap: Map<String, Long>,
                     clean: Boolean
     ) {
@@ -385,25 +385,25 @@ constructor(
     /**
      * Sync interval
      */
-    open var interval: Duration
+    var interval: Duration
         get() = this.service.period ?: Duration.ZERO
         set(value) {
             this.service.period = value
         }
 
-    open fun start() {
+    fun start() {
         this.service.start()
     }
 
-    open fun stop() {
+    fun stop() {
         this.service.stop()
     }
 
-    open fun trigger() {
+    fun trigger() {
         this.service.trigger()
     }
 
-    open fun startSync(clean: Boolean) {
+    fun startSync(clean: Boolean) {
         this.service.submitTask {
             this@DatabaseSyncService.sync(clean)
         }

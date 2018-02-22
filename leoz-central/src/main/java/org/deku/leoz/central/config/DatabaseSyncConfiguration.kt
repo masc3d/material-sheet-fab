@@ -6,28 +6,7 @@ import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.deku.leoz.central.service.internal.sync.NotifyPreset
 import org.deku.leoz.central.service.internal.sync.Preset
 import org.deku.leoz.central.service.internal.sync.SyncPreset
-import org.deku.leoz.node.data.jpa.MstBundleVersion
-import org.deku.leoz.node.data.jpa.MstCountry
-import org.deku.leoz.node.data.jpa.MstDebitor
-import org.deku.leoz.node.data.jpa.MstDebitorStation
-import org.deku.leoz.node.data.jpa.MstHolidayCtrl
-import org.deku.leoz.node.data.jpa.MstRoute
-import org.deku.leoz.node.data.jpa.MstRoutingLayer
-import org.deku.leoz.node.data.jpa.MstSector
-import org.deku.leoz.node.data.jpa.MstStation
-import org.deku.leoz.node.data.jpa.MstStationSector
-import org.deku.leoz.node.data.jpa.QMstBundleVersion
-import org.deku.leoz.node.data.jpa.QMstCountry
-import org.deku.leoz.node.data.jpa.QMstDebitor
-import org.deku.leoz.node.data.jpa.QMstDebitorStation
-import org.deku.leoz.node.data.jpa.QMstHolidayCtrl
-import org.deku.leoz.node.data.jpa.QMstRoute
-import org.deku.leoz.node.data.jpa.QMstRoutingLayer
-import org.deku.leoz.node.data.jpa.QMstSector
-import org.deku.leoz.node.data.jpa.QMstStation
-import org.deku.leoz.node.data.jpa.QMstStationSector
-import org.deku.leoz.node.data.jpa.QTadNodeGeoposition
-import org.deku.leoz.node.data.jpa.TadNodeGeoposition
+import org.deku.leoz.node.data.jpa.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -44,14 +23,14 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class DatabaseSyncConfiguration {
+class DatabaseSyncConfiguration {
     private var log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     private lateinit var dbSyncService: DatabaseSyncService
 
     @get:Bean
-    open val syncPresets = listOf<Preset>(
+    val syncPresets = listOf<Preset>(
             SyncPreset(
                     Tables.MST_BUNDLE_VERSION,
                     Tables.MST_BUNDLE_VERSION.SYNC_ID,

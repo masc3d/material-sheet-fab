@@ -8,14 +8,13 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstNodeRecord
 import org.jooq.DSLContext
 import org.jooq.SelectWhereStep
 import org.springframework.beans.factory.annotation.Qualifier
-
+import org.springframework.stereotype.Component
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Created by masc on 02.07.15.
  */
-@Named
+@Component
 class JooqNodeRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)

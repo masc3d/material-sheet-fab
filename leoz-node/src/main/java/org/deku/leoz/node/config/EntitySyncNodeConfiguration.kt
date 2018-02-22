@@ -27,7 +27,7 @@ import javax.persistence.PersistenceUnit
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Lazy(false)
-open class EntitySyncNodeConfiguration {
+class EntitySyncNodeConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -44,7 +44,7 @@ open class EntitySyncNodeConfiguration {
 
     /** Entity sync consumer */
     @Bean
-    open fun createEntityConsumer(): EntityConsumer {
+    fun createEntityConsumer(): EntityConsumer {
         return EntityConsumer(
                 notificationEndpoint = JmsEndpoints.central.entitySync.topic,
                 requestEndpoint = JmsEndpoints.central.entitySync.queue,

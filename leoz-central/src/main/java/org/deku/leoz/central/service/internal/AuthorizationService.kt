@@ -3,20 +3,20 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.verifyPassword
 import org.deku.leoz.identity.Identity
-import sx.rs.RestProblem
-import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.model.UserRole
+import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
-import sx.mq.MqHandler
 import sx.log.slf4j.info
+import sx.mq.MqHandler
+import sx.rs.RestProblem
 import sx.time.toTimestamp
 import java.text.DecimalFormat
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response
  * Authorization service
  * Created by masc on 01.07.15.
  */
-@Named
+@Component
 @Path("internal/v1/authorize")
 class AuthorizationService
     :

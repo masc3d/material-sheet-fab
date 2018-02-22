@@ -21,6 +21,7 @@ import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCust
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory
 import org.springframework.boot.web.servlet.ServletContextInitializer
 import org.springframework.context.annotation.Bean
+import org.springframework.stereotype.Component
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.context.support.WebApplicationContextUtils
 import sx.mq.jms.activemq.HttpExternalTunnelServlet
@@ -28,14 +29,13 @@ import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.ServletContext
 import javax.servlet.ServletException
 
 /**
  * Created by masc on 27.05.15.
  */
-@Named
+@Component
 class WebContextInitializer : ServletContextInitializer {
     var log = LoggerFactory.getLogger(WebContextInitializer::class.java.name)
 

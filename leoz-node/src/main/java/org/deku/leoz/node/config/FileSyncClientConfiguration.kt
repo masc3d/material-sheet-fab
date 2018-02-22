@@ -24,7 +24,7 @@ import javax.inject.Inject
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Lazy(false)
-open class FileSyncClientConfiguration {
+class FileSyncClientConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -43,7 +43,7 @@ open class FileSyncClientConfiguration {
     private lateinit var storage: Storage
 
     @get:Bean
-    open val fileSyncClientService: FileSyncClientService
+    val fileSyncClientService: FileSyncClientService
         get() = FileSyncClientService(
                 executorService = this.executorService,
                 baseDirectory = storage.transferDirectory,
