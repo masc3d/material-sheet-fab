@@ -9,6 +9,7 @@ import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.LogConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 
 /**
@@ -46,9 +47,11 @@ class ApplicationConfiguration {
     @get:Bean
     val logConfiguration: LogConfiguration = Kodein.global.instance()
 
+    @get:Lazy
     @get:Bean
     val app: Application = Kodein.global.instance()
 
+    @get:Lazy
     @get:Bean
     val identity: Identity by lazy { this.app.identity }
 }
