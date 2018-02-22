@@ -68,7 +68,7 @@ class DeliveryListService
                                     .findNewerThan(
                                             syncId = it.localSyncId,
                                             // Only handle updates for recent delivery lists
-                                            date = Date().plusDays(-100).toTimestamp()
+                                            date = Date().plusDays(-1).toTimestamp()
                                     )
                     )
                 }
@@ -78,53 +78,59 @@ class DeliveryListService
      * Delivery list update handler
      */
     private fun onUpdate(deliverylistIds: List<Long>) {
-        //region Convert delivery lists to tours
-        val dlRecords = deliveryListRepository
-                .findByIds(deliverylistIds)
+        try {
+            //region Convert delivery lists to tours
+            val dlRecords = deliveryListRepository
+                    .findByIds(deliverylistIds)
 
-        if (dlRecords.count() == 0)
-            return
+            if (dlRecords.count() == 0)
+                return
 
-        val dlDetailRecordsByDlId = deliveryListRepository
-                .findDetailsByIds(deliverylistIds)
-                .groupBy { it.id }
+            val dlDetailRecordsByDlId = deliveryListRepository
+                    .findDetailsByIds(deliverylistIds)
+                    .groupBy { it.id }
 
-        // Tour service has no notion of delivery lists, providing dl ids as custom ids
-        val customIds = dlRecords.map { it.id.toLong().toString() }
-        log.info { "Converting delivery list(s) to tour(s) [${customIds.joinToString(", ")}]" }
+            // Tour service has no notion of delivery lists, providing dl ids as custom ids
+            val customIds = dlRecords.map { it.id.toLong().toString() }
+            log.info { "Converting delivery list(s) to tour(s) [${customIds.joinToString(", ")}]" }
 
-        this.tourService.delete(
-                customIds = customIds
-        )
-
-        this.tourService.put(tours = dlRecords.map { dlRecord ->
-            TourServiceV1.Tour(
-                    stationNo = dlRecord.deliveryStation.toLong(),
-                    customId = dlRecord.id.toLong().toString(),
-                    date = ShortDate(dlRecord.deliveryListDate),
-                    stops = dlDetailRecordsByDlId.getValue(dlRecord.id)
-                            .sortedBy { it.orderPosition }
-                            .groupBy { it.orderPosition }
-                            .map { dlStop ->
-                                TourServiceV1.Stop(
-                                        tasks = dlStop.value
-                                                .distinctBy { it.orderId.toString() + it.stoptype }
-                                                .map { dlDetailRecord ->
-                                                    TourServiceV1.Task(
-                                                            orderId = dlDetailRecord.orderId.toLong(),
-                                                            taskType = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
-                                                                TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
-                                                                TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
-                                                            }
-                                                    )
-                                                }
-
-                                )
-
-                            }
+            this.tourService.delete(
+                    customIds = customIds
             )
-        })
-        //endregion
+
+            this.tourService.put(tours = dlRecords.map { dlRecord ->
+                val dlDetailRecords = dlDetailRecordsByDlId.get(dlRecord.id) ?: listOf()
+
+                TourServiceV1.Tour(
+                        stationNo = dlRecord.deliveryStation.toLong(),
+                        customId = dlRecord.id.toLong().toString(),
+                        date = ShortDate(dlRecord.deliveryListDate),
+                        stops = dlDetailRecords
+                                .sortedBy { it.orderPosition }
+                                .groupBy { it.orderPosition }
+                                .map { dlStop ->
+                                    TourServiceV1.Stop(
+                                            tasks = dlStop.value
+                                                    .distinctBy { it.orderId.toString() + it.stoptype }
+                                                    .map { dlDetailRecord ->
+                                                        TourServiceV1.Task(
+                                                                orderId = dlDetailRecord.orderId.toLong(),
+                                                                taskType = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
+                                                                    TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
+                                                                    TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                                }
+                                                        )
+                                                    }
+
+                                    )
+                                }
+                )
+
+            })
+            //endregion
+        } catch (e: Throwable) {
+            log.error(e.message, e)
+        }
     }
 
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
