@@ -11,6 +11,7 @@ import io.reactivex.observables.ConnectableObservable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.Duration
+import java.util.concurrent.Callable
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
@@ -135,7 +136,7 @@ fun <T> Observable<T>.retryWith(
             if (retryCount <= count) {
                 try {
                     return@flatMap action(retryCount, error)
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     return@flatMap Observable.error<Throwable>(error)
                 }
             } else {
@@ -213,4 +214,19 @@ fun Completable.retryWithExponentialBackoff(
     )
 }
 
-
+/**
+ * A safe wrapper for callables with support for null values
+ * @return Observable emitting the callables result or an empty observable if the result was null
+ */
+fun <T> Callable<T?>.toObservable(): Observable<T> {
+    return Observable.fromPublisher<T> { p ->
+        try {
+            this.call()?.also {
+                p.onNext(it)
+            }
+            p.onComplete()
+        } catch (e: Throwable) {
+            p.onError(e)
+        }
+    }
+}

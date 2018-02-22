@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { MsgService } from '../../shared/msg/msg.service';
+
 import { Observable } from 'rxjs/Observable';
-import { Message } from 'primeng/primeng';
+
+import { Message } from 'primeng/components/common/api';
+
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-tour',

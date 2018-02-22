@@ -1,5 +1,9 @@
 package org.deku.leoz.central.service.internal
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.Tuple
 import io.reactivex.Observable
@@ -12,6 +16,8 @@ import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.TaskType
+import org.deku.leoz.model.TourRouteMeta
+import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.node.data.jpa.QTadTour.tadTour
 import org.deku.leoz.node.data.jpa.QTadTourEntry.tadTourEntry
 import org.deku.leoz.node.data.jpa.TadTour
@@ -24,10 +30,10 @@ import org.deku.leoz.node.service.internal.SmartlaneBridge
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
-import org.deku.leoz.service.internal.id
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.scheduling.annotation.Scheduled
 import org.zalando.problem.Status
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
@@ -39,6 +45,7 @@ import sx.persistence.transaction
 import sx.persistence.withEntityManager
 import sx.rs.RestProblem
 import sx.rs.push
+import sx.time.plusDays
 import sx.time.toTimestamp
 import sx.util.hashWithSha1
 import sx.util.letWithParamNotNull
@@ -70,7 +77,7 @@ class TourServiceV1
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    //region Dependencices
+    //region Dependencies
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
@@ -100,6 +107,16 @@ class TourServiceV1
 
     @Inject
     private lateinit var smartlane: SmartlaneBridge
+
+    /** Object mapper used for (de-)serializing (route) metas from/to persistence store */
+    private val objectMapper: ObjectMapper by lazy {
+        ObjectMapper().apply {
+            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true)
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        }
+    }
     //endregion
 
     private val updatedSubject = PublishSubject.create<SubscriptionEvent>()
@@ -119,143 +136,211 @@ class TourServiceV1
                             return@subscribe
                         }
 
-                        if (!tourRepo.exists(tadTour.userId.eq(userId.toLong())))
-                        // Skip when there's no tour for this user
-                            return@subscribe
-
                         val user = this.userRepository.findById(userId)
                                 ?: throw NoSuchElementException("User id [${userId}]")
 
-                        val positions = gpsMessage.dataPoints?.toList() ?: listOf()
+                        if (smartlane.hasDriver(user.email)) {
+                            val positions = gpsMessage.dataPoints?.toList() ?: listOf()
 
-                        this.smartlane.putDriverPosition(
-                                email = user.email,
-                                positions = positions
-                        )
-                                .subscribeBy(
-                                        onError = { e -> log.error(e.message, e) }
-                                )
+                            this.smartlane.putDriverPosition(
+                                    email = user.email,
+                                    positions = positions
+                            )
+                                    .subscribeBy(
+                                            onError = { e -> log.error(e.message, e) }
+                                    )
+                        }
                     } catch (e: Throwable) {
                         log.error("Location push to routing provider failed. node [${gpsMessage.nodeKey}], user [${gpsMessage.userId}]: ${e.message}")
                     }
                 }
     }
 
+    @Scheduled(cron = "0 0 */2 * * *")
+    fun clean() {
+        val expiry = Date()
+                .plusDays(-1)
+                .toTimestamp()
+
+        emf.withEntityManager { em ->
+            this.delete(ids = em.from(tadTour).select(tadTour.id)
+                    .where(tadTour.created.lt(expiry))
+                    .fetch()
+                    .also {
+                        log.info("Removing expired tours [${it.joinToString(", ")}]")
+                    }
+            )
+        }
+    }
+
     /**
-     * Create new tours from domain instance(s)
-     * @param tours Tours to create
-     * @return Ids of created tours
+     * Update or create tour(s) from domain instance(s)
+     * @param tours Tours to update or create
      */
-    fun create(tours: Iterable<Tour>): List<Long> {
-        val now = Date()
+    fun put(
+            tours: Iterable<Tour>
+    ): List<Tour> {
+        val now = Date().toTimestamp()
+
+        if (tours.count() == 0)
+            return listOf()
 
         return emf.transaction { em ->
             tours
                     .map { tour ->
-                        // Create new one if it doesn't exist
-                        val tourRecord = TadTour().also {
-                            it.userId = tour.userId
-                            it.stationNo = tour.stationNo
-                            it.parentId = tour.parentId
-                            it.customId = tour.customId
-                            it.optimized = tour.optimized?.toTimestamp()
-                            it.uid = tour.uid ?: this.createUid()
-                            it.date = ShortDate(now).toString()
-                            it.created = now.toTimestamp()
-                            it.modified = now.toTimestamp()
+                        //region Update tour record
+                        val nodeUid = tour.nodeUid
 
-                            em.persist(it)
-                            em.flush()
+                        // Lookup tour by node uid if applicable
+                        if (nodeUid != null) {
+                            val nodeId = dsl.selectFrom(MST_NODE)
+                                    .fetchIdByUid(nodeUid)
+                                    ?: throw NoSuchElementException("Node with uid ${nodeUid} doesn't exist")
+
+                            tour.id = this.tourRepo.findOne(tadTour.nodeId.eq(nodeId.toLong()))
+                                    .toNullable()
+                                    ?.id
                         }
 
-                        tour.stops.forEachIndexed { index, stop ->
-                            stop.tasks.forEach { task ->
+                        val tourExists = tour.id != null
 
-                                TadTourEntry().also {
-                                    it.tourId = tourRecord.id
-                                    it.position = (index + 1).toDouble()
-                                    it.orderId = task.orderId
-                                    it.orderTaskType = when (task.taskType) {
+                        // Lookup tour by id or create new one
+                        val tourRecord = if (tourExists)
+                            this.tourRepo.findOne(tadTour.id.eq(tour.id))
+                                    .toNullable()
+                                    ?: throw NoSuchElementException("Tour with id ${tour.id} doesn't exist")
+                        else
+                            TadTour().also {
+                                it.id = tour.id
+                                it.uid = tour.uid ?: this.createUid()
+                                it.created = now
+                            }
+
+                        // Update tour record field
+                        tourRecord.also { r ->
+                            r.userId = tour.userId
+                            r.nodeId = tour.nodeUid?.let { nodeUid ->
+                                // TODO: this look is expensive. replicate mst_node to h2 or reference nodes by uid instead of id
+                                dsl.selectFrom(MST_NODE).fetchIdByUid(nodeUid)?.toLong()
+                            }
+                            r.stationNo = tour.stationNo
+                            r.parentId = tour.parentId
+                            r.customId = tour.customId
+                            r.optimized = tour.optimized?.toTimestamp()
+                            r.date = tour.date?.toString()
+
+                            r.modified = now
+
+                            tour.route?.also { route ->
+                                r.routeMeta = this.objectMapper.writeValueAsString(route)
+                            }
+                        }
+
+                        // Persist or merge tour record
+                        if (tourExists) {
+                            em.merge(tourRecord)
+                        } else {
+                            em.persist(tourRecord)
+                            // Flush so generated id is reflected
+                            em.flush()
+
+                            tour.id = tourRecord.id
+                            tour.uid = tourRecord.uid
+                        }
+                        //endregion
+
+                        //region Update tour entry records
+                        val tourEntryIds = tour.stops.flatMap { it.tasks }.map { it.id }
+
+                        val entryRecords = if (tourExists)
+                            tourEntryRepo.findAll(
+                                    tadTourEntry.tourId.eq(tour.id),
+                                    tadTourEntry.position.asc(),
+                                    tadTourEntry.id.asc())
+                                    .toMutableList()
+                        else
+                            mutableListOf()
+
+                        if (entryRecords.count() > 0) {
+                            // Delete existing tour entries which are not referenced in updated tour
+                            val toDelete = entryRecords
+                                    .filter { !tourEntryIds.contains(it.id) }
+
+                            if (toDelete.count() > 0) {
+                                entryRecords.removeAll(toDelete)
+                                tourEntryRepo.deleteAll(toDelete)
+                            }
+                        }
+
+                        tour.stops.forEachIndexed { stopIndex, stop ->
+                            val newPosition = (stopIndex + 1).toDouble()
+
+                            val route = stop.route?.let {
+                                this.objectMapper.writeValueAsString(it)
+                            }
+
+                            // Create and update tour entries
+                            stop.tasks.forEachIndexed { taskIndex, task ->
+                                val taskExists = tourExists && task.id != null
+
+                                val entryRecord = if (taskExists)
+                                    entryRecords.first { it.id == task.id }
+                                else
+                                    TadTourEntry().also { r ->
+                                        r.tourId = tour.id
+                                        r.uid = task.uid ?: this.createUid()
+                                    }
+
+                                entryRecord.also { r ->
+                                    r.position = newPosition
+                                    r.orderId = task.orderId
+                                    r.orderTaskType = when (task.taskType) {
                                         Task.Type.DELIVERY -> TaskType.DELIVERY.value
                                         Task.Type.PICKUP -> TaskType.DELIVERY.value
                                     }
-                                    it.uid = task.uid ?: this.createUid()
-                                    it.timestamp = now.toTimestamp()
+                                    r.timestamp = now
 
-                                    em.persist(it)
+                                    if (taskIndex == 0)
+                                        r.routeMeta = route
+                                }
+
+                                if (taskExists) {
+                                    em.merge(entryRecord)
+                                } else {
+                                    em.persist(entryRecord)
+                                    em.flush()
+
+                                    task.id = entryRecord.id
+                                    task.uid = entryRecord.uid
                                 }
                             }
                         }
+                        //endregion
 
                         tourRecord.id.toLong()
                     }
         }
-                .also {
-                    tours
-                            .groupBy { it.stationNo }
-                            .forEach { stationNo, tours ->
-                                this.updatedSubject.onNext(SubscriptionEvent(
-                                        stationNo = stationNo,
-                                        items = tours.toList()
-                                ))
-                            }
-                }
-    }
-
-    /**
-     * Update existing tour from optimized one
-     * @param tour Optimized tour
-     */
-    fun updateFromOptimizedTour(tour: Tour) {
-        emf.transaction { em ->
-            val tourId = tour.id ?: throw IllegalArgumentException("Tour id cannot be null")
-
-            val now = Date().toTimestamp()
-            val entryRecords = tourEntryRepo.findAll(tadTourEntry.tourId.eq(tourId))
-
-            tour.stops
-                    .forEachIndexed { index, stop ->
-                        val entryRecord = entryRecords.first { it.id == stop.id }
-
-                        val newPosition = (index + 1).toDouble()
-                        log.trace { "OPTIMIZATION POSITION UPDATE ${entryRecord.position} -> ${newPosition}" }
-
-                        // Update position for all entries on the same (positional) level
-                        val entryIds = entryRecords
-                                .filter { it.position == entryRecord.position }
-                                .map { it.id }
-
-                        // TODO debug (modification of entry records must not modify iterated results)
-
-                        tourEntryRepo.findAll(tadTourEntry.id.`in`(entryIds))
-                                .forEach {
-                                    it.position = newPosition
-                                    it.timestamp = now
-
-                                    em.merge(it)
+                .let { tourIds ->
+                    this.get(tourIds).also {
+                        it
+                                .groupBy { it.stationNo }
+                                .forEach { stationNo, tours ->
+                                    this.updatedSubject.onNext(SubscriptionEvent(
+                                            stationNo = stationNo,
+                                            items = tours.toList()
+                                    ))
                                 }
                     }
-
-            tourRepo.findById(tourId).get().also {
-                it.modified = now
-                it.optimized = now
-
-                em.merge(it)
-            }
-        }
-                .also {
-                    this.updatedSubject.onNext(SubscriptionEvent(
-                            stationNo = tour.stationNo,
-                            items = listOf(tour)
-                    ))
                 }
     }
 
     //region REST
     /**
      * Get tours
+     * @throws NoSuchElementException When no tours have been found
      */
     override fun get(
+            ids: List<Long>?,
             debitorId: Long?,
             stationNo: Long?,
             userId: Long?,
@@ -264,6 +349,12 @@ class TourServiceV1
     ): List<Tour> {
         val tourRecords =
                 this.tourRepo.findAll(BooleanBuilder()
+                        .let {
+                            if (ids?.count() ?: 0 > 0)
+                                it.and(tadTour.id.`in`(ids))
+                            else
+                                it
+                        }
                         .letWithParamNotNull(debitorId, {
                             and(tadTour.userId.`in`(
                                     userRepository.findUserIdsByDebitor(it.toInt()).map { it.toLong() }
@@ -357,51 +448,92 @@ class TourServiceV1
     }
 
     override fun delete(
-            ids: List<Long>,
+            ids: List<Long>?,
             userId: Long?,
-            stationNo: Long?) {
+            stationNo: Long?,
+            customIds: List<String>?,
+            includeRelated: Boolean?) {
 
         emf.transaction { em ->
             em.from(tadTour)
-                    .select(tadTour.id, tadTour.stationNo)
-                    .where(tadTour.id.`in`(ids))
+                    .select(tadTour.id, tadTour.stationNo, tadTour.uid)
+                    .let {
+                        when {
+                            ids != null -> {
+                                it.where(tadTour.id.`in`(ids))
+                            }
+                            else -> it
+                        }
+                    }
                     .fetch()
+                    .plus(userId?.let {
+                        em.from(tadTour)
+                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
+                                .where(tadTour.userId.eq(it))
+                                .fetch()
+                    } ?: listOf<Tuple>())
                     .plus(stationNo?.let {
                         em.from(tadTour)
-                                .select(tadTour.id, tadTour.stationNo)
+                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
                                 .where(tadTour.stationNo.eq(it))
                                 .fetch()
 
                     } ?: listOf())
-                    .plus(userId?.let {
+                    .plus(customIds?.let {
                         em.from(tadTour)
-                                .select(tadTour.id, tadTour.stationNo)
-                                .where(tadTour.userId.eq(it))
+                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
+                                .where(tadTour.customId.`in`(it))
                                 .fetch()
-                    } ?: listOf<Tuple>())
+                    } ?: listOf())
+                    .let {
+                        when (includeRelated ?: false) {
+                            true -> {
+                                val tourIds = it.map { it.get(tadTour.id) }
+
+                                it.plus(
+                                        em.from(tadTour)
+                                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
+                                                .where(tadTour.parentId.`in`(tourIds))
+                                                .fetch()
+                                )
+                            }
+                            false -> it
+                        }
+                    }
                     .also { records ->
                         if (records.count() > 0) {
                             val tourIds = records
                                     .map { it.get(tadTour.id) }
                                     .distinct()
 
-                            em.delete(tadTourEntry)
-                                    .where(tadTourEntry.tourId.`in`(tourIds))
-                                    .execute()
+                            em.delete(
+                                    tadTourEntry,
+                                    tadTourEntry.tourId.`in`(tourIds))
 
-                            em.delete(tadTour)
-                                    .where(tadTour.id.`in`(tourIds))
-                                    .execute()
+                            em.delete(
+                                    tadTour,
+                                    tadTour.id.`in`(tourIds)
+                            )
+
+                            this.smartlane.deleteRoutes(
+                                    tours = records.map {
+                                        Tour(
+                                                id = it.get(tadTour.id),
+                                                uid = it.get(tadTour.uid)
+                                        )
+                                    }
+                            )
+                                    .subscribeBy(onError = { e -> log.error(e.message, e) })
                         }
                     }
         }
                 .also { records ->
                     records
                             .groupBy { it.get(tadTour.stationNo) }
-                            .forEach { stationNo, records ->
+                            .forEach { stationNo, groupedRecords ->
                                 this.updatedSubject.onNext(SubscriptionEvent(
                                         stationNo = stationNo,
-                                        deleted = records.map { it.get(tadTour.id)!! }
+                                        deleted = groupedRecords.map { it.get(tadTour.id)!! }
                                 ))
                             }
                 }
@@ -445,10 +577,21 @@ class TourServiceV1
                                 log.info("Ruote optimization completed for tour [${optimization.tourId}]")
 
                                 if (options.vehicles?.count() ?: 0 > 0) {
+                                    // Reset ids for all optimized tours, enforce create
+                                    tours.forEach { it.id = null }
+
                                     // Create tours from optimized results
-                                    this.create(tours)
+                                    this.put(tours).also {
+                                        // Update custom ids @smartlane
+                                        this.smartlane.updateRoutes(it)
+                                                .subscribeBy(onError = { e -> log.error(e.message, e) })
+                                    }
+
                                 } else {
-                                    this.updateFromOptimizedTour(tours.first())
+                                    // Update tour in place
+                                    this.put(
+                                            tours = listOf(tours.first())
+                                    )
                                 }
                             },
                             onComplete = {
@@ -543,6 +686,9 @@ class TourServiceV1
 
     /**
      * Start optimization for a node tour (asynchronously)
+     *
+     * The optimized tour will NOT be stored persistently, but sent back straight to the requesting node via jms.
+     *
      * @param nodeUid Node uid
      * @param nodeRequestUid Message based request uid
      * @param options Optimization options
@@ -601,13 +747,21 @@ class TourServiceV1
             )
                     .subscribeBy(
                             onSuccess = { tours ->
+                                val optimizedTour = tours.first()
+
                                 JmsEndpoints.node.topic(identityUid = Identity.Uid(nodeRecord.uid))
                                         .channel()
                                         .send(TourOptimizationResult(
                                                 requestUid = nodeRequestUid,
                                                 nodeUid = nodeRecord.uid,
-                                                tour = tours.first()
+                                                tour = optimizedTour
                                         ))
+
+                                this.smartlane.assignDriver(
+                                        email = userRecord.email,
+                                        tour = optimizedTour
+                                )
+                                        .subscribeBy({ e -> log.error(e.message, e) })
                             },
                             onError = { e ->
                                 log.error(e.message, e)
@@ -635,64 +789,40 @@ class TourServiceV1
                         detail = "One or more delivery lists could not be found [${missing.joinToString(", ")}]")
         }
 
-        val dlDetailRecordsById = deliverylistRepository
+        val dlDetailRecordsByDlId = deliverylistRepository
                 .findDetailsByIds(deliverylistIds)
                 .groupBy { it.id }
 
-        val timestamp = Date().toTimestamp()
+        val tours =
+                this.put(tours = dlRecords.map { dlRecord ->
+                    Tour(
+                            stationNo = dlRecord.deliveryStation.toLong(),
+                            customId = dlRecord.id.toLong().toString(),
+                            date = ShortDate(dlRecord.deliveryListDate),
+                            stops = dlDetailRecordsByDlId.getValue(dlRecord.id)
+                                    .sortedBy { it.orderPosition }
+                                    .groupBy { it.orderPosition }
+                                    .map { dlStop ->
+                                        Stop(
+                                                tasks = dlStop.value
+                                                        .distinctBy { it.orderId.toString() + it.stoptype }
+                                                        .map { dlDetailRecord ->
+                                                            Task(
+                                                                    orderId = dlDetailRecord.orderId.toLong(),
+                                                                    taskType = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
+                                                                        TaskType.PICKUP -> Task.Type.PICKUP
+                                                                        TaskType.DELIVERY -> Task.Type.DELIVERY
+                                                                    }
+                                                            )
+                                                        }
 
-        val tours = this.emf.withEntityManager { em ->
-            // Create tour/entries from delivery list
-            em.transaction {
-                dlRecords.map { dlRecord ->
-                    // Create new tour
-                    val tourRecord = TadTour().also {
-                        it.stationNo = dlRecord.deliveryStation.toLong()
-                        it.customId = dlRecord.id.toLong().toString()
-                        it.uid = this.createUid()
-                        it.date = ShortDate(timestamp).toString()
-                        it.created = timestamp
-                        it.modified = timestamp
+                                        )
 
-                        em.persist(it)
-                        em.flush()
-                    }
-
-                    val dlDetailRecords = dlDetailRecordsById.getValue(dlRecord.id)
-
-                    // Transform delivery list detail to tour entry record
-                    val tourEntryRecords = dlDetailRecords.mapIndexed { index, dlDetailRecord ->
-                        TadTourEntry().also {
-                            it.tourId = tourRecord.id
-                            it.orderId = dlDetailRecord.orderId.toLong()
-                            it.orderTaskType = TaskType.valueOf(dlDetailRecord.stoptype).value
-                            it.position = (index + 1).toDouble()
-                            it.uid = this.createUid()
-                            it.timestamp = timestamp
-
-                            em.persist(it)
-                        }
-                    }
-
-                    // TODO: optimize performance: using iterable conversion extension
-                    tourRecord.toTour(
-                            tourEntryRecordsByTourId = mapOf(Pair(tourRecord.id, tourEntryRecords))
+                                    }
                     )
-                }
-            }
-        }
-                .also {tours ->
-                    tours
-                            .groupBy { it.stationNo }
-                            .forEach { stationNo, tours ->
-                                this.updatedSubject.onNext(SubscriptionEvent(
-                                        stationNo = stationNo,
-                                        items = tours
-                                ))
-                            }
-                }
+                })
 
-        return tours.toList()
+        return tours
     }
 
     override fun subscribe(stationNo: Long, sink: SseEventSink, sse: Sse) {
@@ -801,101 +931,6 @@ class TourServiceV1
     }
     //endregion
 
-    //region Transformations
-    private fun TadTour.toTour(
-            nodeUid: String? = null,
-            orderRecordsById: Map<Long, org.deku.leoz.service.internal.OrderService.Order>? = null,
-            tourEntryRecordsByTourId: Map<Long, List<TadTourEntry>>? = null): Tour {
-        val tourRecord = this
-
-        @Suppress("NAME_SHADOWING")
-        val nodeUid = this.nodeId?.let {
-            nodeUid ?: dsl.select(MST_NODE.KEY)
-                    .from(MST_NODE)
-                    .where(MST_NODE.NODE_ID.eq(tourRecord.nodeId.toInt()))
-                    .fetchOne().value1()
-        }
-
-        // Fetch tour entries. Equal positions represent stop tasks in order of PK
-        val tourEntryRecords = if (tourEntryRecordsByTourId != null)
-            tourEntryRecordsByTourId.get(
-                    tourRecord.id
-            ) ?: listOf()
-        else {
-            tourEntryRepo.findAll(
-                    tadTourEntry.tourId.eq(tourRecord.id)
-            )
-        }
-
-        val ordersById = if (orderRecordsById != null)
-            orderRecordsById
-        else
-            this@TourServiceV1.orderService.getByIds(
-                    tourEntryRecords.map { it.orderId }.distinct()
-            )
-                    .associateBy { it.id }
-
-        val orders = tourEntryRecords.map { it.orderId }.distinct().map { ordersById.getValue(it) }
-
-        return Tour(
-                id = tourRecord.id,
-                uid = tourRecord.uid,
-                nodeUid = nodeUid,
-                userId = tourRecord.userId,
-                stationNo = tourRecord.stationNo,
-                parentId = tourRecord.parentId,
-                customId = tourRecord.customId,
-                created = tourRecord.created,
-                date = ShortDate(tourRecord.date),
-                optimized = tourRecord.optimized,
-                orders = orders,
-                stops = tourEntryRecords.groupBy { it.position }
-                        .map { stop ->
-                            val tasks = stop.value.map { task ->
-                                val taskType = TaskType.valueMap.getValue(task.orderTaskType)
-                                val order = ordersById.getValue(task.orderId)
-
-                                Task(
-                                        id = task.id,
-                                        uid = task.uid,
-                                        orderId = task.orderId,
-                                        appointmentStart = when (taskType) {
-                                            TaskType.DELIVERY -> order.deliveryAppointment.dateStart
-                                            TaskType.PICKUP -> order.pickupAppointment.dateStart
-                                        },
-                                        appointmentEnd = when (taskType) {
-                                            TaskType.DELIVERY -> order.deliveryAppointment.dateEnd
-                                            TaskType.PICKUP -> order.pickupAppointment.dateEnd
-                                        },
-                                        taskType = when (taskType) {
-                                            TaskType.DELIVERY -> Task.Type.DELIVERY
-                                            TaskType.PICKUP -> Task.Type.PICKUP
-                                        }
-                                )
-                            }
-
-                            Stop(
-                                    address = stop.value.first().let { task ->
-                                        orders.first { it.id == task.orderId }.let {
-                                            when (TaskType.valueMap.getValue(task.orderTaskType)) {
-                                                TaskType.DELIVERY -> it.deliveryAddress
-                                                TaskType.PICKUP -> it.pickupAddress
-                                            }
-                                        }
-                                    },
-                                    tasks = tasks,
-                                    appointmentStart = tasks.map { it.appointmentStart }.filterNotNull().max(),
-                                    appointmentEnd = tasks.map { it.appointmentEnd }.filterNotNull().min(),
-                                    weight = tasks
-                                            .map { ordersById.getValue(it.orderId) }
-                                            .flatMap { it.parcels }
-                                            .sumByDouble { it.dimension.weight }
-                            )
-                        }
-        )
-    }
-    //endregion
-
     //region MQ handlers
     @MqHandler.Types(
             TourUpdate::class,
@@ -953,62 +988,125 @@ class TourServiceV1
             return
         }
 
-        val nodeUid = tour.nodeUid ?: run {
-            log.trace("Updates without node uid are not supported (yet)")
-            return
+        try {
+            // Set tour date to message timestamp (nodes may not provide this)
+            tour.date = ShortDate(message.timestamp)
+
+            // Update tour
+            this.put(listOf(tour))
+
+        } catch (e: Throwable) {
+            log.error(e.message)
+        }
+    }
+    //endregion
+
+    //region Transformations
+    private fun TadTour.toTour(
+            nodeUid: String? = null,
+            orderRecordsById: Map<Long, org.deku.leoz.service.internal.OrderService.Order>? = null,
+            tourEntryRecordsByTourId: Map<Long, List<TadTourEntry>>? = null): Tour {
+        val tourRecord = this
+
+        @Suppress("NAME_SHADOWING")
+        val nodeUid = this.nodeId?.let {
+            nodeUid ?: dsl.select(MST_NODE.KEY)
+                    .from(MST_NODE)
+                    .where(MST_NODE.NODE_ID.eq(tourRecord.nodeId.toInt()))
+                    .fetchOne().value1()
         }
 
-        val nodeId = dsl.selectFrom(MST_NODE).fetchByUid(nodeUid)
-                ?.nodeId
-                ?: run {
-                    log.warn("Node ${nodeUid} doesn't exist. Discarding message")
-                    return
-                }
+        // Fetch tour entries. Equal positions represent stop tasks in order of PK
+        val tourEntryRecords = if (tourEntryRecordsByTourId != null)
+            tourEntryRecordsByTourId.get(
+                    tourRecord.id
+            )
+                    ?.sortedBy { it.position }
+                    ?.sortedWith(compareBy<TadTourEntry> { it.position }.thenBy { it.id })
+                    ?: listOf()
+        else {
+            tourEntryRepo.findAll(
+                    tadTourEntry.tourId.eq(tourRecord.id),
+                    tadTourEntry.position.asc(),
+                    tadTourEntry.id.asc()
+            )
+        }
 
-        // Upsert stop list
-        emf.transaction { em ->
-            // Check for existing tour
-            val tourRecord = this.tourRepo.findOne(tadTour.nodeId.eq(nodeId.toLong()))
-                    .toNullable()
-                    ?:
-                    // Create new one if it doesn't exist
-                    TadTour().also {
-                        it.userId = tour.userId
-                        it.nodeId = nodeId.toLong()
-                        it.uid = this.createUid()
-                        it.date = ShortDate(message.timestamp).toString()
-                        it.created = message.timestamp.toTimestamp()
-                        it.modified = message.timestamp.toTimestamp()
+        // Order lookup table by id
+        val ordersById = if (orderRecordsById != null)
+            orderRecordsById
+        else
+            this@TourServiceV1.orderService.getByIds(
+                    tourEntryRecords.map { it.orderId }.distinct()
+            )
+                    .associateBy { it.id }
 
-                        em.persist(it)
-                        em.flush()
-                    }
+        // Gather orders for this tour
+        val orders = tourEntryRecords.map { it.orderId }.distinct()
+                .map { ordersById.getValue(it) }
 
-            // TODO: update position instead of replace, to prevent losing optimization metadata on tour entry / stop level
-            // Recreate tour entries from update
-            em.delete(tadTourEntry)
-                    .where(tadTourEntry.tourId.eq(tourRecord.id))
-                    .execute()
+        return Tour(
+                id = tourRecord.id,
+                uid = tourRecord.uid,
+                nodeUid = nodeUid,
+                userId = tourRecord.userId,
+                stationNo = tourRecord.stationNo,
+                parentId = tourRecord.parentId,
+                customId = tourRecord.customId,
+                created = tourRecord.created,
+                date = ShortDate(tourRecord.date),
+                optimized = tourRecord.optimized,
+                orders = orders,
+                route = tourRecord.routeMeta?.let {
+                    objectMapper.readValue(it, TourRouteMeta::class.java)
+                },
+                stops = tourEntryRecords.groupBy { it.position }
+                        .map { stop ->
+                            val tasks = stop.value.map { task ->
+                                val taskType = TaskType.valueMap.getValue(task.orderTaskType)
+                                val order = ordersById.getValue(task.orderId)
 
-            tour.stops
-                    .forEachIndexed { index, stop ->
-                        stop.tasks.forEach { task ->
-                            TadTourEntry().also {
-                                it.tourId = tourRecord.id
-                                it.position = (index + 1).toDouble()
-                                it.orderId = task.orderId
-                                it.orderTaskType = when (task.taskType) {
-                                    Task.Type.DELIVERY -> TaskType.DELIVERY.value
-                                    Task.Type.PICKUP -> TaskType.DELIVERY.value
-                                }
-                                it.uid = this.createUid()
-                                it.timestamp = message.timestamp.toTimestamp()
-
-                                em.persist(it)
+                                Task(
+                                        id = task.id,
+                                        uid = task.uid,
+                                        orderId = task.orderId,
+                                        appointmentStart = when (taskType) {
+                                            TaskType.DELIVERY -> order.deliveryAppointment.dateStart
+                                            TaskType.PICKUP -> order.pickupAppointment.dateStart
+                                        },
+                                        appointmentEnd = when (taskType) {
+                                            TaskType.DELIVERY -> order.deliveryAppointment.dateEnd
+                                            TaskType.PICKUP -> order.pickupAppointment.dateEnd
+                                        },
+                                        taskType = when (taskType) {
+                                            TaskType.DELIVERY -> Task.Type.DELIVERY
+                                            TaskType.PICKUP -> Task.Type.PICKUP
+                                        }
+                                )
                             }
+
+                            Stop(
+                                    address = stop.value.first().let { task ->
+                                        orders.first { it.id == task.orderId }.let {
+                                            when (TaskType.valueMap.getValue(task.orderTaskType)) {
+                                                TaskType.DELIVERY -> it.deliveryAddress
+                                                TaskType.PICKUP -> it.pickupAddress
+                                            }
+                                        }
+                                    },
+                                    tasks = tasks,
+                                    appointmentStart = tasks.map { it.appointmentStart }.filterNotNull().max(),
+                                    appointmentEnd = tasks.map { it.appointmentEnd }.filterNotNull().min(),
+                                    weight = tasks
+                                            .map { ordersById.getValue(it.orderId) }
+                                            .flatMap { it.parcels }
+                                            .sumByDouble { it.dimension.weight },
+                                    route = stop.value.first().routeMeta?.let {
+                                        this@TourServiceV1.objectMapper.readValue(it, TourStopRouteMeta::class.java)
+                                    }
+                            )
                         }
-                    }
-        }
+        )
     }
     //endregion
 }

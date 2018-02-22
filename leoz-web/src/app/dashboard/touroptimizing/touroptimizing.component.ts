@@ -1,4 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+
+import { Observable } from 'rxjs/Observable';
+
+import { Message } from 'primeng/components/common/api';
 
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
@@ -7,9 +11,8 @@ import { PrintingService } from '../../core/printing/printing.service';
 import { StoplistReportingService } from '../../core/reporting/stoplist-reporting.service';
 import { Tour } from '../../core/models/tour.model';
 import { MsgService } from '../../shared/msg/msg.service';
-import { Observable } from 'rxjs/Observable';
-import { Message } from 'primeng/primeng';
 import { roundDecimals } from '../../core/math/roundDecimals';
+import { BrowserCheck } from '../../core/auth/browser-check';
 
 @Component( {
   selector: 'app-touroptimizing',
@@ -21,44 +24,46 @@ import { roundDecimals } from '../../core/math/roundDecimals';
 export class TouroptimizingComponent extends AbstractTranslateComponent implements OnInit {
 
   checkAll: boolean;
-  // deliverylists: Deliverylist[];
   toursOrderCount: number;
   toursParcelCount: number;
   toursTotalWeight: number;
   toursQuota: number;
-  // vehicleCount: number;
   tours: Tour[];
 
+  toursLoading$: Observable<boolean>;
   msgs$: Observable<Message[]>;
+
+  notMicrodoof: boolean;
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected touroptimizingService: TouroptimizingService,
                protected msgService: MsgService,
                protected printingService: PrintingService,
-               protected reportingService: StoplistReportingService ) {
+               protected reportingService: StoplistReportingService,
+               private browserCheck: BrowserCheck ) {
     super( translate, cd, msgService );
   }
 
   ngOnInit() {
     super.ngOnInit();
 
+    this.notMicrodoof = this.browserCheck.browser === 'handsome Browser';
     this.toursOrderCount = 0;
     this.toursParcelCount = 0;
     this.toursTotalWeight = 0;
     this.toursQuota = 0;
-    // this.deliverylists = [];
+    this.toursLoading$ = this.touroptimizingService.toursLoading$;
 
     this.tours = [];
     this.touroptimizingService.tours$
       .takeUntil( this.ngUnsubscribe )
       .subscribe( ( tours: Tour[] ) => {
-        this.tours = tours;
-        this.tours.sort( (a, b) => a.id > b.id ? -1 : 1);
-        this.toursOrderCount = this.countOrders( tours );
-        this.toursParcelCount = this.countParcels( tours );
-        this.toursTotalWeight = roundDecimals( this.sumWeights( tours ), 100 );
-        this.toursQuota = this.getToursQuota( tours );
+        this.tours = this.sortAndGroupTours( tours );
+        this.toursOrderCount = this.countOrders( this.tours );
+        this.toursParcelCount = this.countParcels( this.tours );
+        this.toursTotalWeight = roundDecimals( this.sumWeights( this.tours ), 100 );
+        this.toursQuota = this.getToursQuota( this.tours );
         this.cd.markForCheck();
       } );
     this.touroptimizingService.latestDeliverylistModification$
@@ -71,8 +76,28 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
       } );
     this.touroptimizingService.getTours();
 
-    // ALEX: better solution would be SSE
-    // this.touroptimizingService.repeatCheckLatestModDate();
+    this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );
+    this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe );
+  }
+
+  private sortAndGroupTours( tours: Tour[] ): Tour[] {
+    // split in parent and child tours and sort both arrays id descending
+    const sortIdDesc = function ( t1: Tour, t2: Tour ) {
+      return t1.id > t2.id ? -1 : 1;
+    };
+    const parentTours = tours
+      .filter( tour => !tour.parentId )
+      .sort( sortIdDesc );
+    const childTours = tours
+      .filter( tour => tour.parentId )
+      .sort( sortIdDesc );
+    // join arrays => add cildren after parent
+    const sortedTours = [];
+    parentTours.forEach( parent => {
+      sortedTours.push( parent );
+      sortedTours.push( ...childTours.filter( child => child.parentId === parent.id ) );
+    } );
+    return sortedTours;
   }
 
   private getToursQuota( tours: Tour[] ) {
@@ -108,9 +133,13 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
 
   optimizeTours() {
     const selectedTourIds = this.tours
-      .filter( tour => tour.selected )
+      .filter( tour => tour.selected && !tour.optimized )
       .map( tour => tour.id );
-    this.touroptimizingService.optimizeAndReinitTours( selectedTourIds );
+    if (selectedTourIds.length > 0) {
+      this.touroptimizingService.optimizeAndReinitTours( selectedTourIds );
+    } else {
+      this.msgService.info( 'optimizing_optimized_tours_not_possible' );
+    }
     this.checkAll = false;
   }
 
@@ -121,20 +150,28 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
   resetTours() {
     this.msgService.clear();
     const tourIds = this.tours.map( tour => tour.id );
-    this.touroptimizingService.deleteAndReinitTours( tourIds );
+    this.touroptimizingService.deleteTours( tourIds );
     this.checkAll = false;
   }
 
-  deleteTour(tourId) {
-    this.touroptimizingService.deleteAndReinitTours( [tourId] );
+  deleteTour( tourId ) {
+    this.touroptimizingService.deleteTours( [ tourId ] );
   }
 
-  printStopLists() {
+  preview() {
+    this.reporting( false );
+  }
+
+  saving() {
+    this.reporting( true );
+  }
+
+  reporting( saving: boolean ) {
     const listsToPrint = this.tours.filter( tour => tour.selected );
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
     this.printingService.printReports( this.reportingService
         .generateReports( listsToPrint ),
-      filename, false );
+      filename, saving );
   }
 }

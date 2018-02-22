@@ -99,7 +99,7 @@ interface ParcelServiceV1 {
     )
 
     @GET
-    @Path("/{SCANCODE}/status")
+    @Path("/{$SCANCODE}/status")
     @ApiOperation(value = "Get status", authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun getStatus(
             @PathParam(SCANCODE) @ApiParam(value = "Scancode") scanCode: String

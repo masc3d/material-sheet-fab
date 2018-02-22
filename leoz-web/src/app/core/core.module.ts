@@ -21,6 +21,7 @@ import { PreloadSelectedModules } from './PreloadSelectedModules';
 import { WorkingdateService } from './workingdate.service';
 import { ElectronService } from './electron/electron.service';
 import { StoplistReportingService } from './reporting/stoplist-reporting.service';
+import { SseService } from './sse.service';
 
 @NgModule( {
   imports: [
@@ -38,21 +39,22 @@ export class CoreModule {
         { provide: HTTP_INTERCEPTORS, useClass: MockHttpInterceptor, multi: true },
         AuthenticationService,
         AuthenticationGuard,
-        PreloadSelectedModules,
-        ElectronService,
-        KeyUpEventService,
-        PrintingService,
-        LoadinglistReportingService,
-        BagscanReportingService,
-        StoplistReportingService,
-        SoundService,
-        RoleGuard,
         BagscanGuard,
-        Translation,
-        TranslateService,
+        BagscanReportingService,
+        BrowserCheck,
+        ElectronService,
         InetConnectionService,
-        WorkingdateService,
-        BrowserCheck]
+        KeyUpEventService,
+        LoadinglistReportingService,
+        PreloadSelectedModules,
+        PrintingService,
+        RoleGuard,
+        SseService,
+        SoundService,
+        StoplistReportingService,
+        TranslateService,
+        Translation,
+        WorkingdateService]
     };
   }
 

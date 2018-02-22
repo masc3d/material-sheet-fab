@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 
-import { ButtonModule, DropdownModule } from 'primeng/primeng';
+import {DropdownModule} from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
 
 import { SharedModule } from '../../../shared/shared.module';
 

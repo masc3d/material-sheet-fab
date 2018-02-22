@@ -4,137 +4,200 @@
       <div id="tabViewWrapper" class="ui-g-12" style="padding:0;">
           <p-tabView [style]="{'height': '100%'}">
             <p-tabPanel header="{{'open_orders' | translate}}" [style]="{'height': '100%'}">
-              <p-dataTable resizableColumns="false" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '100%'}">
-                <p-header>
-                  {{ 'open_orders_max3days' | translate }}
-                </p-header>
-                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
-                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
-                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
-                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
-                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
-                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
-                <p-column field="info" header="{{'info' | translate}}" [sortable]="true"></p-column>
-                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
-                <p-column field="realweight" header="{{'realweight'| translate}}" ></p-column>
-                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
-              </p-dataTable>
+                <p-table [responsive]="true" [style]="{'height': '100%'}">
+                  <ng-template pTemplate="caption">
+                    {{ 'open_orders_max3days' | translate }}
+                  </ng-template>
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>{{'consignor' | translate}}</th>
+                      <th>{{'consignee' | translate}}</th>
+                      <th>{{'date' | translate}}</th>
+                      <th>{{'from' | translate}}</th>
+                      <th>{{'until' | translate}}</th>
+                      <th>{{'vehicle' | translate}}</th>
+                      <th>{{'info' | translate}}</th>
+                      <th>{{'packs' | translate}}</th>
+                      <th>{{'realweight' | translate}}</th>
+                      <th>{{'Driver' | translate}}</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td [attr.colspan]="10">
+                        {{'noDataAvailable' | translate}}
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
             </p-tabPanel>
             <p-tabPanel header="{{'processed_orders' | translate}}" [style]="{'height': '100%'}">
-              <p-dataTable resizableColumns="false" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '100%'}">
-                <p-header>
+              <p-table [responsive]="true" [style]="{'height': '100%'}">
+                <ng-template pTemplate="caption">
                   {{ 'processed_orders_today' | translate }}
-                </p-header>
-                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
-                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
-                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
-                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
-                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
-                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
-                <p-column field="info" header="{{'info' | translate}}" [sortable]="true"></p-column>
-                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
-                <p-column field="realweight" header="{{'realweight'| translate}}" ></p-column>
-                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
-              </p-dataTable>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>{{'consignor' | translate}}</th>
+                    <th>{{'consignee' | translate}}</th>
+                    <th>{{'date' | translate}}</th>
+                    <th>{{'from' | translate}}</th>
+                    <th>{{'until' | translate}}</th>
+                    <th>{{'vehicle' | translate}}</th>
+                    <th>{{'info' | translate}}</th>
+                    <th>{{'packs' | translate}}</th>
+                    <th>{{'realweight' | translate}}</th>
+                    <th>{{'Driver' | translate}}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="10">
+                      {{'noDataAvailable' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-tabPanel>
             <p-tabPanel header="{{'not_loaded' | translate}}" [style]="{'height': '100%'}">
-              <p-dataTable resizableColumns="false" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '100%'}">
-                <p-header>
+              <p-table [responsive]="true" [style]="{'height': '100%'}">
+                <ng-template pTemplate="caption">
                   {{ 'packs_without_loadingscan_max3days' | translate }}
-                </p-header>
-                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
-                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
-                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
-                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
-                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
-                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
-                <p-column field="info" header="{{'info' | translate}}" [sortable]="true"></p-column>
-                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
-                <p-column field="realweight" header="{{'realweight'| translate}}" ></p-column>
-                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
-              </p-dataTable>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>{{'consignor' | translate}}</th>
+                    <th>{{'consignee' | translate}}</th>
+                    <th>{{'date' | translate}}</th>
+                    <th>{{'from' | translate}}</th>
+                    <th>{{'until' | translate}}</th>
+                    <th>{{'vehicle' | translate}}</th>
+                    <th>{{'info' | translate}}</th>
+                    <th>{{'packs' | translate}}</th>
+                    <th>{{'realweight' | translate}}</th>
+                    <th>{{'Driver' | translate}}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="10">
+                      {{'noDataAvailable' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-tabPanel>
             <p-tabPanel header="{{'loaded' | translate}}" [style]="{'height': '100%'}">
-              <p-dataTable resizableColumns="false" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '100%'}">
-                <p-header>
+              <p-table [responsive]="true" [style]="{'height': '100%'}">
+                <ng-template pTemplate="caption">
                   {{ 'completed_orders_today' | translate }}
-                </p-header>
-                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
-                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
-                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
-                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
-                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
-                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
-                <p-column field="info" header="{{'info' | translate}}" [sortable]="true"></p-column>
-                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
-                <p-column field="realweight" header="{{'realweight'| translate}}" ></p-column>
-                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
-              </p-dataTable>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>{{'consignor' | translate}}</th>
+                    <th>{{'consignee' | translate}}</th>
+                    <th>{{'date' | translate}}</th>
+                    <th>{{'from' | translate}}</th>
+                    <th>{{'until' | translate}}</th>
+                    <th>{{'vehicle' | translate}}</th>
+                    <th>{{'info' | translate}}</th>
+                    <th>{{'packs' | translate}}</th>
+                    <th>{{'realweight' | translate}}</th>
+                    <th>{{'Driver' | translate}}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="10">
+                      {{'noDataAvailable' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-tabPanel>
             <p-tabPanel header="{{'third_party_pickup' | translate}}" [style]="{'height': '100%'}">
-              <p-dataTable resizableColumns="false" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '100%'}">
-                <p-header>
+              <p-table [responsive]="true" [style]="{'height': '100%'}">
+                <ng-template pTemplate="caption">
                   {{ 'status_third_party_pickup_max3days' | translate }}
-                </p-header>
-                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
-                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
-                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
-                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
-                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
-                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
-                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
-                <p-column field="weight" header="{{'weight'| translate}}" ></p-column>
-                <p-column field="status" header="{{'status' | translate}}" [sortable]="true"></p-column>
-                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
-              </p-dataTable>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>{{'consignor' | translate}}</th>
+                    <th>{{'consignee' | translate}}</th>
+                    <th>{{'date' | translate}}</th>
+                    <th>{{'from' | translate}}</th>
+                    <th>{{'until' | translate}}</th>
+                    <th>{{'vehicle' | translate}}</th>
+                    <th>{{'packs' | translate}}</th>
+                    <th>{{'weight' | translate}}</th>
+                    <th>{{'status' | translate}}</th>
+                    <th>{{'Driver' | translate}}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="10">
+                      {{'noDataAvailable' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-tabPanel>
             <p-tabPanel header="{{'own_pickup' | translate}}" [style]="{'height': '100%'}">
-              <p-dataTable resizableColumns="false" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '100%'}">
-                <p-header>
+              <p-table [responsive]="true" [style]="{'height': '100%'}">
+                <ng-template pTemplate="caption">
                   {{ 'status_own_pickup_max3days' | translate }}
-                </p-header>
-                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
-                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
-                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
-                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
-                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
-                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
-                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
-                <p-column field="weight" header="{{'weight'| translate}}" ></p-column>
-                <p-column field="status" header="{{'status' | translate}}" [sortable]="true"></p-column>
-                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
-              </p-dataTable>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>{{'consignor' | translate}}</th>
+                    <th>{{'consignee' | translate}}</th>
+                    <th>{{'date' | translate}}</th>
+                    <th>{{'from' | translate}}</th>
+                    <th>{{'until' | translate}}</th>
+                    <th>{{'vehicle' | translate}}</th>
+                    <th>{{'packs' | translate}}</th>
+                    <th>{{'weight' | translate}}</th>
+                    <th>{{'status' | translate}}</th>
+                    <th>{{'Driver' | translate}}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="10">
+                      {{'noDataAvailable' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-tabPanel>
             <p-tabPanel header="{{'status_overview' | translate}}" [style]="{'height': '100%'}">
-              <p-dataTable resizableColumns="false" responsive="true"
-                           [emptyMessage]="'noDataAvailable' | translate"
-                           [style]="{'height': '100%'}">
-                <p-header>
+              <p-table [responsive]="true" [style]="{'height': '100%'}">
+                <ng-template pTemplate="caption">
                   {{ 'status_overview_max3days' | translate }}
-                </p-header>
-                <p-column field="consignor" header="{{'consignor' | translate}}" [sortable]="true"></p-column>
-                <p-column field="consignee" header="{{'consignee' | translate}}" [sortable]="true"></p-column>
-                <p-column field="date" header="{{'date' | translate}}" [sortable]="true"></p-column>
-                <p-column field="from" header="{{'from' | translate}}" [sortable]="true"></p-column>
-                <p-column field="until" header="{{'until' | translate}}" [sortable]="true"></p-column>
-                <p-column field="vehicle" header="{{'vehicle' | translate}}" [sortable]="true"></p-column>
-                <p-column field="packs" header="{{'packs' | translate}}" [sortable]="true"></p-column>
-                <p-column field="weight" header="{{'weight'| translate}}" ></p-column>
-                <p-column field="status" header="{{'status' | translate}}" [sortable]="true"></p-column>
-                <p-column field="driver" header="{{'Driver' | translate}}" [sortable]="true"></p-column>
-              </p-dataTable>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>{{'consignor' | translate}}</th>
+                    <th>{{'consignee' | translate}}</th>
+                    <th>{{'date' | translate}}</th>
+                    <th>{{'from' | translate}}</th>
+                    <th>{{'until' | translate}}</th>
+                    <th>{{'vehicle' | translate}}</th>
+                    <th>{{'packs' | translate}}</th>
+                    <th>{{'weight' | translate}}</th>
+                    <th>{{'status' | translate}}</th>
+                    <th>{{'Driver' | translate}}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="10">
+                      {{'noDataAvailable' | translate}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </p-tabPanel>
           </p-tabView>
       </div>

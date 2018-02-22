@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
 import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.node.rest.restrictByDebitor
 import org.deku.leoz.model.*
 import sx.rs.RestProblem
 import org.deku.leoz.service.internal.OrderService
@@ -10,7 +11,9 @@ import org.deku.leoz.service.internal.OrderService.Order
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 
 /**
@@ -26,22 +29,12 @@ class OrderService : OrderService {
     private lateinit var orderRepository: JooqOrderRepository
 
     @Inject
-    private lateinit var parcelRepository: JooqParcelRepository
-
-    @Inject
-    private lateinit var statusRepository: JooqStatusRepository
-
-    @Inject
-    private lateinit var userRepository: JooqUserRepository
-
-    @Inject
     private lateinit var stationRepository: JooqStationRepository
 
-    override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
-        return get(labelRef, custRef, parcelScan, null)
-    }
+    @Context
+    private lateinit var httpRequest: HttpServletRequest
 
-    override fun get(labelRef: String?, custRef: String?, parcelScan: String?, apiKey: String?): List<OrderService.Order> {
+    override fun get(labelRef: String?, custRef: String?, parcelScan: String?): List<OrderService.Order> {
         val orders: List<Order>
 
         when {
@@ -53,22 +46,8 @@ class OrderService : OrderService {
                         title = "Order not found",
                         status = Response.Status.NOT_FOUND)
 
-                apiKey
-                        ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
+                httpRequest.restrictByDebitor { order.findOrderDebitorId(Type.DELIVERY) }
 
-                val authorizedUserRecord = userRepository.findByKey(apiKey)
-                authorizedUserRecord ?:
-                        throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-                /**
-                 * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
-                 * ADMIN-User are allowed to access every order.
-                 */
-                if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-                    //todo include send_date (JT)
-                    if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
-                        throw RestProblem(status = Response.Status.FORBIDDEN)
-                }
                 orders = listOf(order)
             }
             else -> TODO("Handle other query types here")
@@ -84,10 +63,6 @@ class OrderService : OrderService {
     }
 
     override fun getById(id: Long): OrderService.Order {
-        return getById(id, null)
-    }
-
-    override fun getById(id: Long, apiKey: String?): OrderService.Order {
 
         val order = this.orderRepository.findById(id)
                 ?.toOrder()
@@ -95,22 +70,7 @@ class OrderService : OrderService {
                 title = "Order not found",
                 status = Response.Status.NOT_FOUND)
 
-        apiKey
-                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?:
-                throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        /**
-         * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
-         * ADMIN-User are allowed to access every order.
-         */
-        if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-            //todo include send_date (JT)
-            if (order.findOrderDebitorId(Type.DELIVERY) != authorizedUserRecord.debitorId)
-                throw RestProblem(status = Response.Status.FORBIDDEN)
-        }
+        httpRequest.restrictByDebitor { order.findOrderDebitorId(Type.DELIVERY) }
 
         order.parcels = this.orderRepository
                 .findParcelsByOrderId(order.id)
@@ -136,15 +96,14 @@ class OrderService : OrderService {
     }
 
     //todo include send_date
-    fun Order.findOrderDebitorId(pickupDeliver: Type): Int {
-        val station: Int
+    fun Order.findOrderDebitorId(pickupDeliver: Type): Int? {
+        val stationNo: Int
 
         when (pickupDeliver) {
-            Type.PICKUP -> station = this.pickupStation
-            Type.DELIVERY -> station = this.deliveryStation
+            Type.PICKUP -> stationNo = this.pickupStation
+            Type.DELIVERY -> stationNo = this.deliveryStation
         }
-
-        return stationRepository.findDebitor(station)
+        return  stationRepository.findByStationNo(stationNo)?.debitorId
     }
 
     enum class Type {

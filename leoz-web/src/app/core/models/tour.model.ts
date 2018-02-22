@@ -10,6 +10,7 @@ export interface Tour extends TourListItem {
   id?: number;
   stationNo?: number;
   deliverylistId?: number;
+  parentId?: number;
   date?: string;
   orders?: DeliverylistItem[];
   stops?: Stop[];

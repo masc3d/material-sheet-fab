@@ -2,7 +2,10 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
-import { ButtonModule, CalendarModule, DataTableModule, DropdownModule } from 'primeng/primeng';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { TableModule } from 'primeng/table';
 import { YagaModule } from '@yaga/leaflet-ng2';
 
 import { SharedModule } from '../../shared/shared.module';
@@ -20,7 +23,7 @@ import { DateMomentjsPipe } from '../../core/translate/date-momentjs.pipe';
   imports: [
     SharedModule,
     FormsModule,
-    DataTableModule,
+    TableModule,
     DropdownModule,
     CalendarModule,
     ButtonModule,

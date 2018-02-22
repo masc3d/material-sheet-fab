@@ -1,19 +1,16 @@
 import { NgModule } from '@angular/core';
 
-import {
-  ButtonModule,
-  CalendarModule,
-  CheckboxModule,
-  DataScrollerModule,
-  DataTableModule,
-  DropdownModule,
-  FieldsetModule,
-  InputTextareaModule,
-  InputTextModule,
-  ProgressBarModule,
-  RadioButtonModule,
-  TabViewModule
-} from 'primeng/primeng';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DropdownModule } from 'primeng/dropdown';
+import { FieldsetModule } from 'primeng/fieldset';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputTextModule } from 'primeng/inputtext';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { TabViewModule } from 'primeng/tabview';
+import { DataScrollerModule } from 'primeng/datascroller';
 
 import { SharedModule } from '../../shared/shared.module';
 import { DeliveryscanRoutingModule } from './deliveryscan-routing.module';
@@ -24,7 +21,6 @@ import { DatePipe } from '@angular/common';
 @NgModule( {
   imports: [
     SharedModule,
-    DataTableModule,
     FieldsetModule,
     InputTextModule,
     DropdownModule,

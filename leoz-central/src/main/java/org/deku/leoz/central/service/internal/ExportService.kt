@@ -19,8 +19,6 @@ import org.deku.leoz.service.internal.ExportService
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.time.toShortTime
-import org.deku.leoz.time.toGregorianLongDateString
-import org.deku.leoz.time.toGregorianLongDateTimeString
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -32,8 +30,11 @@ import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
+import org.deku.leoz.node.rest.authorizedUser
 
 @Named
 @Path("internal/v1/export")
@@ -58,9 +59,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     private lateinit var parcelRepository: JooqParcelRepository
 
     @Inject
-    private lateinit var fieldHistoryRepository: JooqFieldHistoryRepository
-
-    @Inject
     private lateinit var routingService: org.deku.leoz.node.service.pub.RoutingService
 
     @Inject
@@ -72,11 +70,13 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     @Inject
     private lateinit var statusRepository: JooqStatusRepository
 
+    @Context
+    private lateinit var httpRequest: HttpServletRequest
+
     data class ExportUnitOrder(val unit: TblauftragcolliesRecord, val order: TblauftragRecord)
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun export(scanCode: String, loadingListNo: String, stationNo: Int): String {
-        userService.get()
 
         //check stationNo in user-stationsAllowed
 
@@ -139,7 +139,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getLoadedParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
-        userService.get()
 
         val orders = if (sendDate != null) parcelRepository.getOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrdersToExportByStation(station = stationNo)
         if (orders.count() == 0)
@@ -166,7 +165,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getNewLoadinglistNo(): ExportService.Loadinglist {
-        userService.get()
         var loadlistNo: Long = 0
         do {
             loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 300000
@@ -177,7 +175,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getParcelsToExportByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
-        userService.get()
 
         val orders = if (sendDate != null) parcelRepository.getOrdersToExportByStation(stationNo, sendDate.toLocalDate()) else parcelRepository.getOrdersToExportByStation(station = stationNo)
         if (orders.count() == 0)
@@ -187,7 +184,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             )
 
 
-        val allParcels = parcelRepository.getParcelsToExportByOrderids(orders
+        val allParcels = parcelRepository.getParcelsNotDeliveredByOrderids(orders
                 .map { it.orderid.toLong() }
                 .toList()
         )
@@ -210,7 +207,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getParcelsToExportInBagByStationNo(stationNo: Int, sendDate: Date?): List<ExportService.Order> {
-        userService.get()
 
         val parcels = if (sendDate != null) parcelRepository.getParcelsToExportInBagByStation(stationNo, sendDate = sendDate.toLocalDate()) else parcelRepository.getParcelsToExportInBagByStation(station = stationNo)
         if (parcels.count() == 0)
@@ -223,13 +219,10 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getCountToSendBackByStation(stationNo: Int): Int {
-        userService.get()
-
         return bagService.getCountToSendBackByStation(stationNo)
     }
 
     override fun getParcelsToExportByLoadingList(loadinglistNo: String): List<ExportService.Order> {
-        userService.get()
         val un = DekuUnitNumber.parseLabel(loadinglistNo)
         when {
             un.hasError -> {
@@ -255,7 +248,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getNewBagLoadinglistNo(): ExportService.Loadinglist {
-        userService.get()
         var loadlistNo: Long = 0
         do {
             loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
@@ -266,8 +258,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun setBagStationExportRedSeal(bagID: String, bagBackUnitNo: String, stationNo: Int, redSeal: String, text: String) {
-        userService.get()
-
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -393,7 +383,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun reopenBagStationExport(bagID: String, stationNo: Int) {
-        userService.get()
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -438,8 +427,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun fillBagStationExport(bagID: String, bagBackUnitNo: String, stationNo: Int, unitNo: String, loadingListNo: String, yellowSealNo: String): String {
-        userService.get()
-
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -644,8 +631,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun closeBagStationExport(bagID: String, bagBackUnitNo: String, stationNo: Int, loadingListNo: String) {
-        userService.get()
-
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -782,7 +767,6 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getBag(stationNo: Int, bagID: String): ExportService.Bag {
-        userService.get()
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -962,7 +946,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 val gun = GlsUnitNumber.parseLabel(scanCode)
                 when {
                     gun.hasError -> {
-                        val unitRecords = parcelRepository.getParcelsByCreferenceAndStation(stationNo, scanCode)
+                        val unitRecords = parcelRepository.getExportParcelsByCreferenceAndStation(stationNo, scanCode)
                         if (unitRecords.count() == 0)
                             throw RestProblem(
                                     status = Response.Status.NOT_FOUND,
@@ -1212,41 +1196,10 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         }
         val scanTs = Date()
         val infotext = "WebExport"
-        var existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), Event.EXPORT_RECEIVE.creator.toString(), Event.EXPORT_RECEIVE.concatId, Reason.NORMAL.id)
-        if (!existStatus) {
-            val r = dsl.newRecord(Tables.TBLSTATUS)
-            r.packstuecknummer = unitRecord.colliebelegnr
-            r.setDate(scanTs)
-            r.setTime(scanTs)
-            r.infotext = infotext
+        statusRepository.createIfNotExists(unitRecord.colliebelegnr.toLong(), scanTs, Event.EXPORT_RECEIVE, Reason.NORMAL, infotext, stationNo.toString())
 
-            r.kzStatuserzeuger = Event.EXPORT_RECEIVE.creator.toString()
-            r.kzStatus = Event.EXPORT_RECEIVE.concatId.toUInteger()
-            r.timestamp2 = Date().toTimestamp()
-            r.fehlercode = Reason.NORMAL.id.toUInteger()
+        statusRepository.createIfNotExists(unitRecord.colliebelegnr.toLong(), scanTs, Event.EXPORT_LOADED, Reason.NORMAL, infotext, stationNo.toString())
 
-            r.erzeugerstation = stationNo.toString()
-
-            if (r.store() == 0)
-                log.error("Insert status failed")
-        }
-        existStatus = statusRepository.statusExist(unitRecord.colliebelegnr.toLong(), Event.EXPORT_LOADED.creator.toString(), Event.EXPORT_LOADED.concatId, Reason.NORMAL.id)
-        if (!existStatus) {
-            val r = dsl.newRecord(Tables.TBLSTATUS)
-            r.packstuecknummer = unitRecord.colliebelegnr
-            r.setDate(scanTs)
-            r.setTime(scanTs)
-            r.infotext = infotext
-
-            r.kzStatuserzeuger = Event.EXPORT_LOADED.creator.toString()
-            r.kzStatus = Event.EXPORT_LOADED.concatId.toUInteger()
-            r.timestamp2 = Date().toTimestamp()
-            r.fehlercode = Reason.NORMAL.id.toUInteger()
-
-            r.erzeugerstation = stationNo.toString()
-            if (r.store() == 0)
-                log.error("Insert status failed")
-        }
 
         if (orderRecord.service.toLong() and 134217728.toLong() == 134217728.toLong()) {
             orderRecord.service = (orderRecord.service.toLong() - 134217728.toLong()).toInt().toUInteger()

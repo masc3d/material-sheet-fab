@@ -1,14 +1,12 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import {
-  ButtonModule,
-  CheckboxModule,
-  DataScrollerModule,
-  DataTableModule,
-  FieldsetModule,
-  InputTextModule, ToggleButtonModule
-} from 'primeng/primeng';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FieldsetModule } from 'primeng/fieldset';
+import { InputTextModule } from 'primeng/inputtext';
+import { DataScrollerModule } from 'primeng/datascroller';
 
 import { SharedModule } from '../../shared/shared.module';
 import { TouroptimizingRoutingModule } from './touroptimizing-routing.module';
@@ -20,7 +18,6 @@ import { TouroptimizingService } from './touroptimizing.service';
   imports: [
     SharedModule,
     FormsModule,
-    DataTableModule,
     FieldsetModule,
     InputTextModule,
     ButtonModule,

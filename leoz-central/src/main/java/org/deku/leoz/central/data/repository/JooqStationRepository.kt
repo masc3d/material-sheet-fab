@@ -41,6 +41,9 @@ open class JooqStationRepository {
     fun findById(id: Int): TbldepotlisteRecord? =
             dsl.fetchOne(TBLDEPOTLISTE, TBLDEPOTLISTE.ID.eq(id))
 
+    fun findByStationNo(stationNo: Int): TbldepotlisteRecord? =
+            dsl.fetchOne(TBLDEPOTLISTE, TBLDEPOTLISTE.DEPOTNR.eq(stationNo))
+
     fun findByDebitorId(debitorId: Int): List<TbldepotlisteRecord> =
             dsl.fetch(TBLDEPOTLISTE, TBLDEPOTLISTE.DEBITOR_ID.eq(debitorId)).toList()
 
@@ -120,5 +123,16 @@ open class JooqStationRepository {
 
     fun getSeal(sealNo: Long): SsoPMovRecord? {
         return dsl.fetchOne(SsoPMov.SSO_P_MOV, SSO_P_MOV.PLOMBENNUMMER.eq(sealNo.toDouble()))
+    }
+
+    fun getStationTour(zip: String, stationNo: Int): Int {
+        if (zip.trim() == "") return 99
+        val tour = dsl.select(TBLROUTENDEPOT.TOURNR).from(TBLROUTENDEPOT)
+                .where(TBLROUTENDEPOT.DEPOTID.eq(stationNo)
+                        .and(TBLROUTENDEPOT.VONPLZ.le(zip))
+                        .and(TBLROUTENDEPOT.BISPLZ.ge(zip))
+                )
+                .fetchOne(0, Int::class.java)
+        return tour ?: 99
     }
 }

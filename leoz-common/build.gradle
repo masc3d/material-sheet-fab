@@ -83,6 +83,7 @@ dependencies {
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson",
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",

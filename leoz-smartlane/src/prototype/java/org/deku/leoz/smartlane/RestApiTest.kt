@@ -224,10 +224,11 @@ class RestApiTest {
         drivertrackingApi.deleteAll()
         // TODO: drivers must not be deleted until it's thoroughly implmented @smartlane, otherwise causing conflicts
 //        driverApi.deleteAll()
-        addressApi.deleteAddressesNotIn(
-                // Exclude the company/owner address id
-                listOf(1)
-        )
+        // TODO. routes are still archived @smartlane, which will prevent removal of addresses
+//        addressApi.deleteAddressesNotIn(
+//                // Exclude the company/owner address id
+//                listOf(1)
+//        )
     }
 
     @Test

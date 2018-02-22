@@ -3,6 +3,8 @@ package org.deku.leoz.service.internal
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
+import org.deku.leoz.model.TourRouteMeta
+import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
@@ -27,8 +29,10 @@ import javax.ws.rs.sse.SseEventSink
 interface TourServiceV1 {
     companion object {
         const val ID = "id"
+        const val CUSTOM_ID = "custom-id"
         const val DEBITOR_ID = "debitor-id"
         const val FROM = "from"
+        const val INCLUDE_RELATED = "include-related"
         const val NODE_UID = "node-uid"
         const val STATION_NO = "station-no"
         const val TO = "to"
@@ -42,16 +46,18 @@ interface TourServiceV1 {
             value = "Get tour(s)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
+            @QueryParam(ID) @ApiParam(value = "Ids", required = false)
+            ids: List<Long>? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
-            debitorId: Long?,
+            debitorId: Long? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
-            stationNo: Long?,
+            stationNo: Long? = null,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
-            userId: Long?,
+            userId: Long? = null,
             @QueryParam(FROM) @ApiParam(example = "2018-01-27", value = "From (tour) date", required = false)
-            from: ShortDate?,
+            from: ShortDate? = null,
             @QueryParam(TO) @ApiParam(example = "2018-01-27", value = "To (tour) date", required = false)
-            to: ShortDate?
+            to: ShortDate? = null
     ): List<Tour>
 
     @GET
@@ -78,9 +84,10 @@ interface TourServiceV1 {
             userId: Long
     ): Tour
 
+    @Deprecated("Superseded by automatic dl conversion in `DeliveryListService`")
     @POST
     @Path("/deliverylist")
-    @ApiOperation(value = "Create a new tour from delivery lists",
+    @ApiOperation(value = "Create new tour(s) from delivery list(s)",
             notes = "The tours created will be owned by the same station",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun create(
@@ -94,11 +101,15 @@ interface TourServiceV1 {
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun delete(
             @QueryParam(ID) @ApiParam(value = "Tour id(s)", required = false)
-            ids: List<Long>,
+            ids: List<Long>? = null,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
             userId: Long? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
-            stationNo: Long? = null
+            stationNo: Long? = null,
+            @QueryParam(CUSTOM_ID) @ApiParam(value = "Custom id", required = false)
+            customIds: List<String>? = null,
+            @QueryParam(INCLUDE_RELATED) @ApiParam(value = "Inlcude related tours (eg. split optimized tours)", required = false, defaultValue = "false")
+            includeRelated: Boolean? = null
     )
 
     @PATCH
@@ -173,7 +184,7 @@ interface TourServiceV1 {
             notes = "This call uses server-sent-events (SSE)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     @ApiResponses(
-            ApiResponse(code = 200, response = SubscriptionEvent::class, message= "Tour service subscription event")
+            ApiResponse(code = 200, response = SubscriptionEvent::class, message = "Tour service subscription event")
     )
     fun subscribe(
             @QueryParam(STATION_NO)
@@ -210,10 +221,14 @@ interface TourServiceV1 {
             var orders: List<OrderService.Order> = listOf(),
             @ApiModelProperty(position = 80, required = true, value = "Tour stop list")
             var stops: List<Stop> = listOf(),
-            @ApiModelProperty(position = 90, required = true, value = "Last optimization time")
+            @ApiModelProperty(position = 90, required = false, value = "Last optimization time")
             var optimized: Date? = null,
             @ApiModelProperty(position = 100, required = true, value = "Creation date")
-            var created: Date? = null
+            var created: Date? = null,
+
+            @ApiModelProperty(position = 110, required = false,
+                    value = "Tour level route informations. Available when the tour was optimized")
+            var route: TourRouteMeta? = null
     )
 
     @Serializable(0xc65eacc35a3d73)
@@ -233,7 +248,11 @@ interface TourServiceV1 {
             var appointmentEnd: Date? = null,
 
             @ApiModelProperty(position = 50, required = false, value = "Stop weight")
-            var weight: Double? = null
+            var weight: Double? = null,
+
+            @ApiModelProperty(position = 60, required = false,
+                    value = "Stop level route information. Available when the tour was optimized")
+            var route: TourStopRouteMeta? = null
     )
 
     @Serializable(0x8eeb2fbff14af5)
@@ -268,7 +287,9 @@ interface TourServiceV1 {
     data class TourOptimizationOptions(
             @ApiModelProperty(position = 10,
                     required = false,
-                    value = "Start address/location")
+                    value = "Start address/location",
+                    notes = "When this parameter is omitted, the start address will default to " +
+                            "the station address this tour refers to.")
             var start: Address? = null,
 
             @ApiModelProperty(position = 20,
@@ -334,8 +355,12 @@ interface TourServiceV1 {
                         required = false,
                         value = "Vehicle capacity in kg",
                         example = "500.0")
-                var capacity: Double = 500.0
-        )
+                var capacity: Double = DEFAULT_CAPACITY
+        ) {
+            companion object {
+                val DEFAULT_CAPACITY: Double = 500.0
+            }
+        }
 
 
     }

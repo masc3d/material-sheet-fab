@@ -7,13 +7,18 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecor
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragcolliesRecord
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.counter
+import org.deku.leoz.time.toGregorianLongDateString
+import org.deku.leoz.time.toGregorianLongDateTimeString
 import org.deku.leoz.time.toShortTime
 import org.jooq.DSLContext
 import org.jooq.UpdatableRecord
 import org.springframework.beans.factory.annotation.Qualifier
+import sx.time.toLocalDate
+import sx.time.toLocalDateTime
 import javax.inject.Inject
 import javax.inject.Named
 import sx.time.toTimestamp
+import java.sql.Timestamp
 import java.util.*
 
 
@@ -58,8 +63,44 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
                 fieldHistoryRecord.orderid = 0.0
             fieldHistoryRecord.belegnummer = unitNo.toDouble()
             fieldHistoryRecord.feldname = it.name
-            fieldHistoryRecord.oldvalue = it.original(this)?.toString() ?: ""
-            fieldHistoryRecord.newvalue = it.getValue(this)?.toString() ?:"null"
+            //fieldHistoryRecord.oldvalue = it.original(this)?.toString() ?: ""
+
+            //gestern ging es noch mit dataType, heute nicht mehr
+            //when (it.dataType) {
+            //is java.sql.Timestamp -> {
+            if (it.dataType.typeName.equals("timestamp")) {
+
+                val dtOld = it.original(this) as Date
+                val dtOldValue: String
+                if (dtOld == null) {
+                    dtOldValue = "null"
+                } else if (dtOld.year + 1900 <= 1900) {
+                    dtOldValue = dtOld.toShortTime().toString()
+                } else if (dtOld.hours == 0 && dtOld.minutes == 0 && dtOld.seconds == 0) {
+                    dtOldValue = dtOld.toGregorianLongDateString()
+                } else {
+                    dtOldValue = dtOld.toGregorianLongDateTimeString()
+                }
+                fieldHistoryRecord.oldvalue = dtOldValue
+
+                val dt = it.getValue(this) as Date
+                val dtNewValue: String
+                if (dt == null) {
+                    dtNewValue = "null"
+                } else if (dt.year + 1900 <= 1900) {
+                    dtNewValue = dt.toShortTime().toString()
+                } else if (dt.hours == 0 && dt.minutes == 0 && dt.seconds == 0) {
+                    dtNewValue = dt.toGregorianLongDateString()
+                } else {
+                    dtNewValue = dt.toGregorianLongDateTimeString()
+                }
+                fieldHistoryRecord.newvalue = dtNewValue
+            } else {
+                fieldHistoryRecord.oldvalue = it.original(this)?.toString() ?: ""
+                fieldHistoryRecord.newvalue = it.getValue(this)?.toString() ?: "null"
+            }
+
+            //fieldHistoryRecord.newvalue = it.getValue(this)?.toString() ?:"null"
             fieldHistoryRecord.changer = changer
             fieldHistoryRecord.point = point
 
@@ -75,4 +116,12 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
 
 fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistoryExportservice(unitNo: Long) {
     this.storeWithHistory(unitNo, "WEB", "EX")
+}
+
+fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistoryParcelprocessing(unitNo: Long) {
+    this.storeWithHistory(unitNo, "Z", "PP")
+}
+
+fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistoryImportservice(unitNo: Long) {
+    this.storeWithHistory(unitNo, "WEB", "IM")
 }

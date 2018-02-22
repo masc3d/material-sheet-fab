@@ -9,6 +9,7 @@ export const LANG_DE_TRANS = {
   'password': 'Kennwort',
   'password is required': 'Kennwort muss angegeben werden',
   'loggedinas': 'Angemeldet als',
+  'On login-change you have to provide a password': 'Bei Änderungen geben Sie bitte Ihr Passwort ein.',
   // menu
   'home': 'Startseite',
   'loadingscan': 'Beladescan',
@@ -32,6 +33,7 @@ export const LANG_DE_TRANS = {
   'datafilter': 'Datenfilter',
   'record-delivery-data': 'Lieferdatenerfassung',
   'forStation': 'für Station',
+  'favourites': 'Favoriten',
   // 'statistics': 'Statistiken', (see below)
   'pod-reprints': 'Rollkarten Nachdruck',
   'client-management': 'Kundenverwaltung',
@@ -168,6 +170,7 @@ export const LANG_DE_TRANS = {
   'notOnLoadlist': 'noch nicht auf Ladeliste',
   'onLoadlist': 'bereits geladen',
   'noDataAvailable': 'keine Einträge vorhanden',
+  'no activeLoadinglist': 'keine Ladeliste ausgewählt',
   // stationloading form - bagscan
   'openOnBaglist': 'noch nicht auf Bagliste',
   'bagInformation': 'Bag Information',
@@ -411,6 +414,12 @@ export const LANG_DE_TRANS = {
   'tours-most-likely-outdated': 'Ihre Rollkarten haben sich geändert. ' +
                                 'Um sicherzustellen, dass Sie auf dem neuesten Stand sind, sollten Sie "reset" drücken',
   'optimization_progress': 'Optimierung läuft...',
+  'optimizing_optimized_tours_not_possible': 'Optimierung optimierter Touren nicht möglich',
+  // report report_tourplan
+  'report_tourplan': 'Tourenplan',
+  'tourID': 'Tour Nr.',
+  'optimized': 'optimiert',
+  'not_optimized': 'nicht optimiert',
   // pickupdispo
   'info': 'Info',
   'open_orders_max3days': 'Offene Aufträge (max. 3 Tage)',

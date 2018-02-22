@@ -4,26 +4,33 @@ import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadNodeGeopositionRecord
-import org.deku.leoz.central.data.repository.*
-import sx.rs.RestProblem
+import org.deku.leoz.central.data.repository.JooqGeopositionRepository
+import org.deku.leoz.central.data.repository.JooqNodeRepository
+import org.deku.leoz.central.data.repository.JooqUserRepository
+import org.deku.leoz.node.rest.authorizedUser
+import org.deku.leoz.model.UserRole
+import org.deku.leoz.model.VehicleType
+import org.deku.leoz.service.internal.LocationServiceV1
+import org.deku.leoz.service.internal.LocationServiceV2
 import org.jooq.DSLContext
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import sx.log.slf4j.trace
+import sx.log.slf4j.warn
+import sx.mq.MqChannel
+import sx.mq.MqHandler
+import sx.rs.RestProblem
+import sx.time.plusMinutes
+import sx.time.toLocalDate
+import sx.time.toTimestamp
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
-import org.deku.leoz.model.UserRole
-import org.deku.leoz.model.VehicleType
-import org.deku.leoz.service.internal.LocationServiceV2
-import sx.mq.MqChannel
-import sx.mq.MqHandler
-import sx.time.toTimestamp
+import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
-import org.slf4j.LoggerFactory
-import sx.log.slf4j.*
-import sx.time.plusMinutes
-import sx.time.toLocalDate
-import java.text.SimpleDateFormat
 
 /**
  * Location service v2
@@ -32,7 +39,7 @@ import java.text.SimpleDateFormat
 @Path("internal/v2/location")
 class LocationServiceV2 :
         org.deku.leoz.service.internal.LocationServiceV2,
-        MqHandler<LocationServiceV2.GpsMessage> {
+        MqHandler<Any> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -48,6 +55,9 @@ class LocationServiceV2 :
 
     @Inject
     private lateinit var nodeRepository: JooqNodeRepository
+
+    @Context
+    private lateinit var httpRequest: HttpServletRequest
 
     private val locationReceivedSubject = PublishSubject.create<LocationServiceV2.GpsMessage>()
     /** Location received event */
@@ -69,7 +79,7 @@ class LocationServiceV2 :
     }
 
     //region REST
-    override fun get(userId: Int?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationServiceV2.GpsData> {
+    override fun get(userId: Int?, debitorId: Int?, from: Date?, to: Date?): List<LocationServiceV2.GpsData> {
         var debitor_id = debitorId
         val email = when {
             debitorId != null -> null
@@ -90,25 +100,10 @@ class LocationServiceV2 :
         val gpsdataList = mutableListOf<LocationServiceV2.GpsData>()
         var gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
 
-        apiKey ?:
-                throw RestProblem(status = Response.Status.BAD_REQUEST)
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?:
-                throw RestProblem(status = Response.Status.BAD_REQUEST)
-
-        if (!authorizedUserRecord.isActive) {
-            throw RestProblem(
-                    title = "login user deactivated",
-                    status = Response.Status.UNAUTHORIZED)
-        }
-        if (Date() > authorizedUserRecord.expiresOn) {
-            throw RestProblem(
-                    title = "login user account expired",
-                    status = Response.Status.UNAUTHORIZED)
-        }
+        val authorizedUser = httpRequest.authorizedUser
 
         if (debitor_id == null && email == null) {
-            debitor_id = authorizedUserRecord.debitorId
+            debitor_id = authorizedUser.debitorId
         }
 
         when {
@@ -124,9 +119,9 @@ class LocationServiceV2 :
                 //val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
-                    if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
-                            || ((authorizedUserRecord.debitorId == it.debitorId)
-                            && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(it.role).value))) {
+                    if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                            || ((authorizedUser.debitorId == it.debitorId)
+                            && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
 
                         val posList = posRepository.findByUserId(it.id, pos_from, pos_to)
                         //gpsList.clear()
@@ -153,9 +148,9 @@ class LocationServiceV2 :
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by email")
 
-                if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
-                        || ((authorizedUserRecord.debitorId == userRecord.debitorId)
-                        && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value))) {
+                if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                        || ((authorizedUser.debitorId == userRecord.debitorId)
+                        && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
 
                     val posList = posRepository.findByUserId(userRecord.id, pos_from, pos_to)
                     if (posList != null) {
@@ -191,7 +186,7 @@ class LocationServiceV2 :
 
     }
 
-    override fun getRecent(userId: Int?, debitorId: Int?, duration: Int?, apiKey: String?): List<LocationServiceV2.GpsData> {
+    override fun getRecent(userId: Int?, debitorId: Int?, duration: Int?): List<LocationServiceV2.GpsData> {
         var debitor_id = debitorId
         val email = when {
             debitorId != null -> null
@@ -209,25 +204,10 @@ class LocationServiceV2 :
         val gpsdataList = mutableListOf<LocationServiceV2.GpsData>()
         var gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
 
-        apiKey ?:
-                throw RestProblem(status = Response.Status.BAD_REQUEST)
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?:
-                throw RestProblem(status = Response.Status.BAD_REQUEST)
-
-        if (!authorizedUserRecord.isActive) {
-            throw RestProblem(
-                    title = "login user deactivated",
-                    status = Response.Status.UNAUTHORIZED)
-        }
-        if (Date() > authorizedUserRecord.expiresOn) {
-            throw RestProblem(
-                    title = "login user account expired",
-                    status = Response.Status.UNAUTHORIZED)
-        }
+        val authorizedUser = httpRequest.authorizedUser
 
         if (debitor_id == null && email == null) {
-            debitor_id = authorizedUserRecord.debitorId
+            debitor_id = authorizedUser.debitorId
         }
 
         when {
@@ -244,9 +224,9 @@ class LocationServiceV2 :
                 //val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
-                    if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
-                            || ((authorizedUserRecord.debitorId == it.debitorId)
-                            && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(it.role).value))) {
+                    if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                            || ((authorizedUser.debitorId == it.debitorId)
+                            && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
 
                         val posList: List<TadNodeGeopositionRecord>?
                         if (duration != null) {
@@ -280,9 +260,9 @@ class LocationServiceV2 :
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by email")
 
-                if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
-                        || ((authorizedUserRecord.debitorId == userRecord.debitorId)
-                        && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value))) {
+                if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                        || ((authorizedUser.debitorId == userRecord.debitorId)
+                        && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
 
                     val posList: List<TadNodeGeopositionRecord>?
                     if (duration != null) {
@@ -429,34 +409,46 @@ class LocationServiceV2 :
     /**
      * Location service message handler
      */
-    override fun onMessage(message: LocationServiceV2.GpsMessage, replyChannel: MqChannel?) {
+    //region MQ handlers
+    @MqHandler.Types(
+            LocationServiceV1.GpsMessage::class,
+            LocationServiceV2.GpsMessage::class
+    )
+    override fun onMessage(message: Any, replyChannel: MqChannel?) {
         // TODO: from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
 
-        val dataPoints = message.dataPoints?.toList()
-                ?: throw RestProblem(
-                detail = "Missing data points",
-                status = Response.Status.BAD_REQUEST)
+        when (message) {
+            is LocationServiceV2.GpsMessage -> {
+                val dataPoints = message.dataPoints?.toList()
+                        ?: throw RestProblem(
+                                detail = "Missing data points",
+                                status = Response.Status.BAD_REQUEST)
 
-        log.trace { "Received ${dataPoints.count()} from [${message.nodeKey}] user [${message.userId}]" }
+                log.trace { "Received ${dataPoints.count()} from [${message.nodeKey}] user [${message.userId}]" }
 
-        this.locationReceivedSubject.onNext(message)
+                this.locationReceivedSubject.onNext(message)
 
-        dataPoints.forEach {
-            val r = dsl.newRecord(Tables.TAD_NODE_GEOPOSITION)
+                dataPoints.forEach {
+                    val r = dsl.newRecord(Tables.TAD_NODE_GEOPOSITION)
 
-            r.userId = message.userId
-            r.nodeId = nodeRepository.findByKey(message.nodeKey ?: "")?.nodeId
-            r.latitude = it.latitude
-            r.longitude = it.longitude
-            r.positionDatetime = it.time?.toTimestamp()
-            r.speed = it.speed?.toDouble()
-            r.bearing = it.bearing?.toDouble()
-            r.altitude = it.altitude
-            r.accuracy = it.accuracy?.toDouble()
-            r.vehicleType = it.vehicleType?.value?.toUpperCase()
+                    r.userId = message.userId
+                    r.nodeId = nodeRepository.findByKey(message.nodeKey ?: "")?.nodeId
+                    r.latitude = it.latitude
+                    r.longitude = it.longitude
+                    r.positionDatetime = it.time?.toTimestamp()
+                    r.speed = it.speed?.toDouble()
+                    r.bearing = it.bearing?.toDouble()
+                    r.altitude = it.altitude
+                    r.accuracy = it.accuracy?.toDouble()
+                    r.vehicleType = it.vehicleType?.value?.toUpperCase()
 //r.debitorId=
 //todo
-            posRepository.save(r)
+                    posRepository.save(r)
+                }
+            }
+            is LocationServiceV1.GpsMessage -> {
+                log.warn { "Received deprecated location message from node [${message.nodeId}] user [${message.userId}]"}
+            }
         }
     }
 

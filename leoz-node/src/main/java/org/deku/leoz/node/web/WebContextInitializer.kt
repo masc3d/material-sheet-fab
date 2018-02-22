@@ -87,6 +87,7 @@ class WebContextInitializer : ServletContextInitializer {
             val sr = servletContext.addServlet(HttpServletDispatcher::class.java.name, HttpServletDispatcher::class.java)
             sr.setInitParameter("resteasy.servlet.mapping.prefix", Rest.MAPPING_PREFIX)
             sr.setInitParameter("javax.ws.rs.Application", "org.deku.leoz.node.rest.WebserviceApplication")
+            sr.setAsyncSupported(true)
             sr.setInitParameter(SwaggerContextService.USE_PATH_BASED_CONFIG, "true")
             sr.setLoadOnStartup(1)
             sr.addMapping(Rest.MAPPING_PREFIX + "/*")

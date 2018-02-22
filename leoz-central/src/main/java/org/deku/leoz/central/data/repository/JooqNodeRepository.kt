@@ -74,10 +74,6 @@ class JooqNodeRepository {
 val MstNodeRecord.uid: String
     get() = this.key
 
-fun SelectWhereStep<MstNodeRecord>.fetchById(id: Int): MstNodeRecord? {
-    return this.where(MST_NODE.NODE_ID.eq(id)).fetchOne()
-}
-
 /**
  * Fetch node record by uid
  * @param nodeUid Node uid
@@ -99,6 +95,15 @@ fun SelectWhereStep<MstNodeRecord>.fetchByUid(nodeUid: String, strict: Boolean =
             }
         }
     }
+}
+
+fun SelectWhereStep<MstNodeRecord>.fetchById(id: Int): MstNodeRecord? {
+    return this.where(MST_NODE.NODE_ID.eq(id)).fetchOne()
+}
+
+fun SelectWhereStep<MstNodeRecord>.fetchIdByUid(uid: String):Int? {
+    return this.where(MST_NODE.KEY.eq(uid))
+            .fetchOne(MST_NODE.NODE_ID)
 }
 
 fun SelectWhereStep<MstNodeRecord>.fetchUidById(id: Int): String? {

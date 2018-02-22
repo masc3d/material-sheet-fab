@@ -9,6 +9,7 @@ export const LANG_EN_TRANS = {
   'password': 'Password',
   'password is required': 'Password is required',
   'loggedinas': 'Logged in as',
+  'On login-change you have to provide a password': 'On login-change you have to provide a password',
   // menu
   'home': 'Home',
   'loadingscan': 'Loadingscan',
@@ -32,6 +33,7 @@ export const LANG_EN_TRANS = {
   'datafilter': 'Datafilter',
   'record-delivery-data': 'Deliverydata recording',
   'forStation': 'for Station',
+  'favourites': 'Favourites',
   // 'statistics': 'Statistics', (see below)
   'pod-reprints': 'Deliverylist reprint',
   'client-management': 'Client management',
@@ -168,6 +170,7 @@ export const LANG_EN_TRANS = {
   'notOnLoadlist': 'not yet on loadlist',
   'onLoadlist': 'already loaded',
   'noDataAvailable': 'no data available',
+  'no activeLoadinglist': 'no loadlist selected',
   // stationloading form - bagscan
   'openOnBaglist': 'not yet on baglist',
   'bagInformation': 'Bag Information',
@@ -411,6 +414,12 @@ export const LANG_EN_TRANS = {
   'tours-most-likely-outdated': 'There has been a change in your deliverylists. ' +
                                 'To make sure you are up to date, you should press "reset"',
   'optimization_progress': 'Optimization in progress...',
+  'optimizing_optimized_tours_not_possible': 'Optimizing optimized tours not possible',
+  // report report_tourplan
+  'report_tourplan': 'Tour Plan',
+  'tourID': 'Tour No.',
+  'optimized': 'optimized',
+  'not_optimized': 'not optimized',
   // pickupdispo
   'info': 'Info',
   'open_orders_max3days': 'Open Orders (max. 3 days)',

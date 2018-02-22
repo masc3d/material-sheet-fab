@@ -1,6 +1,11 @@
 package org.deku.leoz.central.service.internal.sync
 
-import sx.persistence.truncate
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.central.data.repository.JooqSyncRepository
+import org.deku.leoz.node.data.jpa.LclSync
+import org.deku.leoz.node.data.jpa.QLclSync.lclSync
+import org.deku.leoz.node.data.repository.SyncRepository
 import org.jooq.Record
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -10,10 +15,53 @@ import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
+import sx.Stopwatch
+import sx.log.slf4j.debug
+import sx.persistence.querydsl.from
+import sx.persistence.truncate
+import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
 import javax.inject.Inject
 import javax.inject.Named
 import javax.persistence.PersistenceContext
+
+/** Base interface for all sync presets */
+interface Preset {}
+
+/**
+ * Preset for synchronizing jooq/jdbc records to jpa entities
+ *
+ * @param <TEntity> Type of destiantion JPA entity
+ * @param <TCentralRecord> Type of source JOOQ record
+ * @property srcJooqTable JOOQ source table
+ * @property srcJooqSyncIdField JOOQ source sync id field
+ * @property dstJpaEntityPath Destination QueryDSL entity table path
+ * @property dstJpaSyncIdPath Destination QueryDSL sync id field path
+ * @property transformation    Conversion function JOOQ record -> JPA entity
+ */
+open class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
+        val srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
+        val srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
+        val dstJpaEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
+        val dstJpaSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
+        val transformation: (TCentralRecord) -> TEntity
+) : Preset {
+    override fun toString(): String =
+            "Sync preset [${srcJooqTable.name} -> ${dstJpaEntityPath.metadata.name}]"
+}
+
+/**
+ * Preset for notifying about jooq/jdbc table/record changes
+ * @property srcJooqTable JOOQ source table
+ * @property srcJooqSyncIdField JOOQ source sync id field
+ */
+open class NotifyPreset<TCentralRecord : org.jooq.Record>(
+        val srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
+        val srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?
+) : Preset {
+    override fun toString(): String =
+            "Notify preset [${srcJooqTable.name}]"
+}
 
 /**
  * Database sync service
@@ -60,60 +108,76 @@ constructor(
         private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
     }
 
-    /** Base interface for all sync presets */
-    interface Preset {}
+    //region Events
+    /**
+     * Synchronisation update event
+     * @param entityType the entity type that has been synchronized
+     * @param syncId current sync id
+     */
+    data class UpdateEvent(
+            val entityType: Class<out Any?>,
+            val syncId: Long?
+    )
+
+    private val updatesSubject = PublishSubject.create<UpdateEvent>()
+    open val updates = this.updatesSubject.hide()
 
     /**
-     * Database sync preset
-     * @param <TEntity>             Type of destiantion JPA entity
-     * @param <TCentralRecord>      Type of source JOOQ record
-     * @property sourceTable           JOOQ source table
-     * @property sourceTableSyncIdField      JOOQ source sync id field
-     * @property destQdslEntityPath    Destination QueryDSL entity table path
-     * @property destQdslSyncIdPath Destination QueryDSL sync id field path
-     * @property conversionFunction    Conversion function JOOQ record -> JPA entity
+     * Notification event
+     * @param tableName updated table
+     * @param localSyncId Current local sync id
+     **/
+    data class NotificationEvent(
+            val tableName: String,
+            val localSyncId: Long,
+            val syncId: Long? = null
+    )
+
+    private val notificationsSubject = PublishSubject.create<NotificationEvent>()
+
+    /**
+     * Observable notifications
      */
-    open class SimplePreset<TCentralRecord : org.jooq.Record, TEntity>(
-            val sourceTable: org.jooq.impl.TableImpl<TCentralRecord>,
-            val sourceTableSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
-            val destQdslEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
-            val destQdslSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
-            val conversionFunction: (TCentralRecord) -> TEntity
-    ) : Preset {
-        override fun toString(): String =
-                "Preset [${sourceTable.name} -> ${destQdslEntityPath.metadata.name}]"
-
-    }
-
-    //region Events
-    interface EventListener : sx.event.EventListener {
-        /** Emitted when entities have been updated  */
-        fun onUpdate(entityType: Class<out Any?>, currentSyncId: Long?)
-    }
-
-    private val eventDispatcher = sx.event.EventDispatcher.Companion.createThreadSafe<EventListener>()
-    open val eventDelegate: sx.event.EventDelegate<EventListener>
-        get() = eventDispatcher
+    open val notifications =
+            Observable.defer<NotificationEvent> {
+                Observable.fromIterable(
+                        this.syncRepository.findAll().map {
+                            NotificationEvent(
+                                    tableName = it.tableName,
+                                    localSyncId = it.syncId
+                            )
+                        }
+                )
+            }
+                    .concatWith(
+                            this.notificationsSubject
+                    )
     //endregion
 
     @PersistenceContext
-    private lateinit var entityManager: javax.persistence.EntityManager
+    private lateinit var em: javax.persistence.EntityManager
 
     /** JPA transaction template */
     private val transactionJpa = TransactionTemplate(txJpa).also {
         it.propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
     }
 
+    // JPA repositories
+    @Inject
+    private lateinit var syncRepository: SyncRepository
+
     /** JOOQ transaction template */
     private val transactionJooq = TransactionTemplate(txJooq)
 
     // JOOQ Repositories
     @Inject
-    private lateinit var syncJooqRepository: org.deku.leoz.central.data.repository.JooqSyncRepository
+    private lateinit var syncJooqRepository: JooqSyncRepository
 
+    @Suppress("UNCHECKED_CAST")
     @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
-    @Synchronized open fun sync(clean: Boolean) {
-        val sw = com.google.common.base.Stopwatch.createStarted()
+    @Synchronized
+    open fun sync(clean: Boolean) {
+        val sw = Stopwatch.createStarted()
 
         val syncIdMap = this.syncJooqRepository
                 .findAll()
@@ -125,143 +189,196 @@ constructor(
         this.presets.forEach {
             try {
                 when (it) {
-                    is SimplePreset<*, *> ->
-                        @Suppress("UNCHECKED_CAST")
+                    is SyncPreset<*, *> -> {
                         this.update(
-                                preset = it as SimplePreset<Record, Any>,
+                                preset = it as SyncPreset<Record, Any>,
                                 syncIdMap = syncIdMap,
-                                deleteBeforeUpdate = clean)
+                                clean = clean
+                        )
+                    }
+                    is NotifyPreset<*> -> {
+                        this.update(
+                                preset = it as NotifyPreset<Record>,
+                                syncIdMap = syncIdMap,
+                                clean = clean
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 log.error("${it} failed. ${e.message}")
             }
         }
 
-        log.info("Database sync took " + sw.toString())
+        log.debug { "Database sync took " + sw.toString() }
     }
 
     /**
-     * Generic updater for entites from jooq to jpa
-     * @param deleteBeforeUpdate    Delete all records before updating
+     * Update from notify preset
      */
-    open fun update(preset: SimplePreset<Record, Any>,
+    open fun update(preset: NotifyPreset<Record>,
                     syncIdMap: Map<String, Long>,
-                    deleteBeforeUpdate: Boolean
+                    clean: Boolean) {
+
+        val tableName = preset.srcJooqTable.name
+
+        transactionJpa.execute<Any> { _ ->
+            if (clean) {
+                syncRepository.deleteAll()
+            }
+
+            val dbSyncId = syncIdMap.get(tableName)
+                    ?: return@execute null
+
+            val localSync = syncRepository.findOne(
+                    lclSync.tableName.eq(tableName)
+            )
+                    .toNullable()
+                    // Create new local sync record
+                    ?: LclSync().also {
+                        it.tableName = tableName
+                        it.syncId = -1
+
+                        em.persist(it)
+                    }
+
+            if (dbSyncId > localSync.syncId) {
+                this.notificationsSubject.onNext(NotificationEvent(
+                        tableName = tableName,
+                        localSyncId = localSync.syncId,
+                        syncId = dbSyncId)
+                )
+
+                // Update local sync record
+                localSync.syncId = dbSyncId
+                em.merge(localSync)
+            }
+
+            null
+        }
+    }
+
+    /**
+     * Update from sync preset
+     * @param clean delete all records before updating
+     */
+    open fun update(preset: SyncPreset<Record, Any>,
+                    syncIdMap: Map<String, Long>,
+                    clean: Boolean
     ) {
-        preset.also { p ->
-            // Stopwatch
-            val sw = com.google.common.base.Stopwatch.createStarted()
-            // Log formatter
-            val lfmt = { s: String -> "[${p.destQdslEntityPath.type.name}] ${s} $sw" }
+        val p = preset
 
-            entityManager.flushMode = javax.persistence.FlushModeType.COMMIT
+        // Stopwatch
+        val sw = Stopwatch.createStarted()
+        // Log formatter
+        val lfmt = { s: String -> "[${p.dstJpaEntityPath.type.name}] ${s} $sw" }
 
-            if (deleteBeforeUpdate || p.destQdslSyncIdPath == null) {
-                transactionJpa.execute<Any> { _ ->
-                    log.info(lfmt("Deleting all entities"))
+        em.flushMode = javax.persistence.FlushModeType.COMMIT
 
-                    entityManager.truncate(p.destQdslEntityPath.type)
+        if (clean || p.dstJpaSyncIdPath == null) {
+            transactionJpa.execute<Any> { _ ->
+                log.info(lfmt("Deleting all entities"))
 
-                    entityManager.flush()
-                    entityManager.clear()
-                }
+                em.truncate(p.dstJpaEntityPath.type)
+
+                em.flush()
+                em.clear()
             }
+        }
 
-            // TODO. optimize by preparing query or at least caching the querydsl instance
-            // Get latest timestamp
-            var destMaxSyncId: Long? = null
-            if (p.destQdslSyncIdPath != null) {
-                // Query embedded database table for latest timestamp
-                destMaxSyncId = com.querydsl.jpa.impl.JPAQuery<Any>(entityManager)
-                        .from(p.destQdslEntityPath)
-                        .select(p.destQdslSyncIdPath.max())
-                        .fetchFirst()
+        // TODO. optimize by preparing query or at least caching the querydsl instance
+        // Get latest timestamp
+        var destMaxSyncId: Long? = null
+        if (p.dstJpaSyncIdPath != null) {
+            // Query embedded database table for latest timestamp
+            destMaxSyncId = em.from(p.dstJpaEntityPath)
+                    .select(p.dstJpaSyncIdPath.max())
+                    .fetchFirst()
+        }
+
+        // TODO. optimize by using jooq prepared statements
+        if (destMaxSyncId != null) {
+            val maxSyncId = syncIdMap.get(p.srcJooqTable.name)
+                    ?: throw IllegalStateException("No sync id map entry for [${p.srcJooqTable.name}]")
+            if (maxSyncId == destMaxSyncId) {
+                log.trace(lfmt("sync-id uptodate [${destMaxSyncId}]"))
+                return
             }
+        }
 
-            // TODO. optimize by using jooq prepared statements
-            if (destMaxSyncId != null) {
-                val maxSyncId = syncIdMap.get(p.sourceTable.name) ?: throw IllegalStateException("No sync id map entry for [${p.sourceTable.name}]")
-                if (maxSyncId == destMaxSyncId) {
-                    log.trace(lfmt("sync-id uptodate [${destMaxSyncId}]"))
-                    return
-                }
-            }
+        // Get newer records from central
+        // masc20150530. JOOQ cursor requires an explicit transaction
+        transactionJooq.execute<Any> { _ ->
+            // Read source records newer than destination timestamp
+            val source = syncJooqRepository.findNewerThan(
+                    destMaxSyncId,
+                    p.srcJooqTable,
+                    p.srcJooqSyncIdField)
 
-            // Get newer records from central
-            // masc20150530. JOOQ cursor requires an explicit transaction
-            transactionJooq.execute<Any> { _ ->
-                // Read source records newer than destination timestamp
-                val source = syncJooqRepository.findNewerThan(
-                        destMaxSyncId,
-                        p.sourceTable,
-                        p.sourceTableSyncIdField)
+            if (source.hasNext()) {
+                // Save to destination/jpa
+                // REMARKS
+                // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
+                log.info(lfmt("Outdated [${destMaxSyncId}]"))
+                var count = 0
 
-                if (source.hasNext()) {
-                    // Save to destination/jpa
-                    // REMARKS
-                    // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
-                    log.info(lfmt("Outdated [${destMaxSyncId}]"))
-                    var count = 0
+                val JPA_FLUSH_BATCH_SIZE = 100
+                val JPA_TRANSACTION_BATCH_SIZE = 10000
+                val jpaTransactionManager = transactionJpa.transactionManager
+                        ?: throw IllegalStateException()
 
-                    val JPA_FLUSH_BATCH_SIZE = 100
-                    val JPA_TRANSACTION_BATCH_SIZE = 10000
-                    val jpaTransactionManager = transactionJpa.transactionManager
-                            ?: throw IllegalStateException()
+                var transaction: TransactionStatus = jpaTransactionManager.getTransaction(transactionJpa)
 
-                    var transaction: TransactionStatus = jpaTransactionManager.getTransaction(transactionJpa)
+                try {
+                    while (source.hasNext()) {
+                        // Fetch next record
+                        val record = source.fetchNext()
+                        // Convert to entity
+                        val entity = p.transformation(record)
+                        // Store entity
+                        em.merge(entity)
 
-                    try {
-                        while (source.hasNext()) {
-                            // Fetch next record
-                            val record = source.fetchNext()
-                            // Convert to entity
-                            val entity = p.conversionFunction(record)
-                            // Store entity
-                            entityManager.merge(entity)
+                        count++
 
-                            count++
-
-                            // Flush every now and then (improves performance)
-                            if (count % JPA_FLUSH_BATCH_SIZE == 0) {
-                                entityManager.flush()
-                                entityManager.clear()
-                            }
-
-                            if (count % JPA_TRANSACTION_BATCH_SIZE == 0) {
-                                jpaTransactionManager.commit(transaction)
-                                transaction = jpaTransactionManager.getTransaction(transactionJpa)
-                            }
+                        // Flush every now and then (improves performance)
+                        if (count % JPA_FLUSH_BATCH_SIZE == 0) {
+                            em.flush()
+                            em.clear()
                         }
 
-                        jpaTransactionManager.commit(transaction)
-
-                    } catch(e: Throwable) {
-                        jpaTransactionManager.rollback(transaction)
-                        throw e
+                        if (count % JPA_TRANSACTION_BATCH_SIZE == 0) {
+                            jpaTransactionManager.commit(transaction)
+                            transaction = jpaTransactionManager.getTransaction(transactionJpa)
+                        }
                     }
 
-                    // Re-query destination timestamp
-                    if (p.destQdslSyncIdPath != null) {
-                        // Query embedded database for updated latest timestamp
-                        destMaxSyncId = com.querydsl.jpa.impl.JPAQuery<Any>(entityManager)
-                                .from(p.destQdslEntityPath)
-                                .select(p.destQdslSyncIdPath.max())
-                                .fetchFirst()
-                    }
-                    log.info(lfmt("Updated ${count} entities [${destMaxSyncId}]"))
+                    jpaTransactionManager.commit(transaction)
 
-                    // Emit update event
-                    eventDispatcher.emit { e ->
-                        // Emit event
-                        e.onUpdate(p.destQdslEntityPath.type, destMaxSyncId)
-                    }
-                } else {
-                    log.trace(lfmt("Uptodate [${destMaxSyncId}]"))
+                } catch (e: Throwable) {
+                    jpaTransactionManager.rollback(transaction)
+                    throw e
                 }
 
-                null
+                // Re-query destination timestamp
+                if (p.dstJpaSyncIdPath != null) {
+                    // Query embedded database for updated latest timestamp
+                    destMaxSyncId = em.from(p.dstJpaEntityPath)
+                            .select(p.dstJpaSyncIdPath.max())
+                            .fetchFirst()
+                }
+                log.info(lfmt("Updated ${count} entities [${destMaxSyncId}]"))
+
+                // Emit update event
+                this.updatesSubject.onNext(
+                        UpdateEvent(
+                                entityType = p.dstJpaEntityPath.type,
+                                syncId = destMaxSyncId
+                        )
+                )
+            } else {
+                log.trace(lfmt("Uptodate [${destMaxSyncId}]"))
             }
-            Unit
+
+            null
         }
     }
 

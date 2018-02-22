@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
-import { MenuItem, SelectItem } from 'primeng/primeng';
+import { MenuItem, SelectItem } from 'primeng/api';
 
 import { RoleGuard } from '../../core/auth/role.guard';
 import { TranslateService } from 'app/core/translate/translate.service';
@@ -336,6 +336,12 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
           label: this.translate.instant( 'co-worker' ),
           icon: 'far fa-smile',
           routerLink: 'user',
+          command: closeMenu
+        },
+        {
+          label: this.translate.instant( 'favourites' ),
+          icon: '',
+          routerLink: 'favourites',
           command: closeMenu
         } ];
       if (this.electronService.isElectron()) {

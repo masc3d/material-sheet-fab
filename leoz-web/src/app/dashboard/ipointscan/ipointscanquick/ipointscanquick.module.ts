@@ -1,19 +1,16 @@
 import { NgModule } from '@angular/core';
 
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+
 import { SharedModule } from '../../../shared/shared.module';
 import { IpointscanquickRoutingModule } from './ipointscanquick-routing.module';
 import { IpointscanquickComponent } from './ipointscanquick.component';
-import {
-ButtonModule,
-CheckboxModule,
-DataTableModule,
-} from 'primeng/primeng';
 
 @NgModule({
   imports: [
     SharedModule,
     IpointscanquickRoutingModule,
-    DataTableModule,
     ButtonModule,
     CheckboxModule
   ],

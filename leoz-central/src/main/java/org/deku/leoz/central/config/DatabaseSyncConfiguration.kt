@@ -3,6 +3,9 @@ package org.deku.leoz.central.config
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
+import org.deku.leoz.central.service.internal.sync.NotifyPreset
+import org.deku.leoz.central.service.internal.sync.Preset
+import org.deku.leoz.central.service.internal.sync.SyncPreset
 import org.deku.leoz.node.data.jpa.MstBundleVersion
 import org.deku.leoz.node.data.jpa.MstCountry
 import org.deku.leoz.node.data.jpa.MstDebitor
@@ -45,11 +48,11 @@ open class DatabaseSyncConfiguration {
     private var log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    private lateinit var databaseSyncService: DatabaseSyncService
+    private lateinit var dbSyncService: DatabaseSyncService
 
     @get:Bean
-    open val syncPresets = listOf<DatabaseSyncService.Preset>(
-            DatabaseSyncService.SimplePreset(
+    open val syncPresets = listOf<Preset>(
+            SyncPreset(
                     Tables.MST_BUNDLE_VERSION,
                     Tables.MST_BUNDLE_VERSION.SYNC_ID,
                     QMstBundleVersion.mstBundleVersion,
@@ -65,7 +68,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.TBLDEPOTLISTE,
                     Tables.TBLDEPOTLISTE.SYNC_ID,
                     QMstStation.mstStation,
@@ -105,7 +108,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.MST_COUNTRY,
                     Tables.MST_COUNTRY.SYNC_ID,
                     QMstCountry.mstCountry,
@@ -123,7 +126,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.MST_HOLIDAYCTRL,
                     Tables.MST_HOLIDAYCTRL.SYNC_ID,
                     QMstHolidayCtrl.mstHolidayCtrl,
@@ -141,7 +144,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.MST_ROUTE,
                     Tables.MST_ROUTE.SYNC_ID,
                     QMstRoute.mstRoute,
@@ -172,7 +175,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.MST_SECTOR,
                     Tables.MST_SECTOR.SYNC_ID,
                     QMstSector.mstSector,
@@ -190,7 +193,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.MST_ROUTINGLAYER,
                     Tables.MST_ROUTINGLAYER.SYNC_ID,
                     QMstRoutingLayer.mstRoutingLayer,
@@ -206,7 +209,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.MST_STATION_SECTOR,
                     Tables.MST_STATION_SECTOR.SYNC_ID,
                     QMstStationSector.mstStationSector,
@@ -223,7 +226,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.MST_DEBITOR,
                     Tables.MST_DEBITOR.SYNC_ID,
                     QMstDebitor.mstDebitor,
@@ -241,7 +244,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.MST_DEBITOR_STATION,
                     Tables.MST_DEBITOR_STATION.SYNC_ID,
                     QMstDebitorStation.mstDebitorStation,
@@ -261,7 +264,7 @@ open class DatabaseSyncConfiguration {
                     }
             ),
 
-            DatabaseSyncService.SimplePreset(
+            SyncPreset(
                     Tables.TAD_NODE_GEOPOSITION,
                     Tables.TAD_NODE_GEOPOSITION.SYNC_ID,
                     QTadNodeGeoposition.tadNodeGeoposition,
@@ -285,6 +288,11 @@ open class DatabaseSyncConfiguration {
                             d.syncId = s.syncId
                         }
                     }
+            ),
+
+            NotifyPreset(
+                    Tables.RKKOPF,
+                    Tables.RKKOPF.SYNC_ID
             )
     )
 
@@ -299,17 +307,18 @@ open class DatabaseSyncConfiguration {
         if (ActiveMQBroker.instance.isStarted)
             brokerEventListener.onStart()
 
-        databaseSyncService.interval = Duration.ofMinutes(1)
+        // TODO: requires capability to control sync per table to prevent constant lookups on frequently changing tables
+        dbSyncService.interval = Duration.ofSeconds(5)
     }
 
     /** Broker event listener  */
     private val brokerEventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
-            databaseSyncService.start()
+            dbSyncService.start()
         }
 
         override fun onStop() {
-            databaseSyncService.stop()
+            dbSyncService.stop()
         }
     }
 }

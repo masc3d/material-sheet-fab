@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+
 import { LoginComponent } from './login.component';
 import { SharedModule } from '../shared/shared.module';
-import { ButtonModule, InputTextModule } from 'primeng/primeng';
 
 @NgModule({
   imports: [

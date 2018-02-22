@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
+
+import { TabMenuModule } from 'primeng/tabmenu';
+
 import { SharedModule } from '../../shared/shared.module';
+
 import { OrderRoutingModule } from './order-routing.module';
-
 import { OrderComponent } from './order.component';
-import { TabMenuModule } from 'primeng/primeng';
-
 
 @NgModule( {
   imports: [

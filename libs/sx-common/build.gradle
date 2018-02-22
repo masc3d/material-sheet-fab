@@ -9,11 +9,13 @@ buildscript {
         v_jersey = '2.26'
         v_jgit = '4.10.0.201712302008-r'
         v_jna = '4.5.1'
+        v_jooq = '3.10.5'
         v_jsch = '0.1.54'
         v_jsch_proxy = '0.0.9'
         v_querydsl = '4.1.4'
         v_kotlin = '1.2.21'
         v_koptional = '1.3.0'
+        v_logback = '1.2.3'
         v_requery = '1.5.0'
         v_resteasy = '4.0.0.Beta1'
         v_socketio = '1.0.0'
@@ -117,6 +119,9 @@ dependencies {
             "com.querydsl:querydsl-core:$v_querydsl",
             "com.querydsl:querydsl-jpa:$v_querydsl",
 
+            // Jooq
+            "org.jooq:jooq:$v_jooq",
+
             // JPA
             "javax.persistence:javax.persistence-api:$v_javax_persistence",
 
@@ -128,12 +133,20 @@ dependencies {
             "junit:junit:4.12",
 
             // Digest utils (security)
-            "commons-codec:commons-codec:1.11"
+            "commons-codec:commons-codec:1.11",
+
+            // Logback
+            "ch.qos.logback:logback-classic:$v_logback"
     )
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.2.3"
+            "ch.qos.logback:logback-classic:$v_logback",
+
+            // Jackson
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson"
     )
 }
 

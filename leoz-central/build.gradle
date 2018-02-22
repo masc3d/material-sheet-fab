@@ -16,7 +16,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
 
         // JOOQ plugin
-        classpath "nu.studer:gradle-jooq-plugin:2.0.9"
+        classpath "nu.studer:gradle-jooq-plugin:2.0.11"
         classpath "org.jooq:jooq:$v_jooq"
         classpath "org.jooq:jooq-meta:$v_jooq"
         classpath "org.jooq:jooq-codegen:$v_jooq"
@@ -42,7 +42,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-version = '0.162-SNAPSHOT'
+version = '0.180-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
@@ -50,7 +50,7 @@ def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
 def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'//&noAccessToProcedureBodies=true'
 
 // Flyway constants
-def FLYWAY_TARGET = 75
+def FLYWAY_TARGET = 76
 def FLYWAY_MIGRATION_DIR = new File(project(':leoz-central-schema').projectDir, 'db/migration')
 def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration')
 
@@ -259,6 +259,8 @@ jooq {
                         'f_.*',
                         'hubfahrzeugbeladung',
                         'mst_.*',
+                        'rkkopf',
+                        'rkdetails',
                         'scaerror',
                         'sdd_.*',
                         'sectiondepotlist',
@@ -275,7 +277,8 @@ jooq {
                         'usystblzaehler',
                         'tad_.*',
                         'tblfeldhistorie',
-                        'tblmailqueue'
+                        'tblmailqueue',
+                        'tblroutendepot'
 
                 ].join('|')
             }

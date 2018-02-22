@@ -11,6 +11,24 @@ import javax.ws.rs.core.MediaType
 import kotlin.NoSuchElementException
 
 /**
+ * Location service V1
+ */
+interface LocationServiceV1 {
+    /**
+     * GPS message sent by nodes/devices
+     */
+    @Serializable(0xd307ea744273ae)
+    @Deprecated(message = "This object is deprecated and replaced in LocationServiceV2.",
+            replaceWith = ReplaceWith(expression = "LocationServiceV2.GpsMessage"),
+            level = DeprecationLevel.WARNING)
+    data class GpsMessage(
+            var userId: Int? = null,
+            var nodeId: String? = null,
+            var dataPoints: Array<LocationServiceV2.GpsDataPoint>? = null
+    )
+}
+
+/**
  * Location service V2
  * Created by helke on 24.05.17.
  */
@@ -88,8 +106,7 @@ interface LocationServiceV2 {
             @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
             @QueryParam(FROM) @ApiParam(value = "from", example = "05/31/2017 00:30:00 +0100") from: Date? = null,
-            @QueryParam(TO) @ApiParam(value = "to") to: Date? = null,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @QueryParam(TO) @ApiParam(value = "to") to: Date? = null
     ): List<GpsData>
 
     /**
@@ -102,8 +119,7 @@ interface LocationServiceV2 {
     fun getRecent(
             @QueryParam(USER_ID) @ApiParam(value = "User id") userId: Int? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @QueryParam(DURATION) @ApiParam(value = "Duration in Minutes") duration: Int? = null,
-            @HeaderParam(Rest.API_KEY) @ApiParam(hidden = true) apiKey: String?
+            @QueryParam(DURATION) @ApiParam(value = "Duration in Minutes") duration: Int? = null
     ): List<GpsData>
 
     @GET

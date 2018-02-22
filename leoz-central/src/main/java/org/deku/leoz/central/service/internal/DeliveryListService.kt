@@ -1,24 +1,31 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.data.jooq.dekuclient.Tables.RKKOPF
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.deku.leoz.central.data.repository.JooqDeliveryListRepository
 import org.deku.leoz.central.data.repository.JooqStationRepository
-import org.deku.leoz.central.data.repository.JooqUserRepository
-import org.deku.leoz.config.Rest
-import org.deku.leoz.model.UserRole
+import org.deku.leoz.node.rest.authorizedUser
+import org.deku.leoz.node.rest.restrictByDebitor
+import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
+import org.deku.leoz.model.TaskType
 import sx.rs.RestProblem
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.internal.DeliveryListService
+import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import org.zalando.problem.Status
+import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.time.plusDays
+import sx.time.toTimestamp
 import java.util.*
+import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
-import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
 /**
@@ -34,7 +41,7 @@ class DeliveryListService
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Context
-    private lateinit var httpHeaders: HttpHeaders
+    private lateinit var httpRequest: HttpServletRequest
 
     @Inject
     private lateinit var deliveryListRepository: JooqDeliveryListRepository
@@ -43,30 +50,81 @@ class DeliveryListService
     private lateinit var stationRepository: JooqStationRepository
 
     @Inject
-    private lateinit var orderService: org.deku.leoz.central.service.internal.OrderService
+    private lateinit var orderService: OrderService
 
     @Inject
-    private lateinit var userRepository: JooqUserRepository
+    private lateinit var databaseSyncService: DatabaseSyncService
+
+    @Inject
+    private lateinit var tourService: org.deku.leoz.central.service.internal.TourServiceV1
+
+    @PostConstruct
+    fun onInitialize() {
+        this.databaseSyncService.notifications
+                .filter { it.tableName == RKKOPF.name }
+                .subscribe {
+                    this.onUpdate(
+                            this.deliveryListRepository
+                                    .findNewerThan(
+                                            syncId = it.localSyncId,
+                                            // Only handle updates for recent delivery lists
+                                            date = Date().plusDays(-100).toTimestamp()
+                                    )
+                    )
+                }
+    }
 
     /**
-     * Asserts that the user (=apiKey) is entitled to access data for this debitor
-     * @throws RestProblem if no authorized
+     * Delivery list update handler
      */
-    fun assertOwner(debitorId: Int) {
-        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
+    private fun onUpdate(deliverylistIds: List<Long>) {
+        //region Convert delivery lists to tours
+        val dlRecords = deliveryListRepository
+                .findByIds(deliverylistIds)
 
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
+        if (dlRecords.count() == 0)
+            return
 
-        /**
-         * If the authorized user is an ADMIN, it is not necessary to check for same debitor id`s
-         * ADMIN-User are allowed to access every delivery-list.
-         */
-        if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
-            if (debitorId.toInt() != authorizedUserRecord.debitorId)
-                throw RestProblem(status = Response.Status.FORBIDDEN)
-        }
+        val dlDetailRecordsByDlId = deliveryListRepository
+                .findDetailsByIds(deliverylistIds)
+                .groupBy { it.id }
+
+        // Tour service has no notion of delivery lists, providing dl ids as custom ids
+        val customIds = dlRecords.map { it.id.toLong().toString() }
+        log.info { "Converting delivery list(s) to tour(s) [${customIds.joinToString(", ")}]" }
+
+        this.tourService.delete(
+                customIds = customIds
+        )
+
+        this.tourService.put(tours = dlRecords.map { dlRecord ->
+            TourServiceV1.Tour(
+                    stationNo = dlRecord.deliveryStation.toLong(),
+                    customId = dlRecord.id.toLong().toString(),
+                    date = ShortDate(dlRecord.deliveryListDate),
+                    stops = dlDetailRecordsByDlId.getValue(dlRecord.id)
+                            .sortedBy { it.orderPosition }
+                            .groupBy { it.orderPosition }
+                            .map { dlStop ->
+                                TourServiceV1.Stop(
+                                        tasks = dlStop.value
+                                                .distinctBy { it.orderId.toString() + it.stoptype }
+                                                .map { dlDetailRecord ->
+                                                    TourServiceV1.Task(
+                                                            orderId = dlDetailRecord.orderId.toLong(),
+                                                            taskType = when (TaskType.valueOf(dlDetailRecord.stoptype)) {
+                                                                TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
+                                                                TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                            }
+                                                    )
+                                                }
+
+                                )
+
+                            }
+            )
+        })
+        //endregion
     }
 
     override fun getById(id: Long): org.deku.leoz.service.internal.DeliveryListService.DeliveryList {
@@ -77,7 +135,7 @@ class DeliveryListService
                 title = "DeliveryList not found",
                 status = Response.Status.NOT_FOUND)
 
-        this.assertOwner(dlRecord.debitorId.toInt())
+        this.httpRequest.restrictByDebitor { dlRecord.debitorId.toInt() }
 
         return dlRecord.toDeliveryList()
     }
@@ -85,32 +143,41 @@ class DeliveryListService
     override fun getByStationId(stationId: Int?): List<DeliveryListService.DeliveryList> {
         stationId ?: throw RestProblem(status = Status.BAD_REQUEST)
 
-        val station = stationRepository.findById(stationId) ?: throw RestProblem(status = Status.NOT_FOUND)
+        return this.get(
+                stationId = stationId,
+                stationNo = null)
+    }
 
-        this.assertOwner(station.debitorId)
+    override fun get(stationId: Int?, stationNo: Int?): List<DeliveryListService.DeliveryList> {
+        val station = when {
+            stationId != null -> stationRepository.findById(stationId)
+            stationNo != null -> stationRepository.findByStationNo(stationNo)
+            else -> null
+        }
+                ?: throw NoSuchElementException()
+
+        this.httpRequest.restrictByDebitor { station.debitorId }
 
         return this.deliveryListRepository
-                .findByStationId(stationId)
+                .findByStationNo(station.depotnr)
                 .toDeliveryLists()
     }
 
     override fun getInfo(deliveryDate: ShortDate?): List<DeliveryListService.DeliveryListInfo> {
-        val apiKey = this.httpHeaders.getHeaderString(Rest.API_KEY)
-                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
-
-        val authorizedUserRecord = userRepository.findByKey(apiKey)
-                ?: throw RestProblem(status = Response.Status.UNAUTHORIZED)
+        val authorizedUser = httpRequest.authorizedUser
+        val debitorId = authorizedUser.debitorId
+                ?: throw IllegalArgumentException("User [${authorizedUser.id}] is missing debitor")
 
         val dlInfos = when {
             deliveryDate != null -> {
                 deliveryListRepository.findInfoByDateDebitorList(
                         deliveryDate = deliveryDate.date,
-                        debitorId = authorizedUserRecord.debitorId
+                        debitorId = debitorId
                 )
             }
             else -> {
                 deliveryListRepository.findInfoByDebitor(
-                        debitorId = authorizedUserRecord.debitorId
+                        debitorId = debitorId
                 )
             }
         }

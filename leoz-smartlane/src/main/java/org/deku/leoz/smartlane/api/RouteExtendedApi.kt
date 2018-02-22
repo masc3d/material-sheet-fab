@@ -2,22 +2,15 @@ package org.deku.leoz.smartlane.api
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.reactivex.Observable
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
 import org.deku.leoz.smartlane.SmartlaneApi
-import org.deku.leoz.smartlane.model.Error
-import org.deku.leoz.smartlane.model.Processstatus
 import org.deku.leoz.smartlane.model.Route
-import org.deku.leoz.smartlane.model.Routemetadatas
 import org.deku.leoz.smartlane.model.Routinginput
 import org.slf4j.LoggerFactory
 import sx.log.slf4j.trace
+import sx.rs.FlaskBooleanExpression
 import sx.rs.FlaskFilter
 import sx.rs.FlaskOperator
-import sx.rs.FlaskQuery
+import sx.rs.FlaskPredicate
 import sx.rx.retryWith
 import sx.text.toHexString
 import java.util.concurrent.TimeUnit
@@ -141,16 +134,62 @@ fun RouteApi.getRoute(q: String): Observable<Route> {
     }
 }
 
-fun RouteApi.getRouteByCustomId(customId: String): Observable<Route> {
+/**
+ * Get route(s) by custom id(s) (precise match)
+ * @param customId Custom id
+ */
+fun RouteApi.getRouteByCustomId(vararg customId: String): Observable<Route> {
     return this.getRoute(
-            q = FlaskFilter(FlaskQuery(
+            q = FlaskFilter(FlaskPredicate(
                     name = "custom_id",
-                    op = FlaskOperator.EQ,
-                    value = customId
+                    op = FlaskOperator.IN,
+                    value = customId.toList()
             )).toJson()
     )
 }
 
+/**
+ * Get route by custom id substring
+ * @param customId Custom id (substring)
+ */
+fun RouteApi.getRouteByCustomIdSubstring(vararg customId: String): Observable<Route> {
+    return this.getRoute(
+            q = FlaskFilter(FlaskBooleanExpression(
+                    or = customId.map {
+                        FlaskPredicate(
+                                name = "custom_id",
+                                op = FlaskOperator.LIKE,
+                                value = "%${it}%"
+                        )
+                    }
+            )).toJson()
+    )
+}
+
+/**
+ * Delete routes by id
+ */
+fun RouteExtendedApi.delete(ids: List<Int>) {
+    try {
+        this.deleteRoute(q = FlaskFilter(
+                expression = FlaskPredicate(
+                        name = "id",
+                        op = FlaskOperator.IN,
+                        value = ids
+                )).toJson()
+        )
+    } catch (e: WebApplicationException) {
+        when (e.response.status) {
+        // Expected response when query doesn't match anything to delete
+            Response.Status.INTERNAL_SERVER_ERROR.statusCode -> return
+            else -> throw e
+        }
+    }
+}
+
+/**
+ * Delete all routes
+ */
 fun RouteExtendedApi.deleteAll() {
     try {
         this.deleteRoute(q = "{}")

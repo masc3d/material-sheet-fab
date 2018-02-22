@@ -238,7 +238,7 @@ class VehicleLoadingScreen :
         this.uxRecyclerView.layoutManager = LinearLayoutManager(context)
 
         this.menu = this.inflateMenu(R.menu.menu_vehicleloading).also {
-            if (this.debugSettings.enabled) {
+            if (this.debugSettings.syntheticAidcEnabled) {
                 it.add(0, R.id.action_vehicle_loading_dev_mark_all_loaded, 0, "Mark all as loaded").also {
                     it.setIcon(R.drawable.ic_dev)
                 }

@@ -136,8 +136,10 @@ dependencies {
     testCompile(
             "junit:junit:$v_junit",
             "ch.qos.logback:logback-classic:1.2.3",
+
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
+
             // jackson JSON serializer
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",

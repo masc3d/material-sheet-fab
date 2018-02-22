@@ -2,7 +2,7 @@
 logging:
    level:
       ROOT: INFO
-      sx.mq: INFO
+      sx.mq: DEBUG
 
 # User settings
 user:
@@ -59,6 +59,13 @@ location:
    # GoogleLocation API specific settings
    useGoogleLocationService: true
    smallestDisplacement: 250
+
+# Tour related settings
+tour:
+   # Tour optimization settings
+   optimization:
+      # Toggle optimization availability
+      enabled: true
 
 # Developer/debug settings
 debug:

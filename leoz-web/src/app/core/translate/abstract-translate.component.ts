@@ -2,10 +2,11 @@ import { ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
+import { Message } from 'primeng/components/common/api';
+
 import { TranslateService } from './translate.service';
 import { MsgService } from '../../shared/msg/msg.service';
 import { Observable } from 'rxjs/Observable';
-import { Message } from 'primeng/primeng';
 
 export class AbstractTranslateComponent implements OnInit, OnDestroy {
 

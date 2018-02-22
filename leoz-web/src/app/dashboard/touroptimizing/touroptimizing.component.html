@@ -4,12 +4,12 @@
   <div class="ui-g" style="min-height: 465px;">
     <div class="ui-g-12 ui-lg-6 shadow" style="padding:0; width: 49%; margin-left: 10px;">
       <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-8">{{'tourlists-basedon-deliverylists' | translate}}</div>
-        <div class="ui-g-12 ui-lg-2">
-          <button pButton label="{{'checkLatestModDate' | translate}}" type="button" icon="fas fa-undo-alt" iconPos="left"
+        <div class="ui-g-12 ui-lg-6">{{'tourlists-basedon-deliverylists' | translate}}</div>
+        <div class="ui-g-12 ui-lg-3">
+          <button pButton label="refresh" type="button" icon="fas fa-redo-alt" iconPos="left"
                   (click)="getTours()"></button>
         </div>
-        <div class="ui-g-12 ui-lg-2">
+        <div class="ui-g-12 ui-lg-3">
           <button pButton label="{{'reset' | translate}}" type="button" icon="fas fa-undo-alt" iconPos="left"
                   (click)="resetTours()"></button>
         </div>
@@ -22,7 +22,10 @@
         <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> ({{toursTotalWeight}})</div>
       </div>
       <hr/>
-      <div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">
+      <div style="height:520px; padding:0 3px 3px 3px;overflow-y: scroll;">
+        <div *ngIf="toursLoading$ | async" style="text-align: center">
+          <i style="font-size: 5rem; opacity: .1;" class="fas fa-spinner fa-spin"></i>
+        </div>
         <div *ngFor="let tour of tours">
           <app-tourlistitem [listItem]="tour" [faIcon]="'fa-truck'" [parent]="this"></app-tourlistitem>
         </div>
@@ -36,9 +39,13 @@
         <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"
                 (click)="optimizeTours()"></button>
       </div>
-      <div class="ui-g-12 ui-lg-4">
-        <button pButton label="{{'print' | translate}}" type="button" icon="fas fa-print" iconPos="left"
-                (click)="printStopLists()"></button>
+      <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+        <div *ngIf="notMicrodoof" class="ui-g-12">
+          <button pButton type="button" (click)="preview()" label="{{'preview' | translate}}"></button>
+        </div>
+        <div class="ui-g-12">
+          <button pButton type="button" (click)="saving()" label="{{'save' | translate}}"></button>
+        </div>
       </div>
       <!--not used for the moment-->
       <!--<div class="ui-inputgroup ui-g-12 ui-lg-4">
@@ -59,22 +66,6 @@
         <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> (0)</div>
       </div>
       <hr/>
-      <!--<div style="height:620px; padding:0 3px 3px 3px;overflow-y: scroll;">-->
-        <!--<div *ngFor="let driver of drivers">-->
-          <!--<app-tourlistitem [listItem]="tour" [faIcon]="'fa-user'"></app-tourlistitem>-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--<div class="ui-g-12 ui-lg-4">-->
-        <!--<p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"-->
-                        <!--onIcon="far fa-check-square" offIcon="far fa-square"></p-toggleButton>-->
-      <!--</div>-->
-
-      <!--<div class="ui-g-12 ui-lg-4">-->
-        <!--<button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"></button>-->
-      <!--</div>-->
-      <!--<div class="ui-g-12 ui-lg-4">-->
-        <!--<button pButton label="{{'print' | translate}}" type="button" icon="fas fa-print" iconPos="left"></button>-->
-      <!--</div>-->
     </div>
   </div>
 </div>

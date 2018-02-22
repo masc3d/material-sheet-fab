@@ -9,6 +9,9 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Tour } from '../../core/models/tour.model';
 import { MsgService } from '../../shared/msg/msg.service';
 import { roundDecimals } from '../../core/math/roundDecimals';
+import { Station } from '../../core/auth/station.model';
+import { SseService } from '../../core/sse.service';
+import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class TouroptimizingService {
@@ -18,6 +21,11 @@ export class TouroptimizingService {
   protected generateToursUrl = `${environment.apiUrl}/internal/v1/tour/deliverylist`; // POST body: [...deliverylistIds]
   protected deleteToursUrl = `${environment.apiUrl}/internal/v1/tour`; // DELETE ?id=1&id=2
   protected optimizeToursUrl = `${environment.apiUrl}/internal/v1/tour/optimize`; // PATCH ?id=1&id=2
+  protected optimizeToursSSEUrl = `${environment.apiUrl}/internal/v1/tour/optimize/status/sse`; // EventSource ?station-no=100
+  protected sseWEUrl = `${environment.apiUrl}/internal/v1/tour/subscribe/sse`; // EventSource ?station-no=100
+
+  private toursLoadingSubject = new BehaviorSubject<boolean>( true );
+  public toursLoading$ = this.toursLoadingSubject.asObservable().distinctUntilChanged();
 
   private toursSubject = new BehaviorSubject<Tour[]>( [] );
   public tours$ = this.toursSubject.asObservable().distinctUntilChanged();
@@ -27,19 +35,44 @@ export class TouroptimizingService {
 
   private latestDeliverylists: Deliverylist[];
 
-  // private stationNo: string;
-  // private allDeliverylistsUrl: string;
-
   constructor( protected http: HttpClient,
                protected msgService: MsgService,
                protected wds: WorkingdateService,
-               protected ics: InetConnectionService ) {
+               protected ics: InetConnectionService,
+               private sse: SseService ) {
     this.latestDeliverylists = [];
+  }
+
+  initSSEtouroptimization( ngUnsubscribe: Subject<void> ) {
+    const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
+    const sseUrl = `${this.optimizeToursSSEUrl}?station-no=${activeStation.stationNo.toString()}`;
+    this.sse.observeMessages<{ id?: number, inProgress?: boolean }>( sseUrl )
+      .takeUntil( ngUnsubscribe )
+      .subscribe( ( data ) => {
+        console.log( data );
+        if (data && !data.inProgress) {
+          this.msgService.clear();
+          this.getTours();
+        }
+      } );
+  }
+
+  initSSEtourWhatever( ngUnsubscribe: Subject<void> ) {
+    const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
+    const sseUrl = `${this.sseWEUrl}?station-no=${activeStation.stationNo.toString()}`;
+    this.sse.observeMessages<{ stationNo?: number, items?: Tour[], deleted?: number[] }>( sseUrl )
+      .takeUntil( ngUnsubscribe )
+      .subscribe( ( data ) => {
+        console.log( data );
+        if (data && data.deleted) {
+          this.msgService.clear();
+          this.getTours();
+        }
+      } );
   }
 
   getTours(): void {
     const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
-    // this.toursSubject.next( [] );
     /**
      * ALEX: vorerst nur station-no übergeben, bis Service angepasst ist
      */
@@ -52,7 +85,7 @@ export class TouroptimizingService {
             // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
             this.getDeliverylists( [ this.generateTours, this.latestModDate ] );
           } else {
-            this.getDeliverylists( [ this.latestModDate, (_) => this.toursSubject.next( this.processTourData( tours ) ) ] );
+            this.getDeliverylists( [ this.latestModDate, ( _ ) => this.toursSubject.next( this.processTourData( tours ) ) ] );
           }
         },
         ( error: HttpErrorResponse ) => {
@@ -66,7 +99,7 @@ export class TouroptimizingService {
         } );
   }
 
-  deleteAndReinitTours( tourIds: number[] ) {
+  deleteTours( tourIds: number[] ) {
     let httpParams = new HttpParams();
     tourIds.forEach( id => {
       httpParams = httpParams.append( 'id', id.toString() );
@@ -75,8 +108,11 @@ export class TouroptimizingService {
     this.http.delete( this.deleteToursUrl, {
       params: httpParams
     } )
-      .subscribe( _ => this.getTours(),
-        error => console.log( error ) );
+      .subscribe( _ => {
+        },
+        error => {
+          console.log( error );
+        } );
 
   }
 
@@ -85,23 +121,24 @@ export class TouroptimizingService {
     tourIds.forEach( id => {
       httpParams = httpParams.append( 'id', id.toString() );
     } );
-    httpParams = httpParams.append( 'wait-for-completion', 'true' );
+    // httpParams = httpParams.append( 'wait-for-completion', 'true' );
+    httpParams = httpParams.append( 'wait-for-completion', 'false' );
 
     const defaultBody = {
-      'start': {},
+      // 'start': {},
       'appointments': {
         'omit': false
       },
       'vehicles': [ {} ]
     };
 
-    this.msgService.info( 'optimization_progress', true );
     this.http.patch( this.optimizeToursUrl, defaultBody, {
       params: httpParams
     } )
       .subscribe( _ => {
-        this.getTours(); // this.deleteAndReinitTours( tourIds )
-          this.msgService.clear();
+          // this.getTours(); // this.deleteAndReinitTours( tourIds )
+          // this.msgService.clear();
+          this.msgService.info( 'optimization_progress', true );
         },
         error => {
           this.msgService.error( error.error.detail );
@@ -121,6 +158,9 @@ export class TouroptimizingService {
      * liefert auch leere Rollkarten d.h. Deliverylist.orders.stops.tasks.removed = true
      * und kann nicht auf Stationsebene gefiltert werden
      */
+    if (this.toursSubject.getValue().length === 0) {
+      this.toursLoadingSubject.next( true );
+    }
     this.http.get<Deliverylist[]>( this.allDeliverylistsUrl, {
       params: new HttpParams()
         .set( 'delivery-date', this.wds.deliveryDateForWS() )
@@ -128,6 +168,7 @@ export class TouroptimizingService {
         this.latestDeliverylists = deliverylists;
         // result => Touren generieren => this.toursSubject.next( result );
         successCallbacks.forEach( successCallback => successCallback( deliverylists ) );
+        this.toursLoadingSubject.next( false );
       },
       ( _ ) => {
         this.ics.isOffline();
@@ -144,6 +185,7 @@ export class TouroptimizingService {
   };
 
   private generateTours = ( deliverylists: Deliverylist[] ) => {
+    // ALEX nur ausführen wenn deliverylists.length > 0
     this.http.post<Tour[]>( this.generateToursUrl, deliverylists.map( dl => dl.id ) )
       .subscribe( ( tours ) => {
           this.toursSubject.next( this.processTourData( tours ) );

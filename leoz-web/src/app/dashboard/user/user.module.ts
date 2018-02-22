@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 
-import {
-  DataTableModule, InputTextModule, DropdownModule, ButtonModule, CalendarModule, FieldsetModule,
-  CheckboxModule
-} from 'primeng/primeng';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DropdownModule } from 'primeng/dropdown';
+import { FieldsetModule } from 'primeng/fieldset';
+import { InputTextModule } from 'primeng/inputtext';
 
 import { SharedModule } from '../../shared/shared.module';
 import { UserRoutingModule } from './user-routing.module';
@@ -17,7 +20,7 @@ import { UserFilterPipe } from './user.pipe';
 @NgModule( {
   imports: [
     SharedModule,
-    DataTableModule,
+    TableModule,
     InputTextModule,
     DropdownModule,
     ButtonModule,

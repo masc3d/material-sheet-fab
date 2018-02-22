@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Message } from 'primeng/primeng';
+import { Message } from 'primeng/components/common/api';
 
 
 @Component( {

@@ -21,6 +21,12 @@ export const routes = [
         loadChildren: 'app/dashboard/user/user.module#UserModule'
       },
       {
+        path: 'favourites',
+        canActivate: [ AuthenticationGuard,
+          RoleGuard ],
+        loadChildren: 'app/dashboard/favourites/favourites.module#FavouritesModule'
+      },
+      {
         path: 'tour',
         canActivate: [ AuthenticationGuard,
           RoleGuard ],

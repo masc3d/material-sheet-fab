@@ -17,15 +17,15 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/export")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Export service")
-@ApiKey(false)
+@Api(value = "Export service", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+@ApiKey
 interface ExportService {
 
     companion object {
         const val BAG_BACK_NO = "bagback-no"
         const val STATION_NO = "station-no"
         const val LOADINGLIST_NO = "loadinglist-no"
-        const val SCANCODE = "parcel-no-or-reference"
+        const val SCANCODE = "scancode"
         const val BAG_ID = "bag-id"
         const val REDSEAL = "redseal"
         const val TEXT = "text"
