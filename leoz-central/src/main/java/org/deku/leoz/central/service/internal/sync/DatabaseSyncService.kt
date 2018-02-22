@@ -198,14 +198,17 @@ constructor(
     private val process
         get() =
             Observable
+                    // Emit trigger
                     .interval(this@DatabaseSyncService.interval.toMillis(), TimeUnit.MILLISECONDS)
                     .flatMap {
                         Observable.fromIterable(
+                                // Retrieve source (central) sync ids and map to process steps
                                 this.syncJooqRepository
                                         .findAll()
                                         .mapNotNull { record ->
                                             val preset = this.presets.firstOrNull { it.tableName == record.tableName }
 
+                                            // Ignore source sync entries which have no referring preset
                                             if (preset != null)
                                                 ProcessStep().also {
                                                     it.srcSyncRecord = record
@@ -216,17 +219,19 @@ constructor(
                                         }
                         )
                     }
+                    // Group process steps by table name in order to throttle by table
                     .groupBy { it.srcSyncRecord.tableName }
-                    .flatMap { tableProcess ->
-                        val tableName = tableProcess.key
+                    .flatMap { tableSteps ->
+                        val tableName = tableSteps.key
                         val preset = this.presets.first { it.tableName == tableName }
 
                         // Throttle accordingly
-                        tableProcess.throttleLast(preset.interval.toMillis(), TimeUnit.MILLISECONDS)
+                        tableSteps.throttleLast(preset.interval.toMillis(), TimeUnit.MILLISECONDS)
                     }
                     .doOnNext { step ->
                         val sw = Stopwatch.createStarted()
 
+                        // Actual sync preset processing
                         try {
                             val updated = step.preset.update(
                                     sysSyncRecord = step.srcSyncRecord,
