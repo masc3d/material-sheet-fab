@@ -11,6 +11,7 @@ import sx.rs.auth.ApiKey
 import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 /**
  * Parcel service
@@ -27,7 +28,11 @@ interface ParcelServiceV1 {
         const val STATION_NO = "station-no"
         const val LOADINGLIST_NO = "loadinglist-no"
         const val SCANCODE = "parcel-no"
+        const val PARCEL_ID = "parcel-id"
+        const val PARCEL_REF = "parcel-ref"
+        const val PARCEL_WEB_REF = "parcel-web-ref"
         const val BAG_ID = "bag-id"
+        const val CONSIGNEE_ZIPCODE = "consignee-zipcode"
     }
 
     /**
@@ -98,13 +103,43 @@ interface ParcelServiceV1 {
             var note: String = ""
     )
 
+    // Proposal
+    data class ParcelWebStatus(
+            var status: List<ParcelStatus> = listOf(),
+            var consignee: String? = null,
+            var signatory: String? = null
+    )
+
+    // Proposal
     @GET
-    @Path("/{$SCANCODE}/status")
-    @ApiOperation(value = "Get status", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun getStatus(
-            @PathParam(SCANCODE) @ApiParam(value = "Scancode") scanCode: String
+    @Path("/")
+    @ApiOperation(value = "Find parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun findParcel(
+            @QueryParam(value = SCANCODE) @ApiParam("Scancode") scanCode: String,
+            @QueryParam(value = PARCEL_REF) @ApiParam("Reference") reference: String
+    ): List<OrderService.Order.Parcel>
+
+    // Proposal
+    @GET
+    @Path("/webstatus")
+    @ApiOperation(value = "Get web status (public)")
+    fun getWebStatus(
+            @PathParam(PARCEL_WEB_REF) @ApiParam(value = "Search reference (eg. parcel-no, customer-reference)", required = true) searchRef: String,
+            @PathParam(CONSIGNEE_ZIPCODE) @ApiParam(value = "Zip code of consignee. If given, more information are provided.", required = false) zipCode: String?
     ): List<ParcelStatus>
 
+    @GET
+    @Path("/{$PARCEL_ID}/status")
+    @ApiOperation(value = "Get status", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getStatus(
+            @PathParam(PARCEL_ID) @ApiParam(value = "Unique Parcel Identifier") scanCode: String
+    ): List<ParcelStatus>
 
+    @GET
+    @Path("/{$PARCEL_ID}/label")
+    @ApiOperation(value = "Get label", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getLabel(
+            @PathParam(PARCEL_ID) @ApiParam(value = "Unique Parcel Identifier") parcelId: Long
+    ): Response
 }
 

@@ -1,5 +1,8 @@
 package org.deku.leoz.node.service.pub
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
 import com.neovisionaries.i18n.CountryCode
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -16,6 +19,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont
 import org.apache.pdfbox.pdmodel.font.PDType1Font
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.deku.leoz.model.DekuUnitNumber
+import org.deku.leoz.node.Storage
 import org.krysalis.barcode4j.ChecksumMode
 import org.krysalis.barcode4j.impl.int2of5.Interleaved2Of5Bean
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider
@@ -33,7 +37,7 @@ import java.util.*
 class DocumentService: DocumentService {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    //private val storage: Storage = Kodein.global.instance()
+    private val storage: Storage = Kodein.global.instance()
 
     private val PPI: Float = 72f
     private val PPM: Float = 1 / (10 * 2.54f) * PPI
@@ -52,13 +56,15 @@ class DocumentService: DocumentService {
             }
 
             labelRequest != null -> {
-                val documentFile: File = generateLabelPdf(labelRequest, File("/"))
+                val documentFile: File = generateLabelPdf(labelRequest, storage.workTmpDataDirectory)
 
                 Response
                         .ok(documentFile, MediaType.APPLICATION_OCTET_STREAM)
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"label.pdf\"")
                         .header(HttpHeaders.CONTENT_LENGTH, documentFile.length().toString())
                         .build()
+
+                //TODO Delete temporary File
             }
 
             else -> {

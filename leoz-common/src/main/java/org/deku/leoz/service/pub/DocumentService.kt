@@ -75,7 +75,7 @@ interface DocumentService {
     @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
     fun printParcelLabel(
             @ApiParam(value = "Label request", required = false) labelRequest: LabelRequest? = null,
-            @QueryParam(PARCELID) @ApiParam(value = "Parcel ID", required = false) parcelId: Long? = null,
-            @QueryParam(PARCELNO) @ApiParam(value = "Parcel Number", required = false) parcelNo: String? = null
+            @QueryParam(PARCELID) @ApiParam(value = "Parcel ID", required = false) parcelId: Long? = null,      //TODO To be removed as this can be called via ParcelService??
+            @QueryParam(PARCELNO) @ApiParam(value = "Parcel Number", required = false) parcelNo: String? = null //TODO To be removed as this can be done via ParcelService??
     ): Response
 }

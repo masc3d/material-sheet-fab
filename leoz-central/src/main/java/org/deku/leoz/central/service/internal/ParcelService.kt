@@ -16,6 +16,8 @@ import org.deku.leoz.model.Location
 import org.deku.leoz.model.ParcelDeliveryAdditionalinfo
 import org.deku.leoz.model.Reason
 import org.deku.leoz.node.Storage
+import org.deku.leoz.node.service.pub.DocumentService
+import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
@@ -42,6 +44,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 
 /**
@@ -79,6 +82,9 @@ open class ParcelServiceV1 :
 
     @Inject
     private lateinit var nodeRepository: JooqNodeRepository
+
+    @Inject
+    private lateinit var documentService: DocumentService
 
     /**
      * Parcel service message handler
@@ -424,6 +430,19 @@ open class ParcelServiceV1 :
     }
 
     override fun getStatus(scanCode: String): List<ParcelServiceV1.ParcelStatus> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getLabel(parcelId: Long): Response {
+        //TODO Provide LabelRequest instead of parcelId. ParcelService should get all relevant data from this ID and convert it to a LabelRequest
+        return documentService.printParcelLabel(parcelId = parcelId)
+    }
+
+    override fun findParcel(scanCode: String, reference: String): List<OrderService.Order.Parcel> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getWebStatus(searchRef: String, zipCode: String?): List<ParcelServiceV1.ParcelStatus> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
