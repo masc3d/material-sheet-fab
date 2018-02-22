@@ -17,7 +17,7 @@ buildscript {
         v_material_dialogs = '0.9.6.0'
         v_ormlite = '5.0'
         v_paho = '1.2.0'
-        v_roboelectric = '3.6.1'
+        v_roboelectric = '3.7'
         v_rxlifecycle = '2.2.1'
         v_truetime = '3.3'
     }
@@ -60,7 +60,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
