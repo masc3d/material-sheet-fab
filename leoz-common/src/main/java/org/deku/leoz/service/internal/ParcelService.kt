@@ -105,6 +105,7 @@ interface ParcelServiceV1 {
 
     // Proposal
     data class ParcelWebStatus(
+            var parcelNo: Long = 0,
             var status: List<ParcelStatus> = listOf(),
             var consignee: String? = null,
             var signatory: String? = null
@@ -126,7 +127,7 @@ interface ParcelServiceV1 {
     fun getWebStatus(
             @PathParam(PARCEL_WEB_REF) @ApiParam(value = "Search reference (eg. parcel-no, customer-reference)", required = true) searchRef: String,
             @PathParam(CONSIGNEE_ZIPCODE) @ApiParam(value = "Zip code of consignee. If given, more information are provided.", required = false) zipCode: String?
-    ): List<ParcelStatus>
+    ): List<ParcelWebStatus>
 
     @GET
     @Path("/{$PARCEL_ID}/status")

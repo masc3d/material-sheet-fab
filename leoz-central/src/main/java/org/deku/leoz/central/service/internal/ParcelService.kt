@@ -442,7 +442,7 @@ open class ParcelServiceV1 :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getWebStatus(searchRef: String, zipCode: String?): List<ParcelServiceV1.ParcelStatus> {
+    override fun getWebStatus(searchRef: String, zipCode: String?): List<ParcelServiceV1.ParcelWebStatus> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
