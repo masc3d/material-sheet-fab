@@ -30,7 +30,7 @@ class DatabaseSyncConfiguration {
     private lateinit var dbSyncService: DatabaseSyncService
 
     @get:Bean
-    val syncPresets = listOf<Preset>(
+    val syncPresets = listOf<Preset<*>>(
             SyncPreset(
                     Tables.MST_BUNDLE_VERSION,
                     Tables.MST_BUNDLE_VERSION.SYNC_ID,
