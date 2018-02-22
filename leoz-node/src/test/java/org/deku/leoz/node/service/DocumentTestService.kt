@@ -33,6 +33,8 @@ open class DocumentTestService {
                     it.parcelNumber = "21850041042"
                     it.parcelAmount = 3
                     it.parcelPosition = 2
+                    it.weight = 5.50
+                    it.services = listOf("Briefkastenzustellung", "Pharma", "Keine Alternativzustellung")
                     it.consignee = org.deku.leoz.service.pub.DocumentService.LabelRequest.LabelParticipant().also {
                         it.name1 = "Max"
                         it.name2 = "Mustermann"

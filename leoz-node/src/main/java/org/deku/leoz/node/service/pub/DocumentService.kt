@@ -102,9 +102,9 @@ class DocumentService: DocumentService {
         contentStream.drawImage(barcodeImage, 0.6f * PPI, 4.8f * PPI, 2.9f * PPI, 0.8f * PPI)
 
         contentStream.addText(
-                text = "Gewicht",
+                text = "Gewicht: ${request.weight} kg      Pkst. ${request.parcelPosition} / ${request.parcelAmount}",
                 xOffset = 1f * PPI,
-                yOffset = 4.8f * PPI,
+                yOffset = 4.6f * PPI,
                 size = 10f
         )
 
@@ -120,13 +120,13 @@ class DocumentService: DocumentService {
 
         contentStream.addText(
                 text = "NST 1    ${request.consignee.stationNo}",
-                xOffset = 1.5f * PPI,
-                yOffset = 4.125f * PPI,
+                xOffset = 1.2f * PPI,
+                yOffset = 4.0f * PPI,
                 font = PDType1Font.HELVETICA_BOLD,
-                size = 12f
+                size = 20f
         )
 
-        contentStream.putLine(0.4f * PPI, 4.05f * PPI, 3.6f * PPI, 4.05f * PPI)
+        contentStream.putLine(0.4f * PPI, 3.9f * PPI, 3.6f * PPI, 3.9f * PPI)
 
         contentStream.addText(
                 text = "Absender 1           Auftraggeber: ${request.clientStationNo}            Abholer: ${request.clientStationNo}",
@@ -196,6 +196,19 @@ class DocumentService: DocumentService {
                 text = "${request.consignee.country} - ${request.consignor.zipCode} ${request.consignor.city}",
                 xOffset = 0.4f * PPI,
                 yOffset = 1.8f * PPI
+        )
+
+        contentStream.addText(
+                font = PDType1Font.HELVETICA_BOLD,
+                text = "Servicekennzeichen",
+                xOffset = 0.4f * PPI,
+                yOffset = 1.6f * PPI
+        )
+
+        contentStream.addParagraph(
+                xOffset = 0.4f * PPI,
+                yOffset = 1.5f * PPI,
+                text = (request.services ?: listOf("")).toTypedArray()
         )
 
         // Make sure that the content stream is closed:

@@ -63,6 +63,10 @@ interface DocumentService {
         var parcelAmount: Int? = null
         @ApiModelProperty(position = 80, required = false, value = "Parcel position", example = "2") @DefaultValue("1")
         var parcelPosition: Int? = null
+        @ApiModelProperty(position = 90, required = true, value = "Parcel weight", example = "5.50") @DefaultValue("1.0")
+        var weight: Double? = null
+        @ApiModelProperty(position = 100, required = false, value = "Services", example = "Postbox allowed") @DefaultValue("1.0")
+        var services: List<String>? = null
     }
 
     @GET
