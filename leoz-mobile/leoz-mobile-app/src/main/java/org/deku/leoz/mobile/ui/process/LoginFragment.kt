@@ -44,12 +44,16 @@ class LoginFragment : Fragment<Any>() {
 
     private var privacyDisclaimerAccepted = false
 
+    private val privacyResultSubject: PublishSubject<Unit> = PublishSubject.create()
+
     interface Listener {
         /** Called when it's appropriate to show progress indication */
         fun onLoginPending() {}
 
         fun onLoginFailed() {}
         fun onLoginSuccessful() {}
+
+        fun onPrivacyRejected() {}
     }
 
     private val listener by lazy { this.activity as? Listener }
@@ -93,7 +97,7 @@ class LoginFragment : Fragment<Any>() {
 
         // Actions triggering login
 
-        val rxLoginTrigger =
+        val rxPrivacyTrigger =
                 Observable.merge(listOf(
                         RxTextView.editorActions(this.uxPassword)
                                 .map { Unit }
@@ -105,20 +109,43 @@ class LoginFragment : Fragment<Any>() {
                         this.syntheticLoginSubject
                 ))
 
-        rxLoginTrigger
+        val rxLoginTrigger =
+                Observable.merge(listOf(
+                        this.privacyResultSubject
+                ))
+
+        rxPrivacyTrigger
                 .observeOn(AndroidSchedulers.mainThread())
                 .switchMap {
                     Observable.fromCallable {
                         // Verify all fields
-                        if (listOf(
+                            if (listOf(
                                 validateMailAddress(),
-                                validatePassword(),
-                                queryPrivacyConfirmation()
-                        ).any { it == false }) {
+                                validatePassword()
+                            ).any { it == false }) {
                             throw IllegalArgumentException("Validation failed")
+                            }
                         }
                     }
+                .subscribe {
+                    queryPrivacyConfirmation()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    {
+                                        if (!privacyDisclaimerAccepted)
+                                            this.listener?.onPrivacyRejected()
+                                        else
+                                            privacyResultSubject.onNext(Unit)
+                                    },
+                                    {
+
+                                    }
+                            )
                 }
+
+        rxLoginTrigger
+                .observeOn(AndroidSchedulers.mainThread())
                 .switchMap {
                     login.authenticate(
                             email = uxMailaddress.text.toString(),
@@ -214,6 +241,8 @@ class LoginFragment : Fragment<Any>() {
         return Completable.create {
             val completable = it
 
+            privacyDisclaimerAccepted = false
+
             MaterialDialog.Builder(this.context).also {
                 it.title("Datenschutzerklärung")
                 it.checkBoxPrompt("Ich Akzeptiere die Erklärung", false, { _, checked ->
@@ -223,15 +252,8 @@ class LoginFragment : Fragment<Any>() {
                 it.cancelable(false)
                 it.positiveText("Weiter")
                 it.negativeText("Abbrechen")
-                it.onPositive { dialog, which ->
-                    if (!privacyDisclaimerAccepted) {
-                        completable.onError(IllegalStateException("Privacy disclaimer must be accepted to continue"))
-                    } else {
-                        completable.onComplete()
-                    }
-                }
-                it.onNegative { dialog, which ->
-                    completable.onError(IllegalStateException("Privacy disclaimer must be accepted to continue"))
+                it.onAny { dialog, which ->
+                    completable.onComplete()
                 }
             }.show()
         }

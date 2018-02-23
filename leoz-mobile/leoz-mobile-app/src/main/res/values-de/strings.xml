@@ -196,6 +196,21 @@
     <string name="please_wait">Bitte warten</string>
     <string name="please_sign_below">Bitte unterhalb unterschreiben</string>
 
+    <string name="privacy_disclaimer_text">
+        mobileX ist eine Software Applikation (im Folgenden „mobileX“) der DER KURIER GmbH &amp; Co. KG, Dörrwiese 2, 36286 Neuenstein (im Folgenden „DER KURIER“).\n
+        DER KURIER respektiert Ihr Recht auf Datenschutz und richtet sich nach den geltenden Gesetzen und Regelungen zum Schutz persönlicher Daten. Der Zweck dieser Datenschutzerklärung besteht darin, Sie darüber zu informieren, welche Daten DER KURIER mit mobileX erhebt und wie diese erfassten persönlichen Daten verwendet werden. Für die ordnungsgemäße Funktion von mobileX verwendet DER KURIER Standortinformationen ihres Gerätes.  Hierfür ist es erforderlich, dass die Ortungsfunktion Ihres Geräts eingeschaltet ist.
+        mobileX sendet die von Ihnen eingegebenen Daten (u.a. Scans, Fotodokumentation, Standortdaten, Informationen zur Geräteidentifizierung) an DER KURIER. Zusätzlich kann der Ihnen zugeordnete DER KURIER Systempartner die erfassten Daten, sowie den Standort und die Route bis zu 90 Tage zu Dispositions- und Optimierungszwecken einsehen. Diese Informationen können auch Sie als mobileX Nutzer mit ihrem persönlichen Login über www.command.derkurier.de jederzeit einsehen.
+        Durch Ihre Genehmigung ermöglichen Sie mobileX die Verwendung Ihrer Informationen und Aktivierung der nachfolgend genannten Funktionen:\n
+        \t-	Kamera\n
+        \t-	Speicher\n
+        \t-	Standort\n
+        \t-	Telefon\n
+        \t-	Datenverbindung\n
+        Alle Daten werden verschlüsselt über das Internet gesendet. Je nach Gerät wird die eigene Funk-Verbindung oder eine WLAN-Verbindung verwendet. Hierbei können je nach Vertrag bei Ihrem Mobilfunkanbieter Kosten entstehen. Wenn keine Internetverbindung verfügbar ist, werden die Informationen für einen späteren Upload sicher auf Ihrem Gerät gespeichert.
+        Darüber hinaus benötigen wir Ihre Genehmigung zur Erhebung und Verwendung Ihrer Daten. Wenn Sie uns diese Genehmigung nicht erteilen, werden keine Informationen an DER KURIER gesendet. Sie haben auch jederzeit die Möglichkeit Ihre erteilte Zustimmung im Nachhinein zu widerrufen. In diesem Fall kann mobileX nicht mehr verwendet werden.
+        Zusätzlich verwenden wir die Daten zur technischen Diagnose, um Betrug und Missbrauch zu erkennen und um die Qualität unserer Dienste zu verbessern. Diese Daten werden nur zu diesem Zweck und für einen begrenzten Zeitraum erfasst, nach welchem sie automatisch gelöscht werden. DER KURIER bemüht sich intensiv darum, das ihre Daten vor unbefugtem Zugriff auf oder vor unbefugter Veränderung, Weitergabe oder Zerstörung von Daten zu schützen. DER KURIER wird zu keinem Zeitpunkt die erhobenen Informationen für Dritte freigeben und sie nicht für andere Zwecke, sofern dies nicht durch rechtliche Verfahren ausdrücklich und in rechtmäßiger Weise angeordnet wird, verwenden.
+    </string>
+
     <string name="proceed">Fortfahren</string>
 
     <string name="prompt_password">Passwort (optional)</string>
