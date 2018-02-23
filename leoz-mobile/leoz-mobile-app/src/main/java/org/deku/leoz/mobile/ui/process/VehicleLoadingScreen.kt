@@ -499,8 +499,6 @@ class VehicleLoadingScreen :
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
-        log.trace("AIDC READ $event")
-
         val result = Observable.concat(
                 Observable.fromCallable {
                     DekuUnitNumber
@@ -559,7 +557,7 @@ class VehicleLoadingScreen :
                 .subscribeBy(
                         onNext = {
                             loaded = true
-                            log.info("Current delivery lists [${this.deliveryList.ids.joinToString(", ")}")
+                            log.info("Current delivery lists [${this.deliveryList.ids.get().joinToString(", ")}")
                         },
                         onComplete = {
                             this.isBusy = false
