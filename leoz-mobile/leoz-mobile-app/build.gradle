@@ -23,7 +23,7 @@ buildscript {
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.6.0'
         v_parceler = '1.1.10'
-        v_roboelectric = '3.7'
+        v_roboelectric = '3.7.1'
         v_rxlifecycle = '2.2.1'
         v_stetho = '1.5.0'
         v_truetime = '3.3'
@@ -220,9 +220,9 @@ dependencies {
 
             // Reactive
             "io.reactivex.rxjava2:rxjava:$v_rxjava",
-            "io.reactivex.rxjava2:rxandroid:2.0.1",
+            "io.reactivex.rxjava2:rxandroid:2.0.2",
             "io.reactivex:rxkotlin:$v_rxkotlin",
-            "com.jakewharton.rxbinding2:rxbinding:2.1.0",
+            "com.jakewharton.rxbinding2:rxbinding:2.1.1",
             "com.trello.rxlifecycle2:rxlifecycle:$v_rxlifecycle",
             "com.trello.rxlifecycle2:rxlifecycle-kotlin:$v_rxlifecycle",
             "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle",
