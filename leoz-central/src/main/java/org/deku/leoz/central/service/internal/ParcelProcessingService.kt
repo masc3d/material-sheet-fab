@@ -607,12 +607,10 @@ class ParcelProcessingService {
                             insertStatus = false
                     }
                     Event.NOT_IN_DELIVERY -> {
-
-                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.NOT_IN_DELIVERY.creator.toString(), Event.NOT_IN_DELIVERY.concatId, Reason.NORMAL.id)
-
-
-                        if (existStatus)
-                            insertStatus = false
+//lt. Anforderung JTR 23.02.2018
+//                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.NOT_IN_DELIVERY.creator.toString(), Event.NOT_IN_DELIVERY.concatId, Reason.NORMAL.id)
+//                        if (existStatus)
+//                            insertStatus = false
                     }
                     Event.EXPORT_LOADED -> {/*
                         if (it.additionalInfo == null)
