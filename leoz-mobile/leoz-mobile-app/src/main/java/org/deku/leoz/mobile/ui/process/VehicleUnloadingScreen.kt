@@ -416,8 +416,6 @@ class VehicleUnloadingScreen :
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
-        log.trace("AIDC READ $event")
-
         val result: Result<UnitNumber> = UnitNumber.parseLabel(event.data)
 
         when {

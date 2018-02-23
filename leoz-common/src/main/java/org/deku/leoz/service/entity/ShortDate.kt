@@ -23,11 +23,9 @@ class ShortDate {
         this.date = format.parse(localDate)
     }
 
-    constructor(localDate: Date = Date()) {
+    @JvmOverloads constructor(localDate: Date = Date()) {
         this.date = localDate
     }
 
-    override fun toString(): String {
-        return format.format(this.date)
-    }
+    override fun toString(): String = format.format(this.date)
 }

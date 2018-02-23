@@ -47,6 +47,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.config.user
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
@@ -87,6 +88,7 @@ import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 
 /**
  * Leoz activity base class
@@ -875,6 +877,14 @@ abstract class Activity : BaseActivity(),
                         aidcActionItem.visible = enabled.value
                         this.uxActionOverlay.update()
                     }
+                }
+
+        this.aidcReader.readEvent
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .subscribe {
+                    val type = this.supportFragmentManager.fragments.lastOrNull()?.javaClass ?: this.javaClass
+
+                    LoggerFactory.getLogger(type).user { "AIDC ${it}" }
                 }
 
         this.aidcReader.bindActivity(this)
