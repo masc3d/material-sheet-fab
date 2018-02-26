@@ -28,6 +28,7 @@ import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.hideSoftInput
 import java.lang.IllegalStateException
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
@@ -44,7 +45,7 @@ class LoginFragment : Fragment<Any>() {
 
     private var privacyDisclaimerAccepted = false
 
-    private val privacyResultSubject: PublishSubject<Unit> = PublishSubject.create()
+    private val privacyResultSubject: PublishSubject<Date> = PublishSubject.create()
 
     interface Listener {
         /** Called when it's appropriate to show progress indication */
@@ -136,7 +137,7 @@ class LoginFragment : Fragment<Any>() {
                                         if (!privacyDisclaimerAccepted)
                                             this.listener?.onPrivacyRejected()
                                         else
-                                            privacyResultSubject.onNext(Unit)
+                                            privacyResultSubject.onNext(Date())
                                     },
                                     {
 
