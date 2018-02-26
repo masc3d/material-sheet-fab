@@ -4,14 +4,14 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstBundleVersionRecord
 import org.jooq.DSLContext
-import javax.inject.Inject
-import javax.inject.Named
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
+import javax.inject.Inject
 
 /**
  * Created by masc on 27/02/16.
  */
-@Named
+@Component
 class JooqBundleVersionRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)

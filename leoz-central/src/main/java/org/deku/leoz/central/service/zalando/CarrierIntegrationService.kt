@@ -4,20 +4,22 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SddContzipRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SddFpcsOrderRecord
-import sx.rs.RestProblem
+import org.deku.leoz.service.zalando.CarrierIntegrationService
 import org.deku.leoz.service.zalando.entity.DeliveryOption
 import org.deku.leoz.service.zalando.entity.DeliveryOrder
 import org.deku.leoz.service.zalando.entity.NotifiedDeliveryOrder
-import org.deku.leoz.service.zalando.CarrierIntegrationService
 import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.time.*
+import org.springframework.stereotype.Component
+import sx.rs.RestProblem
+import sx.time.plusDays
+import sx.time.replaceDate
+import sx.time.replaceTime
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
@@ -27,7 +29,7 @@ import javax.ws.rs.core.Response
  * Zalanda carrier integration service
  * Created by 27694066 on 02.03.2017.
  */
-@Named
+@Component
 @Path("zalando/v1/ldn")
 class CarrierIntegrationService : CarrierIntegrationService {
 

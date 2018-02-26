@@ -9,15 +9,15 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecor
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Order repository
  * Created by JT on 30.06.17.
  */
-@Named
-open class JooqOrderRepository {
+@Component
+class JooqOrderRepository {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

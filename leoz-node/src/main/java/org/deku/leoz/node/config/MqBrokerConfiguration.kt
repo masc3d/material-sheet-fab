@@ -21,7 +21,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class MqBrokerConfiguration {
+class MqBrokerConfiguration {
     private val log = LoggerFactory.getLogger(MqBrokerConfiguration::class.java)
 
     /**
@@ -29,7 +29,7 @@ open class MqBrokerConfiguration {
      */
     @Configuration
     @ConfigurationProperties(prefix = "broker")
-    open class Settings {
+    class Settings {
         var nativePort: Int? = null
         var httpContextPath: String? = null
     }
@@ -70,11 +70,11 @@ open class MqBrokerConfiguration {
     }
 
     @get:Bean
-    open val activeMqConfiguration
+    val activeMqConfiguration
         get() = JmsConfiguration
 
     @get:Bean
-    open val activeMqBroker
+    val activeMqBroker
         get() = ActiveMQBroker.instance
 
     @PreDestroy

@@ -1,23 +1,24 @@
 package org.deku.leoz.node.service.internal
 
-import org.deku.leoz.node.*
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.JmsEndpoints
+import org.deku.leoz.node.Application
+import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.EntitySyncNodeConfiguration
-import org.deku.leoz.service.internal.update.BundleUpdateService
-import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.ApplicationService.Version
+import org.deku.leoz.service.internal.entity.update.UpdateInfo
+import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Component
 import sx.mq.jms.channel
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.ws.rs.Path
 
-@Named
+@Component
 @Path("internal/v1/application")
 @Profile(Application.PROFILE_CLIENT_NODE)
-open class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
+class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
 
     protected val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 

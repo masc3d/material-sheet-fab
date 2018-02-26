@@ -14,11 +14,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.AdviceMode
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.*
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import org.springframework.transaction.annotation.EnableTransactionManagement
@@ -42,7 +38,7 @@ import javax.sql.DataSource
 @Import(org.deku.leoz.node.config.PersistenceConfiguration::class)
 @EnableConfigurationProperties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
-open class PersistenceConfiguration {
+class PersistenceConfiguration {
     companion object {
         const val QUALIFIER = "db_central"
     }
@@ -52,7 +48,7 @@ open class PersistenceConfiguration {
     @Qualifier(QUALIFIER)
     @Configuration
     @ConfigurationProperties(prefix = "persistence.central")
-    open class Settings {
+    class Settings {
         var debug: Boolean = false
     }
 
@@ -62,7 +58,7 @@ open class PersistenceConfiguration {
     @get:Bean
     @get:Qualifier(QUALIFIER)
     @get:ConfigurationProperties(prefix = "persistence.central.datasource")
-    open val dataSourceCentral: DataSource
+    val dataSourceCentral: DataSource
         get() {
             val basicDataSource = BasicDataSource()
             basicDataSource.driverClassName = com.mysql.jdbc.Driver::class.java.canonicalName
@@ -80,28 +76,28 @@ open class PersistenceConfiguration {
 
     @get:Bean
     @get:Qualifier(QUALIFIER)
-    open val jooqCentralTransactionAwareDataSourceProxy: TransactionAwareDataSourceProxy
+    val jooqCentralTransactionAwareDataSourceProxy: TransactionAwareDataSourceProxy
         get() {
             return TransactionAwareDataSourceProxy(this.dataSourceCentral)
         }
 
     @get:Bean
     @get:Qualifier(QUALIFIER)
-    open val jooqCentralTransactionManager: DataSourceTransactionManager
+    val jooqCentralTransactionManager: DataSourceTransactionManager
         get() {
             return DataSourceTransactionManager(this.dataSourceCentral)
         }
 
     @get:Bean
     @get:Qualifier(QUALIFIER)
-    open val jooqCentralConnectionProvider: DataSourceConnectionProvider
+    val jooqCentralConnectionProvider: DataSourceConnectionProvider
         get() {
             return DataSourceConnectionProvider(this.jooqCentralTransactionAwareDataSourceProxy)
         }
 
     @get:Bean
     @get:Qualifier(QUALIFIER)
-    open val centralDslContext: DefaultDSLContext
+    val centralDslContext: DefaultDSLContext
         get() {
             return DefaultDSLContext(
                     DefaultConfiguration().also {

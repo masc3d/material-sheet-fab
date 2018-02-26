@@ -6,17 +6,17 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylis
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVDeliverylistRecord
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import sx.time.toTimestamp
 import java.sql.Timestamp
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Created by JT on 12.07.17.
  */
-@Named
-open class JooqDeliveryListRepository {
+@Component
+class JooqDeliveryListRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
@@ -76,13 +76,13 @@ open class JooqDeliveryListRepository {
     /**
      * Find delivery list ids newer than specific criteria
      * @param syncId sync id
-     * @param date created date
+     * @param date delivery list date
      */
     fun findNewerThan(
             syncId: Long,
             date: Timestamp): List<Long> {
         return dsl.select(RKKOPF.ROLLKARTENNUMMER).from(RKKOPF)
-                .where(RKKOPF.SYNC_ID.gt(syncId)).and(RKKOPF.ROLLKARTENDATUM.ge(date))
+                .where(RKKOPF.SYNC_ID.gt(syncId)).and(RKKOPF.DRUCKZEIT.ge(date))
                 .fetch(RKKOPF.ROLLKARTENNUMMER)
                 .map { it.toLong() }
     }

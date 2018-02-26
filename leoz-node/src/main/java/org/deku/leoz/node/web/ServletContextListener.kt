@@ -1,17 +1,16 @@
 package org.deku.leoz.node.web
 
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.springframework.web.context.ConfigurableWebApplicationContext
 import sx.log.slf4j.trace
-
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.ServletContextEvent
 
 /**
  * Created by masc on 17.09.14.
  */
-@Named("node.ServletContextListener")
+@Component("node.ServletContextListener")
 class ServletContextListener : javax.servlet.ServletContextListener {
     private var log = LoggerFactory.getLogger(ServletContextListener::class.java)
 

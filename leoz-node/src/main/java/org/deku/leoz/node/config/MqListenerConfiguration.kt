@@ -25,7 +25,7 @@ import javax.inject.Inject
 @Configuration
 @Service
 @Lazy(false)
-open class MqListenerConfiguration {
+class MqListenerConfiguration {
     private val log = LoggerFactory.getLogger(MqListenerConfiguration::class.java)
 
     @Inject
@@ -52,14 +52,14 @@ open class MqListenerConfiguration {
 
     //region Lifecycle
     @PostConstruct
-    open fun onInitialize() {
+    fun onInitialize() {
         // Register event listeners
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
         this.startIfReady()
     }
 
     @PreDestroy
-    open fun onDestroy() {
+    fun onDestroy() {
         this.stop()
     }
 

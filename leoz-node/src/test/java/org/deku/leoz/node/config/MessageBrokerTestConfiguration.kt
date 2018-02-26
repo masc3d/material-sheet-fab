@@ -1,8 +1,8 @@
 package org.deku.leoz.node.config
 
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
-import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
+import org.deku.leoz.config.JmsConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,7 +19,7 @@ import javax.annotation.PreDestroy
  */
 @Configuration
 @Lazy(false)
-open class MessageBrokerTestConfiguration {
+class MessageBrokerTestConfiguration {
     private val log = LoggerFactory.getLogger(MessageBrokerTestConfiguration::class.java)
 
     private val USE_ARTEMIS = false
@@ -36,7 +36,7 @@ open class MessageBrokerTestConfiguration {
     }
 
     @get:Bean
-    open val broker: MqBroker = ActiveMQBroker.instance
+    val broker: MqBroker = ActiveMQBroker.instance
 
     @PreDestroy
     fun onDestroy() {

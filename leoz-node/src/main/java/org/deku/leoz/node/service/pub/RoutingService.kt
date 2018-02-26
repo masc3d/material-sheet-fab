@@ -9,12 +9,13 @@ import org.deku.leoz.node.data.jpa.QMstHolidayCtrl
 import org.deku.leoz.node.data.jpa.QMstRoutingLayer
 import org.deku.leoz.node.data.repository.*
 import org.deku.leoz.node.rest.ServiceException
-import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.entity.ShortTime
 import org.deku.leoz.service.entity.DayType
 import org.deku.leoz.service.entity.ServiceErrorCode
+import org.deku.leoz.service.entity.ShortDate
+import org.deku.leoz.service.entity.ShortTime
 import org.deku.leoz.service.pub.RoutingService.*
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import sx.time.toDate
 import sx.time.toLocalDate
 import java.sql.Timestamp
@@ -23,7 +24,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
 import javax.ws.rs.Path
@@ -31,7 +31,7 @@ import javax.ws.rs.Path
 /**
  * Created by masc on 23.07.14.
  */
-@Named
+@Component
 @Path("v1/routing")
 class RoutingService : org.deku.leoz.service.pub.RoutingService {
     private val log = LoggerFactory.getLogger(this.javaClass)

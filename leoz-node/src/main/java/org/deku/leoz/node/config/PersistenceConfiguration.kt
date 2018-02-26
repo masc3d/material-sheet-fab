@@ -47,7 +47,7 @@ import javax.sql.DataSource
 @ComponentScan(lazyInit = true, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 @EnableJpaRepositories(considerNestedRepositories = false, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
-open class PersistenceConfiguration {
+class PersistenceConfiguration {
     companion object {
         const val QUALIFIER = "db_embedded"
         const val QUALIFIER_JOOQ = "db_embedded_jooq"
@@ -59,7 +59,7 @@ open class PersistenceConfiguration {
     /** Server properties holder */
     @Configuration
     @ConfigurationProperties(prefix = "persistence")
-    open class Settings {
+    class Settings {
         class H2 {
             class Server {
                 var port: Int = 0
@@ -94,7 +94,7 @@ open class PersistenceConfiguration {
 
     @get:Bean
     @get:Qualifier(QUALIFIER)
-    open val dataSource: DataSource
+    val dataSource: DataSource
         get() {
             // Dev/debug flag for enabling h2 in memory database
             val H2_IN_MEMORY = false
@@ -135,7 +135,7 @@ open class PersistenceConfiguration {
     //region JPA
     @Bean
     @Qualifier(QUALIFIER)
-    open fun transactionManager(emf: EntityManagerFactory): PlatformTransactionManager {
+    fun transactionManager(emf: EntityManagerFactory): PlatformTransactionManager {
         val transactionManager = JpaTransactionManager()
         transactionManager.entityManagerFactory = emf
         transactionManager.dataSource = this.dataSource
@@ -144,7 +144,7 @@ open class PersistenceConfiguration {
     }
 
     @Bean
-    open fun entityManagerFactory(): LocalContainerEntityManagerFactoryBean {
+    fun entityManagerFactory(): LocalContainerEntityManagerFactoryBean {
         // TODO. more robust behaviour when database is down.
         // eg. webservice fails when database is unreachable (on startup eg.)
         // more tests required referring to db outages during runtime
@@ -190,7 +190,7 @@ open class PersistenceConfiguration {
         //region Dev/debug code for letting eclipselink/jpa generate DDL/SQL from entites
         if (false) {
             val sqlFile = File("sql/leoz-ddl.sql")
-            File(sqlFile.getParent()).mkdirs()
+            File(sqlFile.parent).mkdirs()
 
             properties.set(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, "create")
             properties.set(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, sqlFile.toString())
@@ -247,22 +247,22 @@ open class PersistenceConfiguration {
     //region JOOQ
     @get:Bean
     @get:Qualifier(QUALIFIER_JOOQ)
-    open val jooqTransactionAwareDataSourceProxy: TransactionAwareDataSourceProxy
+    val jooqTransactionAwareDataSourceProxy: TransactionAwareDataSourceProxy
         get() = TransactionAwareDataSourceProxy(this.dataSource)
 
     @get:Bean
     @get:Qualifier(QUALIFIER_JOOQ)
-    open val jooqTransactionManager: DataSourceTransactionManager
+    val jooqTransactionManager: DataSourceTransactionManager
         get() = DataSourceTransactionManager(this.dataSource)
 
     @get:Bean
     @get:Qualifier(QUALIFIER_JOOQ)
-    open val jooqConnectionProvider: DataSourceConnectionProvider
+    val jooqConnectionProvider: DataSourceConnectionProvider
         get() = DataSourceConnectionProvider(this.jooqTransactionAwareDataSourceProxy)
 
     @get:Bean
     @get:Qualifier(QUALIFIER_JOOQ)
-    open val dsl: DefaultDSLContext
+    val dsl: DefaultDSLContext
         get() {
             val settings = org.jooq.conf.Settings().withStatementType(StatementType.PREPARED_STATEMENT)
             return DefaultDSLContext(this.jooqConnectionProvider, SQLDialect.H2, settings)
@@ -282,7 +282,7 @@ open class PersistenceConfiguration {
     }
 
     @PostConstruct
-    open fun onInitialize() {
+    fun onInitialize() {
         this.migrateFLywaySchemaVersionTable()
 
         // Migrate schema
@@ -314,7 +314,7 @@ open class PersistenceConfiguration {
     }
 
     @PreDestroy
-    open fun onDestroy() {
+    fun onDestroy() {
         val server = this.h2Server
         if (server != null) {
             log.info("Closing H2 server")

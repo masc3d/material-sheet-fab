@@ -1,7 +1,5 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.node.service.internal.SmartlaneBridge
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 
@@ -10,5 +8,4 @@ import org.springframework.context.annotation.Lazy
  */
 @Configuration
 @Lazy(false)
-open class SmartlaneConfiguration {
-}
+class SmartlaneConfiguration

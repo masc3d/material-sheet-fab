@@ -11,6 +11,7 @@ import org.deku.leoz.service.internal.NodeServiceV1
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.log.slf4j.info
 import sx.mq.MqChannel
@@ -20,13 +21,12 @@ import sx.rs.RestProblem
 import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
-import javax.ws.rs.*
+import javax.ws.rs.Path
 
 /**
  * Created by masc on 17.02.16.
  */
-@Named
+@Component
 @Path("internal/v1/node")
 class NodeServiceV1
     :

@@ -1,19 +1,25 @@
 package org.deku.leoz.node.service.internal
 
-import io.reactivex.*
+import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.internal.schedulers.SchedulerWhen
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.model.Interval
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
-import org.deku.leoz.service.internal.*
-import org.deku.leoz.service.internal.TourServiceV1.*
+import org.deku.leoz.service.internal.LocationServiceV2
+import org.deku.leoz.service.internal.TourServiceV1.Tour
+import org.deku.leoz.service.internal.TourServiceV1.TourOptimizationOptions
+import org.deku.leoz.service.internal.UserService
+import org.deku.leoz.service.internal.uid
 import org.deku.leoz.smartlane.SmartlaneApi
 import org.deku.leoz.smartlane.api.*
 import org.deku.leoz.smartlane.model.*
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.threeten.bp.Duration
 import org.threeten.bp.temporal.ChronoUnit
 import sx.LazyInstance
@@ -33,7 +39,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
-import javax.inject.Named
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.Response
 import kotlin.NoSuchElementException
@@ -43,7 +48,7 @@ import kotlin.concurrent.withLock
  * Bridge operations between leoz and smartlane
  * Created by masc on 15.11.17.
  */
-@Named
+@Component
 class SmartlaneBridge {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

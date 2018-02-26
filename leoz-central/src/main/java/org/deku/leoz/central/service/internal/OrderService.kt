@@ -2,15 +2,16 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderParcelRecord
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TadVOrderRecord
-import org.deku.leoz.central.data.repository.*
-import org.deku.leoz.node.rest.restrictByDebitor
+import org.deku.leoz.central.data.repository.JooqOrderRepository
+import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.deku.leoz.model.*
-import sx.rs.RestProblem
+import org.deku.leoz.node.rest.restrictByDebitor
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.OrderService.Order
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import sx.rs.RestProblem
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
@@ -20,7 +21,7 @@ import javax.ws.rs.core.Response
  * Order service implementation
  * Created by JT on 30.06.17.
  */
-@Named
+@Component
 @Path("internal/v1/order")
 class OrderService : OrderService {
     private val log = LoggerFactory.getLogger(this.javaClass)

@@ -29,7 +29,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class SshServerConfiguration {
+class SshServerConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val sshServer: SshServer
 

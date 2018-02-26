@@ -22,7 +22,7 @@ import javax.persistence.PersistenceUnit
  */
 @Configuration
 @Lazy(false)
-open class EntitySyncCentralConfiguration {
+class EntitySyncCentralConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject

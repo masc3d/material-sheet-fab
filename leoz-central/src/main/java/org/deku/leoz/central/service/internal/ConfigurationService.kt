@@ -10,15 +10,15 @@ import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import sx.rs.RestProblem
 import javax.inject.Inject
-import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.Response
 
-@Named
+@Component
 @Path("internal/v1/configuration")
 class ConfigurationService: ConfigurationService {
 

@@ -17,7 +17,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class DiscoveryServiceConfguration {
+class DiscoveryServiceConfguration {
 
     @Inject
     private lateinit var application: Application
@@ -31,7 +31,7 @@ open class DiscoveryServiceConfguration {
     private lateinit var executorService: ScheduledExecutorService
 
     @get:Bean
-    open val discoveryService: DiscoveryService
+    val discoveryService: DiscoveryService
         get() = DiscoveryService(
                 executorService = this.executorService,
                 uid = this.application.identity.shortUid,

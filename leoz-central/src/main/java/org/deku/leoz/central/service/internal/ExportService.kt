@@ -13,15 +13,16 @@ import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.service.entity.DayTypeKey
 import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.BagService
 import org.deku.leoz.service.internal.ExportService
+import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.time.toShortTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sx.rs.RestProblem
 import sx.time.toLocalDate
@@ -29,16 +30,14 @@ import sx.time.toTimestamp
 import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
-import org.deku.leoz.node.rest.authorizedUser
 
-@Named
+@Component
 @Path("internal/v1/export")
-open class ExportService : org.deku.leoz.service.internal.ExportService {
+class ExportService : org.deku.leoz.service.internal.ExportService {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

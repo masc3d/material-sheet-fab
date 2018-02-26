@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
+import org.springframework.stereotype.Component
 import sx.log.slf4j.info
 import sx.rsync.Rsync
 import sx.rsync.RsyncServer
@@ -14,7 +15,6 @@ import java.net.InetAddress
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.properties.Delegates
 
 /**
@@ -22,14 +22,14 @@ import kotlin.properties.Delegates
  * Initializes server and provides client instances.
  * Created by masc on 15.09.15.
  */
-@Named
+@Component
 @Configuration
 @Lazy(false)
-open class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
+class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
     /** Server properties holder */
     @Configuration
     @ConfigurationProperties(prefix = "rsync.server")
-    open class Settings {
+    class Settings {
         var port: Int? = null
     }
 

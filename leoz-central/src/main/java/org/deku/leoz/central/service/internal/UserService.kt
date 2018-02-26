@@ -4,23 +4,24 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
-import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.central.data.repository.JooqMailQueueRepository
+import org.deku.leoz.central.data.repository.JooqStationRepository
+import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.setHashedPassword
-import org.deku.leoz.node.rest.authorizedUser
-import org.deku.leoz.config.Rest
+import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.model.AllowedStations
-import sx.rs.RestProblem
+import org.deku.leoz.model.UserRole
+import org.deku.leoz.node.rest.authorizedUser
+import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.UserService.User
 import org.jooq.DSLContext
-import org.springframework.beans.factory.annotation.Qualifier
-import javax.inject.Inject
-import javax.inject.Named
-import javax.ws.rs.Path
-import org.deku.leoz.service.internal.UserService
-import org.deku.leoz.model.UserRole
 import org.slf4j.LoggerFactory
-import java.util.*
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
+import sx.rs.RestProblem
+import javax.inject.Inject
 import javax.servlet.http.HttpServletRequest
+import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 
@@ -28,7 +29,7 @@ import javax.ws.rs.core.Response
  * User service
  * Created by helke on 15.05.17.
  */
-@Named
+@Component
 @Path("internal/v1/user")
 class UserService : UserService {
     private val log = LoggerFactory.getLogger(this.javaClass)

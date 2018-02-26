@@ -2,19 +2,19 @@ package org.deku.leoz.node
 
 import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.node.config.RemotePeerConfiguration
+import org.springframework.stereotype.Component
 import sx.Lifecycle
 import sx.mq.MqBroker
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Controls various aspect of lifecycles, for example network dependent lifecycle which require
  * (re)start when the connection is lost temporarily.
  * Created by masc on 24/03/16.
  */
-@Named
+@Component
 class LifecycleController {
     val lifecycles = Collections.synchronizedList(ArrayList<Lifecycle>())
 

@@ -1,9 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.node.Application
-import org.deku.leoz.node.config.ExecutorConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.junit.runner.RunWith
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 
@@ -14,4 +11,4 @@ import org.springframework.context.annotation.Import
 @Import(ApplicationTestConfiguration::class,
         PersistenceConfiguration::class,
         ExecutorConfiguration::class)
-open class DataTestConfiguration
+class DataTestConfiguration
