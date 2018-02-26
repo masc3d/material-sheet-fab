@@ -29,8 +29,13 @@ class LocationServiceGMS:
     var builder: LocationSettingsRequest.Builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
 
+    val googleApiClientBuilder: GoogleApiClient.Builder by lazy {
+        GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+    }
+
     val googleApiClient: GoogleApiClient by lazy {
-        this.locationServices.googleApiClientBuilder
+        this.googleApiClientBuilder
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build()
