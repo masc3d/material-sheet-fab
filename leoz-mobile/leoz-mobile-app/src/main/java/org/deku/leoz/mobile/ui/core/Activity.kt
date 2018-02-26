@@ -47,7 +47,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.config.user
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
@@ -83,6 +83,7 @@ import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTint
 import sx.android.view.setIconTintRes
+import sx.log.slf4j.trace
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
@@ -387,7 +388,7 @@ abstract class Activity : BaseActivity(),
                     .map { it.javaClass.simpleName }
 
             // Log backstack state
-            log.trace("BACKSTACK [${fragments.joinToString(", ")}]")
+            log.user { "Backstack [${fragments.joinToString(", ")}]" }
         }
         //endregion
 
@@ -627,10 +628,6 @@ abstract class Activity : BaseActivity(),
 
         return false
     }
-
-//    override fun attachBaseContext(newBase: Context?) {
-//        super.attachBaseContext(LocaleContextWrapper.wrap(context = newBase!!, language = null))
-//    }
 
     private val cameraAidcFragment: AidcCameraFragment?
         get() = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName) as? AidcCameraFragment

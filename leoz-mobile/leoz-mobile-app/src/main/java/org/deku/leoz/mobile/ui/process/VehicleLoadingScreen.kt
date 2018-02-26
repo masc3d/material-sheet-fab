@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
@@ -351,6 +352,8 @@ class VehicleLoadingScreen :
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     val section = it.value
+
+                    log.user { "Selected section [${section?.title}]"}
 
                     this.accentColor = when (section) {
                         loadedSection -> R.color.colorGreen

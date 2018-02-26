@@ -12,6 +12,7 @@ import io.reactivex.functions.BiFunction
 import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -576,6 +577,9 @@ class DeliveryStop(
                                         )
                                     }.toTypedArray()
                             )
+                                    .also {
+                                        log.user { "Stop finalized ${it}"}
+                                    }
                     )
                     //endregion
                 })

@@ -72,7 +72,6 @@ class SectionsAdapter
                                     adapter.recyclerView.scrollToPosition(0)
                                 }
                             } else {
-                                log.trace("SELECT")
                                 select(section)
                             }
                         }
@@ -93,6 +92,7 @@ class SectionsAdapter
         this.selectedSectionProperty
                 .subscribe {
                     val section = it.value
+
                     if (section != null && !this.isSectionSelected(section)) {
                         this.select(section)
                     }

@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.screen_tour_stop_process.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding
 import org.deku.leoz.mobile.databinding.ScreenTourStopProcessBinding
@@ -582,6 +583,8 @@ class StopProcessScreen :
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     val section = it.value
+
+                    log.user { "Selected section [${section?.title}]"}
 
                     this.accentColor = when {
                         section == this.deliveredSection -> R.color.colorGreen
