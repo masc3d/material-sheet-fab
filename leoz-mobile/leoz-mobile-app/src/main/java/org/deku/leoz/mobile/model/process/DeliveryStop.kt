@@ -648,7 +648,7 @@ class DeliveryStop(
                                     }.toTypedArray()
                             )
                                     .also {
-                                        log.user { "Finalizes stop [${this.entity.address}]" }
+                                        log.user { "Finalizes stop [${this.entity.address}] [${it}]" }
                                     }
                     )
                     //endregion

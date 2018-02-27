@@ -78,7 +78,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
      * @param parcels Parcels to unload
      */
     fun unload(parcels: List<ParcelEntity>): Completable {
-        log.user { "Unloads parcel(s) ${parcels.map { it.number }.joinToString(", ")}" }
+        log.user { "Unloads parcel(s) [${parcels.map { it.number }.joinToString(", ")}]" }
 
         return Completable.fromAction {
             val lastLocation = this.locationCache.lastLocation

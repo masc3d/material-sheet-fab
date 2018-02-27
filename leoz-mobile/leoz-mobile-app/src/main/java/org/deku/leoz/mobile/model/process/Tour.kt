@@ -99,7 +99,9 @@ class Tour : CompositeDisposableSupplier {
     var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { _, o, v ->
         o?.dispose()
 
-        log.user { "Activates stop [${v?.entity?.address}]" }
+        v?.entity?.address?.also {
+            log.user { "Activates stop [$it]" }
+        }
 
         if (v != null) {
             // If stop has no state, reset to pending

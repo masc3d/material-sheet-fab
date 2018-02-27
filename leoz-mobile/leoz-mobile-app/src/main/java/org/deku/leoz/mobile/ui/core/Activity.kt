@@ -83,6 +83,7 @@ import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTint
 import sx.android.view.setIconTintRes
+import sx.log.slf4j.trace
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
@@ -385,8 +386,8 @@ abstract class Activity : BaseActivity(),
                     .filterNotNull()
                     .map { it.javaClass.simpleName }
 
-            // Log backstack state
-            log.user { "Changes screen [${fragments.joinToString(", ")}]" }
+            // Log backstack state / user action
+            log.user { "Shows [${fragments.joinToString(", ")}]" }
         }
         //endregion
 
@@ -560,7 +561,7 @@ abstract class Activity : BaseActivity(),
         // Global action handler
 
         val actionName = this.resources.getResourceEntryNameOrNull(id)
-        log.user { "Performs action [${actionName}]" }
+        log.user { "Performs [${actionName}]" }
 
         when (id) {
             R.id.action_aidc_camera -> {
@@ -946,8 +947,6 @@ abstract class Activity : BaseActivity(),
      * @param addToBackStack If the fragment should be added to the backstack
      */
     fun showScreen(fragment: ScreenFragment<*>, addToBackStack: Boolean = true): Int {
-        log.trace("SHOW SCREEN [${fragment.javaClass.simpleName}]")
-
         return supportFragmentManager.withTransaction {
             if (addToBackStack) {
                 it.setCustomAnimations(
@@ -1043,7 +1042,7 @@ abstract class Activity : BaseActivity(),
         var scrollCollapseMode = fragment.scrollCollapseMode
         var scroll = (scrollCollapseMode != ScreenFragment.ScrollCollapseModeType.None)
 
-        log.trace("HEADER HEIGHT ${this.uxHeader.layoutParams.height}")
+        log.trace { "HEADER HEIGHT ${this.uxHeader.layoutParams.height}" }
 
         if (fragment.toolbarCollapsed) {
             expandAppBar = false
@@ -1070,7 +1069,7 @@ abstract class Activity : BaseActivity(),
         run {
             // TODO: don't expand when scroll position is not top on pre-existing fragment
 
-            log.trace("HEADER IMAGE SET ${fragment.headerImage}")
+            log.trace { "HEADER IMAGE SET ${fragment.headerImage}" }
             this.header.headerDrawable = if (fragment.headerImage != null)
                 fragment.headerImage
             else
@@ -1098,13 +1097,13 @@ abstract class Activity : BaseActivity(),
                 false -> 0
             }
 
-            log.trace("APPBAR EXPAND ${expandAppBar}")
+            log.trace { "APPBAR EXPAND ${expandAppBar}" }
             this.uxAppBarLayout.setExpanded(expandAppBar, true)
 
             val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
             this.scrollFlags = scrollFlag or collapsingScrollFlag or scrollSnapFlag
-            log.trace("SCROLL FLAGS ${layoutParams.scrollFlags} ${scrollFlags}")
+            log.trace { "SCROLL FLAGS ${layoutParams.scrollFlags} ${scrollFlags}" }
 
             this.uxCollapsingToolbarLayout.postDelayed({
                 if (layoutParams.scrollFlags != this.scrollFlags) {
