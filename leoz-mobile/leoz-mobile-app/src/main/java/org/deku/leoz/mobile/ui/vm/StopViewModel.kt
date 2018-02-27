@@ -259,11 +259,11 @@ class StopViewModel(
         }.toField()
     }
 
-    override fun removeOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {
+    override fun removeOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback) {
         super.removeOnPropertyChangedCallback(callback)
     }
 
-    override fun addOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback?) {
+    override fun addOnPropertyChangedCallback(callback: android.databinding.Observable.OnPropertyChangedCallback) {
         super.addOnPropertyChangedCallback(callback)
     }
 }

@@ -310,6 +310,8 @@ dependencies {
 
             "org.zeroturnaround:zt-zip:1.12",
 
+            "org.zalando:problem:0.20.1",
+
             //region EVALUATION
             "com.github.lzyzsd:circleprogress:1.2.1",
 
@@ -392,7 +394,6 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:$v_android_gradle"
     )
 }
 
