@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v2/bundle")
 @Api(value = "Bundle operations")
-class BundleServiceV2 : BundleServiceV2 {
+open class BundleServiceV2 : org.deku.leoz.service.internal.BundleServiceV2 {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
