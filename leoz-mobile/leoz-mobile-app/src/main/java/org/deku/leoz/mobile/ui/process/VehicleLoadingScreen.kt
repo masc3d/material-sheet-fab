@@ -353,7 +353,7 @@ class VehicleLoadingScreen :
                 .subscribe {
                     val section = it.value
 
-                    log.user { "Selected section [${section?.title}]"}
+                    log.user { "Selects section [${section?.title}]"}
 
                     this.accentColor = when (section) {
                         loadedSection -> R.color.colorGreen

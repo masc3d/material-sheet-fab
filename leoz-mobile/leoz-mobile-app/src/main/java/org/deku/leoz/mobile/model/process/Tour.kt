@@ -7,9 +7,11 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.disposables.CompositeDisposable
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.OrderTask
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.TourServiceV1
@@ -96,6 +98,8 @@ class Tour : CompositeDisposableSupplier {
      */
     var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { _, o, v ->
         o?.dispose()
+
+        log.user { "Activates stop [${v?.entity?.address}]" }
 
         if (v != null) {
             // If stop has no state, reset to pending

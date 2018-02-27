@@ -10,6 +10,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -77,6 +78,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
      * @param parcels Parcels to unload
      */
     fun unload(parcels: List<ParcelEntity>): Completable {
+        log.user { "Unloads parcel(s) ${parcels.map { it.number }.joinToString(", ")}" }
 
         return Completable.fromAction {
             val lastLocation = this.locationCache.lastLocation

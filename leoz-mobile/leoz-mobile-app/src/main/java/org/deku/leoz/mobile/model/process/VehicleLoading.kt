@@ -8,11 +8,10 @@ import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.filterValuesByType
-import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
@@ -94,6 +93,8 @@ class VehicleLoading : CompositeDisposableSupplier {
      * @param parcels Parcel(s) to load
      */
     fun load(parcels: List<ParcelEntity>): Completable {
+        log.user { "Loads parcel(s) ${parcels.map { it.number }.joinToString(", ")}" }
+
         return Completable.fromAction {
             val lastLocation = this@VehicleLoading.locationCache.lastLocation
 
@@ -110,7 +111,7 @@ class VehicleLoading : CompositeDisposableSupplier {
                             .blockingGet()
 
                     stopRepository.updateStopStateFromParcels(
-                        stop = parcel.order.tasks.map { it.stop }.filterNotNull().first()
+                            stop = parcel.order.tasks.map { it.stop }.filterNotNull().first()
                     )
                             .blockingAwait()
                 }

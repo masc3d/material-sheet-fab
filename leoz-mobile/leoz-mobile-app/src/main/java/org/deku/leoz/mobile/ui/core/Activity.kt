@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.core
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Resources
 import android.databinding.DataBindingUtil
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
@@ -47,12 +48,14 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.log.user
+import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
@@ -72,10 +75,7 @@ import org.jetbrains.anko.backgroundColor
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
-import sx.android.ApplicationStateMonitor
-import sx.android.Connectivity
-import sx.android.Device
-import sx.android.NtpTime
+import sx.android.*
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
@@ -83,13 +83,11 @@ import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTint
 import sx.android.view.setIconTintRes
-import sx.log.slf4j.trace
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.logging.Logger
 
 /**
  * Leoz activity base class
@@ -388,7 +386,7 @@ abstract class Activity : BaseActivity(),
                     .map { it.javaClass.simpleName }
 
             // Log backstack state
-            log.user { "Backstack [${fragments.joinToString(", ")}]" }
+            log.user { "Changes screen [${fragments.joinToString(", ")}]" }
         }
         //endregion
 
@@ -560,6 +558,10 @@ abstract class Activity : BaseActivity(),
 
     override fun onActionItem(id: Int) {
         // Global action handler
+
+        val actionName = this.resources.getResourceEntryNameOrNull(id)
+        log.user { "Performs action [${actionName}]" }
+
         when (id) {
             R.id.action_aidc_camera -> {
                 this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
@@ -879,7 +881,8 @@ abstract class Activity : BaseActivity(),
         this.aidcReader.readEvent
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
-                    val type = this.supportFragmentManager.fragments.lastOrNull()?.javaClass ?: this.javaClass
+                    val type = this.supportFragmentManager.fragments.lastOrNull()?.javaClass
+                            ?: this.javaClass
 
                     LoggerFactory.getLogger(type).user { "AIDC ${it}" }
                 }

@@ -17,6 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.User
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.ui.core.Fragment
@@ -104,9 +105,9 @@ class LoginFragment : Fragment<Any>() {
                     Observable.fromCallable {
                         // Verify all fields
                         if (listOf(
-                                validateMailAddress(),
-                                validatePassword()
-                        ).any { it == false }) {
+                                        validateMailAddress(),
+                                        validatePassword()
+                                ).any { it == false }) {
                             throw IllegalArgumentException("Validation failed")
                         }
                     }
@@ -132,6 +133,9 @@ class LoginFragment : Fragment<Any>() {
                 }
                 .doOnError {
                     log.error(it.message, it)
+
+                    log.user { "Fails to login [${it.message}]" }
+
                     this.view?.post {
                         this.listener?.onLoginFailed()
                     }
@@ -146,7 +150,7 @@ class LoginFragment : Fragment<Any>() {
                             this.listener?.onLoginPending()
                         }
                         else -> {
-                            log.info("Login successful $it")
+                            log.user { "Logged in successfully [$it]" }
                             this.listener?.onLoginSuccessful()
                         }
                     }

@@ -32,12 +32,12 @@ import kotlinx.android.synthetic.main.screen_tour_stop_process.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.databinding.ItemStopBinding
 import org.deku.leoz.mobile.databinding.ItemStopMergeDialogBinding
 import org.deku.leoz.mobile.databinding.ScreenTourStopProcessBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.OrderEntity
 import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.StopEntity
@@ -404,8 +404,6 @@ class StopProcessScreen :
     override fun onResume() {
         super.onResume()
 
-        log.trace("RESUME")
-
         aidcReader.decoders.set(
                 Interleaved25Decoder(true, 11, 12),
                 DatamatrixDecoder(true),
@@ -584,7 +582,7 @@ class StopProcessScreen :
                 .subscribe {
                     val section = it.value
 
-                    log.user { "Selected section [${section?.title}]"}
+                    log.user { "Selects section [${section?.title}]" }
 
                     this.accentColor = when {
                         section == this.deliveredSection -> R.color.colorGreen
@@ -808,6 +806,8 @@ class StopProcessScreen :
                                 .customView(R.layout.dialog_tour_stop_merge, true)
                                 .positiveText(R.string.proceed)
                                 .onPositive { _, _ ->
+                                    log.user { "Merges stop [${sourceStop.address}] into [${deliveryStop.entity.address}]" }
+
                                     db.store.withTransaction {
                                         stopRepository.mergeInto(
                                                 source = sourceStop,
@@ -974,6 +974,8 @@ class StopProcessScreen :
     }
 
     private fun closeStop(variant: EventDeliveredReason) {
+        log.user { "Closes stop [${variant}]" }
+
         this.deliveryStop.resetCloseStopState()
 
         this.currentCloseStopVariatn = variant
