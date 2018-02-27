@@ -99,12 +99,12 @@ class SectionsAdapter
                 }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         log.trace("ADAPTER ATTACHED")
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         // TODO detach is never called. verify if this may be a leak
         super.onDetachedFromRecyclerView(recyclerView)
         log.trace("ADAPTER DETACHED")

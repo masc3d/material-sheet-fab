@@ -22,6 +22,7 @@ buildscript {
         v_anko = '0.10.4'
         v_javamail = '1.6.0'
         v_material_dialogs = '0.9.6.0'
+        v_multidex = '1.0.3'
         v_parceler = '1.1.10'
         v_roboelectric = '3.7.1'
         v_rxlifecycle = '2.2.1'
@@ -192,7 +193,8 @@ dependencies {
             "com.android.support:design:$v_android_support",
             "com.android.support:cardview-v7:$v_android_support",
             "com.android.support:recyclerview-v7:$v_android_support",
-            'com.android.support:multidex:1.0.2',
+            "com.android.support:multidex:$v_multidex",
+            "com.android.support:multidex-instrumentation:$v_multidex",
             "android.arch.lifecycle:runtime:1.1.0",
 
             // Camera
