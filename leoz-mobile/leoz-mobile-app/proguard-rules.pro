@@ -59,9 +59,6 @@
 # which means all nested serializable classes must have @Serializable
 -keep @sx.io.serialization.Serializable class * { *; }
 
-# TODO agp-3.1 bug, proguard complains about missing databinding resources
--dontwarn org.deku.leoz.mobile.model.entity.**
-
 # Warnings
 # KEEP ALPHA SORTING
 -dontwarn android.databinding.**
