@@ -74,6 +74,7 @@ android {
         versionName "0.132-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        multiDexKeepProguard file('multidex-keep.pro')
         vectorDrawables.useSupportLibrary true
     }
 
