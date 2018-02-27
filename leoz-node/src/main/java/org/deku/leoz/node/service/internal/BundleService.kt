@@ -55,7 +55,7 @@ open class BundleServiceV2 : org.deku.leoz.service.internal.BundleServiceV2 {
     /**
      * Look up version alias by node key
      */
-    fun aliasByNodeKey(nodeKey: String): String {
+    open fun aliasByNodeKey(nodeKey: String): String {
         // Implemented only in leoz-central
         throw UnsupportedOperationException("Node key lookup not supported")
     }
