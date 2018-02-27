@@ -85,7 +85,8 @@ dependencies {
     )
 
     kapt(
-            "io.requery:requery-processor:$v_requery"
+            "io.requery:requery-processor:$v_requery",
+            "com.android.databinding:compiler:$v_android_gradle"
     )
 
     testImplementation(
