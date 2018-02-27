@@ -184,4 +184,8 @@ dependencies {
 
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
+
+    kapt(
+            "com.android.databinding:compiler:$v_android_gradle"
+    )
 }
