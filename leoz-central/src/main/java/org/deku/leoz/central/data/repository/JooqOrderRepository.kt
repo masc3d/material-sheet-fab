@@ -76,12 +76,5 @@ class JooqOrderRepository {
         )
     }
 
-    fun findOrderByOrderNumber(orderNo: Long): TblauftragRecord? {
-        if(orderNo==0.toLong()) return null
-        return dsl.select()
-                .from(Tables.TBLAUFTRAG)
-                .where(Tables.TBLAUFTRAG.ORDERID.eq(orderNo.toDouble()))
-                //.and(Tables.TBLAUFTRAG.ORDERID.greaterThan(0.0))
-                ?.fetchOneInto(Tblauftrag.TBLAUFTRAG)
-    }
+
 }
