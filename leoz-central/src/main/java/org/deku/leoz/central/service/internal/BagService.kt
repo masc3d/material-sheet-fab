@@ -584,7 +584,9 @@ class BagService : BagService {
                             .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(UInteger.valueOf(0)))
                             //.andNot(Tables.TBLAUFTRAG.SERVICE.bitAnd(s))
                             //.and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(0)))
-                            .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull))
+                            .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull)
+                            .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+            )
 
 
             val unitWeight = dsl.select(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL?.sum()?.round())
@@ -592,7 +594,9 @@ class BagService : BagService {
                     .where(Tables.TBLAUFTRAGCOLLIES.BELADELINIE.eq(line.toDouble()))
                     .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
                     .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(UInteger.valueOf(0)))
-                    .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull).fetch()?.getValue(0, Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL?.sum()?.round(0)) ?: 0
+                    .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull)
+                    .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                    .fetch()?.getValue(0, Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL?.sum()?.round(0)) ?: 0
 
 
             var weight = "${unitCount.toString()}/${unitWeight.toString()}"

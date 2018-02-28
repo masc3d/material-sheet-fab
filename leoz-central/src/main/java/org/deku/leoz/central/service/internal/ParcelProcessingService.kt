@@ -102,7 +102,7 @@ class ParcelProcessingService {
                     //return@forEach
                     continue@loop
                 }
-                val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
+                val orderRecord = parcelRepository.getOrderById(parcelRecord.orderid.toLong())
                 if (orderRecord == null) {
                     log.info("parcelId=$parcel,messageID=${it.id} no orderRecord")
                     it.isProccessed = 1
@@ -406,7 +406,7 @@ class ParcelProcessingService {
                                         unitInBagStatusRecord.infotext = r.infotext
                                         unitInBagStatusRecord.store()
 
-                                        val unitInBagOrderRecord = orderRepository.findOrderByOrderNumber(it.orderid.toLong())
+                                        val unitInBagOrderRecord = parcelRepository.getOrderById(it.orderid.toLong())
                                         if (unitInBagOrderRecord != null) {
                                             //wird jetzt an anderer Stelle behandelt sendstatus
 //                                            val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster

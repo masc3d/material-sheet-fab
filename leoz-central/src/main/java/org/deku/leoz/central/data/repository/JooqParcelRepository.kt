@@ -37,6 +37,7 @@ class JooqParcelRepository {
         return dsl.selectCount()
                 .from(Tables.TBLAUFTRAGCOLLIES)
                 .where(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME.eq(bmpFilename)
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
                 )// .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble())))
                 .fetchOne(0, Int::class.java)
     }
@@ -44,7 +45,9 @@ class JooqParcelRepository {
     fun setSignaturePath(parcelNumber: String, path: String) {
         dsl.update(Tables.TBLAUFTRAGCOLLIES)
                 .set(Tables.TBLAUFTRAGCOLLIES.BMPFILENAME, path)
-                .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(parcelNumber.toDouble()))
+                .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(parcelNumber.toDouble())
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                )
                 .execute()
     }
 
@@ -52,7 +55,9 @@ class JooqParcelRepository {
         if (id == 0.toLong()) return null
         return dsl.select()
                 .from(Tables.TBLAUFTRAGCOLLIES)
-                .where(Tables.TBLAUFTRAGCOLLIES.PARCEL_ID.eq(id.toInt()))
+                .where(Tables.TBLAUFTRAGCOLLIES.PARCEL_ID.eq(id.toInt())
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                )
                 ?.fetchOneInto(Tblauftragcollies.TBLAUFTRAGCOLLIES)
     }
 
@@ -61,6 +66,7 @@ class JooqParcelRepository {
         return dsl.fetchOne(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(unitNo.toDouble())
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
 
     }
@@ -70,6 +76,7 @@ class JooqParcelRepository {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRABC.eq(bagUnitNo.toDouble())
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
     }
 
@@ -78,6 +85,7 @@ class JooqParcelRepository {
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRC.eq(bagBackUnitNo.toDouble())
                         .and(Tables.TBLAUFTRAGCOLLIES.BAGBELEGNRC.ne(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR))
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
     }
 
@@ -85,6 +93,7 @@ class JooqParcelRepository {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
                 //  .and(Tables.TBLAUFTRAGCOLLIES.ORDERPOS.greaterThan(0))
                 //  .and(Tables.TBLAUFTRAGCOLLIES.ORDERID.greaterThan(0.0))
         )
@@ -94,6 +103,7 @@ class JooqParcelRepository {
         return dsl.fetch(
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.eq(loadinglistNo.toDouble())
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
     }
 
@@ -101,6 +111,7 @@ class JooqParcelRepository {
         return dsl.fetchOne(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.ORDERID.eq(orderId.toDouble())
+                        .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
         )
     }
 
@@ -108,6 +119,7 @@ class JooqParcelRepository {
         return dsl.fetch(
                 Tables.TBLAUFTRAG,
                 Tables.TBLAUFTRAG.ORDERID.`in`(orderIds.map { it.toDouble() })
+                        .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
         )
 
     }
@@ -127,6 +139,7 @@ class JooqParcelRepository {
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
                         .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
                         .and(Tables.TBLAUFTRAG.KZ_TRANSPORTART.eq(1.toUByte()))//ONS
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
         //.fetchInto(TblauftragcolliesRecord::class.java)
         records ?: return result
@@ -166,6 +179,7 @@ class JooqParcelRepository {
                         .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
                         .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(UInteger.valueOf(134217728)).eq(UInteger.valueOf(0)))//fehlende anfahrt raus
                         .and(Tables.TBLAUFTRAG.KZ_TRANSPORTART.eq(1.toUByte()))//ONS
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
         //.fetchInto(TblauftragcolliesRecord::class.java)
 
@@ -218,6 +232,7 @@ class JooqParcelRepository {
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
 
     }
@@ -235,6 +250,7 @@ class JooqParcelRepository {
                 Tables.TBLAUFTRAGCOLLIES.ORDERID.`in`(orderIds.map { it.toDouble() })
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
     }
 
@@ -245,6 +261,7 @@ class JooqParcelRepository {
                         .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.greaterThan(100000.0))
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
 
     }
@@ -256,6 +273,7 @@ class JooqParcelRepository {
                         .and(Tables.TBLAUFTRAGCOLLIES.LADELISTENNUMMERD.greaterThan(100000.0))
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
 
     }
@@ -270,7 +288,8 @@ class JooqParcelRepository {
                                 .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))
                                 .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                                 .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
-                        //.and(Tables.TBLAUFTRAG.VERLADEDATUM.eq(sendDate.toTimestamp()))
+                                //.and(Tables.TBLAUFTRAG.VERLADEDATUM.eq(sendDate.toTimestamp()))
+                                .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
                 )
                 .fetchInto(TblauftragcolliesRecord::class.java)
     }
@@ -281,6 +300,7 @@ class JooqParcelRepository {
                 Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference)
                         .and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.ne(4))//ausgeliefert
                         .andNot(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERSTATUS.eq(8).and(Tables.TBLAUFTRAGCOLLIES.ERSTLIEFERFEHLER.eq(30)))//fehlendes Pkst raus
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
     }
 
@@ -292,6 +312,7 @@ class JooqParcelRepository {
                     Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.greaterOrEqual(800)
                             .and(Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.lessOrEqual(900))
                             .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))
+                            .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
             )
 
         } else {
@@ -299,6 +320,7 @@ class JooqParcelRepository {
                     Tables.TBLAUFTRAGCOLLIES,
                     Tables.TBLAUFTRAGCOLLIES.MYDEPOTABD.eq(station)
                             .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))
+                            .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
             )
 
         }
@@ -312,6 +334,7 @@ class JooqParcelRepository {
                 Tables.TBLAUFTRAGCOLLIES,
                 Tables.TBLAUFTRAGCOLLIES.MYDEPOTID2.eq(station)
                         .and(Tables.TBLAUFTRAGCOLLIES.CREFERENZ.eq(cReference))
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
         )
 
 
@@ -330,15 +353,17 @@ class JooqParcelRepository {
         )
 
     }
-    fun getSumUnitRealWeight(orderId:Long):BigDecimal?{
-        return dsl.select(sum(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL)).
-                from(Tables.TBLAUFTRAGCOLLIES).
-                where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble()))?.fetchOne(0, BigDecimal::class.java)
+
+    fun getSumUnitRealWeight(orderId: Long): BigDecimal? {
+        return dsl.select(sum(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL)).from(Tables.TBLAUFTRAGCOLLIES).where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
+                .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+        )?.fetchOne(0, BigDecimal::class.java)
     }
-    fun getSumUnitVolWeight(orderId:Long):BigDecimal?{
-        return dsl.select(sum(Tables.TBLAUFTRAGCOLLIES.GEWICHTLBH)).
-                from(Tables.TBLAUFTRAGCOLLIES).
-                where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble()))?.fetchOne(0, BigDecimal::class.java)
+
+    fun getSumUnitVolWeight(orderId: Long): BigDecimal? {
+        return dsl.select(sum(Tables.TBLAUFTRAGCOLLIES.GEWICHTLBH)).from(Tables.TBLAUFTRAGCOLLIES).where(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(orderId.toDouble())
+                .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+        )?.fetchOne(0, BigDecimal::class.java)
     }
 
 }
