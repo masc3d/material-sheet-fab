@@ -124,7 +124,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         items: [
           {
             label: this.translate.instant( 'tour' ),
-            icon: 'fas fa-bus',
+            icon: '',
             routerLink: 'tour',
             command: closeMenu
           }
@@ -138,7 +138,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         items: [
           {
             label: this.translate.instant( 'co-worker' ),
-            icon: 'far fa-smile',
+            icon: '',
             routerLink: 'user',
             command: closeMenu
           }
@@ -334,7 +334,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
       const officeManagementItems = [
         {
           label: this.translate.instant( 'co-worker' ),
-          icon: 'far fa-smile',
+          icon: '',
           routerLink: 'user',
           command: closeMenu
         },
@@ -412,7 +412,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         items: [
           {
             label: this.translate.instant( 'tour' ),
-            icon: 'fas fa-bus',
+            icon: '',
             routerLink: 'tour',
             command: closeMenu
           }
