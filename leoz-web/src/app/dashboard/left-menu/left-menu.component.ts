@@ -246,7 +246,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
         {
           label: this.translate.instant( 'touroptimizing' ),
           icon: '',
-          routerLink: '/dashboard/touroptimizing',
+          routerLink: '/dashboard/touroptimizing/officedispo',
           command: closeMenu
         },
         {
