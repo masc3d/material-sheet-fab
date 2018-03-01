@@ -14,11 +14,13 @@ import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.UserService.User
+import org.deku.leoz.time.toDateWithoutTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import sx.rs.RestProblem
+import sx.time.toSqlDate
 import javax.inject.Inject
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
@@ -67,8 +69,8 @@ class UserService : UserService {
             debitor_id != null -> {
                 val userRecList = userRepository.findByDebitorId(debitor_id)
                         ?: throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "no user found by debitor-id")
+                                status = Response.Status.NOT_FOUND,
+                                title = "no user found by debitor-id")
                 if (userRecList.isEmpty())
                     throw RestProblem(
                             status = Response.Status.NOT_FOUND,
@@ -92,8 +94,8 @@ class UserService : UserService {
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
                         ?: throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "no user found by email")
+                                status = Response.Status.NOT_FOUND,
+                                title = "no user found by email")
 
                 if (UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
                     return listOf(userRecord.toUser())
@@ -304,8 +306,8 @@ class UserService : UserService {
             rec.email = user.email
             if (password == null)
                 throw RestProblem(
-                        status=Response.Status.CONFLICT,
-                        title="On login-change you have to provide a password"
+                        status = Response.Status.CONFLICT,
+                        title = "On login-change you have to provide a password"
                 )
         }
         if (debitor != null)
@@ -320,8 +322,26 @@ class UserService : UserService {
             rec.firstname = firstName
         if (lastName != null)
             rec.lastname = lastName
-        if (user.active != null)
+        if (user.active != null) {
             rec.active = user.isActive
+            if (user.active == true) {
+                if (user.expiresOn == null) {
+                    if (java.util.Date().toSqlDate() > rec.expiresOn) {
+                        throw RestProblem(
+                                status = Response.Status.CONFLICT,
+                                title = "expiresOn invalid to activate user"
+                        )
+                    }
+                } else {
+                    if (java.util.Date().toSqlDate() > user.expiresOn) {
+                        throw RestProblem(
+                                status = Response.Status.CONFLICT,
+                                title = "expiresOn invalid to activate user"
+                        )
+                    }
+                }
+            }
+        }
         if (user.externalUser != null)
             rec.externalUser = user.isExternalUser
         if (phone != null)
@@ -330,6 +350,11 @@ class UserService : UserService {
             rec.phoneMobile = mobilePhone
         if (user.expiresOn != null)
             rec.expiresOn = user.expiresOn
+        else {
+            if (user.active != null && (user.active == false)) {
+                rec.expiresOn = java.util.Date().toSqlDate()
+            }
+        }
 
 //todo read from mst_station_user
 //        rec.allowedStations = stations
@@ -379,6 +404,7 @@ class UserService : UserService {
     override fun getCurrentUserConfiguration(): String {
         val authorizedUser = httpRequest.authorizedUser
 
-        return configurationService.getUserConfiguration(authorizedUser.id ?: throw RestProblem(status = Response.Status.NOT_FOUND))
+        return configurationService.getUserConfiguration(authorizedUser.id
+                ?: throw RestProblem(status = Response.Status.NOT_FOUND))
     }
 }
