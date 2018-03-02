@@ -97,20 +97,22 @@ class StopProcessScreen :
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_order,
-                amount = deliveryStop.deliveredOrdersAmount.map { it.toString() }.toField(),
-                totalAmount = deliveryStop.orderTotalAmount.map { it.toString() }.toField()
+                amount = deliveryStop.deliveredOrdersAmount.cast(Number::class.java),
+                totalAmount = deliveryStop.orderTotalAmount.cast(Number::class.java)
         )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_variant_closed,
-                amount = deliveryStop.deliveredParcelAmount.map { it.toString() }.toField(),
-                totalAmount = deliveryStop.parcelTotalAmount.map { it.toString() }.toField()
+                amount = deliveryStop.deliveredParcelAmount.cast(Number::class.java),
+                totalAmount = deliveryStop.parcelTotalAmount.cast(Number::class.java)
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_weight_scale,
-                amount = deliveryStop.deliveredParcelsWeight.map { "${it.format(2)}kg" }.toField(),
-                totalAmount = deliveryStop.totalWeight.map { "${it.format(2)}kg" }.toField()
+                amount = deliveryStop.deliveredParcelsWeight.cast(Number::class.java),
+                totalAmount = deliveryStop.totalWeight.cast(Number::class.java),
+                format =  { "${(it as Double).format(2)}kg" }
+
         )
     }
 

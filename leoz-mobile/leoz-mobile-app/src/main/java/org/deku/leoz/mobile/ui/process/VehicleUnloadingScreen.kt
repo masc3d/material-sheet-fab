@@ -74,14 +74,15 @@ class VehicleUnloadingScreen :
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_variant_closed,
-                amount = this.vehicleUnloading.parcelAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleUnloading.parcelTotalAmount.map { it.toString() }.toField()
+                amount = this.vehicleUnloading.parcelAmount.map { it as Number },
+                totalAmount = this.vehicleUnloading.parcelTotalAmount.map { it as Number }
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_weight_scale,
-                amount = this.vehicleUnloading.weight.map { "${it.format(2)}kg" }.toField(),
-                totalAmount = this.vehicleUnloading.totalWeight.map { "${it.format(2)}kg" }.toField()
+                amount = this.vehicleUnloading.weight.map { it as Number },
+                totalAmount = this.vehicleUnloading.totalWeight.map { it as Number },
+                format = { "${(it as Double).format(2)}kg" }
         )
     }
 

@@ -81,26 +81,27 @@ class VehicleLoadingScreen :
 
         val stopCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_stop,
-                amount = this.vehicleLoading.stopAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.stopTotalAmount.map { it.toString() }.toField()
+                amount = this.vehicleLoading.stopAmount.map { it as Number},
+                totalAmount = this.vehicleLoading.stopTotalAmount.map { it as Number}
         )
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_order,
-                amount = this.vehicleLoading.orderAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.orderTotalAmount.map { it.toString() }.toField()
+                amount = this.vehicleLoading.orderAmount.map { it as Number},
+                totalAmount = this.vehicleLoading.orderTotalAmount.map { it as Number}
         )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_variant_closed,
-                amount = this.vehicleLoading.parcelAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.parcelTotalAmount.map { it.toString() }.toField()
+                amount = this.vehicleLoading.parcelAmount.map { it as Number},
+                totalAmount = this.vehicleLoading.parcelTotalAmount.map { it as Number}
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_weight_scale,
-                amount = this.vehicleLoading.weight.map { "${it.format(2)}kg" }.toField(),
-                totalAmount = this.vehicleLoading.totalWeight.map { "${it.format(2)}kg" }.toField()
+                amount = this.vehicleLoading.weight.map { it as Number},
+                totalAmount = this.vehicleLoading.totalWeight.map { it as Number},
+                format = { "${(it as Double).format(2)}kg" }
         )
     }
 
