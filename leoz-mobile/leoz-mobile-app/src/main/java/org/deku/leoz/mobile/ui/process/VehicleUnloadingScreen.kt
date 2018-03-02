@@ -72,13 +72,13 @@ class VehicleUnloadingScreen :
     ) : BaseObservable() {
 
         val parcelCounter = CounterViewModel(
-                icon = R.drawable.ic_package_variant_closed,
+                iconRes = R.drawable.ic_package_variant_closed,
                 amount = this.vehicleUnloading.parcelAmount.map { it as Number },
                 totalAmount = this.vehicleUnloading.parcelTotalAmount.map { it as Number }
         )
 
         val weightCounter = CounterViewModel(
-                icon = R.drawable.ic_weight_scale,
+                iconRes = R.drawable.ic_weight_scale,
                 amount = this.vehicleUnloading.weight.map { it as Number },
                 totalAmount = this.vehicleUnloading.totalWeight.map { it as Number },
                 format = { "${(it as Double).format(2)}kg" }

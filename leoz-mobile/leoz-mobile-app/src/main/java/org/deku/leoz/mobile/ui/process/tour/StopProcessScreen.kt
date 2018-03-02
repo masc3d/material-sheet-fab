@@ -95,19 +95,19 @@ class StopProcessScreen :
         : BaseObservable() {
 
         val orderCounter = CounterViewModel(
-                icon = R.drawable.ic_order,
+                iconRes = R.drawable.ic_order,
                 amount = tourStop.deliveredOrdersAmount.cast(Number::class.java),
                 totalAmount = tourStop.orderTotalAmount.cast(Number::class.java)
         )
 
         val parcelCounter = CounterViewModel(
-                icon = R.drawable.ic_package_variant_closed,
+                iconRes = R.drawable.ic_package_variant_closed,
                 amount = tourStop.deliveredParcelAmount.cast(Number::class.java),
                 totalAmount = tourStop.parcelTotalAmount.cast(Number::class.java)
         )
 
         val weightCounter = CounterViewModel(
-                icon = R.drawable.ic_weight_scale,
+                iconRes = R.drawable.ic_weight_scale,
                 amount = tourStop.deliveredParcelsWeight.cast(Number::class.java),
                 totalAmount = tourStop.totalWeight.cast(Number::class.java),
                 format =  { "${(it as Double).format(2)}kg" }
@@ -1044,12 +1044,6 @@ class StopProcessScreen :
 
                                             this.activity.showScreen(SignatureScreen().also {
                                                 it.setTargetFragment(this, 0)
-                                                it.parameters = SignatureScreen.Parameters(
-                                                        stopId = this.stop.id,
-                                                        deliveryReason = EventDeliveredReason.NORMAL,
-                                                        recipient = this.tourStop.recipientName
-                                                                ?: ""
-                                                )
                                             })
                                         })
                                         .build().show()
@@ -1131,11 +1125,6 @@ class StopProcessScreen :
         this.activity.showScreen(
                 SignatureScreen().also {
                     it.setTargetFragment(this, 0)
-                    it.parameters = SignatureScreen.Parameters(
-                            stopId = this.stop.id,
-                            deliveryReason = EventDeliveredReason.NEIGHBOR,
-                            recipient = neighbourName
-                    )
                 }
         )
     }
@@ -1153,11 +1142,6 @@ class StopProcessScreen :
 
                             this.activity.showScreen(SignatureScreen().also {
                                 it.setTargetFragment(this, 0)
-                                it.parameters = SignatureScreen.Parameters(
-                                        stopId = this.stop.id,
-                                        deliveryReason = EventDeliveredReason.NORMAL,
-                                        recipient = this.tourStop.recipientName ?: ""
-                                )
                             })
                         })
                         .build().show()

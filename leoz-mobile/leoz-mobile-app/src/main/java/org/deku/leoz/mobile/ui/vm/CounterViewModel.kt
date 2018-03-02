@@ -1,10 +1,15 @@
 package org.deku.leoz.mobile.ui.vm
 
+import android.content.Context
 import android.databinding.BaseObservable
-import android.databinding.ObservableField
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
+import android.support.v4.content.ContextCompat
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import org.deku.leoz.mobile.R
 import sx.android.databinding.toField
@@ -15,9 +20,9 @@ import sx.android.databinding.toField
  */
 class CounterViewModel(
         /** The drawable to display */
-        @DrawableRes val icon: Int,
+        @DrawableRes val iconRes: Int,
         /** Optional icon tint */
-        @ColorRes val iconTint: Int = R.color.colorLighterGrey,
+        @ColorRes val iconTintRes: Int = R.color.colorLighterGrey,
         /** Optional icon alpha */
         val iconAlpha: Float = 1.0F,
         /** Amount */
@@ -27,31 +32,43 @@ class CounterViewModel(
         /** Amount formatting */
         val format: (Number) -> String = { it.toString() },
         /** Singular title */
-        @StringRes val title: Int = 0,
+        @StringRes val titleRes: Int = 0,
         /** Plural title (defaults to singular title) */
-        @StringRes val titlePlural: Int = title
+        @StringRes val titlePluralRes: Int = titleRes
 ) : BaseObservable() {
-    val amountField by lazy {
+    private val context: Context by Kodein.global.lazy.instance()
+
+    val amountTextField by lazy {
         this.amount
                 .map { format(it) }
                 .toField()
     }
 
-    val totalAmountField by lazy {
+    val totalAmountTextField by lazy {
         this.totalAmount
                 .map { format(it) }
                 .toField()
+    }
+
+    val amountGreaterThanZero by lazy {
+        this.amount.map { it.toDouble() > 0.0 }.toField()
     }
 
     @delegate:StringRes
     val titleField by lazy {
         this.amount
                 .map {
-                    if (it.toDouble() > 1.0)
-                        this.titlePlural
+                    val stringRes = if (it.toDouble() > 1.0)
+                        this.titlePluralRes
                     else
-                        this.title
+                        this.titleRes
+
+                    if (stringRes > 0) context.getText(stringRes) else ""
                 }
                 .toField()
+    }
+
+    val iconTintColor by lazy {
+        ContextCompat.getColor(context, this.iconTintRes)
     }
 }

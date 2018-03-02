@@ -1,77 +1,213 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="org.deku.leoz.mobile.ui.process.tour.stop.SignatureScreen">
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:bind="http://schemas.android.com/tools"
+    >
 
-    <!-- TODO: this screen needs redesign. relative layouts don't scale well across display sizes -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical">
+    <data>
+        <import type="android.view.View"/>
 
-        <TextView
-            android:id="@+id/textView3"
-            style="@style/TextAppearance.AppCompat.Headline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginBottom="@dimen/margin"
-            android:gravity="center"
-            android:text="@string/please_sign_here"
-            />
-
-        <com.github.gcacace.signaturepad.views.SignaturePad
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/uxSignaturePad"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:layout_below="@+id/textView3"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/signaturepad_background"
-            app:clearOnDoubleClick="false"
-            app:penColor="@android:color/black"/>
-
-
-        <FrameLayout
-            style="@style/AppTheme.Layout.Content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/uxSignaturePad"
-            >
-
-            <TextView
-                android:id="@+id/uxRecipient"
-                style="@style/TextAppearance.AppCompat.Medium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/small_margin"
-                android:text="@string/signature_signed_by_name"/>
-
-        </FrameLayout>
-
-    </RelativeLayout>
+        <variable
+            name="vm"
+            type="org.deku.leoz.mobile.ui.process.tour.stop.SignatureScreen.ViewModel"/>
+    </data>
 
     <FrameLayout
-        style="@style/AppTheme.Layout.Content"
+        android:id="@+id/uxScreen"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_height="match_parent"
         >
 
-        <TextView
-            android:id="@+id/uxConclusion"
-            style="@style/TextAppearance.AppCompat.Medium"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:alpha="1"
-            android:ems="10"
-            android:text="@string/signature_conclusion"
-            tools:ignore="HardcodedText"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <!-- Header spacing for action buttons -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"/>
+
+            <!-- Summary -->
+            <LinearLayout
+                android:id="@+id/uxSummaryContainer"
+                style="@style/AppTheme.Layout.Content"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1.4"
+                android:orientation="vertical"
+                >
+
+                <!-- Summary heading -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/small_margin"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_large"
+                            android:layout_height="@dimen/icon_size_large"
+                            android:layout_marginEnd="@dimen/margin"
+                            android:src="@drawable/ic_stop"
+                            android:tint="@color/colorGrey"
+                            />
+
+                        <TextView
+                            android:id="@+id/uxSummary"
+                            style="@style/TextAppearance.AppCompat.Headline"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/margin"
+                            android:gravity="center"
+                            android:text="Summary"
+                            />
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+                <!-- Summary counters -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/small_margin"
+                    android:orientation="horizontal"
+                    >
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:visibility="@{safeUnbox(vm.deliveredCounter.amountGreaterThanZero) ? View.VISIBLE : View.GONE}"
+                        >
+
+                        <include
+                            layout="@layout/view_circular_counter"
+                            bind:counter="@{vm.deliveredCounter}"
+                            />
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:visibility="@{safeUnbox(vm.orderCounter.amountGreaterThanZero) ? View.VISIBLE : View.GONE}"
+                        >
+
+                        <include
+                            layout="@layout/view_circular_counter"
+                            bind:counter="@{vm.orderCounter}"
+                            />
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:visibility="@{safeUnbox(vm.damagedCounter.amountGreaterThanZero) ? View.VISIBLE : View.GONE}"
+                        >
+
+                        <include
+                            layout="@layout/view_circular_counter"
+                            bind:counter="@{vm.damagedCounter}"
+                            />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Signature area heading -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/small_margin"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    >
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        android:layout_marginEnd="@dimen/margin"
+                        android:src="@drawable/ic_user"
+                        android:tint="@color/colorGrey"
+                        />
+
+                    <TextView
+                        android:id="@+id/uxSignatureHeading"
+                        style="@style/TextAppearance.AppCompat.Headline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        android:gravity="center"
+                        android:text="@string/recipient"
+                        />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <!-- Signature area -->
+            <RelativeLayout
+                android:id="@+id/uxSignatureContainer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="2.0"
+                android:background="@drawable/signaturepad_background"
+                >
+
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_above="@+id/uxRecipient"
+                    android:layout_marginBottom="@dimen/large_margin"
+                    android:layout_marginEnd="@dimen/large_margin"
+                    android:layout_marginStart="@dimen/large_margin"
+                    android:background="@android:color/darker_gray"/>
+
+                <TextView
+                    android:id="@+id/uxRecipient"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:paddingBottom="@dimen/large_margin"
+                    android:text="@{vm.signatureText}"
+                    android:textColor="@color/dark_gray"/>
+
+                <com.github.gcacace.signaturepad.views.SignaturePad
+                    android:id="@+id/uxSignaturePad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    app:clearOnDoubleClick="false"
+                    app:penColor="@android:color/black"
+                    />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
     </FrameLayout>
 
-</FrameLayout>
+</layout>

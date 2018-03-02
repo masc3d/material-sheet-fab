@@ -78,25 +78,25 @@ class VehicleLoadingScreen :
     ) : BaseObservable() {
 
         val stopCounter = CounterViewModel(
-                icon = R.drawable.ic_stop,
+                iconRes = R.drawable.ic_stop,
                 amount = this.vehicleLoading.stopAmount.map { it as Number},
                 totalAmount = this.vehicleLoading.stopTotalAmount.map { it as Number}
         )
 
         val orderCounter = CounterViewModel(
-                icon = R.drawable.ic_order,
+                iconRes = R.drawable.ic_order,
                 amount = this.vehicleLoading.orderAmount.map { it as Number},
                 totalAmount = this.vehicleLoading.orderTotalAmount.map { it as Number}
         )
 
         val parcelCounter = CounterViewModel(
-                icon = R.drawable.ic_package_variant_closed,
+                iconRes = R.drawable.ic_package_variant_closed,
                 amount = this.vehicleLoading.parcelAmount.map { it as Number},
                 totalAmount = this.vehicleLoading.parcelTotalAmount.map { it as Number}
         )
 
         val weightCounter = CounterViewModel(
-                icon = R.drawable.ic_weight_scale,
+                iconRes = R.drawable.ic_weight_scale,
                 amount = this.vehicleLoading.weight.map { it as Number},
                 totalAmount = this.vehicleLoading.totalWeight.map { it as Number},
                 format = { "${(it as Double).format(2)}kg" }

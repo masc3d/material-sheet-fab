@@ -4,8 +4,11 @@ import android.databinding.BindingAdapter
 import android.databinding.InverseBindingAdapter
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.support.annotation.ColorRes
 import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.res.ResourcesCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup

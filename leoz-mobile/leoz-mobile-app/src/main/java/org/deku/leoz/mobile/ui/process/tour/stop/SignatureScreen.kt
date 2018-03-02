@@ -1,6 +1,9 @@
 package org.deku.leoz.mobile.ui.process.tour.stop
 
+import android.content.Context
 import android.content.pm.ActivityInfo
+import android.databinding.BaseObservable
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,39 +17,36 @@ import com.neovisionaries.i18n.CountryCode
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_tour_stop_signature.*
-import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.entity.Stop
+import org.deku.leoz.mobile.databinding.ScreenTourStopSignatureBinding
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.process.Tour
+import org.deku.leoz.mobile.model.process.TourStop
+import org.deku.leoz.mobile.model.process.toTourStop
 import org.deku.leoz.mobile.model.repository.StopRepository
-import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.BaseCameraScreen
+import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
+import org.deku.leoz.mobile.ui.vm.CounterViewModel
 import org.deku.leoz.model.EventDeliveredReason
 import org.parceler.Parcel
 import org.parceler.ParcelConstructor
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.trace
+import sx.text.toHexString
 
 /**
  * Signature screen
  */
 class SignatureScreen
     :
-        ScreenFragment<SignatureScreen.Parameters>(),
+        ScreenFragment<Any>(),
         SignaturePad.OnSignedListener,
         BaseCameraScreen.Listener {
     interface Listener {
         fun onSignatureSubmitted(signatureSvg: String)
         fun onSignatureImageSubmitted(signatureJpeg: ByteArray)
     }
-
-    @Parcel(Parcel.Serialization.BEAN)
-    class Parameters @ParcelConstructor constructor(
-            var stopId: Int,
-            var deliveryReason: EventDeliveredReason = EventDeliveredReason.NORMAL,
-            var recipient: String
-    )
 
     private val listener by lazy {
         this.targetFragment as? Listener
@@ -55,22 +55,55 @@ class SignatureScreen
     }
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val db: Database by Kodein.global.lazy.instance()
-    private val stopRepository: StopRepository by Kodein.global.lazy.instance()
+
+    /**
+     * Referring stop
+     *
+     * NOTE: Signaature screen needs to rely on injected tour / active stop, as not all tour stop
+     * attributes are stored persistently.
+     */
     private val tour: Tour by Kodein.global.lazy.instance()
 
-    private val descriptionText: String by lazy {
-        this@SignatureScreen.getString(R.string.signature_conclusion,
-                tour.activeStop?.orders?.blockingFirst()?.count().toString(),
-                tour.activeStop?.deliveredParcelAmount?.blockingFirst().toString(),
-                stop.address.line1)
+    private val stop: TourStop by lazy {
+        tour.activeStop
+                ?: throw IllegalArgumentException("No active tour stop")
     }
 
-    private val stop: Stop by lazy {
-        stopRepository
-                .findById(this.parameters.stopId)
-                .blockingGet()
-                ?: throw IllegalArgumentException("Illegal stop id [${this.parameters.stopId}]")
+    /**
+     * Created by masc on 10.07.17.
+     */
+    class ViewModel(
+            val stop: TourStop,
+            val recipient: String
+    ) : BaseObservable() {
+
+        private val context: Context by Kodein.global.lazy.instance()
+
+        val signatureText by lazy {
+            context.getString(R.string.signature_signed_by_name, recipient)
+        }
+
+        val deliveredCounter = CounterViewModel(
+                iconRes = R.drawable.ic_package_variant_closed,
+                amount = this.stop.deliveredParcels.map { it.count() }.cast(Number::class.java),
+                titleRes = R.string.parcel,
+                titlePluralRes = R.string.parcels
+        )
+
+        val orderCounter = CounterViewModel(
+                iconRes = R.drawable.ic_order,
+                amount = this.stop.orders.map { it.count() }.cast(Number::class.java),
+                titleRes = R.string.order,
+                titlePluralRes = R.string.orders
+        )
+
+        val damagedCounter = CounterViewModel(
+                iconRes = R.drawable.ic_damaged,
+                iconTintRes = R.color.colorAccent,
+                iconAlpha = 0.4F,
+                amount = this.stop.damagedParcels.map { it.count() }.cast(Number::class.java),
+                titleRes = R.string.damaged
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,10 +111,11 @@ class SignatureScreen
 
         this.orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         this.toolbarHidden = true
+        this.statusBarHidden = true
         this.flipScreen = true
         this.lockNavigationDrawer = true
 
-        this.setLanguage(CountryCode.valueOf(this.stop.address.countryCode))
+        this.setLanguage(CountryCode.valueOf(this.stop.entity.address.countryCode))
     }
 
     override fun onDestroy() {
@@ -90,15 +124,24 @@ class SignatureScreen
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? =
-            // Inflate the layout for this fragment
-            inflater.inflate(R.layout.screen_tour_stop_signature, container, false)
+                              savedInstanceState: Bundle?): View? {
+        val binding: ScreenTourStopSignatureBinding = DataBindingUtil.inflate(
+                inflater,
+                R.layout.screen_tour_stop_signature,
+                container, false)
+
+        // Setup bindings
+        binding.vm = ViewModel(
+                stop = this.stop,
+                recipient = this.stop.recipientName ?: ""
+        )
+
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxConclusion.text = descriptionText
-        this.uxRecipient.text = this.getString(R.string.signature_signed_by_name, this.parameters.recipient)
         this.uxSignaturePad.setOnSignedListener(this)
 
         this.actionItems = listOf(
@@ -137,15 +180,17 @@ class SignatureScreen
                             this.resetLanguage()
                             this.listener?.onSignatureSubmitted(this.uxSignaturePad.signatureSvg)
                         }
+
                         R.id.action_signature_clear -> {
                             this.uxSignaturePad.clear()
                         }
+
                         R.id.action_signature_paper -> {
                             this.resetLanguage()
                             this.activity.showScreen(SignOnPaperCameraScreen().also {
                                 it.setTargetFragment(this, 0)
                                 it.parameters = SignOnPaperCameraScreen.Parameters(
-                                        name = this.parameters.recipient
+                                        name = this.stop.recipientName ?: ""
                                 )
                             })
                         }

@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:alpha="0.7"
-                android:text="@{counter.totalAmountField, default=100}"
+                android:text="@{counter.totalAmountTextField, default=100}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 />
 
@@ -39,7 +39,7 @@
                 android:layout_marginStart="@dimen/margin"
                 android:layout_marginTop="10dp"
                 android:contentDescription="TODO"
-                android:src="@{counter.icon, default=@drawable/ic_stop}"
+                android:src="@{counter.iconRes, default=@drawable/ic_stop}"
                 android:tint="@color/colorDarkGrey"/>
 
         </FrameLayout>
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="@{counter.amountField, default=0}"
+            android:text="@{counter.amountTextField, default=0}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             />
 
