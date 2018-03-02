@@ -13,9 +13,7 @@ import { TouroptimizingService } from './touroptimizing.service';
     TabMenuModule,
     TouroptimizingRoutingModule
   ],
-  declarations: [
-    TouroptimizingComponent
-  ],
+  declarations: [ TouroptimizingComponent ],
   exports: [ TouroptimizingComponent ],
   providers: [TouroptimizingService ]
 } )

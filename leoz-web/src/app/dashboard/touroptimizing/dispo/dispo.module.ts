@@ -12,10 +12,9 @@ import { ToggleButtonModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/dialog';
 
 import { SharedModule } from '../../../shared/shared.module';
-import { DispoModule } from '../dispo/dispo.module';
 import { TouroptimizingService } from '../touroptimizing.service';
-import { DriverdispoComponent } from './driverdispo.component';
-import { DriverdispoRoutingModule } from './driverdispo-routing.module';
+import { DispoComponent } from './dispo.component';
+import { TourlistitemComponent } from './tourlistitem.component';
 
 @NgModule( {
   imports: [
@@ -29,20 +28,19 @@ import { DriverdispoRoutingModule } from './driverdispo-routing.module';
     DataScrollerModule,
     TabViewModule,
     TabMenuModule,
-    DialogModule,
-    DispoModule,
-    DriverdispoRoutingModule
+    DialogModule
   ],
   declarations: [
-    DriverdispoComponent
+    DispoComponent,
+    TourlistitemComponent
   ],
   exports: [
-    DriverdispoComponent
+    DispoComponent,
+    TourlistitemComponent
   ],
   providers: [
     TouroptimizingService
   ]
 } )
-
-export class DriverdispoModule {
+export class DispoModule {
 }

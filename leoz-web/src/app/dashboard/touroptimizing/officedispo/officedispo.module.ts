@@ -1,19 +1,21 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
-import { SharedModule } from '../../../shared/shared.module';
-import { OfficedispoRoutingModule } from './officedispo-routing.module';
-import { OfficedispoComponent } from './officedispo.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FieldsetModule } from 'primeng/fieldset';
 import { ButtonModule } from 'primeng/button';
-import { FormsModule } from '@angular/forms';
 import { DataScrollerModule } from 'primeng/datascroller';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
 import { ToggleButtonModule } from 'primeng/primeng';
-import { TourlistitemComponent } from '../tourlistitem.component';
+import { DialogModule } from 'primeng/dialog';
+
+import { SharedModule } from '../../../shared/shared.module';
+import { DispoModule } from '../dispo/dispo.module';
+import { OfficedispoRoutingModule } from './officedispo-routing.module';
 import { TouroptimizingService } from '../touroptimizing.service';
+import { OfficedispoComponent } from './officedispo.component';
 
 @NgModule( {
   imports: [
@@ -27,12 +29,18 @@ import { TouroptimizingService } from '../touroptimizing.service';
     DataScrollerModule,
     TabViewModule,
     TabMenuModule,
+    DialogModule,
+    DispoModule,
     OfficedispoRoutingModule,
   ],
-  declarations: [ OfficedispoComponent,
-                  TourlistitemComponent],
-  exports: [ OfficedispoComponent ],
-  providers: [ TouroptimizingService
+  declarations: [
+    OfficedispoComponent
+  ],
+  exports: [
+    OfficedispoComponent
+  ],
+  providers: [
+    TouroptimizingService
   ]
 } )
 export class OfficedispoModule {

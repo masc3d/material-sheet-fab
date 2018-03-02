@@ -4,10 +4,11 @@
     <div class="ui-g-12" style="padding:0; margin-left: 10px;">
       <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
         <div class="ui-g-12 ui-lg-6">{{'tourlists-basedon-deliverylists' | translate}}</div>
-        <div class="ui-g-12 ui-lg-2"> </div>
+        <div class="ui-g-12 ui-lg-2"></div>
         <div class="ui-g-12 ui-lg-2">
           <button pButton label="refresh" type="button" icon="fas fa-redo-alt" iconPos="left"
                   (click)="getTours()"></button>
+                  <!--(click)="getTours(withInitialGeneration)"></button>-->
         </div>
         <div class="ui-g-12 ui-lg-2">
           <button pButton label="{{'reset' | translate}}" type="button" icon="fas fa-undo-alt" iconPos="left"
@@ -30,7 +31,7 @@
           <app-tourlistitem [listItem]="tour" [faIcon]="'fa-truck'" [parent]="this"></app-tourlistitem>
         </div>
       </div>
-      <div class="ui-g-12 ui-lg-6"> </div>
+      <div class="ui-g-12 ui-lg-6"></div>
       <div class="ui-g-12 ui-lg-2">
         <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
                         onIcon="far fa-check-square" offIcon="far fa-square"
@@ -38,7 +39,7 @@
       </div>
       <div class="ui-g-12 ui-lg-2">
         <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"
-                (click)="optimizeTours()"></button>
+                (click)="optimizeDialog()"></button>
       </div>
       <div class="ui-g-12 ui-lg-2 ui-g-nopad">
         <div *ngIf="notMicrodoof" class="ui-g-12">
@@ -48,11 +49,59 @@
           <button pButton type="button" (click)="saving()" label="{{'save' | translate}}"></button>
         </div>
       </div>
-      <!--not used for the moment-->
-      <!--<div class="ui-inputgroup ui-g-12 ui-lg-4">
-        <span class="ui-inputgroup-addon"><i class="fas fa-truck"></i></span>
-        <input type="text" pInputText [(ngModel)]="vehicleCount">
-      </div>-->
+
+      <p-dialog header="{{'optimizationOptions' | translate}}" [(visible)]="displayOptimizationOptions"
+                [modal]="true" width="700" [responsive]="true">
+        <div class="ui-g">
+          <div class="ui-g-12">
+            <p-checkbox [(ngModel)]="optimizeTodayAndFuture" binary="true"
+                        label="{{'optimizeTodayAndFuture' | translate}}"></p-checkbox>
+          </div>
+          <div class="ui-g-12">
+            <p-checkbox [(ngModel)]="optimizeTraffic" binary="true"
+                        label="{{'optimizeTraffic' | translate}}"></p-checkbox>
+          </div>
+          <div class="ui-g-12">
+            <p-checkbox [(ngModel)]="optimizeExistingtours" binary="true"
+                        label="{{'optimizeExistingtours' | translate}}"></p-checkbox>
+          </div>
+          <div *ngIf="this.selectedOptimizableTourIds.length === 1" class="ui-g-12">
+            <p-checkbox [(ngModel)]="optimizeSplitTours" binary="true"
+                        label="{{'optimizeSplitTours' | translate}}"></p-checkbox>
+          </div>
+          <div *ngIf="this.selectedOptimizableTourIds.length === 1 && optimizeSplitTours" class="ui-g-12">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{'sprinter_max_kg' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText [(ngModel)]="sprinterMaxKg">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{'caddy_max_kg' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText [(ngModel)]="caddyMaxKg">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{'kombi_max_kg' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText [(ngModel)]="kombiMaxKg">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{'bike_max_kg' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText [(ngModel)]="bikeMaxKg">
+            </div>
+          </div>
+        </div>
+        <p-footer>
+          <button type="button" pButton (click)="rejectOptimizationOptions()" label="{{'cancel' | translate}}"></button>
+          <button type="button" pButton (click)="acceptOptimizationOptions()" label="{{'start' | translate}}"></button>
+        </p-footer>
+      </p-dialog>
+
     </div>
   </div>
 </div>

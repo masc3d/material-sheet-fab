@@ -439,6 +439,7 @@ p-tabpanel > div {
 }
 
 .ui-chkbox-box {
+  border-color: #d6d6d6 !important;
   background-color: #FFFFFF !important;
 }
 
@@ -644,4 +645,9 @@ input[pinputtext]{
 
 .ui-table .ui-table-thead > tr > th, .ui-table .ui-table-tfoot > tr > td {
   font-weight: normal !important;
+}
+
+.ui-dialog-content,
+.ui-dialog-footer {
+  background-color: white !important;
 }
