@@ -151,7 +151,8 @@ interface ExportService {
         YELLOW_SEAL_NOT_VALID("Yellow seal number not valid"),
         NO_SEAL_IN_BAG("No seal number in bag"),
         WEIGHT_GREATER_THAN_MAX("Weight > max"),
-        SEND_DATE_INVALID("Invalid senddate")
+        SEND_DATE_INVALID("Invalid senddate"),
+        BAG_NOT_CLOSED("Bag not closed - close bag before export")
     }
 
     @GET

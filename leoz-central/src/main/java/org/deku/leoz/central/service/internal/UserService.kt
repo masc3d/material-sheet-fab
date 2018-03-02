@@ -19,6 +19,7 @@ import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import sx.rs.RestProblem
 import sx.time.toSqlDate
 import javax.inject.Inject
@@ -145,6 +146,7 @@ class UserService : UserService {
         update(email = user.email, user = user, sendAppLink = sendAppLink)
     }
 
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun update(email: String, user: User, sendAppLink: Boolean) {
         val authorizedUser = httpRequest.authorizedUser
 

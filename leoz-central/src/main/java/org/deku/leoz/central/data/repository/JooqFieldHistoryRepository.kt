@@ -66,7 +66,7 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
             //is java.sql.Timestamp -> {
             if (it.dataType.typeName.equals("timestamp")) {
 
-                val dtOld = it.original(this) as Date
+                val dtOld = it.original(this) as Date?
                 val dtOldValue: String
                 if (dtOld == null) {
                     dtOldValue = "null"
@@ -79,7 +79,7 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
                 }
                 fieldHistoryRecord.oldvalue = dtOldValue
 
-                val dt = it.getValue(this) as Date
+                val dt = it.getValue(this) as Date?
                 val dtNewValue: String
                 if (dt == null) {
                     dtNewValue = "null"
