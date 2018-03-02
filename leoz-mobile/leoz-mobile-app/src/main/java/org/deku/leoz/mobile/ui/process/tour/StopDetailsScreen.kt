@@ -60,7 +60,7 @@ class StopDetailsScreen
     )
 
     interface Listener {
-        fun onDeliveryStopDetailUnitNumberInput(unitNumber: UnitNumber)
+        fun onStopDetailUnitNumberInput(unitNumber: UnitNumber)
     }
 
     private val listener by lazy { this.activity as? Listener }
@@ -363,6 +363,6 @@ class StopDetailsScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        this.listener?.onDeliveryStopDetailUnitNumberInput(unitNumber)
+        this.listener?.onStopDetailUnitNumberInput(unitNumber)
     }
 }

@@ -44,7 +44,7 @@ import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
-import org.deku.leoz.mobile.model.process.DeliveryStop
+import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -65,7 +65,6 @@ import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.SimpleVmItem
@@ -97,20 +96,20 @@ class StopProcessScreen :
 
         val orderCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_order,
-                amount = deliveryStop.deliveredOrdersAmount.cast(Number::class.java),
-                totalAmount = deliveryStop.orderTotalAmount.cast(Number::class.java)
+                amount = tourStop.deliveredOrdersAmount.cast(Number::class.java),
+                totalAmount = tourStop.orderTotalAmount.cast(Number::class.java)
         )
 
         val parcelCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_package_variant_closed,
-                amount = deliveryStop.deliveredParcelAmount.cast(Number::class.java),
-                totalAmount = deliveryStop.parcelTotalAmount.cast(Number::class.java)
+                amount = tourStop.deliveredParcelAmount.cast(Number::class.java),
+                totalAmount = tourStop.parcelTotalAmount.cast(Number::class.java)
         )
 
         val weightCounter = CounterViewModel(
                 drawableRes = R.drawable.ic_weight_scale,
-                amount = deliveryStop.deliveredParcelsWeight.cast(Number::class.java),
-                totalAmount = deliveryStop.totalWeight.cast(Number::class.java),
+                amount = tourStop.deliveredParcelsWeight.cast(Number::class.java),
+                totalAmount = tourStop.totalWeight.cast(Number::class.java),
                 format =  { "${(it as Double).format(2)}kg" }
 
         )
@@ -138,7 +137,7 @@ class StopProcessScreen :
         this.stopRepository.entities.first { it.id == this.parameters.stopId }
     }
 
-    private val deliveryStop: DeliveryStop by lazy {
+    private val tourStop: TourStop by lazy {
         this.tour.activeStop ?: throw IllegalArgumentException("Active stop not set")
     }
 
@@ -156,7 +155,7 @@ class StopProcessScreen :
                 color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_green,
                 title = getString(R.string.delivered),
-                items = this.deliveryStop.deliveredParcels
+                items = this.tourStop.deliveredParcels
         )
     }
 
@@ -167,7 +166,7 @@ class StopProcessScreen :
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 title = getString(R.string.pending),
-                items = this.deliveryStop.pendingParcels
+                items = this.tourStop.pendingParcels
         )
     }
 
@@ -179,7 +178,7 @@ class StopProcessScreen :
                 showIfEmpty = true,
                 expandOnSelection = true,
                 title = this.getString(R.string.orders),
-                items = this.deliveryStop.orders
+                items = this.tourStop.orders
         )
     }
 
@@ -190,7 +189,7 @@ class StopProcessScreen :
                 background = R.drawable.section_background_grey,
                 showIfEmpty = false,
                 title = getString(R.string.missing),
-                items = this.deliveryStop.missingParcels
+                items = this.tourStop.missingParcels
         )
     }
 
@@ -201,7 +200,7 @@ class StopProcessScreen :
                 background = R.drawable.section_background_accent,
                 showIfEmpty = true,
                 title = getString(R.string.event_reason_damaged),
-                items = this.deliveryStop.damagedParcels
+                items = this.tourStop.damagedParcels
         )
     }
 
@@ -212,7 +211,7 @@ class StopProcessScreen :
                 background = R.drawable.section_background_accent,
                 showIfEmpty = true,
                 title = getString(R.string.excluded),
-                items = this.deliveryStop.excludedParcels
+                items = this.tourStop.excludedParcels
         )
     }
 
@@ -226,7 +225,7 @@ class StopProcessScreen :
                 background = R.drawable.section_background_accent,
                 showIfEmpty = false,
                 title = this.mobile.textOrName(context),
-                items = deliveryStop.parcelsByEvent
+                items = tourStop.parcelsByEvent
                         .withDefault { Observable.empty() }
                         .getValue(this)
         )
@@ -236,7 +235,7 @@ class StopProcessScreen :
      * Section by event/reason
      */
     private val sectionByEvent by lazy {
-        mapOf(*this.deliveryStop.allowedEvents.map {
+        mapOf(*this.tourStop.allowedEvents.map {
             Pair(it, it.toSection())
         }.toTypedArray())
     }
@@ -318,7 +317,7 @@ class StopProcessScreen :
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
 
         // Set models's active stop when screen is created
-        this.tour.activeStop = DeliveryStop(stop)
+        this.tour.activeStop = TourStop(stop)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -357,8 +356,8 @@ class StopProcessScreen :
         val closeStopMenu = this.activity.inflateMenu(R.menu.menu_delivery_stop_process_close)
 
         closeStopMenu.findItem(R.id.action_deliver_postbox).isVisible =
-                this.deliveryStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
-                !this.deliveryStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
+                this.tourStop.services.contains(ParcelService.POSTBOX_DELIVERY) &&
+                !this.tourStop.services.contains(ParcelService.NO_ALTERNATIVE_DELIVERY)
 
         this.actionItems = listOf(
                 ActionItem(
@@ -428,7 +427,7 @@ class StopProcessScreen :
                         R.id.action_reset -> {
                             log.info("Resetting all delivery states / data")
 
-                            this.deliveryStop
+                            this.tourStop
                                     .reset()
                                     .subscribe()
 
@@ -471,7 +470,7 @@ class StopProcessScreen :
                                         }
                                         d.dismiss()
                                     }).also {
-                                        if (this.deliveryStop.orders.blockingFirst().count() > 1) {
+                                        if (this.tourStop.orders.blockingFirst().count() > 1) {
                                             it.add(MaterialSimpleListItem.Builder(context)
                                                     .backgroundColor(Color.WHITE)
                                                     .icon(R.drawable.ic_split)
@@ -482,8 +481,8 @@ class StopProcessScreen :
                                         }
 
                                         it.addAll(
-                                                this.deliveryStop.allowedParcelEvents
-                                                        .plus(this.deliveryStop.allowedStopEvents)
+                                                this.tourStop.allowedParcelEvents
+                                                        .plus(this.tourStop.allowedStopEvents)
                                                         .reversed()
                                                         .map { it.toMaterialSimpleListItem(context) }
 
@@ -511,14 +510,14 @@ class StopProcessScreen :
 
         // Damaged parcels
         Observable.combineLatest(
-                this.deliveryStop.damagedParcels,
+                this.tourStop.damagedParcels,
                 // Also fire when selected section changes */
                 this.processAdapter.selectedSectionProperty.filter {
                     it.value != this.damagedSection
                 },
 
                 BiFunction { _: Any, _: Any ->
-                    this.deliveryStop.damagedParcels.blockingFirst()
+                    this.tourStop.damagedParcels.blockingFirst()
                 }
         )
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -541,14 +540,14 @@ class StopProcessScreen :
 
         // Excluded orders
         Observable.combineLatest(
-                this.deliveryStop.excludedParcels,
+                this.tourStop.excludedParcels,
 
                 this.processAdapter.selectedSectionProperty.filter {
                     it.value != this.excludedSection
                 },
 
                 BiFunction { _: Any, _: Any ->
-                    this.deliveryStop.excludedParcels.blockingFirst()
+                    this.tourStop.excludedParcels.blockingFirst()
                 }
         )
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -630,7 +629,7 @@ class StopProcessScreen :
                                                 when (it) {
                                                     is EventNotDeliveredReason -> {
                                                         // Stop level event
-                                                        this.deliveryStop.assignOrderLevelEvent(
+                                                        this.tourStop.assignOrderLevelEvent(
                                                                 order = orderTaskViewModel.orderTask.order,
                                                                 reason = it
                                                         )
@@ -642,7 +641,7 @@ class StopProcessScreen :
                                                     }
                                                     else -> {
                                                         if (item.id == R.string.exclude.toLong()) {
-                                                            this.deliveryStop.excludedOrders = this.deliveryStop.excludedOrders.plus(
+                                                            this.tourStop.excludedOrders = this.tourStop.excludedOrders.plus(
                                                                     orderTaskViewModel.orderTask.order as OrderEntity
                                                             )
 
@@ -658,7 +657,7 @@ class StopProcessScreen :
                                                 d.dismiss()
                                             }
                                         }).also {
-                                            if (this.deliveryStop.orders.blockingFirst().count() > 1) {
+                                            if (this.tourStop.orders.blockingFirst().count() > 1) {
                                                 it.add(MaterialSimpleListItem.Builder(context)
                                                         .backgroundColor(Color.WHITE)
                                                         .icon(R.drawable.ic_split)
@@ -669,7 +668,7 @@ class StopProcessScreen :
                                             }
 
                                             it.addAll(
-                                                    this.deliveryStop.allowedOrderEvents
+                                                    this.tourStop.allowedOrderEvents
                                                             .map { it.toMaterialSimpleListItem(context) }
                                             )
                                         }, null)
@@ -679,7 +678,7 @@ class StopProcessScreen :
 
         // Synthetic inputs
         Observable.combineLatest(
-                this.deliveryStop.parcels.switchMap {
+                this.tourStop.parcels.switchMap {
                     Observable.just(
                             SyntheticInput(
                                     name = "Stop Parcels",
@@ -719,8 +718,8 @@ class StopProcessScreen :
 
         // Observe changes which affect action items
         Observable.merge(
-                this.deliveryStop.pendingParcels,
-                this.deliveryStop.stop
+                this.tourStop.pendingParcels,
+                this.tourStop.stop
         )
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOnMainThread()
@@ -728,9 +727,9 @@ class StopProcessScreen :
                     this.actionItems = this.actionItems.apply {
                         first { it.id == R.id.action_delivery_close_stop }
                                 .also {
-                                    it.visible = deliveryStop.canClose
+                                    it.visible = tourStop.canClose
 
-                                    if (deliveryStop.canCloseWithEvent) {
+                                    if (tourStop.canCloseWithEvent) {
                                         it.colorRes = R.color.colorAccent
                                         it.iconTintRes = android.R.color.black
                                     } else {
@@ -742,12 +741,12 @@ class StopProcessScreen :
                         first { it.id == R.id.action_delivery_close_stop_extra }
                                 .also {
                                     it.menu?.findItem(R.id.action_deliver_neighbour)
-                                            ?.isVisible = deliveryStop.canCloseWithDeliveryToNeighbor
+                                            ?.isVisible = tourStop.canCloseWithDeliveryToNeighbor
 
                                     it.menu?.findItem(R.id.action_deliver_postbox)
-                                            ?.isVisible = deliveryStop.canCloseWithDeliveryToPostbox
+                                            ?.isVisible = tourStop.canCloseWithDeliveryToPostbox
 
-                                    it.visible = deliveryStop.canClose &&
+                                    it.visible = tourStop.canClose &&
                                             it.menu?.hasVisibleItems() == true
                                 }
                     }
@@ -773,7 +772,7 @@ class StopProcessScreen :
 
     private fun onInput(unitNumber: UnitNumber) {
         // Regular stop parcels
-        this.deliveryStop
+        this.tourStop
                 .parcels
                 .subscribeOn(db.scheduler)
                 .blockingFirst()
@@ -793,7 +792,7 @@ class StopProcessScreen :
                             ?: throw IllegalStateException("No stop for task")
 
                     // Stops may only be merged under specific conditions (eg. zipcode matches)
-                    if (sourceStop.address.zipCode == this.deliveryStop.entity.address.zipCode) {
+                    if (sourceStop.address.zipCode == this.tourStop.entity.address.zipCode) {
                         // Parcel does not belong to this delivery stop, ask for stop merge
                         feedback.warning()
 
@@ -808,12 +807,12 @@ class StopProcessScreen :
                                 .customView(R.layout.dialog_tour_stop_merge, true)
                                 .positiveText(R.string.proceed)
                                 .onPositive { _, _ ->
-                                    log.user { "Merges stop [${sourceStop.address}] into [${deliveryStop.entity.address}]" }
+                                    log.user { "Merges stop [${sourceStop.address}] into [${tourStop.entity.address}]" }
 
                                     db.store.withTransaction {
                                         stopRepository.mergeInto(
                                                 source = sourceStop,
-                                                target = deliveryStop.entity
+                                                target = tourStop.entity
                                         )
                                                 .blockingAwait()
                                     }
@@ -876,7 +875,7 @@ class StopProcessScreen :
 
                         val bindingTargetStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(targetView)!!
                         bindingTargetStop.stop = StopViewModel(
-                                stop = this.deliveryStop.entity,
+                                stop = this.tourStop.entity,
                                 timerEvent = Observable.empty()
                         )
 
@@ -902,7 +901,7 @@ class StopProcessScreen :
         when (processAdapter.selectedSection) {
 
             deliveredSection, pendingSection, orderSection -> {
-                this.deliveryStop.deliverParcel(parcel)
+                this.tourStop.deliverParcel(parcel)
                         .subscribe()
 
                 if (this.processAdapter.selectedSection != deliveredSection)
@@ -945,8 +944,8 @@ class StopProcessScreen :
             }
 
             excludedSection -> {
-                if (!this.deliveryStop.excludedOrders.contains(parcel.order)) {
-                    this.deliveryStop.excludedOrders = this.deliveryStop.excludedOrders.plus(
+                if (!this.tourStop.excludedOrders.contains(parcel.order)) {
+                    this.tourStop.excludedOrders = this.tourStop.excludedOrders.plus(
                             parcel.order as OrderEntity
                     )
                 }
@@ -955,7 +954,7 @@ class StopProcessScreen :
     }
 
     private fun finalizeStop() {
-        this.deliveryStop.finalize()
+        this.tourStop.finalize()
                 .bindToLifecycle(this)
                 .subscribeOn(db.scheduler)
                 .observeOnMainThread()
@@ -978,12 +977,12 @@ class StopProcessScreen :
     private fun closeStop(variant: EventDeliveredReason) {
         log.user { "Closes stop [${variant}]" }
 
-        this.deliveryStop.resetCloseStopState()
+        this.tourStop.resetCloseStopState()
 
         this.currentCloseStopVariatn = variant
 
         // Show notification dialogs
-        val dialogs: List<MaterialDialog> = this.deliveryStop.services
+        val dialogs: List<MaterialDialog> = this.tourStop.services
                 .filter { it.mobile.ackMessage != null }
                 .map {
                     MaterialDialog.Builder(context)
@@ -999,7 +998,7 @@ class StopProcessScreen :
                     it.show()
                 }
 
-                if (this.deliveryStop.cashAmountToCollect > 0) {
+                if (this.tourStop.cashAmountToCollect > 0) {
                     this.activity.showScreen(CashScreen().also {
                         it.setTargetFragment(this, 0)
                     })
@@ -1021,14 +1020,14 @@ class StopProcessScreen :
 
             EventDeliveredReason.NORMAL -> {
                 when {
-                    this.deliveryStop.isSignatureRequired -> {
+                    this.tourStop.isSignatureRequired -> {
                         // TODO: this will certainly not work. must be reactive
                         dialogs.forEach {
                             it.show()
                         }
 
                         when {
-                            this.deliveryStop.cashAmountToCollect > 0 -> {
+                            this.tourStop.cashAmountToCollect > 0 -> {
                                 //Requires CashScreen to be shown
                                 this.activity.showScreen(CashScreen().also {
                                     it.setTargetFragment(this, 0)
@@ -1041,14 +1040,14 @@ class StopProcessScreen :
                                         .content(R.string.recipient_dialog_content)
                                         .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME or InputType.TYPE_TEXT_FLAG_CAP_WORDS)
                                         .input("Max Mustermann", null, false, { _, charSequence ->
-                                            this.deliveryStop.recipientName = charSequence.toString()
+                                            this.tourStop.recipientName = charSequence.toString()
 
                                             this.activity.showScreen(SignatureScreen().also {
                                                 it.setTargetFragment(this, 0)
                                                 it.parameters = SignatureScreen.Parameters(
                                                         stopId = this.stop.id,
                                                         deliveryReason = EventDeliveredReason.NORMAL,
-                                                        recipient = this.deliveryStop.recipientName
+                                                        recipient = this.tourStop.recipientName
                                                                 ?: ""
                                                 )
                                             })
@@ -1067,7 +1066,7 @@ class StopProcessScreen :
 
     private fun onEventSelected(event: EventNotDeliveredReason) {
         when {
-            this.deliveryStop.allowedParcelEvents.contains(event) -> {
+            this.tourStop.allowedParcelEvents.contains(event) -> {
                 // Parcel level event
                 when (event) {
                     EventNotDeliveredReason.DAMAGED -> {
@@ -1085,7 +1084,7 @@ class StopProcessScreen :
             }
             else -> {
                 // Stop level event
-                this.deliveryStop.assignStopLevelEvent(event)
+                this.tourStop.assignStopLevelEvent(event)
                         .observeOnMainThread()
                         .subscribeBy(
                                 onComplete = {
@@ -1109,25 +1108,25 @@ class StopProcessScreen :
             }
 
             is PostboxCameraScreen -> {
-                this.deliveryStop.deliverToPostbox(jpeg)
+                this.tourStop.deliverToPostbox(jpeg)
                 this.finalizeStop()
             }
         }
     }
 
     override fun onSignatureSubmitted(signatureSvg: String) {
-        this.deliveryStop.signatureSvg = signatureSvg
+        this.tourStop.signatureSvg = signatureSvg
         this.finalizeStop()
     }
 
     override fun onSignatureImageSubmitted(signatureJpeg: ByteArray) {
-        this.deliveryStop.deliverWithSignatureOnPaper(signatureJpeg)
+        this.tourStop.deliverWithSignatureOnPaper(signatureJpeg)
         this.finalizeStop()
     }
 
     override fun onNeighbourDeliveryScreenContinue(neighbourName: String) {
-        this.deliveryStop.recipientName = neighbourName
-        this.deliveryStop.deliveredReason = EventDeliveredReason.NEIGHBOR
+        this.tourStop.recipientName = neighbourName
+        this.tourStop.deliveredReason = EventDeliveredReason.NEIGHBOR
 
         this.activity.showScreen(
                 SignatureScreen().also {
@@ -1150,14 +1149,14 @@ class StopProcessScreen :
                         .content(R.string.recipient_dialog_content)
                         .inputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME)
                         .input("Max Mustermann", null, false, { _, charSequence ->
-                            this.deliveryStop.recipientName = charSequence.toString()
+                            this.tourStop.recipientName = charSequence.toString()
 
                             this.activity.showScreen(SignatureScreen().also {
                                 it.setTargetFragment(this, 0)
                                 it.parameters = SignatureScreen.Parameters(
                                         stopId = this.stop.id,
                                         deliveryReason = EventDeliveredReason.NORMAL,
-                                        recipient = this.deliveryStop.recipientName ?: ""
+                                        recipient = this.tourStop.recipientName ?: ""
                                 )
                             })
                         })

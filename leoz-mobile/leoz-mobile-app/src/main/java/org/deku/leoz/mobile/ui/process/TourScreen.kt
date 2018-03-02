@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui.process
 
-import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -73,7 +72,7 @@ class TourScreen
         ScreenFragment<Any>() {
 
     interface Listener {
-        fun onDeliveryStopListUnitNumberInput(unitNumber: UnitNumber)
+        fun onTourUnitNumberInput(unitNumber: UnitNumber)
     }
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -740,7 +739,7 @@ class TourScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        this.listener?.onDeliveryStopListUnitNumberInput(unitNumber)
+        this.listener?.onTourUnitNumberInput(unitNumber)
     }
 
     /**

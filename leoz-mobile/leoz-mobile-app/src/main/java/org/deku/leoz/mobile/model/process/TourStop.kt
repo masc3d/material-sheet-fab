@@ -35,7 +35,7 @@ import java.util.*
  * Mobile delivery stop
  * Created by masc on 08.08.17.
  */
-class DeliveryStop(
+class TourStop(
         val entity: StopEntity) : CompositeDisposableSupplier {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -555,7 +555,7 @@ class DeliveryStop(
 
         return db.store.withTransaction {
             // Split excluded orders into separate stops
-            this@DeliveryStop.excludedOrders.forEach {
+            this@TourStop.excludedOrders.forEach {
                 // Remove excluded order tasks
                 stop.tasks.remove(it.deliveryTask)
                 update(stop)
@@ -579,11 +579,11 @@ class DeliveryStop(
                 .toCompletable()
                 .concatWith(Completable.fromCallable {
                     //region Send status events on stop close
-                    val lastLocation = this@DeliveryStop.locationCache.lastLocation
+                    val lastLocation = this@TourStop.locationCache.lastLocation
 
                     val parcels = stop.tasks.flatMap { it.order.parcels }
 
-                    // TODO: unify parcel message send, as this is replicated eg., in DeliveryStop
+                    // TODO: unify parcel message send, as this is replicated eg., in TourStop
                     // Send compound closing stop parcel message
                     mqttEndpoints.central.main.channel().send(
                             ParcelServiceV1.ParcelMessage(
@@ -657,4 +657,4 @@ class DeliveryStop(
     }
 }
 
-fun StopEntity.toDeliveryStop(): DeliveryStop = DeliveryStop(this)
+fun StopEntity.toTourStop(): TourStop = TourStop(this)

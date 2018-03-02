@@ -96,7 +96,7 @@ class Tour : CompositeDisposableSupplier {
      * The currently active stop.
      * Setting a stop active will also set its state to PENDING if it has no state
      */
-    var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { _, o, v ->
+    var activeStop: TourStop? by Delegates.observable<TourStop?>(null, { _, o, v ->
         o?.dispose()
 
         v?.entity?.address?.also {
