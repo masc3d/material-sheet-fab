@@ -129,8 +129,50 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             title = ExportService.ResponseMsg.LL_CHANGED.value//"Loadinglist changed"
 
         }
+        if (unitRecord.ladelistennummerd == null || unitRecord.ladelistennummerd.toLong() != un.value.value.toLong()) {
+            unitRecord.ladelistennummerd = un.value.value.toLong().toDouble()
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
+        }
 
-        exportUnit(ExportUnitOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
+        //falls bag hier noch alle pkst exportieren statt in close-Bag, denn was zB mit export-Status wenn reopen-Bag?
+        val unScan=DekuUnitNumber.parse(unitRecord.colliebelegnr.toLong().toString().padStart(11, '0'))
+        when {
+            unScan.hasError -> {
+                throw RestProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = ExportService.ResponseMsg.PARCEL_NOT_FOUND.value
+                )
+            }
+        }
+        if (unScan.value.type == UnitNumber.Type.BagBack){
+            val bagBack=stationRepository.getBagByBagBackOrderId(unitRecord.orderid.toLong())
+            bagBack ?: throw RestProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title=ExportService.ResponseMsg.BAG_ID_NULL.value
+            )
+            val bag=getAndCheckBag(stationNo,DekuUnitNumber.parse(bagBack.bagNumber.toLong().toString().padStart(11, '0')).value.label)
+
+            if (bag.lastStation != 2 && bag.status != BagStatus.CLOSED_FROM_STATION && bag.status != BagStatus.CLOSED_FROM_HUB) {
+                throw RestProblem(
+                        status=Response.Status.BAD_REQUEST,
+                        title = ExportService.ResponseMsg.BAG_NOT_CLOSED.value
+                )
+            }
+
+            bag.ordersToexport = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
+            bag.ordersToexport.forEach { parcels ->
+                parcels.parcels.forEach {
+                    val inBagexportUnitOrder = getAndCheckUnit(DekuUnitNumber.parse(it.parcelNo.toString().padStart(11, '0')).value.label, stationNo)
+
+                    val inBagunitRecord = inBagexportUnitOrder.unit
+                    val inBagorderRecord = inBagexportUnitOrder.order
+                    exportUnit(ExportUnitOrder(inBagunitRecord, inBagorderRecord), stationNo)
+                }
+            }
+        }
+        //
+
+        exportUnit(ExportUnitOrder(unitRecord, orderRecord), stationNo)
 
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -755,15 +797,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
                 unitRecord.gewichteffektiv = weightRealSum
             }
             unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
-            bag.ordersToexport.forEach { parcels ->
-                parcels.parcels.forEach {
-                    val inBagexportUnitOrder = getAndCheckUnit(DekuUnitNumber.parse(it.parcelNo.toString().padStart(11, '0')).value.label, stationNo)
 
-                    val inBagunitRecord = inBagexportUnitOrder.unit
-                    val inBagorderRecord = inBagexportUnitOrder.order
-                    exportUnit(ExportUnitOrder(inBagunitRecord, inBagorderRecord), un.value.value.toLong(), stationNo)
-                }
-            }
         }
         if (sendStatusRequired) {
             if (orderRecord.sendstatus.toInt() != 0) {
@@ -1171,15 +1205,12 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun exportUnit(eu: ExportUnitOrder, loadingListNo: Long, stationNo: Int): ExportUnitOrder {
+    open fun exportUnit(eu: ExportUnitOrder, stationNo: Int): ExportUnitOrder {
 
         val unitRecord = eu.unit
         val orderRecord = eu.order
 
-        if (unitRecord.ladelistennummerd == null || unitRecord.ladelistennummerd.toLong() != loadingListNo) {
-            unitRecord.ladelistennummerd = loadingListNo.toDouble()
-            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
-        }
+
         val workDate = bagServiceCentral.getWorkingDate()
         if (unitRecord.dtausgangdepot2 == null || unitRecord.dtausgangdepot2 != workDate.toTimestamp()) {
             unitRecord.dtausgangdepot2 = workDate.toTimestamp()

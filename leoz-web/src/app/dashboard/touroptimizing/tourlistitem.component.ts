@@ -11,6 +11,7 @@ import * as moment from 'moment';
 
 import { TourListItem } from '../../core/models/tour-list-item.model';
 import { TouroptimizingComponent } from './touroptimizing.component';
+import { OfficedispoComponent } from './officedispo/officedispo.component';
 
 @Component( {
   selector: 'app-tourlistitem',
@@ -100,7 +101,7 @@ import { TouroptimizingComponent } from './touroptimizing.component';
 } )
 export class TourlistitemComponent implements OnInit {
 
-  @Input() parent: TouroptimizingComponent;
+  @Input() parent: OfficedispoComponent;
   @Input() listItem: TourListItem;
   @Input() faIcon: string;
   formattedCreatetime: string;

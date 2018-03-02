@@ -107,6 +107,10 @@ class JooqStationRepository {
         //return record
     }
 
+    fun getBagByBagBackOrderId(bagBackOrderId:Long):SsoSMovepoolRecord? {
+        return dsl.fetchOne(SsoSMovepool.SSO_S_MOVEPOOL, SSO_S_MOVEPOOL.ORDERDEPOT2HUB.eq(bagBackOrderId.toDouble()))
+    }
+
     fun getUnitNo(orderid: Long): Long? {
         if (orderid == 0.toLong()) return null
         return dsl.select(TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(TBLAUFTRAGCOLLIES)

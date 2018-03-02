@@ -82,16 +82,13 @@ class LocationServiceV2 :
     override fun get(userId: Int?, debitorId: Int?, from: Date?, to: Date?): List<LocationServiceV2.GpsData> {
         var debitor_id = debitorId
         val email = when {
-            debitorId != null -> null
-            else -> when {
-                userId != null -> {
-                    val rUser = userRepository.findById(userId)
-                            ?: throw RestProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
+            userId != null -> {
+                val rUser = userRepository.findById(userId)
+                        ?: throw RestProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
 
-                    rUser.email
-                }
-                else -> null
+                rUser.email
             }
+            else -> null
         }
 
         val pos_from = from ?: SimpleDateFormat("yyyy-MM-dd").parse(Date().toLocalDate().toString())
@@ -107,50 +104,15 @@ class LocationServiceV2 :
         }
 
         when {
-            debitor_id != null -> {
-                val userRecList = userRepository.findByDebitorId(debitor_id)
-                        ?: throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "no user found by debitor-id")
-                if (userRecList.isEmpty())
-                    throw RestProblem(
-                            status = Response.Status.NOT_FOUND,
-                            title = "no user found by debitor-id")
-                //val user = mutableListOf<LocationService.User>()
-                userRecList.forEach {
-
-                    if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
-                            || ((authorizedUser.debitorId == it.debitorId)
-                            && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
-
-                        val posList = posRepository.findByUserId(it.id, pos_from, pos_to)
-                        //gpsList.clear()
-                        var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
-                        if (posList != null) {
-                            /*
-                            posList.forEach {
-                                gpsListTmp.add(it.toGpsData())
-                            }*/
-                            gpsListTmp = filter(posList)
-
-                        }
-                        gpsdataList.add(LocationServiceV2.GpsData(
-                                userId = it.id,
-                                gpsDataPoints = gpsListTmp))
-                    }
-                }
-                //if (gpsdataList.isEmpty())
-                return gpsdataList.toList()
-            }
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
                         ?: throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "no user found by email")
+                                status = Response.Status.NOT_FOUND,
+                                title = "no user found by email")
 
                 if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
                         || ((authorizedUser.debitorId == userRecord.debitorId)
-                        && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
+                                && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
 
                     val posList = posRepository.findByUserId(userRecord.id, pos_from, pos_to)
                     if (posList != null) {
@@ -174,49 +136,11 @@ class LocationServiceV2 :
 
                 return gpsdataList.toList()
             }
-            else -> {
-                // All query params are omitted.
-                // We may return all users here at one point, for those who require it
-                // In this case we should sensibly check if the user is allowed to do that.
-
-                throw RestProblem(status = Response.Status.BAD_REQUEST)
-
-            }
-        }
-
-    }
-
-    override fun getRecent(userId: Int?, debitorId: Int?, duration: Int?): List<LocationServiceV2.GpsData> {
-        var debitor_id = debitorId
-        val email = when {
-            debitorId != null -> null
-            else -> when {
-                userId != null -> {
-                    val rUser = userRepository.findById(userId)
-                            ?: throw RestProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
-
-                    rUser.email
-                }
-                else -> null
-            }
-        }
-
-        val gpsdataList = mutableListOf<LocationServiceV2.GpsData>()
-        var gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
-
-        val authorizedUser = httpRequest.authorizedUser
-
-        if (debitor_id == null && email == null) {
-            debitor_id = authorizedUser.debitorId
-        }
-
-        when {
-
             debitor_id != null -> {
                 val userRecList = userRepository.findByDebitorId(debitor_id)
                         ?: throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "no user found by debitor-id")
+                                status = Response.Status.NOT_FOUND,
+                                title = "no user found by debitor-id")
                 if (userRecList.isEmpty())
                     throw RestProblem(
                             status = Response.Status.NOT_FOUND,
@@ -226,16 +150,9 @@ class LocationServiceV2 :
 
                     if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
                             || ((authorizedUser.debitorId == it.debitorId)
-                            && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
+                                    && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
 
-                        val posList: List<TadNodeGeopositionRecord>?
-                        if (duration != null) {
-                            val pos_to = Date()
-                            val pos_from = Date().plusMinutes(duration * -1)
-                            posList = posRepository.findByUserId(it.id, pos_from, pos_to)
-                        } else {
-                            posList = posRepository.findRecentByUserId(it.id)
-                        }
+                        val posList = posRepository.findByUserId(it.id, pos_from, pos_to)
                         //gpsList.clear()
                         var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
                         if (posList != null) {
@@ -254,15 +171,50 @@ class LocationServiceV2 :
                 //if (gpsdataList.isEmpty())
                 return gpsdataList.toList()
             }
+
+            else -> {
+                // All query params are omitted.
+                // We may return all users here at one point, for those who require it
+                // In this case we should sensibly check if the user is allowed to do that.
+
+                throw RestProblem(status = Response.Status.BAD_REQUEST)
+
+            }
+        }
+
+    }
+
+    override fun getRecent(userId: Int?, debitorId: Int?, duration: Int?): List<LocationServiceV2.GpsData> {
+        var debitor_id = debitorId
+        val email = when {
+            userId != null -> {
+                val rUser = userRepository.findById(userId)
+                        ?: throw RestProblem(status = Response.Status.BAD_REQUEST, detail = "Invalid user id")
+
+                rUser.email
+            }
+            else -> null
+        }
+
+        val gpsdataList = mutableListOf<LocationServiceV2.GpsData>()
+        var gpsList = mutableListOf<LocationServiceV2.GpsDataPoint>()
+
+        val authorizedUser = httpRequest.authorizedUser
+
+        if (debitor_id == null && email == null) {
+            debitor_id = authorizedUser.debitorId
+        }
+
+        when {
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
                         ?: throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "no user found by email")
+                                status = Response.Status.NOT_FOUND,
+                                title = "no user found by email")
 
                 if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
                         || ((authorizedUser.debitorId == userRecord.debitorId)
-                        && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
+                                && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
 
                     val posList: List<TadNodeGeopositionRecord>?
                     if (duration != null) {
@@ -294,6 +246,49 @@ class LocationServiceV2 :
 
                 return gpsdataList.toList()
             }
+            debitor_id != null -> {
+                val userRecList = userRepository.findByDebitorId(debitor_id)
+                        ?: throw RestProblem(
+                                status = Response.Status.NOT_FOUND,
+                                title = "no user found by debitor-id")
+                if (userRecList.isEmpty())
+                    throw RestProblem(
+                            status = Response.Status.NOT_FOUND,
+                            title = "no user found by debitor-id")
+                //val user = mutableListOf<LocationService.User>()
+                userRecList.forEach {
+
+                    if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
+                            || ((authorizedUser.debitorId == it.debitorId)
+                                    && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
+
+                        val posList: List<TadNodeGeopositionRecord>?
+                        if (duration != null) {
+                            val pos_to = Date()
+                            val pos_from = Date().plusMinutes(duration * -1)
+                            posList = posRepository.findByUserId(it.id, pos_from, pos_to)
+                        } else {
+                            posList = posRepository.findRecentByUserId(it.id)
+                        }
+                        //gpsList.clear()
+                        var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
+                        if (posList != null) {
+                            /*
+                            posList.forEach {
+                                gpsListTmp.add(it.toGpsData())
+                            }*/
+                            gpsListTmp = filter(posList)
+
+                        }
+                        gpsdataList.add(LocationServiceV2.GpsData(
+                                userId = it.id,
+                                gpsDataPoints = gpsListTmp))
+                    }
+                }
+                //if (gpsdataList.isEmpty())
+                return gpsdataList.toList()
+            }
+
             else -> {
                 // All query params are omitted.
                 // We may return all users here at one point, for those who require it
@@ -447,7 +442,7 @@ class LocationServiceV2 :
                 }
             }
             is LocationServiceV1.GpsMessage -> {
-                log.warn { "Received deprecated location message from node [${message.nodeId}] user [${message.userId}]"}
+                log.warn { "Received deprecated location message from node [${message.nodeId}] user [${message.userId}]" }
             }
         }
     }

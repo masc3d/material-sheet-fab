@@ -66,7 +66,10 @@ interface CallbackArguments {
              [responsive]="true" sortField="lastName">
       <ng-template pTemplate="header">
         <tr>
-          <th>{{'firstname' | translate}}</th>
+          <th [pSortableColumn]="'firstName'">
+            {{'firstname' | translate}}
+            <p-sortIcon [field]="'firstName'"></p-sortIcon>
+          </th>
           <th [pSortableColumn]="'lastName'">
             {{'surname' | translate}}
             <p-sortIcon [field]="'lastName'"></p-sortIcon>

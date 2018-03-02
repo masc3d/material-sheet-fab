@@ -1,15 +1,15 @@
-<!--<form style="padding-top: 10px" class="mbDashboardContent">-->
 <app-msg-box [msgs]="msgs$ | async" [sticky]="true"></app-msg-box>
 <div class="ui-fluid mbDashboardContent" style="padding-top: 10px">
   <div class="ui-g" style="min-height: 465px;">
-    <div class="ui-g-12 ui-lg-6 shadow" style="padding:0; width: 49%; margin-left: 10px;">
+    <div class="ui-g-12" style="padding:0; margin-left: 10px;">
       <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
         <div class="ui-g-12 ui-lg-6">{{'tourlists-basedon-deliverylists' | translate}}</div>
-        <div class="ui-g-12 ui-lg-3">
+        <div class="ui-g-12 ui-lg-2"> </div>
+        <div class="ui-g-12 ui-lg-2">
           <button pButton label="refresh" type="button" icon="fas fa-redo-alt" iconPos="left"
                   (click)="getTours()"></button>
         </div>
-        <div class="ui-g-12 ui-lg-3">
+        <div class="ui-g-12 ui-lg-2">
           <button pButton label="{{'reset' | translate}}" type="button" icon="fas fa-undo-alt" iconPos="left"
                   (click)="resetTours()"></button>
         </div>
@@ -30,16 +30,17 @@
           <app-tourlistitem [listItem]="tour" [faIcon]="'fa-truck'" [parent]="this"></app-tourlistitem>
         </div>
       </div>
-      <div class="ui-g-12 ui-lg-4">
+      <div class="ui-g-12 ui-lg-6"> </div>
+      <div class="ui-g-12 ui-lg-2">
         <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
                         onIcon="far fa-check-square" offIcon="far fa-square"
                         [(ngModel)]="checkAll" (onChange)="changeCheckAllTours($event)"></p-toggleButton>
       </div>
-      <div class="ui-g-12 ui-lg-4">
+      <div class="ui-g-12 ui-lg-2">
         <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"
                 (click)="optimizeTours()"></button>
       </div>
-      <div class="ui-g-12 ui-lg-4 ui-g-nopad">
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
         <div *ngIf="notMicrodoof" class="ui-g-12">
           <button pButton type="button" (click)="preview()" label="{{'preview' | translate}}"></button>
         </div>
@@ -53,20 +54,5 @@
         <input type="text" pInputText [(ngModel)]="vehicleCount">
       </div>-->
     </div>
-
-    <div class="ui-g-12 ui-lg-6 shadow" style="padding:0; width: 49%; margin-left: 10px;">
-      <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-12">{{'driverlists' | translate}}</div>
-      </div>
-      <div class="ui-g" style="font-weight: bold;font-size:14px; padding-left: 3px;">
-        <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> (0)</div>
-        <div class="ui-g-12 ui-lg-2"><i class="far fa-user iconBlue"></i> (0)</div>
-        <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S (0)</div>
-        <div class="ui-g-12 ui-lg-3"><i class="fa-sum iconBlue"></i>&nbsp;P (0)</div>
-        <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> (0)</div>
-      </div>
-      <hr/>
-    </div>
   </div>
 </div>
-<!--</form>-->
