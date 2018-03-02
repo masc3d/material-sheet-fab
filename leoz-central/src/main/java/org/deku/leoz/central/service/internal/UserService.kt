@@ -328,14 +328,14 @@ class UserService : UserService {
             rec.active = user.isActive
             if (user.active == true) {
                 if (user.expiresOn == null) {
-                    if (java.util.Date().toSqlDate() > rec.expiresOn) {
+                    if (java.util.Date() > rec.expiresOn) {
                         throw RestProblem(
                                 status = Response.Status.CONFLICT,
                                 title = "expiresOn invalid to activate user"
                         )
                     }
                 } else {
-                    if (java.util.Date().toSqlDate() > user.expiresOn) {
+                    if (java.util.Date() > user.expiresOn) {
                         throw RestProblem(
                                 status = Response.Status.CONFLICT,
                                 title = "expiresOn invalid to activate user"
