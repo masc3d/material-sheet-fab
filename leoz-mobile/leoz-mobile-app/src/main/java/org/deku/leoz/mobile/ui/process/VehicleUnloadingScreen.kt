@@ -44,7 +44,6 @@ import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.SimpleVmItem
@@ -73,13 +72,13 @@ class VehicleUnloadingScreen :
     ) : BaseObservable() {
 
         val parcelCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_package_variant_closed,
+                icon = R.drawable.ic_package_variant_closed,
                 amount = this.vehicleUnloading.parcelAmount.map { it as Number },
                 totalAmount = this.vehicleUnloading.parcelTotalAmount.map { it as Number }
         )
 
         val weightCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_weight_scale,
+                icon = R.drawable.ic_weight_scale,
                 amount = this.vehicleUnloading.weight.map { it as Number },
                 totalAmount = this.vehicleUnloading.totalWeight.map { it as Number },
                 format = { "${(it as Double).format(2)}kg" }

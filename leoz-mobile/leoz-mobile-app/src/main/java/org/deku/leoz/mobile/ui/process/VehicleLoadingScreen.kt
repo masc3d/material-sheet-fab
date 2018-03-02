@@ -15,7 +15,6 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
@@ -50,7 +49,6 @@ import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.SimpleVmItem
@@ -80,25 +78,25 @@ class VehicleLoadingScreen :
     ) : BaseObservable() {
 
         val stopCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_stop,
+                icon = R.drawable.ic_stop,
                 amount = this.vehicleLoading.stopAmount.map { it as Number},
                 totalAmount = this.vehicleLoading.stopTotalAmount.map { it as Number}
         )
 
         val orderCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_order,
+                icon = R.drawable.ic_order,
                 amount = this.vehicleLoading.orderAmount.map { it as Number},
                 totalAmount = this.vehicleLoading.orderTotalAmount.map { it as Number}
         )
 
         val parcelCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_package_variant_closed,
+                icon = R.drawable.ic_package_variant_closed,
                 amount = this.vehicleLoading.parcelAmount.map { it as Number},
                 totalAmount = this.vehicleLoading.parcelTotalAmount.map { it as Number}
         )
 
         val weightCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_weight_scale,
+                icon = R.drawable.ic_weight_scale,
                 amount = this.vehicleLoading.weight.map { it as Number},
                 totalAmount = this.vehicleLoading.totalWeight.map { it as Number},
                 format = { "${(it as Double).format(2)}kg" }

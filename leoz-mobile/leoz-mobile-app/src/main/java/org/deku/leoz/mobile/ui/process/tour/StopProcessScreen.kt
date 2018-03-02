@@ -95,19 +95,19 @@ class StopProcessScreen :
         : BaseObservable() {
 
         val orderCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_order,
+                icon = R.drawable.ic_order,
                 amount = tourStop.deliveredOrdersAmount.cast(Number::class.java),
                 totalAmount = tourStop.orderTotalAmount.cast(Number::class.java)
         )
 
         val parcelCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_package_variant_closed,
+                icon = R.drawable.ic_package_variant_closed,
                 amount = tourStop.deliveredParcelAmount.cast(Number::class.java),
                 totalAmount = tourStop.parcelTotalAmount.cast(Number::class.java)
         )
 
         val weightCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_weight_scale,
+                icon = R.drawable.ic_weight_scale,
                 amount = tourStop.deliveredParcelsWeight.cast(Number::class.java),
                 totalAmount = tourStop.totalWeight.cast(Number::class.java),
                 format =  { "${(it as Double).format(2)}kg" }

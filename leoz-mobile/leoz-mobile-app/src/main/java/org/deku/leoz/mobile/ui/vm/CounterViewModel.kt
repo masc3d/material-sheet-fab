@@ -2,9 +2,11 @@ package org.deku.leoz.mobile.ui.vm
 
 import android.databinding.BaseObservable
 import android.databinding.ObservableField
+import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import io.reactivex.Observable
+import org.deku.leoz.mobile.R
 import sx.android.databinding.toField
 
 /**
@@ -13,7 +15,11 @@ import sx.android.databinding.toField
  */
 class CounterViewModel(
         /** The drawable to display */
-        @DrawableRes val drawableRes: Int,
+        @DrawableRes val icon: Int,
+        /** Optional icon tint */
+        @ColorRes val iconTint: Int = R.color.colorLighterGrey,
+        /** Optional icon alpha */
+        val iconAlpha: Float = 1.0F,
         /** Amount */
         val amount: Observable<Number>,
         /** Total amount (defaults to amount) */
@@ -37,6 +43,7 @@ class CounterViewModel(
                 .toField()
     }
 
+    @delegate:StringRes
     val titleField by lazy {
         this.amount
                 .map {
@@ -45,5 +52,6 @@ class CounterViewModel(
                     else
                         this.title
                 }
+                .toField()
     }
 }

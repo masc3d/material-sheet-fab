@@ -39,7 +39,7 @@
                 android:layout_marginStart="@dimen/margin"
                 android:layout_marginTop="10dp"
                 android:contentDescription="TODO"
-                android:src="@{counter.drawableRes, default=@drawable/ic_stop}"
+                android:src="@{counter.icon, default=@drawable/ic_stop}"
                 android:tint="@color/colorDarkGrey"/>
 
         </FrameLayout>
