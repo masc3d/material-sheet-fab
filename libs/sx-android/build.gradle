@@ -132,7 +132,7 @@ dependencies {
     compileOnly(
             project(':sx-mq'),
 
-            "com.journeyapps:zxing-android-embedded:3.5.0",
+            "com.journeyapps:zxing-android-embedded:3.6.0",
 
             // MQTT persistence
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
