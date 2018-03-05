@@ -108,6 +108,8 @@ class MqttConfiguration {
 
                 // Wire connectivity
                 instance<Connectivity>().networkProperty
+                        // Handle connectivity state changes on main thread to prevent
+                        // early events to access dispatcher while mqtt is not fully intiialized
                         .observeOnMainThread()
                         .subscribe {
                     when (it.value.state) {
