@@ -222,7 +222,7 @@ class StopDetailsScreen
 
         adapter.mode = SelectableAdapter.Mode.SINGLE
         // Since 5.0.0-rc3 click events will only be forwarded to holders when there's a click listener registered
-        adapter.addListener(FlexibleAdapter.OnItemClickListener { _ -> false })
+        adapter.addListener(FlexibleAdapter.OnItemClickListener { _, _ -> false })
 
         adapter.setStickyHeaders(true)
         adapter.showAllHeaders()
