@@ -11,6 +11,7 @@ import org.deku.leoz.model.Interval
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.internal.LocationServiceV2
+import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.Tour
 import org.deku.leoz.service.internal.TourServiceV1.TourOptimizationOptions
 import org.deku.leoz.service.internal.UserService
@@ -576,7 +577,7 @@ class SmartlaneBridge {
     ): Routinginput {
         return Routinginput().also {
             val omitLoads = options.omitLoads ?: false
-            val vehicleCount = options.vehicles?.count() ?: 0
+            val vehicles = options.vehicles ?: listOf(TourOptimizationOptions.Vehicle())
 
             it.deliverydata = this.stops
                     .map { stop ->
@@ -692,8 +693,8 @@ class SmartlaneBridge {
                 }
             }
 
-            if (!omitLoads || vehicleCount > 0)
-                it.vehcapacities = options.vehicles?.map { (it.capacity * 100).toInt() }
+            if (!omitLoads || vehicles.count() > 0)
+                it.vehcapacities = vehicles.map { (it.capacity * 100).toInt() }
         }
     }
 }
