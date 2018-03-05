@@ -451,7 +451,9 @@ class SmartlaneBridge {
         val routeApi = this.proxy(RouteExtendedApi::class.java, customerId = customerId)
 
         val inPlaceUpdate = (options.vehicles?.count() ?: 0) == 0
-        val vehicleCount = options.vehicles?.count() ?: 1
+        val vehicleCount = (options.vehicles?.count() ?: 0).let {
+            if (it > 0) it else 1
+        }
 
         return routeApi.optimize(
                 routingInput = tour.toRoutingInput(
@@ -577,7 +579,10 @@ class SmartlaneBridge {
     ): Routinginput {
         return Routinginput().also {
             val omitLoads = options.omitLoads ?: false
-            val vehicles = options.vehicles ?: listOf(TourOptimizationOptions.Vehicle())
+            val vehicles = options.vehicles?.let {
+                // When vehicles are empty instead of null, revert to default as well
+                if (it.count() > 0) it else null
+            } ?: listOf(TourOptimizationOptions.Vehicle())
 
             it.deliverydata = this.stops
                     .map { stop ->
@@ -693,8 +698,7 @@ class SmartlaneBridge {
                 }
             }
 
-            if (!omitLoads || vehicles.count() > 0)
-                it.vehcapacities = vehicles.map { (it.capacity * 100).toInt() }
+            it.vehcapacities = vehicles.map { (it.capacity * 100).toInt() }
         }
     }
 }
