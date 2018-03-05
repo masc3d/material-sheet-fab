@@ -179,7 +179,8 @@ abstract class Activity : BaseActivity(),
 
     private val actionEventSubject = PublishSubject.create<Int>()
     /** Action overlay event */
-    val actionEvent = this.actionEventSubject.hide()
+    val actionEvent = this.actionEventSubject
+            .hide()
 
     /** Additional menu items to add */
     var screenMenuItems: Menu? = null

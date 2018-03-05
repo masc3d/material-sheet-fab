@@ -71,6 +71,7 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.materialdialogs.addAll
 import sx.format.format
+import java.util.concurrent.TimeUnit
 
 /**
  * Delivery stop process screen
@@ -442,6 +443,10 @@ class StopProcessScreen :
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
+                // As stop process is currently partially stateless (eg. close stop can be triggered multiple times)
+                // prevent accidental duplicate events leading to confusing dialog order.
+                // This is rather a workaround, stop process should track state at all times.
+                .throttleFirst(250, TimeUnit.MILLISECONDS)
                 .observeOnMainThread()
                 .subscribe {
                     when (it) {
