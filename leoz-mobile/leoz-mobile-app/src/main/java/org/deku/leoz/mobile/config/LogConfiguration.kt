@@ -140,8 +140,3 @@ class LogConfiguration {
         }
     }
 }
-
-/** Log user action */
-fun org.slf4j.Logger.user(message: () -> Any) {
-    this.info { "User : ${message()}" }
-}

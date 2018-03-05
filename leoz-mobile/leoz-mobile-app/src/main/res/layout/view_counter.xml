@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:alpha="0.7"
-                android:text="@{counter.totalAmount, default=100}"
+                android:text="@{counter.totalAmountTextField, default=100}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 />
 
@@ -34,13 +34,13 @@
                 android:layout_width="@dimen/icon_size"
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center_vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginBottom="@dimen/small_margin"
+                android:layout_marginEnd="24dp"
                 android:layout_marginStart="@dimen/margin"
-                android:src="@{counter.drawableRes, default=@drawable/ic_stop}"
-                android:tint="@color/colorDarkGrey"
-                android:contentDescription="TODO"/>
+                android:layout_marginTop="10dp"
+                android:contentDescription="TODO"
+                android:src="@{counter.iconRes, default=@drawable/ic_stop}"
+                android:tint="@color/colorDarkGrey"/>
 
         </FrameLayout>
 
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="@{counter.amount, default=0}"
+            android:text="@{counter.amountTextField, default=0}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             />
 

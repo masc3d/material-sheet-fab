@@ -12,6 +12,12 @@ import { roundDecimals } from '../../core/math/roundDecimals';
 import { Station } from '../../core/auth/station.model';
 import { SseService } from '../../core/sse.service';
 import { Subject } from 'rxjs/Subject';
+import { Position } from '../tour/position.model';
+import VehicleType = Position.VehicleType;
+
+interface Vehicle {
+  capacity?: number
+}
 
 @Injectable()
 export class TouroptimizingService {
@@ -43,7 +49,7 @@ export class TouroptimizingService {
     this.latestDeliverylists = [];
   }
 
-  initSSEtouroptimization( ngUnsubscribe: Subject<void> ) {
+  initSSEtouroptimization( ngUnsubscribe: Subject<void>, withInitialGeneration: boolean ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.optimizeToursSSEUrl}?station-no=${activeStation.stationNo.toString()}`;
     this.sse.observeMessages<{ id?: number, inProgress?: boolean }>( sseUrl )
@@ -52,12 +58,12 @@ export class TouroptimizingService {
         console.log( data );
         if (data && !data.inProgress) {
           this.msgService.clear();
-          this.getTours();
+          this.getTours(withInitialGeneration);
         }
       } );
   }
 
-  initSSEtourWhatever( ngUnsubscribe: Subject<void> ) {
+  initSSEtourWhatever( ngUnsubscribe: Subject<void>, withInitialGeneration: boolean ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.sseWEUrl}?station-no=${activeStation.stationNo.toString()}`;
     this.sse.observeMessages<{ stationNo?: number, items?: Tour[], deleted?: number[] }>( sseUrl )
@@ -66,12 +72,12 @@ export class TouroptimizingService {
         console.log( data );
         if (data && data.deleted) {
           this.msgService.clear();
-          this.getTours();
+          this.getTours(withInitialGeneration);
         }
       } );
   }
 
-  getTours(): void {
+  getTours(withInitialGeneration: boolean = true): void {
     const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
     /**
      * ALEX: vorerst nur station-no übergeben, bis Service angepasst ist
@@ -81,7 +87,7 @@ export class TouroptimizingService {
         .set( 'station-no', activeStation.stationNo.toString() )
     } )
       .subscribe( ( tours ) => {
-          if (tours.length === 0) {
+          if (tours.length === 0 && withInitialGeneration) {
             // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
             this.getDeliverylists( [ this.generateTours, this.latestModDate ] );
           } else {
@@ -116,7 +122,7 @@ export class TouroptimizingService {
 
   }
 
-  optimizeAndReinitTours( tourIds: number[] ) {
+  optimizeAndReinitTours( tourIds: number[], vehicles: Vehicle[] = [{}], optimizeTraffic = true) {
     let httpParams = new HttpParams();
     tourIds.forEach( id => {
       httpParams = httpParams.append( 'id', id.toString() );
@@ -125,11 +131,11 @@ export class TouroptimizingService {
     httpParams = httpParams.append( 'wait-for-completion', 'false' );
 
     const defaultBody = {
-      // 'start': {},
       'appointments': {
         'omit': false
       },
-      'vehicles': [ {} ]
+      'vehicles': vehicles,
+      'traffic': optimizeTraffic
     };
 
     this.http.patch( this.optimizeToursUrl, defaultBody, {

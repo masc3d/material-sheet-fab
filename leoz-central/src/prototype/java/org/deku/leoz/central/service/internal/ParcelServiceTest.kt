@@ -70,7 +70,7 @@ class ParcelServiceTest {
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 2173653856606, parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = sig64))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 1173471944806, parcelScancode = "2041019147", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt", signature = svgDirect))
 
-        val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.POSTBOX.id, time = Date().toTimestamp(), parcelId = 15000000,  additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "Tschuh", signature = svgDirect))
+//        val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.POSTBOX.id, time = Date().toTimestamp(), parcelId = 15000000,  additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "Tschuh", signature = svgDirect))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15000000)
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 1163467893501, parcelScancode = "86853136142", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidtMeier", signature = img64, mimetype = "jpg"))
         //val event = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 2173652369401, parcelScancode = "10071321554",from="956", additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerMeier", signature = "abc"))
@@ -85,55 +85,57 @@ class ParcelServiceTest {
         //val event = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.WRONG_ROUTING.id, time = Date().toTimestamp(), parcelScancode = "51520039870", from = "956", additionalInfo = AdditionalInfo.EmptyInfo)
 
         //val event = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.PARCEL_DAMAGED.id, time = Date().toTimestamp(), parcelScancode = "20450007242", additionalInfo = AdditionalInfo.DamagedInfo(description = "aufgerissen", photo = img64))
-
-        val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "müllerSchmidtIgor", signature = svgDirect))
-
+//        val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "müllerSchmidtIgor", signature = svgDirect))
         //val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event),userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", postboxDeliveryInfo = ParcelServiceV1.ParcelMessage.PostboxDeliveryInfo(pictureFileUid = UUID.fromString("4c4b1f91-5539-4ac1-9fdd-04ea17deab63")))
-
         //val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", signatureOnPaperInfo = ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(pictureFileUid = UUID.fromString("86f86b71-acac-45fd-b4f1-5b7d2440e501"), recipient = "MrBig1234565432413243567898uztdferste5rhuzt"))
-
         //val msg = ParcelServiceV1.ParcelMessage(events = arrayOf(event), nodeId = "abcf-tzt", deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "müllerSchmidtIgor", signature = img64,mimetype="jpg"))
 
-
-        //    parcelService.onMessage(msg, null)
-
         //Postbox
-        val imgPostbox = File(this.javaClass.getResource("/jpg/4c4b1f91-5539-4ac1-9fdd-04ea17deab63.jpg").toURI())
-        Files.copy(imgPostbox.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgPostbox.name).toFile().toPath(), StandardCopyOption.REPLACE_EXISTING)
+//        val imgPostbox = File(this.javaClass.getResource("/jpg/4c4b1f91-55ge39-4ac1-9fdd-04ea17deab63.jpg").toURI())
+//        Files.copy(imgPostbox.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgPostbox.name).toFile().toPath(), StandardCopyOption.REPLACE_EXISTING)
 
-        val eventPostbox = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.POSTBOX.id, time = Date().toTimestamp(), parcelId = 15000000)
-        val msgPostbox = ParcelServiceV1.ParcelMessage(events = arrayOf(eventPostbox), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", postboxDeliveryInfo = ParcelServiceV1.ParcelMessage.PostboxDeliveryInfo(pictureFileUid = UUID.fromString("4c4b1f91-5539-4ac1-9fdd-04ea17deab63")))
-//        parcelService.onMessage(msgPostbox, null)
-
+//        val eventPostbox = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.POSTBOX.id, time = Date().toTimestamp(), parcelId = 15000000)
+//        val msgPostbox = ParcelServiceV1.ParcelMessage(events = arrayOf(eventPostbox), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", postboxDeliveryInfo = ParcelServiceV1.ParcelMessage.PostboxDeliveryInfo(pictureFileUid = UUID.fromString("4c4b1f91-5539-4ac1-9fdd-04ea17deab63")))
 
         // SignOnPaper
-        val imgSignOnPaper = File(this.javaClass.getResource("/jpg/86f86b71-acac-45fd-b4f1-5b7d2440e501.jpg").toURI())
-        Files.copy(imgSignOnPaper.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgSignOnPaper.name).toFile().toPath(), StandardCopyOption.REPLACE_EXISTING)
-        val msgSignOnPaper = ParcelServiceV1.ParcelMessage(events = arrayOf(event), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", signatureOnPaperInfo = ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(pictureFileUid = UUID.fromString("86f86b71-acac-45fd-b4f1-5b7d2440e501"), recipient = "MrBig1234565432413243567898uztdferste5rhuzt"))
-     //       parcelService.onMessage(msgSignOnPaper, null)
+//        val imgSignOnPaper = File(this.javaClass.getResource("/jpg/86f86b71-acac-45fd-b4f1-5b7d2440e501.jpg").toURI())
+//        Files.copy(imgSignOnPaper.toPath(), storage.workTmpDataDirectory.toPath().resolve(imgSignOnPaper.name).toFile().toPath(), StandardCopyOption.REPLACE_EXISTING)
+//        val msgSignOnPaper = ParcelServiceV1.ParcelMessage(events = arrayOf(event), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c", signatureOnPaperInfo = ParcelServiceV1.ParcelMessage.SignatureOnPaperInfo(pictureFileUid = UUID.fromString("86f86b71-acac-45fd-b4f1-5b7d2440e501"), recipient = "MrBig1234565432413243567898uztdferste5rhuzt"))
 
         //Damaged
-        val eventDamaged = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.PARCEL_DAMAGED.id, time = Date().toTimestamp(), parcelId = 15000000, additionalInfo = AdditionalInfo.DamagedInfo(description = "aufgerissen"))
-        val msgDamaged = ParcelServiceV1.ParcelMessage(events = arrayOf(eventDamaged), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
-       //      parcelService.onMessage(msgDamaged, null)
+//        val eventDamaged = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.PARCEL_DAMAGED.id, time = Date().toTimestamp(), parcelId = 15000000, additionalInfo = AdditionalInfo.DamagedInfo(description = "aufgerissen"))
+//        val msgDamaged = ParcelServiceV1.ParcelMessage(events = arrayOf(eventDamaged), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
 
         //ImportReceive
         val eventImportReceive = ParcelServiceV1.Event(event = Event.IMPORT_RECEIVE.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15001093, additionalInfo = AdditionalInfo.EmptyInfo)
-        val msgImportReceive = ParcelServiceV1.ParcelMessage(events = arrayOf(eventImportReceive), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
-            parcelService.onMessage(msgImportReceive, null)
+//        val msgImportReceive = ParcelServiceV1.ParcelMessage(events = arrayOf(eventImportReceive), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
 
-        //ImportReceive 956
+        //Delivered 956
         val event956 = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 16413459, additionalInfo = AdditionalInfo.EmptyInfo)
         val msg956 = ParcelServiceV1.ParcelMessage(events = arrayOf(event956), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
-        //parcelService.onMessage(msg956, null)
-//        val eventNotDel = ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.CUSTOMER_VACATION.id, time = Date().toTimestamp(), parcelId = 15000000)
 
-//        val eventNotDel = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15000000,additionalInfo = AdditionalInfo.DeliveredInfo(recipient = "müllerSchmidt")
-        val eventNotDel = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15000000)
+//
+//        val eventNotDel = ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15000000)
+//        val msgNotDel = ParcelServiceV1.ParcelMessage(events = arrayOf(eventNotDel), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
 
-        val msgNotDel = ParcelServiceV1.ParcelMessage(events = arrayOf(eventNotDel), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c")
+// test event - reason mischmasch
+
+        var e: List<ParcelServiceV1.Event> = emptyList()
+        var events: MutableList<ParcelServiceV1.Event> = e.toMutableList()
 
 
-        //parcelService.onMessage(msgNotDel, null)
+//        events.add(ParcelServiceV1.Event(event = Event.DELIVERY_FAIL.value, reason = Reason.ADDRESS_WRONG.id, time = Date().toTimestamp(), parcelId = 15000000))
+//        events.add(ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.ADDRESS_WRONG.id, time = Date().toTimestamp(), parcelId = 15000000))
+//
+//        events.add(ParcelServiceV1.Event(event = Event.DELIVERED.value, reason = Reason.NORMAL.id, time = Date().toTimestamp(), parcelId = 15000000))
+
+        //events.add(eventImportReceive)
+        events.add(event956)
+
+        //pro message events zu einer(!) parcel_id + additional (deliveredInfo, SignatureOnPaper,PostboxDeliverecInfo)
+        val ret = ParcelServiceV1.ParcelMessage(events = events.toTypedArray(), userId = 3, nodeId = "71f8a014-6139-92a8-1757-ad520452538c",deliveredInfo = ParcelServiceV1.ParcelMessage.DeliveredInfo(recipient = "trotzki", signature = svgDirect))
+        parcelService.onMessage(ret, null)
+
+
     }
 }

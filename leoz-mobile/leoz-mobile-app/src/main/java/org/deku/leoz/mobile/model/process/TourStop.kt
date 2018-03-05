@@ -12,6 +12,7 @@ import io.reactivex.functions.BiFunction
 import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -21,6 +22,7 @@ import org.deku.leoz.mobile.service.LocationCache
 import org.deku.leoz.model.*
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.debug
 import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.rx.CompositeDisposableSupplier
@@ -33,7 +35,7 @@ import java.util.*
  * Mobile delivery stop
  * Created by masc on 08.08.17.
  */
-class DeliveryStop(
+class TourStop(
         val entity: StopEntity) : CompositeDisposableSupplier {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -325,6 +327,67 @@ class DeliveryStop(
         com.neovisionaries.i18n.CountryCode.valueOf(this.stop.blockingFirst().address.countryCode)
     }
 
+    init {
+        //region Parcel collection state logging
+        // Observe changes on all relevant collections
+        Observable.combineLatest(
+                listOf(
+                        this.loadedParcels,
+                        this.pendingParcels,
+                        this.damagedParcels,
+                        this.missingParcels,
+                        this.deliveredParcels
+                ).plus(this.parcelsByEvent.map { it.value }),
+                { x ->
+                    val loaded = this.loadedParcels.blockingFirst().map { it.number }
+                    val pending = this.pendingParcels.blockingFirst().map { it.number }
+                    val missing = this.missingParcels.blockingFirst().map { it.number }
+                    val damaged = this.damagedParcels.blockingFirst().map { it.number }
+                    val delivered = this.deliveredParcels.blockingFirst().map { it.number }
+                    val byEvent = this.parcelsByEvent.map {
+                        Pair(it.key, it.value.blockingFirst().map { it.number })
+                    }
+
+                    fun Iterable<Any>.format(name: String): String? {
+                        return when {
+                            this.count() > 0 -> "${name} [${this.joinToString(", ")}]"
+                            else -> null
+                        }
+                    }
+
+                    listOf(
+                            loaded.format("LOADED"),
+                            pending.format("PENDING"),
+                            missing.format("MISSING"),
+                            damaged.format("DAMAGED"),
+                            delivered.format("DELIVERED")
+                    )
+                            .plus(
+                                    byEvent.map { it.second.format(it.first.name) }
+                            )
+                            .filterNotNull()
+                            .joinToString(" ")
+                }
+        )
+                .distinctUntilChanged()
+                .subscribe {
+                    if (it.length > 0)
+                        log.debug { it }
+                }
+
+        this.excludedOrdersProperty
+                .subscribe {
+                    val orders = it.value
+
+                    if (it.value.count() > 0)
+                        log.user {
+                            "Excludes orders [${orders.map { it.id }.joinToString(", ")}] " +
+                                    "with parcels [${orders.flatMap { it.parcels }.map { it.number }.joinToString(", ")}]"
+                        }
+                }
+        //endregion
+    }
+
     /**
      * Reset all closing stop related state variables
      */
@@ -383,6 +446,8 @@ class DeliveryStop(
      * Deliver a single parcel
      */
     fun deliverParcel(parcel: ParcelEntity): Completable {
+        log.user { "Delivers parcel [${parcel.number}]" }
+
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
             open()
@@ -426,6 +491,8 @@ class DeliveryStop(
      * Assign event reason to entire stop
      */
     fun assignStopLevelEvent(reason: EventNotDeliveredReason): Completable {
+        log.user { "Assigns stop level event [${reason}]" }
+
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
             open()
@@ -444,6 +511,8 @@ class DeliveryStop(
      * Assign event reason to entire stop
      */
     fun assignOrderLevelEvent(order: Order, reason: EventNotDeliveredReason): Completable {
+        log.user { "Assigns order level event [${reason}] for [${order.id}]" }
+
         return db.store.withTransaction {
             // In case the stop has been closed before, re-open on delivery
             open()
@@ -486,7 +555,7 @@ class DeliveryStop(
 
         return db.store.withTransaction {
             // Split excluded orders into separate stops
-            this@DeliveryStop.excludedOrders.forEach {
+            this@TourStop.excludedOrders.forEach {
                 // Remove excluded order tasks
                 stop.tasks.remove(it.deliveryTask)
                 update(stop)
@@ -510,11 +579,11 @@ class DeliveryStop(
                 .toCompletable()
                 .concatWith(Completable.fromCallable {
                     //region Send status events on stop close
-                    val lastLocation = this@DeliveryStop.locationCache.lastLocation
+                    val lastLocation = this@TourStop.locationCache.lastLocation
 
                     val parcels = stop.tasks.flatMap { it.order.parcels }
 
-                    // TODO: unify parcel message send, as this is replicated eg., in DeliveryStop
+                    // TODO: unify parcel message send, as this is replicated eg., in TourStop
                     // Send compound closing stop parcel message
                     mqttEndpoints.central.main.channel().send(
                             ParcelServiceV1.ParcelMessage(
@@ -552,10 +621,12 @@ class DeliveryStop(
                                                         when {
                                                             this.deliveredReason == EventDeliveredReason.POSTBOX -> Reason.POSTBOX.id
                                                             this.deliveredReason == EventDeliveredReason.NEIGHBOR -> Reason.NEIGHBOUR.id
-                                                            else -> it.reason?.reason?.id ?: Reason.NORMAL.id
+                                                            else -> it.reason?.reason?.id
+                                                                    ?: Reason.NORMAL.id
                                                         }
                                                     }
-                                                    else -> it.reason?.reason?.id ?: Reason.NORMAL.id
+                                                    else -> it.reason?.reason?.id
+                                                            ?: Reason.NORMAL.id
                                                 },
                                                 parcelId = it.id,
                                                 latitude = lastLocation?.latitude,
@@ -576,6 +647,9 @@ class DeliveryStop(
                                         )
                                     }.toTypedArray()
                             )
+                                    .also {
+                                        log.user { "Finalizes stop [${this.entity.address}] [${it}]" }
+                                    }
                     )
                     //endregion
                 })
@@ -583,4 +657,4 @@ class DeliveryStop(
     }
 }
 
-fun StopEntity.toDeliveryStop(): DeliveryStop = DeliveryStop(this)
+fun StopEntity.toTourStop(): TourStop = TourStop(this)

@@ -6,7 +6,7 @@ import { User } from './user.model';
 import { environment } from '../../../environments/environment';
 import { MsgService } from '../../shared/msg/msg.service';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
-import { InetConnectionService } from "app/core/inet-connection.service";
+import { InetConnectionService } from 'app/core/inet-connection.service';
 
 @Injectable()
 export class UserService {

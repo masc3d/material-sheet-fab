@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v2/bundle")
 @Api(value = "Bundle operations")
-class BundleServiceV2 : BundleServiceV2 {
+open class BundleServiceV2 : org.deku.leoz.service.internal.BundleServiceV2 {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -55,7 +55,7 @@ class BundleServiceV2 : BundleServiceV2 {
     /**
      * Look up version alias by node key
      */
-    fun aliasByNodeKey(nodeKey: String): String {
+    open fun aliasByNodeKey(nodeKey: String): String {
         // Implemented only in leoz-central
         throw UnsupportedOperationException("Node key lookup not supported")
     }

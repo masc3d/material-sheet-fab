@@ -1,0 +1,107 @@
+<app-msg-box [msgs]="msgs$ | async" [sticky]="true"></app-msg-box>
+<div class="ui-fluid mbDashboardContent" style="padding-top: 10px">
+  <div class="ui-g" style="min-height: 465px;">
+    <div class="ui-g-12" style="padding:0; margin-left: 10px;">
+      <div class="ui-g" style="font-weight: bold;font-size:16px; padding-left: 3px;">
+        <div class="ui-g-12 ui-lg-6">{{'tourlists-basedon-deliverylists' | translate}}</div>
+        <div class="ui-g-12 ui-lg-2"></div>
+        <div class="ui-g-12 ui-lg-2">
+          <button pButton label="refresh" type="button" icon="fas fa-redo-alt" iconPos="left"
+                  (click)="getTours()"></button>
+                  <!--(click)="getTours(withInitialGeneration)"></button>-->
+        </div>
+        <div class="ui-g-12 ui-lg-2">
+          <button pButton label="{{'reset' | translate}}" type="button" icon="fas fa-undo-alt" iconPos="left"
+                  (click)="resetTours()"></button>
+        </div>
+      </div>
+      <div class="ui-g" style="font-weight: bold;font-size:14px; padding-left: 3px;">
+        <div class="ui-g-12 ui-lg-2"><i class="fas fa-percent iconBlue"></i> ({{toursQuota}})</div>
+        <div class="ui-g-12 ui-lg-2"><i class="fas fa-truck iconBlue"></i> ({{tours.length}})</div>
+        <div class="ui-g-12 ui-lg-2"><i class="fa-sum iconBlue"></i>&nbsp;S ({{toursOrderCount}})</div>
+        <div class="ui-g-12 ui-lg-3"><i class="fa-sum iconBlue"></i>&nbsp;P ({{toursParcelCount}})</div>
+        <div class="ui-g-12 ui-lg-3"><i class="fas fa-balance-scale iconBlue"></i> ({{toursTotalWeight}})</div>
+      </div>
+      <hr/>
+      <div style="height:520px; padding:0 3px 3px 3px;overflow-y: scroll;">
+        <div *ngIf="toursLoading$ | async" style="text-align: center">
+          <i style="font-size: 5rem; opacity: .1;" class="fas fa-spinner fa-spin"></i>
+        </div>
+        <div *ngFor="let tour of tours">
+          <app-tourlistitem [listItem]="tour" [faIcon]="'fa-truck'" [parent]="this"></app-tourlistitem>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-lg-6"></div>
+      <div class="ui-g-12 ui-lg-2">
+        <p-toggleButton onLabel="{{'all' | translate}}" offLabel="{{'none' | translate}}"
+                        onIcon="far fa-check-square" offIcon="far fa-square"
+                        [(ngModel)]="checkAll" (onChange)="changeCheckAllTours($event)"></p-toggleButton>
+      </div>
+      <div class="ui-g-12 ui-lg-2">
+        <button pButton label="{{'optimize' | translate}}" type="button" icon="fas fa-sync" iconPos="left"
+                (click)="optimizeDialog()"></button>
+      </div>
+      <div class="ui-g-12 ui-lg-2 ui-g-nopad">
+        <div *ngIf="notMicrodoof" class="ui-g-12">
+          <button pButton type="button" (click)="preview()" label="{{'preview' | translate}}"></button>
+        </div>
+        <div class="ui-g-12">
+          <button pButton type="button" (click)="saving()" label="{{'save' | translate}}"></button>
+        </div>
+      </div>
+
+      <p-dialog header="{{'optimizationOptions' | translate}}" [(visible)]="displayOptimizationOptions"
+                [modal]="true" width="700" [responsive]="true">
+        <div class="ui-g">
+          <div class="ui-g-12">
+            <p-checkbox [(ngModel)]="optimizeTodayAndFuture" binary="true"
+                        label="{{'optimizeTodayAndFuture' | translate}}"></p-checkbox>
+          </div>
+          <div class="ui-g-12">
+            <p-checkbox [(ngModel)]="optimizeTraffic" binary="true"
+                        label="{{'optimizeTraffic' | translate}}"></p-checkbox>
+          </div>
+          <div class="ui-g-12">
+            <p-checkbox [(ngModel)]="optimizeExistingtours" binary="true"
+                        label="{{'optimizeExistingtours' | translate}}"></p-checkbox>
+          </div>
+          <div *ngIf="this.selectedOptimizableTourIds.length === 1" class="ui-g-12">
+            <p-checkbox [(ngModel)]="optimizeSplitTours" binary="true"
+                        label="{{'optimizeSplitTours' | translate}}"></p-checkbox>
+          </div>
+          <div *ngIf="this.selectedOptimizableTourIds.length === 1 && optimizeSplitTours" class="ui-g-12">
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{'sprinter_max_kg' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText [(ngModel)]="sprinterMaxKg">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{'caddy_max_kg' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText [(ngModel)]="caddyMaxKg">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{'kombi_max_kg' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText [(ngModel)]="kombiMaxKg">
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              {{'bike_max_kg' | translate}}:
+            </div>
+            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+              <input pInputText [(ngModel)]="bikeMaxKg">
+            </div>
+          </div>
+        </div>
+        <p-footer>
+          <button type="button" pButton (click)="rejectOptimizationOptions()" label="{{'cancel' | translate}}"></button>
+          <button type="button" pButton (click)="acceptOptimizationOptions()" label="{{'start' | translate}}"></button>
+        </p-footer>
+      </p-dialog>
+
+    </div>
+  </div>
+</div>

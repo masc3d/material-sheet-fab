@@ -72,7 +72,6 @@ class SectionsAdapter
                                     adapter.recyclerView.scrollToPosition(0)
                                 }
                             } else {
-                                log.trace("SELECT")
                                 select(section)
                             }
                         }
@@ -93,18 +92,19 @@ class SectionsAdapter
         this.selectedSectionProperty
                 .subscribe {
                     val section = it.value
+
                     if (section != null && !this.isSectionSelected(section)) {
                         this.select(section)
                     }
                 }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         log.trace("ADAPTER ATTACHED")
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         // TODO detach is never called. verify if this may be a leak
         super.onDetachedFromRecyclerView(recyclerView)
         log.trace("ADAPTER DETACHED")

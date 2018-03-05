@@ -102,7 +102,7 @@ class ParcelProcessingService {
                     //return@forEach
                     continue@loop
                 }
-                val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
+                val orderRecord = parcelRepository.getOrderById(parcelRecord.orderid.toLong())
                 if (orderRecord == null) {
                     log.info("parcelId=$parcel,messageID=${it.id} no orderRecord")
                     it.isProccessed = 1
@@ -152,12 +152,13 @@ class ParcelProcessingService {
                 //}
                 val from = r.erzeugerstation
 
-                val pasClearingartmaster = orderRecord.clearingartmaster
-                val pasCleared: Boolean
-                if (pasClearingartmaster != null) {
-                    pasCleared = (4096.and(pasClearingartmaster.toInt())) == 4096
-                } else
-                    pasCleared = false
+                //wird an anderer Stelle behandelt sendstatus...
+//                val pasClearingartmaster = orderRecord.clearingartmaster
+//                val pasCleared: Boolean
+//                if (pasClearingartmaster != null) {
+//                    pasCleared = (4096.and(pasClearingartmaster.toInt())) == 4096
+//                } else
+//                    pasCleared = false
                 //TODO
                 // var pasReset = false
                 val checkDamaged = parcelAddInfo.damagedFileUIDs != null
@@ -405,17 +406,18 @@ class ParcelProcessingService {
                                         unitInBagStatusRecord.infotext = r.infotext
                                         unitInBagStatusRecord.store()
 
-                                        val unitInBagOrderRecord = orderRepository.findOrderByOrderNumber(it.orderid.toLong())
+                                        val unitInBagOrderRecord = parcelRepository.getOrderById(it.orderid.toLong())
                                         if (unitInBagOrderRecord != null) {
-                                            val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
-                                            val unitInBagPasCleared: Boolean
-                                            if (unitInBagPasClearingartmaster != null) {
-                                                unitInBagPasCleared = (4096.and(unitInBagPasClearingartmaster.toInt())) == 4096
-                                            } else
-                                                unitInBagPasCleared = false
-                                            if (unitInBagPasCleared) {
-                                                //TODO WLtransfer Auslieferdaten nach Abrechnung
-                                            }
+                                            //wird jetzt an anderer Stelle behandelt sendstatus
+//                                            val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
+//                                            val unitInBagPasCleared: Boolean
+//                                            if (unitInBagPasClearingartmaster != null) {
+//                                                unitInBagPasCleared = (4096.and(unitInBagPasClearingartmaster.toInt())) == 4096
+//                                            } else
+//                                                unitInBagPasCleared = false
+//                                            if (unitInBagPasCleared) {
+//                                                //TODO WLtransfer Auslieferdaten nach Abrechnung
+//                                            }
                                             it.bmpfilename = parcelRecord.bmpfilename
                                             //val unitInBagOldValue = it.lieferstatus
                                             it.lieferstatus = r.kzStatus.toShort() //4
@@ -509,9 +511,9 @@ class ParcelProcessingService {
                         if (firstDeliveryStatus.toInt() != (4)) {
                             //TODO
                             //pasReset = true
-                            if (pasCleared) {
-                                //TODO WLtransfer Auslieferung nach Abrechnung
-                            }
+//                            if (pasCleared) {
+//                                //TODO WLtransfer Auslieferung nach Abrechnung
+//                            }
                             if (firstDeliveryStatus.toInt() == 0) {
 
                                 parcelRecord.erstlieferstatus = r.kzStatus.toShort()

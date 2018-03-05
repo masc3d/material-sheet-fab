@@ -1,6 +1,7 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SsoPMov
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SsoSMovepool
@@ -106,10 +107,16 @@ class JooqStationRepository {
         //return record
     }
 
+    fun getBagByBagBackOrderId(bagBackOrderId:Long):SsoSMovepoolRecord? {
+        return dsl.fetchOne(SsoSMovepool.SSO_S_MOVEPOOL, SSO_S_MOVEPOOL.ORDERDEPOT2HUB.eq(bagBackOrderId.toDouble()))
+    }
+
     fun getUnitNo(orderid: Long): Long? {
         if (orderid == 0.toLong()) return null
         return dsl.select(TBLAUFTRAGCOLLIES.COLLIEBELEGNR).from(TBLAUFTRAGCOLLIES)
-                .where(TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble()))
+                .where(TBLAUFTRAGCOLLIES.ORDERID.eq(orderid.toDouble())
+                        .and(Tables.TBLAUFTRAGCOLLIES.IS_CANCELLED.eq(0))
+                )
                 .fetchOne(0, Long::class.java)
     }
 
