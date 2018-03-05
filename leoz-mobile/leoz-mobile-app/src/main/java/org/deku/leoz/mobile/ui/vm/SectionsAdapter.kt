@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.utils.Log
@@ -46,7 +47,7 @@ class SectionsAdapter
         // TODO: unreliable. need to override flexibleadapter for proper reactive event
         this.addListener(object : FlexibleAdapter.OnItemClickListener {
 
-            override fun onItemClick(position: Int): Boolean {
+            override fun onItemClick(view: View, position: Int): Boolean {
                 val adapter = this@SectionsAdapter
                 val item: Any? = adapter.getItem(position)
 

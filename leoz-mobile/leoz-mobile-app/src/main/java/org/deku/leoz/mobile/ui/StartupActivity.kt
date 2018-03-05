@@ -37,6 +37,7 @@ import sx.mq.mqtt.channel
 import java.util.concurrent.TimeUnit
 import org.deku.leoz.mobile.settings.RemoteSettings
 import sx.android.NtpTime
+import sx.mq.mqtt.MqttDispatcher
 
 
 /**
@@ -178,6 +179,7 @@ class StartupActivity : BaseActivity() {
 
                                     // Late initialization of singletons which require eg. permissions
                                     Kodein.global.instance<IMqttAsyncClient>()
+                                    Kodein.global.instance<MqttDispatcher>()
                                     Kodein.global.instance<LogMqAppender>().also {
                                         it.dispatcher.start()
                                     }

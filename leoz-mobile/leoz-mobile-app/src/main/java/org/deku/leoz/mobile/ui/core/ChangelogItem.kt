@@ -38,10 +38,10 @@ class ChangelogItem private constructor(
     override fun getLayoutRes(): Int =
             R.layout.item_changelog
 
-    override fun createViewHolder(view: View, adapter: FlexibleAdapter<out IFlexible<*>>): ViewHolder =
+    override fun createViewHolder(view: View, adapter: FlexibleAdapter<IFlexible<*>>): ViewHolder =
             ViewHolder(view, adapter)
 
-    override fun bindViewHolder(adapter: FlexibleAdapter<*>?,
+    override fun bindViewHolder(adapter: FlexibleAdapter<IFlexible<*>>,
                                 holder: ViewHolder,
                                 position: Int,
                                 payloads: List<*>?) {

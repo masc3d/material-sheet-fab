@@ -402,7 +402,7 @@ class TourScreen
         adapter.setStickyHeaders(true)
         adapter.showAllHeaders()
 
-        adapter.addListener(FlexibleAdapter.OnItemClickListener { pos ->
+        adapter.addListener(FlexibleAdapter.OnItemClickListener { _, pos ->
             // Ignore click/selection in edit mode
             if (this.editMode)
                 return@OnItemClickListener true
