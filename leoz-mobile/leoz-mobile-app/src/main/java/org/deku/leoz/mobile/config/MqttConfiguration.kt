@@ -19,6 +19,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.mqtt.MqttSqlitePersistence
+import sx.android.rx.observeOnMainThread
 import sx.mq.mqtt.MqttContext
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.MqttRxClient
@@ -106,7 +107,9 @@ class MqttConfiguration {
                 )
 
                 // Wire connectivity
-                instance<Connectivity>().networkProperty.subscribe {
+                instance<Connectivity>().networkProperty
+                        .observeOnMainThread()
+                        .subscribe {
                     when (it.value.state) {
                         NetworkInfo.State.CONNECTED -> dispatcher.connect()
                         else -> dispatcher.disconnect(forcibly = true)
