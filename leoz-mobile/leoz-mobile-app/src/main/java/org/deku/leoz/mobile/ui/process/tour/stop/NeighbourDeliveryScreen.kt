@@ -20,6 +20,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.jetbrains.anko.inputMethodManager
@@ -61,6 +62,8 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
         super.onCreate(savedInstanceState)
 
         this.retainInstance = true
+
+        this.headerImage = Headers.delivery
         this.title = getString(R.string.title_alternativedelivery)
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
