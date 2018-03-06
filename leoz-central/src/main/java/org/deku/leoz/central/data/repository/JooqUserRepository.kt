@@ -1,17 +1,22 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_KEY
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_USER
 import org.deku.leoz.central.data.jooq.dekuclient.tables.MstUser
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstUserRecord
 import org.deku.leoz.hashUserPassword
+import org.deku.leoz.model.UserActivity
 import org.deku.leoz.node.data.jooq.Tables.MST_DEBITOR
 import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import sx.text.parseHex
+import sx.time.toTimestamp
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -124,6 +129,16 @@ class JooqUserRepository {
         rec ?: return false
         rec.keyId = keyID
         return (rec.store() > 0)
+    }
+
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    fun logUserActivity(userId: Int, activity: UserActivity, date: Date) {
+        val r = dsl.newRecord(Tables.HIS_USER_ACTIVITY).also {
+            it.userId = userId
+            it.activity = activity.value
+            it.tsActivity = date.toTimestamp()
+        }
+        r.store()
     }
 }
 

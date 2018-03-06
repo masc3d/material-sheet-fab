@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import sx.mq.MqChannel
+import sx.mq.MqHandler
 import sx.rs.RestProblem
 import sx.time.toSqlDate
 import javax.inject.Inject
@@ -34,7 +36,10 @@ import javax.ws.rs.core.Response
  */
 @Component
 @Path("internal/v1/user")
-class UserService : UserService {
+class UserService :
+        UserService,
+        MqHandler<Any> {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -408,5 +413,16 @@ class UserService : UserService {
 
         return configurationService.getUserConfiguration(authorizedUser.id
                 ?: throw RestProblem(status = Response.Status.NOT_FOUND))
+    }
+
+    @MqHandler.Types(
+            UserService.DataProtectionActivity::class
+    )
+    override fun onMessage(message: Any, replyChannel: MqChannel?) {
+        when (message) {
+            is UserService.DataProtectionActivity -> {
+
+            }
+        }
     }
 }
