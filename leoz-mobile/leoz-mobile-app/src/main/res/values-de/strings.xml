@@ -333,4 +333,6 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
+    <string name="data_protection">Datenschutz</string>
+    <string name="data_protection_policy">Datenschutzerklärung</string>
 </resources>

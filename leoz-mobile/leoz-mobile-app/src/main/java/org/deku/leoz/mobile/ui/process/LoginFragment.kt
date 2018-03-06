@@ -249,14 +249,14 @@ class LoginFragment : Fragment<Any>() {
             privacyDisclaimerAccepted = false
 
             MaterialDialog.Builder(this.context).also {
-                it.title("Datenschutzerklärung")
-                it.checkBoxPrompt("Ich Akzeptiere die Erklärung", false, { _, checked ->
+                it.title(R.string.data_protection)
+                it.checkBoxPrompt("Ich akzeptiere die Erklärung", false, { _, checked ->
                     privacyDisclaimerAccepted = checked
                 })
                 it.content(R.string.privacy_disclaimer_text)
                 it.cancelable(false)
-                it.positiveText("Weiter")
-                it.negativeText("Abbrechen")
+                it.positiveText(R.string.proceed)
+                it.negativeText(R.string.cancel)
                 it.onNegative { dialog, which ->
                     completable.onError(IllegalStateException("Policy must be accepted to continue"))
                 }

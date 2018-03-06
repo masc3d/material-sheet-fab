@@ -30,6 +30,11 @@
             android:title="@string/help"
             android:visible="false"
             />
+        <item
+            android:id="@+id/nav_data_policy"
+            android:icon="@drawable/ic_service"
+            android:title="@string/data_protection"
+            android:visible="true" />
     </group>
 
     <group android:id="@+id/nav_group_dev">
