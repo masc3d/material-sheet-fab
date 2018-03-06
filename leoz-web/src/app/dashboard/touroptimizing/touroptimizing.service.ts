@@ -12,12 +12,8 @@ import { roundDecimals } from '../../core/math/roundDecimals';
 import { Station } from '../../core/auth/station.model';
 import { SseService } from '../../core/sse.service';
 import { Subject } from 'rxjs/Subject';
-import { Position } from '../tour/position.model';
-import VehicleType = Position.VehicleType;
+import { Vehicle } from '../../core/models/vehicle.model';
 
-interface Vehicle {
-  capacity?: number
-}
 
 @Injectable()
 export class TouroptimizingService {
@@ -58,7 +54,7 @@ export class TouroptimizingService {
         console.log( data );
         if (data && !data.inProgress) {
           this.msgService.clear();
-          this.getTours(withInitialGeneration);
+          this.getTours( withInitialGeneration );
         }
       } );
   }
@@ -72,12 +68,12 @@ export class TouroptimizingService {
         console.log( data );
         if (data && data.deleted) {
           this.msgService.clear();
-          this.getTours(withInitialGeneration);
+          this.getTours( withInitialGeneration );
         }
       } );
   }
 
-  getTours(withInitialGeneration: boolean = true): void {
+  getTours( withInitialGeneration: boolean = true ): void {
     const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
     /**
      * ALEX: vorerst nur station-no übergeben, bis Service angepasst ist
@@ -122,22 +118,30 @@ export class TouroptimizingService {
 
   }
 
-  optimizeAndReinitTours( tourIds: number[], vehicles: Vehicle[] = [{}], optimizeTraffic = true) {
+  optimizeAndReinitTours( tourIds: number[], vehicles: Vehicle[] = [], optimizeTraffic = true,
+                          optimizeExistingtours = true, dontShiftOneDayFromNow = true ) {
     let httpParams = new HttpParams();
     tourIds.forEach( id => {
       httpParams = httpParams.append( 'id', id.toString() );
     } );
     // httpParams = httpParams.append( 'wait-for-completion', 'true' );
     httpParams = httpParams.append( 'wait-for-completion', 'false' );
-
+    /**
+     * ALEX: mal 'omit': true und mal 'omit': false / produktiv auf false stellen
+     */
     const defaultBody = {
       'appointments': {
         'omit': false
       },
-      'vehicles': vehicles,
       'traffic': optimizeTraffic
     };
 
+    if(!dontShiftOneDayFromNow) {
+      defaultBody.appointments['shiftDaysFromNow'] = 1;
+    }
+    if (!optimizeExistingtours && vehicles.length > 0) {
+      defaultBody[ 'vehicles' ] = vehicles;
+    }
     this.http.patch( this.optimizeToursUrl, defaultBody, {
       params: httpParams
     } )
