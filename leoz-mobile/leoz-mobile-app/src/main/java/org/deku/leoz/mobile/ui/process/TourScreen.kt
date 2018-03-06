@@ -80,7 +80,7 @@ class TourScreen
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val feedback: Feedback by Kodein.global.lazy.instance()
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     private val sharedPrefs: SharedPreferences by Kodein.global.lazy.instance()
     private val tourSettings: TourSettings by Kodein.global.lazy.instance()

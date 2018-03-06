@@ -44,15 +44,11 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
 
     private var pictureJpeg: ByteArray? = null
 
-    private val listener by lazy {
-        this.targetFragment as? Listener
-                ?: this.parentFragment as? Listener
-                ?: this.activity as? Listener
-    }
-
     interface Listener {
         fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray)
     }
+
+    private val listener by listenerDelegate<Listener>()
 
     /** Allow multiple pictures */
     protected var allowMultiplePictures = true

@@ -44,11 +44,7 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
         fun onNeighbourDeliveryScreenContinue(neighbourName: String)
     }
 
-    private val listener by lazy {
-        this.targetFragment as? Listener
-                ?: this.parentFragment as? Listener
-                ?: this.activity as? Listener
-    }
+    private val listener by listenerDelegate<Listener>()
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val db: Database by Kodein.global.lazy.instance()

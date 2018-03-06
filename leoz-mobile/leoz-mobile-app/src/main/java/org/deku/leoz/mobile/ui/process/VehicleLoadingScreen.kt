@@ -68,7 +68,7 @@ class VehicleLoadingScreen :
         fun onVehicleLoadingFinalized()
     }
 
-    val listener by lazy { this.activity as? Listener }
+    val listener by listenerDelegate<Listener>()
 
     /**
      * Created by masc on 10.07.17.

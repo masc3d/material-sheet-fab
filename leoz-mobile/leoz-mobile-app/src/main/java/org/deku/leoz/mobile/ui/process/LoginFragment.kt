@@ -46,7 +46,7 @@ class LoginFragment : Fragment<Any>() {
         fun onLoginSuccessful() {}
     }
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)

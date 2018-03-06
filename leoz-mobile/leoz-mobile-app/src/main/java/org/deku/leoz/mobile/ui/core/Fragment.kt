@@ -8,6 +8,7 @@ import com.tinsuke.icekick.extension.unfreezeInstanceState
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import org.parceler.Parcels
 import org.slf4j.LoggerFactory
+import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -44,6 +45,22 @@ open class Fragment<P> : RxAppCompatDialogFragment() {
             }
         }
     }
+
+    /**
+     * Listener delegate property
+     */
+    protected inner class ListenerProperty<L> : ReadOnlyProperty<Fragment<P>, L?> {
+        private val listener by lazy {
+            @Suppress("UNCHECKED_CAST")
+            this@Fragment.targetFragment as? L
+                    ?: this@Fragment.parentFragment as? L
+                    ?: this@Fragment.activity as? L
+        }
+
+        override fun getValue(thisRef: Fragment<P>, property: KProperty<*>): L? = this.listener
+    }
+    /** Listener delegate builder */
+    protected fun <L> listenerDelegate() = ListenerProperty<L>()
 
     /**
      * Fragment parameters

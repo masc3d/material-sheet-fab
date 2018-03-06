@@ -63,7 +63,7 @@ class StopDetailsScreen
         fun onStopDetailUnitNumberInput(unitNumber: UnitNumber)
     }
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val feedback: Feedback by Kodein.global.lazy.instance()

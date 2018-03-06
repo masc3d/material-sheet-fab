@@ -44,11 +44,7 @@ class CashScreen : ScreenFragment<Any>() {
         fun onCashScreenContinue()
     }
 
-    private val listener by lazy {
-        this.targetFragment as? Listener
-                ?: this.parentFragment as? Listener
-                ?: this.activity as? Listener
-    }
+    private val listener by listenerDelegate<Listener>()
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

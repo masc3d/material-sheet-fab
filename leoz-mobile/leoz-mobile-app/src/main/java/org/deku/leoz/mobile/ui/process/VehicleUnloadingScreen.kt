@@ -62,7 +62,7 @@ class VehicleUnloadingScreen :
         fun onVehicleUnloadingFinalized()
     }
 
-    val listener by lazy { this.activity as? Listener }
+    val listener by listenerDelegate<Listener>()
 
     /**
      * Created by masc on 10.07.17.
