@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { DispoComponent } from '../dispo/dispo.component';
 
 @Component( {
   selector: 'app-officedispo',
-  templateUrl: './officedispo.component.html',
+  template: `<app-dispo [withInitialGeneration]="true"></app-dispo>`,
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 
-export class OfficedispoComponent extends DispoComponent {
+export class OfficedispoComponent {
 }
 
 

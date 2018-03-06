@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Message } from 'primeng/components/common/api';
 
@@ -11,17 +11,19 @@ import { roundDecimals } from '../../../core/math/roundDecimals';
 import { BrowserCheck } from '../../../core/auth/browser-check';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { StoplistReportingService } from '../../../core/reporting/stoplist-reporting.service';
+import { Vehicle } from '../../../core/models/vehicle.model';
 
 
 @Component( {
   selector: 'app-dispo',
-  template: 'to override',
+  templateUrl: './dispo.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 } )
 
 export class DispoComponent extends AbstractTranslateComponent implements OnInit {
 
-  withInitialGeneration = true;
+  @Input()
+  withInitialGeneration: boolean;
 
   checkAll: boolean;
   toursOrderCount: number;
@@ -37,7 +39,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   notMicrodoof: boolean;
 
   displayOptimizationOptions = false;
-  optimizeTodayAndFuture = true;
+  dontShiftOneDayFromNow = true;
   optimizeTraffic = true;
   optimizeExistingtours = true;
   optimizeSplitTours = false;
@@ -85,14 +87,14 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
           this.msgService.info( 'tours-most-likely-outdated' );
         }
       } );
-    this.touroptimizingService.getTours(this.withInitialGeneration);
+    this.touroptimizingService.getTours( this.withInitialGeneration );
 
     this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe, this.withInitialGeneration );
     this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe, this.withInitialGeneration );
   }
 
   getTours() {
-    this.touroptimizingService.getTours(this.withInitialGeneration);
+    this.touroptimizingService.getTours( this.withInitialGeneration );
   }
 
   resetTours() {
@@ -107,11 +109,12 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     const sortIdDesc = function ( t1: Tour, t2: Tour ) {
       return t1.id > t2.id ? -1 : 1;
     };
+    // tours that are optimized within themselves have their own id as parentId
     const parentTours = tours
-      .filter( tour => !tour.parentId )
+      .filter( tour => !tour.parentId || tour.id === tour.parentId )
       .sort( sortIdDesc );
     const childTours = tours
-      .filter( tour => tour.parentId )
+      .filter( tour => tour.parentId && tour.id !== tour.parentId )
       .sort( sortIdDesc );
     // join arrays => add cildren after parent
     const sortedTours = [];
@@ -170,33 +173,37 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     if (this.selectedOptimizableTourIds.length === 0) {
       this.msgService.info( 'no_optimizable_tours_selected' );
     } else {
-      const selectedNotOptimizedTourIds = this.tours
-        .filter( tour => tour.selected && !tour.optimized )
+      const selectedTourIds = this.tours
+        .filter( tour => tour.selected )
         .map( tour => tour.id );
-      if (selectedNotOptimizedTourIds.length > 0) {
-        const vehicles = [];
+      // const selectedNotOptimizedTourIds = this.tours
+      //   .filter( tour => tour.selected && !tour.optimized )
+      //   .map( tour => tour.id );
+      // if (selectedNotOptimizedTourIds.length > 0) {
+        let vehicles = [];
         if (this.optimizeSplitTours) {
-          if (this.sprinterMaxKg > 0) {
-            vehicles.push( { capacity: 1200 } );
-          }
-          if (this.caddyMaxKg > 0) {
-            vehicles.push( { capacity: 500 } );
-          }
-          if (this.kombiMaxKg > 0) {
-            vehicles.push( { capacity: 350 } );
-          }
-          if (this.bikeMaxKg > 0) {
-            vehicles.push( { capacity: 30 } );
-          }
+          vehicles = this.addVehicles(this.sprinterMaxKg, Vehicle.SPRINTER, vehicles );
+          vehicles = this.addVehicles(this.caddyMaxKg, Vehicle.CADDY, vehicles );
+          vehicles = this.addVehicles(this.kombiMaxKg, Vehicle.STATION_WAGON, vehicles );
+          vehicles = this.addVehicles(this.bikeMaxKg, Vehicle.BIKE, vehicles );
         }
-        this.touroptimizingService.optimizeAndReinitTours( selectedNotOptimizedTourIds,
-          vehicles.length > 0 ? vehicles : [{}],
-          this.optimizeTraffic );
-      } else {
-        this.msgService.info( 'optimizing_optimized_tours_not_possible' );
-      }
+        this.touroptimizingService.optimizeAndReinitTours( selectedTourIds,
+          vehicles.length > 0 ? vehicles : [ Vehicle.SPRINTER ],
+          this.optimizeTraffic, this.optimizeExistingtours, this.dontShiftOneDayFromNow);
+      // } else {
+      //   this.msgService.info( 'optimizing_optimized_tours_not_possible' );
+      // }
     }
     this.checkAll = false;
+  }
+
+  private addVehicles( amount: number, type: Vehicle, vehicles: Vehicle[] ): Vehicle[] {
+    if (amount > 0) {
+      for (let i = 0; i < amount; i += 1) {
+        vehicles.push( type );
+      }
+    }
+    return vehicles;
   }
 
   deleteTour( tourId ) {

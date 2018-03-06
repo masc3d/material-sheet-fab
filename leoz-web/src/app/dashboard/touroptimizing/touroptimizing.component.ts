@@ -38,11 +38,11 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
       routerLink: 'officedispo'
     } );
 
-    items.push( {
+    /*items.push( {
       label: this.translate.instant( 'driverdispo' ),
       icon: '',
       routerLink: 'driverdispo'
-    } );
+    } );*/
 
     return items;
   }
