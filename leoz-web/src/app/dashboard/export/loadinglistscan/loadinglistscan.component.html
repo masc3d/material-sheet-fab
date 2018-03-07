@@ -211,30 +211,30 @@
             <p-tabPanel header="{{'loaded' | translate}}">
               <p style="text-align: center">{{'onLoadlist' | translate}} {{loadedPackcount}}</p>
 
-              <p-table [value]="loadedPackages$ | async" resizableColumns="true" responsive="true">
+              <p-table [value]="loadedPackages$ | async" [resizableColumns]="true" [responsive]="true">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th [pSortableColumn]="'parcelNo'">
+                    <th [pSortableColumn]="'parcelNo'" pResizableColumn>
                       {{'parcelno' | translate}}
                       <p-sortIcon [field]="'parcelNo'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'zip'">
+                    <th [pSortableColumn]="'zip'" pResizableColumn>
                       {{'zip' | translate}}
                       <p-sortIcon [field]="'zip'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'city'">
+                    <th [pSortableColumn]="'city'" pResizableColumn>
                       {{'city' | translate}}
                       <p-sortIcon [field]="'city'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'devliveryStation'">
+                    <th [pSortableColumn]="'devliveryStation'" pResizableColumn>
                       {{'devliveryStation' | translate}}
                       <p-sortIcon [field]="'devliveryStation'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'loadinglistNo'">
+                    <th [pSortableColumn]="'loadinglistNo'" pResizableColumn>
                       {{'loadinglist' | translate}}
                       <p-sortIcon [field]="'loadinglistNo'"></p-sortIcon>
                     </th>
-                    <th [pSortableColumn]="'typeOfPackaging'">
+                    <th [pSortableColumn]="'typeOfPackaging'" pResizableColumn>
                       {{'valore' | translate}}
                       <p-sortIcon [field]="'typeOfPackaging'"></p-sortIcon>
                     </th>

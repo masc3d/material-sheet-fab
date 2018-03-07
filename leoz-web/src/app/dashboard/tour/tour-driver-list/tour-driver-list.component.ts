@@ -66,19 +66,19 @@ interface CallbackArguments {
              [responsive]="true" sortField="lastName">
       <ng-template pTemplate="header">
         <tr>
-          <th [pSortableColumn]="'firstName'">
+          <th [pSortableColumn]="'firstName'" pResizableColumn>
             {{'firstname' | translate}}
             <p-sortIcon [field]="'firstName'"></p-sortIcon>
           </th>
-          <th [pSortableColumn]="'lastName'">
+          <th [pSortableColumn]="'lastName'" pResizableColumn>
             {{'surname' | translate}}
             <p-sortIcon [field]="'lastName'"></p-sortIcon>
           </th>
-          <th [pSortableColumn]="'phone'">
+          <th [pSortableColumn]="'phone'" pResizableColumn>
             {{'phoneoffice' | translate}}
             <p-sortIcon [field]="'phone'"></p-sortIcon>
           </th>
-          <th [pSortableColumn]="'phoneMobile'">
+          <th [pSortableColumn]="'phoneMobile'" pResizableColumn>
             {{'phonemobile' | translate}}
             <p-sortIcon [field]="'phoneMobile'"></p-sortIcon>
           </th>

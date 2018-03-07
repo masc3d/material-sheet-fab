@@ -15,39 +15,39 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 @Component( {
   selector: 'app-user-list',
   template: `
-    <p-table [value]="users$ | async | userfilter" resizableColumns="true"
+    <p-table [value]="users$ | async | userfilter" [resizableColumns]="true"
              [responsive]="true" sortField="lastName">
         <ng-template pTemplate="header">
           <tr>
-            <th [pSortableColumn]="'firstName'">
+            <th [pSortableColumn]="'firstName'" pResizableColumn>
               {{'firstname' | translate}}
               <p-sortIcon [field]="'firstName'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'lastName'">
+            <th [pSortableColumn]="'lastName'" pResizableColumn>
               {{'surname' | translate}}
               <p-sortIcon [field]="'lastName'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'role'">
+            <th [pSortableColumn]="'role'" pResizableColumn>
               {{'role' | translate}}
               <p-sortIcon [field]="'role'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'email'">
+            <th [pSortableColumn]="'email'" pResizableColumn>
               {{'email' | translate}}
               <p-sortIcon [field]="'email'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'phone'">
+            <th [pSortableColumn]="'phone'" pResizableColumn>
               {{'phoneoffice' | translate}}
               <p-sortIcon [field]="'phone'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'phoneMobile'">
+            <th [pSortableColumn]="'phoneMobile'" pResizableColumn>
               {{'phonemobile' | translate}}
               <p-sortIcon [field]="'phoneMobile'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'active'">
+            <th [pSortableColumn]="'active'" pResizableColumn>
               {{'active' | translate}}
               <p-sortIcon [field]="'active'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'expiresOn'">
+            <th [pSortableColumn]="'expiresOn'" pResizableColumn>
               {{'expires_on' | translate}}
               <p-sortIcon [field]="'expiresOn'"></p-sortIcon>
             </th>
