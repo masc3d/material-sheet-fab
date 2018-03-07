@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_whatsnew"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/deku_background_selector"
+    android:orientation="vertical">
+
+    <LinearLayout
+        style="@style/AppTheme.Layout.Screen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        >
+
+        <Spinner
+            android:id="@+id/uxDelayReasons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="10" />
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_marginBottom="@dimen/medium_margin"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:text="Approximate delay:"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginBottom="@dimen/medium_margin"
+            >
+
+            <EditText
+                android:id="@+id/uxApproximateDelay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Delay (in hours, eg. 1:30)"
+                android:inputType="time" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <mobi.upod.timedurationpicker.TimeDurationPicker
+            android:id="@+id/uxTimeDurationInput"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

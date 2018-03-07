@@ -6,6 +6,7 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
 import org.deku.leoz.mobile.R
+import org.deku.leoz.model.DelayedAppointmentReason
 import org.deku.leoz.model.EventNotDeliveredReason
 
 /**
@@ -95,6 +96,16 @@ private val meta = listOf(
                 R.drawable.ic_event
         )
 )
+
+data class DelayedAppointmentReasonMeta(
+        val value: DelayedAppointmentReason,
+        @StringRes val text: Int?
+) {
+        fun textOrName(context: Context): String =
+                if (this.text != null) context.getString(this.text) else this.value.name
+}
+
+
 
 /**
  * Event meta lookup by reason

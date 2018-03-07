@@ -534,3 +534,11 @@ enum class RoutingZoneDe(val value: String) {
     WR("WR"),
     UL("UL")
 }
+
+enum class DelayedAppointmentReason(val value: Int) {
+    BAD_WEATHER(0),
+    TRAFFIC_JAM(1),
+    CAR_ACCIDENT(2),
+    VEHICLE_BREAKDOWN(3),
+    OTHER(100)
+}

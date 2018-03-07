@@ -16,6 +16,9 @@ import android.widget.LinearLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem
+import com.codetroopers.betterpickers.expirationpicker.ExpirationPicker
+import com.codetroopers.betterpickers.expirationpicker.ExpirationPickerBuilder
+import com.codetroopers.betterpickers.hmspicker.HmsPickerBuilder
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -29,6 +32,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_stop.*
 import kotlinx.android.synthetic.main.screen_tour_stop_process.*
+import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
@@ -71,6 +75,7 @@ import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.materialdialogs.addAll
 import sx.format.format
+import sx.time.TimeSpan
 import java.util.concurrent.TimeUnit
 
 /**
@@ -385,6 +390,12 @@ class StopProcessScreen :
                         id = R.id.action_delivery_select_event,
                         colorRes = R.color.colorAccent,
                         iconRes = R.drawable.ic_exclamation
+                ),
+                ActionItem(
+                        id = R.id.action_report_delay,
+                        colorRes = R.color.colorGrey,
+                        iconRes = R.drawable.ic_appointment_at_risk,
+                        visible = !this.tourStop.canClose
                 )
         )
         //endregion
@@ -507,6 +518,52 @@ class StopProcessScreen :
 
                         R.id.action_delivery_close_stop -> {
                             this.closeStop(org.deku.leoz.model.EventDeliveredReason.NORMAL)
+                        }
+
+                        R.id.action_report_delay -> {
+                            val dialog = MaterialDialog.Builder(context)
+                                    .title("Report delay")
+                                    .iconRes(R.drawable.ic_appointment_at_risk)
+                                    .cancelable(false)
+                                    .customView(R.layout.dialog_delay_picker, true)
+                                    .positiveText(R.string.proceed)
+                                    .onPositive { _, _ ->
+
+                                    }
+                                    .negativeText(android.R.string.cancel)
+                                    .build()
+
+                            val customView = dialog.customView!!
+                            customView.findViewById<TimeDurationPicker>(R.id.uxTimeDurationInput).also {
+                                it.setTimeUnits(1)
+                            }
+
+                            dialog.show()
+
+//                            val dialogBuilder = MaterialDialog.Builder(context).also {
+//                                it.title("Report delay")
+//                                it.positiveText("Continue")
+//                                it.negativeText("Abort")
+//                                it.content("Specify a reason for the delay")
+//                                it.input(
+//                                        "Reason",
+//                                        null,
+//                                        false,
+//                                        MaterialDialog.InputCallback { dialog, input ->
+//                                            log.debug("INPUT-CALLBACK [$input]}")
+//                                        }
+//                                )
+//                                it.inputType(InputType.TYPE_CLASS_TEXT)
+//                                it.onPositive { dialog, which ->
+//                                    val hmsPicker: HmsPickerBuilder = HmsPickerBuilder().also {
+//                                        it.setFragmentManager(this.fragmentManager)
+//                                        it.setStyleResId(R.style.BetterPickersDialogFragment)
+//                                        it.setPlusMinusVisibility(View.VISIBLE)
+//                                    }
+//
+//                                    hmsPicker.show()
+//                                }
+//                            }.show()
                         }
                     }
                 }
@@ -753,6 +810,11 @@ class StopProcessScreen :
 
                                     it.visible = tourStop.canClose &&
                                             it.menu?.hasVisibleItems() == true
+                                }
+
+                        first { it.id == R.id.action_report_delay }
+                                .also {
+                                    it.visible = !tourStop.canClose
                                 }
                     }
                 }
