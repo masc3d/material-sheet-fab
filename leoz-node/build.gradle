@@ -133,6 +133,8 @@ dependencies {
             project(':leoz-node-data'),
             project(':leoz-smartlane'),
 
+            "net.sf.barcode4j:barcode4j:2.1",
+
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
