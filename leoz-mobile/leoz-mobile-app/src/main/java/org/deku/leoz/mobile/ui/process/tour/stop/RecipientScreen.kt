@@ -34,7 +34,7 @@ import sx.android.showSoftInput
  * Neighbour delivery screen
  * Created by phpr on 10.07.2017.
  */
-class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameters>() {
+class RecipientScreen : ScreenFragment<RecipientScreen.Parameters>() {
 
     @Parcel(Parcel.Serialization.BEAN)
     class Parameters @ParcelConstructor constructor(
@@ -42,7 +42,7 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
     )
 
     interface Listener {
-        fun onNeighbourDeliveryScreenContinue(neighbourName: String)
+        fun onRecipientScreenComplete(neighbourName: String)
     }
 
     private val listener by listenerDelegate<Listener>()
@@ -146,7 +146,7 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
         )
                 .subscribe {
                     this.context.inputMethodManager.hideSoftInput()
-                    this.listener?.onNeighbourDeliveryScreenContinue(
+                    this.listener?.onRecipientScreenComplete(
                             neighbourName = this.uxNeighboursName.text.toString()
                     )
                 }

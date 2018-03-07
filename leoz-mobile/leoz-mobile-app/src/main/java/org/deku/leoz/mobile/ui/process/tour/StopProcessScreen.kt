@@ -80,7 +80,7 @@ class StopProcessScreen :
         ScreenFragment<StopProcessScreen.Parameters>(),
         BaseCameraScreen.Listener,
         SignatureScreen.Listener,
-        NeighbourDeliveryScreen.Listener,
+        RecipientScreen.Listener,
         CashScreen.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -1008,9 +1008,9 @@ class StopProcessScreen :
                         it.setTargetFragment(this, 0)
                     })
                 } else {
-                    this.activity.showScreen(NeighbourDeliveryScreen().also {
+                    this.activity.showScreen(RecipientScreen().also {
                         it.setTargetFragment(this, 0)
-                        it.parameters = NeighbourDeliveryScreen.Parameters(
+                        it.parameters = RecipientScreen.Parameters(
                                 stopId = this.stop.id
                         )
                     })
@@ -1123,7 +1123,7 @@ class StopProcessScreen :
         this.finalizeStop()
     }
 
-    override fun onNeighbourDeliveryScreenContinue(neighbourName: String) {
+    override fun onRecipientScreenComplete(neighbourName: String) {
         this.tourStop.recipientName = neighbourName
         this.tourStop.deliveredReason = EventDeliveredReason.NEIGHBOR
 
@@ -1153,9 +1153,9 @@ class StopProcessScreen :
             }
 
             EventDeliveredReason.NEIGHBOR -> {
-                this.activity.showScreen(NeighbourDeliveryScreen().also {
+                this.activity.showScreen(RecipientScreen().also {
                     it.setTargetFragment(this, 0)
-                    it.parameters = NeighbourDeliveryScreen.Parameters(
+                    it.parameters = RecipientScreen.Parameters(
                             stopId = this.stop.id
                     )
                 })
