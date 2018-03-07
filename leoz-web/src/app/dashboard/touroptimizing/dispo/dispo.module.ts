@@ -8,6 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { DataScrollerModule } from 'primeng/datascroller';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { TabViewModule } from 'primeng/tabview';
+import { TableModule } from 'primeng/table';
 import { ToggleButtonModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/dialog';
 
@@ -28,6 +29,7 @@ import { TourlistitemComponent } from './tourlistitem.component';
     DataScrollerModule,
     TabViewModule,
     TabMenuModule,
+    TableModule,
     DialogModule
   ],
   declarations: [

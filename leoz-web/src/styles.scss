@@ -293,6 +293,7 @@ input {
 
 .ui-panelmenu .ui-panelmenu-content {
   border: none !important;
+  background: none;
 }
 
 .ui-panelmenu .ui-panelmenu-content .ui-menuitem-link {
@@ -302,7 +303,6 @@ input {
     color: $color-deku-blue !important;
     background-color: #f1f1f1 !important;
   }
-  // background: none !important;
 }
 
 .ui-panelmenu .ui-panelmenu-header-link {
@@ -311,10 +311,6 @@ input {
 
 .ui-panelmenu .ui-panelmenu-content-wrapper {
   margin-left: 20px;
-}
-
-.ui-widget-content {
-  background: none !important;
 }
 
 .ui-widget-content .ui-state-active {

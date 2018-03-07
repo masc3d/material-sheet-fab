@@ -33,7 +33,7 @@ export class TouroptimizingComponent extends AbstractTranslateComponent implemen
     const items = [];
 
     items.push( {
-      label: this.translate.instant( 'officedispo' ),
+      label: this.translate.instant( 'optimization-tour' ),
       icon: '',
       routerLink: 'officedispo'
     } );
