@@ -20,6 +20,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.node.Storage
+import org.deku.leoz.service.internal.OrderService
 import org.krysalis.barcode4j.ChecksumMode
 import org.krysalis.barcode4j.impl.int2of5.Interleaved2Of5Bean
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider
@@ -217,14 +218,19 @@ class DocumentService: DocumentService {
                 text = (request.services ?: listOf("")).toTypedArray()
         )
 
-        // Make sure that the content stream is closed:
-        contentStream.close()
+        try {
+            // Make sure that the content stream is closed:
+            contentStream.close()
 
-        // Save the results and ensure that the document is properly closed:
-        document.save(documentFile)
-        document.close()
+            // Save the results and ensure that the document is properly closed:
+            document.save(documentFile)
+            document.close()
 
-        return documentFile
+            return documentFile
+        } finally {
+            // TODO Check if this wont delete the file before it is downloaded by the client
+            documentFile.delete()
+        }
     }
 }
 
@@ -254,4 +260,8 @@ fun PDPageContentStream.addParagraph(xOffset: Float, yOffset: Float, spacing: Fl
         this.showText(line)
         this.endText()
     }
+}
+
+fun OrderService.Order.Parcel.toLabelRequest(order: OrderService.Order): DocumentService.LabelRequest {
+    return DocumentService.LabelRequest()
 }

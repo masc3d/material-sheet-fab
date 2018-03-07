@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response
 @Api(value = "Parcel service")
 @ApiKey(false)
 interface ParcelServiceV1 {
+
     companion object {
         const val EVENT = 1
         const val STATION_NO = "station-no"
@@ -115,10 +116,17 @@ interface ParcelServiceV1 {
     @GET
     @Path("/")
     @ApiOperation(value = "Find parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
-    fun findParcel(
+    fun findParcels(
             @QueryParam(value = SCANCODE) @ApiParam("Scancode") scanCode: String,
             @QueryParam(value = PARCEL_REF) @ApiParam("Reference") reference: String
     ): List<OrderService.Order.Parcel>
+
+    @GET
+    @Path("/{$PARCEL_ID}")
+    @ApiOperation(value = "Find parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun findParcel(
+            @PathParam(value = PARCEL_ID) @ApiParam("Parcel ID") parcelId: Long
+    ): OrderService.Order.Parcel?
 
     // Proposal
     @GET

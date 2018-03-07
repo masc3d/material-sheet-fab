@@ -24,6 +24,7 @@ import sx.log.slf4j.debug
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.rs.RestProblem
 import sx.time.toTimestamp
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -424,11 +425,20 @@ class ParcelServiceV1 :
     }
 
     override fun getLabel(parcelId: Long): Response {
-        //TODO Provide LabelRequest instead of parcelId. ParcelService should get all relevant data from this ID and convert it to a LabelRequest
-        return documentService.printParcelLabel(parcelId = parcelId)
+        TODO("not implemented")
+        val parcel = this.findParcel(parcelId)
+        if (parcel != null) {
+            return documentService.printParcelLabel(parcelId = parcelId)
+        } else {
+            throw RestProblem(title = "No parcel could be found with the id [$parcelId]", status = Response.Status.NOT_FOUND)
+        }
     }
 
-    override fun findParcel(scanCode: String, reference: String): List<OrderService.Order.Parcel> {
+    override fun findParcels(scanCode: String, reference: String): List<OrderService.Order.Parcel> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun findParcel(parcelId: Long): OrderService.Order.Parcel? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
