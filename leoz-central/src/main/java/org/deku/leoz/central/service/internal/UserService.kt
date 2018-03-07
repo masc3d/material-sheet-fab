@@ -80,11 +80,11 @@ class UserService : UserService {
                 userRecList.forEach {
 
                     if (authorizedUser.role == UserRole.ADMIN.name) {
-                        user.add(it.toUser())
+                        user.add(it.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(it.id) })
                     } else {
                         if (authorizedUser.debitorId == it.debitorId) {
                             if (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value) {
-                                user.add(it.toUser())
+                                user.add(it.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(it.id) })
                             }
                         }
                     }
@@ -99,10 +99,10 @@ class UserService : UserService {
                                 title = "no user found by email")
 
                 if (UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
-                    return listOf(userRecord.toUser())
+                    return listOf(userRecord.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(userRecord.id) })
                 if ((UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value) &&
                         (authorizedUser.debitorId == userRecord.debitorId)) {
-                    return listOf(userRecord.toUser())
+                    return listOf(userRecord.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(userRecord.id) })
                 } else {
                     throw RestProblem(
                             status = Response.Status.FORBIDDEN,
@@ -160,13 +160,13 @@ class UserService : UserService {
         val phone = user.phone
         val mobilePhone = user.phoneMobile
 
-        val allowsStations = AllowedStations()
+        //var allowsStations = List<Int>?//AllowedStations()
         val userStations = user.allowedStations
-        if (userStations != null) {
-            allowsStations.allowedStations = userStations.map { j -> j.toString() }.toList()
-        }
-        val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+//        if (userStations != null) {
+//            allowsStations.allowedStations = userStations.map { j -> j.toString() }.toList()
+//        }
+        //val mapper = ObjectMapper()
+        //mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
         var isNew = false
         var rec = userRepository.findByMail(email)
@@ -362,6 +362,39 @@ class UserService : UserService {
 //        rec.allowedStations = stations
 
         rec.store()
+
+        //check auth? evtl erst ab powerUser?
+        if (userStations != null) {
+            val allowedStations = userRepository.findAllowedStationsByUserId(rec.id)
+
+            userStations.forEach {
+                if (!allowedStations.contains(it)) {
+                    //Insert into mst_station_user
+                    val recStation = dsl.newRecord(Tables.MST_STATION_USER)
+                    recStation.userId = rec.id
+                    val stationId = userRepository.findStationIdByDepotNr(it)
+                    stationId ?: throw RestProblem(
+                            status = Response.Status.NOT_FOUND,
+                            title = "Station with No [$it] not found"
+                    )
+                    recStation.stationId = stationId
+                    recStation.store()
+                }
+            }
+            allowedStations.forEach {
+                if (!userStations.contains(it)) {
+                    //delete from mst_station_user
+//                    val stationId = userRepository.findStationIdByDepotNr(it)
+//                    if (stationId != null) {
+//                        dsl.deleteFrom(Tables.MST_STATION_USER)
+//                                .where(Tables.MST_STATION_USER.USER_ID.eq(rec.id))
+//                                .and(Tables.MST_STATION_USER.STATION_ID.eq(stationId))
+//                                .execute()
+//                    }
+                }
+            }
+
+        }
 
         if (sendAppLink) {
             sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)

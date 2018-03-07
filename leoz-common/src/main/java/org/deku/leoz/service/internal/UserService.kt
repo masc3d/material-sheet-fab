@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserPreferenceKey
+import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -34,6 +35,7 @@ interface UserService {
      * Created by 27694066 on 25.04.2017.
      */
     @ApiModel(description = "User Model")
+    @Serializable(0x4b4e300fc8dec6)
     data class User(
             @get:ApiModelProperty(value = "User id")
             var id: Int? = null,
@@ -80,6 +82,7 @@ interface UserService {
             //@get:ApiModelProperty(example = "[\"220\",\"221\"]", required = false, value = "allowed stations")
             //@get:ApiModelProperty(example = ["220","221"], required = false, value = "allowed stations")
             //@get:ApiModelProperty(example = "220,221", dataType = "Array<String>", required = false, value = "allowed stations")
+            //@get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
             @get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
             var allowedStations: List<Int>? = null,
 

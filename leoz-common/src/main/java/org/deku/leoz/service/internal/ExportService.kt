@@ -5,6 +5,7 @@ import io.swagger.annotations.*
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.LoadinglistType
+import org.deku.leoz.rest.RestrictStations
 import org.deku.leoz.service.entity.ServiceError
 import org.deku.leoz.service.internal.entity.Address
 import sx.io.serialization.Serializable
@@ -202,6 +203,7 @@ interface ExportService {
     @PATCH
     @Path("/")
     @ApiOperation(value = "Export parcel", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    @RestrictStations
     fun export(
             @QueryParam(SCANCODE) @ApiParam(value = "Parcel number or creference", required = true) scanCode: String = "",
             @QueryParam(LOADINGLIST_NO) @ApiParam(value = "Loadinglist number", required = true) loadingListNo: String,

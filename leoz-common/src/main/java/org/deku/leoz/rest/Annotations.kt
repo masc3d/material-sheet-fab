@@ -14,3 +14,6 @@ import org.deku.leoz.model.UserRole
 annotation class RestrictRoles(
         vararg val role: UserRole
 )
+
+@Target(AnnotationTarget.FUNCTION,AnnotationTarget.ANNOTATION_CLASS)
+annotation class RestrictStations()

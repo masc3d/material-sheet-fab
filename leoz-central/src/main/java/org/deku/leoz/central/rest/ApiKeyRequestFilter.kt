@@ -6,6 +6,7 @@ import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.rest.RestrictRoles
+import org.deku.leoz.rest.RestrictStations
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import sx.reflect.allInterfaces
@@ -72,6 +73,19 @@ class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter()
         resourceInfo.annotationOfType(RestrictRoles::class.java)
                 ?.also {
                     if (userRole == null || !it.role.contains(UserRole.valueOf(userRole)))
+                        return false
+                }
+
+        resourceInfo.annotationOfType(RestrictStations::class.java)
+                ?.also {
+                    if(user==null ) return false
+                    val userAllowedStations=this.userJooqRepository.findAllowedStationsByUserId(user.id!!)
+                    var requestStation=this.httpRequest.getParameter("station-no")?.toInt()
+                    if(requestStation==null)
+                    {
+                        //requestStation=this.httpRequest.getPathParameter
+                    }
+                    if(!userAllowedStations.contains(requestStation))
                         return false
                 }
 
