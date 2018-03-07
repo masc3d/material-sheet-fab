@@ -15,12 +15,12 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import io.reactivex.rxkotlin.joinToString
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.screen_vehicleloading.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.databinding.ScreenVehicleloadingBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
@@ -49,7 +49,6 @@ import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.android.databinding.toField
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.SimpleVmItem
@@ -79,27 +78,28 @@ class VehicleLoadingScreen :
     ) : BaseObservable() {
 
         val stopCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_stop,
-                amount = this.vehicleLoading.stopAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.stopTotalAmount.map { it.toString() }.toField()
+                iconRes = R.drawable.ic_stop,
+                amount = this.vehicleLoading.stopAmount.map { it as Number},
+                totalAmount = this.vehicleLoading.stopTotalAmount.map { it as Number}
         )
 
         val orderCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_order,
-                amount = this.vehicleLoading.orderAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.orderTotalAmount.map { it.toString() }.toField()
+                iconRes = R.drawable.ic_order,
+                amount = this.vehicleLoading.orderAmount.map { it as Number},
+                totalAmount = this.vehicleLoading.orderTotalAmount.map { it as Number}
         )
 
         val parcelCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_package_variant_closed,
-                amount = this.vehicleLoading.parcelAmount.map { it.toString() }.toField(),
-                totalAmount = this.vehicleLoading.parcelTotalAmount.map { it.toString() }.toField()
+                iconRes = R.drawable.ic_package_variant_closed,
+                amount = this.vehicleLoading.parcelAmount.map { it as Number},
+                totalAmount = this.vehicleLoading.parcelTotalAmount.map { it as Number}
         )
 
         val weightCounter = CounterViewModel(
-                drawableRes = R.drawable.ic_weight_scale,
-                amount = this.vehicleLoading.weight.map { "${it.format(2)}kg" }.toField(),
-                totalAmount = this.vehicleLoading.totalWeight.map { "${it.format(2)}kg" }.toField()
+                iconRes = R.drawable.ic_weight_scale,
+                amount = this.vehicleLoading.weight.map { it as Number},
+                totalAmount = this.vehicleLoading.totalWeight.map { it as Number},
+                format = { "${(it as Double).format(2)}kg" }
         )
     }
 
@@ -352,6 +352,8 @@ class VehicleLoadingScreen :
                 .subscribe {
                     val section = it.value
 
+                    log.user { "Selects section [${section?.title}]"}
+
                     this.accentColor = when (section) {
                         loadedSection -> R.color.colorGreen
                         damagedSection -> R.color.colorAccent
@@ -499,8 +501,6 @@ class VehicleLoadingScreen :
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
-        log.trace("AIDC READ $event")
-
         val result = Observable.concat(
                 Observable.fromCallable {
                     DekuUnitNumber
@@ -559,7 +559,7 @@ class VehicleLoadingScreen :
                 .subscribeBy(
                         onNext = {
                             loaded = true
-                            log.info("Current delivery lists [${this.deliveryList.ids.joinToString(", ")}")
+                            log.info("Current delivery lists [${this.deliveryList.ids.get().joinToString(", ")}")
                         },
                         onComplete = {
                             this.isBusy = false

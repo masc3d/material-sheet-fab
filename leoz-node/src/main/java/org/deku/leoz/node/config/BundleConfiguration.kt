@@ -14,7 +14,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class BundleConfiguration {
+class BundleConfiguration {
     @Inject
     private lateinit var storage: Storage
 
@@ -22,7 +22,7 @@ open class BundleConfiguration {
      * Local bundle repository
      **/
     @get:Bean
-    open val localRepository: BundleRepository
+    val localRepository: BundleRepository
         get() = BundleRepository(
                 rsyncModuleUri = Rsync.URI(storage.bundleRepositoryDirectory))
 
@@ -30,7 +30,7 @@ open class BundleConfiguration {
      * Application wide bundle installer
      */
     @get:Bean
-    open val bundleInstaller: BundleInstaller
+    val bundleInstaller: BundleInstaller
         get() = BundleInstaller(
                 storage.bundleInstallationDirectory)
 }

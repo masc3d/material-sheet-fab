@@ -1,13 +1,6 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.service.internal.AuthorizationService
-import org.deku.leoz.central.service.internal.DeliveryListService
-import org.deku.leoz.central.service.internal.FileServiceV1
-import org.deku.leoz.central.service.internal.LocationServiceV2
-import org.deku.leoz.central.service.internal.LogService
-import org.deku.leoz.central.service.internal.ParcelServiceV1
-import org.deku.leoz.central.service.internal.NodeServiceV1
-import org.deku.leoz.central.service.internal.TourServiceV1
+import org.deku.leoz.central.service.internal.*
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import javax.annotation.PostConstruct
@@ -23,7 +16,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class MqServiceConfiguration {
+class MqServiceConfiguration {
     @Inject
     private lateinit var messageListenerConfiguration: MqListenerConfiguration
 

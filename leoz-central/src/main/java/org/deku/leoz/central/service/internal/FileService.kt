@@ -1,35 +1,31 @@
 package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.net.MediaType
-import org.apache.tika.mime.MimeType
 import org.apache.tika.mime.MimeTypes
 import org.deku.leoz.node.Storage
 import org.deku.leoz.service.internal.FileServiceV1
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import sx.io.serialization.JacksonSerializer
 import sx.io.serialization.Serializable
 import sx.io.serialization.Serializer
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
-import sx.rs.auth.ApiKey
 import java.io.File
 import java.io.FileOutputStream
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
-import java.nio.channels.Channels
 import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
 import javax.inject.Inject
-import javax.inject.Named
 import javax.ws.rs.Path
 
 /**
  * File service V1 implementation
  * Created by masc on 25.08.17.
  */
-@Named
+@Component
 @Path("internal/v1/file")
 class FileServiceV1 :
         FileServiceV1,

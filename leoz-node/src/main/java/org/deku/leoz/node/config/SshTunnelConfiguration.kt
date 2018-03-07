@@ -18,13 +18,13 @@ import kotlin.properties.Delegates
  */
 @Configuration
 @Lazy(false)
-open class SshTunnelConfiguration {
+class SshTunnelConfiguration {
     /**
      * SSH tunnel configuration properties
      */
     @Configuration
     @ConfigurationProperties(prefix = "ssh.tunnel")
-    open class Settings {
+    class Settings {
         var localPortRangeStart: Int by Delegates.notNull()
         var localPortRangeEnd: Int by Delegates.notNull()
 
@@ -52,7 +52,7 @@ open class SshTunnelConfiguration {
      * SSH tunnel provider
      * */
     @get:Bean
-    open val tunnelProvider: SshTunnelProvider
+    val tunnelProvider: SshTunnelProvider
         get() {
             val sshHosts = this.settings.hosts.values.map {
                 SshHost(

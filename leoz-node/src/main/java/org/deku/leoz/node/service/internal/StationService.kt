@@ -4,16 +4,14 @@ import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstStation
 import org.deku.leoz.node.data.repository.DebitorStationRepository
 import org.deku.leoz.node.data.repository.StationRepository
-import org.deku.leoz.node.rest.authorizedUser
-import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
-import sx.rs.RestProblem
 import org.deku.leoz.service.internal.entity.Station
 import org.deku.leoz.service.internal.entity.StationV2
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import sx.rs.RestProblem
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
@@ -23,7 +21,7 @@ import javax.ws.rs.core.Response
 /**
  * Created by masc on 17.09.14.
  */
-@Named
+@Component
 @Path("internal/v1/station")
 class StationService : org.deku.leoz.service.internal.StationService {
     private val log = LoggerFactory.getLogger(this.javaClass)

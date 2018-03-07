@@ -361,8 +361,6 @@ interface TourServiceV1 {
                 val DEFAULT_CAPACITY: Double = 500.0
             }
         }
-
-
     }
 
     /**

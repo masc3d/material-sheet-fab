@@ -7,9 +7,11 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.disposables.CompositeDisposable
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.OrderTask
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
+import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.TourServiceV1
@@ -94,8 +96,12 @@ class Tour : CompositeDisposableSupplier {
      * The currently active stop.
      * Setting a stop active will also set its state to PENDING if it has no state
      */
-    var activeStop: DeliveryStop? by Delegates.observable<DeliveryStop?>(null, { _, o, v ->
+    var activeStop: TourStop? by Delegates.observable<TourStop?>(null, { _, o, v ->
         o?.dispose()
+
+        v?.entity?.address?.also {
+            log.user { "Activates stop [$it]" }
+        }
 
         if (v != null) {
             // If stop has no state, reset to pending

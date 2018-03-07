@@ -2,6 +2,7 @@
 logging:
    level:
       ROOT: INFO
+      org.deku.leoz: DEBUG
       sx.mq: DEBUG
 
 # User settings

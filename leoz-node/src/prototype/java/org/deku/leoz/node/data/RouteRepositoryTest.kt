@@ -33,7 +33,7 @@ import javax.sql.DataSource
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(DataTestConfiguration::class))
 @Category(PrototypeTest::class)
-open class RouteRepositoryTest {
+class RouteRepositoryTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -48,7 +48,7 @@ open class RouteRepositoryTest {
 
     @Transactional
     @Test
-    open fun testFindAll() {
+    fun testFindAll() {
         val qRoute = QMstRoute.mstRoute
 
         val result = routeRepository.findAll(
@@ -60,7 +60,7 @@ open class RouteRepositoryTest {
 
     @Transactional
     @Test
-    open fun testFind() {
+    fun testFind() {
         for (i in 0..20) {
             val sw = Stopwatch.createStarted()
             val result = routeRepository.findById(46179)
@@ -70,7 +70,7 @@ open class RouteRepositoryTest {
 
     @Transactional
     @Test
-    open fun testFindQueryDsl() {
+    fun testFindQueryDsl() {
         val qRoute = QMstRoute.mstRoute
 
         val pLayer = Param(Int::class.java)
@@ -105,7 +105,7 @@ open class RouteRepositoryTest {
 
     @Transactional
     @Test
-    open fun testFindRoutingSpringDataPrepared() {
+    fun testFindRoutingSpringDataPrepared() {
         val qRoute = QMstRoute.mstRoute
 
         class Params {
@@ -176,7 +176,7 @@ open class RouteRepositoryTest {
 
     @Transactional
     @Test
-    open fun testFindRoutingSpringDataPreparedRaw() {
+    fun testFindRoutingSpringDataPreparedRaw() {
         val qRoute = QMstRoute.mstRoute
 
         val pLayer = Param(Int::class.java, qRoute.layer.metadata.name)
@@ -259,7 +259,7 @@ open class RouteRepositoryTest {
 
     @Transactional
     @Test
-    open fun testFindRoutingSpringData() {
+    fun testFindRoutingSpringData() {
         val qRoute = QMstRoute.mstRoute
 
         val timestamp = Date().toTimestamp()
@@ -286,7 +286,7 @@ open class RouteRepositoryTest {
 
     @Transactional
     @Test
-    open fun testFindQueryDsl2() {
+    fun testFindQueryDsl2() {
         val qRoute = QMstRoute.mstRoute
 
         for (i in 0..20) {
@@ -302,7 +302,7 @@ open class RouteRepositoryTest {
     val SQL_QUERY = "SELECT * FROM mst_route WHERE layer=1 AND country='DE' AND zip_from='63571'"
 
     @Test
-    open fun testSelectJdbcPrepared() {
+    fun testSelectJdbcPrepared() {
         val cn = this.dataSource.connection
 
         val pstmt = cn.prepareStatement(SQL_QUERY)

@@ -1,19 +1,19 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstKeyRecord
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.MstKey
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstKeyRecord
 import org.jooq.DSLContext
-import javax.inject.Inject
-import javax.inject.Named
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
+import javax.inject.Inject
 
 
 /**
  * Created by JT on 17.05.17.
  */
-@Named
+@Component
 class JooqKeyRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)

@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonMappingException
 import org.deku.leoz.service.entity.ServiceError
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import org.zalando.problem.ThrowableProblem
 import sx.rs.RestProblem
-import javax.inject.Named
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider
 /**
  * Created by masc on 21.04.15.
  */
-@Named
+@Component
 @Provider
 class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
     private val log = LoggerFactory.getLogger(this.javaClass)

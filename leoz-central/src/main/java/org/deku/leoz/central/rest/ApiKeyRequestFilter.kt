@@ -4,19 +4,15 @@ import org.deku.leoz.central.Application
 import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.toUser
-import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.rest.RestrictRoles
-import org.deku.leoz.service.internal.UserService
 import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Component
 import sx.reflect.allInterfaces
 import sx.rs.RestProblem
-import sx.rs.auth.ApiKeyRequestFilterBase
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
-import javax.ws.rs.WebApplicationException
 import javax.ws.rs.container.ResourceInfo
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
@@ -27,7 +23,7 @@ import javax.ws.rs.ext.Provider
  * Created by masc on 08.07.15.
  */
 @Profile(Application.PROFILE_CENTRAL)
-@Named
+@Component
 @Provider
 class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter()
 {
@@ -60,7 +56,7 @@ class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter()
 
         if (user != null) {
             // Check for user activity & expiry
-            if (!(user.active ?: false)) {
+            if (user.active != true) {
                 throw RestProblem(
                         title = "User [${user.id}] has been deactivated",
                         status = Response.Status.UNAUTHORIZED)

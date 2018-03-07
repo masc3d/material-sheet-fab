@@ -243,11 +243,11 @@ class TourActivity : Activity(),
         )
     }
 
-    override fun onDeliveryStopDetailUnitNumberInput(unitNumber: UnitNumber) {
+    override fun onStopDetailUnitNumberInput(unitNumber: UnitNumber) {
         this.onDeliveryUnitNumberInput(unitNumber)
     }
 
-    override fun onDeliveryStopListUnitNumberInput(unitNumber: UnitNumber) {
+    override fun onTourUnitNumberInput(unitNumber: UnitNumber) {
         this.onDeliveryUnitNumberInput(unitNumber)
     }
 }

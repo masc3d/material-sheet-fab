@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.core
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Resources
 import android.databinding.DataBindingUtil
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
@@ -47,11 +48,14 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 import org.deku.leoz.MimeType
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.databinding.ViewConnectivityIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewMqIndicatorBinding
 import org.deku.leoz.mobile.databinding.ViewUpdateIndicatorBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.process.Login
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.mq.MqttEndpoints
@@ -71,10 +75,7 @@ import org.jetbrains.anko.backgroundColor
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.aidc.SymbologyType
-import sx.android.ApplicationStateMonitor
-import sx.android.Connectivity
-import sx.android.Device
-import sx.android.NtpTime
+import sx.android.*
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
@@ -82,6 +83,7 @@ import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
 import sx.android.view.setIconTint
 import sx.android.view.setIconTintRes
+import sx.log.slf4j.trace
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
 import sx.rx.ObservableRxProperty
@@ -177,7 +179,8 @@ abstract class Activity : BaseActivity(),
 
     private val actionEventSubject = PublishSubject.create<Int>()
     /** Action overlay event */
-    val actionEvent = this.actionEventSubject.hide()
+    val actionEvent = this.actionEventSubject
+            .hide()
 
     /** Additional menu items to add */
     var screenMenuItems: Menu? = null
@@ -384,8 +387,8 @@ abstract class Activity : BaseActivity(),
                     .filterNotNull()
                     .map { it.javaClass.simpleName }
 
-            // Log backstack state
-            log.trace("BACKSTACK [${fragments.joinToString(", ")}]")
+            // Log backstack state / user action
+            log.user { "Shows [${fragments.joinToString(", ")}]" }
         }
         //endregion
 
@@ -557,6 +560,10 @@ abstract class Activity : BaseActivity(),
 
     override fun onActionItem(id: Int) {
         // Global action handler
+
+        val actionName = this.resources.getResourceEntryNameOrNull(id)
+        log.user { "Performs [${actionName}]" }
+
         when (id) {
             R.id.action_aidc_camera -> {
                 this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
@@ -625,10 +632,6 @@ abstract class Activity : BaseActivity(),
 
         return false
     }
-
-//    override fun attachBaseContext(newBase: Context?) {
-//        super.attachBaseContext(LocaleContextWrapper.wrap(context = newBase!!, language = null))
-//    }
 
     private val cameraAidcFragment: AidcCameraFragment?
         get() = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName) as? AidcCameraFragment
@@ -877,6 +880,15 @@ abstract class Activity : BaseActivity(),
                     }
                 }
 
+        this.aidcReader.readEvent
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .subscribe {
+                    val type = this.supportFragmentManager.fragments.lastOrNull()?.javaClass
+                            ?: this.javaClass
+
+                    LoggerFactory.getLogger(type).user { "AIDC ${it}" }
+                }
+
         this.aidcReader.bindActivity(this)
 
         this.cameraReader.readEvent
@@ -936,8 +948,6 @@ abstract class Activity : BaseActivity(),
      * @param addToBackStack If the fragment should be added to the backstack
      */
     fun showScreen(fragment: ScreenFragment<*>, addToBackStack: Boolean = true): Int {
-        log.trace("SHOW SCREEN [${fragment.javaClass.simpleName}]")
-
         return supportFragmentManager.withTransaction {
             if (addToBackStack) {
                 it.setCustomAnimations(
@@ -1033,7 +1043,7 @@ abstract class Activity : BaseActivity(),
         var scrollCollapseMode = fragment.scrollCollapseMode
         var scroll = (scrollCollapseMode != ScreenFragment.ScrollCollapseModeType.None)
 
-        log.trace("HEADER HEIGHT ${this.uxHeader.layoutParams.height}")
+        log.trace { "HEADER HEIGHT ${this.uxHeader.layoutParams.height}" }
 
         if (fragment.toolbarCollapsed) {
             expandAppBar = false
@@ -1060,7 +1070,7 @@ abstract class Activity : BaseActivity(),
         run {
             // TODO: don't expand when scroll position is not top on pre-existing fragment
 
-            log.trace("HEADER IMAGE SET ${fragment.headerImage}")
+            log.trace { "HEADER IMAGE SET ${fragment.headerImage}" }
             this.header.headerDrawable = if (fragment.headerImage != null)
                 fragment.headerImage
             else
@@ -1088,13 +1098,13 @@ abstract class Activity : BaseActivity(),
                 false -> 0
             }
 
-            log.trace("APPBAR EXPAND ${expandAppBar}")
+            log.trace { "APPBAR EXPAND ${expandAppBar}" }
             this.uxAppBarLayout.setExpanded(expandAppBar, true)
 
             val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
 
             this.scrollFlags = scrollFlag or collapsingScrollFlag or scrollSnapFlag
-            log.trace("SCROLL FLAGS ${layoutParams.scrollFlags} ${scrollFlags}")
+            log.trace { "SCROLL FLAGS ${layoutParams.scrollFlags} ${scrollFlags}" }
 
             this.uxCollapsingToolbarLayout.postDelayed({
                 if (layoutParams.scrollFlags != this.scrollFlags) {

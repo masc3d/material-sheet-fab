@@ -1,26 +1,25 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_KEY
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_USER
 import org.deku.leoz.central.data.jooq.dekuclient.tables.MstUser
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstUserRecord
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.node.data.jooq.Tables.MST_DEBITOR
+import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import sx.text.parseHex
 import javax.inject.Inject
-import javax.inject.Named
-import org.deku.leoz.service.internal.UserService
 
 /**
  * User repository
  * Created by 27694066 on 25.04.2017.
  */
-@Named
-open class JooqUserRepository {
+@Component
+class JooqUserRepository {
     companion object {
         // Backend specific salt. This one shouldn't be reused on other devices
         private val SALT = "27abf393a822078603768c78de67e4a3".parseHex()

@@ -23,6 +23,9 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$v_kotlin"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$v_kotlin"
+
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
         classpath "com.h2database:h2:$v_h2"
@@ -45,6 +48,8 @@ buildscript {
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
+apply plugin: 'kotlin-jpa'
 apply plugin: 'application'
 apply plugin: 'distribution'
 apply plugin: 'idea'
@@ -172,7 +177,7 @@ dependencies {
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
-            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson_kt",
 
             "org.zalando:problem:$v_rest_problem",
             "org.zalando:jackson-datatype-problem:$v_rest_problem",

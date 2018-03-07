@@ -34,6 +34,7 @@ import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
@@ -54,7 +55,6 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.annotation.PostConstruct
 import javax.inject.Inject
-import javax.inject.Named
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
 import javax.ws.rs.Path
@@ -68,7 +68,7 @@ import kotlin.NoSuchElementException
  * Tour service implementation
  * Created by masc on 14.12.17.
  */
-@Named
+@Component
 @Path("internal/v1/tour")
 class TourServiceV1
     :

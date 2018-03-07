@@ -52,6 +52,8 @@
     <string name="continue_text">Continue</string>
     <string name="continue_without">Continue without</string>
 
+    <string name="damaged">Damaged</string>
+
     <string name="delivered">Delivered</string>
 
     <string name="delivery">Delivery</string>
@@ -135,6 +137,8 @@
     <string name="given_cash">Given cash</string>
     <string name="given_cash_eg_15_00">Given cash (eg. 15,00)</string>
 
+    <string name="gps_active">GPS active</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -186,12 +190,14 @@
 
     <string name="optimize">Optimize</string>
 
+    <string name="order">Order</string>
     <string name="order_list">Order list</string>
     <string name="order_not_on_delivery_list">Order not on delivery list</string>
     <string name="order_not_on_delivery_list_confirmation">Do you want to store the corresponding order?</string>
 
     <string name="orders">Orders</string>
 
+    <string name="parcel">Parcel</string>
     <string name="parcel_damaged">Parcel damaged</string>
     <string name="parcel_missing">Parcel missing</string>
 
@@ -201,8 +207,6 @@
 
     <string name="pending">Pending</string>
 
-    <string name="please_sign_here">Please sign here</string>
-    <string name="please_sign_below">Please sign below</string>
     <string name="please_wait">Please wait</string>
 
     <string name="privacy_disclaimer_text" translatable="false">
@@ -286,15 +290,15 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
 
     <string name="services">Services</string>
 
-    <string name="signature_conclusion">I acknowledge the receipt of:\nOrders: %1$s\nParcels: %2$s\nRecipient: %3$s</string>
+    <string name="signature_heading">Summary</string>
     <string name="signature_on_paper">Signature on paper</string>
-    <string name="signature_signed_by_name">Name: %s</string>
+    <string name="signature_signed_by_name">Signature (%s)</string>
 
     <string name="skip">Skip</string>
 
     <string name="sort_appointment">By appointment</string>
-    <string name="sort_optimize">Optimize</string>
     <string name="sort_distance">By distance</string>
+    <string name="sort_optimize">Optimize</string>
     <string name="sort_zip">By zip</string>
 
     <string name="station_id">Station ID</string>
@@ -324,12 +328,12 @@ Wir bieten Ihnen auf unserer Seite die Möglichkeit, mit uns per E-Mail und/oder
     <string name="to_recipient">To recipient</string>
 
     <string name="tour">Tour</string>
-    <string name="tour_optimization_in_progress">Optimizing tour</string>
     <string name="tour_optimization_failed">Tour optimization failed</string>
+    <string name="tour_optimization_in_progress">Optimizing tour</string>
     <string name="tour_optimization_settings">Optimization settings</string>
     <string name="tour_optimization_settings_omit_appointments">Omit appointments</string>
-    <string name="tour_optimization_settings_traffic">Traffic</string>
     <string name="tour_optimization_settings_shift_appointments">Shift appointments</string>
+    <string name="tour_optimization_settings_traffic">Traffic</string>
 
     <string name="truck">Truck</string>
 

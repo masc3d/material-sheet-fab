@@ -14,14 +14,14 @@ import javax.annotation.PreDestroy
  */
 @Configuration
 @Lazy(false)
-open class ExecutorConfiguration {
+class ExecutorConfiguration {
     val log = LoggerFactory.getLogger(ExecutorConfiguration::class.java.name)
 
     /**
      * Scheduled thread executor
      */
     @get:Bean
-    open val executorService: ScheduledExecutorService
+    val executorService: ScheduledExecutorService
         get() = CompositeExecutorService(
                 this.scheduledExecutorService,
                 this.cachedExecutorService)
@@ -30,7 +30,7 @@ open class ExecutorConfiguration {
      * Scheduled executor service
      */
     private val scheduledExecutorService by lazy {
-        val executor = ScheduledThreadPoolExecutor(8);
+        val executor = ScheduledThreadPoolExecutor(8)
         executor.removeOnCancelPolicy = true
         executor
     }

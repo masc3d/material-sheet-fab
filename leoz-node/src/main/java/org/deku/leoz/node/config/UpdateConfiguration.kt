@@ -6,7 +6,6 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.*
 import org.deku.leoz.node.service.internal.AuthorizationClientService
-import sx.rs.client.RestClient
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.update.BundleUpdateService
 import org.slf4j.LoggerFactory
@@ -16,6 +15,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.packager.BundleInstaller
 import sx.packager.BundleRepository
+import sx.rs.client.RestClient
 import sx.ssh.SshTunnelProvider
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
@@ -28,7 +28,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class UpdateConfiguration {
+class UpdateConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -71,7 +71,7 @@ open class UpdateConfiguration {
 
     @Configuration
     @ConfigurationProperties(prefix = "update")
-    open class Settings {
+    class Settings {
         /** Enable/disbale updates */
         var enabled: Boolean = false
         /** Perform automatic updates/retrieve update notifications */
@@ -122,7 +122,7 @@ open class UpdateConfiguration {
      * The actual bundle update service
      */
     @get:Bean
-    open val bundleUpdateService: BundleUpdateService
+    val bundleUpdateService: BundleUpdateService
         get() {
             val rsyncHostDiffers =
                     !this.settings.rsyncHost.isNullOrEmpty() &&

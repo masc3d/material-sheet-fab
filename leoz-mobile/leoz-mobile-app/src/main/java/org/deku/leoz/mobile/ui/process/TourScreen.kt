@@ -30,6 +30,7 @@ import org.deku.leoz.mobile.databinding.ScreenTourBinding
 import org.deku.leoz.mobile.databinding.ViewOptimizationOptionsBinding
 import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.OptimizationOptions
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.StopEntity
@@ -71,7 +72,7 @@ class TourScreen
         ScreenFragment<Any>() {
 
     interface Listener {
-        fun onDeliveryStopListUnitNumberInput(unitNumber: UnitNumber)
+        fun onTourUnitNumberInput(unitNumber: UnitNumber)
     }
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -379,7 +380,7 @@ class TourScreen
                         iconTintRes = android.R.color.black,
                         menu = this.activity.inflateMenu(R.menu.menu_delivery_list_sort).also {
                             it.findItem(R.id.action_sort_optimize).setVisible(
-                                tourSettings.optimization.enabled
+                                    tourSettings.optimization.enabled
                             )
                         },
                         visible = false
@@ -401,7 +402,7 @@ class TourScreen
         adapter.setStickyHeaders(true)
         adapter.showAllHeaders()
 
-        adapter.addListener(FlexibleAdapter.OnItemClickListener { pos ->
+        adapter.addListener(FlexibleAdapter.OnItemClickListener { _, pos ->
             // Ignore click/selection in edit mode
             if (this.editMode)
                 return@OnItemClickListener true
@@ -437,11 +438,14 @@ class TourScreen
                         .negativeText(android.R.string.no)
                         .onPositive { dialog, _ ->
                             dialog.dismiss()
+
                             adapter.getItem(pos)
                                     ?.viewModel
                                     ?.also { viewModel ->
                                         when (viewModel) {
                                             is StopViewModel -> {
+                                                log.user { "Re-opens stop [${viewModel.stop}]" }
+
                                                 this.db.store.withTransaction {
                                                     val stop = viewModel.stop as StopEntity
 
@@ -538,6 +542,7 @@ class TourScreen
                         .show()
             }
 
+            log.user { "Starts tour optimization [${options}]"}
             subscription = tourService.optimize(
                     options = options,
                     startStationNo = mobileOptions.stationNo
@@ -585,13 +590,6 @@ class TourScreen
                             }
                     )
         }
-
-        val settings = arrayOf(
-                R.string.tour_optimization_settings_omit_appointments,
-                R.string.tour_optimization_settings_shift_appointments,
-                R.string.tour_optimization_settings_traffic
-        )
-
 
         val optionsViewBinding = DataBindingUtil.inflate<ViewOptimizationOptionsBinding>(
                 this.layoutInflater,
@@ -724,8 +722,6 @@ class TourScreen
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
-        log.trace("AIDC READ $event")
-
         val result: Result<UnitNumber> = UnitNumber.parseLabel(event.data)
 
         when {
@@ -743,7 +739,7 @@ class TourScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        this.listener?.onDeliveryStopListUnitNumberInput(unitNumber)
+        this.listener?.onTourUnitNumberInput(unitNumber)
     }
 
     /**

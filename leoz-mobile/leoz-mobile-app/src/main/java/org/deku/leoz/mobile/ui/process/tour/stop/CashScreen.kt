@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.screen_tour_stop_cash.*
 import org.deku.leoz.mobile.BR
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Tour
-import org.deku.leoz.mobile.model.process.DeliveryStop
+import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
@@ -55,17 +55,17 @@ class CashScreen : ScreenFragment<Any>() {
     // Model classes
     private val tour: Tour by Kodein.global.lazy.instance()
 
-    private val deliveryStop: DeliveryStop by lazy {
+    private val tourStop: TourStop by lazy {
         tour.activeStop ?: throw IllegalStateException("Active delivery stop not set")
     }
 
     /** Cash amount to collect */
     private val cashAmountToCollect by lazy {
-        this.deliveryStop.cashAmountToCollect
+        this.tourStop.cashAmountToCollect
     }
 
     private val currencyCode by lazy {
-        this.deliveryStop
+        this.tourStop
     }
 
     /** Cash amount given */
@@ -86,11 +86,11 @@ class CashScreen : ScreenFragment<Any>() {
 
     /** Current locale currency format */
     private val currencyFormat by lazy { NumberFormat.getCurrencyInstance(recipientLocale).also {
-        it.currency = Currency.getInstance(deliveryStop.cashCurrencyCode)
+        it.currency = Currency.getInstance(tourStop.cashCurrencyCode)
     } }
 
     val recipientLocale by lazy {
-        this.deliveryStop.recipientCountryCode.toLocale()
+        this.tourStop.recipientCountryCode.toLocale()
     }
 
     private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<
@@ -131,7 +131,7 @@ class CashScreen : ScreenFragment<Any>() {
         adapter.isSwipeEnabled = false
 
         //region Orders
-        val orders = this.deliveryStop.orders.blockingFirst()
+        val orders = this.tourStop.orders.blockingFirst()
 
         adapter.addItem(
                 VmItem<SectionViewModel<Any>, Any>(

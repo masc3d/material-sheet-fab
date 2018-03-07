@@ -18,6 +18,8 @@ import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.ConfigurationMap
+import sx.log.slf4j.debug
+import sx.log.slf4j.info
 import sx.mq.mqtt.channel
 
 /**

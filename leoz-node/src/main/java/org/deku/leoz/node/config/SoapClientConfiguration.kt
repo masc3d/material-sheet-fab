@@ -18,11 +18,11 @@ import javax.xml.ws.BindingProvider
  */
 @Configuration
 @Lazy(true)
-open class SoapClientConfiguration {
+class SoapClientConfiguration {
     /**
      * Common SOAP endpoint settings
      */
-    open class EndpointSettings {
+    class EndpointSettings {
         var namespace: String? = null
         var username: String? = null
         var password: String? = null
@@ -30,10 +30,10 @@ open class SoapClientConfiguration {
 
     @get:ConfigurationProperties("remote.gls.soap.shipment-processing")
     @get:Bean
-    open val shipmentProcessingServiceSettings: EndpointSettings = EndpointSettings()
+    val shipmentProcessingServiceSettings: EndpointSettings = EndpointSettings()
 
     @get:Bean
-    open val blzService: BLZServicePortType = BLZService().blzServiceSOAP12PortHttp
+    val blzService: BLZServicePortType = BLZService().blzServiceSOAP12PortHttp
 
     /**
      * Updates endpoint settings of XML WS service
@@ -53,7 +53,7 @@ open class SoapClientConfiguration {
     }
 
     @get:Bean
-    open val glsShipmentProcessingService: ShipmentProcessingPortType
+    val glsShipmentProcessingService: ShipmentProcessingPortType
         get() {
             val service = ShipmentProcessingService().shipmentProcessingPortTypePort
 

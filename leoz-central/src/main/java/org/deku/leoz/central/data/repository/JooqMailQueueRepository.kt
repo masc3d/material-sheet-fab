@@ -6,10 +6,10 @@ import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import javax.inject.Inject
-import javax.inject.Named
 
-@Named
+@Component
 class JooqMailQueueRepository {
     private val log = LoggerFactory.getLogger(JooqMailQueueRepository::class.java)
 
@@ -48,19 +48,19 @@ class JooqMailQueueRepository {
 
     }
 
-    private open class DefID {
+    private class DefID {
         companion object {
             const val SMS: Int = 10
         }
     }
 
-    private open class Status {
+    private class Status {
         companion object {
             const val NEW: Int = 0
         }
     }
 
-    private open class DeleteAfterSend {
+    private class DeleteAfterSend {
         companion object {
             const val NO: Int = 0
             const val YES: Int = -1

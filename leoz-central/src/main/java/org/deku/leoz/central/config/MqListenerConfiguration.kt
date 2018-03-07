@@ -18,7 +18,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class MqListenerConfiguration : org.deku.leoz.node.config.MqListenerConfiguration() {
+class MqListenerConfiguration : org.deku.leoz.node.config.MqListenerConfiguration() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject

@@ -13,15 +13,16 @@ import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.service.entity.DayTypeKey
 import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.BagService
 import org.deku.leoz.service.internal.ExportService
+import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.time.toShortTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sx.rs.RestProblem
 import sx.time.toLocalDate
@@ -29,16 +30,14 @@ import sx.time.toTimestamp
 import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
-import org.deku.leoz.node.rest.authorizedUser
 
-@Named
+@Component
 @Path("internal/v1/export")
-open class ExportService : org.deku.leoz.service.internal.ExportService {
+class ExportService : org.deku.leoz.service.internal.ExportService {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -130,8 +129,50 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
             title = ExportService.ResponseMsg.LL_CHANGED.value//"Loadinglist changed"
 
         }
+        if (unitRecord.ladelistennummerd == null || unitRecord.ladelistennummerd.toLong() != un.value.value.toLong()) {
+            unitRecord.ladelistennummerd = un.value.value.toLong().toDouble()
+            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
+        }
 
-        exportUnit(ExportUnitOrder(unitRecord, orderRecord), un.value.value.toLong(), stationNo)
+        //falls bag hier noch alle pkst exportieren statt in close-Bag, denn was zB mit export-Status wenn reopen-Bag?
+        val unScan=DekuUnitNumber.parse(unitRecord.colliebelegnr.toLong().toString().padStart(11, '0'))
+        when {
+            unScan.hasError -> {
+                throw RestProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = ExportService.ResponseMsg.PARCEL_NOT_FOUND.value
+                )
+            }
+        }
+        if (unScan.value.type == UnitNumber.Type.BagBack){
+            val bagBack=stationRepository.getBagByBagBackOrderId(unitRecord.orderid.toLong())
+            bagBack ?: throw RestProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title=ExportService.ResponseMsg.BAG_ID_NULL.value
+            )
+            val bag=getAndCheckBag(stationNo,DekuUnitNumber.parse(bagBack.bagNumber.toLong().toString().padStart(11, '0')).value.label)
+
+            if (bag.lastStation != 2 && bag.status != BagStatus.CLOSED_FROM_STATION && bag.status != BagStatus.CLOSED_FROM_HUB) {
+                throw RestProblem(
+                        status=Response.Status.BAD_REQUEST,
+                        title = ExportService.ResponseMsg.BAG_NOT_CLOSED.value
+                )
+            }
+
+            bag.ordersToexport = getParcelsFilledInBagBackByBagBackUnitNo(bag.unitNoBack)
+            bag.ordersToexport.forEach { parcels ->
+                parcels.parcels.forEach {
+                    val inBagexportUnitOrder = getAndCheckUnit(DekuUnitNumber.parse(it.parcelNo.toString().padStart(11, '0')).value.label, stationNo)
+
+                    val inBagunitRecord = inBagexportUnitOrder.unit
+                    val inBagorderRecord = inBagexportUnitOrder.order
+                    exportUnit(ExportUnitOrder(inBagunitRecord, inBagorderRecord), stationNo)
+                }
+            }
+        }
+        //
+
+        exportUnit(ExportUnitOrder(unitRecord, orderRecord), stationNo)
 
         val mapper = ObjectMapper()
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -251,6 +292,14 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
         var loadlistNo: Long = 0
         do {
             loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
+            //da auf ladeliste>100000 geprüft wird für schon geladene aber nicht im Bag wird der Tageszaehler zurückgesetzt sobald 100000 erreicht ist
+            //laut Alex reicht es, da ja alle 3 Monate archiviert wird
+            if (loadlistNo >= 100000) {
+                dsl.update(Tables.USYSTBLZAEHLER).set(Tables.USYSTBLZAEHLER.TAGESZAEHLER, 1)
+                        .where(Tables.USYSTBLZAEHLER.COUNTERTYP.eq(counter.LOADING_LIST.value))
+                        .execute()
+                loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
+            }
             var checklist = parcelRepository.getParcelsByLoadingList(loadlistNo)
         } while (checklist.count() > 0)
         return ExportService.Loadinglist(loadinglistNo = loadlistNo)
@@ -748,15 +797,7 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
                 unitRecord.gewichteffektiv = weightRealSum
             }
             unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
-            bag.ordersToexport.forEach { parcels ->
-                parcels.parcels.forEach {
-                    val inBagexportUnitOrder = getAndCheckUnit(DekuUnitNumber.parse(it.parcelNo.toString().padStart(11, '0')).value.label, stationNo)
 
-                    val inBagunitRecord = inBagexportUnitOrder.unit
-                    val inBagorderRecord = inBagexportUnitOrder.order
-                    exportUnit(ExportUnitOrder(inBagunitRecord, inBagorderRecord), un.value.value.toLong(), stationNo)
-                }
-            }
         }
         if (sendStatusRequired) {
             if (orderRecord.sendstatus.toInt() != 0) {
@@ -1164,15 +1205,12 @@ open class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun exportUnit(eu: ExportUnitOrder, loadingListNo: Long, stationNo: Int): ExportUnitOrder {
+    open fun exportUnit(eu: ExportUnitOrder, stationNo: Int): ExportUnitOrder {
 
         val unitRecord = eu.unit
         val orderRecord = eu.order
 
-        if (unitRecord.ladelistennummerd == null || unitRecord.ladelistennummerd.toLong() != loadingListNo) {
-            unitRecord.ladelistennummerd = loadingListNo.toDouble()
-            unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
-        }
+
         val workDate = bagServiceCentral.getWorkingDate()
         if (unitRecord.dtausgangdepot2 == null || unitRecord.dtausgangdepot2 != workDate.toTimestamp()) {
             unitRecord.dtausgangdepot2 = workDate.toTimestamp()

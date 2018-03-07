@@ -19,15 +19,15 @@ import javax.inject.Inject
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(DataTestConfiguration::class))
 @Category(PrototypeTest::class)
-open class BundleVersionRepositoryTest {
+class BundleVersionRepositoryTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    lateinit private var bundleVersionRepository: BundleVersionRepository
+    private lateinit var bundleVersionRepository: BundleVersionRepository
 
     @Test
     @Transactional
-    open fun testSaveWithAutoIdentity() {
+    fun testSaveWithAutoIdentity() {
         val record = MstBundleVersion()
         record.alias = "test"
         record.bundle = "test"

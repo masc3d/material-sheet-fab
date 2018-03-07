@@ -19,7 +19,10 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
              [responsive]="true" sortField="lastName">
         <ng-template pTemplate="header">
           <tr>
-            <th>{{'firstname' | translate}}</th>
+            <th [pSortableColumn]="'firstName'">
+              {{'firstname' | translate}}
+              <p-sortIcon [field]="'firstName'"></p-sortIcon>
+            </th>
             <th [pSortableColumn]="'lastName'">
               {{'surname' | translate}}
               <p-sortIcon [field]="'lastName'"></p-sortIcon>
@@ -32,8 +35,14 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
               {{'email' | translate}}
               <p-sortIcon [field]="'email'"></p-sortIcon>
             </th>
-            <th>{{'phoneoffice' | translate}}</th>
-            <th>{{'phonemobile' | translate}}</th>
+            <th [pSortableColumn]="'phone'">
+              {{'phoneoffice' | translate}}
+              <p-sortIcon [field]="'phone'"></p-sortIcon>
+            </th>
+            <th [pSortableColumn]="'phoneMobile'">
+              {{'phonemobile' | translate}}
+              <p-sortIcon [field]="'phoneMobile'"></p-sortIcon>
+            </th>
             <th [pSortableColumn]="'active'">
               {{'active' | translate}}
               <p-sortIcon [field]="'active'"></p-sortIcon>

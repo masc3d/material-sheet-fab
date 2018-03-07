@@ -4,23 +4,27 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
-import org.deku.leoz.central.data.repository.*
+import org.deku.leoz.central.data.repository.JooqMailQueueRepository
+import org.deku.leoz.central.data.repository.JooqStationRepository
+import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.setHashedPassword
-import org.deku.leoz.node.rest.authorizedUser
-import org.deku.leoz.config.Rest
+import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.model.AllowedStations
-import sx.rs.RestProblem
-import org.deku.leoz.service.internal.UserService.User
-import org.jooq.DSLContext
-import org.springframework.beans.factory.annotation.Qualifier
-import javax.inject.Inject
-import javax.inject.Named
-import javax.ws.rs.Path
-import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.model.UserRole
+import org.deku.leoz.node.rest.authorizedUser
+import org.deku.leoz.service.internal.UserService
+import org.deku.leoz.service.internal.UserService.User
+import org.deku.leoz.time.toDateWithoutTime
+import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
-import java.util.*
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import sx.rs.RestProblem
+import sx.time.toSqlDate
+import javax.inject.Inject
 import javax.servlet.http.HttpServletRequest
+import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
 
@@ -28,7 +32,7 @@ import javax.ws.rs.core.Response
  * User service
  * Created by helke on 15.05.17.
  */
-@Named
+@Component
 @Path("internal/v1/user")
 class UserService : UserService {
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -66,8 +70,8 @@ class UserService : UserService {
             debitor_id != null -> {
                 val userRecList = userRepository.findByDebitorId(debitor_id)
                         ?: throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "no user found by debitor-id")
+                                status = Response.Status.NOT_FOUND,
+                                title = "no user found by debitor-id")
                 if (userRecList.isEmpty())
                     throw RestProblem(
                             status = Response.Status.NOT_FOUND,
@@ -91,8 +95,8 @@ class UserService : UserService {
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
                         ?: throw RestProblem(
-                        status = Response.Status.NOT_FOUND,
-                        title = "no user found by email")
+                                status = Response.Status.NOT_FOUND,
+                                title = "no user found by email")
 
                 if (UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
                     return listOf(userRecord.toUser())
@@ -142,6 +146,7 @@ class UserService : UserService {
         update(email = user.email, user = user, sendAppLink = sendAppLink)
     }
 
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun update(email: String, user: User, sendAppLink: Boolean) {
         val authorizedUser = httpRequest.authorizedUser
 
@@ -303,8 +308,8 @@ class UserService : UserService {
             rec.email = user.email
             if (password == null)
                 throw RestProblem(
-                        status=Response.Status.CONFLICT,
-                        title="On login-change you have to provide a password"
+                        status = Response.Status.CONFLICT,
+                        title = "On login-change you have to provide a password"
                 )
         }
         if (debitor != null)
@@ -319,8 +324,26 @@ class UserService : UserService {
             rec.firstname = firstName
         if (lastName != null)
             rec.lastname = lastName
-        if (user.active != null)
+        if (user.active != null) {
             rec.active = user.isActive
+            if (user.active == true) {
+                if (user.expiresOn == null) {
+                    if (java.util.Date() > rec.expiresOn) {
+                        throw RestProblem(
+                                status = Response.Status.CONFLICT,
+                                title = "expiresOn invalid to activate user"
+                        )
+                    }
+                } else {
+                    if (java.util.Date() > user.expiresOn) {
+                        throw RestProblem(
+                                status = Response.Status.CONFLICT,
+                                title = "expiresOn invalid to activate user"
+                        )
+                    }
+                }
+            }
+        }
         if (user.externalUser != null)
             rec.externalUser = user.isExternalUser
         if (phone != null)
@@ -329,6 +352,11 @@ class UserService : UserService {
             rec.phoneMobile = mobilePhone
         if (user.expiresOn != null)
             rec.expiresOn = user.expiresOn
+        else {
+            if (user.active != null && (user.active == false)) {
+                rec.expiresOn = java.util.Date().toSqlDate()
+            }
+        }
 
 //todo read from mst_station_user
 //        rec.allowedStations = stations
@@ -378,6 +406,7 @@ class UserService : UserService {
     override fun getCurrentUserConfiguration(): String {
         val authorizedUser = httpRequest.authorizedUser
 
-        return configurationService.getUserConfiguration(authorizedUser.id ?: throw RestProblem(status = Response.Status.NOT_FOUND))
+        return configurationService.getUserConfiguration(authorizedUser.id
+                ?: throw RestProblem(status = Response.Status.NOT_FOUND))
     }
 }

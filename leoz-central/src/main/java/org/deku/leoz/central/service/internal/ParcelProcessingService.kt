@@ -1,33 +1,31 @@
 package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.config.ParcelServiceConfiguration
+import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
-import org.deku.leoz.time.toTimeWithoutDate
 import org.deku.leoz.time.toDateWithoutTime
-import org.deku.leoz.time.toShortTime
-import org.deku.leoz.time.toGregorianLongDateString
+import org.deku.leoz.time.toTimeWithoutDate
 import org.jooq.DSLContext
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sx.time.toTimestamp
-import java.util.*
-import javax.inject.Inject
-import javax.inject.Named
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.util.*
+import javax.inject.Inject
 
 
-@Named
-open class ParcelProcessingService {
+@Component
+class ParcelProcessingService {
 
     class ParcelProcessingException(message: String, inner: Throwable? = null) : Exception(message, inner)
 
@@ -62,7 +60,7 @@ open class ParcelProcessingService {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun processMessages() {
+    fun processMessages() {
         if (parcelServiceSettings.skipParcelProcessing) {
             log.trace("Parcel processing is disabled")
             return
@@ -87,7 +85,7 @@ open class ParcelProcessingService {
 
                 when (parcel) {
                     0.toLong() -> {
-                        log.info("parcelId=0,messageID=${it.id.toString()}")
+                        log.info("parcelId=0,messageID=${it.id}")
                         it.isProccessed = 1
                         it.store()
                         //return@forEach
@@ -98,15 +96,15 @@ open class ParcelProcessingService {
                 }
 
                 if (parcelRecord == null) {
-                    log.info("parcelId=$parcel,messageID=${it.id.toString()} no parcelRecord")
+                    log.info("parcelId=$parcel,messageID=${it.id} no parcelRecord")
                     it.isProccessed = 1
                     it.store()
                     //return@forEach
                     continue@loop
                 }
-                val orderRecord = orderRepository.findOrderByOrderNumber(parcelRecord.orderid.toLong())
+                val orderRecord = parcelRepository.getOrderById(parcelRecord.orderid.toLong())
                 if (orderRecord == null) {
-                    log.info("parcelId=$parcel,messageID=${it.id.toString()} no orderRecord")
+                    log.info("parcelId=$parcel,messageID=${it.id} no orderRecord")
                     it.isProccessed = 1
                     it.store()
                     //return@forEach
@@ -154,12 +152,13 @@ open class ParcelProcessingService {
                 //}
                 val from = r.erzeugerstation
 
-                val pasClearingartmaster = orderRecord.clearingartmaster
-                val pasCleared: Boolean
-                if (pasClearingartmaster != null) {
-                    pasCleared = (4096.and(pasClearingartmaster.toInt())) == 4096
-                } else
-                    pasCleared = false
+                //wird an anderer Stelle behandelt sendstatus...
+//                val pasClearingartmaster = orderRecord.clearingartmaster
+//                val pasCleared: Boolean
+//                if (pasClearingartmaster != null) {
+//                    pasCleared = (4096.and(pasClearingartmaster.toInt())) == 4096
+//                } else
+//                    pasCleared = false
                 //TODO
                 // var pasReset = false
                 val checkDamaged = parcelAddInfo.damagedFileUIDs != null
@@ -203,7 +202,7 @@ open class ParcelProcessingService {
                 if (checkPictureFile) {
                     val pictureUID = parcelAddInfo.pictureFileUID
                     if (pictureUID == null) {
-                        log.info("parcelId=$parcel,messageID=${it.id.toString()} pictureID null")
+                        log.info("parcelId=$parcel,messageID=${it.id} pictureID null")
                         //return@forEach
                         continue@loop
                     }
@@ -407,17 +406,18 @@ open class ParcelProcessingService {
                                         unitInBagStatusRecord.infotext = r.infotext
                                         unitInBagStatusRecord.store()
 
-                                        val unitInBagOrderRecord = orderRepository.findOrderByOrderNumber(it.orderid.toLong())
+                                        val unitInBagOrderRecord = parcelRepository.getOrderById(it.orderid.toLong())
                                         if (unitInBagOrderRecord != null) {
-                                            val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
-                                            val unitInBagPasCleared: Boolean
-                                            if (unitInBagPasClearingartmaster != null) {
-                                                unitInBagPasCleared = (4096.and(unitInBagPasClearingartmaster.toInt())) == 4096
-                                            } else
-                                                unitInBagPasCleared = false
-                                            if (unitInBagPasCleared) {
-                                                //TODO WLtransfer Auslieferdaten nach Abrechnung
-                                            }
+                                            //wird jetzt an anderer Stelle behandelt sendstatus
+//                                            val unitInBagPasClearingartmaster = unitInBagOrderRecord.clearingartmaster
+//                                            val unitInBagPasCleared: Boolean
+//                                            if (unitInBagPasClearingartmaster != null) {
+//                                                unitInBagPasCleared = (4096.and(unitInBagPasClearingartmaster.toInt())) == 4096
+//                                            } else
+//                                                unitInBagPasCleared = false
+//                                            if (unitInBagPasCleared) {
+//                                                //TODO WLtransfer Auslieferdaten nach Abrechnung
+//                                            }
                                             it.bmpfilename = parcelRecord.bmpfilename
                                             //val unitInBagOldValue = it.lieferstatus
                                             it.lieferstatus = r.kzStatus.toShort() //4
@@ -511,9 +511,9 @@ open class ParcelProcessingService {
                         if (firstDeliveryStatus.toInt() != (4)) {
                             //TODO
                             //pasReset = true
-                            if (pasCleared) {
-                                //TODO WLtransfer Auslieferung nach Abrechnung
-                            }
+//                            if (pasCleared) {
+//                                //TODO WLtransfer Auslieferung nach Abrechnung
+//                            }
                             if (firstDeliveryStatus.toInt() == 0) {
 
                                 parcelRecord.erstlieferstatus = r.kzStatus.toShort()
@@ -609,12 +609,10 @@ open class ParcelProcessingService {
                             insertStatus = false
                     }
                     Event.NOT_IN_DELIVERY -> {
-
-                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.NOT_IN_DELIVERY.creator.toString(), Event.NOT_IN_DELIVERY.concatId, Reason.NORMAL.id)
-
-
-                        if (existStatus)
-                            insertStatus = false
+//lt. Anforderung JTR 23.02.2018
+//                        var existStatus = statusRepository.statusExist(parcelRecord.colliebelegnr.toLong(), Event.NOT_IN_DELIVERY.creator.toString(), Event.NOT_IN_DELIVERY.concatId, Reason.NORMAL.id)
+//                        if (existStatus)
+//                            insertStatus = false
                     }
                     Event.EXPORT_LOADED -> {/*
                         if (it.additionalInfo == null)

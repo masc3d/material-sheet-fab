@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.vm
 
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import eu.davidea.flexibleadapter.BuildConfig
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.utils.Log
@@ -46,7 +47,7 @@ class SectionsAdapter
         // TODO: unreliable. need to override flexibleadapter for proper reactive event
         this.addListener(object : FlexibleAdapter.OnItemClickListener {
 
-            override fun onItemClick(position: Int): Boolean {
+            override fun onItemClick(view: View, position: Int): Boolean {
                 val adapter = this@SectionsAdapter
                 val item: Any? = adapter.getItem(position)
 
@@ -72,7 +73,6 @@ class SectionsAdapter
                                     adapter.recyclerView.scrollToPosition(0)
                                 }
                             } else {
-                                log.trace("SELECT")
                                 select(section)
                             }
                         }
@@ -93,18 +93,19 @@ class SectionsAdapter
         this.selectedSectionProperty
                 .subscribe {
                     val section = it.value
+
                     if (section != null && !this.isSectionSelected(section)) {
                         this.select(section)
                     }
                 }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         log.trace("ADAPTER ATTACHED")
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         // TODO detach is never called. verify if this may be a leak
         super.onDetachedFromRecyclerView(recyclerView)
         log.trace("ADAPTER DETACHED")

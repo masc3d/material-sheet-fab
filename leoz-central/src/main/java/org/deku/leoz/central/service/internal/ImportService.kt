@@ -8,22 +8,22 @@ import org.deku.leoz.service.internal.ImportService
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sx.rs.RestProblem
 import sx.time.toLocalDate
 import sx.time.toTimestamp
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
-import javax.ws.rs.Path
-import javax.ws.rs.core.Response
-import java.math.BigDecimal
 import javax.servlet.http.HttpServletRequest
+import javax.ws.rs.Path
 import javax.ws.rs.core.Context
+import javax.ws.rs.core.Response
 
-@Named
+@Component
 @Path("internal/v1/import")
-open class ImportService : org.deku.leoz.service.internal.ImportService {
+class ImportService : org.deku.leoz.service.internal.ImportService {
 
     val importServiceInfotext = "WebImport"
 

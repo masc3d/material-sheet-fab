@@ -81,10 +81,6 @@ class ActionOverlayView : RelativeLayout {
         init()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
-        init()
-    }
-
     private enum class SheetState {
         HIDDEN,
         SHOWN,
@@ -93,20 +89,20 @@ class ActionOverlayView : RelativeLayout {
     }
 
     /** Resource id of style to use for dynamically created fabs */
+    @StyleRes
     var fabStyle: Int = 0
-        @StyleRes
         set(value) {
             field = value
         }
 
+    @DrawableRes
     var defaultIcon: Int = 0
-        @DrawableRes
         set(value) {
             field = value
         }
 
+    @DrawableRes
     var defaultIconTint: Int = 0
-        @DrawableRes
         set(value) {
             field = value
         }

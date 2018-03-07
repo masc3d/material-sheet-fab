@@ -48,6 +48,8 @@
     <string name="continue_text">Fortfahren</string>
     <string name="continue_without">Ohne fortfahren</string>
 
+    <string name="damaged">Beschädigt</string>
+
     <string name="delivered">Zugestellt</string>
 
     <string name="delivery">Zustellung</string>
@@ -130,6 +132,8 @@
     <string name="given_cash">Erhaltenes Geld</string>
     <string name="given_cash_eg_15_00">Erhaltenes Geld (z.B. 15,00)</string>
 
+    <string name="gps_active">GPS aktiv</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -137,6 +141,7 @@
 
     <string name="hint_field_mail">Email Adresse</string>
     <string name="hint_field_password">Passwort</string>
+    <string name="hint_field_station_no">Station No</string>
     <string name="hint_leadseal_white_not_yellow">Scan white lead-seal! Not yellow!</string>
     <string name="hint_not_available">Nicht verfügbar</string>
     <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>
@@ -177,12 +182,14 @@
 
     <string name="optimize">Optimieren</string>
 
+    <string name="order">Auftrag</string>
     <string name="order_list">Auftragsliste</string>
     <string name="order_not_on_delivery_list">Auftrag nicht auf Rollkarte</string>
     <string name="order_not_on_delivery_list_confirmation">Zugehörigen Auftrag speichern?</string>
 
     <string name="orders">Aufträge</string>
 
+    <string name="parcel">Paket</string>
     <string name="parcel_damaged">Paket beschädigt</string>
     <string name="parcel_missing">Paket fehlt</string>
 
@@ -192,9 +199,7 @@
 
     <string name="pending">Ausstehend</string>
 
-    <string name="please_sign_here">Bitte hier unterschreiben</string>
     <string name="please_wait">Bitte warten</string>
-    <string name="please_sign_below">Bitte unterhalb unterschreiben</string>
 
     <string name="proceed">Fortfahren</string>
 
@@ -241,14 +246,15 @@
 
     <string name="services">Services</string>
 
-    <string name="signature_conclusion">Ich quittiere den Empfang von\nAufträge: %1$s\nPakete: %2$s\nEmpfänger: %3$s</string>
+    <string name="signature_heading">Zusammenfassung</string>
     <string name="signature_on_paper">Unterschrift auf Papier</string>
-    <string name="signature_signed_by_name">Name: %s</string>
+    <string name="signature_signed_by_name">Unterschrift (%s)</string>
 
     <string name="skip">Überspringen</string>
 
     <string name="sort_appointment">Nach Termin</string>
     <string name="sort_distance">Nach Distanz</string>
+    <string name="sort_optimize">Optimieren</string>
     <string name="sort_zip">Nach PLZ</string>
 
     <string name="station_id">Station:</string>
@@ -278,8 +284,8 @@
     <string name="to_recipient">An Empfänger</string>
 
     <string name="tour">Tour</string>
-    <string name="tour_optimization_in_progress">Tour wird optimiert</string>
     <string name="tour_optimization_failed">Optimierung nicht erfolgreich</string>
+    <string name="tour_optimization_in_progress">Tour wird optimiert</string>
     <string name="tour_optimization_settings">Tour Optimierung</string>
     <string name="tour_optimization_settings_omit_appointments">Termine ignorieren</string>
     <string name="tour_optimization_settings_shift_appointments">Termine verschieben</string>
@@ -312,6 +318,4 @@
     <string name="warehouse">Lager</string>
 
     <string name="yes_start_tour">Ja, Tour starten</string>
-    <string name="sort_optimize">Optimieren</string>
-    <string name="hint_field_station_no">Station No</string>
 </resources>

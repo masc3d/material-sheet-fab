@@ -60,7 +60,7 @@ class StopDetailsScreen
     )
 
     interface Listener {
-        fun onDeliveryStopDetailUnitNumberInput(unitNumber: UnitNumber)
+        fun onStopDetailUnitNumberInput(unitNumber: UnitNumber)
     }
 
     private val listener by lazy { this.activity as? Listener }
@@ -222,7 +222,7 @@ class StopDetailsScreen
 
         adapter.mode = SelectableAdapter.Mode.SINGLE
         // Since 5.0.0-rc3 click events will only be forwarded to holders when there's a click listener registered
-        adapter.addListener(FlexibleAdapter.OnItemClickListener { _ -> false })
+        adapter.addListener(FlexibleAdapter.OnItemClickListener { _, _ -> false })
 
         adapter.setStickyHeaders(true)
         adapter.showAllHeaders()
@@ -346,8 +346,6 @@ class StopDetailsScreen
     }
 
     private fun onAidcRead(event: AidcReader.ReadEvent) {
-        log.trace("AIDC READ $event")
-
         val result: Result<UnitNumber> = UnitNumber.parseLabel(event.data)
 
         when {
@@ -365,6 +363,6 @@ class StopDetailsScreen
     }
 
     private fun onInput(unitNumber: UnitNumber) {
-        this.listener?.onDeliveryStopDetailUnitNumberInput(unitNumber)
+        this.listener?.onStopDetailUnitNumberInput(unitNumber)
     }
 }

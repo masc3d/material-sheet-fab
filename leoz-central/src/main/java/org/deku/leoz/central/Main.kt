@@ -17,7 +17,7 @@ import org.springframework.core.annotation.Order
 @Configuration("central.main")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ComponentScan(lazyInit = true)
-open class Main : org.deku.leoz.node.Main() {
+class Main : org.deku.leoz.node.Main() {
     companion object {
         private val log = LoggerFactory.getLogger(Main::class.java)
 

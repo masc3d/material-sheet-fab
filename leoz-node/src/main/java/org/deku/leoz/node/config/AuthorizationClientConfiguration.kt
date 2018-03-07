@@ -20,7 +20,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class AuthorizationClientConfiguration {
+class AuthorizationClientConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -39,7 +39,7 @@ open class AuthorizationClientConfiguration {
     private lateinit var application: Application
 
     @get:Bean
-    open val authorizationClientService: AuthorizationClientService
+    val authorizationClientService: AuthorizationClientService
         get() = AuthorizationClientService(
                 executorService = this.executorService,
                 identitySupplier = { this.application.identity },

@@ -6,12 +6,8 @@ import * as jsPDF from 'jspdf';
 import { Report } from './report.model';
 import { ReportPart } from './report-part.model';
 import { ReportingService } from './reporting.service';
-import { Deliverylist } from '../models/deliverylist.model';
 import { DeliverylistItem } from '../models/deliverylist.item.model';
 import { Tour } from '../models/tour.model';
-import { roundDecimals } from '../math/roundDecimals';
-import { TourListItem } from '../models/tour-list-item.model';
-import { Package } from '../models/package.model';
 
 @Injectable()
 export class StoplistReportingService extends ReportingService {
@@ -52,28 +48,6 @@ export class StoplistReportingService extends ReportingService {
           return doc;
         },
         reportFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
-/*          offsetY += 5;
-          doc.setFontSize( 10 );
-          doc.setFontType( 'bold' );
-          doc.text( `${data[ 'nameOfDriver' ]}:`, offsetX, offsetY ); // 150
-          doc.setLineWidth( 0.25 );
-          doc.line( offsetX + 35, offsetY, offsetX + 95, offsetY );
-          doc.text( `${data[ 'licensePlate' ]}:`, offsetX + 105, offsetY );
-          doc.line( offsetX + 140, offsetY, offsetX + 190, offsetY );
-
-          offsetY += 8;
-          doc.text( `${data[ 'printing_Date_Short' ]}`, offsetX + 18, offsetY );
-
-          offsetY += 2;
-          doc.text( `${data[ 'loadingDate' ]}:`, offsetX, offsetY );
-          doc.line( offsetX + 15, offsetY, offsetX + 45, offsetY );
-          doc.text( `${data[ 'loadingTime' ]}:`, offsetX + 55, offsetY );
-          doc.line( offsetX + 70, offsetY, offsetX + 95, offsetY );
-          doc.text( `${data[ 'signature' ]}:`, offsetX + 105, offsetY );
-          doc.line( offsetX + 130, offsetY, offsetX + 190, offsetY );
-
-          offsetY += 5;
-          doc.text( `${data[ 'llDriver' ]}`, offsetX + 105, offsetY );*/
           return doc;
         },
         pageFooterRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
@@ -135,6 +109,17 @@ export class StoplistReportingService extends ReportingService {
   }
 
   private buildPageContent( tour: Tour ): ReportPart[] {
+    const pageContents: ReportPart[] = [];
+    // per page max orders 20
+    const clonedOrders = [...tour.orders];
+    while (clonedOrders.length > 0) {
+      const orderPart = this.createOrderPart( tour, clonedOrders.splice(0, 22) );
+      pageContents.push( orderPart );
+    }
+    return pageContents;
+  }
+
+  private createOrderPart( tour: Tour, orders: DeliverylistItem[] ): ReportPart {
     const stopListRenderFunction = function ( doc: jsPDF, offsetX: number, offsetY: number, currPageNo: number, data: any ) {
 
       doc.setFontSize( 8 );
@@ -142,7 +127,7 @@ export class StoplistReportingService extends ReportingService {
       // doc.text( `tour.id: ${tour.id}`, offsetX, offsetY );
       doc.setFontType( 'normal' );
 
-      tour.orders.forEach( ( dli: DeliverylistItem ) => {
+      orders.forEach( ( dli: DeliverylistItem ) => {
         offsetY += 10;
         doc.text( `${dli.deliveryAddress.line1}`, offsetX, offsetY );
         doc.text( `${dli.deliveryAddress.street} ${dli.deliveryAddress.streetNo}`, offsetX + 70, offsetY );
@@ -153,7 +138,7 @@ export class StoplistReportingService extends ReportingService {
       } );
       return doc;
     };
-    return [ new ReportPart( (10 + tour.orders.length * 10), stopListRenderFunction, tour ) ];
+    return new ReportPart( (10 + orders.length * 10), stopListRenderFunction, tour );
   }
 
 }

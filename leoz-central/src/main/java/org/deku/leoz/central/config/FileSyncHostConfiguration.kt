@@ -17,7 +17,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class FileSyncHostConfiguration {
+class FileSyncHostConfiguration {
 
     @Inject
     private lateinit var application: Application
@@ -32,7 +32,7 @@ open class FileSyncHostConfiguration {
      * File sync service
      */
     @get:Bean
-    open val fileSyncService: FileSyncHostService
+    val fileSyncService: FileSyncHostService
         get() = FileSyncHostService(
                 baseDirectory = storage.transferDirectory,
                 executorService = this.executorService,

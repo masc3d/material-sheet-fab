@@ -10,6 +10,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.*
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
@@ -138,6 +139,8 @@ class DeliveryList : CompositeDisposableSupplier {
     fun load(deliveryListNumber: DekuDeliveryListNumber): Observable<List<Stop>> {
         val sw = Stopwatch.createStarted()
 
+        log.user { "Loads delivery list [${deliveryListNumber.value}]" }
+
         return Observable.fromCallable {
 
             val deliveryListService = Kodein.global.instance<DeliveryListService>()
@@ -223,6 +226,8 @@ class DeliveryList : CompositeDisposableSupplier {
      * Merge a single order into the entity store
      */
     fun mergeOrder(order: Order): Completable {
+        log.user { "Merges order [${order.id}]" }
+
         return db.store.withTransaction {
             orderRepository
                     .merge(listOf(order))

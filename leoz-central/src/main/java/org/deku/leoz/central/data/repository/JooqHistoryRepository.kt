@@ -5,16 +5,15 @@ import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblhistorieRecord
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Created by helke on 24.03.17.
  */
-@Named
-open class JooqHistoryRepository {
+@Component
+class JooqHistoryRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dsl: DSLContext
@@ -23,12 +22,12 @@ open class JooqHistoryRepository {
     //private lateinit var historyRepository: HistoryJooqRepository
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun save(logEntry: TblhistorieRecord) {
+    fun save(logEntry: TblhistorieRecord) {
         dsl.insertInto(Tables.TBLHISTORIE).set(logEntry).execute()
     }
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    open fun save(depotId: String, info: String, msgLocation: String, orderId: String) {
+    fun save(depotId: String, info: String, msgLocation: String, orderId: String) {
         val record = dsl.newRecord(Tables.TBLHISTORIE)
         record.depotid = if(depotId.length>10)depotId.substring(0,10) else depotId
         record.info = info

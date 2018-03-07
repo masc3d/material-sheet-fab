@@ -93,7 +93,7 @@ abstract class BaseLocationService: Service() {
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this)
 
         builder.setContentTitle(getString(R.string.app_name_long))
-                .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)}")
+                .setContentText("${getString(R.string.app_name)} ${getString(R.string.running)} - ${getString(R.string.gps_active)}")
                 .setAutoCancel(true)
                 .setLargeIcon(this.getDrawableCompat(R.drawable.ic_launcher).toBitmap())
                 .setSmallIcon(R.drawable.ic_launcher)

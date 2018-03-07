@@ -1,7 +1,10 @@
 package org.deku.leoz.central.service.internal.sync
 
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.central.data.jooq.dekuclient.tables.SysSync
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
 import org.deku.leoz.central.data.repository.JooqSyncRepository
 import org.deku.leoz.node.data.jpa.LclSync
 import org.deku.leoz.node.data.jpa.QLclSync.lclSync
@@ -9,66 +12,91 @@ import org.deku.leoz.node.data.repository.SyncRepository
 import org.jooq.Record
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
+import sun.rmi.transport.tcp.TCPEndpoint
 import sx.Stopwatch
 import sx.log.slf4j.debug
+import sx.log.slf4j.trace
 import sx.persistence.querydsl.from
 import sx.persistence.truncate
+import sx.rx.subscribeOn
 import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Named
 import javax.persistence.PersistenceContext
+import kotlin.properties.Delegates
 
-/** Base interface for all sync presets */
-interface Preset {}
+/**
+ * Base class for all sync presets
+ * @param <TCentralRecord> Type of source JOOQ record
+ **/
+abstract class Preset<TCentralRecord : org.jooq.Record>(
+        /** JOOQ source table */
+        val srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
+        /** JOOQ source sync id field */
+        val srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
+        /** Synchronization interval */
+        val interval: Duration
+) {
+    val tableName by lazy {
+        this.srcJooqTable.name
+    }
+}
+
+/**
+ * Preset for notifying about jooq/jdbc table/record changes
+ */
+class NotifyPreset<TCentralRecord : org.jooq.Record>(
+        srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
+        srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
+        interval: Duration = Duration.ofSeconds(5)
+) : Preset<TCentralRecord>(
+        srcJooqTable = srcJooqTable,
+        srcJooqSyncIdField = srcJooqSyncIdField,
+        interval = interval
+) {
+    override fun toString(): String =
+            "Notify preset [${srcJooqTable.name}]"
+}
 
 /**
  * Preset for synchronizing jooq/jdbc records to jpa entities
  *
  * @param <TEntity> Type of destiantion JPA entity
  * @param <TCentralRecord> Type of source JOOQ record
- * @property srcJooqTable JOOQ source table
- * @property srcJooqSyncIdField JOOQ source sync id field
- * @property dstJpaEntityPath Destination QueryDSL entity table path
- * @property dstJpaSyncIdPath Destination QueryDSL sync id field path
- * @property transformation    Conversion function JOOQ record -> JPA entity
  */
-open class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
-        val srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
-        val srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
+class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
+        srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
+        srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?,
+        /** Destination QueryDSL entity table path */
         val dstJpaEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
+        /** Destination QueryDSL sync id field path */
         val dstJpaSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
-        val transformation: (TCentralRecord) -> TEntity
-) : Preset {
+        /** Conversion function JOOQ record -> JPA entity */
+        val transformation: (TCentralRecord) -> TEntity,
+        interval: Duration = Duration.ofMinutes(1)
+) : Preset<TCentralRecord>(
+        srcJooqTable = srcJooqTable,
+        srcJooqSyncIdField = srcJooqSyncIdField,
+        interval = interval
+) {
     override fun toString(): String =
             "Sync preset [${srcJooqTable.name} -> ${dstJpaEntityPath.metadata.name}]"
-}
-
-/**
- * Preset for notifying about jooq/jdbc table/record changes
- * @property srcJooqTable JOOQ source table
- * @property srcJooqSyncIdField JOOQ source sync id field
- */
-open class NotifyPreset<TCentralRecord : org.jooq.Record>(
-        val srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
-        val srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>?
-) : Preset {
-    override fun toString(): String =
-            "Notify preset [${srcJooqTable.name}]"
 }
 
 /**
  * Database sync service
  * Created by masc on 15.05.15.
  */
-@Named
-open class DatabaseSyncService
+@Component
+class DatabaseSyncService
 @Inject
 constructor(
         private val exceutorService: ScheduledExecutorService,
@@ -77,36 +105,37 @@ constructor(
         @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER)
         txJooq: PlatformTransactionManager
 ) {
-
-    /** Background service */
-    inner class Service : sx.concurrent.Service(
-            executorService = this.exceutorService,
-            period = Duration.ofMinutes(1)
-
-    ) {
-        override fun run() {
-            this@DatabaseSyncService.sync(false)
-        }
-
-        fun submitTask(command: () -> Unit) {
-            super.submitSupplementalTask(command)
-        }
-    }
+    private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
 
     /**
      * Sync presets
      */
     @Inject
-    private lateinit var presets: List<Preset>
+    private lateinit var presets: List<Preset<*>>
+
+    // JPA repositories
+    @Inject
+    private lateinit var syncRepository: SyncRepository
+
+    // JOOQ Repositories
+    @Inject
+    private lateinit var syncJooqRepository: JooqSyncRepository
+
+    /** JOOQ transaction template */
+    private val transactionJooq = TransactionTemplate(txJooq)
+
+    @PersistenceContext
+    private lateinit var em: javax.persistence.EntityManager
+
+    /** JPA transaction template */
+    private val transactionJpa = TransactionTemplate(txJpa).also {
+        it.propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
+    }
 
     /**
-     * Embedded service class
+     * Sync interval
      */
-    protected open val service = Service()
-
-    companion object {
-        private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
-    }
+    var interval: Duration = Duration.ofSeconds(5)
 
     //region Events
     /**
@@ -120,7 +149,7 @@ constructor(
     )
 
     private val updatesSubject = PublishSubject.create<UpdateEvent>()
-    open val updates = this.updatesSubject.hide()
+    val updates = this.updatesSubject.hide()
 
     /**
      * Notification event
@@ -138,8 +167,9 @@ constructor(
     /**
      * Observable notifications
      */
-    open val notifications =
+    val notifications =
             Observable.defer<NotificationEvent> {
+                // Emit local sync ids initially (deferred so those are emitter on each subscription)
                 Observable.fromIterable(
                         this.syncRepository.findAll().map {
                             NotificationEvent(
@@ -154,56 +184,98 @@ constructor(
                     )
     //endregion
 
-    @PersistenceContext
-    private lateinit var em: javax.persistence.EntityManager
-
-    /** JPA transaction template */
-    private val transactionJpa = TransactionTemplate(txJpa).also {
-        it.propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
+    /**
+     * Sync process step
+     */
+    private class ProcessStep {
+        /** Source (central) sync record */
+        var srcSyncRecord: SysSyncRecord by Delegates.notNull()
+        /** Preset to process */
+        var preset: Preset<*> by Delegates.notNull()
     }
 
-    // JPA repositories
-    @Inject
-    private lateinit var syncRepository: SyncRepository
+    /** Reactive sync processing */
+    private val process
+        get() =
+            Observable
+                    // Emit trigger
+                    .interval(this@DatabaseSyncService.interval.toMillis(), TimeUnit.MILLISECONDS)
+                    .flatMap {
+                        Observable.fromIterable(
+                                // Retrieve source (central) sync ids and map to process steps
+                                this.syncJooqRepository
+                                        .findAll()
+                                        .mapNotNull { record ->
+                                            val preset = this.presets.firstOrNull { it.tableName == record.tableName }
 
-    /** JOOQ transaction template */
-    private val transactionJooq = TransactionTemplate(txJooq)
+                                            // Ignore source sync entries which have no referring preset
+                                            if (preset != null)
+                                                ProcessStep().also {
+                                                    it.srcSyncRecord = record
+                                                    it.preset = preset
+                                                }
+                                            else
+                                                null
+                                        }
+                        )
+                    }
+                    // Group process steps by table name in order to throttle by table
+                    .groupBy { it.srcSyncRecord.tableName }
+                    .flatMap { tableSteps ->
+                        val tableName = tableSteps.key
+                        val preset = this.presets.first { it.tableName == tableName }
 
-    // JOOQ Repositories
-    @Inject
-    private lateinit var syncJooqRepository: JooqSyncRepository
+                        // Throttle accordingly
+                        tableSteps.throttleLast(preset.interval.toMillis(), TimeUnit.MILLISECONDS)
+                    }
+                    .doOnNext { step ->
+                        val sw = Stopwatch.createStarted()
 
-    @Suppress("UNCHECKED_CAST")
-    @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
-    @Synchronized
-    open fun sync(clean: Boolean) {
+                        // Actual sync preset processing
+                        try {
+                            val updated = step.preset.update(
+                                    sysSyncRecord = step.srcSyncRecord,
+                                    clean = false
+                            )
+
+                            val message = { "${step.preset.javaClass.simpleName} [${step.preset.tableName}] took ${sw}" }
+
+                            if (updated)
+                                log.debug(message)
+                            else
+                                log.trace(message)
+                        } catch (e: Throwable) {
+                            log.error(e.message, e)
+                        }
+                    }
+                    .subscribeOn(this.exceutorService)
+
+    /** Reactive sync process subscription */
+    private var processSubscription: Disposable? = null
+        set(value) {
+            field?.dispose()
+            field = value
+        }
+
+    /**
+     * Synchronize all presets
+     */
+    fun sync(clean: Boolean) {
         val sw = Stopwatch.createStarted()
 
-        val syncIdMap = this.syncJooqRepository
+        val syncMap = this.syncJooqRepository
                 .findAll()
                 .groupBy { it.tableName }
                 .mapValues {
-                    it.value.first().syncId
+                    it.value.first()
                 }
 
         this.presets.forEach {
             try {
-                when (it) {
-                    is SyncPreset<*, *> -> {
-                        this.update(
-                                preset = it as SyncPreset<Record, Any>,
-                                syncIdMap = syncIdMap,
-                                clean = clean
-                        )
-                    }
-                    is NotifyPreset<*> -> {
-                        this.update(
-                                preset = it as NotifyPreset<Record>,
-                                syncIdMap = syncIdMap,
-                                clean = clean
-                        )
-                    }
-                }
+                it.update(
+                        sysSyncRecord = syncMap.getValue(it.tableName),
+                        clean = clean
+                )
             } catch (e: Exception) {
                 log.error("${it} failed. ${e.message}")
             }
@@ -213,27 +285,50 @@ constructor(
     }
 
     /**
+     * Abstract update extension
+     *
+     * NOTE: this method must be @Synchronized to prevent concurrent updates of the same preset / table
+     */
+    @Suppress("UNCHECKED_CAST")
+    @Synchronized
+    private fun Preset<*>.update(
+            sysSyncRecord: SysSyncRecord,
+            clean: Boolean): Boolean {
+
+        return when (this) {
+            is SyncPreset<*, *> -> (this as SyncPreset<Record, Any>).update(
+                    sysSyncRecord = sysSyncRecord,
+                    clean = clean
+            )
+            is NotifyPreset<*> -> (this as NotifyPreset<Record>).update(
+                    sysSyncRecord = sysSyncRecord,
+                    clean = clean
+            )
+            else -> false
+        }
+    }
+
+    /**
      * Update from notify preset
      */
-    open fun update(preset: NotifyPreset<Record>,
-                    syncIdMap: Map<String, Long>,
-                    clean: Boolean) {
+    private fun NotifyPreset<Record>.update(
+            sysSyncRecord: SysSyncRecord,
+            clean: Boolean): Boolean {
 
-        val tableName = preset.srcJooqTable.name
+        val tableName = this.srcJooqTable.name
 
-        transactionJpa.execute<Any> { _ ->
+        return transactionJpa.execute { _ ->
             if (clean) {
                 syncRepository.deleteAll()
             }
 
-            val dbSyncId = syncIdMap.get(tableName)
-                    ?: return@execute null
+            val dbSyncId = sysSyncRecord.syncId
 
             val localSync = syncRepository.findOne(
                     lclSync.tableName.eq(tableName)
             )
                     .toNullable()
-                    // Create new local sync record
+            // Create new local sync record
                     ?: LclSync().also {
                         it.tableName = tableName
                         it.syncId = -1
@@ -242,7 +337,7 @@ constructor(
                     }
 
             if (dbSyncId > localSync.syncId) {
-                this.notificationsSubject.onNext(NotificationEvent(
+                notificationsSubject.onNext(DatabaseSyncService.NotificationEvent(
                         tableName = tableName,
                         localSyncId = localSync.syncId,
                         syncId = dbSyncId)
@@ -251,21 +346,23 @@ constructor(
                 // Update local sync record
                 localSync.syncId = dbSyncId
                 em.merge(localSync)
-            }
 
-            null
-        }
+                true
+            } else {
+                false
+            }
+        }!!
     }
 
     /**
      * Update from sync preset
      * @param clean delete all records before updating
      */
-    open fun update(preset: SyncPreset<Record, Any>,
-                    syncIdMap: Map<String, Long>,
-                    clean: Boolean
-    ) {
-        val p = preset
+    private fun SyncPreset<Record, Any>.update(
+            sysSyncRecord: SysSyncRecord,
+            clean: Boolean
+    ): Boolean {
+        val p = this
 
         // Stopwatch
         val sw = Stopwatch.createStarted()
@@ -297,11 +394,11 @@ constructor(
 
         // TODO. optimize by using jooq prepared statements
         if (destMaxSyncId != null) {
-            val maxSyncId = syncIdMap.get(p.srcJooqTable.name)
-                    ?: throw IllegalStateException("No sync id map entry for [${p.srcJooqTable.name}]")
+            val maxSyncId = sysSyncRecord.syncId
+
             if (maxSyncId == destMaxSyncId) {
                 log.trace(lfmt("sync-id uptodate [${destMaxSyncId}]"))
-                return
+                return false
             }
         }
 
@@ -368,8 +465,8 @@ constructor(
                 log.info(lfmt("Updated ${count} entities [${destMaxSyncId}]"))
 
                 // Emit update event
-                this.updatesSubject.onNext(
-                        UpdateEvent(
+                updatesSubject.onNext(
+                        DatabaseSyncService.UpdateEvent(
                                 entityType = p.dstJpaEntityPath.type,
                                 syncId = destMaxSyncId
                         )
@@ -380,31 +477,20 @@ constructor(
 
             null
         }
+
+        return true
     }
 
-    /**
-     * Sync interval
-     */
-    open var interval: Duration
-        get() = this.service.period ?: Duration.ZERO
-        set(value) {
-            this.service.period = value
-        }
-
-    open fun start() {
-        this.service.start()
+    fun start() {
+        this.processSubscription = process.subscribe()
     }
 
-    open fun stop() {
-        this.service.stop()
+    fun stop() {
+        this.processSubscription = null
     }
 
-    open fun trigger() {
-        this.service.trigger()
-    }
-
-    open fun startSync(clean: Boolean) {
-        this.service.submitTask {
+    fun startSync(clean: Boolean) {
+        this.exceutorService.submit {
             this@DatabaseSyncService.sync(clean)
         }
     }

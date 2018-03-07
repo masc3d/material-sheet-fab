@@ -2,24 +2,21 @@ package org.deku.leoz.node.config
 
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
-import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
-import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
-import javax.annotation.PostConstruct
 
 /**
  * Created by masc on 28/11/2016.
  */
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
-open class ApplicationConfiguration {
+class ApplicationConfiguration {
     companion object {
         val module = Kodein.Module {
             bind<Application>() with eagerSingleton {
@@ -38,17 +35,19 @@ open class ApplicationConfiguration {
     }
 
     @get:Bean
-    open val storage: Storage by lazy { Kodein.global.instance<Storage>() }
+    val storage: Storage by lazy { Kodein.global.instance<Storage>() }
 
     @get:Bean
-    open val logConfiguration: LogConfiguration by lazy { Kodein.global.instance<LogConfiguration>() }
+    val logConfiguration: LogConfiguration by lazy { Kodein.global.instance<LogConfiguration>() }
+
+    @get:Lazy
+    @get:Bean
+    val app: Application by lazy { Kodein.global.instance<Application>() }
+
+    @get:Lazy
+    @get:Bean
+    val identity: Identity by lazy { this.app.identity }
 
     @get:Bean
-    open val app: Application by lazy { Kodein.global.instance<Application>() }
-
-    @get:Bean
-    open val identity: Identity by lazy { this.app.identity }
-
-    @get:Bean
-    open val systemInformation: SystemInformation by lazy { Kodein.global.instance<SystemInformation>() }
+    val systemInformation: SystemInformation by lazy { Kodein.global.instance<SystemInformation>() }
 }

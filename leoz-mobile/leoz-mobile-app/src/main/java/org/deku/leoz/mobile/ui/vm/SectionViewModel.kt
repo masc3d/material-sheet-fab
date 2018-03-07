@@ -35,4 +35,7 @@ open class SectionViewModel<T>(
     val amountText = items.map { it.count().toString() }.toField()
 
     val colorInt: Int by lazy { ContextCompat.getColor(context, color) }
+
+    override fun toString(): String =
+            "${this.javaClass.simpleName}(title=${title})"
 }

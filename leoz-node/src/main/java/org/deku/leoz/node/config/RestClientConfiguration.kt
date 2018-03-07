@@ -1,10 +1,10 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.node.Application
-import sx.rs.client.RestClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import sx.rs.client.RestClient
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 
@@ -13,20 +13,20 @@ import javax.inject.Inject
  */
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
-open class RestClientConfiguration {
+class RestClientConfiguration {
     @Inject
     private lateinit var remotePeerConfiguration: RemotePeerConfiguration
 
     @get:Bean
-    open val restClientFactory: org.deku.leoz.node.rest.RestClientFactory
+    val restClientFactory: org.deku.leoz.node.rest.RestClientFactory
         get() = org.deku.leoz.node.rest.RestClientFactory()
 
     @get:Bean
-    open val restClient: RestClient
+    val restClient: RestClient
         get() = this.restClientFactory.create()
 
     @PostConstruct
-    open fun onInitialize() {
+    fun onInitialize() {
         this.restClientFactory.also {
             it.host = remotePeerConfiguration.host!!
             it.port = remotePeerConfiguration.httpPort!!

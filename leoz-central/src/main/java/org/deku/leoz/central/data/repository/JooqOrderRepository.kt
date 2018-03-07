@@ -9,15 +9,15 @@ import org.deku.leoz.central.data.jooq.dekuclient.tables.records.TblauftragRecor
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Order repository
  * Created by JT on 30.06.17.
  */
-@Named
-open class JooqOrderRepository {
+@Component
+class JooqOrderRepository {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -76,12 +76,5 @@ open class JooqOrderRepository {
         )
     }
 
-    fun findOrderByOrderNumber(orderNo: Long): TblauftragRecord? {
-        if(orderNo==0.toLong()) return null
-        return dsl.select()
-                .from(Tables.TBLAUFTRAG)
-                .where(Tables.TBLAUFTRAG.ORDERID.eq(orderNo.toDouble()))
-                //.and(Tables.TBLAUFTRAG.ORDERID.greaterThan(0.0))
-                ?.fetchOneInto(Tblauftrag.TBLAUFTRAG)
-    }
+
 }

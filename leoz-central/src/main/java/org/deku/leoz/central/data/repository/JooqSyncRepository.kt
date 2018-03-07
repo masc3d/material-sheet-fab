@@ -1,7 +1,6 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.SYS_SYNC
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
 import org.deku.leoz.central.data.prepared
@@ -13,16 +12,15 @@ import org.jooq.impl.DSL
 import org.jooq.impl.TableImpl
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.Stopwatch
+import org.springframework.stereotype.Component
 import java.sql.ResultSet
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Sync table jooq repository
  * Created by masc on 18/10/2016.
  */
-@Named
+@Component
 class JooqSyncRepository {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
