@@ -7,6 +7,8 @@ import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.boot.config.*
 import org.slf4j.LoggerFactory
 import io.reactivex.rxkotlin.subscribeBy
+import org.deku.leoz.bundle.BundleType
+import org.deku.leoz.service.internal.DiscoveryService
 import java.awt.GraphicsEnvironment
 
 /**
@@ -41,7 +43,7 @@ class Application {
                 })
 
                 // Injection setup
-                log.info("Setting up injection")
+                log.trace("Setting up injection")
                 Kodein.global.addImport(ApplicationConfiguration.module)
                 Kodein.global.addImport(StorageConfiguration.module)
                 Kodein.global.addImport(LogConfiguration.module)
@@ -50,14 +52,27 @@ class Application {
                 Kodein.global.addImport(RestClientConfiguration.module)
                 Kodein.global.addImport(BundleConfiguration.module)
                 Kodein.global.addImport(SshConfiguration.module)
-                log.info("Done setting up injection")
+                log.trace("Done setting up injection")
 
                 val settings = Kodein.global.instance<Settings>()
-                log.info("${settings}")
 
                 // Parse leoz-boot command line
                 val jc = JCommander(settings)
+                jc.setAcceptUnknownOptions(true)
                 jc.parse(*args)
+
+                if (jc.unknownOptions.size > 0) {
+                    jc.usage()
+                    System.exit(0)
+                    return
+                }
+
+                log.info("${settings}")
+
+                Kodein.global.instance<RsyncConfiguration>()
+                Kodein.global.instance<DiscoveryService>().also {
+                    it.start()
+                }
 
                 if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
                     Boot().boot(settings).subscribeBy(
