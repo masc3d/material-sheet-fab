@@ -67,11 +67,12 @@ class Application {
                     return
                 }
 
-                log.info("${settings}")
+                log.info("Settings [${settings}]")
 
                 Kodein.global.instance<RsyncConfiguration>()
                 Kodein.global.instance<DiscoveryService>().also {
-                    it.start()
+                    if (settings.discover)
+                        it.start()
                 }
 
                 if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
