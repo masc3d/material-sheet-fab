@@ -10,6 +10,7 @@ import sx.reflect.allInterfaces
 import sx.rs.auth.ApiKeyRequestFilterBase
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.WebApplicationException
+import javax.ws.rs.container.ContainerRequestContext
 import javax.ws.rs.container.ResourceInfo
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
@@ -41,7 +42,7 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
                 ?: this.resourceClass.allInterfaces.map { it.getAnnotation(a) }.firstOrNull()
     }
 
-    override fun verify(resourceInfo: ResourceInfo, apiKey: String): Boolean {
+    override fun verify(requestContext: ContainerRequestContext, resourceInfo: ResourceInfo, apiKey: String): Boolean {
         // TODO: implement api key support for nodes
         return true
     }

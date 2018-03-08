@@ -15,5 +15,5 @@ annotation class RestrictRoles(
         vararg val role: UserRole
 )
 
-@Target(AnnotationTarget.FUNCTION,AnnotationTarget.ANNOTATION_CLASS)
-annotation class RestrictStations()
+@Target(AnnotationTarget.VALUE_PARAMETER)
+annotation class RestrictStation()
