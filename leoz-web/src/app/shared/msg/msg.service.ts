@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/operator/distinctUntilChanged';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 import { Message } from 'primeng/components/common/api';
 
@@ -11,7 +11,7 @@ import { TranslateService } from '../../core/translate/translate.service';
 export class MsgService {
 
   private msgsSubject = new BehaviorSubject<Message[]>( <Message[]> [] );
-  public msgs$ = this.msgsSubject.asObservable().distinctUntilChanged();
+  public msgs$ = this.msgsSubject.asObservable().pipe(distinctUntilChanged());
 
   constructor( private translate: TranslateService ) {
   }

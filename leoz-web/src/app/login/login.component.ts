@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../core/auth/authentication.service';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/takeUntil';
 
 import { Message } from 'primeng/api';
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import 'rxjs/add/operator/filter';
+import { filter, takeUntil } from 'rxjs/operators';
 
 import { SelectItem } from 'primeng/api';
 
@@ -79,20 +79,28 @@ export class DeliveryscanComponent extends AbstractTranslateComponent implements
     this.latestDirection = 'INIT';
 
     this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowDown' && !ev.shiftKey )
-      .takeUntil( this.ngUnsubscribe );
+      .pipe(
+        filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowDown' && !ev.shiftKey ),
+        takeUntil( this.ngUnsubscribe )
+      );
 
     this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowUp' && !ev.shiftKey )
-      .takeUntil( this.ngUnsubscribe );
+      .pipe(
+        filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowUp' && !ev.shiftKey ),
+        takeUntil( this.ngUnsubscribe )
+      );
 
     this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowDown' && ev.shiftKey )
-      .takeUntil( this.ngUnsubscribe );
+      .pipe(
+        filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowDown' && ev.shiftKey ),
+        takeUntil( this.ngUnsubscribe )
+      );
 
     this.keyUpService.keyUpEvents$
-      .filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowUp' && ev.shiftKey )
-      .takeUntil( this.ngUnsubscribe );
+      .pipe(
+        filter( ( ev: KeyboardEvent ) => ev.key === 'ArrowUp' && ev.shiftKey ),
+        takeUntil( this.ngUnsubscribe )
+      );
 
     this.deliveryscanForm = this.fb.group( {
       payload: [ null ],

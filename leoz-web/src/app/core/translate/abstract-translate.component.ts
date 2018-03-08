@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/takeUntil';
+import { Observable } from 'rxjs/Observable';
+import { takeUntil } from 'rxjs/operators';
 
 import { Message } from 'primeng/components/common/api';
 
 import { TranslateService } from './translate.service';
 import { MsgService } from '../../shared/msg/msg.service';
-import { Observable } from 'rxjs/Observable';
 
 export class AbstractTranslateComponent implements OnInit, OnDestroy {
 
@@ -30,7 +30,9 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
     this.msgs$ = this.msgService.msgs$;
 
     this.translate.onLangChanged
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( lang: string ) => {
         this.dateFormat = this.translate.setDateformat( 'internal' );
         this.dateFormatLong = this.translate.setDateformat( 'internalLong' );

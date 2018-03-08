@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Router } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
 
 import { MenuItem, SelectItem } from 'primeng/api';
 
@@ -9,7 +11,6 @@ import { AbstractTranslateComponent } from 'app/core/translate/abstract-translat
 import { environment } from '../../../environments/environment';
 import { AuthenticationService } from '../../core/auth/authentication.service';
 import { Station } from '../../core/auth/station.model';
-import { Router } from '@angular/router';
 import { BagscanGuard } from '../../core/auth/bagscan.guard';
 import { ElectronService } from '../../core/electron/electron.service';
 import { MsgService } from '../../shared/msg/msg.service';
@@ -76,7 +77,9 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
     this.myEmail = currUser.user.email;
 
     this.auth.debitorStations$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( debitorStations: Station[] ) => {
         this.debitorStations = [];
         if (debitorStations) {
@@ -88,7 +91,9 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
       } );
 
     this.auth.activeStation$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( activeStation: Station ) => {
         this.activeStation = activeStation;
       } );

@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
 import { AbstractExportService } from '../abstract-export.service';
 import { BagData } from './bagdata.model';
 import { AuthenticationService } from '../../../core/auth/authentication.service';
 import { Station } from '../../../core/auth/station.model';
-import * as moment from 'moment';
 
 @Injectable()
 export class BagscanService extends AbstractExportService {
 
   public activeBagDataSubject = new BehaviorSubject<BagData>( <BagData> {} );
-  public activeBagData$ = this.activeBagDataSubject.asObservable().distinctUntilChanged();
+  public activeBagData$ = this.activeBagDataSubject.asObservable().pipe(distinctUntilChanged());
 
   protected newLoadlistNoUrl = `${environment.apiUrl}/internal/v1/export/bag/loadinglist`;
   protected reportHeaderUrl = `${environment.apiUrl}/internal/v1/bagscan/report/header`;
@@ -49,9 +49,11 @@ export class BagscanService extends AbstractExportService {
     return this.http.patch( scanPackToBagUrl, null, {
       observe: 'response',
       params: params
-    } ).map( ( response: HttpResponse<any> ) => {
-      return response;
-    } );
+    } ).pipe(
+      map( ( response: HttpResponse<any> ) => {
+        return response;
+      } )
+    );
   }
 
 }

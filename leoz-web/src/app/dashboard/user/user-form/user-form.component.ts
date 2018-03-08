@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/takeUntil';
+import { takeUntil } from 'rxjs/operators';
 
 import { Message } from 'primeng/components/common/api';
 import { SelectItem } from 'primeng/api';
@@ -86,7 +86,9 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
     } );
 
     this.userService.activeUser$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( activeUser: User ) => {
         this.activeUser = activeUser;
         const passwordControl = this.userForm.get( 'password' );

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import 'rxjs/add/operator/filter';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';

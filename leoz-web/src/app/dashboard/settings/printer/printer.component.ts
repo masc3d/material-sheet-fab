@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { takeUntil } from 'rxjs/operators';
+
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { ElectronService } from '../../../core/electron/electron.service';
@@ -31,7 +33,9 @@ export class PrinterComponent extends AbstractTranslateComponent implements OnIn
     if (this.electronService.isElectron()) {
       console.log( 'isElectron()' );
       this.electronService.printers$
-        .takeUntil( this.ngUnsubscribe )
+        .pipe(
+          takeUntil( this.ngUnsubscribe )
+        )
         .subscribe( ( printers: PrinterInfo[] ) => {
           this.printerList = printers.map( printer => printer.name ).join( ' --- ' );
           console.log( 'this.printerList', this.printerList );

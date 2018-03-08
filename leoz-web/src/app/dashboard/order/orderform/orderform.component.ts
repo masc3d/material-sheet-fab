@@ -5,9 +5,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import 'rxjs/add/operator/filter';
-
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';

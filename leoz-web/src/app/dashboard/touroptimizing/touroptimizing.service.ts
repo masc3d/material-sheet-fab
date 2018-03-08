@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subject } from 'rxjs/Subject';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+
 import { environment } from '../../../environments/environment';
 import { Deliverylist } from '../../core/models/deliverylist.model';
 import { InetConnectionService } from '../../core/inet-connection.service';
 import { WorkingdateService } from '../../core/workingdate.service';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Tour } from '../../core/models/tour.model';
 import { MsgService } from '../../shared/msg/msg.service';
 import { roundDecimals } from '../../core/math/roundDecimals';
 import { Station } from '../../core/auth/station.model';
 import { SseService } from '../../core/sse.service';
-import { Subject } from 'rxjs/Subject';
 import { Vehicle } from '../../core/models/vehicle.model';
 
 
@@ -27,13 +28,13 @@ export class TouroptimizingService {
   protected sseWEUrl = `${environment.apiUrl}/internal/v1/tour/subscribe/sse`; // EventSource ?station-no=100
 
   private toursLoadingSubject = new BehaviorSubject<boolean>( true );
-  public toursLoading$ = this.toursLoadingSubject.asObservable().distinctUntilChanged();
+  public toursLoading$ = this.toursLoadingSubject.asObservable().pipe(distinctUntilChanged());
 
   private toursSubject = new BehaviorSubject<Tour[]>( [] );
-  public tours$ = this.toursSubject.asObservable().distinctUntilChanged();
+  public tours$ = this.toursSubject.asObservable().pipe(distinctUntilChanged());
 
   private latestDeliverylistModificationSubject = new BehaviorSubject<number>( 0 );
-  public latestDeliverylistModification$ = this.latestDeliverylistModificationSubject.asObservable().distinctUntilChanged();
+  public latestDeliverylistModification$ = this.latestDeliverylistModificationSubject.asObservable().pipe(distinctUntilChanged());
 
   private latestDeliverylists: Deliverylist[];
 
@@ -49,7 +50,9 @@ export class TouroptimizingService {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.optimizeToursSSEUrl}?station-no=${activeStation.stationNo.toString()}`;
     this.sse.observeMessages<{ id?: number, inProgress?: boolean }>( sseUrl )
-      .takeUntil( ngUnsubscribe )
+      .pipe(
+        takeUntil( ngUnsubscribe )
+      )
       .subscribe( ( data ) => {
         console.log( data );
         if (data && !data.inProgress) {
@@ -63,7 +66,9 @@ export class TouroptimizingService {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.sseWEUrl}?station-no=${activeStation.stationNo.toString()}`;
     this.sse.observeMessages<{ stationNo?: number, items?: Tour[], deleted?: number[] }>( sseUrl )
-      .takeUntil( ngUnsubscribe )
+      .pipe(
+        takeUntil( ngUnsubscribe )
+      )
       .subscribe( ( data ) => {
         console.log( data );
         if (data && data.deleted) {

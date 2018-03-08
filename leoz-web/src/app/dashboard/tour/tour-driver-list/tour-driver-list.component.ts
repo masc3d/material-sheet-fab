@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import { takeUntil } from 'rxjs/operators';
 import 'rxjs/add/observable/timer';
 
 import { SelectItem } from 'primeng/api';
@@ -186,7 +187,9 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       this.allDrivers();
     } else if (this.roleGuard.isDriver()) {
       this.driverService.currentDriver$
-        .takeUntil( this.ngUnsubscribe )
+        .pipe(
+          takeUntil( this.ngUnsubscribe )
+        )
         .subscribe( ( currentDriver: Driver ) => {
           // empty Driver object could be returned
           if (currentDriver.role) {

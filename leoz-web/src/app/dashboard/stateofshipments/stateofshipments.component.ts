@@ -6,7 +6,6 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import 'rxjs/add/operator/filter';
 
 import { SelectItem } from 'primeng/api';
 
