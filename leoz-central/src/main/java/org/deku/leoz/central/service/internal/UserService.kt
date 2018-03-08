@@ -364,37 +364,37 @@ class UserService : UserService {
         rec.store()
 
         //check auth? evtl erst ab powerUser?
-        if (userStations != null) {
-            val allowedStations = userRepository.findAllowedStationsByUserId(rec.id)
-
-            userStations.forEach {
-                if (!allowedStations.contains(it)) {
-                    //Insert into mst_station_user
-                    val recStation = dsl.newRecord(Tables.MST_STATION_USER)
-                    recStation.userId = rec.id
-                    val stationId = userRepository.findStationIdByDepotNr(it)
-                    stationId ?: throw RestProblem(
-                            status = Response.Status.NOT_FOUND,
-                            title = "Station with No [$it] not found"
-                    )
-                    recStation.stationId = stationId
-                    recStation.store()
-                }
-            }
-            allowedStations.forEach {
-                if (!userStations.contains(it)) {
-                    //delete from mst_station_user
+//        if (userStations != null) {
+//            val allowedStations = userRepository.findAllowedStationsByUserId(rec.id)
+//
+//            userStations.forEach {
+//                if (!allowedStations.contains(it)) {
+//                    //Insert into mst_station_user
+//                    val recStation = dsl.newRecord(Tables.MST_STATION_USER)
+//                    recStation.userId = rec.id
 //                    val stationId = userRepository.findStationIdByDepotNr(it)
-//                    if (stationId != null) {
-//                        dsl.deleteFrom(Tables.MST_STATION_USER)
-//                                .where(Tables.MST_STATION_USER.USER_ID.eq(rec.id))
-//                                .and(Tables.MST_STATION_USER.STATION_ID.eq(stationId))
-//                                .execute()
-//                    }
-                }
-            }
-
-        }
+//                    stationId ?: throw RestProblem(
+//                            status = Response.Status.NOT_FOUND,
+//                            title = "Station with No [$it] not found"
+//                    )
+//                    recStation.stationId = stationId
+//                    recStation.store()
+//                }
+//            }
+//            allowedStations.forEach {
+//                if (!userStations.contains(it)) {
+//                    //delete from mst_station_user
+////                    val stationId = userRepository.findStationIdByDepotNr(it)
+////                    if (stationId != null) {
+////                        dsl.deleteFrom(Tables.MST_STATION_USER)
+////                                .where(Tables.MST_STATION_USER.USER_ID.eq(rec.id))
+////                                .and(Tables.MST_STATION_USER.STATION_ID.eq(stationId))
+////                                .execute()
+////                    }
+//                }
+//            }
+//
+//        }
 
         if (sendAppLink) {
             sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)
