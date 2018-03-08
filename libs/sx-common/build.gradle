@@ -19,6 +19,7 @@ buildscript {
         v_logback = '1.2.3'
         v_requery = '1.5.0'
         v_resteasy = '4.0.0.Beta2'
+        v_sprin = '5.0.4.RELEASE'
         v_socketio = '1.0.0'
         v_slf4j = '1.7.25'
     }
@@ -137,7 +138,10 @@ dependencies {
             "commons-codec:commons-codec:1.11",
 
             // Logback
-            "ch.qos.logback:logback-classic:$v_logback"
+            "ch.qos.logback:logback-classic:$v_logback",
+
+            // Spring
+            "org.springframework:spring-core:$v_spring"
     )
 
     testCompile(
