@@ -15,8 +15,11 @@ export interface TourListItem {
   optimized?: string;
   created?: string;
   time?: string;
-  route?: TourRouteMeta[];
+  route?: TourRouteMeta;
   selected?: boolean;
   outdated?: boolean;
   state?: string;
+
+  distance?: number;
+  drivingTime?: number;
 }

@@ -34,13 +34,13 @@
               {{'weight' | translate}}
               <p-sortIcon [field]="'totalWeight'"></p-sortIcon>
             </th>
-            <th>
+            <th [pSortableColumn]="'drivingTime'">
               {{'time' | translate}}
-              <!--<p-sortIcon [field]="'drivingTime'"></p-sortIcon>-->
+              <p-sortIcon [field]="'drivingTime'"></p-sortIcon>
             </th>
-            <th>
+            <th [pSortableColumn]="'distance'">
               {{'distance' | translate}}
-              <!--<p-sortIcon [field]="'distance'"></p-sortIcon>-->
+              <p-sortIcon [field]="'distance'"></p-sortIcon>
             </th>
             <th [pSortableColumn]="'created'" pResizableColumn>
               {{'date' | translate}}
@@ -61,8 +61,8 @@
             <td>{{tour.stops.length}}</td>
             <td>{{tour.totalPackages}}</td>
             <td>{{roundDecimalsAsStringWrapper( tour.totalWeight )}}</td>
-            <td>{{formatTourDurationTime(tour.route?.drivingTime)}}</td>
-            <td>{{roundDecimalsAsStringWrapper(tour.route?.distance)}}</td>
+            <td>{{formatTourDurationTime(tour.drivingTime)}}</td>
+            <td>{{roundDecimalsAsStringWrapper(tour.distance)}}</td>
             <td>{{formatTourCreationDate(tour.created)}}</td>
             <td>
               <span *ngIf="tour.optimized; else notOptimized">

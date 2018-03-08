@@ -28,13 +28,13 @@ export class TouroptimizingService {
   protected sseWEUrl = `${environment.apiUrl}/internal/v1/tour/subscribe/sse`; // EventSource ?station-no=100
 
   private toursLoadingSubject = new BehaviorSubject<boolean>( true );
-  public toursLoading$ = this.toursLoadingSubject.asObservable().pipe(distinctUntilChanged());
+  public toursLoading$ = this.toursLoadingSubject.asObservable().pipe( distinctUntilChanged() );
 
   private toursSubject = new BehaviorSubject<Tour[]>( [] );
-  public tours$ = this.toursSubject.asObservable().pipe(distinctUntilChanged());
+  public tours$ = this.toursSubject.asObservable().pipe( distinctUntilChanged() );
 
   private latestDeliverylistModificationSubject = new BehaviorSubject<number>( 0 );
-  public latestDeliverylistModification$ = this.latestDeliverylistModificationSubject.asObservable().pipe(distinctUntilChanged());
+  public latestDeliverylistModification$ = this.latestDeliverylistModificationSubject.asObservable().pipe( distinctUntilChanged() );
 
   private latestDeliverylists: Deliverylist[];
 
@@ -141,8 +141,8 @@ export class TouroptimizingService {
       'traffic': optimizeTraffic
     };
 
-    if(!dontShiftOneDayFromNow) {
-      defaultBody.appointments['shiftDaysFromNow'] = 1;
+    if (!dontShiftOneDayFromNow) {
+      defaultBody.appointments[ 'shiftDaysFromNow' ] = 1;
     }
     if (!optimizeExistingtours && vehicles.length > 0) {
       defaultBody[ 'vehicles' ] = vehicles;
@@ -226,6 +226,15 @@ export class TouroptimizingService {
         tour.totalWeight = roundDecimals( mappedParcels
           .reduce( ( a, b ) => a + b ), 100 );
       }
+
+      tour.distance = (tour.route && tour.route.distance > 0)
+        ? tour.distance = tour.route.distance
+        : 0;
+
+      tour.drivingTime = (tour.route && tour.route.drivingTime > 0)
+        ? tour.drivingTime = tour.route.drivingTime
+        : 0;
+
       tour.selected = false;
       const dl = this.latestDeliverylists.filter( deliverylist => deliverylist.id === tour.deliverylistId );
       tour.state = dl.length > 0 && dl[ 0 ].modified > tour.created ? 'changed' : 'new';
