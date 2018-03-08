@@ -218,7 +218,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   formatTourCreationDate( created: string ): string {
-    return moment( created ).format( 'DD.MM.YY HH:mm' );
+    return moment( created ).format( 'DD.MM. HH:mm' );
   }
 
   formatTourDurationTime( duration: number ): string {
