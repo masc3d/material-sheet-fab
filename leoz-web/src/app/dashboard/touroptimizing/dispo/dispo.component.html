@@ -66,13 +66,13 @@
             <td>{{formatTourCreationDate(tour.created)}}</td>
             <td>
               <span *ngIf="tour.optimized; else notOptimized">
-                <i class="fas fa-sync" style="color: #00a200;"></i>
+                <i class="fas fa-sync" style="color: #00a200; margin-right: .5rem;"></i>
               </span>
               <ng-template #notOptimized>
-                <i class="fas fa-sync" style="color: #ff0000;"></i>
+                <i class="fas fa-sync" style="color: #ff0000; margin-right: .5rem;"></i>
               </ng-template>
               <p-checkbox name="optimize" [(ngModel)]="tour.selected" binary="true"></p-checkbox>
-              <i (click)="deleteTour(tour.id)" class="far fa-trash-alt" aria-hidden="true"></i>
+              <i (click)="deleteTour(tour.id)" class="far fa-trash-alt" aria-hidden="true" style="margin-left: .25rem;"></i>
             </td>
           </tr>
         </ng-template>
