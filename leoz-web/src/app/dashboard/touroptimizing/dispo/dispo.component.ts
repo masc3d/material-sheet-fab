@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Message } from 'primeng/components/common/api';
+import { takeUntil } from 'rxjs/operators';
 
+import { Message } from 'primeng/components/common/api';
 import * as moment from 'moment';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
@@ -9,7 +10,7 @@ import { TranslateService } from '../../../core/translate/translate.service';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { TouroptimizingService } from '../touroptimizing.service';
 import { Tour } from '../../../core/models/tour.model';
-import { roundDecimals } from '../../../core/math/roundDecimals';
+import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 import { BrowserCheck } from '../../../core/auth/browser-check';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { StoplistReportingService } from '../../../core/reporting/stoplist-reporting.service';
@@ -64,13 +65,17 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
     this.tours = [];
     this.touroptimizingService.tours$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( tours: Tour[] ) => {
         this.tours = this.sortAndGroupTours( tours );
         this.cd.markForCheck();
       } );
     this.touroptimizingService.latestDeliverylistModification$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( someTimestamp: number ) => {
         if (this.tours && this.tours.length > 0
           && new Date( this.tours[ 0 ].created ).getTime() < someTimestamp) {
@@ -113,7 +118,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       sortedTours.push( ...childTours.filter( child => child.parentId === parent.id ) );
     } );
     if (parentTours.length === 0 && childTours.length > 0) {
-      childTours.forEach( child => sortedTours.push( child ));
+      childTours.forEach( child => sortedTours.push( child ) );
     }
     return sortedTours;
   }
@@ -212,26 +217,19 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.displayOptimizationOptions = false;
   }
 
-  formatTourCreationDate( created: string ) {
-    return moment( created ).format( 'DD.MM.YY' );
+  formatTourCreationDate( created: string ): string {
+    return moment( created ).format( 'DD.MM.YY HH:mm' );
   }
 
-  formatTourDurationTime( duration: number){
-    if ( duration > 0 ) {
+  formatTourDurationTime( duration: number ): string {
+    if (duration > 0) {
       return moment.utc( duration * 1000 ).format( 'HH:mm:ss' )
     }
+    return '';
   }
 
-  roundTourWeight( weight: number){
-    if ( weight > 0 ) {
-      return roundDecimals(  weight , 10 );
-    }
-  }
-
-  roundTourDistance( distance: number){
-    if ( distance > 0 ) {
-      return roundDecimals(  distance , 10 );
-    }
+  roundDecimalsAsStringWrapper( input: number) {
+    return roundDecimalsAsString( input, 10, true );
   }
 }
 

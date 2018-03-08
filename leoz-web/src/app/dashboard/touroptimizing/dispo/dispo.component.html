@@ -9,7 +9,7 @@
         </div>
       </div>
       <hr/>
-      <p-table [value]="tours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="10">
+      <p-table [value]="tours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="15">
         <ng-template pTemplate="header">
           <tr>
             <th>{{'optimization' | translate}}</th>
@@ -60,9 +60,9 @@
             <td>missing</td>
             <td>{{tour.stops.length}}</td>
             <td>{{tour.totalPackages}}</td>
-            <td>{{roundTourWeight(tour.totalWeight)}}</td>
+            <td>{{roundDecimalsAsStringWrapper( tour.totalWeight )}}</td>
             <td>{{formatTourDurationTime(tour.route?.drivingTime)}}</td>
-            <td>{{roundTourDistance(tour.route?.distance)}}</td>
+            <td>{{roundDecimalsAsStringWrapper(tour.route?.distance)}}</td>
             <td>{{formatTourCreationDate(tour.created)}}</td>
             <td>
               <span *ngIf="tour.optimized; else notOptimized">

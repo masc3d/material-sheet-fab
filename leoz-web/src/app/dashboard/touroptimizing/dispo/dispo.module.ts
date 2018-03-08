@@ -15,7 +15,6 @@ import { DialogModule } from 'primeng/dialog';
 import { SharedModule } from '../../../shared/shared.module';
 import { TouroptimizingService } from '../touroptimizing.service';
 import { DispoComponent } from './dispo.component';
-import { TourlistitemComponent } from './tourlistitem.component';
 
 @NgModule( {
   imports: [
@@ -34,11 +33,9 @@ import { TourlistitemComponent } from './tourlistitem.component';
   ],
   declarations: [
     DispoComponent,
-    TourlistitemComponent
   ],
   exports: [
     DispoComponent,
-    TourlistitemComponent
   ],
   providers: [
     TouroptimizingService
