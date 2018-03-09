@@ -45,7 +45,7 @@ interface RouteExtendedApi : RouteApi {
     )
 
     data class RouteProcessStatus(
-            var message: String = "",
+            var message: String? = null,
             var success: Boolean = false,
             var successFiles: String? = null,
             var routeIds: List<Int> = listOf()
