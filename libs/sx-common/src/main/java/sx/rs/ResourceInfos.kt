@@ -39,7 +39,7 @@ fun <A : Annotation> ResourceInfo.annotationOfType(a: Class<A>): A? {
  * NOTE: method relies on spring-core reflection utils for cached lookups
  *
  * @param a Annotation type
- * @param requestContext The request context used to look up parameter values
+ * @param requestContext request context used to look up parameter values
  */
 fun <A : Annotation> ResourceInfo.annotatedParametersOfType(a: Class<A>, requestContext: ContainerRequestContext): Sequence<AnnotatedParameter<A>> {
     return sequenceOf(
@@ -54,17 +54,18 @@ fun <A : Annotation> ResourceInfo.annotatedParametersOfType(a: Class<A>, request
             .mapNotNull { method ->
                 // Filter method parameters for annotation
                 method.parameters.mapNotNull { p ->
-                    AnnotationUtils.findAnnotation(p, a)?.let {
-                        AnnotatedParameter(
-                                parameter = p,
-                                annotation = it,
-                                value = AnnotationUtils.findAnnotation(p, QueryParam::class.java)?.let {
-                                    requestContext.uriInfo.queryParameters.getFirst(it.value)
-                                } ?: AnnotationUtils.findAnnotation(p, PathParam::class.java)?.let {
-                                    requestContext.uriInfo.pathParameters.getFirst(it.value)
-                                }
-                        )
-                    }
+                    AnnotationUtils.findAnnotation(p, a)
+                            ?.let {
+                                AnnotatedParameter(parameter = p, annotation = it,
+                                        value = AnnotationUtils.findAnnotation(p, QueryParam::class.java)
+                                                ?.let {
+                                                    requestContext.uriInfo.queryParameters.getFirst(it.value)
+                                                } ?: AnnotationUtils.findAnnotation(p, PathParam::class.java)
+                                                ?.let {
+                                                    requestContext.uriInfo.pathParameters.getFirst(it.value)
+                                                }
+                                )
+                            }
                 }
                         .firstOrNull()
             }
