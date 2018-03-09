@@ -10,7 +10,7 @@ class Settings {
     @Parameter(description = "Command args")
     var args: List<String> = ArrayList()
 
-    @Parameter(names = arrayOf("--bundle"), description = "Bundle to boot")
+    @Parameter(names = arrayOf("--bundle"), description = "Bundle to boot", required = true)
     var bundle: String = ""
 
     @Parameter(names = arrayOf("--no-ui"), description = "Don't show user interface")

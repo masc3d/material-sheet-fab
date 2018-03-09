@@ -1,6 +1,7 @@
 package org.deku.leoz.boot
 
 import com.beust.jcommander.JCommander
+import com.beust.jcommander.ParameterException
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -43,7 +44,6 @@ class Application {
                 })
 
                 // Injection setup
-                log.trace("Setting up injection")
                 Kodein.global.addImport(ApplicationConfiguration.module)
                 Kodein.global.addImport(StorageConfiguration.module)
                 Kodein.global.addImport(LogConfiguration.module)
@@ -52,18 +52,27 @@ class Application {
                 Kodein.global.addImport(RestClientConfiguration.module)
                 Kodein.global.addImport(BundleConfiguration.module)
                 Kodein.global.addImport(SshConfiguration.module)
-                log.trace("Done setting up injection")
 
                 val settings = Kodein.global.instance<Settings>()
 
                 // Parse leoz-boot command line
                 val jc = JCommander(settings)
+                jc.programName = BundleType.LEOZ_BOOT.value
                 jc.setAcceptUnknownOptions(true)
-                jc.parse(*args)
+
+                try {
+                    jc.parse(*args)
+                }
+                catch(e: ParameterException) {
+                    log.error(e.message)
+                    jc.usage()
+                    System.exit(-1)
+                    return
+                }
 
                 if (jc.unknownOptions.size > 0) {
                     jc.usage()
-                    System.exit(0)
+                    System.exit(-1)
                     return
                 }
 
@@ -88,7 +97,8 @@ class Application {
                     javafx.application.Application.launch(org.deku.leoz.boot.fx.Application::class.java)
                 }
 
-            } catch (e: Exception) {
+            }
+            catch (e: Exception) {
                 log.error(e.message, e)
                 System.exit(-1)
             }
