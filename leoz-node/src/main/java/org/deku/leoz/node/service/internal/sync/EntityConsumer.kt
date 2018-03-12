@@ -29,8 +29,9 @@ class EntityConsumer
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory,
         /** Executor used for listening/processing incoming messages */
-        listenerExecutor: Executor)
-    :
+        listenerExecutor: Executor,
+        private val presets: List<Preset>
+) :
         SpringJmsListener(notificationEndpoint, listenerExecutor),
         MqHandler<EntityStateMessage> {
 
@@ -40,8 +41,9 @@ class EntityConsumer
     private var executorService: ExecutorService
 
     init {
-
         this.addDelegate(this)
+
+        // Use single-threaded executor for sequential processing
         this.executorService = java.util.concurrent.Executors.newSingleThreadExecutor { r ->
             val t = Thread(r)
             t.priority = Thread.MIN_PRIORITY
@@ -73,6 +75,11 @@ class EntityConsumer
             remoteSyncId: Long? = null,
             requestAll: Boolean = false,
             clean: Boolean = false) {
+
+        val preset = this.presets.firstOrNull { it.type == entityType }
+
+        if (preset == null)
+            return
 
         executorService.submit<Unit> {
             // Log formatting with entity type
@@ -216,6 +223,18 @@ class EntityConsumer
                 entityType = entityType,
                 remoteSyncId = null,
                 clean = clean)
+    }
+
+    /**
+     * Request entity updates for all presets
+     */
+    fun request(clean: Boolean = false) {
+        this.presets.forEach {
+            this.request(
+                    entityType = it.type,
+                    clean = clean
+            )
+        }
     }
 
     override fun close() {

@@ -5,6 +5,7 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.service.internal.sync.EntityConsumer
+import org.deku.leoz.node.service.internal.sync.Preset
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -49,7 +50,19 @@ class EntitySyncNodeConfiguration {
                 notificationEndpoint = JmsEndpoints.central.entitySync.topic,
                 requestEndpoint = JmsEndpoints.central.entitySync.queue,
                 entityManagerFactory = this.entityManagerFactory,
-                listenerExecutor = this.executorService)
+                listenerExecutor = this.executorService,
+                presets = listOf(
+                        Preset(MstStation::class.java),
+                        Preset(MstCountry::class.java),
+                        Preset(MstHolidayCtrl::class.java),
+                        Preset(MstRoute::class.java),
+                        Preset(MstRoutingLayer::class.java),
+                        Preset(MstSector::class.java),
+                        Preset(MstBundleVersion::class.java),
+                        Preset(MstDebitor::class.java),
+                        Preset(MstDebitorStation::class.java)
+                )
+        )
     }
 
     @Inject
@@ -67,31 +80,7 @@ class EntitySyncNodeConfiguration {
         }
 
         override fun onConnectedToBrokerNetwork() {
-            this@EntitySyncNodeConfiguration.requestEntities()
-        }
-    }
-
-    /**
-     * List of masterdata entities to synchronize
-     */
-    private val masterdataEntities = listOf(
-            MstStation::class.java,
-            MstCountry::class.java,
-            MstHolidayCtrl::class.java,
-            MstRoute::class.java,
-            MstRoutingLayer::class.java,
-            MstSector::class.java,
-            MstBundleVersion::class.java,
-            MstDebitor::class.java,
-            MstDebitorStation::class.java
-    )
-
-    /**
-     * Starts entity requests for all entity types
-     */
-    fun requestEntities(clean: Boolean = false) {
-        masterdataEntities.forEach {
-            entityConsumer.request(it, clean)
+            this@EntitySyncNodeConfiguration.entityConsumer.request()
         }
     }
 
