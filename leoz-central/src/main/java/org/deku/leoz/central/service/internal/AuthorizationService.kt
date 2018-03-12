@@ -7,8 +7,6 @@ import org.deku.leoz.model.UserRole
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import sx.event.EventDelegate
-import sx.event.EventDispatcher
 import sx.event.EventListener
 import sx.log.slf4j.info
 import sx.mq.MqHandler
@@ -47,12 +45,9 @@ class AuthorizationService
         fun onAuthorized(nodeIdentityUid: Identity.Uid)
     }
 
-    // TODO: replace with rx event
-    private val eventSubject = EventDispatcher.createThreadSafe<Listener>()
-    val event: EventDelegate<Listener> = eventSubject
-
+    //region REST
     /**
-     *
+     * Authorize user
      */
     override fun authorize(request: AuthorizationService.Credentials): AuthorizationService.Response {
         val user = request
@@ -87,15 +82,15 @@ class AuthorizationService
                     status = Response.Status.UNAUTHORIZED)
         }
 
-        var keyRecord = this.keyRepository.findByID(userRecord.keyId)
+        var keyRecord = this.keyRepository.findById(userRecord.keyId)
 
         if (keyRecord == null) {
-            val keyID = this.keyRepository.insertNew(
+            val keyId = this.keyRepository.insertNew(
                     key = UUID.randomUUID().toString())
 
-            this.userRepository.updateKeyIdById(userRecord.id, keyID)
+            this.userRepository.updateKeyIdById(userRecord.id, keyId)
 
-            keyRecord = this.keyRepository.findByID(keyID)
+            keyRecord = this.keyRepository.findById(keyId)
         }
         userRecord.tsLastlogin = Date().toTimestamp()
         userRecord.store()
@@ -109,9 +104,11 @@ class AuthorizationService
                 key = keyRecord.key,
                 user = userRecord.toUser())
     }
+    //endregion
 
+    //region MQ
     /**
-     *
+     * Node authorizatino request mq handler
      */
     override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.MqChannel?) {
         try {
@@ -135,9 +132,6 @@ class AuthorizationService
 
                 val isAuthorized = record.authorized != null && record.authorized != 0
 
-                if (isAuthorized)
-                    this.eventSubject.emit { it.onAuthorized(identityKey) }
-
                 if (replyChannel != null) {
                     am.authorized = isAuthorized
                     replyChannel.send(am)
@@ -151,4 +145,5 @@ class AuthorizationService
             log.error(e.message, e)
         }
     }
+    //endregion
 }
