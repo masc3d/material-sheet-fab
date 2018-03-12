@@ -4,10 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.SYS_SYNC
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
 import org.deku.leoz.central.data.prepared
-import org.jooq.Cursor
-import org.jooq.DSLContext
-import org.jooq.Record
-import org.jooq.TableField
+import org.jooq.*
 import org.jooq.impl.DSL
 import org.jooq.impl.TableImpl
 import org.slf4j.LoggerFactory
@@ -68,18 +65,18 @@ class JooqSyncRepository {
      * Generic find newer function
      * @param syncId Optional sync id. If omitted all records are fetched.
      * @param table Jooq table
-     * @param field Jooq field
+     * @param syncIdField Jooq field
      * @return Jooq record
      */
     fun <TRecord : Record> findNewerThan(
             syncId: Long?,
             table: TableImpl<TRecord>,
-            field: TableField<out Record, Long>?): Cursor<TRecord> {
+            syncIdField: TableField<out Record, Long>?): Cursor<TRecord> {
 
         return dsl.selectFrom(table)
                 .let {
                     when {
-                        (syncId != null && field != null) -> it.where(field.gt(syncId))
+                        (syncId != null && syncIdField != null) -> it.where(syncIdField.gt(syncId))
                         else -> it
                     }
                 }
@@ -100,5 +97,25 @@ class JooqSyncRepository {
     ): Long? {
         return dsl.selectFrom(table)
                 .fetchOne(field.max())
+    }
+
+    /**
+     * Find newer sync ids
+     * @param syncId Sync id
+     * @param table Table
+     * @param syncIdField Table sync id field
+     */
+    fun <TRecord : Record> findSyncIdsNewerThan(
+            syncId: Long,
+            table: TableImpl<TRecord>,
+            syncIdField: TableField<out Record, Long>): Cursor<Record1<Long>> {
+
+        return dsl.select(syncIdField)
+                .from(table)
+                .where(syncIdField.gt(syncId))
+                .resultSetConcurrency(ResultSet.CONCUR_READ_ONLY)
+                .resultSetType(ResultSet.TYPE_FORWARD_ONLY)
+                .fetchSize(Int.MIN_VALUE)
+                .fetchLazy()
     }
 }

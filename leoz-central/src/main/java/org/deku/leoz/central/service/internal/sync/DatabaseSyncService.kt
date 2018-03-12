@@ -23,6 +23,7 @@ import sun.rmi.transport.tcp.TCPEndpoint
 import sx.Stopwatch
 import sx.log.slf4j.debug
 import sx.log.slf4j.trace
+import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
 import sx.persistence.truncate
 import sx.rx.subscribeOn
@@ -285,6 +286,35 @@ constructor(
     }
 
     /**
+     * Preliminary delete support
+     */
+    private fun <TCentralRecord : Record, TEntity> delete(
+            srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
+            srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>,
+            /** Destination QueryDSL entity table path */
+            dstJpaEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
+            /** Destination QueryDSL sync id field path */
+            dstJpaSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>,
+            destMaxSyncId: Long
+            ) {
+
+        // TODO: currently only for testing performance of traversing sync ids
+        Stopwatch.createStarted(this, "TRAVERSE SYNCIDS", {
+            transactionJpa.execute<Any> { _ ->
+                syncJooqRepository.findSyncIdsNewerThan(
+                        syncId = 0,
+                        table = srcJooqTable,
+                        syncIdField = srcJooqSyncIdField
+                )
+                        .forEach {
+                            // TODO: delete
+                        }
+            }
+        })
+    }
+
+
+    /**
      * Abstract update extension
      *
      * NOTE: this method must be @Synchronized to prevent concurrent updates of the same preset / table
@@ -394,11 +424,21 @@ constructor(
 
         // TODO. optimize by using jooq prepared statements
         if (destMaxSyncId != null) {
-            val maxSyncId = sysSyncRecord.syncId
-
-            if (maxSyncId == destMaxSyncId) {
+            if (sysSyncRecord.syncId == destMaxSyncId) {
                 log.trace(lfmt("sync-id uptodate [${destMaxSyncId}]"))
                 return false
+            }
+
+            if (dstJpaSyncIdPath != null && srcJooqSyncIdField != null) {
+                //region TODO: delete. IMPORTANT: only for testing for the moment
+//                this@DatabaseSyncService.delete(
+//                        srcJooqTable = srcJooqTable,
+//                        dstJpaEntityPath = dstJpaEntityPath,
+//                        dstJpaSyncIdPath = dstJpaSyncIdPath,
+//                        srcJooqSyncIdField = srcJooqSyncIdField,
+//                        destMaxSyncId = destMaxSyncId
+//                )
+                //endregion
             }
         }
 
