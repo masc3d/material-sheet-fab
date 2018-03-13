@@ -38,7 +38,7 @@ export const LANG_DE_TRANS = {
   'vehicle tracing': 'Spurverfolgung',
   'stoplist backinput': 'Stopplistenrückerfassung',
   'shipment cockpit': 'Sendungscockpit',
-  'hiroglyph t&t': 'Hiroglyphen T&T',
+  'line haul': 'Line Haul',
   'administration': 'Verwaltung',
   'customer administration': 'Kundenverwaltung',
   'user administration': 'Mitarbeiterverwaltung',

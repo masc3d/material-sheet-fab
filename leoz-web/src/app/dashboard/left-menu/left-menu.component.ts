@@ -275,7 +275,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent implements OnI
           command: closeMenu
         },
         {
-          label: this.translate.instant( 'hiroglyph t&t' ),
+          label: this.translate.instant( 'line haul' ),
           routerLink: '/',
           command: closeMenu
         }

@@ -38,7 +38,7 @@ export const LANG_EN_TRANS = {
   'vehicle tracing' : 'vehicle tracing',
   'stoplist backinput': 'stoplist backinput',
   'shipment cockpit': 'shipment cockpit',
-  'hiroglyph t&t': 'hiroglyph t&t',
+  'line haul': 'line haul',
   'administration': 'administration',
   'customer administration': 'customer administration',
   'user administration': 'user administration',
