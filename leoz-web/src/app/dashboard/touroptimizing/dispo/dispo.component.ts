@@ -15,6 +15,7 @@ import { BrowserCheck } from '../../../core/auth/browser-check';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { StoplistReportingService } from '../../../core/reporting/stoplist-reporting.service';
 import { Vehicle } from '../../../core/models/vehicle.model';
+import { SortEvent } from 'primeng/api';
 
 
 @Component( {
@@ -47,6 +48,9 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   kombiMaxKg: number;
   bikeMaxKg: number;
 
+  latestSortField: string = null;
+  latestSortOrder = 0;
+
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected touroptimizingService: TouroptimizingService,
@@ -69,7 +73,15 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
         takeUntil( this.ngUnsubscribe )
       )
       .subscribe( ( tours: Tour[] ) => {
-        this.tours = this.sortAndGroupTours( tours );
+        // this.tours = this.sortAndGroupTours( tours );
+        this.tours.length = 0;
+        if (this.latestSortField !== null) {
+          this.tours.push( ...tours.sort( ( data1, data2 ) => {
+            return this.compareCustom( this.latestSortOrder, data1[this.latestSortField], data2[this.latestSortField] );
+          } ) );
+        } else {
+          this.tours.push( ...this.sortAndGroupTours( tours ) );
+        }
         this.cd.markForCheck();
       } );
     this.touroptimizingService.latestDeliverylistModification$
@@ -86,6 +98,33 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
     this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe, this.withInitialGeneration );
     this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe, this.withInitialGeneration );
+  }
+
+  customSort( event: SortEvent ) {
+    if (event.field) {
+      this.latestSortField = event.field;
+      this.latestSortOrder = event.order;
+      event.data.sort( ( data1, data2 ) => {
+        return this.compareCustom( event.order, data1[ event.field ], data2[ event.field ] );
+      } );
+    }
+  }
+
+  compareCustom( sortOrder: number, value1: any, value2: any ) {
+    if (value1 == null && value2 != null) {
+      return -1 * sortOrder;
+    }
+    if (value1 != null && value2 == null) {
+      return sortOrder;
+    }
+    if (value1 == null && value2 == null) {
+      return 0;
+    }
+    if (typeof value1 === 'string' && typeof value2 === 'string') {
+      return value1.localeCompare( value2 ) * sortOrder;
+    }
+    const result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+    return (sortOrder * result);
   }
 
   getTours() {
@@ -228,7 +267,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     return '';
   }
 
-  roundDecimalsAsStringWrapper( input: number) {
+  roundDecimalsAsStringWrapper( input: number ) {
     return roundDecimalsAsString( input, 10, true );
   }
 }

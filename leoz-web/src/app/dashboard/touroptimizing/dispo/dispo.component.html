@@ -9,7 +9,8 @@
         </div>
       </div>
       <hr/>
-      <p-table [value]="tours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="15">
+      <p-table [value]="tours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="5"
+               [totalRecords]="tours.length" (sortFunction)="customSort($event)" [customSort]="true">
         <ng-template pTemplate="header">
           <tr>
             <th>{{'optimization' | translate}}</th>
