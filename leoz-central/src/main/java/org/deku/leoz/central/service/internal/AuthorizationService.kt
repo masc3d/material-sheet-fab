@@ -40,11 +40,6 @@ class AuthorizationService
     @Inject
     private lateinit var keyRepository: JooqKeyRepository
 
-
-    interface Listener : EventListener {
-        fun onAuthorized(nodeIdentityUid: Identity.Uid)
-    }
-
     //region REST
     /**
      * Authorize user

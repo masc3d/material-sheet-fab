@@ -34,7 +34,7 @@ class AnnotationTest {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
-        override fun getByStationNo(debitorId: Int, stationNo: Int): StationV2 {
+        override fun getByStationNo(stationNo: Int): StationV2 {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
