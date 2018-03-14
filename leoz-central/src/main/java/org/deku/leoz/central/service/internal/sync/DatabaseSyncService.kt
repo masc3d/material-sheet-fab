@@ -1,7 +1,9 @@
 package org.deku.leoz.central.service.internal.sync
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SysSync
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
@@ -27,6 +29,7 @@ import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
 import sx.persistence.truncate
 import sx.rx.subscribeOn
+import sx.rx.toHotCache
 import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -256,33 +259,42 @@ constructor(
         set(value) {
             field?.dispose()
             field = value
-        }
-
-    /**
-     * Synchronize all presets
-     */
-    fun sync(clean: Boolean) {
-        val sw = Stopwatch.createStarted()
-
-        val syncMap = this.syncJooqRepository
-                .findAll()
-                .groupBy { it.tableName }
-                .mapValues {
-                    it.value.first()
-                }
-
-        this.presets.forEach {
-            try {
-                it.update(
-                        sysSyncRecord = syncMap.getValue(it.tableName),
-                        clean = clean
-                )
-            } catch (e: Exception) {
-                log.error("${it} failed. ${e.message}")
+            if (field != null) {
+                // Perform initial sync
+                this.sync(clean = false)
             }
         }
 
-        log.debug { "Database sync took " + sw.toString() }
+    /**
+     * Run all synchronisation presets (asynchronously)
+     * @param clean Perform clean for all presets
+     * @return Hot completable for this operation
+     */
+    fun sync(clean: Boolean): Completable {
+        return this.exceutorService.submit {
+            val sw = Stopwatch.createStarted()
+
+            val syncMap = this.syncJooqRepository
+                    .findAll()
+                    .groupBy { it.tableName }
+                    .mapValues {
+                        it.value.first()
+                    }
+
+            this.presets.forEach {
+                try {
+                    it.update(
+                            sysSyncRecord = syncMap.getValue(it.tableName),
+                            clean = clean
+                    )
+                } catch (e: Exception) {
+                    log.error("${it} failed. ${e.message}")
+                }
+            }
+
+            log.debug { "Database sync took " + sw.toString() }
+        }
+                .toCompletable()
     }
 
     /**
@@ -526,12 +538,7 @@ constructor(
     }
 
     fun stop() {
+        // TODO graceful shutdown. currently start/stop is not synchronized
         this.processSubscription = null
-    }
-
-    fun startSync(clean: Boolean) {
-        this.exceutorService.submit {
-            this@DatabaseSyncService.sync(clean)
-        }
     }
 }
