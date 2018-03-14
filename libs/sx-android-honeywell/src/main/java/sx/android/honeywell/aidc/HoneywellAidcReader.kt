@@ -54,8 +54,13 @@ class HoneywellAidcReader private constructor(
                         .subscribe {
                     when(it.value) {
                         false -> {
-                            log.debug("Closing")
-                            this.honeywellReader.decode(false)
+                            log.debug("Disabling reader/decode")
+
+                            try {
+                                this.honeywellReader.decode(false)
+                            } catch(t: Throwable) {
+                                log.error("Disabling reader failed [${t.message}]", t)
+                            }
                         }
                     }
                 })
@@ -239,9 +244,13 @@ class HoneywellAidcReader private constructor(
 
     override fun onTriggerEvent(evt: TriggerStateChangeEvent) {
         if (this.enabled) {
-            this.honeywellReader.aim(evt.state)
-            this.honeywellReader.light(evt.state)
-            this.honeywellReader.decode(evt.state)
+            try {
+                this.honeywellReader.aim(evt.state)
+                this.honeywellReader.light(evt.state)
+                this.honeywellReader.decode(evt.state)
+            } catch(t: Throwable) {
+                log.error("Enabling reader failed [${t.message}]", t)
+            }
         }
     }
 }
