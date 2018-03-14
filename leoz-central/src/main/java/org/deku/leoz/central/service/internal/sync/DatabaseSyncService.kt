@@ -14,6 +14,7 @@ import org.deku.leoz.node.data.repository.SyncRepository
 import org.jooq.Record
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
@@ -105,7 +106,7 @@ class DatabaseSyncService
 constructor(
         private val exceutorService: ScheduledExecutorService,
         @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
-        txJpa: PlatformTransactionManager,
+        txJpa: JpaTransactionManager,
         @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER)
         txJooq: PlatformTransactionManager
 ) {

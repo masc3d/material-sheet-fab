@@ -367,7 +367,7 @@ class QueryPerformanceTest {
         cn.close()
     }
 
-    @Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     @Test
     open fun testSelectMaxJooqPrepared() {
         val field = Tables.MST_ROUTE.SYNC_ID.max()
@@ -390,7 +390,7 @@ class QueryPerformanceTest {
 
     }
 
-    @Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     @Test
     open fun testSelectMaxJooqInline() {
         val field = Tables.MST_ROUTE.SYNC_ID.max()
@@ -408,7 +408,7 @@ class QueryPerformanceTest {
 
     }
 
-    @Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     @Test
     open fun testSelectEntityJooqPrepared() {
         val tRoute = Tables.MST_ROUTE
@@ -436,7 +436,7 @@ class QueryPerformanceTest {
 
     }
 
-    @Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     @Test
     open fun testSelectEntityJooq() {
         val tRoute = Tables.MST_ROUTE
