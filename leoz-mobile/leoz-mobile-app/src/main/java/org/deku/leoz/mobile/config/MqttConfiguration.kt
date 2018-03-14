@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.mqtt.MqttSqlitePersistence
 import sx.android.rx.observeOnMainThread
+import sx.log.slf4j.debug
 import sx.mq.mqtt.MqttContext
 import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.MqttRxClient
@@ -72,20 +73,22 @@ class MqttConfiguration {
                         connectOptions = instance<MqttConnectOptions>()
                 )
 
+                val listeners = instance<MqttListeners>()
+
                 // TODO: dispatcher should support durable subscriptions
                 client.statusEvent.subscribeBy(onNext = {
                     when {
                         it is MqttRxClient.Status.ConnectionComplete -> {
-                            log.trace("Starting mq listeners")
+                            log.debug { "Starting mq listeners" }
 
                             try {
                                 // Start listeners on connection
-                                instance<MqttListeners>().also {
+                                listeners.also {
                                     it.mobile.broadcast.start()
                                     it.node.topic.start()
                                 }
                             } catch(e: Throwable) {
-                                log.error(e.message, e)
+                                log.error("Failed starting listeners [${e.message}]", e)
                             }
                         }
                     }
