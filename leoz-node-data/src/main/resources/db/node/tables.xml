@@ -7,6 +7,7 @@
     <table name="mst_bundle_version" uid="0x6a0acd69ac1a6c" />
     <table name="mst_country" uid="0x61175aa6b510b3" />
     <table name="mst_holiday_ctrl" uid="0x56c4d6ff7b69dc" />
+    <table name="mst_node" uid="0xee9824a64c632c" />
     <table name="mst_route" uid="0xef6d8232d3263d" />
     <table name="mst_routing_layer" uid="0x92ed6a2fc3f79f" />
     <table name="mst_sector" uid="0xf1dec2bb66db87" />

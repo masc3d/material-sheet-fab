@@ -5,6 +5,7 @@ import org.apache.commons.lang3.SystemUtils
 import org.jboss.forge.roaster.Roaster
 import org.jboss.forge.roaster.model.source.FieldSource
 import org.jboss.forge.roaster.model.source.JavaClassSource
+import org.jboss.forge.roaster.model.source.AnnotationSource
 import org.jboss.forge.roaster.model.source.PropertySource
 import org.jooq.util.DefaultGeneratorStrategy
 import org.jooq.util.Definition
@@ -260,8 +261,9 @@ def jooqConfiguration = new Configuration()
                         .withPojos(true)
                         .withFluentSetters(false)
                         .withPojosEqualsAndHashCode(true))
-                .withStrategy(new Strategy()
-                .withName(CustomJooqGeneratorStrategy.class.canonicalName))
+                .withStrategy(
+                new Strategy()
+                        .withName(CustomJooqGeneratorStrategy.class.canonicalName))
                 .withDatabase(
                 new Database()
                         .withName(H2Database.class.canonicalName)
@@ -439,15 +441,17 @@ static List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
         if (serializableUidField != null)
             serializableUidField.literalInitializer = uidLiteral
 
-        // EclipseLink currently does not support primitive @Id fields
-        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=415027
-        // Thus changing primitve @Id fields and referring properties to their wrapped object type counterpart
         jsource.fields.each { field ->
             // Find field with @Id annotation
             def idAnnotation = field.annotations.find {
                 it.qualifiedName == javax.persistence.Id.canonicalName
             }
+
             if (idAnnotation != null) {
+                //region Mangle primitive @Id fields
+                // EclipseLink currently does not support primitive @Id fields
+                // https://bugs.eclipse.org/bugs/show_bug.cgi?id=415027
+                // Thus changing primitve @Id fields and referring properties to their wrapped object type counterpart
                 if (field.type.primitive) {
                     def fieldSource = (FieldSource) field
                     def wrapperType = ClassUtils.primitiveToWrapper(ClassUtils.getClass(field.type.qualifiedName))
@@ -468,8 +472,22 @@ static List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
                     // Update field type
                     fieldSource.type = wrapperType
                 }
+                //endregion
             }
         }
+
+//        jsource.properties.each { property ->
+//            //region Change generated value strategies to AUTO. unlike IDENTITY, this allows manual id updates (if desired)
+//            def generatedValueAnnotation = property.annotations.find {
+//                it.qualifiedName == javax.persistence.GeneratedValue.canonicalName
+//            }
+//
+//            if (generatedValueAnnotation != null) {
+//                def a = (AnnotationSource<JavaClassSource>) generatedValueAnnotation
+//                a.setLiteralValue("strategy", "GenerationType.IDENTITY")
+//            }
+//            //endregion
+//        }
 
         // Generate and write updated class
         it.write(jsource.toString())
