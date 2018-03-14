@@ -20,7 +20,7 @@ buildscript {
         v_eclipselink = '2.7.1'
         v_feign = '9.6.0'
         v_flyway = '5.0.7'
-        v_fxform2 = '8.2.2'
+        v_fxform2 = '8.2.3'
         v_guava = '24.0-jre'
         v_h2 = '1.4.196'
         v_ini4j = '0.5.4'
