@@ -2,12 +2,12 @@ package sx.android.honeywell.aidc
 
 import android.content.Context
 import com.honeywell.aidc.*
-import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import org.slf4j.LoggerFactory
 import sx.LazyInstance
-import sx.android.aidc.*
 import sx.aidc.SymbologyType
+import sx.android.aidc.*
 import sx.rx.toHotReplay
 
 /**
@@ -35,7 +35,7 @@ class HoneywellAidcReader private constructor(
                         onSubscribe.onNext(HoneywellAidcReader(it))
                         onSubscribe.onComplete()
                     }
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     onSubscribe.onError(e)
                 }
             }.toHotReplay()
@@ -46,24 +46,29 @@ class HoneywellAidcReader private constructor(
 
     override fun onBind() {
         log.debug("Claiming reader")
-        this.honeywellReader.claim()
+
+        try {
+            this.honeywellReader.claim()
+        } catch (t: Throwable) {
+            log.error("Claiming reader failed [${t.message}]", t)
+        }
 
         this.subscriptions.add(
                 this.enabledProperty
                         .distinctUntilChanged()
                         .subscribe {
-                    when(it.value) {
-                        false -> {
-                            log.debug("Disabling reader/decode")
+                            when (it.value) {
+                                false -> {
+                                    log.debug("Disabling reader/decode")
 
-                            try {
-                                this.honeywellReader.decode(false)
-                            } catch(t: Throwable) {
-                                log.error("Disabling reader failed [${t.message}]", t)
+                                    try {
+                                        this.honeywellReader.decode(false)
+                                    } catch (t: Throwable) {
+                                        log.error("Disabling reader failed [${t.message}]", t)
+                                    }
+                                }
                             }
-                        }
-                    }
-                })
+                        })
 
         this.subscriptions.add(
                 this.decodersUpdatedSubject.subscribe {
@@ -75,11 +80,16 @@ class HoneywellAidcReader private constructor(
         log.debug("Releasing reader")
         this.subscriptions.forEach { it.dispose() }
         this.subscriptions.clear()
-        this.honeywellReader.release()
+
+        try {
+            this.honeywellReader.release()
+        } catch (t: Throwable) {
+            log.error("Releasing reader failed [${t.message}]", t)
+        }
     }
 
     private val honeywellReader: BarcodeReader
-            get() { return honeywellReaderInstance.get() }
+        get() = honeywellReaderInstance.get()
     /**
      * Honeywell barcode reader
      */
@@ -248,7 +258,7 @@ class HoneywellAidcReader private constructor(
                 this.honeywellReader.aim(evt.state)
                 this.honeywellReader.light(evt.state)
                 this.honeywellReader.decode(evt.state)
-            } catch(t: Throwable) {
+            } catch (t: Throwable) {
                 log.error("Enabling reader failed [${t.message}]", t)
             }
         }
