@@ -133,6 +133,10 @@ export class TouroptimizingService {
       httpParams = httpParams.append( 'id', id.toString() );
     } );
 
+    const tmpTours = this.toursSubject.getValue()
+      .filter( tour => tourIds.indexOf( tour.id ) === -1 );
+    this.toursSubject.next( tmpTours );
+
     this.http.delete( this.deleteToursUrl, {
       params: httpParams
     } )
