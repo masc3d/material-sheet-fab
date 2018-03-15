@@ -1,4 +1,4 @@
-<app-msg-box [msgs]="msgs$ | async" [sticky]="true"></app-msg-box>
+<app-msg-box [msgs]="msgs$ | async" [sticky]="sticky$ | async"></app-msg-box>
 <div class="ui-fluid mbDashboardContent" style="padding-top: 10px">
   <div class="ui-g" style="min-height: 465px;">
     <div class="ui-g-12" style="padding:0; margin-left: 10px;">

@@ -32,9 +32,11 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   checkAll: boolean;
   tours: Tour[];
-
   toursLoading$: Observable<boolean>;
+
   public msgs$: Observable<Message[]>;
+  public sticky$: Observable<boolean>;
+
   selectedOptimizableTourIds: Tour[] = []; // tours with more than one shipment
 
   notMicrodoof: boolean;
@@ -91,7 +93,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       .subscribe( ( someTimestamp: number ) => {
         if (this.tours && this.tours.length > 0
           && new Date( this.tours[ 0 ].created ).getTime() < someTimestamp) {
-          this.msgService.info( 'tours-most-likely-outdated' );
+          this.msgService.info( 'tours-most-likely-outdated', false, true );
         }
       } );
     this.touroptimizingService.getTours( this.withInitialGeneration );
@@ -155,7 +157,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.selectedOptimizableTourIds = this.tours
       .filter( tour => tour.selected && tour.orders.length > 1 );
     if (this.selectedOptimizableTourIds.length === 0) {
-      this.msgService.info( 'no_optimizable_tours_selected' );
+      this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
       const selectedTourIds = this.tours
         .filter( tour => tour.selected )
@@ -208,7 +210,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.selectedOptimizableTourIds = this.tours
       .filter( tour => tour.selected && tour.orders.length > 1 );
     if (this.selectedOptimizableTourIds.length === 0) {
-      this.msgService.info( 'no_optimizable_tours_selected' );
+      this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
       this.displayOptimizationOptions = true;
     }

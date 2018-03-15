@@ -175,10 +175,10 @@ export class TouroptimizingService {
       params: httpParams
     } )
       .subscribe( _ => {
-          this.msgService.info( 'optimization_progress', true );
+          this.msgService.info( 'optimization_progress', true, true );
         },
         error => {
-          this.msgService.error( error.error.detail );
+          this.msgService.error( error.error.detail, true );
         } );
   }
 
