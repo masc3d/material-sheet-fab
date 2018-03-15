@@ -13,6 +13,7 @@ interface DebitorStationRepository :
 
 interface DebitorStationRepositoryExtension {
     fun findStationIdsByDebitorid(debitorId: Int): List<Int>
+    fun findByStationId(stationId: Int): MstDebitorStation?
 
 }
 
@@ -28,5 +29,12 @@ class DebitorStationRepositoryImpl : DebitorStationRepositoryExtension {
                 qDebitorStation.debitorId.eq(debitorId)
         )
         return debitorStations.map { it.stationId }.toList()
+    }
+
+    override fun findByStationId(stationId: Int): MstDebitorStation? {
+        val qDebitorStation = QMstDebitorStation.mstDebitorStation
+        return debitorStationRepository.findOne(
+                qDebitorStation.stationId.eq(stationId)
+        ).orElse(null)
     }
 }

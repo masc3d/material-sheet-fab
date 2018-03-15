@@ -20,4 +20,7 @@
     <table name="tad_tour_entry" uid="0x6c32a669a4a424" />
     <table name="mst_debitor_station" uid="0xaa946790064008" />
     <table name="mst_debitor" uid="0xaa946790064009" />
+    <table name="mst_key" uid="0x8556806322cf47" />
+    <table name="mst_user" uid="0xd0345b4eedac00" />
+    <table name="mst_station_user" uid="0xea2337d04d0a2b" />
 </tables>
