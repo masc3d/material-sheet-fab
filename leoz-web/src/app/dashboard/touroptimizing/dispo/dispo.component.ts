@@ -38,7 +38,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   selectedOptimizableTourIds: Tour[] = []; // tours with more than one shipment
 
   notMicrodoof: boolean;
-  loading$: Observable<boolean>;
 
   displayOptimizationOptions = false;
   dontShiftOneDayFromNow = true;
@@ -70,7 +69,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.toursLoading$ = this.touroptimizingService.toursLoading$;
 
     this.tours = [];
-    // this.loading$ = this.touroptimizingService.loading$;
     this.touroptimizingService.tours$
       .pipe(
         takeUntil( this.ngUnsubscribe )
@@ -79,7 +77,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
         this.tours.length = 0;
         if (this.latestSortField !== null) {
           this.tours.push( ...tours.sort( ( data1, data2 ) => {
-            return compareCustom( this.latestSortOrder, data1[this.latestSortField], data2[this.latestSortField] );
+            return compareCustom( this.latestSortOrder, data1[ this.latestSortField ], data2[ this.latestSortField ] );
           } ) );
         } else {
           this.tours.push( ...this.sortAndGroupTours( tours ) );
@@ -154,17 +152,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   protected optimizeTours() {
-    /**
-     * ALEX: Values should come from the service
-     */
-    // this.optimizeTodayAndFuture
-    // this.optimizeTraffic => traffic: true
-    // this.optimizeExistingtours = => vehicles[{capacity: 0}]
-    // this.optimizeSplitTours
-    // this.sprinterMaxKg => vehicles[{capacity: 1200}]
-    // this.caddyMaxKg => vehicles[{capacity: 500}]
-    // this.kombiMaxKg => vehicles[{capacity: 350}]
-    // this.bikeMaxKg => vehicles[{capacity: 30}]
     this.selectedOptimizableTourIds = this.tours
       .filter( tour => tour.selected && tour.orders.length > 1 );
     if (this.selectedOptimizableTourIds.length === 0) {
@@ -173,10 +160,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       const selectedTourIds = this.tours
         .filter( tour => tour.selected )
         .map( tour => tour.id );
-      // const selectedNotOptimizedTourIds = this.tours
-      //   .filter( tour => tour.selected && !tour.optimized )
-      //   .map( tour => tour.id );
-      // if (selectedNotOptimizedTourIds.length > 0) {
       let vehicles = [];
       if (this.optimizeSplitTours) {
         vehicles = this.addVehicles( this.sprinterMaxKg, Vehicle.SPRINTER, vehicles );
@@ -187,9 +170,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       this.touroptimizingService.optimizeAndReinitTours( selectedTourIds,
         vehicles.length > 0 ? vehicles : [ Vehicle.SPRINTER ],
         this.optimizeTraffic, this.optimizeExistingtours, this.dontShiftOneDayFromNow );
-      // } else {
-      //   this.msgService.info( 'optimizing_optimized_tours_not_possible' );
-      // }
     }
     this.checkAll = false;
   }

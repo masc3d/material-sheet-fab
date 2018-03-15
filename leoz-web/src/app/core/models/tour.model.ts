@@ -13,5 +13,5 @@ export interface Tour extends TourListItem {
   parentId?: number;
   date?: string;
   orders?: DeliverylistItem[];
-  stops?: Stop[]
+  stops?: Stop[];
 }

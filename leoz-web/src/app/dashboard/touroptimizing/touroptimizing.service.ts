@@ -36,10 +36,9 @@ export class TouroptimizingService {
   private latestDeliverylistModificationSubject = new BehaviorSubject<number>( 0 );
   public latestDeliverylistModification$ = this.latestDeliverylistModificationSubject.asObservable().pipe( distinctUntilChanged() );
 
-  // private loadingSubject = new BehaviorSubject<boolean>( true );
-  // public loading$ = this.loadingSubject.asObservable().pipe( distinctUntilChanged() );
-
   private latestDeliverylists: Deliverylist[];
+
+  private optimizationInProgress: number[] = [];
 
   constructor( protected http: HttpClient,
                protected msgService: MsgService,
@@ -58,11 +57,30 @@ export class TouroptimizingService {
       )
       .subscribe( ( data ) => {
         console.log( data );
-        if (data && !data.inProgress) {
+        const id = data.id;
+        this.optimizing( id, data.inProgress );
+        if (!data.inProgress) {
           this.msgService.clear();
           this.getTours( withInitialGeneration );
         }
       } );
+  }
+
+  private optimizing( id: any, inProgress: boolean ) {
+    if (inProgress) {
+      this.optimizationInProgress.push( id );
+    } else {
+      this.optimizationInProgress = this.optimizationInProgress.filter( el => el !== id );
+    }
+    const tmpTours = this.toursSubject
+      .getValue()
+      .map( tour => {
+        if (tour.id === id) {
+          tour.isOptimizing = inProgress;
+        }
+        return tour;
+      } );
+    this.toursSubject.next( tmpTours );
   }
 
   initSSEtourWhatever( ngUnsubscribe: Subject<void>, withInitialGeneration: boolean ) {
@@ -132,7 +150,6 @@ export class TouroptimizingService {
     tourIds.forEach( id => {
       httpParams = httpParams.append( 'id', id.toString() );
     } );
-    // httpParams = httpParams.append( 'wait-for-completion', 'true' );
     httpParams = httpParams.append( 'wait-for-completion', 'false' );
     /**
      * ALEX: mal 'omit': true und mal 'omit': false / produktiv auf false stellen
@@ -154,8 +171,6 @@ export class TouroptimizingService {
       params: httpParams
     } )
       .subscribe( _ => {
-          // this.getTours(); // this.deleteAndReinitTours( tourIds )
-          // this.msgService.clear();
           this.msgService.info( 'optimization_progress', true );
         },
         error => {
@@ -238,6 +253,7 @@ export class TouroptimizingService {
         ? tour.drivingTime = tour.route.drivingTime
         : 0;
 
+      tour.isOptimizing = this.optimizationInProgress.indexOf( tour.id ) >= 0;
       tour.selected = false;
       const dl = this.latestDeliverylists.filter( deliverylist => deliverylist.id === tour.deliverylistId );
       tour.state = dl.length > 0 && dl[ 0 ].modified > tour.created ? 'changed' : 'new';
@@ -246,6 +262,6 @@ export class TouroptimizingService {
   }
 
   public showSpinner() {
-    this.toursLoadingSubject.next(true);
+    this.toursLoadingSubject.next( true );
   }
 }
