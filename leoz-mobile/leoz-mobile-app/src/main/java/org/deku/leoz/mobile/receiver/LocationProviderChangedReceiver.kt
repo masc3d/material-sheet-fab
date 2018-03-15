@@ -25,7 +25,7 @@ class LocationProviderChangedReceiver : BroadcastReceiver() {
         log.debug("BroadcastReceiver [${this::class.java.simpleName}] fired")
         log.debug("ONRECEIVE Intent [${intent.action}] Context [$context]")
         Log.d(LocationProviderChangedReceiver::class.java.simpleName, "ONRECEIVE")
-        locationSettings.locationSettingsChangedEventProperty.onNext(Unit)
+        locationSettings.locationSettingsChangedEventSubject.onNext(Unit)
     }
 
 }
