@@ -38,6 +38,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   selectedOptimizableTourIds: Tour[] = []; // tours with more than one shipment
 
   notMicrodoof: boolean;
+  loading$: Observable<boolean>;
 
   displayOptimizationOptions = false;
   dontShiftOneDayFromNow = true;
@@ -69,12 +70,12 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.toursLoading$ = this.touroptimizingService.toursLoading$;
 
     this.tours = [];
+    // this.loading$ = this.touroptimizingService.loading$;
     this.touroptimizingService.tours$
       .pipe(
         takeUntil( this.ngUnsubscribe )
       )
       .subscribe( ( tours: Tour[] ) => {
-        // this.tours = this.sortAndGroupTours( tours );
         this.tours.length = 0;
         if (this.latestSortField !== null) {
           this.tours.push( ...tours.sort( ( data1, data2 ) => {
@@ -112,10 +113,12 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   getTours() {
+    this.touroptimizingService.showSpinner();
     this.touroptimizingService.getTours( this.withInitialGeneration );
   }
 
   resetTours() {
+    this.touroptimizingService.showSpinner();
     this.msgService.clear();
     const tourIds = this.tours.map( tour => tour.id );
     this.touroptimizingService.deleteTours( tourIds );

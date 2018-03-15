@@ -36,6 +36,9 @@ export class TouroptimizingService {
   private latestDeliverylistModificationSubject = new BehaviorSubject<number>( 0 );
   public latestDeliverylistModification$ = this.latestDeliverylistModificationSubject.asObservable().pipe( distinctUntilChanged() );
 
+  // private loadingSubject = new BehaviorSubject<boolean>( true );
+  // public loading$ = this.loadingSubject.asObservable().pipe( distinctUntilChanged() );
+
   private latestDeliverylists: Deliverylist[];
 
   constructor( protected http: HttpClient,
@@ -242,4 +245,7 @@ export class TouroptimizingService {
     } );
   }
 
+  public showSpinner() {
+    this.toursLoadingSubject.next(true);
+  }
 }

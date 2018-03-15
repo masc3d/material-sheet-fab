@@ -10,7 +10,8 @@
       </div>
       <hr/>
       <p-table [value]="tours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="15"
-               [totalRecords]="tours.length" (sortFunction)="customSort($event)" [customSort]="true">
+               [totalRecords]="tours.length" (sortFunction)="customSort($event)" [customSort]="true"
+               [loading]="toursLoading$ | async" [loadingIcon]="'fa-spinner'">
         <ng-template pTemplate="header">
           <tr>
             <th>{{'optimization' | translate}}</th>
@@ -47,7 +48,7 @@
               {{'date' | translate}}
               <p-sortIcon [field]="'created'"></p-sortIcon>
             </th>
-            <th></th>
+            <th style="width: 100px;"></th>
           </tr>
         </ng-template>
 
