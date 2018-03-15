@@ -10,12 +10,13 @@ import { TranslateService } from '../../../core/translate/translate.service';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { TouroptimizingService } from '../touroptimizing.service';
 import { Tour } from '../../../core/models/tour.model';
-import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 import { BrowserCheck } from '../../../core/auth/browser-check';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { StoplistReportingService } from '../../../core/reporting/stoplist-reporting.service';
 import { Vehicle } from '../../../core/models/vehicle.model';
 import { SortEvent } from 'primeng/api';
+import { compareCustom } from '../../../core/compare-fn/custom-compare';
+import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 
 
 @Component( {
@@ -77,7 +78,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
         this.tours.length = 0;
         if (this.latestSortField !== null) {
           this.tours.push( ...tours.sort( ( data1, data2 ) => {
-            return this.compareCustom( this.latestSortOrder, data1[this.latestSortField], data2[this.latestSortField] );
+            return compareCustom( this.latestSortOrder, data1[this.latestSortField], data2[this.latestSortField] );
           } ) );
         } else {
           this.tours.push( ...this.sortAndGroupTours( tours ) );
@@ -105,26 +106,9 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       this.latestSortField = event.field;
       this.latestSortOrder = event.order;
       event.data.sort( ( data1, data2 ) => {
-        return this.compareCustom( event.order, data1[ event.field ], data2[ event.field ] );
+        return compareCustom( event.order, data1[ event.field ], data2[ event.field ] );
       } );
     }
-  }
-
-  compareCustom( sortOrder: number, value1: any, value2: any ) {
-    if (value1 == null && value2 != null) {
-      return -1 * sortOrder;
-    }
-    if (value1 != null && value2 == null) {
-      return sortOrder;
-    }
-    if (value1 == null && value2 == null) {
-      return 0;
-    }
-    if (typeof value1 === 'string' && typeof value2 === 'string') {
-      return value1.localeCompare( value2 ) * sortOrder;
-    }
-    const result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
-    return (sortOrder * result);
   }
 
   getTours() {

@@ -15,7 +15,6 @@ import { TourDriverListComponent } from './tour-driver-list/tour-driver-list.com
 import { TourService } from './tour.service';
 import { TourRoutingModule } from './tour-routing.module';
 import { DriverService } from './driver.service';
-import { DriverFilterPipe } from './driver.pipe';
 import { UserService } from '../user/user.service';
 import { DateMomentjsPipe } from '../../core/translate/date-momentjs.pipe';
 
@@ -33,8 +32,7 @@ import { DateMomentjsPipe } from '../../core/translate/date-momentjs.pipe';
   declarations: [
     TourComponent,
     TourMapComponent,
-    TourDriverListComponent,
-    DriverFilterPipe
+    TourDriverListComponent
   ],
   providers: [
     DriverService,

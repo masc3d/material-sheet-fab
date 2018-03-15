@@ -15,6 +15,7 @@ import { UserService } from '../../user/user.service';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../../core/translate/translate.service';
 import { MsgService } from '../../../shared/msg/msg.service';
+import { PermissionCheck } from '../../../core/auth/permission-check';
 
 interface CallbackArguments {
   driver: Driver;
@@ -63,7 +64,7 @@ interface CallbackArguments {
         </div>
       </div>
     </div>
-    <p-table *ngIf="tableIsVisible" [value]="drivers$ | async | driverfilter: [filterName]"
+    <p-table *ngIf="tableIsVisible" [value]="drivers" [paginator]="true" [rows]="10" [totalRecords]="drivers.length"
              [responsive]="true" sortField="lastName">
       <ng-template pTemplate="header">
         <tr>
@@ -123,7 +124,7 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   maxDateValue: Date;
   latestRefresh: Date;
-  drivers$: Observable<Driver[]>;
+  drivers: Driver[];
   isPermitted: boolean;
   filterName: string;
   tableIsVisible: boolean;
@@ -178,7 +179,16 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
       { label: '30', value: 30 },
       { label: '60', value: 60 } ];
 
-    this.drivers$ = this.driverService.drivers$;
+    this.drivers = [];
+    this.driverService.drivers$
+      .pipe(
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe(drivers => {
+        this.drivers.length = 0;
+        this.drivers.push(...this.filterDrivers(drivers, this.filterName));
+        this.cd.markForCheck();
+      });
     this.isPermitted = (this.roleGuard.isPoweruser() || this.roleGuard.isUser());
     this.tourService.resetMarkerAndRoute();
     this.tableIsVisible = false;
@@ -349,5 +359,22 @@ export class TourDriverListComponent extends AbstractTranslateComponent implemen
 
   showRoute( args: CallbackArguments ) {
     args.tourService.changeActiveRoute( args.driver, this.selectedInterval * 60, this.tourDate );
+  }
+
+  private filterDrivers( drivers: Driver[], filterName: string ): Driver[] {
+    if (!drivers) {
+      return [];
+    }
+    if (this.roleGuard.userRole === Driver.RoleEnum.DRIVER) {
+      const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+      return drivers.filter( ( driver: Driver ) => driver.email === currUser.user.email );
+      // return drivers.filter( ( driver: Driver ) => driver.email === 'driver@deku.org' );
+    } else {
+      let filtered = filterName === 'driverfilter'
+        ? drivers.filter( ( driver: Driver ) => driver.role === Driver.RoleEnum.DRIVER )
+        : drivers.filter( ( driver: Driver ) => PermissionCheck.isAllowedRole( this.roleGuard.userRole, driver.role ) );
+      filtered = filtered.filter( ( driver: Driver ) => driver.active );
+      return filtered;
+    }
   }
 }
