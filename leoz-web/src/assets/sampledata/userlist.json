@@ -1,6 +1,0 @@
-[
-   {"id": 1, "firstname": "firstname1", "surname": "nachname1","drivernumber": 1,"tournumber": 11, "position": {"lat": 48.57, "lng": 13.26}},
-   {"id": 2, "firstname": "firstname2", "surname": "nachname2","drivernumber": 2,"tournumber": 22, "position": {"lat": 43, "lng":2}},
-   {"id": 3, "firstname": "firstname3", "surname": "nachname3","drivernumber": 3,"tournumber": 33, "position": {"lat": 51, "lng": 0}},
-   {"id": 4, "firstname": "firstname4", "surname": "nachname4","drivernumber": 4,"tournumber": 44, "position": {"lat": -30, "lng": -70}}
-]
