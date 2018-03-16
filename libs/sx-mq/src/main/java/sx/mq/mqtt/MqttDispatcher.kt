@@ -170,7 +170,8 @@ class MqttDispatcher(
                                 log.trace { "Removed [m${m.persistentId}]" }
                             }
                     )
-                    .blockingAwait()
+                    // TODO: static timeout for verifying if publish may run into deadlock
+                    .blockingAwait(5, TimeUnit.SECONDS)
 
             Observable.just(m)
         }
