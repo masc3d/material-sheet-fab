@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response
 @Component
 @Path("internal/v1/user")
 @Profile(Application.PROFILE_CENTRAL)
-class UserService : UserService {
+class UserService : org.deku.leoz.service.internal.UserService {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject

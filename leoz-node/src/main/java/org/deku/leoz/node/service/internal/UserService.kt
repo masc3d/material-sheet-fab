@@ -53,9 +53,6 @@ class UserService : org.deku.leoz.service.internal.UserService {
     @Inject
     private lateinit var configurationService: ConfigurationService
 
-//    @Inject
-//    private lateinit var mailRepository: JooqMailQueueRepository
-
     override fun get(email: String?, debitorId: Int?): List<UserService.User> {
         var debitor_id = debitorId
 
@@ -423,24 +420,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {
-        val user=userRepository.findById(userId.toLong())
-        if(!user.isPresent)
-            return false
-        var phone =user.get().phoneMobile //userRepository.findById(userId)!!.phoneMobile!!
-        phone = phone.replace("\\D".toRegex(), "")
-        phone = phone.removePrefix("00")
-
-        if (phone.first() == '0')
-            phone = phone.replaceFirst("0", "49")
-
-        try {
-           // mailRepository.insertSms(receiver = phone, message = "Hallo und willkommen bei mobileX. Download: http://derkurier.de/mobileX/ Zugangsdaten erhalten Sie in Ihrer Station.")
-        } catch (e: Exception) {
-            return false
-        }
-
-        return true
-
+        throw NotImplementedError("unsupported")
     }
 
     override fun changePassword(oldPassword: String, newPassword: String) {
