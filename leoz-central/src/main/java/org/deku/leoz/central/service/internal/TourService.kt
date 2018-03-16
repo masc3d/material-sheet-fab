@@ -159,7 +159,7 @@ class TourServiceV1
     @Scheduled(cron = "0 0 */2 * * *")
     fun clean() {
         val expiry = Date()
-                .plusDays(-1)
+                .plusDays(-4)
                 .toTimestamp()
 
         emf.withEntityManager { em ->
