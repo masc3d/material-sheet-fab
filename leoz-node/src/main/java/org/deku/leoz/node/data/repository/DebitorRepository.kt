@@ -6,4 +6,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 
 interface DebitorRepository:
         JpaRepository<MstDebitor, Long>,
-        QuerydslPredicateExecutor<MstDebitor>
+        QuerydslPredicateExecutor<MstDebitor>,DebitorRepositoryExtension
+
+interface DebitorRepositoryExtension{
+    fun findByDebitorNr(debitorNr:Double):MstDebitor
+}
