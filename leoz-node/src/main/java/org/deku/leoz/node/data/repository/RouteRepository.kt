@@ -9,7 +9,7 @@ import org.eclipse.persistence.config.HintValues
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.QueryHints
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
-import sx.jpa.NamedQuery
+import sx.persistence.querydsl.NamedQuery
 import java.sql.Timestamp
 import javax.inject.Inject
 import javax.persistence.EntityManager

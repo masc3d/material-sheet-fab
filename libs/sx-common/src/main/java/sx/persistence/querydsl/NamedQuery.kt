@@ -1,4 +1,4 @@
-package sx.jpa
+package sx.persistence.querydsl
 
 import com.querydsl.core.types.ParamExpression
 import com.querydsl.core.types.dsl.Param
