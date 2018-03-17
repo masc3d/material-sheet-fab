@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.JooqNodeRepository
@@ -11,6 +12,7 @@ import org.deku.leoz.service.internal.NodeServiceV1
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.log.slf4j.info
@@ -28,10 +30,13 @@ import javax.ws.rs.Path
  */
 @Component
 @Path("internal/v1/node")
+@Profile(Application.PROFILE_CENTRAL)
+
 class NodeServiceV1
     :
         org.deku.leoz.service.internal.NodeServiceV1,
-        MqHandler<NodeServiceV1.Info> {
+        MqHandler<NodeServiceV1.Info>
+{
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 

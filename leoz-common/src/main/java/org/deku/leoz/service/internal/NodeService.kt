@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiParam
 import io.swagger.annotations.Authorization
 import org.deku.leoz.config.Rest
 import sx.io.serialization.Serializable
+import sx.mq.MqHandler
 import sx.rs.auth.ApiKey
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType

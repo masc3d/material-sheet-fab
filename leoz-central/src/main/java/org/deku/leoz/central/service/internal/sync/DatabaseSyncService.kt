@@ -35,6 +35,7 @@ import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import kotlin.properties.Delegates
 
@@ -130,7 +131,7 @@ constructor(
     private val transactionJooq = TransactionTemplate(txJooq)
 
     @PersistenceContext
-    private lateinit var em: javax.persistence.EntityManager
+    private lateinit var em: EntityManager
 
     /** JPA transaction template */
     private val transactionJpa = TransactionTemplate(txJpa).also {

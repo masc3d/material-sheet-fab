@@ -1,15 +1,16 @@
 package org.deku.leoz.node.data.repository
 
 import org.deku.leoz.node.data.jpa.*
+import org.deku.leoz.node.data.jpa.QMstKey.mstKey
+import org.deku.leoz.node.data.jpa.QMstUser.mstUser
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import javax.inject.Inject
 import javax.persistence.EntityManager
-import javax.persistence.criteria.JoinType
 import org.deku.leoz.service.internal.UserService
-import org.springframework.data.jpa.repository.Query
+import sx.persistence.querydsl.from
 import sx.text.parseHex
-import javax.inject.Qualifier
+import javax.persistence.PersistenceContext
 
 interface UserRepository :
         JpaRepository<MstUser, Long>,
@@ -19,67 +20,41 @@ interface UserRepositoryExtension {
     fun findByDebitorId(debitorId: Long): List<MstUser>
     fun findByEmail(email: String): MstUser?
     fun findByAliasAndDebitorId(alias: String, debitorId: Long): MstUser?
-
-    //@Query("select station_nr from mst_station inner join mst_station_user on mst_station.station_id=mst_station_user.station_id where mst_station_user.user_id= ?#{[0]}")
-    //fun findAllowedStationsByUserId(userId: Long): List<Int>
-
+    fun findByKey(key: String): MstUser?
 }
 
-class UserRepositioryImpl : UserRepositoryExtension {
+class UserRepositoryImpl : UserRepositoryExtension {
 
     @Inject
     private lateinit var userRepository: UserRepository
 
-//    @Inject
-//    private lateinit var entityManager: EntityManager
+    @PersistenceContext
+    private lateinit var em: EntityManager
 
     override fun findByAliasAndDebitorId(alias: String, debitorId: Long): MstUser? {
-        val qUser = QMstUser.mstUser
         return userRepository.findOne(
-                qUser.alias.eq(alias)
-                        .and(qUser.debitorId.eq(debitorId))
+                mstUser.alias.eq(alias)
+                        .and(mstUser.debitorId.eq(debitorId))
                          )
                 .orElse(null)
     }
 
     override fun findByDebitorId(debitorId: Long): List<MstUser> {
-        val qUser = QMstUser.mstUser
         return userRepository.findAll(
-                qUser.debitorId.eq(debitorId)).toList()
+                mstUser.debitorId.eq(debitorId)).toList()
     }
 
     override fun findByEmail(email: String): MstUser? {
-        val qUser = QMstUser.mstUser
         return userRepository.findOne(
-                qUser.email.eq(email)).orElse(null)
+                mstUser.email.eq(email)).orElse(null)
     }
 
-    //   @Query("select station_nr from mst_station inner join mst_station_user on mst_station.station_id=mst_station_user.station_id where mst_station_user.user_id= ?#{[0]}")
-    //   override fun findAllowedStationsByUserId(userId: Long): List<Int> {
-
-//    override fun findAllowedStationsByUserId(userId: Long): List<Int> {
-//        //val qUser=QMstUser.mstUser
-//        //val qStationUser = QMstStationUser.mstStationUser
-//        //val qStation = QMstStation.mstStation
-//
-////        val builder = entityManager.criteriaBuilder
-////        val query = builder.createQuery(MstStation::class.java)
-////        val stat=query.from(MstStation::class.java)
-////        val userJoin=stat.joins(MstStationUser)//.join("mappedB",JoinType.INNER)
-////        userJoin.
-////        query.where(builder.equal(userJoin.get))
-////        query.where(qStation.stationId.eq(qStationUser.stationId))
-////return entityManager.createQuery(query).resultList()
-//
-//        val l = mutableListOf<Int>(10, 20)
-//
-//
-//        return l
-////        return entityManager.createQuery("select station_nr from mst_station inner join mst_station_user on mst_station.station_id=mst_station_user.station_id where mst_station_user.user_id= :userid ",Int::class.java)
-////                .setParameter("userid",userId)
-////                .resultList
-//
-//    }
+    override fun findByKey(key: String): MstUser? {
+        return em.from(mstUser)
+                .innerJoin(mstKey).on(mstUser.keyId.eq(mstKey.id))
+                .where(mstKey.key.eq(key))
+                .fetchOne()
+    }
 }
 
 fun MstUser.toUser(): UserService.User =
