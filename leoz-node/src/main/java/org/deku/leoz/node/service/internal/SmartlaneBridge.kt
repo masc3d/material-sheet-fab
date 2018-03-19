@@ -491,15 +491,21 @@ class SmartlaneBridge {
                         // Determine optimized tour id / uid
                         val id: Long?
                         val uid: String
+                        val parentId: Long?
+                        val customId: String?
                         when (inPlaceUpdate) {
                             true -> {
                                 uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
                                 id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
+                                parentId = null
+                                customId = tour.customId
                             }
                             false -> {
                                 // Generate uid for new tour
                                 uid = uidSupplier()
                                 id = null
+                                parentId = tour.id
+                                customId = null
                             }
                         }
 
@@ -509,7 +515,8 @@ class SmartlaneBridge {
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
                                 stationNo = tour.stationNo,
-                                parentId = tour.id,
+                                customId = customId,
+                                parentId = parentId,
                                 date = tour.date,
                                 optimized = now,
                                 stops = stops,
