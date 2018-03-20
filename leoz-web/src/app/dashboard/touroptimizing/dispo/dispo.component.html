@@ -58,7 +58,7 @@
             <td>{{tour.id}}</td>
             <td>
               <span *ngIf="tour.deliverylistId; else parentID">{{tour.deliverylistId}}</span>
-              <ng-template #parentID>P: {{tour.parentId}}</ng-template></td>
+              <ng-template #parentID>P: {{tour.parentId}}</ng-template>
             </td>
             <td></td>
             <td>{{tour.stops.length}}</td>
