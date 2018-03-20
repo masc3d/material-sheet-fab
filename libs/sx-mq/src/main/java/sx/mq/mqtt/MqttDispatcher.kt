@@ -133,8 +133,7 @@ class MqttDispatcher(
             when (it) {
                 is MqttRxClient.Status.ConnectionLost -> {
                     log.warn("Connection lost [${it.cause?.message ?: "-"}]")
-                    this@MqttDispatcher.disconnect(forcibly = true)
-                    this@MqttDispatcher.connect()
+                    this.reconnect()
                 }
 
                 is MqttRxClient.Status.ConnectionComplete -> {
@@ -245,9 +244,8 @@ class MqttDispatcher(
 
                                 log.error("Dequeue encountered error [${message}]")
 
-                                // Disconnect the client forcibly when dequeue errors occur.
-                                // The connection subscription will not be affected.
-                                this.client.disconnect(forcibly = true)
+                                // On dequeue errors, perform reconnect if applicable
+                                this.reconnect()
                             }
                 }
                 .doFinally {
@@ -353,6 +351,19 @@ class MqttDispatcher(
                         .subscribe()
             }
             return Completable.complete()
+        }
+    }
+
+    /**
+     * Reconnect (if connection subscription is active)
+     */
+    private fun reconnect() {
+        this.lock.withLock {
+            val hasConnectionSubscription = this.connectionSubscription != null
+
+            this.disconnect(forcibly = true)
+            if (hasConnectionSubscription)
+                this.connect()
         }
     }
 
