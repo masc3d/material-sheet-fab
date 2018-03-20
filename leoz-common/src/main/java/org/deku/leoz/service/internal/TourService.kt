@@ -84,7 +84,7 @@ interface TourServiceV1 {
             userId: Long
     ): Tour
 
-    @Deprecated("Superseded by automatic dl conversion in `DeliveryListService`")
+    @Deprecated("Superseded by automatic dl conversion in `DeliveryListService`, manual conversion method will be moved to (central only) delivery list service")
     @POST
     @Path("/deliverylist")
     @ApiOperation(value = "Create new tour(s) from delivery list(s)",

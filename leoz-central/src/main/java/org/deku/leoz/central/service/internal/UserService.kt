@@ -405,12 +405,14 @@ class UserService : org.deku.leoz.service.internal.UserService {
     }
 
     override fun getById(userId: Int): User {
-        val u = userRepository.findById(userId) ?: throw RestProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "User with ID [$userId] not found"
-        )
+        val u = userRepository.findById(userId)
+                ?: throw NoSuchElementException("User with ID [$userId] not found")
 
         return this.get(email = u.email).first()
+    }
+
+    override fun getIdsByDebitor(debitorId: Int): List<Int> {
+        return userRepository.findUserIdsByDebitor(debitorId)
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {

@@ -1,5 +1,6 @@
 package org.deku.leoz.node.service.internal
 
+import com.querydsl.core.BooleanBuilder
 import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.node.Application
@@ -16,15 +17,19 @@ import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
+import sx.persistence.querydsl.from
 import sx.persistence.transaction
 import sx.rs.RestProblem
 import sx.time.toTimestamp
+import sx.util.letWithParamNotNull
 import sx.util.toNullable
 import java.util.*
 import javax.inject.Inject
+import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
 import javax.ws.rs.Path
+import kotlin.NoSuchElementException
 
 
 /**
@@ -45,6 +50,9 @@ class NodeServiceV1
 
     @Inject
     private lateinit var configurationService: ConfigurationService
+
+    @Inject
+    private lateinit var em: EntityManager
 
     @PersistenceUnit(name = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     private lateinit var emf: EntityManagerFactory
@@ -75,12 +83,29 @@ class NodeServiceV1
 
             em.merge(rNode)
         }
+    }
 
+    override fun get(id: List<Int>?): List<NodeServiceV1.Node> {
+        return nodeRepository.findAll(BooleanBuilder()
+                .letWithParamNotNull(id, {
+                    if (it.count() > 0)
+                        and(mstNode.id.`in`(it.map { it.toLong() }))
+                    else
+                        this
+                })
+        )
+                .map { it.toNode() }
+    }
+
+    override fun getByUid(uid: String): NodeServiceV1.Node {
+        return nodeRepository.findByUid(uid)
+                ?.toNode()
+                ?: throw NoSuchElementException("Unknown node uid [${uid}]")
     }
 
     override fun requestDiagnosticData(nodeUid: String) {
         val rNode = this.nodeRepository.findByUid(nodeUid)
-                ?: throw RestProblem(status = Status.NOT_FOUND)
+                ?: throw NoSuchElementException("Unknown node uid [${nodeUid}]")
 
         JmsEndpoints.node.topic(Identity.Uid(rNode.key)).channel().use {
             it.send(NodeServiceV1.DiagnosticDataRequest())
@@ -91,4 +116,10 @@ class NodeServiceV1
         return configurationService.getNodeConfiguration(nodeUid)
     }
 
+    fun MstNode.toNode(): NodeServiceV1.Node {
+        return NodeServiceV1.Node(
+                id = this.id,
+                uid = this.key
+        )
+    }
 }

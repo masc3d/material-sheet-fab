@@ -5,6 +5,7 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.data.jpa.MstUser
 import org.deku.leoz.node.data.jpa.QMstStationUser
 import org.deku.leoz.node.data.jpa.QMstUser
+import org.deku.leoz.node.data.jpa.QMstUser.mstUser
 import org.deku.leoz.node.data.repository.*
 import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.internal.ConfigurationService
@@ -12,11 +13,13 @@ import org.deku.leoz.service.internal.UserService
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import sx.persistence.querydsl.from
 import sx.persistence.transaction
 import sx.rs.RestProblem
 import sx.time.toSqlDate
 import sx.time.toTimestamp
 import javax.inject.Inject
+import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
 import javax.servlet.http.HttpServletRequest
@@ -28,7 +31,6 @@ import javax.ws.rs.core.Response
 @Path("internal/v1/user")
 @Profile(Application.PROFILE_CLIENT_NODE)
 class UserService : org.deku.leoz.service.internal.UserService {
-
     @Context
     private lateinit var httpRequest: HttpServletRequest
 
@@ -46,6 +48,9 @@ class UserService : org.deku.leoz.service.internal.UserService {
 
     @Inject
     private lateinit var debitorStationRepository: DebitorStationRepository
+
+    @Inject
+    private lateinit var em: EntityManager
 
     @PersistenceUnit(name = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     private lateinit var emf: EntityManagerFactory
@@ -417,6 +422,14 @@ class UserService : org.deku.leoz.service.internal.UserService {
                     status = Response.Status.NOT_FOUND,
                     title = "User with ID [$userId] not found"
             )
+    }
+
+    override fun getIdsByDebitor(debitorId: Int): List<Int> {
+        return this.em.from(mstUser)
+                .select(mstUser.id)
+                .where(mstUser.debitorId.eq(debitorId.toLong()))
+                .fetch()
+                .map { it.toInt() }
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {
