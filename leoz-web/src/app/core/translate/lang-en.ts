@@ -164,6 +164,7 @@ export const LANG_EN_TRANS = {
   'selectedlist': 'selected list',
   'actuallist': 'actual list',
   'preview': 'Preview',
+  'printpreview': 'Print Preview',
   'directprint': 'direct print',
   'information': 'Information',
   'loadlistnumber': 'Loadlist-No',

@@ -164,6 +164,7 @@ export const LANG_DE_TRANS = {
   'selectedlist': 'für Auswahl',
   'actuallist': 'aktuell',
   'preview': 'Vorschau',
+  'printpreview': 'Druckvorschau',
   'directprint': 'Sofortdruck',
   'information': 'Information',
   'loadlistnumber': 'Ladelisten Nr',
