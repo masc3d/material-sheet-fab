@@ -54,12 +54,13 @@
 
         <ng-template pTemplate="body" let-tour>
           <tr>
-            <td>missing</td>
+            <td></td>
             <td>{{tour.id}}</td>
             <td>
               <span *ngIf="tour.deliverylistId; else parentID">{{tour.deliverylistId}}</span>
               <ng-template #parentID>P: {{tour.parentId}}</ng-template></td>
-            <td>missing</td>
+            </td>
+            <td></td>
             <td>{{tour.stops.length}}</td>
             <td>{{tour.totalPackages}}</td>
             <td>{{roundDecimalsAsStringWrapper( tour.totalWeight )}}</td>
@@ -91,7 +92,7 @@
                   (click)="optimizeDialog()"></button>
         </div>
         <div *ngIf="notMicrodoof" class="ui-g-12 ui-lg-2">
-          <button pButton type="button" (click)="preview()" label="{{'preview' | translate}}"></button>
+          <button pButton type="button" (click)="preview()" label="{{'printpreview' | translate}}"></button>
         </div>
         <div class="ui-g-12 ui-lg-2">
           <button pButton type="button" (click)="saving()" label="{{'save' | translate}}"></button>
@@ -99,11 +100,6 @@
         <div class="ui-g-12 ui-lg-2">
           <button pButton label="refresh" type="button" icon="fas fa-redo-alt" iconPos="left"
                   (click)="getTours()"></button>
-          <!--(click)="getTours(withInitialGeneration)"></button>-->
-        </div>
-        <div class="ui-g-12 ui-lg-2">
-          <button pButton label="{{'reset' | translate}}" type="button" icon="fas fa-undo-alt" iconPos="left"
-                  (click)="resetTours()"></button>
         </div>
       </div>
 

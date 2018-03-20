@@ -48,7 +48,7 @@ export class TouroptimizingService {
     this.latestDeliverylists = [];
   }
 
-  initSSEtouroptimization( ngUnsubscribe: Subject<void>, withInitialGeneration: boolean ) {
+  initSSEtouroptimization( ngUnsubscribe: Subject<void> ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.optimizeToursSSEUrl}?station-no=${activeStation.stationNo.toString()}`;
     this.sse.observeMessages<{ id?: number, inProgress?: boolean }>( sseUrl )
@@ -61,7 +61,7 @@ export class TouroptimizingService {
         this.optimizing( id, data.inProgress );
         if (!data.inProgress) {
           this.msgService.clear();
-          this.getTours( withInitialGeneration );
+          this.getTours();
         }
       } );
   }
@@ -83,7 +83,7 @@ export class TouroptimizingService {
     this.toursSubject.next( tmpTours );
   }
 
-  initSSEtourWhatever( ngUnsubscribe: Subject<void>, withInitialGeneration: boolean ) {
+  initSSEtourWhatever( ngUnsubscribe: Subject<void> ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.sseWEUrl}?station-no=${activeStation.stationNo.toString()}`;
     this.sse.observeMessages<{ stationNo?: number, items?: Tour[], deleted?: number[] }>( sseUrl )
@@ -94,12 +94,12 @@ export class TouroptimizingService {
         console.log( data );
         if (data && data.deleted) {
           this.msgService.clear();
-          this.getTours( withInitialGeneration );
+          this.getTours();
         }
       } );
   }
 
-  getTours( withInitialGeneration: boolean = true ): void {
+  getTours(): void {
     const activeStation = JSON.parse( localStorage.getItem( 'activeStation' ) );
     /**
      * ALEX: vorerst nur station-no übergeben, bis Service angepasst ist
@@ -109,17 +109,11 @@ export class TouroptimizingService {
         .set( 'station-no', activeStation.stationNo.toString() )
     } )
       .subscribe( ( tours ) => {
-          if (tours.length === 0 && withInitialGeneration) {
-            // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
-            this.getDeliverylists( [ this.generateTours, this.latestModDate ] );
-          } else {
-            this.getDeliverylists( [ this.latestModDate, ( _ ) => this.toursSubject.next( this.processTourData( tours ) ) ] );
-          }
+          this.getDeliverylists( [ this.latestModDate, ( _ ) => this.toursSubject.next( this.processTourData( tours ) ) ] );
         },
         ( error: HttpErrorResponse ) => {
           if (error.status === 404) {
-            // scheinbar keine Touren vorhanden => aus Deliverylisten Touren generieren
-            this.getDeliverylists( [ this.generateTours, this.latestModDate ] );
+            this.toursLoadingSubject.next( false );
           } else {
             this.ics.isOffline();
             this.toursSubject.next( [] );

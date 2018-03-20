@@ -27,9 +27,6 @@ import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 
 export class DispoComponent extends AbstractTranslateComponent implements OnInit {
 
-  @Input()
-  withInitialGeneration: boolean;
-
   checkAll: boolean;
   tours: Tour[];
   toursLoading$: Observable<boolean>;
@@ -96,10 +93,10 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
           this.msgService.info( 'tours-most-likely-outdated', false, true );
         }
       } );
-    this.touroptimizingService.getTours( this.withInitialGeneration );
+    this.touroptimizingService.getTours();
 
-    this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe, this.withInitialGeneration );
-    this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe, this.withInitialGeneration );
+    this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );
+    this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe );
   }
 
   customSort( event: SortEvent ) {
@@ -114,15 +111,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   getTours() {
     this.touroptimizingService.showSpinner();
-    this.touroptimizingService.getTours( this.withInitialGeneration );
-  }
-
-  resetTours() {
-    this.touroptimizingService.showSpinner();
-    this.msgService.clear();
-    const tourIds = this.tours.map( tour => tour.id );
-    this.touroptimizingService.deleteTours( tourIds );
-    this.checkAll = false;
+    this.touroptimizingService.getTours();
   }
 
   private sortAndGroupTours( tours: Tour[] ): Tour[] {
