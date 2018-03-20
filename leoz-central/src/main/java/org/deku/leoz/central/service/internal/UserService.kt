@@ -330,12 +330,16 @@ class UserService : org.deku.leoz.service.internal.UserService {
         if (user.active != null) {
             rec.active = user.isActive
             if (user.active == true) {
+                // TODO: intransparent. expiry check should be done against one definitive field.
                 if (user.expiresOn == null) {
-                    if (java.util.Date() > rec.expiresOn) {
-                        throw RestProblem(
-                                status = Response.Status.CONFLICT,
-                                title = "expiresOn invalid to activate user"
-                        )
+                    // TODO: what if both are null?!
+                    if (rec.expiresOn != null) {
+                        if (java.util.Date() > rec.expiresOn) {
+                            throw RestProblem(
+                                    status = Response.Status.CONFLICT,
+                                    title = "expiresOn invalid to activate user"
+                            )
+                        }
                     }
                 } else {
                     if (java.util.Date() > user.expiresOn) {
