@@ -23,6 +23,7 @@ import sx.rx.retryWithExponentialBackoff
 import sx.rx.toHotCache
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.properties.Delegates
@@ -132,6 +133,7 @@ class MqttDispatcher(
             when (it) {
                 is MqttRxClient.Status.ConnectionLost -> {
                     log.warn("Connection lost [${it.cause?.message ?: "-"}]")
+                    this@MqttDispatcher.disconnect(forcibly = true)
                     this@MqttDispatcher.connect()
                 }
 
@@ -170,8 +172,7 @@ class MqttDispatcher(
                                 log.trace { "Removed [m${m.persistentId}]" }
                             }
                     )
-                    // TODO: static timeout for verifying if publish may run into deadlock
-                    .blockingAwait(5, TimeUnit.SECONDS)
+                    .blockingAwait()
 
             Observable.just(m)
         }
@@ -243,6 +244,10 @@ class MqttDispatcher(
                                 }
 
                                 log.error("Dequeue encountered error [${message}]")
+
+                                // Disconnect the client forcibly when dequeue errors occur.
+                                // The connection subscription will not be affected.
+                                this.client.disconnect(forcibly = true)
                             }
                 }
                 .doFinally {
@@ -323,28 +328,30 @@ class MqttDispatcher(
      */
     override fun connect(): Completable {
         this.lock.withLock {
-            log.info("Starting connection cycle")
-            // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
-            this.connectionSubscription = Completable
-                    .defer {
-                        log.info { "Attempting connection to ${this.client.uri}" }
-                        this.client.connect()
-                    }
-                    .onErrorComplete {
-                        when (it) {
-                        // Avoid retries when already connected
-                            is MqttException -> it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
-                            else -> false
+            // Don't start another connection subscription if one is already active
+            if (this.connectionSubscription == null) {
+                log.info("Starting connection cycle")
+                // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
+                this.connectionSubscription = Completable
+                        .defer {
+                            log.info { "Attempting connection to ${this.client.uri}" }
+                            this.client.connect()
                         }
-                    }
-                    .retryWithExponentialBackoff(
-                            initialDelay = Duration.ofSeconds(2),
-                            maximumDelay = Duration.ofMinutes(2),
-                            action = { retry, delay, error ->
-                                log.error("Connection failed. [${error.message}] Retry [${retry}] in ${delay}")
-                            })
-                    .subscribe()
-
+                        .onErrorComplete {
+                            when (it) {
+                            // Avoid retries when already connected
+                                is MqttException -> it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
+                                else -> false
+                            }
+                        }
+                        .retryWithExponentialBackoff(
+                                initialDelay = Duration.ofSeconds(2),
+                                maximumDelay = Duration.ofMinutes(2),
+                                action = { retry, delay, error ->
+                                    log.error("Connection failed. [${error.message}] Retry [${retry}] in ${delay}")
+                                })
+                        .subscribe()
+            }
             return Completable.complete()
         }
     }

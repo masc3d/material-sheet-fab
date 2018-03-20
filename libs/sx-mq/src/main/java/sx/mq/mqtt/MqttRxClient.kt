@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.rx.toHotCache
 import sx.rx.toHotReplay
+import java.util.concurrent.TimeUnit
 
 /**
  * MQTT reactive client interface
@@ -121,6 +122,8 @@ class MqttRxClient(
                 emitter.onError(e)
             }
         }
+                // TODO: shouldn't require a timeout, but publish action callback may not report back under specific conditions, resulting in deadlock
+                .timeout(5, TimeUnit.SECONDS)
                 .toHotCache()
     }
 
