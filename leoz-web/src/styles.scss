@@ -191,11 +191,18 @@ a {
   margin-top: 10px;
 }
 
-input.ng-invalid, select.ng-invalid, input.invalid, p-dropdown.ng-invalid > div > label {
+input.ng-invalid,
+select.ng-invalid,
+input.invalid,
+p-dropdown.ng-invalid > div > label,
+p-calendar.ng-invalid > span {
   border-left: 5px solid red !important;
 }
 
-input.ng-valid, select.ng-valid, p-dropdown.ng-valid > div > label {
+input.ng-valid,
+select.ng-valid,
+p-dropdown.ng-valid > div > label,
+p-calendar.ng-valid > span {
   padding-left: 5px;
 }
 
@@ -444,6 +451,9 @@ p-tabpanel > div {
   font-weight: normal;
 }
 
+.ui-datepicker.ui-widget .ui-datepicker-calendar td a.ui-state-active {
+  background-color: #186ba0 !important;
+}
 /*.ui-state-default a {
   background: none !important;
 }*/
