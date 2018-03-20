@@ -5,7 +5,6 @@ import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.jooq.dekuclient.tables.MstUser
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstUserRecord
 import org.deku.leoz.hashUserPassword
-import org.deku.leoz.node.data.jooq.Tables.MST_DEBITOR
 import org.deku.leoz.service.internal.UserService
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
