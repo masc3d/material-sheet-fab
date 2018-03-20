@@ -83,16 +83,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
         }
         this.cd.markForCheck();
       } );
-    this.touroptimizingService.latestDeliverylistModification$
-      .pipe(
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( ( someTimestamp: number ) => {
-        if (this.tours && this.tours.length > 0
-          && new Date( this.tours[ 0 ].created ).getTime() < someTimestamp) {
-          this.msgService.info( 'tours-most-likely-outdated', false, true );
-        }
-      } );
     this.touroptimizingService.getTours();
 
     this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );

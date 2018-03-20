@@ -434,8 +434,6 @@ export const LANG_EN_TRANS = {
   'all': 'All',
   'optimize': 'Optimize',
   'driverlists': 'Driverlists',
-  'tours-most-likely-outdated': 'There has been a change in your deliverylists. ' +
-                                'To make sure you are up to date, you should press "reset"',
   'optimization_progress': 'Optimization in progress...',
   'optimizing_optimized_tours_not_possible': 'Optimizing optimized tours not possible',
   'optimizationOptions': 'Optimization options',

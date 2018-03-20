@@ -434,8 +434,6 @@ export const LANG_DE_TRANS = {
   'all': 'Alle',
   'optimize': 'Optimieren',
   'driverlists': 'Fahrerlisten',
-  'tours-most-likely-outdated': 'Ihre Rollkarten haben sich geändert. ' +
-                                'Um sicherzustellen, dass Sie auf dem neuesten Stand sind, sollten Sie "reset" drücken',
   'optimization_progress': 'Optimierung läuft...',
   'optimizing_optimized_tours_not_possible': 'Optimierung optimierter Touren nicht möglich',
   'optimizationOptions': 'Optimierungsoptionen',
