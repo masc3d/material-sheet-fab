@@ -129,7 +129,7 @@ class StartupActivity : BaseActivity() {
                         }
                     }
 
-            // Acquire AidcReader
+            // Acquire AidcReader(s)
             val ovAidcReader = Kodein.global.instance<Observable<out AidcReader>>()
                     .timeout(5, TimeUnit.SECONDS)
                     .onErrorReturn {

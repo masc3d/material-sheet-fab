@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
+import sx.rx.connected
+import sx.rx.toHotCompletable
 import sx.rx.toHotReplay
 
 /**
@@ -24,21 +26,25 @@ class HoneywellAidcReader private constructor(
 
         /**
          * Creates HoneywellAidcReader instance. This method is asynchronous.
-         * @return Hot reply observable emitting AidcReader when it is (or has become) available
+         * @return Hot observable emitting AidcReader when it is (or has become) available
          */
         fun create(context: Context): Observable<AidcReader> {
-            return Observable.create<AidcReader> { onSubscribe ->
+            return Observable.create<AidcReader> { emitter ->
                 try {
                     log.debug("Creating AidcManager")
                     AidcManager.create(context) {
                         log.debug("AidcManager created")
-                        onSubscribe.onNext(HoneywellAidcReader(it))
-                        onSubscribe.onComplete()
+                        if (!emitter.isDisposed) {
+                            emitter.onNext(HoneywellAidcReader(it))
+                            emitter.onComplete()
+                        }
                     }
                 } catch (e: Throwable) {
-                    onSubscribe.onError(e)
+                    if (!emitter.isDisposed) emitter.onError(e)
                 }
-            }.toHotReplay()
+            }
+                    .publish()
+                    .connected()
         }
     }
 

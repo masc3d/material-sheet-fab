@@ -12,6 +12,7 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.honeywell.aidc.HoneywellAidcReader
+import sx.rx.connected
 import sx.rx.toHotReplay
 
 /**
@@ -48,12 +49,16 @@ class AidcConfiguration {
 
                 when (device.manufacturer.type) {
                     Device.Manufacturer.Type.Honeywell ->
-                        readers.add(HoneywellAidcReader.create(context = instance()))
+                        readers.add(HoneywellAidcReader
+                                .create(context = instance())
+                                .cache()
+                        )
 
                     else -> Unit
                 }
 
-                Observable.merge(readers).toHotReplay()
+                Observable.merge(readers)
+                        .toHotReplay()
             }
 
             /**
