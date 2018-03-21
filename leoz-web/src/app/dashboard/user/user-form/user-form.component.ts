@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs/Observable';
 import { takeUntil } from 'rxjs/operators';
@@ -82,7 +82,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       phoneMobile: [ null, [ Validators.required ] ],
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
-      expiresOn: [ null ]
+      expiresOn: [ null, [ Validators.required ] ]
     } );
 
     this.userService.activeUser$
@@ -91,17 +91,6 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       )
       .subscribe( ( activeUser: User ) => {
         this.activeUser = activeUser;
-        const passwordControl = this.userForm.get( 'password' );
-        const validators = <ValidatorFn[]> [];
-        validators.push( Validators.minLength( 6 ) );
-        validators.push( Validators.maxLength( 25 ) );
-        if (this.isEditMode( activeUser )) {
-          this.msgService.clear();
-        } else {
-          validators.push( Validators.required );
-        }
-        passwordControl.clearValidators();
-        passwordControl.setValidators( validators );
         this.userForm.patchValue( {
           emailOrigin: activeUser.email,
           firstName: activeUser.firstName,
@@ -114,6 +103,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
           role: activeUser.role,
           active: activeUser.active,
           expiresOn: activeUser.expiresOn ? new Date( activeUser.expiresOn ) : activeUser.expiresOn
+          // expiresOn: activeUser.expiresOn ? new Date( activeUser.expiresOn ) : new Date('2099-12-31')
         } );
       } );
   }
@@ -137,10 +127,6 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       roleOptions.push( { label: this.translate.instant( 'Customer' ), value: 'CUSTOMER' } );
     }
     return roleOptions;
-  }
-
-  private isEditMode( activeUser: User ) {
-    return activeUser.email && activeUser.email.length > 0;
   }
 
   myself(): boolean {

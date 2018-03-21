@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.threeten.bp.Duration
 import sx.rx.toHotCache
 import sx.rx.toHotReplay
+import java.util.concurrent.TimeUnit
 
 /**
  * MQTT reactive client interface
@@ -108,7 +109,7 @@ class MqttRxClient(
                         null,
                         object : IMqttActionListener {
                             override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                emitter.onComplete()
+                                if (!emitter.isDisposed) emitter.onComplete()
                             }
 
                             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -118,9 +119,11 @@ class MqttRxClient(
                         }
                 )
             } catch (e: Throwable) {
-                emitter.onError(e)
+                if (!emitter.isDisposed) emitter.onError(e)
             }
         }
+                // TODO: shouldn't require a timeout, but publish action callback may not report back under specific conditions, resulting in deadlock
+                .timeout(5, TimeUnit.SECONDS)
                 .toHotCache()
     }
 
@@ -151,11 +154,11 @@ class MqttRxClient(
                         },
                         object : IMqttMessageListener {
                             override fun messageArrived(topic: String, message: MqttMessage) {
-                                emitter.onNext(message)
+                                if (!emitter.isDisposed) emitter.onNext(message)
                             }
                         })
             } catch (e: Throwable) {
-                emitter.onError(e)
+                if (!emitter.isDisposed) emitter.onError(e)
             }
         }
                 .toHotReplay()
@@ -170,7 +173,7 @@ class MqttRxClient(
             try {
                 this.parent.unsubscribe(topicName, null, object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        emitter.onComplete()
+                        if (!emitter.isDisposed) emitter.onComplete()
                     }
 
                     override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -180,7 +183,7 @@ class MqttRxClient(
 
                 })
             } catch (e: Throwable) {
-                emitter.onError(e)
+                if (!emitter.isDisposed) emitter.onError(e)
             }
         }
                 .toHotCache()
@@ -197,7 +200,7 @@ class MqttRxClient(
                         null,
                         object : IMqttActionListener {
                             override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                emitter.onComplete()
+                                if (!emitter.isDisposed) emitter.onComplete()
                             }
 
                             override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -213,7 +216,7 @@ class MqttRxClient(
                     log.warn(e.message, e)
                 }
 
-                emitter.onError(e)
+                if (!emitter.isDisposed) emitter.onError(e)
             }
         }
                 .toHotCache()
@@ -232,7 +235,7 @@ class MqttRxClient(
                             null,
                             object : IMqttActionListener {
                                 override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                    emitter.onComplete()
+                                    if (!emitter.isDisposed) emitter.onComplete()
                                 }
 
                                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
@@ -241,7 +244,7 @@ class MqttRxClient(
                                 }
                             })
                 } catch (e: Throwable) {
-                    emitter.onError(e)
+                    if (!emitter.isDisposed) emitter.onError(e)
                 }
             }
         }

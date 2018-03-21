@@ -68,7 +68,7 @@ buildscript {
     apply from: 'versions.gradle'
 
     ext {
-        v_jgit = '4.10.0.201712302008-r'
+        v_jgit = '4.11.0.201803080745-r'
         v_jsch = '0.0.9'
     }
 

@@ -1,7 +1,10 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
+import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_NODE
+import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstNodeRecord
 import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.central.data.repository.fetchByUid
 import org.deku.leoz.central.data.repository.uid
@@ -11,6 +14,7 @@ import org.deku.leoz.service.internal.NodeServiceV1
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.zalando.problem.Status
 import sx.log.slf4j.info
@@ -19,20 +23,23 @@ import sx.mq.MqHandler
 import sx.mq.jms.channel
 import sx.rs.RestProblem
 import sx.time.toTimestamp
+import sx.util.letWithParamNotNull
 import java.util.*
 import javax.inject.Inject
 import javax.ws.rs.Path
+import kotlin.NoSuchElementException
 
 /**
  * Created by masc on 17.02.16.
  */
 @Component
 @Path("internal/v1/node")
+@Profile(Application.PROFILE_CENTRAL)
 class NodeServiceV1
     :
         org.deku.leoz.service.internal.NodeServiceV1,
-        MqHandler<NodeServiceV1.Info> {
-
+        MqHandler<NodeServiceV1.Info>
+{
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -67,14 +74,31 @@ class NodeServiceV1
         rNode.store()
     }
 
+    override fun get(id: List<Int>?): List<NodeServiceV1.Node> {
+        return dsl.selectFrom(MST_NODE)
+                .where()
+                .letWithParamNotNull(id, {
+                    if (it.count() > 0)
+                        and(MST_NODE.NODE_ID.`in`(it))
+                    else
+                        this
+                })
+                .map { it.toNode() }
+    }
+
+    override fun getByUid(uid: String): NodeServiceV1.Node {
+        return this.nodeJooqRepository.findByKeyStartingWith(uid)
+                ?.toNode()
+                ?: throw NoSuchElementException("Unknown node uid [${uid}]")
+    }
+
     override fun requestDiagnosticData(nodeUid: String) {
         val rNode = dsl.
                 selectFrom(Tables.MST_NODE)
                 .fetchByUid(
                         nodeUid = nodeUid,
                         strict = false)
-
-                ?: throw RestProblem(status = Status.NOT_FOUND)
+                ?: throw NoSuchElementException("Unknown node uid [${nodeUid}]")
 
         JmsEndpoints.node.topic(Identity.Uid(rNode.uid)).channel().use {
             it.send(NodeServiceV1.DiagnosticDataRequest())
@@ -85,4 +109,10 @@ class NodeServiceV1
         return configurationService.getNodeConfiguration(nodeUid)
     }
 
+    fun MstNodeRecord.toNode(): NodeServiceV1.Node {
+        return NodeServiceV1.Node(
+                id = this.nodeId.toLong(),
+                uid = this.key
+        )
+    }
 }

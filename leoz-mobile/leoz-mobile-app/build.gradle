@@ -249,6 +249,8 @@ dependencies {
             "io.requery:requery-android:$v_requery",
             "io.requery:sqlite-android:3.22.0",
 
+            "javax.transaction:jta:1.1",
+
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
 
@@ -279,9 +281,9 @@ dependencies {
             },
 
             // UI
-            "eu.davidea:flexible-adapter:5.0.0",
+            "eu.davidea:flexible-adapter:5.0.1",
             "eu.davidea:flexible-adapter-databinding:1.0.0-b2@aar",
-            "eu.davidea:flexible-adapter-ui:1.0.0-b2@aar",
+            "eu.davidea:flexible-adapter-ui:1.0.0-b3@aar",
             "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",
 
             "me.tatarka.bindingcollectionadapter2:bindingcollectionadapter:2.2.0",

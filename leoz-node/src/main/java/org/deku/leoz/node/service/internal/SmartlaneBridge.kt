@@ -11,7 +11,6 @@ import org.deku.leoz.model.Interval
 import org.deku.leoz.model.TourRouteMeta
 import org.deku.leoz.model.TourStopRouteMeta
 import org.deku.leoz.service.internal.LocationServiceV2
-import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.Tour
 import org.deku.leoz.service.internal.TourServiceV1.TourOptimizationOptions
 import org.deku.leoz.service.internal.UserService
@@ -492,15 +491,21 @@ class SmartlaneBridge {
                         // Determine optimized tour id / uid
                         val id: Long?
                         val uid: String
+                        val parentId: Long?
+                        val customId: String?
                         when (inPlaceUpdate) {
                             true -> {
                                 uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
                                 id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
+                                parentId = null
+                                customId = tour.customId
                             }
                             false -> {
                                 // Generate uid for new tour
                                 uid = uidSupplier()
                                 id = null
+                                parentId = tour.id
+                                customId = null
                             }
                         }
 
@@ -510,7 +515,8 @@ class SmartlaneBridge {
                                 nodeUid = tour.nodeUid,
                                 userId = tour.userId,
                                 stationNo = tour.stationNo,
-                                parentId = tour.id,
+                                customId = customId,
+                                parentId = parentId,
                                 date = tour.date,
                                 optimized = now,
                                 stops = stops,
@@ -602,7 +608,7 @@ class SmartlaneBridge {
                                 address.countryCode = address.countryCode
 
                                 if (!omitLoads)
-                                    it.load = stop.weight?.let { (it * 100.0).toInt() }
+                                    it.load = stop.weight?.let { Math.ceil(it).toInt() }
                             }
 
                             // Track stop via custom id
@@ -698,7 +704,7 @@ class SmartlaneBridge {
                 }
             }
 
-            it.vehcapacities = vehicles.map { (it.capacity * 100).toInt() }
+            it.vehcapacities = vehicles.map { Math.ceil(it.capacity).toInt() }
         }
     }
 }

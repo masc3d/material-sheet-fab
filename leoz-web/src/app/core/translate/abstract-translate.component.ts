@@ -18,6 +18,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
   dateFormatPrimeng: string;
   locale: any;
   msgs$: Observable<Message[]>;
+  sticky$: Observable<boolean>;
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
@@ -27,6 +28,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.msgService.clear();
+    this.sticky$ = this.msgService.sticky$;
     this.msgs$ = this.msgService.msgs$;
 
     this.translate.onLangChanged

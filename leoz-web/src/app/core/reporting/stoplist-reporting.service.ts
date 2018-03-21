@@ -128,11 +128,24 @@ export class StoplistReportingService extends ReportingService {
       doc.setFontType( 'normal' );
 
       orders.forEach( ( dli: DeliverylistItem ) => {
+        const orderId =  dli.id;
+        const routes = tour.stops
+          .filter(stop => stop.tasks.filter(task => task.orderId === orderId))
+          .filter( stop => stop.route)
+          .map( stop => stop.route);
+        let etaFrom = '',
+          etaTo = '';
+        if(routes.length > 0) {
+          etaFrom = moment(routes[0].eta.from).format( 'HH:mm' );
+          etaTo = moment(routes[0].eta.to).format( 'HH:mm' );
+        }
         offsetY += 10;
         doc.text( `${dli.deliveryAddress.line1}`, offsetX, offsetY );
         doc.text( `${dli.deliveryAddress.street} ${dli.deliveryAddress.streetNo}`, offsetX + 70, offsetY );
         doc.text( `${dli.deliveryAddress.zipCode} ${dli.deliveryAddress.city}`, offsetX + 125, offsetY );
         doc.text( `Pkst: ${dli.parcels.length}`, offsetX + 70, offsetY + 4 );
+        doc.text( `ETA: ${etaFrom}`, offsetX, offsetY + 4);
+        doc.text( `bis ${etaTo}`, offsetX + 15, offsetY + 4 );
         doc.text( `Termin: ${moment(dli.deliveryAppointment.dateStart).format( 'HH:mm' )}`, offsetX + 125, offsetY + 4 );
         doc.text( `bis ${moment(dli.deliveryAppointment.dateEnd).format( 'HH:mm' )}`, offsetX + 145, offsetY + 4 );
       } );

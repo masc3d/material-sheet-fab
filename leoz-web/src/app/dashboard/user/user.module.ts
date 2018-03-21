@@ -15,7 +15,6 @@ import { UserComponent } from './user.component';
 import { UserFormComponent } from './user-form/user-form.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { UserService } from './user.service';
-import { UserFilterPipe } from './user.pipe';
 
 @NgModule( {
   imports: [
@@ -32,8 +31,7 @@ import { UserFilterPipe } from './user.pipe';
   declarations: [
     UserComponent,
     UserFormComponent,
-    UserListComponent,
-    UserFilterPipe
+    UserListComponent
   ],
   exports: [ UserComponent ],
   providers: [ UserService ]

@@ -19,7 +19,7 @@ export interface TourListItem {
   selected?: boolean;
   outdated?: boolean;
   state?: string;
-
   distance?: number;
   drivingTime?: number;
+  isOptimizing?: boolean;
 }

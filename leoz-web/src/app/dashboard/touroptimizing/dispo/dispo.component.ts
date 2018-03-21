@@ -10,11 +10,13 @@ import { TranslateService } from '../../../core/translate/translate.service';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { TouroptimizingService } from '../touroptimizing.service';
 import { Tour } from '../../../core/models/tour.model';
-import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 import { BrowserCheck } from '../../../core/auth/browser-check';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { StoplistReportingService } from '../../../core/reporting/stoplist-reporting.service';
 import { Vehicle } from '../../../core/models/vehicle.model';
+import { SortEvent } from 'primeng/api';
+import { compareCustom } from '../../../core/compare-fn/custom-compare';
+import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 
 
 @Component( {
@@ -25,14 +27,13 @@ import { Vehicle } from '../../../core/models/vehicle.model';
 
 export class DispoComponent extends AbstractTranslateComponent implements OnInit {
 
-  @Input()
-  withInitialGeneration: boolean;
-
   checkAll: boolean;
   tours: Tour[];
-
   toursLoading$: Observable<boolean>;
+
   public msgs$: Observable<Message[]>;
+  public sticky$: Observable<boolean>;
+
   selectedOptimizableTourIds: Tour[] = []; // tours with more than one shipment
 
   notMicrodoof: boolean;
@@ -46,6 +47,9 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   caddyMaxKg: number;
   kombiMaxKg: number;
   bikeMaxKg: number;
+
+  latestSortField: string = null;
+  latestSortOrder = 0;
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
@@ -69,34 +73,35 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
         takeUntil( this.ngUnsubscribe )
       )
       .subscribe( ( tours: Tour[] ) => {
-        this.tours = this.sortAndGroupTours( tours );
+        this.tours.length = 0;
+        if (this.latestSortField !== null) {
+          this.tours.push( ...tours.sort( ( data1, data2 ) => {
+            return compareCustom( this.latestSortOrder, data1[ this.latestSortField ], data2[ this.latestSortField ] );
+          } ) );
+        } else {
+          this.tours.push( ...this.sortAndGroupTours( tours ) );
+        }
         this.cd.markForCheck();
       } );
-    this.touroptimizingService.latestDeliverylistModification$
-      .pipe(
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( ( someTimestamp: number ) => {
-        if (this.tours && this.tours.length > 0
-          && new Date( this.tours[ 0 ].created ).getTime() < someTimestamp) {
-          this.msgService.info( 'tours-most-likely-outdated' );
-        }
-      } );
-    this.touroptimizingService.getTours( this.withInitialGeneration );
+    this.touroptimizingService.getTours();
 
-    this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe, this.withInitialGeneration );
-    this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe, this.withInitialGeneration );
+    this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );
+    this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe );
+  }
+
+  customSort( event: SortEvent ) {
+    if (event.field) {
+      this.latestSortField = event.field;
+      this.latestSortOrder = event.order;
+      event.data.sort( ( data1, data2 ) => {
+        return compareCustom( event.order, data1[ event.field ], data2[ event.field ] );
+      } );
+    }
   }
 
   getTours() {
-    this.touroptimizingService.getTours( this.withInitialGeneration );
-  }
-
-  resetTours() {
-    this.msgService.clear();
-    const tourIds = this.tours.map( tour => tour.id );
-    this.touroptimizingService.deleteTours( tourIds );
-    this.checkAll = false;
+    this.touroptimizingService.showSpinner();
+    this.touroptimizingService.getTours();
   }
 
   private sortAndGroupTours( tours: Tour[] ): Tour[] {
@@ -128,29 +133,14 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   protected optimizeTours() {
-    /**
-     * ALEX: Values should come from the service
-     */
-    // this.optimizeTodayAndFuture
-    // this.optimizeTraffic => traffic: true
-    // this.optimizeExistingtours = => vehicles[{capacity: 0}]
-    // this.optimizeSplitTours
-    // this.sprinterMaxKg => vehicles[{capacity: 1200}]
-    // this.caddyMaxKg => vehicles[{capacity: 500}]
-    // this.kombiMaxKg => vehicles[{capacity: 350}]
-    // this.bikeMaxKg => vehicles[{capacity: 30}]
     this.selectedOptimizableTourIds = this.tours
       .filter( tour => tour.selected && tour.orders.length > 1 );
     if (this.selectedOptimizableTourIds.length === 0) {
-      this.msgService.info( 'no_optimizable_tours_selected' );
+      this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
       const selectedTourIds = this.tours
         .filter( tour => tour.selected )
         .map( tour => tour.id );
-      // const selectedNotOptimizedTourIds = this.tours
-      //   .filter( tour => tour.selected && !tour.optimized )
-      //   .map( tour => tour.id );
-      // if (selectedNotOptimizedTourIds.length > 0) {
       let vehicles = [];
       if (this.optimizeSplitTours) {
         vehicles = this.addVehicles( this.sprinterMaxKg, Vehicle.SPRINTER, vehicles );
@@ -161,9 +151,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       this.touroptimizingService.optimizeAndReinitTours( selectedTourIds,
         vehicles.length > 0 ? vehicles : [ Vehicle.SPRINTER ],
         this.optimizeTraffic, this.optimizeExistingtours, this.dontShiftOneDayFromNow );
-      // } else {
-      //   this.msgService.info( 'optimizing_optimized_tours_not_possible' );
-      // }
     }
     this.checkAll = false;
   }
@@ -202,7 +189,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.selectedOptimizableTourIds = this.tours
       .filter( tour => tour.selected && tour.orders.length > 1 );
     if (this.selectedOptimizableTourIds.length === 0) {
-      this.msgService.info( 'no_optimizable_tours_selected' );
+      this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
       this.displayOptimizationOptions = true;
     }
@@ -228,7 +215,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     return '';
   }
 
-  roundDecimalsAsStringWrapper( input: number) {
+  roundDecimalsAsStringWrapper( input: number ) {
     return roundDecimalsAsString( input, 10, true );
   }
 }

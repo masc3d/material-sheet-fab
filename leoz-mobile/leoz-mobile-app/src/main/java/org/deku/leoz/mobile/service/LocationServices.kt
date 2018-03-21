@@ -23,8 +23,8 @@ class LocationServices(val context: Context) {
         (context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
     }
 
-    val locationSettingsChangedEventProperty = PublishSubject.create<Unit>()
-    val locationSettingsChangedEvent = locationSettingsChangedEventProperty.hide()
+    val locationSettingsChangedEventSubject = PublishSubject.create<Unit>()
+    val locationSettingsChangedEvent = locationSettingsChangedEventSubject.hide()
 
     val locationRequest = LocationRequest().also {
         it.interval = Duration.ofSeconds(this.locationSettings.period).toMillis()

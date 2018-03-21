@@ -23,7 +23,6 @@ import javax.inject.Inject
  */
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Configuration
-@Service
 @Lazy(false)
 class MqListenerConfiguration {
     private val log = LoggerFactory.getLogger(MqListenerConfiguration::class.java)

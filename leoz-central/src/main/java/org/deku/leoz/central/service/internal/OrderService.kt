@@ -80,7 +80,7 @@ class OrderService : OrderService {
         return order
     }
 
-    fun getByIds(ids: List<Long>): List<OrderService.Order> {
+    override fun getByIds(ids: List<Long>): List<OrderService.Order> {
         val rOrders = this.orderRepository.findByIds(ids)
 
         val rParcelsByOrderId = this.orderRepository

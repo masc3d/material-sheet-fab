@@ -71,12 +71,12 @@ class LocationService
 
         override fun onProviderDisabled(provider: String?) {
             log.trace("ONPROVIDERDISABLED [$provider]")
-            locationServices.locationSettingsChangedEventProperty.onNext(Unit)
+            locationServices.locationSettingsChangedEventSubject.onNext(Unit)
         }
 
         override fun onProviderEnabled(provider: String?) {
             log.trace("ONPROVIDERENABLED [$provider]")
-            locationServices.locationSettingsChangedEventProperty.onNext(Unit)
+            locationServices.locationSettingsChangedEventSubject.onNext(Unit)
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {

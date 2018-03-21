@@ -181,4 +181,9 @@ interface UserService {
     @Path("/auth/configuration")
     @ApiOperation(value = "Get user configuration for current user")
     fun getCurrentUserConfiguration(): String
+
+    @GET
+    @Path("/id")
+    @ApiOperation(value = "Get user id(s) by debitor id")
+    fun getIdsByDebitor(debitorId: Int): List<Int>
 }

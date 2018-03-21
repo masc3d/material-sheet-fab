@@ -45,6 +45,7 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.Device
 import sx.android.aidc.*
+import sx.android.rx.observeOnMainThread
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
 
@@ -272,14 +273,14 @@ class StopDetailsScreen
 
         aidcReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .subscribe {
                     this.onAidcRead(it)
                 }
 
         this.activity.actionEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .subscribe {
                     when (it) {
                         R.id.action_deliver_continue -> {

@@ -24,7 +24,6 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_stop.*
@@ -44,8 +43,8 @@ import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.mobile
 import org.deku.leoz.mobile.model.process.DeliveryList
-import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.model.process.Tour
+import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.toMaterialSimpleListItem
@@ -111,7 +110,7 @@ class StopProcessScreen :
                 iconRes = R.drawable.ic_weight_scale,
                 amount = tourStop.deliveredParcelsWeight.cast(Number::class.java),
                 totalAmount = tourStop.totalWeight.cast(Number::class.java),
-                format =  { "${(it as Double).format(2)}kg" }
+                format = { "${(it as Double).format(2)}kg" }
 
         )
     }
@@ -148,6 +147,13 @@ class StopProcessScreen :
     /** Current close stop variant */
     private var currentCloseStopVariatn: EventDeliveredReason? = null
     //endregion
+
+    /** Active merge dialog */
+    private var mergeDialog: MaterialDialog? = null
+        set(value) {
+            field?.dismiss()
+            field = value
+        }
 
     //region Sections
     private val deliveredSection: SectionViewModel<ParcelEntity> by lazy {
@@ -416,7 +422,7 @@ class StopProcessScreen :
 
         aidcReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .subscribe {
                     this.onAidcRead(it)
                 }
@@ -779,7 +785,6 @@ class StopProcessScreen :
         // Regular stop parcels
         this.tourStop
                 .parcels
-                .subscribeOn(db.scheduler)
                 .blockingFirst()
                 .firstOrNull { it.number == unitNumber.value }
                 ?.also {
@@ -790,14 +795,15 @@ class StopProcessScreen :
         // Other stop parcels (merge support)
         this.parcelRepository
                 .findByNumber(unitNumber.value)
-                .subscribeOn(db.scheduler)
                 .blockingGet()
                 ?.also { parcel ->
                     val sourceStop = parcel.order.deliveryTask.stop
                             ?: throw IllegalStateException("No stop for task")
 
+                    val isMergeAllowed = sourceStop.address.zipCode == this.tourStop.entity.address.zipCode
+
                     // Stops may only be merged under specific conditions (eg. zipcode matches)
-                    if (sourceStop.address.zipCode == this.tourStop.entity.address.zipCode) {
+                    if (isMergeAllowed || true) {
                         // Parcel does not belong to this delivery stop, ask for stop merge
                         feedback.warning()
 
@@ -805,7 +811,7 @@ class StopProcessScreen :
                         var reverseRunnable: Runnable? = null
                         val animationHandler = Handler()
 
-                        val dialog = MaterialDialog.Builder(context)
+                        this.mergeDialog = MaterialDialog.Builder(context)
                                 .title(R.string.title_stop_merge)
                                 .iconRes(R.drawable.ic_merge)
                                 .cancelable(true)
@@ -822,17 +828,12 @@ class StopProcessScreen :
                                                 .blockingAwait()
                                     }
                                             .toCompletable()
-                                            .subscribeOn(db.scheduler)
-                                            .subscribeBy(
-                                                    onError = {
-                                                        log.error(it.message, it)
-                                                        feedback.error()
-                                                    })
+                                            .blockingAwait()
                                 }
                                 .negativeText(android.R.string.no)
                                 .build()
 
-                        val customView = dialog.customView!!
+                        val customView = this.mergeDialog?.customView!!
                         val sourceContainer = customView.findViewById<LinearLayout>(R.id.uxSourceStopContainer)!!
                         val targetContainer = customView.findViewById<LinearLayout>(R.id.uxtargetStopContainer)!!
                         val sourceView = customView.findViewById<View>(R.id.uxSourceStop)!!
@@ -884,7 +885,7 @@ class StopProcessScreen :
                                 timerEvent = Observable.empty()
                         )
 
-                        dialog.show()
+                        this.mergeDialog?.show()
 
                         animationHandler.postDelayed(runnable, 0)
 

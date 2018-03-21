@@ -1,7 +1,7 @@
 import { LoginComponent } from './login/login.component';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { PreloadSelectedModules } from './core/PreloadSelectedModules';
+import { PreloadSelectedModules } from './core/preload-selected-modules';
 
 export const routes = [
   { path: '', redirectTo: 'dashboard/home', pathMatch: 'full' },

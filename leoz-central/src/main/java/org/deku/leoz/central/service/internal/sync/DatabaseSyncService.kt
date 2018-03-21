@@ -1,7 +1,9 @@
 package org.deku.leoz.central.service.internal.sync
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.central.data.jooq.dekuclient.tables.SysSync
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
@@ -12,6 +14,7 @@ import org.deku.leoz.node.data.repository.SyncRepository
 import org.jooq.Record
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
@@ -23,13 +26,16 @@ import sun.rmi.transport.tcp.TCPEndpoint
 import sx.Stopwatch
 import sx.log.slf4j.debug
 import sx.log.slf4j.trace
+import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
 import sx.persistence.truncate
 import sx.rx.subscribeOn
+import sx.rx.toHotCache
 import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import kotlin.properties.Delegates
 
@@ -101,7 +107,7 @@ class DatabaseSyncService
 constructor(
         private val exceutorService: ScheduledExecutorService,
         @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
-        txJpa: PlatformTransactionManager,
+        txJpa: JpaTransactionManager,
         @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER)
         txJooq: PlatformTransactionManager
 ) {
@@ -125,7 +131,7 @@ constructor(
     private val transactionJooq = TransactionTemplate(txJooq)
 
     @PersistenceContext
-    private lateinit var em: javax.persistence.EntityManager
+    private lateinit var em: EntityManager
 
     /** JPA transaction template */
     private val transactionJpa = TransactionTemplate(txJpa).also {
@@ -255,34 +261,72 @@ constructor(
         set(value) {
             field?.dispose()
             field = value
-        }
-
-    /**
-     * Synchronize all presets
-     */
-    fun sync(clean: Boolean) {
-        val sw = Stopwatch.createStarted()
-
-        val syncMap = this.syncJooqRepository
-                .findAll()
-                .groupBy { it.tableName }
-                .mapValues {
-                    it.value.first()
-                }
-
-        this.presets.forEach {
-            try {
-                it.update(
-                        sysSyncRecord = syncMap.getValue(it.tableName),
-                        clean = clean
-                )
-            } catch (e: Exception) {
-                log.error("${it} failed. ${e.message}")
+            if (field != null) {
+                // Perform initial sync
+                this.sync(clean = false)
             }
         }
 
-        log.debug { "Database sync took " + sw.toString() }
+    /**
+     * Run all synchronisation presets (asynchronously)
+     * @param clean Perform clean for all presets
+     * @return Hot completable for this operation
+     */
+    fun sync(clean: Boolean): Completable {
+        return this.exceutorService.submit {
+            val sw = Stopwatch.createStarted()
+
+            val syncMap = this.syncJooqRepository
+                    .findAll()
+                    .groupBy { it.tableName }
+                    .mapValues {
+                        it.value.first()
+                    }
+
+            this.presets.forEach {
+                try {
+                    it.update(
+                            sysSyncRecord = syncMap.getValue(it.tableName),
+                            clean = clean
+                    )
+                } catch (e: Exception) {
+                    log.error("${it} failed. ${e.message}")
+                }
+            }
+
+            log.debug { "Database sync took " + sw.toString() }
+        }
+                .toCompletable()
     }
+
+    /**
+     * Preliminary delete support
+     */
+    private fun <TCentralRecord : Record, TEntity> delete(
+            srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
+            srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>,
+            /** Destination QueryDSL entity table path */
+            dstJpaEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
+            /** Destination QueryDSL sync id field path */
+            dstJpaSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>,
+            destMaxSyncId: Long
+            ) {
+
+        // TODO: currently only for testing performance of traversing sync ids
+        Stopwatch.createStarted(this, "TRAVERSE SYNCIDS", {
+            transactionJpa.execute<Any> { _ ->
+                syncJooqRepository.findSyncIdsNewerThan(
+                        syncId = 0,
+                        table = srcJooqTable,
+                        syncIdField = srcJooqSyncIdField
+                )
+                        .forEach {
+                            // TODO: delete
+                        }
+            }
+        })
+    }
+
 
     /**
      * Abstract update extension
@@ -394,11 +438,21 @@ constructor(
 
         // TODO. optimize by using jooq prepared statements
         if (destMaxSyncId != null) {
-            val maxSyncId = sysSyncRecord.syncId
-
-            if (maxSyncId == destMaxSyncId) {
+            if (sysSyncRecord.syncId == destMaxSyncId) {
                 log.trace(lfmt("sync-id uptodate [${destMaxSyncId}]"))
                 return false
+            }
+
+            if (dstJpaSyncIdPath != null && srcJooqSyncIdField != null) {
+                //region TODO: delete. IMPORTANT: only for testing for the moment
+//                this@DatabaseSyncService.delete(
+//                        srcJooqTable = srcJooqTable,
+//                        dstJpaEntityPath = dstJpaEntityPath,
+//                        dstJpaSyncIdPath = dstJpaSyncIdPath,
+//                        srcJooqSyncIdField = srcJooqSyncIdField,
+//                        destMaxSyncId = destMaxSyncId
+//                )
+                //endregion
             }
         }
 
@@ -486,12 +540,7 @@ constructor(
     }
 
     fun stop() {
+        // TODO graceful shutdown. currently start/stop is not synchronized
         this.processSubscription = null
-    }
-
-    fun startSync(clean: Boolean) {
-        this.exceutorService.submit {
-            this@DatabaseSyncService.sync(clean)
-        }
     }
 }

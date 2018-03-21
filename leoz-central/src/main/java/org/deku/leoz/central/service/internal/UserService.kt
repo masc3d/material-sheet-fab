@@ -2,6 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.JooqMailQueueRepository
@@ -18,6 +19,7 @@ import org.deku.leoz.time.toDateWithoutTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sx.rs.RestProblem
@@ -34,7 +36,8 @@ import javax.ws.rs.core.Response
  */
 @Component
 @Path("internal/v1/user")
-class UserService : UserService {
+@Profile(Application.PROFILE_CENTRAL)
+class UserService : org.deku.leoz.service.internal.UserService {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -327,12 +330,16 @@ class UserService : UserService {
         if (user.active != null) {
             rec.active = user.isActive
             if (user.active == true) {
+                // TODO: intransparent. expiry check should be done against one definitive field.
                 if (user.expiresOn == null) {
-                    if (java.util.Date() > rec.expiresOn) {
-                        throw RestProblem(
-                                status = Response.Status.CONFLICT,
-                                title = "expiresOn invalid to activate user"
-                        )
+                    // TODO: what if both are null?!
+                    if (rec.expiresOn != null) {
+                        if (java.util.Date() > rec.expiresOn) {
+                            throw RestProblem(
+                                    status = Response.Status.CONFLICT,
+                                    title = "expiresOn invalid to activate user"
+                            )
+                        }
                     }
                 } else {
                     if (java.util.Date() > user.expiresOn) {
@@ -402,12 +409,14 @@ class UserService : UserService {
     }
 
     override fun getById(userId: Int): User {
-        val u = userRepository.findById(userId) ?: throw RestProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "User with ID [$userId] not found"
-        )
+        val u = userRepository.findById(userId)
+                ?: throw NoSuchElementException("User with ID [$userId] not found")
 
         return this.get(email = u.email).first()
+    }
+
+    override fun getIdsByDebitor(debitorId: Int): List<Int> {
+        return userRepository.findUserIdsByDebitor(debitorId)
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {
