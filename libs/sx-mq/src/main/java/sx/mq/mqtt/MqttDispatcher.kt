@@ -210,7 +210,7 @@ class MqttDispatcher(
                             .doOnNext {
                                 log.debug { "Topic triggered [${it}|" }
                             }
-                            .concatMap { trigger ->
+                            .concatMap { _ ->
                                 val sw = Stopwatch.createUnstarted()
                                 var count: Int = 0
 
