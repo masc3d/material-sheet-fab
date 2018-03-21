@@ -702,7 +702,12 @@ class VehicleLoadingScreen :
             }
             else -> {
                 this.vehicleLoading.load(parcel)
-                        .subscribe()
+                        .subscribeBy(
+                                onError = {
+                                    log.error(it.message, it)
+                                    feedback.error()
+                                }
+                        )
 
                 this.parcelListAdapter.selectedSection = loadedSection
             }
