@@ -59,6 +59,7 @@ dependencies {
             project(':sx-serialization'),
             project(':sx-mq'),
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
 
             // Kodein
             "com.github.salomonbrys.kodein:kodein:$v_kodein",
