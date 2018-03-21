@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
-import sx.rx.connected
-import sx.rx.toHotCompletable
 import sx.rx.toHotReplay
 
 /**
@@ -18,7 +16,7 @@ import sx.rx.toHotReplay
  * Created by masc on 28/02/2017.
  */
 class HoneywellAidcReader private constructor(
-        private val aidcManager: AidcManager
+        private var aidcManager: AidcManager
 ) : AidcReader(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
 
     companion object {
@@ -30,21 +28,38 @@ class HoneywellAidcReader private constructor(
          */
         fun create(context: Context): Observable<AidcReader> {
             return Observable.create<AidcReader> { emitter ->
+                var _reader: HoneywellAidcReader? = null
+
                 try {
-                    log.debug("Creating AidcManager")
-                    AidcManager.create(context) {
-                        log.debug("AidcManager created")
-                        if (!emitter.isDisposed) {
-                            emitter.onNext(HoneywellAidcReader(it))
-                            emitter.onComplete()
+                    log.debug("Creating aidc manager")
+                    // Create callback may return multiple times as underlying service reconnects
+                    AidcManager.create(context) { aidcManager ->
+                        log.debug("Aidc manager created")
+
+                        val reader = _reader
+
+                        if (reader == null) {
+                            log.debug("Emitting initial aidc reader")
+
+                            // Emit aidc reader instance initially
+                            _reader = HoneywellAidcReader(aidcManager).also {
+                                if (!emitter.isDisposed) {
+                                    emitter.onNext(it)
+                                    emitter.onComplete()
+                                }
+                            }
+                        } else {
+                            log.debug("Updating aidc manager")
+
+                            // Update aidc manager on subsequent callbacks
+                            reader.aidcManager = aidcManager
                         }
                     }
-                } catch (e: Throwable) {
-                    if (!emitter.isDisposed) emitter.onError(e)
+                } catch (t: Throwable) {
+                    if (!emitter.isDisposed) emitter.onError(t)
                 }
             }
-                    .publish()
-                    .connected()
+                    .toHotReplay()
         }
     }
 
@@ -57,6 +72,7 @@ class HoneywellAidcReader private constructor(
             this.honeywellReader.claim()
         } catch (t: Throwable) {
             log.error("Claiming reader failed [${t.message}]", t)
+            throw t
         }
 
         this.subscriptions.add(
@@ -91,6 +107,7 @@ class HoneywellAidcReader private constructor(
             this.honeywellReader.release()
         } catch (t: Throwable) {
             log.error("Releasing reader failed [${t.message}]", t)
+            throw t
         }
     }
 
@@ -150,9 +167,9 @@ class HoneywellAidcReader private constructor(
     })
 
     var centerDecode: Boolean
-        get() {
-            return this.honeywellReader.getBooleanProperty(BarcodeReader.PROPERTY_CENTER_DECODE)
-        }
+        get() =
+            this.honeywellReader.getBooleanProperty(BarcodeReader.PROPERTY_CENTER_DECODE)
+
         set(value) {
             this.honeywellReader.setProperty(BarcodeReader.PROPERTY_CENTER_DECODE, value)
         }
@@ -266,6 +283,7 @@ class HoneywellAidcReader private constructor(
                 this.honeywellReader.decode(evt.state)
             } catch (t: Throwable) {
                 log.error("Enabling reader failed [${t.message}]", t)
+                throw t
             }
         }
     }
