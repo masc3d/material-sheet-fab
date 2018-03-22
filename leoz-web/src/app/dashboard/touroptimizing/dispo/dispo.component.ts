@@ -54,7 +54,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   dateFormatMedium: string;
 
   dateFormat: string;
-  dateFormatMedium: string;
   aktualTourDate = null;
 
   constructor( protected translate: TranslateService,
