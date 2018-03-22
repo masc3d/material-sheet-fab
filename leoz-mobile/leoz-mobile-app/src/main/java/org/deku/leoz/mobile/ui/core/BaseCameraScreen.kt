@@ -94,7 +94,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
                 when (event.type) {
                     CameraKitEvent.TYPE_CAMERA_OPEN -> {
                         log.trace("CAMERA OPENED")
-                        this@BaseCameraScreen.uxProgressContainer.post {
+                        this@BaseCameraScreen.uxProgressContainer?.post {
                             this@BaseCameraScreen.uxProgressContainer.visibility = View.INVISIBLE
                         }
                     }
