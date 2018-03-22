@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { takeUntil } from 'rxjs/operators';
 
@@ -51,6 +51,12 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   latestSortField: string = null;
   latestSortOrder = 0;
 
+  dateFormatMedium: string;
+
+  dateFormat: string;
+  dateFormatMedium: string;
+  aktualTourDate = null;
+
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected touroptimizingService: TouroptimizingService,
@@ -58,11 +64,16 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
                protected printingService: PrintingService,
                protected reportingService: StoplistReportingService,
                protected browserCheck: BrowserCheck ) {
-    super( translate, cd, msgService );
+    super( translate, cd, msgService, () => {
+      this.aktualTourDate = this.initAktualTourDate();
+    } );
   }
+
 
   ngOnInit() {
     super.ngOnInit();
+
+    this.aktualTourDate = this.initAktualTourDate();
 
     this.notMicrodoof = this.browserCheck.browser === 'handsome Browser';
     this.toursLoading$ = this.touroptimizingService.toursLoading$;
@@ -217,6 +228,17 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   roundDecimalsAsStringWrapper( input: number ) {
     return roundDecimalsAsString( input, 10, true );
+  }
+
+  private initAktualTourDate() {
+    const d = new Date();
+    return d;
+  }
+
+  private switchDay(timeline: number) {
+    const d = new Date(this.aktualTourDate);
+    d.setDate( d.getDate() + (timeline) );
+    this.aktualTourDate = d;
   }
 }
 
