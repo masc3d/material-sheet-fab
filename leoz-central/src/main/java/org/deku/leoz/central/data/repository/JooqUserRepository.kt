@@ -157,7 +157,8 @@ fun MstUserRecord.toUser(): UserService.User =
                 externalUser = this.isExternalUser,
                 phone = this.phone,
                 phoneMobile = this.phoneMobile,
-                expiresOn = this.expiresOn
+                expiresOn = this.expiresOn,
+                passwordExpiresOn = this.passwordExpiresOn
         )
 
 val MstUserRecord.isActive: Boolean

@@ -72,7 +72,9 @@ class JooqStationRepository {
         return dsl
                 .select()
                 .from(TBLDEPOTLISTE)
-                .where(TBLDEPOTLISTE.DEPOTMATCHCODE.eq(matchcode))
+                .where(TBLDEPOTLISTE.DEPOTMATCHCODE.eq(matchcode)
+                        .and(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
+                )
                 .fetchOneInto(TbldepotlisteRecord::class.java)
     }
 

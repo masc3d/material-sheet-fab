@@ -3,11 +3,21 @@ package org.deku.leoz.node.rest
 import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.Application
+import org.deku.leoz.node.data.repository.StationRepository
+import org.deku.leoz.node.data.repository.UserRepository
+import org.deku.leoz.node.data.repository.toUser
+import org.deku.leoz.rest.RestrictRoles
+import org.deku.leoz.rest.RestrictStation
 import org.deku.leoz.service.internal.UserService
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import sx.reflect.allInterfaces
+import sx.rs.RestProblem
+import sx.rs.annotatedParametersOfType
+import sx.rs.annotationOfType
 import sx.rs.auth.ApiKeyRequestFilterBase
+import java.util.*
+import javax.inject.Inject
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.container.ContainerRequestContext
@@ -29,6 +39,12 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
     @Context
     private lateinit var httpRequest: HttpServletRequest
 
+    @Inject
+    private lateinit var userRepository: UserRepository
+
+    @Inject
+    private lateinit var stationRepository: StationRepository
+
     companion object {
         const val REQUEST_AUTHORIZED_USER = "AUTHORIZED_USER"
     }
@@ -44,6 +60,40 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
 
     override fun verify(requestContext: ContainerRequestContext, resourceInfo: ResourceInfo, apiKey: String): Boolean {
         // TODO: implement api key support for nodes
+        val user=this.userRepository.findByKey(apiKey)
+                ?.toUser()?.also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(x.id!!.toLong()) }
+        val userRole = user?.role
+        // Store authorized user domain object on http request level for consumers (eg. services)
+        this.httpRequest.setAttribute(REQUEST_AUTHORIZED_USER, user)
+        if (user != null) {
+            // Check for user activity & expiry
+            if (user.active != true) {
+                throw RestProblem(
+                        title = "User [${user.id}] has been deactivated",
+                        status = Response.Status.UNAUTHORIZED)
+            }
+            if (Date() > user.expiresOn) {
+                throw RestProblem(
+                        title = "User [${user.id}] expired on ${user.expiresOn}",
+                        status = Response.Status.UNAUTHORIZED)
+            }
+        }
+        // Check role restrictions
+        resourceInfo.annotationOfType(RestrictRoles::class.java)
+                ?.also {
+                    if (userRole == null || !it.role.contains(UserRole.valueOf(userRole)))
+                        return false
+                }
+
+        resourceInfo.annotatedParametersOfType(RestrictStation::class.java, requestContext)
+                .firstOrNull()
+                ?.also { ap ->
+                    if (user == null)
+                        return false
+                    if (!user.allowedStations!!.contains(ap.value!!.toInt()))
+                        return false
+                }
+
         return true
     }
 }

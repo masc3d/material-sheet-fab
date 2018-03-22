@@ -44,6 +44,9 @@ class AuthorizationService
     @Inject
     private lateinit var keyRepo: KeyRepository
 
+    @Inject
+    private lateinit var stationRepository: StationRepository
+
     //region REST
     /**
      * Authorize user
@@ -79,7 +82,7 @@ class AuthorizationService
                     status = Response.Status.UNAUTHORIZED)
         }
 
-        val keyRecord = this.keyRepo.findById(userRecord.keyId.toInt())
+        val keyRecord = this.keyRepo.findById(userRecord.keyId)
                 .toNullable()
                 ?: MstKey().also {
                     it.key = UUID.randomUUID().toString()
@@ -100,7 +103,8 @@ class AuthorizationService
 
         return AuthorizationService.Response(
                 key = keyRecord.key,
-                user = userRecord.toUser())
+                user = userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) }
+        )
     }
     //endregion
 

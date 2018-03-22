@@ -3,8 +3,7 @@ package org.deku.leoz.node.service.internal
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.data.jpa.MstUser
-import org.deku.leoz.node.data.jpa.QMstStationUser
-import org.deku.leoz.node.data.jpa.QMstUser
+import org.deku.leoz.node.data.jpa.QMstStationUser.mstStationUser
 import org.deku.leoz.node.data.jpa.QMstUser.mstUser
 import org.deku.leoz.node.data.repository.*
 import org.deku.leoz.node.rest.authorizedUser
@@ -12,7 +11,6 @@ import org.deku.leoz.service.internal.ConfigurationService
 import org.deku.leoz.service.internal.UserService
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import sx.persistence.querydsl.from
 import sx.persistence.transaction
 import sx.rs.RestProblem
@@ -78,11 +76,11 @@ class UserService : org.deku.leoz.service.internal.UserService {
                 userRecList.forEach {
 
                     if (authorizedUser.role == UserRole.ADMIN.name) {
-                        user.add(it.toUser().also { x -> x.allowedStations = findAllowedStationsByUserId(it.id) })
+                        user.add(it.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(it.id) })
                     } else {
                         if (authorizedUser.debitorId!!.toLong() == it.debitorId) {
                             if (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value) {
-                                user.add(it.toUser().also { x -> x.allowedStations = findAllowedStationsByUserId(it.id) })
+                                user.add(it.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(it.id) })
                             }
                         }
                     }
@@ -96,10 +94,10 @@ class UserService : org.deku.leoz.service.internal.UserService {
                                 status = Response.Status.NOT_FOUND,
                                 title = "no user found by email")
                 if (UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
-                    return listOf(userRecord.toUser().also { x -> x.allowedStations = findAllowedStationsByUserId(userRecord.id) })
+                    return listOf(userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) })
                 if ((UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value) &&
                         (authorizedUser.debitorId!!.toLong() == userRecord.debitorId)) {
-                    return listOf(userRecord.toUser().also { x -> x.allowedStations = findAllowedStationsByUserId(userRecord.id) })
+                    return listOf(userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) })
                 } else {
                     throw RestProblem(
                             status = Response.Status.FORBIDDEN,
@@ -140,7 +138,6 @@ class UserService : org.deku.leoz.service.internal.UserService {
         update(email = user.email, user = user, sendAppLink = sendAppLink)
     }
 
-    //@Transactional(PersistenceConfiguration.QUALIFIER)
     override fun update(email: String, user: UserService.User, sendAppLink: Boolean) {
         val authorizedUser = httpRequest.authorizedUser
 
@@ -299,12 +296,14 @@ class UserService : org.deku.leoz.service.internal.UserService {
 
                 //if ((user.email != null) && (user.email != "@"))
                 if (user.email != "@") {
-                    rec.email = user.email
-                    if (password == null)
-                        throw RestProblem(
-                                status = Response.Status.CONFLICT,
-                                title = "On login-change you have to provide a password"
-                        )
+                    if(rec.email != user.email) {
+                        rec.email = user.email
+                        if (password == null)
+                            throw RestProblem(
+                                    status = Response.Status.CONFLICT,
+                                    title = "On login-change you have to provide a password"
+                            )
+                    }
                 }
                 if (debitor != null)
                     rec.debitorId = debitor!!.toLong()
@@ -322,11 +321,13 @@ class UserService : org.deku.leoz.service.internal.UserService {
                     rec.active = user.isActive
                     if (user.active == true) {
                         if (user.expiresOn == null) {
-                            if (java.util.Date() > rec.expiresOn) {
-                                throw RestProblem(
-                                        status = Response.Status.CONFLICT,
-                                        title = "expiresOn invalid to activate user"
-                                )
+                            if (rec.expiresOn != null) {
+                                if (java.util.Date() > rec.expiresOn) {
+                                    throw RestProblem(
+                                            status = Response.Status.CONFLICT,
+                                            title = "expiresOn invalid to activate user"
+                                    )
+                                }
                             }
                         } else {
                             if (java.util.Date() > user.expiresOn) {
@@ -452,15 +453,5 @@ class UserService : org.deku.leoz.service.internal.UserService {
 
     }
 
-    fun findAllowedStationsByUserId(userId: Long): List<Int> {
-        val qStationUser = QMstStationUser.mstStationUser
-        val stationIds = stationUserRepository.findAll(
-                qStationUser.userId.eq(userId)
-        ).map { x -> x.stationId.toInt() }.toList()
 
-        val stationRecords = stationRepository.findByStationIds(stationIds)
-
-        return stationRecords.map { it.stationNr }
-
-    }
 }

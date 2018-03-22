@@ -14,7 +14,7 @@ import javax.persistence.PersistenceContext
  * Key repository
  */
 interface KeyRepository :
-        JpaRepository<MstKey, Int>,
+        JpaRepository<MstKey, Long>,
         QuerydslPredicateExecutor<MstKey>, KeyRepositoryExtension
 
 interface KeyRepositoryExtension {
@@ -31,6 +31,9 @@ class KeyRepositoryImpl : NodeRepositoryExtension {
         return nodeRepo.findOne(
                 mstNode.key.startsWith(nodeUid)
         ).toNullable()
+    }
+    override fun findByKey(key: String): MstNode? {
+        return nodeRepo.findOne(mstNode.key.eq(key)).toNullable()
     }
 }
 

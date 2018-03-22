@@ -48,7 +48,7 @@ class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter() {
 
     override fun verify(requestContext: ContainerRequestContext, resourceInfo: ResourceInfo, apiKey: String): Boolean {
         val user = this.userJooqRepository.findByKey(apiKey)
-                ?.toUser()
+                ?.toUser()?.also { x -> x.allowedStations = this.userJooqRepository.findAllowedStationsByUserId(x.id!!) }
 
         val userRole = user?.role
 
@@ -81,12 +81,7 @@ class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter() {
                 ?.also { ap ->
                     if (user == null)
                         return false
-
-                    val station = ap.value!!.toInt()
-
-                    val allowedStations = this.userJooqRepository.findAllowedStationsByUserId(user.id!!)
-
-                    if (!allowedStations.contains(station))
+                    if (!user.allowedStations!!.contains(ap.value!!.toInt()))
                         return false
                 }
 

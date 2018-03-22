@@ -5,6 +5,7 @@ import org.deku.leoz.node.data.jpa.MstRoutingLayer
 import org.deku.leoz.node.data.jpa.QMstNode.mstNode
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
+import sx.persistence.querydsl.from
 import sx.util.toNullable
 import javax.inject.Inject
 import javax.persistence.EntityManager
@@ -23,6 +24,7 @@ interface NodeRepositoryExtension {
      * @param nodeUid node uid to find. this can be a truncated or short uid.
      */
     fun findByUid(nodeUid: String): MstNode?
+    fun findByKey(key: String): MstNode?
 }
 
 class NodeRepositoryImpl : NodeRepositoryExtension {
@@ -36,6 +38,10 @@ class NodeRepositoryImpl : NodeRepositoryExtension {
         return nodeRepo.findOne(
                 mstNode.key.startsWith(nodeUid)
         ).toNullable()
+    }
+
+    override fun findByKey(key: String): MstNode? {
+        return nodeRepo.findOne(mstNode.key.eq(key)).toNullable()
     }
 }
 

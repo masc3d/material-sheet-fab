@@ -9,5 +9,5 @@ interface DebitorRepository:
         QuerydslPredicateExecutor<MstDebitor>,DebitorRepositoryExtension
 
 interface DebitorRepositoryExtension{
-    fun findByDebitorNr(debitorNr:Double):MstDebitor
+    fun findByDebitorNr(debitorNr:Double):MstDebitor?
 }
