@@ -53,6 +53,7 @@ class HoneywellAidcReader private constructor(
 
                             // Update aidc manager on subsequent callbacks
                             reader.aidcManager = aidcManager
+                            reader.honeywellReaderInstance.reset()
                         }
                     }
                 } catch (t: Throwable) {
