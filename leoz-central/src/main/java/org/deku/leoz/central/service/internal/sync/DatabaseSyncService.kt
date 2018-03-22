@@ -25,6 +25,7 @@ import org.threeten.bp.Duration
 import sun.rmi.transport.tcp.TCPEndpoint
 import sx.Stopwatch
 import sx.log.slf4j.debug
+import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.persistence.querydsl.delete
 import sx.persistence.querydsl.from
@@ -36,6 +37,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.persistence.EntityManager
+import javax.persistence.FlushModeType
 import javax.persistence.PersistenceContext
 import kotlin.properties.Delegates
 
@@ -276,12 +278,14 @@ constructor(
         return this.exceutorService.submit {
             val sw = Stopwatch.createStarted()
 
-            val syncMap = this.syncJooqRepository
-                    .findAll()
-                    .groupBy { it.tableName }
-                    .mapValues {
-                        it.value.first()
-                    }
+            val syncMap = Stopwatch.createStarted(this, "FINDSYNCIDS", {
+                this.syncJooqRepository
+                        .findAll()
+                        .groupBy { it.tableName }
+                        .mapValues {
+                            it.value.first()
+                        }
+            })
 
             this.presets.forEach {
                 try {
@@ -300,35 +304,6 @@ constructor(
     }
 
     /**
-     * Preliminary delete support
-     */
-    private fun <TCentralRecord : Record, TEntity> delete(
-            srcJooqTable: org.jooq.impl.TableImpl<TCentralRecord>,
-            srcJooqSyncIdField: org.jooq.TableField<TCentralRecord, Long>,
-            /** Destination QueryDSL entity table path */
-            dstJpaEntityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
-            /** Destination QueryDSL sync id field path */
-            dstJpaSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>,
-            destMaxSyncId: Long
-            ) {
-
-        // TODO: currently only for testing performance of traversing sync ids
-        Stopwatch.createStarted(this, "TRAVERSE SYNCIDS", {
-            transactionJpa.execute<Any> { _ ->
-                syncJooqRepository.findSyncIdsNewerThan(
-                        syncId = 0,
-                        table = srcJooqTable,
-                        syncIdField = srcJooqSyncIdField
-                )
-                        .forEach {
-                            // TODO: delete
-                        }
-            }
-        })
-    }
-
-
-    /**
      * Abstract update extension
      *
      * NOTE: this method must be @Synchronized to prevent concurrent updates of the same preset / table
@@ -341,7 +316,6 @@ constructor(
 
         return when (this) {
             is SyncPreset<*, *> -> (this as SyncPreset<Record, Any>).update(
-                    sysSyncRecord = sysSyncRecord,
                     clean = clean
             )
             is NotifyPreset<*> -> (this as NotifyPreset<Record>).update(
@@ -403,56 +377,64 @@ constructor(
      * @param clean delete all records before updating
      */
     private fun SyncPreset<Record, Any>.update(
-            sysSyncRecord: SysSyncRecord,
             clean: Boolean
     ): Boolean {
-        val p = this
-
         // Stopwatch
         val sw = Stopwatch.createStarted()
+
         // Log formatter
-        val lfmt = { s: String -> "[${p.dstJpaEntityPath.type.name}] ${s} $sw" }
+        val lfmt = { s: String -> "[${dstJpaEntityPath.type.name}] ${s}" }
 
-        em.flushMode = javax.persistence.FlushModeType.COMMIT
+        em.flushMode = FlushModeType.COMMIT
 
-        if (clean || p.dstJpaSyncIdPath == null) {
+        if (clean || dstJpaSyncIdPath == null) {
             transactionJpa.execute<Any> { _ ->
-                log.info(lfmt("Deleting all entities"))
+                log.info { lfmt("Deleting all entities") }
 
-                em.truncate(p.dstJpaEntityPath.type)
-
+                em.truncate(dstJpaEntityPath.type)
                 em.flush()
                 em.clear()
             }
         }
 
-        // TODO. optimize by preparing query or at least caching the querydsl instance
-        // Get latest timestamp
-        var destMaxSyncId: Long? = null
-        if (p.dstJpaSyncIdPath != null) {
-            // Query embedded database table for latest timestamp
-            destMaxSyncId = em.from(p.dstJpaEntityPath)
-                    .select(p.dstJpaSyncIdPath.max())
-                    .fetchFirst()
+        //region Determine source & destination sync ranges
+        var dstSyncIdRange: LongRange? = null
+        if (dstJpaSyncIdPath != null) {
+            // Query destination/jpa database table for latest timestamp
+            dstSyncIdRange = syncRepository.findSyncIdMinMax(
+                    dstJpaEntityPath,
+                    dstJpaSyncIdPath
+            )
         }
 
-        // TODO. optimize by using jooq prepared statements
-        if (destMaxSyncId != null) {
-            if (sysSyncRecord.syncId == destMaxSyncId) {
-                log.trace(lfmt("sync-id uptodate [${destMaxSyncId}]"))
-                return false
+        val srcSyncIdRange = if (srcJooqSyncIdField != null) {
+            syncJooqRepository.findMinMaxSyncId(
+                    srcJooqTable,
+                    srcJooqSyncIdField
+            )
+        } else null
+        //endregion
+
+        log.trace { lfmt("sync-ids source [${srcSyncIdRange}] destination [${dstSyncIdRange}]") }
+
+        if (srcSyncIdRange != null && dstSyncIdRange != null) {
+            if (dstJpaSyncIdPath != null && srcJooqSyncIdField != null) {
+                if (dstSyncIdRange.first < srcSyncIdRange.first) {
+                    log.info { lfmt("deleting < [${srcSyncIdRange.first}]") }
+                    transactionJpa.execute<Any> { _ ->
+                        em.delete(
+                                dstJpaEntityPath,
+                                dstJpaSyncIdPath.lt(srcSyncIdRange.first)
+                        )
+                        em.flush()
+                        em.clear()
+                    }
+                }
             }
 
-            if (dstJpaSyncIdPath != null && srcJooqSyncIdField != null) {
-                //region TODO: delete. IMPORTANT: only for testing for the moment
-//                this@DatabaseSyncService.delete(
-//                        srcJooqTable = srcJooqTable,
-//                        dstJpaEntityPath = dstJpaEntityPath,
-//                        dstJpaSyncIdPath = dstJpaSyncIdPath,
-//                        srcJooqSyncIdField = srcJooqSyncIdField,
-//                        destMaxSyncId = destMaxSyncId
-//                )
-                //endregion
+            if (srcSyncIdRange.endInclusive == dstSyncIdRange.endInclusive) {
+                // All records uptodate. Processing ends here.
+                return false
             }
         }
 
@@ -461,15 +443,15 @@ constructor(
         transactionJooq.execute<Any> { _ ->
             // Read source records newer than destination timestamp
             val source = syncJooqRepository.findNewerThan(
-                    destMaxSyncId,
-                    p.srcJooqTable,
-                    p.srcJooqSyncIdField)
+                    dstSyncIdRange?.endInclusive,
+                    srcJooqTable,
+                    srcJooqSyncIdField)
 
             if (source.hasNext()) {
                 // Save to destination/jpa
                 // REMARKS
                 // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
-                log.info(lfmt("Outdated [${destMaxSyncId}]"))
+                log.info(lfmt("outdated [${dstSyncIdRange?.endInclusive}]"))
                 var count = 0
 
                 val JPA_FLUSH_BATCH_SIZE = 100
@@ -484,7 +466,7 @@ constructor(
                         // Fetch next record
                         val record = source.fetchNext()
                         // Convert to entity
-                        val entity = p.transformation(record)
+                        val entity = transformation(record)
                         // Store entity
                         em.merge(entity)
 
@@ -510,23 +492,24 @@ constructor(
                 }
 
                 // Re-query destination timestamp
-                if (p.dstJpaSyncIdPath != null) {
+                if (dstJpaSyncIdPath != null) {
                     // Query embedded database for updated latest timestamp
-                    destMaxSyncId = em.from(p.dstJpaEntityPath)
-                            .select(p.dstJpaSyncIdPath.max())
-                            .fetchFirst()
+                    dstSyncIdRange = syncRepository.findSyncIdMinMax(
+                            dstJpaEntityPath,
+                            dstJpaSyncIdPath
+                    )
                 }
-                log.info(lfmt("Updated ${count} entities [${destMaxSyncId}]"))
+                log.info { lfmt("updated ${count} entities [${dstSyncIdRange?.endInclusive}]") }
 
                 // Emit update event
                 updatesSubject.onNext(
                         DatabaseSyncService.UpdateEvent(
-                                entityType = p.dstJpaEntityPath.type,
-                                syncId = destMaxSyncId
+                                entityType = dstJpaEntityPath.type,
+                                syncId = dstSyncIdRange?.endInclusive
                         )
                 )
             } else {
-                log.trace(lfmt("Uptodate [${destMaxSyncId}]"))
+                log.trace { lfmt("uptodate [${dstSyncIdRange?.endInclusive}]") }
             }
 
             null

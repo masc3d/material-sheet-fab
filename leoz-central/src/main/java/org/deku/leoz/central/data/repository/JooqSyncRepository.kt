@@ -71,7 +71,7 @@ class JooqSyncRepository {
     fun <TRecord : Record> findNewerThan(
             syncId: Long?,
             table: TableImpl<TRecord>,
-            syncIdField: TableField<out Record, Long>?): Cursor<TRecord> {
+            syncIdField: TableField<out TRecord, Long>?): Cursor<TRecord> {
 
         return dsl.selectFrom(table)
                 .let {
@@ -92,8 +92,8 @@ class JooqSyncRepository {
      * @param field Jooq sync id field
      */
     fun <TRecord : Record> findMaxSyncId(
-            table: TableImpl<Record>,
-            field: TableField<out Record, Long>
+            table: TableImpl<TRecord>,
+            field: TableField<out TRecord, Long>
     ): Long? {
         return dsl.selectFrom(table)
                 .fetchOne(field.max())
@@ -108,7 +108,7 @@ class JooqSyncRepository {
     fun <TRecord : Record> findSyncIdsNewerThan(
             syncId: Long,
             table: TableImpl<TRecord>,
-            syncIdField: TableField<out Record, Long>): Cursor<Record1<Long>> {
+            syncIdField: TableField<out TRecord, Long>): Cursor<Record1<Long>> {
 
         return dsl.select(syncIdField)
                 .from(table)
@@ -117,5 +117,26 @@ class JooqSyncRepository {
                 .resultSetType(ResultSet.TYPE_FORWARD_ONLY)
                 .fetchSize(Int.MIN_VALUE)
                 .fetchLazy()
+    }
+
+    /**
+     * Find minimum and maximum sync id
+     * @param table table
+     * @param syncIdField sync id field
+     * @return range of sync ids (min..max) or null when table is empty
+     */
+    fun <TRecord : Record> findMinMaxSyncId(
+            table: TableImpl<TRecord>,
+            syncIdField: TableField<out TRecord, Long>): LongRange? {
+
+        return dsl.select(syncIdField.min(), syncIdField.max())
+                .from(table)
+                .fetchOne()
+                .let {
+                    val min = it.component1() ?: return null
+                    val max = it.component2() ?: return null
+
+                    (min..max)
+                }
     }
 }
