@@ -66,7 +66,7 @@
             <td>{{roundDecimalsAsStringWrapper( tour.totalWeight )}}</td>
             <td>{{formatTourDurationTime(tour.drivingTime)}}</td>
             <td>{{roundDecimalsAsStringWrapper(tour.distance)}}</td>
-            <td>{{formatTourCreationDate(tour.created)}}</td>
+            <td>{{ tour.created | date:dateFormatMedium}}</td>
             <td>
               <span *ngIf="tour.optimized; else notOptimized">
                 <i class="fas fa-sync {{tour.isOptimizing ? 'fa-spin' : ''}}" style="color: #00a200; margin-right: .5rem;"></i>

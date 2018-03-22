@@ -51,6 +51,8 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   latestSortField: string = null;
   latestSortOrder = 0;
 
+  dateFormatMedium: string;
+
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected touroptimizingService: TouroptimizingService,
