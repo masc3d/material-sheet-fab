@@ -1,4 +1,58 @@
 <app-msg-box [msgs]="msgs$ | async" [sticky]="sticky$ | async"></app-msg-box>
+
+<p-dialog header="{{'optimizationOptions' | translate}}" [(visible)]="displayOptimizationOptions"
+          [positionTop]="200"
+          [modal]="true" width="700" [responsive]="true" [draggable]="false" [resizable]="false">
+  <div class="ui-g">
+    <div class="ui-g-12">
+      <p-checkbox [(ngModel)]="dontShiftOneDayFromNow" binary="true"
+                  label="{{'optimizeTodayAndFuture' | translate}}"></p-checkbox>
+    </div>
+    <div class="ui-g-12">
+      <p-checkbox [(ngModel)]="optimizeTraffic" binary="true"
+                  label="{{'optimizeTraffic' | translate}}"></p-checkbox>
+    </div>
+    <div class="ui-g-12">
+      <p-checkbox [(ngModel)]="optimizeExistingtours" binary="true"
+                  label="{{'optimizeExistingtours' | translate}}"></p-checkbox>
+    </div>
+    <div *ngIf="selectedTours.length === 1" class="ui-g-12">
+      <p-checkbox [(ngModel)]="optimizeSplitTours" binary="true"
+                  label="{{'optimizeSplitTours' | translate}}"></p-checkbox>
+    </div>
+    <div *ngIf="selectedTours.length === 1 && optimizeSplitTours" class="ui-g-12">
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        {{'sprinter_max_kg' | translate}}:
+      </div>
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        <input pInputText [(ngModel)]="sprinterMaxKg">
+      </div>
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        {{'caddy_max_kg' | translate}}:
+      </div>
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        <input pInputText [(ngModel)]="caddyMaxKg">
+      </div>
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        {{'kombi_max_kg' | translate}}:
+      </div>
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        <input pInputText [(ngModel)]="kombiMaxKg">
+      </div>
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        {{'bike_max_kg' | translate}}:
+      </div>
+      <div class="ui-g-12 ui-lg-6 ui-g-nopad">
+        <input pInputText [(ngModel)]="bikeMaxKg">
+      </div>
+    </div>
+  </div>
+  <p-footer>
+    <button type="button" pButton (click)="rejectOptimizationOptions()" label="{{'cancel' | translate}}"></button>
+    <button type="button" pButton (click)="acceptOptimizationOptions()" label="{{'start' | translate}}"></button>
+  </p-footer>
+</p-dialog>
+
 <div class="ui-fluid mbDashboardContent" style="padding-top: 10px">
   <div class="ui-g" style="min-height: 465px;">
     <div class="ui-g-12" style="padding:0; margin-left: 10px;">
@@ -103,59 +157,6 @@
                   (click)="getTours()"></button>
         </div>
       </div>
-
-      <p-dialog header="{{'optimizationOptions' | translate}}" [(visible)]="displayOptimizationOptions"
-                [modal]="true" width="700" [responsive]="true">
-        <div class="ui-g">
-          <div class="ui-g-12">
-            <p-checkbox [(ngModel)]="dontShiftOneDayFromNow" binary="true"
-                        label="{{'optimizeTodayAndFuture' | translate}}"></p-checkbox>
-          </div>
-          <div class="ui-g-12">
-            <p-checkbox [(ngModel)]="optimizeTraffic" binary="true"
-                        label="{{'optimizeTraffic' | translate}}"></p-checkbox>
-          </div>
-          <div class="ui-g-12">
-            <p-checkbox [(ngModel)]="optimizeExistingtours" binary="true"
-                        label="{{'optimizeExistingtours' | translate}}"></p-checkbox>
-          </div>
-          <div *ngIf="this.selectedOptimizableTourIds.length === 1" class="ui-g-12">
-            <p-checkbox [(ngModel)]="optimizeSplitTours" binary="true"
-                        label="{{'optimizeSplitTours' | translate}}"></p-checkbox>
-          </div>
-          <div *ngIf="this.selectedOptimizableTourIds.length === 1 && optimizeSplitTours" class="ui-g-12">
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              {{'sprinter_max_kg' | translate}}:
-            </div>
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              <input pInputText [(ngModel)]="sprinterMaxKg">
-            </div>
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              {{'caddy_max_kg' | translate}}:
-            </div>
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              <input pInputText [(ngModel)]="caddyMaxKg">
-            </div>
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              {{'kombi_max_kg' | translate}}:
-            </div>
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              <input pInputText [(ngModel)]="kombiMaxKg">
-            </div>
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              {{'bike_max_kg' | translate}}:
-            </div>
-            <div class="ui-g-12 ui-lg-6 ui-g-nopad">
-              <input pInputText [(ngModel)]="bikeMaxKg">
-            </div>
-          </div>
-        </div>
-        <p-footer>
-          <button type="button" pButton (click)="rejectOptimizationOptions()" label="{{'cancel' | translate}}"></button>
-          <button type="button" pButton (click)="acceptOptimizationOptions()" label="{{'start' | translate}}"></button>
-        </p-footer>
-      </p-dialog>
-
     </div>
   </div>
 </div>
