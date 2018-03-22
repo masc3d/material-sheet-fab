@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 
 @Named
@@ -38,7 +39,9 @@ import java.util.*
 class DocumentService: DocumentService {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val storage: Storage = Kodein.global.instance()
+
+    @Inject
+    private lateinit var storage: Storage
 
     private val PPI: Float = 72f
     private val PPM: Float = 1 / (10 * 2.54f) * PPI
