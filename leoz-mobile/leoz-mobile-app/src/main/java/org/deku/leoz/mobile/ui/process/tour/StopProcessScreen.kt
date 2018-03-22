@@ -66,6 +66,8 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
+import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.materialdialogs.addAll
@@ -421,8 +423,7 @@ class StopProcessScreen :
         )
 
         aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.onAidcRead(it)
                 }
@@ -448,12 +449,11 @@ class StopProcessScreen :
                 }
 
         this.activity.actionEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
                 // As stop process is currently partially stateless (eg. close stop can be triggered multiple times)
                 // prevent accidental duplicate events leading to confusing dialog order.
                 // This is rather a workaround, stop process should track state at all times.
                 .throttleFirst(250, TimeUnit.MILLISECONDS)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it) {
                         R.id.action_delivery_select_delivered -> {
@@ -531,8 +531,7 @@ class StopProcessScreen :
                     this.tourStop.damagedParcels.blockingFirst()
                 }
         )
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     if (it.count() > 0) {
                         this.processAdapter.addSection(
@@ -561,8 +560,7 @@ class StopProcessScreen :
                     this.tourStop.excludedParcels.blockingFirst()
                 }
         )
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     if (it.count() > 0) {
                         this.processAdapter.addSection(
@@ -732,8 +730,7 @@ class StopProcessScreen :
                 this.tourStop.pendingParcels,
                 this.tourStop.stop
         )
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.actionItems = this.actionItems.apply {
                         first { it.id == R.id.action_delivery_close_stop }
@@ -977,9 +974,8 @@ class StopProcessScreen :
 
     private fun finalizeStop() {
         this.tourStop.finalize()
-                .bindToLifecycle(this)
                 .subscribeOn(db.scheduler)
-                .observeOnMainThread()
+                .observeOnMainThreadWithLifecycle(this)
                 .subscribeBy(
                         onComplete = {
                             this.tour.activeStop = null

@@ -57,6 +57,8 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
+import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmHeaderItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHolder
@@ -139,8 +141,7 @@ class TourScreen
         )
 
         aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.onAidcRead(it)
                 }
@@ -550,8 +551,7 @@ class TourScreen
                     // `Single`s that may be disposed before completion must be converted to observables
                     // in order to mitigate https://github.com/trello/RxLifecycle/issues/217
                     .toObservable()
-                    .bindToLifecycle(this)
-                    .observeOnMainThread()
+                    .observeOnMainThreadWithLifecycle(this)
                     .doFinally {
                         progressDialog.dismiss()
                     }

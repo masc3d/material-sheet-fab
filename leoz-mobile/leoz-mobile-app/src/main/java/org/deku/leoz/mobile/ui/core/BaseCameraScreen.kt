@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory
 import sx.android.Device
 import sx.android.aidc.CameraAidcReader
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.rx.ObservableRxProperty
 import sx.rx.subscribeOn
 import java.util.concurrent.ExecutorService
@@ -185,8 +186,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         this.showCaptureActions()
 
         this.torchEnabledProperty
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.uxCameraView.flash = when (it.value) {
                         true -> CameraKit.Constants.FLASH_TORCH
@@ -256,7 +256,7 @@ abstract class BaseCameraScreen<P> : ScreenFragment<P>() {
         this.cameraAidcReader
                 .isCameraInUse
                 .takeUntil { it == false  }
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribeBy(onComplete ={
                     this.uxCameraView.start()
                 })
