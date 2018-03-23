@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import org.deku.leoz.mobile.settings.RemoteSettings
+import sx.android.Device
 import sx.android.NtpTime
 
 /**
@@ -12,12 +13,13 @@ import sx.android.NtpTime
 class TimeConfiguration {
     companion object {
         private val remoteSettings: RemoteSettings by Kodein.global.lazy.instance()
+        private val device: Device by Kodein.global.lazy.instance()
 
         var module = Kodein.Module {
             bind<NtpTime>() with eagerSingleton {
                 sx.android.NtpTime(
                         context = instance(),
-                        ntpHost = remoteSettings.ntp.host,
+                        ntpHost = if (device.isM2MConnected) remoteSettings.ntp.hostInternal else remoteSettings.host,
                         maxRetryCount = 5,
                         trueTimeInternalLoggingEnabled = false
                 )
