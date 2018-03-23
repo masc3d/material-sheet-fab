@@ -119,7 +119,7 @@ class LoginFragment : Fragment<Any>() {
                 ))
 
         rxPrivacyTrigger
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .switchMap {
                     Observable.fromCallable {
                         // Verify all fields
