@@ -16,7 +16,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-@Category(PrototypeTest::class)
+@Category(StandardTest::class)
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,

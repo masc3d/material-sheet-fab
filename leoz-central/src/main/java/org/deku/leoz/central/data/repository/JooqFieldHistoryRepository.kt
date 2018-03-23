@@ -50,7 +50,6 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
 
     this.fields().forEach {
         if (this.changed(it)) {//changed!=modified
-            // TODO: add field history record
 
             val fieldHistoryRecord = dsl.newRecord(Tables.TBLFELDHISTORIE)
             if (this is TblauftragcolliesRecord)
@@ -61,11 +60,6 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
                 fieldHistoryRecord.orderid = 0.0
             fieldHistoryRecord.belegnummer = unitNo.toDouble()
             fieldHistoryRecord.feldname = it.name
-            //fieldHistoryRecord.oldvalue = it.original(this)?.toString() ?: ""
-
-            //gestern ging es noch mit dataType, heute nicht mehr
-            //when (it.dataType) {
-            //is java.sql.Timestamp -> {
             if (it.dataType.typeName.equals("timestamp")) {
 
                 val dtOld = it.original(this) as Date?
@@ -100,7 +94,6 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
                 fieldHistoryRecord.newvalue = it.getValue(this)?.toString() ?: "null"
             }
 
-            //fieldHistoryRecord.newvalue = it.getValue(this)?.toString() ?:"null"
             fieldHistoryRecord.changer = changer
             fieldHistoryRecord.point = point
 

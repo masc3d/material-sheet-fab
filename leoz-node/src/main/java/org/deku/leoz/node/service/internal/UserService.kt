@@ -71,7 +71,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                 if (userRecList.isEmpty())
                     throw RestProblem(
                             status = Response.Status.NOT_FOUND,
-                            title = "no user found by debitor-id")
+                            title = "No user found by debitor-id")
                 val user = mutableListOf<UserService.User>()
                 userRecList.forEach {
 
@@ -92,7 +92,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                 val userRecord = userRepository.findByEmail(email)
                         ?: throw RestProblem(
                                 status = Response.Status.NOT_FOUND,
-                                title = "no user found by email")
+                                title = "No user found by email")
                 if (UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
                     return listOf(userRecord.toUser().also { x -> x.allowedStations = stationRepository.findAllowedStationsByUserId(userRecord.id) })
                 if ((UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value) &&
@@ -101,7 +101,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                 } else {
                     throw RestProblem(
                             status = Response.Status.FORBIDDEN,
-                            title = "user found but no permission returning this user")
+                            title = "User found but no permission returning this user")
                 }
             }
             else -> {
@@ -115,7 +115,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
         if (rec != null) {
             throw RestProblem(
                     status = Response.Status.BAD_REQUEST,
-                    title = "email exists")
+                    title = "Email exists")
         }
 
         if (user.debitorId == null) {
@@ -173,7 +173,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                     if (!user.email.equals(email)) {
                         throw  RestProblem(
                                 status = Response.Status.BAD_REQUEST,
-                                title = "multiple email for new record")
+                                title = "Multiple email for new record")
                     }
                 } else {
                     if (rec.debitorId == null) rec.debitorId = authorizedUser.debitorId!!.toLong()
@@ -183,13 +183,13 @@ class UserService : org.deku.leoz.service.internal.UserService {
                         if (rec.debitorId != authorizedUser.debitorId!!.toLong())
                             throw  RestProblem(
                                     status = Response.Status.FORBIDDEN,
-                                    title = "login user can not change user - debitorId")
+                                    title = "Login user can not change user - debitorId")
                     }
 
                     if (UserRole.valueOf(authorizedUser.role!!).value < UserRole.valueOf(rec.role).value) {
                         throw  RestProblem(
                                 status = Response.Status.FORBIDDEN,
-                                title = "login user can not create/change user - no permission")
+                                title = "Login user can not create/change user - no permission")
                     }
 
                     //if (user.email != null) {
@@ -197,7 +197,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                         if (userRepository.findByEmail(user.email) != null) {
                             throw  RestProblem(
                                     status = Response.Status.BAD_REQUEST,
-                                    title = "duplicate email")
+                                    title = "Duplicate email")
                         }
                     }
                     //}
@@ -217,7 +217,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                         if (userRepository.findByAliasAndDebitorId(testAlias, testDebitor) != null) {
                             throw  RestProblem(
                                     status = Response.Status.BAD_REQUEST,
-                                    title = "duplicate alias or debitorId")
+                                    title = "Duplicate alias or debitorId")
                         }
                     }
                 }
@@ -225,22 +225,22 @@ class UserService : org.deku.leoz.service.internal.UserService {
                 if (isNew) {
                     alias ?: throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "no alias")
+                            title = "No alias")
                     userRole ?: throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "no user role")
+                            title = "No user role")
                     password ?: throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "no password")
+                            title = "No password")
                     firstName ?: throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "no first name")
+                            title = "No first name")
                     lastName ?: throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "no last name")
+                            title = "No last name")
                     phone ?: throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "no phone")
+                            title = "No phone")
 
                     if (user.active == null)
                         user.active = false
@@ -248,7 +248,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                     if (userRepository.findByEmail(user.email) != null)
                         throw RestProblem(
                                 status = Response.Status.BAD_REQUEST,
-                                title = "duplicate email")
+                                title = "Duplicate email")
 
                     if (debitor == null)
                         debitor = authorizedUser.debitorId
@@ -256,18 +256,18 @@ class UserService : org.deku.leoz.service.internal.UserService {
                     if (debitor == null)
                         throw RestProblem(
                                 status = Response.Status.BAD_REQUEST,
-                                title = "missing debitor of login user")
+                                title = "Missing debitor of login user")
 
                     if (userRepository.findByAliasAndDebitorId(alias, debitor!!.toLong()) != null)
                         throw RestProblem(
                                 status = Response.Status.BAD_REQUEST,
-                                title = "duplicate alias/debitor")
+                                title = "Duplicate alias/debitor")
                 }
 
                 if (!UserRole.values().any { it.name == authorizedUser.role })
                     throw  RestProblem(
                             status = Response.Status.BAD_REQUEST,
-                            title = "login user role unknown")
+                            title = "Login user role unknown")
 
                 if (debitor != null) {
 
@@ -275,7 +275,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                         if (authorizedUser.debitorId != debitor) {
                             throw  RestProblem(
                                     status = Response.Status.FORBIDDEN,
-                                    title = "login user can not change debitorId")
+                                    title = "Login user can not change debitorId")
                         }
                     }
                 }
@@ -284,12 +284,12 @@ class UserService : org.deku.leoz.service.internal.UserService {
                     if (!UserRole.values().any { it.name == userRole })
                         throw  RestProblem(
                                 status = Response.Status.BAD_REQUEST,
-                                title = "user role unknown")
+                                title = "User role unknown")
 
                     if (UserRole.valueOf(authorizedUser.role!!).value < UserRole.valueOf(userRole).value) {
                         throw  RestProblem(
                                 status = Response.Status.FORBIDDEN,
-                                title = "login user can not create/change user - no permission")
+                                title = "Login user can not create/change user - no permission")
                     }
                 }
 
@@ -325,7 +325,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                                 if (java.util.Date() > rec.expiresOn) {
                                     throw RestProblem(
                                             status = Response.Status.CONFLICT,
-                                            title = "expiresOn invalid to activate user"
+                                            title = "ExpiresOn invalid to activate user"
                                     )
                                 }
                             }
@@ -333,7 +333,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
                             if (java.util.Date() > user.expiresOn) {
                                 throw RestProblem(
                                         status = Response.Status.CONFLICT,
-                                        title = "expiresOn invalid to activate user"
+                                        title = "ExpiresOn invalid to activate user"
                                 )
                             }
                         }
@@ -434,7 +434,7 @@ class UserService : org.deku.leoz.service.internal.UserService {
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {
-        throw NotImplementedError("unsupported")
+        throw NotImplementedError("Unsupported")
     }
 
     override fun changePassword(oldPassword: String, newPassword: String) {

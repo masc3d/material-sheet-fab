@@ -38,7 +38,7 @@ class JooqStationRepository {
             dsl.fetchOne(TBLDEPOTLISTE, TBLDEPOTLISTE.DEPOTNR.eq(stationNo))
 
     fun findByDebitorId(debitorId: Int): List<TbldepotlisteRecord> =
-            dsl.fetch(TBLDEPOTLISTE, TBLDEPOTLISTE.DEBITOR_ID.eq(debitorId)).toList()
+            dsl.fetch(TBLDEPOTLISTE, TBLDEPOTLISTE.DEBITOR_ID.eq(debitorId).and(TBLDEPOTLISTE.ISTGUELTIG.eq(1))).toList()
 
     fun findSectionDepots(iSection: Int, iPosition: Int): List<String> {
         return dsl
@@ -63,7 +63,8 @@ class JooqStationRepository {
         return dsl
                 .select(TBLDEPOTLISTE.DEPOTNR)
                 .from(TBLDEPOTLISTE)
-                .where(TBLDEPOTLISTE.ID.eq(debitorId))
+                .where(TBLDEPOTLISTE.DEBITOR_ID.eq(debitorId)
+                        .and(TBLDEPOTLISTE.ISTGUELTIG.eq(1)))
 //todo include send_date  between active_from and active_to
                 .fetchInto(String::class.java)
     }
@@ -135,5 +136,20 @@ class JooqStationRepository {
                 )
                 .fetchOne(0, Int::class.java)
         return tour ?: 99
+    }
+
+    fun findAllowedStationsByUserId(userId: Int): List<Int> {
+        return dsl.select(TBLDEPOTLISTE.DEPOTNR)
+                .from(TBLDEPOTLISTE)
+                .innerJoin(MST_STATION_USER).on(TBLDEPOTLISTE.ID.eq(MST_STATION_USER.STATION_ID))
+                .where(MST_STATION_USER.USER_ID.eq(userId)).and(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
+                .fetch(TBLDEPOTLISTE.DEPOTNR)
+
+    }
+    fun findStationIdByDepotNr(depotNr:Int):Int?{
+        return dsl.selectFrom(TBLDEPOTLISTE)
+                .where(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
+                .and(TBLDEPOTLISTE.DEPOTNR.eq(depotNr))
+                .fetchOne(TBLDEPOTLISTE.ID)
     }
 }

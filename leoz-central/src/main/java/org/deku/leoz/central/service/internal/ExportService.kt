@@ -76,6 +76,8 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun export(scanCode: String, loadingListNo: String, stationNo: Int): String {
+        val mapper = ObjectMapper()
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
         //check stationNo in user-stationsAllowed
 
@@ -120,10 +122,8 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
         if (unitRecord.ladelistennummerd == null) {
         } else if (unitRecord.ladelistennummerd.toLong() == un.value.value.toLong()) {
             //doppelt gescannt
-            throw RestProblem(
-                    status = Response.Status.OK,
-                    title = ExportService.ResponseMsg.PARCEL_ALREADY_SCANNED.value//"Parcel already scanned"
-            )
+            title =ExportService.ResponseMsg.PARCEL_ALREADY_SCANNED.value //"Parcel already scanned"
+            return mapper.writeValueAsString(title)
         } else {
             //umbuchen auf andere ladeliste
             title = ExportService.ResponseMsg.LL_CHANGED.value//"Loadinglist changed"
@@ -174,8 +174,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
 
         exportUnit(ExportUnitOrder(unitRecord, orderRecord), stationNo)
 
-        val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+
         return mapper.writeValueAsString(title)
     }
 
@@ -476,6 +475,8 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun fillBagStationExport(bagID: String, bagBackUnitNo: String, stationNo: Int, unitNo: String, loadingListNo: String, yellowSealNo: String): String {
+        val mapper = ObjectMapper()
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
         val bag = getAndCheckBag(stationNo, bagID)
         val backUnit = bag.unitNoBack
@@ -644,12 +645,12 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
         var title = ""// "Ok"
         if (unitRecord.ladelistennummerd == null) {
         } else if (unitRecord.ladelistennummerd.toLong() == un.value.value.toLong()) {
-            if (unitRecord.bagbelegnrc == unBack.value.value.toDouble())
-            //doppelt gescannt
-                throw RestProblem(
-                        status = Response.Status.OK,
-                        title = ExportService.ResponseMsg.PARCEL_ALREADY_SCANNED.value//"Parcel already scanned"
-                )
+            if (unitRecord.bagbelegnrc == unBack.value.value.toDouble()){
+                //doppelt gescannt
+                title=ExportService.ResponseMsg.PARCEL_ALREADY_SCANNED.value//"Parcel already scanned"
+                return mapper.writeValueAsString(title)
+            }
+
         } else {
             //umbuchen auf andere ladeliste
             title = ExportService.ResponseMsg.LL_CHANGED.value//"Loadinglist changed"
@@ -673,8 +674,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
             unitRecord.beladelinie = bag.bagNumber!!.toDouble()
         }
         unitRecord.storeWithHistoryExportservice(unitRecord.colliebelegnr.toLong())
-        val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+
         return mapper.writeValueAsString(title)
     }
 
