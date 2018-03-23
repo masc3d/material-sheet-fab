@@ -206,7 +206,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getNewLoadinglistNo(): ExportService.Loadinglist {
-        var loadlistNo: Long = 0
+        var loadlistNo: Long
         do {
             loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 300000
             var checklist = parcelRepository.getParcelsByLoadingList(loadlistNo)
@@ -289,7 +289,7 @@ class ExportService : org.deku.leoz.service.internal.ExportService {
     }
 
     override fun getNewBagLoadinglistNo(): ExportService.Loadinglist {
-        var loadlistNo: Long = 0
+        var loadlistNo: Long
         do {
             loadlistNo = Routines.fTan(dsl.configuration(), counter.LOADING_LIST.value) + 10000
             //da auf ladeliste>100000 geprüft wird für schon geladene aber nicht im Bag wird der Tageszaehler zurückgesetzt sobald 100000 erreicht ist

@@ -24,6 +24,8 @@ import org.deku.leoz.mobile.ui.core.Fragment
 import org.jetbrains.anko.inputMethodManager
 import org.slf4j.LoggerFactory
 import sx.android.hideSoftInput
+import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
@@ -100,7 +102,7 @@ class LoginFragment : Fragment<Any>() {
                 ))
 
         rxLoginTrigger
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .switchMap {
                     Observable.fromCallable {
                         // Verify all fields
@@ -142,8 +144,7 @@ class LoginFragment : Fragment<Any>() {
                 }
                 // Retrying the entire observable (including required triggers, eg. user input)
                 .retry()
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when {
                         it.pending == true -> {

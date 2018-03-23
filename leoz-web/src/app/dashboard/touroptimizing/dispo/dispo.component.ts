@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { takeUntil } from 'rxjs/operators';
 
 import { Message } from 'primeng/components/common/api';
+import { SortEvent } from 'primeng/api';
 import * as moment from 'moment';
 
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
@@ -14,7 +15,6 @@ import { BrowserCheck } from '../../../core/auth/browser-check';
 import { PrintingService } from '../../../core/printing/printing.service';
 import { StoplistReportingService } from '../../../core/reporting/stoplist-reporting.service';
 import { Vehicle } from '../../../core/models/vehicle.model';
-import { SortEvent } from 'primeng/api';
 import { compareCustom } from '../../../core/compare-fn/custom-compare';
 import { roundDecimalsAsString } from '../../../core/math/roundDecimals';
 
@@ -34,7 +34,8 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   public msgs$: Observable<Message[]>;
   public sticky$: Observable<boolean>;
 
-  selectedOptimizableTourIds: Tour[] = []; // tours with more than one shipment
+  selectedTours: Tour[] = [];
+  selectedOptimizableTours: Tour[] = []; // tours with more than one shipment
 
   notMicrodoof: boolean;
 
@@ -51,6 +52,11 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   latestSortField: string = null;
   latestSortOrder = 0;
 
+  dateFormatMedium: string;
+
+  dateFormat: string;
+  aktualTourDate = null;
+
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
                protected touroptimizingService: TouroptimizingService,
@@ -58,11 +64,16 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
                protected printingService: PrintingService,
                protected reportingService: StoplistReportingService,
                protected browserCheck: BrowserCheck ) {
-    super( translate, cd, msgService );
+    super( translate, cd, msgService, () => {
+      this.aktualTourDate = this.initAktualTourDate();
+    } );
   }
+
 
   ngOnInit() {
     super.ngOnInit();
+
+    this.aktualTourDate = this.initAktualTourDate();
 
     this.notMicrodoof = this.browserCheck.browser === 'handsome Browser';
     this.toursLoading$ = this.touroptimizingService.toursLoading$;
@@ -133,13 +144,14 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   protected optimizeTours() {
-    this.selectedOptimizableTourIds = this.tours
-      .filter( tour => tour.selected && tour.orders.length > 1 );
-    if (this.selectedOptimizableTourIds.length === 0) {
+    this.selectedTours = this.tours
+      .filter( tour => tour.selected );
+    this.selectedOptimizableTours = this.selectedTours
+      .filter( tour => tour.orders.length > 1 );
+    if (this.selectedOptimizableTours.length === 0) {
       this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
-      const selectedTourIds = this.tours
-        .filter( tour => tour.selected )
+      const selectedTourIds = this.selectedOptimizableTours
         .map( tour => tour.id );
       let vehicles = [];
       if (this.optimizeSplitTours) {
@@ -186,26 +198,28 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   optimizeDialog() {
-    this.selectedOptimizableTourIds = this.tours
-      .filter( tour => tour.selected && tour.orders.length > 1 );
-    if (this.selectedOptimizableTourIds.length === 0) {
+    this.displayOptimizationOptions = false;
+    this.selectedTours = this.tours
+      .filter( tour => tour.selected );
+    this.selectedOptimizableTours = this.selectedTours
+      .filter( tour => tour.orders.length > 1 );
+    if (this.selectedOptimizableTours.length === 0) {
       this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
       this.displayOptimizationOptions = true;
     }
+    this.cd.markForCheck();
   }
 
   acceptOptimizationOptions() {
     this.optimizeTours();
     this.displayOptimizationOptions = false;
+    this.cd.markForCheck();
   }
 
   rejectOptimizationOptions() {
     this.displayOptimizationOptions = false;
-  }
-
-  formatTourCreationDate( created: string ): string {
-    return moment( created ).format( 'DD.MM. HH:mm' );
+    this.cd.markForCheck();
   }
 
   formatTourDurationTime( duration: number ): string {
@@ -217,6 +231,17 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   roundDecimalsAsStringWrapper( input: number ) {
     return roundDecimalsAsString( input, 10, true );
+  }
+
+  private initAktualTourDate() {
+    const d = new Date();
+    return d;
+  }
+
+  private switchDay( timeline: number ) {
+    const d = new Date( this.aktualTourDate );
+    d.setDate( d.getDate() + (timeline) );
+    this.aktualTourDate = d;
   }
 }
 

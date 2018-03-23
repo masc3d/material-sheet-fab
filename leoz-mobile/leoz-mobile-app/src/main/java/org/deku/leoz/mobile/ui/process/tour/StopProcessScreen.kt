@@ -66,6 +66,8 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
+import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.android.ui.materialdialogs.addAll
@@ -421,8 +423,7 @@ class StopProcessScreen :
         )
 
         aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.onAidcRead(it)
                 }
@@ -448,12 +449,11 @@ class StopProcessScreen :
                 }
 
         this.activity.actionEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
                 // As stop process is currently partially stateless (eg. close stop can be triggered multiple times)
                 // prevent accidental duplicate events leading to confusing dialog order.
                 // This is rather a workaround, stop process should track state at all times.
                 .throttleFirst(250, TimeUnit.MILLISECONDS)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it) {
                         R.id.action_delivery_select_delivered -> {
@@ -531,8 +531,7 @@ class StopProcessScreen :
                     this.tourStop.damagedParcels.blockingFirst()
                 }
         )
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     if (it.count() > 0) {
                         this.processAdapter.addSection(
@@ -561,8 +560,7 @@ class StopProcessScreen :
                     this.tourStop.excludedParcels.blockingFirst()
                 }
         )
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     if (it.count() > 0) {
                         this.processAdapter.addSection(
@@ -732,8 +730,7 @@ class StopProcessScreen :
                 this.tourStop.pendingParcels,
                 this.tourStop.stop
         )
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.actionItems = this.actionItems.apply {
                         first { it.id == R.id.action_delivery_close_stop }
@@ -782,9 +779,19 @@ class StopProcessScreen :
     }
 
     private fun onInput(unitNumber: UnitNumber) {
+        /** Error emission helper */
+        fun emitError() {
+            feedback.error()
+
+            this.activity.snackbarBuilder
+                    .message(R.string.error_invalid_parcel)
+                    .build().show()
+        }
+
         // Regular stop parcels
         this.tourStop
                 .parcels
+                .subscribeOn(db.scheduler)
                 .blockingFirst()
                 .firstOrNull { it.number == unitNumber.value }
                 ?.also {
@@ -793,111 +800,117 @@ class StopProcessScreen :
                 }
 
         // Other stop parcels (merge support)
-        this.parcelRepository
+        val parcel = this.parcelRepository
                 .findByNumber(unitNumber.value)
                 .blockingGet()
-                ?.also { parcel ->
-                    val sourceStop = parcel.order.deliveryTask.stop
-                            ?: throw IllegalStateException("No stop for task")
 
-                    val isMergeAllowed = sourceStop.address.zipCode == this.tourStop.entity.address.zipCode
+        if (parcel == null) {
+            emitError()
+            return
+        }
 
-                    // Stops may only be merged under specific conditions (eg. zipcode matches)
-                    if (isMergeAllowed || true) {
-                        // Parcel does not belong to this delivery stop, ask for stop merge
-                        feedback.warning()
+        val sourceTask = parcel.order.deliveryTask
+        val sourceStop = sourceTask.stop
 
-                        val runnable: Runnable?
-                        var reverseRunnable: Runnable? = null
-                        val animationHandler = Handler()
+        if (sourceStop == null) {
+            log.error("No stop for task [${sourceTask}]")
+            emitError()
+            return
+        }
 
-                        this.mergeDialog = MaterialDialog.Builder(context)
-                                .title(R.string.title_stop_merge)
-                                .iconRes(R.drawable.ic_merge)
-                                .cancelable(true)
-                                .customView(R.layout.dialog_tour_stop_merge, true)
-                                .positiveText(R.string.proceed)
-                                .onPositive { _, _ ->
-                                    log.user { "Merges stop [${sourceStop.address}] into [${tourStop.entity.address}]" }
+        // Stops may only be merged under specific conditions (eg. zipcode matches)
+        val isMergeAllowed = sourceStop.address.zipCode == this.tourStop.entity.address.zipCode
 
-                                    db.store.withTransaction {
-                                        stopRepository.mergeInto(
-                                                source = sourceStop,
-                                                target = tourStop.entity
-                                        )
-                                                .blockingAwait()
-                                    }
-                                            .toCompletable()
-                                            .blockingAwait()
-                                }
-                                .negativeText(android.R.string.no)
-                                .build()
+        if (!isMergeAllowed) {
+            log.warn("Merge is not allowed")
+            emitError()
+            return
+        }
 
-                        val customView = this.mergeDialog?.customView!!
-                        val sourceContainer = customView.findViewById<LinearLayout>(R.id.uxSourceStopContainer)!!
-                        val targetContainer = customView.findViewById<LinearLayout>(R.id.uxtargetStopContainer)!!
-                        val sourceView = customView.findViewById<View>(R.id.uxSourceStop)!!
-                        val targetView = customView.findViewById<View>(R.id.uxTargetStop)!!
+        // Parcel does not belong to this delivery stop, ask for stop merge
+        feedback.warning()
 
-                        runnable = Runnable {
-                            sourceContainer.animate()
-                                    .alpha(0f)
-                                    .translationY(100f)
-                                    .setDuration(1500)
-                                    .setStartDelay(2000)
-                                    .withEndAction(reverseRunnable)
-                                    .start()
+        val runnable: Runnable?
+        var reverseRunnable: Runnable? = null
+        val animationHandler = Handler()
 
-                            targetContainer.animate()
-                                    .translationY(-100f)
-                                    .setDuration(1500)
-                                    .setStartDelay(2000)
-                                    .withEndAction(reverseRunnable)
-                                    .start()
-                        }
+        this.mergeDialog = MaterialDialog.Builder(context)
+                .title(R.string.title_stop_merge)
+                .iconRes(R.drawable.ic_merge)
+                .cancelable(true)
+                .customView(R.layout.dialog_tour_stop_merge, true)
+                .positiveText(R.string.proceed)
+                .onPositive { _, _ ->
+                    log.user { "Merges stop [${sourceStop.address}] into [${tourStop.entity.address}]" }
 
-                        reverseRunnable = Runnable {
-                            sourceContainer.animate()
-                                    .alpha(1f)
-                                    .translationY(0f)
-                                    .setDuration(500)
-                                    .setStartDelay(1000)
-                                    .withEndAction(runnable)
-                                    .start()
-
-                            targetContainer.animate()
-                                    .translationY(0f)
-                                    .setDuration(500)
-                                    .setStartDelay(1000)
-                                    .withEndAction(runnable)
-                                    .start()
-                        }
-
-                        val bindingSourceStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(sourceView)!!
-                        bindingSourceStop.stop = StopViewModel(
-                                stop = sourceStop,
-                                timerEvent = Observable.empty()
+                    db.store.withTransaction {
+                        stopRepository.mergeInto(
+                                source = sourceStop,
+                                target = tourStop.entity
                         )
-
-                        val bindingTargetStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(targetView)!!
-                        bindingTargetStop.stop = StopViewModel(
-                                stop = this.tourStop.entity,
-                                timerEvent = Observable.empty()
-                        )
-
-                        this.mergeDialog?.show()
-
-                        animationHandler.postDelayed(runnable, 0)
-
-                        return
+                                .blockingAwait()
                     }
+                            .toCompletable()
+                            .blockingAwait()
                 }
+                .negativeText(android.R.string.no)
+                .build()
 
-        feedback.error()
+        val customView = this.mergeDialog?.customView!!
+        val sourceContainer = customView.findViewById<LinearLayout>(R.id.uxSourceStopContainer)!!
+        val targetContainer = customView.findViewById<LinearLayout>(R.id.uxtargetStopContainer)!!
+        val sourceView = customView.findViewById<View>(R.id.uxSourceStop)!!
+        val targetView = customView.findViewById<View>(R.id.uxTargetStop)!!
 
-        this.activity.snackbarBuilder
-                .message(R.string.error_invalid_parcel)
-                .build().show()
+        runnable = Runnable {
+            sourceContainer.animate()
+                    .alpha(0f)
+                    .translationY(100f)
+                    .setDuration(1500)
+                    .setStartDelay(2000)
+                    .withEndAction(reverseRunnable)
+                    .start()
+
+            targetContainer.animate()
+                    .translationY(-100f)
+                    .setDuration(1500)
+                    .setStartDelay(2000)
+                    .withEndAction(reverseRunnable)
+                    .start()
+        }
+
+        reverseRunnable = Runnable {
+            sourceContainer.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(500)
+                    .setStartDelay(1000)
+                    .withEndAction(runnable)
+                    .start()
+
+            targetContainer.animate()
+                    .translationY(0f)
+                    .setDuration(500)
+                    .setStartDelay(1000)
+                    .withEndAction(runnable)
+                    .start()
+        }
+
+        val bindingSourceStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(sourceView)!!
+        bindingSourceStop.stop = StopViewModel(
+                stop = sourceStop,
+                timerEvent = Observable.empty()
+        )
+
+        val bindingTargetStop = DataBindingUtil.bind<ItemStopMergeDialogBinding>(targetView)!!
+        bindingTargetStop.stop = StopViewModel(
+                stop = this.tourStop.entity,
+                timerEvent = Observable.empty()
+        )
+
+        this.mergeDialog?.show()
+
+        animationHandler.postDelayed(runnable, 0)
     }
 
     /**
@@ -961,9 +974,8 @@ class StopProcessScreen :
 
     private fun finalizeStop() {
         this.tourStop.finalize()
-                .bindToLifecycle(this)
                 .subscribeOn(db.scheduler)
-                .observeOnMainThread()
+                .observeOnMainThreadWithLifecycle(this)
                 .subscribeBy(
                         onComplete = {
                             this.tour.activeStop = null

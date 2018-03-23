@@ -7,7 +7,7 @@ import { AbstractTranslateComponent } from '../../core/translate/abstract-transl
 @Component( {
   selector: 'app-touroptimizing',
   template: `
-    <p-tabMenu [model]="items"></p-tabMenu>
+    <p-tabMenu [style]="{'marginLeft': '5px'}" [model]="items"></p-tabMenu>
     <div style="background-color: #efefef8c;" class="mbDashboardContent">
         <router-outlet></router-outlet>
     </div>

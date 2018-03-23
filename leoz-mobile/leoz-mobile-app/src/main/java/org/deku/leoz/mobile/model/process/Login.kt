@@ -192,7 +192,7 @@ class Login {
 
             user
         }
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThread()
                 .doOnNext {
                     // Store authenticated user in property
                     this.authenticatedUser = it

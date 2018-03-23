@@ -97,7 +97,7 @@ class AuthorizationService
 
         return AuthorizationService.Response(
                 key = keyRecord.key,
-                user = userRecord.toUser())
+                user = userRecord.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(userRecord.id) })
     }
     //endregion
 

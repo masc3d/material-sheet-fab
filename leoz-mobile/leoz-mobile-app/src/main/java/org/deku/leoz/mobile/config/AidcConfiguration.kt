@@ -48,12 +48,15 @@ class AidcConfiguration {
 
                 when (device.manufacturer.type) {
                     Device.Manufacturer.Type.Honeywell ->
-                        readers.add(HoneywellAidcReader.create(context = instance()))
+                        readers.add(
+                                HoneywellAidcReader.create(context = instance())
+                        )
 
                     else -> Unit
                 }
 
-                Observable.merge(readers).toHotReplay()
+                Observable.merge(readers)
+                        .toHotReplay()
             }
 
             /**

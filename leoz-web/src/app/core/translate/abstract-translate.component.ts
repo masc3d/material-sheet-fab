@@ -13,6 +13,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
   protected ngUnsubscribe: Subject<void> = new Subject<void>();
 
   dateFormat: string;
+  dateFormatMedium: string;
   dateFormatLong: string;
   dateFormatEvenLonger: string;
   dateFormatPrimeng: string;
@@ -37,6 +38,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
       )
       .subscribe( ( lang: string ) => {
         this.dateFormat = this.translate.setDateformat( 'internal' );
+        this.dateFormatMedium = this.translate.setDateformat( 'internalMedium' );
         this.dateFormatLong = this.translate.setDateformat( 'internalLong' );
         this.dateFormatEvenLonger = this.translate.setDateformat( 'internalLonger' );
         this.dateFormatPrimeng = this.translate.setDateformat( 'primeng' );
@@ -47,6 +49,7 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
         this.cd.markForCheck();
       } );
     this.dateFormat = this.translate.setDateformat( 'internal' );
+    this.dateFormatMedium = this.translate.setDateformat( 'internalMedium' );
     this.dateFormatLong = this.translate.setDateformat( 'internalLong' );
     this.dateFormatEvenLonger = this.translate.setDateformat( 'internalLonger' );
     this.dateFormatPrimeng = this.translate.setDateformat( 'primeng' );

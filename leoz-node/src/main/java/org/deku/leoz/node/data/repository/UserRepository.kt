@@ -31,6 +31,7 @@ class UserRepositoryImpl : UserRepositoryExtension {
     @PersistenceContext
     private lateinit var em: EntityManager
 
+
     override fun findByAliasAndDebitorId(alias: String, debitorId: Long): MstUser? {
         return userRepository.findOne(
                 mstUser.alias.eq(alias)
@@ -74,7 +75,8 @@ fun MstUser.toUser(): UserService.User =
                 externalUser = this.isExternalUser,
                 phone = this.phone,
                 phoneMobile = this.phoneMobile,
-                expiresOn = this.expiresOn
+                expiresOn = this.expiresOn,
+                passwordExpiresOn = this.passwordExpiresOn
         )
 
 val MstUser.isActive: Boolean
