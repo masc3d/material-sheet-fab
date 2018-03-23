@@ -120,6 +120,21 @@ class JooqSyncRepository {
     }
 
     /**
+     * Fetch all sync ids
+     * @param table table
+     * @param syncIdField sync-id field
+     */
+    fun <TRecord : Record> findAllSyncIds(
+            table: TableImpl<TRecord>,
+            syncIdField: TableField<out TRecord, Long>): Set<Long> {
+
+        return dsl.select(syncIdField)
+                .from(table)
+                .fetchInto(Long::class.java)
+                .toSet()
+    }
+
+    /**
      * Find minimum and maximum sync id
      * @param table table
      * @param syncIdField sync id field
@@ -138,5 +153,11 @@ class JooqSyncRepository {
 
                     (min..max)
                 }
+    }
+
+    fun <TRecord : Record> count(
+            table: TableImpl<TRecord>
+    ): Long {
+        return dsl.fetchCount(table).toLong()
     }
 }

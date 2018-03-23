@@ -5,7 +5,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.toCompletable
 import io.reactivex.subjects.PublishSubject
-import org.deku.leoz.central.data.jooq.dekuclient.tables.SysSync
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.SysSyncRecord
 import org.deku.leoz.central.data.repository.JooqSyncRepository
 import org.deku.leoz.node.data.jpa.LclSync
@@ -19,19 +18,15 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.TransactionStatus
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import org.threeten.bp.Duration
-import sun.rmi.transport.tcp.TCPEndpoint
 import sx.Stopwatch
 import sx.log.slf4j.debug
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
 import sx.persistence.querydsl.delete
-import sx.persistence.querydsl.from
 import sx.persistence.truncate
 import sx.rx.subscribeOn
-import sx.rx.toHotCache
 import sx.util.toNullable
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -89,6 +84,12 @@ class SyncPreset<TCentralRecord : org.jooq.Record, TEntity>(
         val dstJpaSyncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>?,
         /** Conversion function JOOQ record -> JPA entity */
         val transformation: (TCentralRecord) -> TEntity,
+        /** Perform accurate delete synchronisation (on each sync interval).
+         * By default (false) only outdated sync-ids weil be cleaned.
+         * REMARK: (true) not recommended for large tables, as the entire index of
+         * both source and destination haveto be retrieved and diff'ed
+         */
+        val accurateDeletes: Boolean = false,
         interval: Duration = Duration.ofMinutes(1)
 ) : Preset<TCentralRecord>(
         srcJooqTable = srcJooqTable,
@@ -294,7 +295,7 @@ constructor(
                             clean = clean
                     )
                 } catch (e: Exception) {
-                    log.error("${it} failed. ${e.message}")
+                    log.error("${it} failed. ${e.message}", e)
                 }
             }
 
@@ -417,6 +418,7 @@ constructor(
 
         log.trace { lfmt("sync-ids source [${srcSyncIdRange}] destination [${dstSyncIdRange}]") }
 
+        //region Auto-delete
         if (srcSyncIdRange != null && dstSyncIdRange != null) {
             if (dstJpaSyncIdPath != null && srcJooqSyncIdField != null) {
                 if (dstSyncIdRange.first < srcSyncIdRange.first) {
@@ -431,89 +433,137 @@ constructor(
                     }
                 }
             }
-
-            if (srcSyncIdRange.endInclusive == dstSyncIdRange.endInclusive) {
-                // All records uptodate. Processing ends here.
-                return false
-            }
         }
+        //endregion
 
-        // Get newer records from central
-        // masc20150530. JOOQ cursor requires an explicit transaction
-        transactionJooq.execute<Any> { _ ->
-            // Read source records newer than destination timestamp
-            val source = syncJooqRepository.findNewerThan(
-                    dstSyncIdRange?.endInclusive,
-                    srcJooqTable,
-                    srcJooqSyncIdField)
+        //region Update
+        if (srcSyncIdRange != null && dstSyncIdRange != null &&
+                srcSyncIdRange.endInclusive != dstSyncIdRange.endInclusive) {
 
-            if (source.hasNext()) {
-                // Save to destination/jpa
-                // REMARKS
-                // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
-                log.info(lfmt("outdated [${dstSyncIdRange?.endInclusive}]"))
-                var count = 0
+            // Get newer records from central
+            // masc20150530. JOOQ cursor requires an explicit transaction
+            transactionJooq.execute<Any> { _ ->
+                // Read source records newer than destination timestamp
+                val source = syncJooqRepository.findNewerThan(
+                        dstSyncIdRange?.endInclusive,
+                        srcJooqTable,
+                        srcJooqSyncIdField)
 
-                val JPA_FLUSH_BATCH_SIZE = 100
-                val JPA_TRANSACTION_BATCH_SIZE = 10000
-                val jpaTransactionManager = transactionJpa.transactionManager
-                        ?: throw IllegalStateException()
+                if (source.hasNext()) {
+                    // Save to destination/jpa
+                    // REMARKS
+                    // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
+                    log.info(lfmt("outdated [${dstSyncIdRange?.endInclusive}]"))
+                    var count = 0
 
-                var transaction: TransactionStatus = jpaTransactionManager.getTransaction(transactionJpa)
+                    val JPA_FLUSH_BATCH_SIZE = 100
+                    val JPA_TRANSACTION_BATCH_SIZE = 10000
+                    val jpaTransactionManager = transactionJpa.transactionManager
+                            ?: throw IllegalStateException()
 
-                try {
-                    while (source.hasNext()) {
-                        // Fetch next record
-                        val record = source.fetchNext()
-                        // Convert to entity
-                        val entity = transformation(record)
-                        // Store entity
-                        em.merge(entity)
+                    var transaction: TransactionStatus = jpaTransactionManager.getTransaction(transactionJpa)
 
-                        count++
+                    Stopwatch.createStarted(this, lfmt("updating"), {
+                        try {
+                            while (source.hasNext()) {
+                                // Fetch next record
+                                val record = source.fetchNext()
+                                // Convert to entity
+                                val entity = transformation(record)
+                                // Store entity
+                                em.merge(entity)
 
-                        // Flush every now and then (improves performance)
-                        if (count % JPA_FLUSH_BATCH_SIZE == 0) {
-                            em.flush()
-                            em.clear()
-                        }
+                                count++
 
-                        if (count % JPA_TRANSACTION_BATCH_SIZE == 0) {
+                                // Flush every now and then (improves performance)
+                                if (count % JPA_FLUSH_BATCH_SIZE == 0) {
+                                    em.flush()
+                                    em.clear()
+                                }
+
+                                if (count % JPA_TRANSACTION_BATCH_SIZE == 0) {
+                                    jpaTransactionManager.commit(transaction)
+                                    transaction = jpaTransactionManager.getTransaction(transactionJpa)
+                                }
+                            }
+
                             jpaTransactionManager.commit(transaction)
-                            transaction = jpaTransactionManager.getTransaction(transactionJpa)
+
+                        } catch (e: Throwable) {
+                            jpaTransactionManager.rollback(transaction)
+                            throw e
                         }
+                    })
+
+                    // Re-query destination timestamp
+                    if (dstJpaSyncIdPath != null) {
+                        // Query embedded database for updated latest timestamp
+                        dstSyncIdRange = syncRepository.findSyncIdMinMax(
+                                dstJpaEntityPath,
+                                dstJpaSyncIdPath
+                        )
                     }
 
-                    jpaTransactionManager.commit(transaction)
+                    log.info { lfmt("updated ${count} entities [${dstSyncIdRange?.endInclusive}]") }
 
-                } catch (e: Throwable) {
-                    jpaTransactionManager.rollback(transaction)
-                    throw e
-                }
-
-                // Re-query destination timestamp
-                if (dstJpaSyncIdPath != null) {
-                    // Query embedded database for updated latest timestamp
-                    dstSyncIdRange = syncRepository.findSyncIdMinMax(
-                            dstJpaEntityPath,
-                            dstJpaSyncIdPath
+                    // Emit update event
+                    updatesSubject.onNext(
+                            DatabaseSyncService.UpdateEvent(
+                                    entityType = dstJpaEntityPath.type,
+                                    syncId = dstSyncIdRange?.endInclusive
+                            )
                     )
+                } else {
+                    log.trace { lfmt("uptodate [${dstSyncIdRange?.endInclusive}]") }
                 }
-                log.info { lfmt("updated ${count} entities [${dstSyncIdRange?.endInclusive}]") }
 
-                // Emit update event
-                updatesSubject.onNext(
-                        DatabaseSyncService.UpdateEvent(
-                                entityType = dstJpaEntityPath.type,
-                                syncId = dstSyncIdRange?.endInclusive
-                        )
-                )
-            } else {
-                log.trace { lfmt("uptodate [${dstSyncIdRange?.endInclusive}]") }
+                null
             }
-
-            null
         }
+        //endregion
+
+        //region Accurate delete
+        if (accurateDeletes) {
+            if (srcJooqSyncIdField != null && dstJpaSyncIdPath != null) {
+                val srcCount = Stopwatch.createStarted(this, lfmt("SRC_FETCHCOUNT"), {
+                    syncJooqRepository.count(srcJooqTable)
+                })
+
+                val dstCount = Stopwatch.createStarted(this, lfmt("DST_FETCHCOUNT"), {
+                    syncRepository.count(dstJpaEntityPath)
+                })
+
+                if (srcCount != dstCount) {
+                    log.info { lfmt("performing accurate delete due to source [${srcCount}] <> [${dstCount}]") }
+
+                    val srcSyncIds = Stopwatch.createStarted(this, lfmt("SRC_FINDALLSYNCIDS"), {
+                        syncJooqRepository.findAllSyncIds(
+                                srcJooqTable,
+                                srcJooqSyncIdField
+                        )
+                    })
+
+                    val dstSyncIds = Stopwatch.createStarted(this, lfmt("DST_FINDALLSYNCIDS"), {
+                        syncRepository.findAllSyncIds(
+                                dstJpaEntityPath,
+                                dstJpaSyncIdPath
+                        )
+                    })
+
+                    val toDelete = dstSyncIds.subtract(srcSyncIds)
+
+                    log.debug { lfmt("deleting ${toDelete.count()} entities") }
+
+                    transactionJpa.execute { _ ->
+                        em.delete(
+                                dstJpaEntityPath,
+                                dstJpaSyncIdPath.`in`(toDelete)
+                        )
+                    }
+                }
+            }
+        }
+        //endregion
 
         return true
     }

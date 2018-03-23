@@ -1,5 +1,7 @@
 package org.deku.leoz.node.data.repository
 
+import com.querydsl.core.types.dsl.EntityPathBase
+import com.querydsl.core.types.dsl.NumberPath
 import org.deku.leoz.node.data.jpa.LclSync
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
@@ -24,9 +26,19 @@ interface SyncRepositoryExtension {
      * @param syncIdPath querydsl sync id field path
      */
     fun <TEntity> findSyncIdMinMax(
-            entityPath: com.querydsl.core.types.dsl.EntityPathBase<TEntity>,
-            syncIdPath: com.querydsl.core.types.dsl.NumberPath<Long>
+            entityPath: EntityPathBase<TEntity>,
+            syncIdPath: NumberPath<Long>
     ): LongRange?
+
+    fun <TEntity> findAllSyncIds(
+            entityPath: EntityPathBase<TEntity>,
+            syncIdPath: NumberPath<Long>
+    ): Set<Long>
+
+    fun <TEntity> count(
+            entityPath: EntityPathBase<TEntity>
+    ): Long
+
 }
 
 class SyncRepositoryExtensionImpl : SyncRepositoryExtension {
@@ -47,5 +59,20 @@ class SyncRepositoryExtensionImpl : SyncRepositoryExtension {
 
                     (min..max)
                 }
+    }
+
+    override fun <TEntity> findAllSyncIds(
+            entityPath: EntityPathBase<TEntity>,
+            syncIdPath: NumberPath<Long>
+    ): Set<Long> {
+
+        return em.from(entityPath)
+                .select(syncIdPath)
+                .fetch()
+                .toSet()
+    }
+
+    override fun <TEntity> count(entityPath: EntityPathBase<TEntity>): Long {
+        return em.from(entityPath).fetchCount()
     }
 }
