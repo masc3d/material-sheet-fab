@@ -40,6 +40,9 @@ class AuthorizationService
     @Inject
     private lateinit var keyRepository: JooqKeyRepository
 
+    @Inject
+    private lateinit var stationJooqRepository: JooqStationRepository
+
     //region REST
     /**
      * Authorize user
@@ -97,7 +100,7 @@ class AuthorizationService
 
         return AuthorizationService.Response(
                 key = keyRecord.key,
-                user = userRecord.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(userRecord.id) })
+                user = userRecord.toUser().also { x -> x.allowedStations = stationJooqRepository.findAllowedStationsByUserId(userRecord.id) })
     }
     //endregion
 
