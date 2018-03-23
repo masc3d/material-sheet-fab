@@ -4,7 +4,10 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.log.user
@@ -69,25 +72,32 @@ class Tour : CompositeDisposableSupplier {
         this.pendingStops.map { it.value }
                 .subscribe { parcels ->
                     log.trace("Sending tour update")
-                    this.mqttEndpoints.central.main.channel().send(
-                            TourServiceV1.TourUpdate(tour = TourServiceV1.Tour(
-                                    nodeUid = identity.uid.value,
-                                    userId = login.authenticatedUser?.id?.toLong() ?: 0,
-                                    stops = parcels.map { stop ->
-                                        TourServiceV1.Stop(
-                                                tasks = stop.tasks.map {
-                                                    TourServiceV1.Task(
-                                                            orderId = it.order.id,
-                                                            taskType = when (it.type) {
-                                                                OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
-                                                                OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
-                                                            }
-                                                    )
-                                                }
-                                        )
-                                    }
-                            ))
-                    )
+
+                    Observable.fromCallable {
+                        this.mqttEndpoints.central.main.channel().send(
+                                TourServiceV1.TourUpdate(tour = TourServiceV1.Tour(
+                                        nodeUid = identity.uid.value,
+                                        userId = login.authenticatedUser?.id?.toLong() ?: 0,
+                                        stops = parcels.map { stop ->
+                                            TourServiceV1.Stop(
+                                                    tasks = stop.tasks.map {
+                                                        TourServiceV1.Task(
+                                                                orderId = it.order.id,
+                                                                taskType = when (it.type) {
+                                                                    OrderTask.TaskType.DELIVERY -> TourServiceV1.Task.Type.DELIVERY
+                                                                    OrderTask.TaskType.PICKUP -> TourServiceV1.Task.Type.PICKUP
+                                                                }
+                                                        )
+                                                    }
+                                            )
+                                        }
+                                ))
+                        )
+                    }
+                            .subscribeOn(Schedulers.io())
+                            .subscribeBy(onError = {
+                                log.error("Error sending tour update [${it.message}]", it)
+                            })
                 }
                 .bind(this)
     }

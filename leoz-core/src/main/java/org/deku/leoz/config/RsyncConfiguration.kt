@@ -17,7 +17,6 @@ open class RsyncConfiguration {
 
         init {
             Rsync.executable.baseFilename = "leoz-rsync"
-            log.info("Using [${Rsync.executable.file}]")
         }
 
         /**

@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { RoleGuard } from './role.guard';
 import { MsgService } from '../../shared/msg/msg.service';
 import { User } from '../../dashboard/user/user.model';
 import { Station } from './station.model';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class AuthenticationService {
@@ -18,17 +18,17 @@ export class AuthenticationService {
   private debitorUrl = `${environment.apiUrl}/internal/v1/station/debitor/`;
 
   private debitorStationsSubject = new BehaviorSubject<Station[]>( null );
-  public debitorStations$ = this.debitorStationsSubject.asObservable().distinctUntilChanged();
+  public debitorStations$ = this.debitorStationsSubject.asObservable().pipe(distinctUntilChanged());
 
   private activeStationSubject = new BehaviorSubject<Station>( null );
-  public activeStation$ = this.activeStationSubject.asObservable().distinctUntilChanged();
+  public activeStation$ = this.activeStationSubject.asObservable().pipe(distinctUntilChanged());
 
   constructor( private router: Router,
                private http: HttpClient,
                private roleGuard: RoleGuard,
                private msgService: MsgService ) {
-    this.debitorStationsSubject.next(JSON.parse( localStorage.getItem( 'debitorStations' ) ) );
-    this.activeStationSubject.next(JSON.parse( localStorage.getItem( 'activeStation' ) ) );
+    this.debitorStationsSubject.next( JSON.parse( localStorage.getItem( 'debitorStations' ) ) );
+    this.activeStationSubject.next( JSON.parse( localStorage.getItem( 'activeStation' ) ) );
   }
 
   logout() {
@@ -49,27 +49,28 @@ export class AuthenticationService {
 
     return this.http.patch( this.authUrl, body, {
       observe: 'response'
-    } ).map( ( response: HttpResponse<any> ) => {
-      if (response.status === 200) {
-        const userJson = response.body;
-        const user: User = userJson[ 'user' ];
-        this.roleGuard.userRole = user.role;
-        if (user.active) {
-          localStorage.setItem( 'currentUser', JSON.stringify( userJson ) );
-          localStorage.setItem('version', environment.version );
-          this.fetchStations( user.debitorId );
-        } else {
-          this.msgService.error( 'user account deactivated' );
+    } ).pipe(
+      map( ( response: HttpResponse<any> ) => {
+        if (response.status === 200) {
+          const userJson = response.body;
+          const user: User = userJson[ 'user' ];
+          this.roleGuard.userRole = user.role;
+          if (user.active) {
+            localStorage.setItem( 'currentUser', JSON.stringify( userJson ) );
+            localStorage.setItem( 'version', environment.version );
+            this.fetchStations( user.debitorId );
+          } else {
+            this.msgService.error( 'user account deactivated' );
+          }
         }
-      }
-      return response;
-    } );
+        return response;
+      } ) );
   }
 
   public fetchStations( debitorId: number ) {
     this.http.get<Station[]>( this.debitorUrl + debitorId.toString() )
       .subscribe( ( stations ) => {
-          const debitorStations = stations.map( ( station: Station ) => <Station>{
+          const debitorStations = stations.map( ( station: Station ) => <Station> {
             stationNo: station.stationNo,
             exportValuablesAllowed: station.exportValuablesAllowed,
             exportValuablesWithoutBagAllowed: station.exportValuablesWithoutBagAllowed
@@ -90,7 +91,7 @@ export class AuthenticationService {
             exportValuablesAllowed: false,
             exportValuablesWithoutBagAllowed: false
           };
-          localStorage.setItem( 'debitorStations', JSON.stringify( [-1] ) );
+          localStorage.setItem( 'debitorStations', JSON.stringify( [ -1 ] ) );
           this.changeActiveStation( defaultStation );
         } );
   }

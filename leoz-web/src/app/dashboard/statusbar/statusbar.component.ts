@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { takeUntil } from 'rxjs/operators';
+
 import { InetConnectionService } from '../../core/inet-connection.service';
 import { AbstractTranslateComponent } from '../../core/translate/abstract-translate.component';
 import { TranslateService } from '../../core/translate/translate.service';
@@ -47,7 +49,9 @@ export class StatusbarComponent extends AbstractTranslateComponent implements On
   ngOnInit() {
     super.ngOnInit();
     this.ics.isOnline$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( (isOnline: boolean) => {
         this.isOnline = isOnline;
         this.cd.markForCheck();

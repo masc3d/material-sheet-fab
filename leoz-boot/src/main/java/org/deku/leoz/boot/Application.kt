@@ -1,12 +1,15 @@
 package org.deku.leoz.boot
 
 import com.beust.jcommander.JCommander
+import com.beust.jcommander.ParameterException
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.boot.config.*
 import org.slf4j.LoggerFactory
 import io.reactivex.rxkotlin.subscribeBy
+import org.deku.leoz.bundle.BundleType
+import org.deku.leoz.service.internal.DiscoveryService
 import java.awt.GraphicsEnvironment
 
 /**
@@ -41,7 +44,6 @@ class Application {
                 })
 
                 // Injection setup
-                log.info("Setting up injection")
                 Kodein.global.addImport(ApplicationConfiguration.module)
                 Kodein.global.addImport(StorageConfiguration.module)
                 Kodein.global.addImport(LogConfiguration.module)
@@ -50,14 +52,37 @@ class Application {
                 Kodein.global.addImport(RestClientConfiguration.module)
                 Kodein.global.addImport(BundleConfiguration.module)
                 Kodein.global.addImport(SshConfiguration.module)
-                log.info("Done setting up injection")
 
                 val settings = Kodein.global.instance<Settings>()
-                log.info("${settings}")
 
                 // Parse leoz-boot command line
                 val jc = JCommander(settings)
-                jc.parse(*args)
+                jc.programName = BundleType.LEOZ_BOOT.value
+                jc.setAcceptUnknownOptions(true)
+
+                try {
+                    jc.parse(*args)
+                }
+                catch(e: ParameterException) {
+                    log.error(e.message)
+                    jc.usage()
+                    System.exit(-1)
+                    return
+                }
+
+                if (jc.unknownOptions.size > 0) {
+                    jc.usage()
+                    System.exit(-1)
+                    return
+                }
+
+                log.info("Settings [${settings}]")
+
+                Kodein.global.instance<RsyncConfiguration>()
+                Kodein.global.instance<DiscoveryService>().also {
+                    if (settings.discover)
+                        it.start()
+                }
 
                 if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
                     Boot().boot(settings).subscribeBy(
@@ -72,7 +97,8 @@ class Application {
                     javafx.application.Application.launch(org.deku.leoz.boot.fx.Application::class.java)
                 }
 
-            } catch (e: Exception) {
+            }
+            catch (e: Exception) {
                 log.error(e.message, e)
                 System.exit(-1)
             }

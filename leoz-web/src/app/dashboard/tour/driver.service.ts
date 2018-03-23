@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/observable/of';
+import { distinctUntilChanged} from 'rxjs/operators';
+
 import { environment } from '../../../environments/environment';
 import { Driver } from './driver.model';
 import { MsgService } from '../../shared/msg/msg.service';
@@ -16,10 +14,10 @@ export class DriverService {
   private driverListUrl = `${environment.apiUrl}/internal/v1/user`;
 
   private driversSubject = new BehaviorSubject<Driver[]>( [] );
-  public drivers$ = this.driversSubject.asObservable().distinctUntilChanged();
+  public drivers$ = this.driversSubject.asObservable().pipe(distinctUntilChanged());
 
   private currentDriversSubject = new BehaviorSubject<Driver>( <Driver> {} );
-  public currentDriver$ = this.currentDriversSubject.asObservable().distinctUntilChanged();
+  public currentDriver$ = this.currentDriversSubject.asObservable().pipe(distinctUntilChanged());
 
   constructor( private http: HttpClient,
                private msgService: MsgService,

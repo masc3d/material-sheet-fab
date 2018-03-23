@@ -8,4 +8,5 @@ interface Dimension {
 export interface Parcel extends Dimension {
   id: number;
   dimension: Dimension;
+  lastDeliveryListId?: number;
 }

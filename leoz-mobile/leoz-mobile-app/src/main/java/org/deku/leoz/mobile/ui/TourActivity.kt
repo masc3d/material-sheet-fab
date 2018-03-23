@@ -32,6 +32,7 @@ import org.deku.leoz.mobile.ui.process.tour.StopProcessScreen
 import org.deku.leoz.model.UnitNumber
 import org.slf4j.LoggerFactory
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadWithLifecycle
 import java.util.*
 
 /**
@@ -131,9 +132,8 @@ class TourActivity : Activity(),
         when (entryType) {
             MenuScreen.EntryType.LOADING -> {
                 this.orderRepository.hasOutdatedOrders()
-                        .bindToLifecycle(this)
                         .subscribeOn(db.scheduler)
-                        .observeOnMainThread()
+                        .observeOnMainThreadWithLifecycle(this)
                         .subscribeBy(
                                 onError = {
                                     log.error(it.message, it)

@@ -27,7 +27,6 @@ import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter
-import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.io.File
 import java.util.*
@@ -50,8 +49,6 @@ import javax.sql.DataSource
 class PersistenceConfiguration {
     companion object {
         const val QUALIFIER = "db_embedded"
-        const val QUALIFIER_JOOQ = "db_embedded_jooq"
-        const val QUALIFIER_SERVER = "db_embedded_server"
     }
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java.name)
@@ -135,7 +132,7 @@ class PersistenceConfiguration {
     //region JPA
     @Bean
     @Qualifier(QUALIFIER)
-    fun transactionManager(emf: EntityManagerFactory): PlatformTransactionManager {
+    fun transactionManager(emf: EntityManagerFactory): JpaTransactionManager {
         val transactionManager = JpaTransactionManager()
         transactionManager.entityManagerFactory = emf
         transactionManager.dataSource = this.dataSource
@@ -246,22 +243,22 @@ class PersistenceConfiguration {
 
     //region JOOQ
     @get:Bean
-    @get:Qualifier(QUALIFIER_JOOQ)
+    @get:Qualifier(QUALIFIER)
     val jooqTransactionAwareDataSourceProxy: TransactionAwareDataSourceProxy
         get() = TransactionAwareDataSourceProxy(this.dataSource)
 
     @get:Bean
-    @get:Qualifier(QUALIFIER_JOOQ)
+    @get:Qualifier(QUALIFIER)
     val jooqTransactionManager: DataSourceTransactionManager
         get() = DataSourceTransactionManager(this.dataSource)
 
     @get:Bean
-    @get:Qualifier(QUALIFIER_JOOQ)
+    @get:Qualifier(QUALIFIER)
     val jooqConnectionProvider: DataSourceConnectionProvider
         get() = DataSourceConnectionProvider(this.jooqTransactionAwareDataSourceProxy)
 
     @get:Bean
-    @get:Qualifier(QUALIFIER_JOOQ)
+    @get:Qualifier(QUALIFIER)
     val dsl: DefaultDSLContext
         get() {
             val settings = org.jooq.conf.Settings().withStatementType(StatementType.PREPARED_STATEMENT)

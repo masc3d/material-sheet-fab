@@ -46,7 +46,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-version = '0.185-SNAPSHOT'
+version = '0.190-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
@@ -89,9 +89,7 @@ sourceSets {
 
 // TODO: to be removed when spring-boot goes final
 repositories {
-    maven {
-        url 'https://repo.spring.io/libs-snapshot'
-    }
+    maven { url 'http://repo.spring.io/libs-milestone' }
 }
 
 dependencies {

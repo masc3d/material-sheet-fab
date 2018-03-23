@@ -81,6 +81,7 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.SimulatingAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.view.setIconTint
 import sx.android.view.setIconTintRes
 import sx.log.slf4j.trace
@@ -812,8 +813,7 @@ abstract class Activity : BaseActivity(),
                                 }
                     }
                 }
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribeBy(
                         onNext = {
                             it.value?.also { event ->
@@ -871,8 +871,7 @@ abstract class Activity : BaseActivity(),
         //region AIDC
         this.aidcReader.enabledProperty
                 .distinctUntilChanged()
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe { enabled ->
                     log.debug("AIDC reader ${if (enabled.value) "enabled" else "disabled"}")
                     val aidcActionItem = this.uxActionOverlay.items
@@ -901,8 +900,7 @@ abstract class Activity : BaseActivity(),
         this.aidcReader.bindActivity(this)
 
         this.cameraReader.readEvent
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
                     this.feedback.acknowledge()
 
@@ -913,8 +911,7 @@ abstract class Activity : BaseActivity(),
                 }
 
         this.locationServices.locationSettingsChangedEvent
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
                     log.trace("Location settings change detected")
                     checkLocationSettings()
@@ -924,8 +921,7 @@ abstract class Activity : BaseActivity(),
                 .interval(5, TimeUnit.MINUTES)
                 .map { this.ntpTime.deviation.toOptional() }
                 .filterSome()
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe { deviation ->
                     log.trace("TrueTime observable emit value [$deviation]")
                     if (deviation.abs() > Duration.ofSeconds(150)) {

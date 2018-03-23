@@ -46,6 +46,7 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
@@ -62,7 +63,7 @@ class VehicleUnloadingScreen :
         fun onVehicleUnloadingFinalized()
     }
 
-    val listener by lazy { this.activity as? Listener }
+    val listener by listenerDelegate<Listener>()
 
     /**
      * Created by masc on 10.07.17.
@@ -259,8 +260,7 @@ class VehicleUnloadingScreen :
         )
 
         aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.onAidcRead(it)
                 }
@@ -371,8 +371,7 @@ class VehicleUnloadingScreen :
                     this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
                 }
         )
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     if (it.count() > 0) {
                         this.parcelListAdapter.addSection(

@@ -14,6 +14,8 @@ import org.jooq.DSLContext
 import org.jooq.UpdatableRecord
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import sx.time.threeten.toLocalDateTimeBp
+import java.sql.Timestamp
 import java.util.*
 import javax.inject.Inject
 
@@ -67,12 +69,13 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
             if (it.dataType.typeName.equals("timestamp")) {
 
                 val dtOld = it.original(this) as Date?
+                val dtOldTimestamp = (it.original(this) as Timestamp?)?.toLocalDateTime()
                 val dtOldValue: String
                 if (dtOld == null) {
                     dtOldValue = "null"
-                } else if (dtOld.year + 1900 <= 1900) {
+                } else if (dtOldTimestamp!!.year <= 1900) {
                     dtOldValue = dtOld.toShortTime().toString()
-                } else if (dtOld.hours == 0 && dtOld.minutes == 0 && dtOld.seconds == 0) {
+                } else if (dtOldTimestamp.hour == 0 && dtOldTimestamp.minute == 0 && dtOldTimestamp.second == 0) {
                     dtOldValue = dtOld.toGregorianLongDateString()
                 } else {
                     dtOldValue = dtOld.toGregorianLongDateTimeString()
@@ -80,12 +83,13 @@ fun <R : UpdatableRecord<R>> UpdatableRecord<R>.storeWithHistory(unitNo: Long, c
                 fieldHistoryRecord.oldvalue = dtOldValue
 
                 val dt = it.getValue(this) as Date?
+                val dtTimestamp = (it.getValue(this) as Timestamp?)?.toLocalDateTime()
                 val dtNewValue: String
                 if (dt == null) {
                     dtNewValue = "null"
-                } else if (dt.year + 1900 <= 1900) {
+                } else if (dtTimestamp!!.year <= 1900) {
                     dtNewValue = dt.toShortTime().toString()
-                } else if (dt.hours == 0 && dt.minutes == 0 && dt.seconds == 0) {
+                } else if (dtTimestamp.hour == 0 && dtTimestamp.minute == 0 && dtTimestamp.second == 0) {
                     dtNewValue = dt.toGregorianLongDateString()
                 } else {
                     dtNewValue = dt.toGregorianLongDateTimeString()

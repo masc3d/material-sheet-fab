@@ -9,6 +9,7 @@ import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.service.internal.sync.EntityConsumer
 import org.deku.leoz.node.service.internal.sync.EntityPublisher
+import org.deku.leoz.node.service.internal.sync.Preset
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -81,7 +82,10 @@ class EntitySyncTest {
                 notificationEndpoint = notificationChannelConfig,
                 requestEndpoint = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
-                listenerExecutor = Executors.newSingleThreadExecutor())
+                listenerExecutor = Executors.newSingleThreadExecutor(),
+                presets = listOf(
+                        Preset(type = MstRoute::class.java)
+                ))
     }
 
     @After

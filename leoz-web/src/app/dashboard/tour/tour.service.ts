@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import { distinctUntilChanged } from 'rxjs/operators';
+
+import * as moment from 'moment';
+
 import { environment } from '../../../environments/environment';
 import { Position } from './position.model';
 import { MsgService } from '../../shared/msg/msg.service';
@@ -8,8 +13,6 @@ import { Driver } from './driver.model';
 import { MarkerModel } from './tour-map/marker.model';
 import { TranslateService } from '../../core/translate/translate.service';
 import { DriverService } from './driver.service';
-import * as moment from 'moment';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import RoleEnum = Driver.RoleEnum;
 import { InetConnectionService } from '../../core/inet-connection.service';
 
@@ -24,19 +27,19 @@ export class TourService {
   };
 
   private displayMarkerSubject = new BehaviorSubject<boolean>( false );
-  public displayMarker$ = this.displayMarkerSubject.asObservable().distinctUntilChanged();
+  public displayMarker$ = this.displayMarkerSubject.asObservable().pipe(distinctUntilChanged());
 
   private activeMarkerSubject = new BehaviorSubject<MarkerModel>( this.homebase );
-  public activeMarker$ = this.activeMarkerSubject.asObservable().distinctUntilChanged();
+  public activeMarker$ = this.activeMarkerSubject.asObservable().pipe(distinctUntilChanged());
 
   private allMarkersSubject = new BehaviorSubject<MarkerModel[]>( [] );
-  public allMarkers$ = this.allMarkersSubject.asObservable().distinctUntilChanged();
+  public allMarkers$ = this.allMarkersSubject.asObservable().pipe(distinctUntilChanged());
 
   private displayRouteSubject = new BehaviorSubject<boolean>( false );
-  public displayRoute$ = this.displayRouteSubject.asObservable().distinctUntilChanged();
+  public displayRoute$ = this.displayRouteSubject.asObservable().pipe(distinctUntilChanged());
 
   private activeRouteSubject = new BehaviorSubject<Position[]>( <Position[]> [] );
-  public activeRoute$ = this.activeRouteSubject.asObservable().distinctUntilChanged();
+  public activeRoute$ = this.activeRouteSubject.asObservable().pipe(distinctUntilChanged());
 
   private locationUrl = `${environment.apiUrl}/internal/v2/location/recent`;
   private locationFromToUrl = `${environment.apiUrl}/internal/v2/location`;

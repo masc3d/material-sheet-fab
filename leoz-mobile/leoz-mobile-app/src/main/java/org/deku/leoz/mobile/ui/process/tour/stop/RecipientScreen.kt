@@ -20,6 +20,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.entity.Stop
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
 import org.jetbrains.anko.inputMethodManager
@@ -33,7 +34,7 @@ import sx.android.showSoftInput
  * Neighbour delivery screen
  * Created by phpr on 10.07.2017.
  */
-class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameters>() {
+class RecipientScreen : ScreenFragment<RecipientScreen.Parameters>() {
 
     @Parcel(Parcel.Serialization.BEAN)
     class Parameters @ParcelConstructor constructor(
@@ -41,14 +42,10 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
     )
 
     interface Listener {
-        fun onNeighbourDeliveryScreenContinue(neighbourName: String)
+        fun onRecipientScreenComplete(neighbourName: String)
     }
 
-    private val listener by lazy {
-        this.targetFragment as? Listener
-                ?: this.parentFragment as? Listener
-                ?: this.activity as? Listener
-    }
+    private val listener by listenerDelegate<Listener>()
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val db: Database by Kodein.global.lazy.instance()
@@ -65,6 +62,8 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
         super.onCreate(savedInstanceState)
 
         this.retainInstance = true
+
+        this.headerImage = Headers.delivery
         this.title = getString(R.string.title_alternativedelivery)
         this.scrollCollapseMode = ScrollCollapseModeType.ExitUntilCollapsed
     }
@@ -147,7 +146,7 @@ class NeighbourDeliveryScreen : ScreenFragment<NeighbourDeliveryScreen.Parameter
         )
                 .subscribe {
                     this.context.inputMethodManager.hideSoftInput()
-                    this.listener?.onNeighbourDeliveryScreenContinue(
+                    this.listener?.onRecipientScreenComplete(
                             neighbourName = this.uxNeighboursName.text.toString()
                     )
                 }

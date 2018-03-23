@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 import { User } from './user.model';
 import { environment } from '../../../environments/environment';
 import { MsgService } from '../../shared/msg/msg.service';
-import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from '@angular/common/http';
 import { InetConnectionService } from 'app/core/inet-connection.service';
 
 @Injectable()
@@ -14,10 +15,10 @@ export class UserService {
   private userListUrl = `${environment.apiUrl}/internal/v1/user`;
 
   private usersSubject = new BehaviorSubject<User[]>( [] );
-  public users$ = this.usersSubject.asObservable().distinctUntilChanged();
+  public users$ = this.usersSubject.asObservable().pipe(distinctUntilChanged());
 
   private activeUserSubject = new BehaviorSubject<User>( <User> {} );
-  public activeUser$ = this.activeUserSubject.asObservable().distinctUntilChanged();
+  public activeUser$ = this.activeUserSubject.asObservable().pipe(distinctUntilChanged());
 
   constructor( private http: HttpClient,
                private msgService: MsgService,

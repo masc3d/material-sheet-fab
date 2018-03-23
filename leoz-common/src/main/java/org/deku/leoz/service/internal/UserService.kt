@@ -36,6 +36,7 @@ interface UserService {
      * Created by 27694066 on 25.04.2017.
      */
     @ApiModel(description = "User Model")
+    @Serializable(0x4b4e300fc8dec6)
     data class User(
             @get:ApiModelProperty(value = "User id")
             var id: Int? = null,
@@ -82,6 +83,7 @@ interface UserService {
             //@get:ApiModelProperty(example = "[\"220\",\"221\"]", required = false, value = "allowed stations")
             //@get:ApiModelProperty(example = ["220","221"], required = false, value = "allowed stations")
             //@get:ApiModelProperty(example = "220,221", dataType = "Array<String>", required = false, value = "allowed stations")
+            //@get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
             @get:ApiModelProperty(example = "[220,221]", required = false, value = "allowed stations")
             var allowedStations: List<Int>? = null,
 
@@ -193,4 +195,9 @@ interface UserService {
     @Path("/auth/configuration")
     @ApiOperation(value = "Get user configuration for current user")
     fun getCurrentUserConfiguration(): String
+
+    @GET
+    @Path("/id")
+    @ApiOperation(value = "Get user id(s) by debitor id")
+    fun getIdsByDebitor(debitorId: Int): List<Int>
 }

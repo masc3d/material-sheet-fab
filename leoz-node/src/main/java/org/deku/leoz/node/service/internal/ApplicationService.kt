@@ -5,6 +5,7 @@ import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.EntitySyncNodeConfiguration
+import org.deku.leoz.node.service.internal.sync.EntityConsumer
 import org.deku.leoz.service.internal.ApplicationService.Version
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.update.BundleUpdateService
@@ -32,7 +33,7 @@ class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
     private lateinit var bundleUpdateService: BundleUpdateService
 
     @Inject
-    private lateinit var entitySyncNodeConfiguration: Optional<EntitySyncNodeConfiguration>
+    private lateinit var entityConsumer: Optional<EntityConsumer>
 
     override fun restart() {
         val bundleInstaller = sx.packager.BundleInstaller(
@@ -62,8 +63,8 @@ class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
     }
 
     override fun syncWithRemoteNode(clean: Boolean) {
-        this.entitySyncNodeConfiguration.ifPresent {
-            it.requestEntities(clean = clean)
+        this.entityConsumer.ifPresent {
+            it.request(clean = clean)
         }
     }
 

@@ -166,7 +166,7 @@ class ImportService : org.deku.leoz.service.internal.ImportService {
         val parcelLength = parcel.length ?: 0
         val parcelWidth = parcel.width ?: 0
         val parcelHeight = parcel.height ?: 0
-        var parcelEffWeight = 0.0
+        var parcelEffWeight:Double
         var orderSumWeight = orderRecord.gewichtgesamt ?: 0.0
         if (parcelWeight > 0 && parcelWeight != parcelOriginal.realWeight) {
             parcelWeightChanged = true

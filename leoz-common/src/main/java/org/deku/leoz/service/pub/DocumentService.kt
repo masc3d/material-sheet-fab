@@ -39,9 +39,11 @@ interface DocumentService {
             var city: String = "Neuenstein"
             @ApiModelProperty(position = 80, required = true, value = "Zip code", example = "36286")
             var zipCode: String = "36286"
-            @ApiModelProperty(position = 90, required = false, value = "Phone", example = "+49 6677 950")
+            @ApiModelProperty(position = 90, required = true, value = "Country code", example = "DE")
+            var country: String = "DE"
+            @ApiModelProperty(position = 100, required = false, value = "Phone", example = "+49 6677 950")
             var phone: String? = null
-            @ApiModelProperty(position = 100, required = false, value = "Notice", example = "Hinten klingeln")
+            @ApiModelProperty(position = 110, required = false, value = "Notice", example = "Hinten klingeln")
             var notice: String? = null
         }
 
@@ -49,7 +51,7 @@ interface DocumentService {
         var parcelNumber: String = "10010000001"
         @ApiModelProperty(position = 20, required = true, value = "Order Number", notes = "Without check digit", example = "10010000001")
         var orderNumber: String = "10010000001"
-        @ApiModelProperty(position = 30, required = true, value = "Client Station Number", example = "100")
+        @ApiModelProperty(position = 30, required = true, value = "Client Station Number", example = "999")
         var clientStationNo: String = "999"
         @ApiModelProperty(position = 40, required = true, value = "Consignor")
         var consignor: LabelParticipant = LabelParticipant()
@@ -61,6 +63,10 @@ interface DocumentService {
         var parcelAmount: Int? = null
         @ApiModelProperty(position = 80, required = false, value = "Parcel position", example = "2") @DefaultValue("1")
         var parcelPosition: Int? = null
+        @ApiModelProperty(position = 90, required = true, value = "Parcel weight", example = "5.50") @DefaultValue("1.0")
+        var weight: Double? = null
+        @ApiModelProperty(position = 100, required = false, value = "Services", example = "Postbox allowed") @DefaultValue("1.0")
+        var services: List<String>? = null
     }
 
     @GET
@@ -69,7 +75,7 @@ interface DocumentService {
     @Produces(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM)
     fun printParcelLabel(
             @ApiParam(value = "Label request", required = false) labelRequest: LabelRequest? = null,
-            @QueryParam(PARCELID) @ApiParam(value = "Parcel ID", required = false) parcelId: Long? = null,
-            @QueryParam(PARCELNO) @ApiParam(value = "Parcel Number", required = false) parcelNo: String? = null
+            @QueryParam(PARCELID) @ApiParam(value = "Parcel ID", required = false) parcelId: Long? = null,      //TODO To be removed as this can be called via ParcelService??
+            @QueryParam(PARCELNO) @ApiParam(value = "Parcel Number", required = false) parcelNo: String? = null //TODO To be removed as this can be done via ParcelService??
     ): Response
 }

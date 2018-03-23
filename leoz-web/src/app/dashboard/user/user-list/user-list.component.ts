@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { takeUntil } from 'rxjs/operators';
 
-import { SortMeta } from 'primeng/api';
+import { SortEvent } from 'primeng/api';
 
 import { UserService } from '../user.service';
 import { User } from '../user.model';
@@ -10,50 +11,50 @@ import { TranslateService } from '../../../core/translate/translate.service';
 import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 import { PermissionCheck } from '../../../core/auth/permission-check';
 import { RoleGuard } from '../../../core/auth/role.guard';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { compareCustom } from '../../../core/compare-fn/custom-compare';
 
 @Component( {
   selector: 'app-user-list',
   template: `
-    <p-table [value]="users$ | async | userfilter" resizableColumns="true"
-             [responsive]="true" sortField="lastName">
-        <ng-template pTemplate="header">
-          <tr>
-            <th [pSortableColumn]="'firstName'">
-              {{'firstname' | translate}}
-              <p-sortIcon [field]="'firstName'"></p-sortIcon>
-            </th>
-            <th [pSortableColumn]="'lastName'">
-              {{'surname' | translate}}
-              <p-sortIcon [field]="'lastName'"></p-sortIcon>
-            </th>
-            <th [pSortableColumn]="'role'">
-              {{'role' | translate}}
-              <p-sortIcon [field]="'role'"></p-sortIcon>
-            </th>
-            <th [pSortableColumn]="'email'">
-              {{'email' | translate}}
-              <p-sortIcon [field]="'email'"></p-sortIcon>
-            </th>
-            <th [pSortableColumn]="'phone'">
-              {{'phoneoffice' | translate}}
-              <p-sortIcon [field]="'phone'"></p-sortIcon>
-            </th>
-            <th [pSortableColumn]="'phoneMobile'">
-              {{'phonemobile' | translate}}
-              <p-sortIcon [field]="'phoneMobile'"></p-sortIcon>
-            </th>
-            <th [pSortableColumn]="'active'">
-              {{'active' | translate}}
-              <p-sortIcon [field]="'active'"></p-sortIcon>
-            </th>
-            <th [pSortableColumn]="'expiresOn'">
-              {{'expires_on' | translate}}
-              <p-sortIcon [field]="'expiresOn'"></p-sortIcon>
-            </th>
-            <th></th>
-          </tr>
-        </ng-template>
+    <p-table [value]="users" [resizableColumns]="true" [paginator]="true" [rows]="10" [totalRecords]="users.length"
+             [responsive]="true" (sortFunction)="customSort($event)" [customSort]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th [pSortableColumn]="'firstName'" pResizableColumn>
+            {{'firstname' | translate}}
+            <p-sortIcon [field]="'firstName'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'lastName'" pResizableColumn>
+            {{'surname' | translate}}
+            <p-sortIcon [field]="'lastName'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'role'" pResizableColumn>
+            {{'role' | translate}}
+            <p-sortIcon [field]="'role'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'email'" pResizableColumn>
+            {{'email' | translate}}
+            <p-sortIcon [field]="'email'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'phone'" pResizableColumn>
+            {{'phoneoffice' | translate}}
+            <p-sortIcon [field]="'phone'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'phoneMobile'" pResizableColumn>
+            {{'phonemobile' | translate}}
+            <p-sortIcon [field]="'phoneMobile'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'active'" pResizableColumn>
+            {{'active' | translate}}
+            <p-sortIcon [field]="'active'"></p-sortIcon>
+          </th>
+          <th [pSortableColumn]="'expiresOn'" pResizableColumn>
+            {{'expires_on' | translate}}
+            <p-sortIcon [field]="'expiresOn'"></p-sortIcon>
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
 
       <ng-template pTemplate="body" let-user>
         <tr>
@@ -95,10 +96,11 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 } )
 export class UserListComponent extends AbstractTranslateComponent implements OnInit {
 
-  users$: Observable<User[]>;
+  users: User[];
   dateFormat: string;
 
-  multiSortMeta: SortMeta[] = [];
+  latestSortField: string = null;
+  latestSortOrder = 0;
 
   constructor( private userService: UserService,
                public translate: TranslateService,
@@ -111,12 +113,37 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
   ngOnInit() {
     super.ngOnInit();
 
-    this.multiSortMeta.push( { field: 'active', order: -1 } );
-    this.multiSortMeta.push( { field: 'lastName', order: 1 } );
     this.deactivate( <User> {} );
     this.selected( <User> {} );
-    this.users$ = this.userService.users$;
+    this.users = [];
+    this.userService.users$
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
+      .subscribe( users => {
+          users = this.filterUsers( users );
+          this.users.length = 0;
+          if (this.latestSortField !== null) {
+            this.users.push( ...users.sort( ( data1, data2 ) => {
+              return compareCustom( this.latestSortOrder, data1[ this.latestSortField ], data2[ this.latestSortField ] );
+            } ) );
+          } else {
+            this.users.push( ...this.initialSort( users ) );
+          }
+          this.cd.markForCheck();
+        }
+      );
     this.userService.getUsers();
+  }
+
+  customSort( event: SortEvent ) {
+    if (event.field) {
+      this.latestSortField = event.field;
+      this.latestSortOrder = event.order;
+      event.data.sort( ( data1, data2 ) => {
+        return compareCustom( event.order, data1[ event.field ], data2[ event.field ] );
+      } );
+    }
   }
 
   selected( selectedUser: User ) {
@@ -152,5 +179,23 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
 
   checkPermission( user: User ): boolean {
     return PermissionCheck.hasLessPermissions( this.roleGuard.userRole, user.role );
+  }
+
+  private initialSort( users: User[] ): User[] {
+    // sorting active = true and lastName asc
+    const activePart = users
+      .filter(user => user.active)
+      .sort((u1: User, u2: User) => u1.lastName.localeCompare( u2.lastName ));
+    const inactivePart = users
+      .filter(user => !user.active)
+      .sort((u1: User, u2: User) => u1.lastName.localeCompare( u2.lastName ));
+    return [...activePart, ...inactivePart];
+  }
+
+  private filterUsers( users: User[] ): User[] {
+    if (!users) {
+      return [];
+    }
+    return users.filter( ( user: User ) => PermissionCheck.isAllowedRole( this.roleGuard.userRole, user.role ) );
   }
 }

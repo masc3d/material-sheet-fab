@@ -3,22 +3,23 @@ version = '0.1'
 
 buildscript {
     ext {
-        v_feign = '9.5.1'
+        v_feign = '9.6.0'
         v_jackson = '2.9.4'
         v_jackson_kt = '2.9.4.1'
         v_javax_persistence = '2.2'
         v_jersey = '2.26'
-        v_jgit = '4.10.0.201712302008-r'
+        v_jgit = '4.11.0.201803080745-r'
         v_jna = '4.5.1'
-        v_jooq = '3.10.5'
+        v_jooq = '3.10.6'
         v_jsch = '0.1.54'
         v_jsch_proxy = '0.0.9'
-        v_querydsl = '4.1.4'
+        v_querydsl = '4.2.0'
         v_kotlin = '1.2.30'
         v_koptional = '1.3.0'
         v_logback = '1.2.3'
         v_requery = '1.5.0'
         v_resteasy = '4.0.0.Beta2'
+        v_sprin = '5.0.4.RELEASE'
         v_socketio = '1.0.0'
         v_slf4j = '1.7.25'
     }
@@ -62,7 +63,7 @@ dependencies {
             "org.slf4j:jul-to-slf4j:$v_slf4j",
 
             // RX
-            "io.reactivex.rxjava2:rxjava:2.1.10",
+            "io.reactivex.rxjava2:rxjava:2.1.11",
             "io.reactivex:rxkotlin:2.0.0-RC1",
 
             "com.gojuno.koptional:koptional:$v_koptional",
@@ -101,7 +102,7 @@ dependencies {
             },
 
             // YAML
-            "org.yaml:snakeyaml:1.20",
+            "org.yaml:snakeyaml:1.19",
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
@@ -137,12 +138,17 @@ dependencies {
             "commons-codec:commons-codec:1.11",
 
             // Logback
-            "ch.qos.logback:logback-classic:$v_logback"
+            "ch.qos.logback:logback-classic:$v_logback",
+
+            // Spring
+            "org.springframework:spring-core:$v_spring"
     )
 
     testCompile(
             "junit:junit:4.12",
             "ch.qos.logback:logback-classic:$v_logback",
+
+            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",

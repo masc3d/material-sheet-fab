@@ -2,6 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.repository.JooqMailQueueRepository
@@ -18,6 +19,7 @@ import org.deku.leoz.time.toDateWithoutTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import sx.mq.MqChannel
@@ -36,6 +38,8 @@ import javax.ws.rs.core.Response
  */
 @Component
 @Path("internal/v1/user")
+@Profile(Application.PROFILE_CENTRAL)
+class UserService : org.deku.leoz.service.internal.UserService {
 class UserService :
         UserService,
         MqHandler<Any> {
@@ -85,11 +89,11 @@ class UserService :
                 userRecList.forEach {
 
                     if (authorizedUser.role == UserRole.ADMIN.name) {
-                        user.add(it.toUser())
+                        user.add(it.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(it.id) })
                     } else {
                         if (authorizedUser.debitorId == it.debitorId) {
                             if (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value) {
-                                user.add(it.toUser())
+                                user.add(it.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(it.id) })
                             }
                         }
                     }
@@ -104,10 +108,10 @@ class UserService :
                                 title = "no user found by email")
 
                 if (UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
-                    return listOf(userRecord.toUser())
+                    return listOf(userRecord.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(userRecord.id) })
                 if ((UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value) &&
                         (authorizedUser.debitorId == userRecord.debitorId)) {
-                    return listOf(userRecord.toUser())
+                    return listOf(userRecord.toUser().also { x -> x.allowedStations = userRepository.findAllowedStationsByUserId(userRecord.id) })
                 } else {
                     throw RestProblem(
                             status = Response.Status.FORBIDDEN,
@@ -165,13 +169,13 @@ class UserService :
         val phone = user.phone
         val mobilePhone = user.phoneMobile
 
-        val allowsStations = AllowedStations()
+        //var allowsStations = List<Int>?//AllowedStations()
         val userStations = user.allowedStations
-        if (userStations != null) {
-            allowsStations.allowedStations = userStations.map { j -> j.toString() }.toList()
-        }
-        val mapper = ObjectMapper()
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+//        if (userStations != null) {
+//            allowsStations.allowedStations = userStations.map { j -> j.toString() }.toList()
+//        }
+        //val mapper = ObjectMapper()
+        //mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
 
         var isNew = false
         var rec = userRepository.findByMail(email)
@@ -310,12 +314,14 @@ class UserService :
 
         //if ((user.email != null) && (user.email != "@"))
         if (user.email != "@") {
-            rec.email = user.email
-            if (password == null)
-                throw RestProblem(
-                        status = Response.Status.CONFLICT,
-                        title = "On login-change you have to provide a password"
-                )
+            if(rec.email != user.email) {
+                rec.email = user.email
+                if (password == null)
+                    throw RestProblem(
+                            status = Response.Status.CONFLICT,
+                            title = "On login-change you have to provide a password"
+                    )
+            }
         }
         if (debitor != null)
             rec.debitorId = debitor
@@ -332,12 +338,16 @@ class UserService :
         if (user.active != null) {
             rec.active = user.isActive
             if (user.active == true) {
+                // TODO: intransparent. expiry check should be done against one definitive field.
                 if (user.expiresOn == null) {
-                    if (java.util.Date() > rec.expiresOn) {
-                        throw RestProblem(
-                                status = Response.Status.CONFLICT,
-                                title = "expiresOn invalid to activate user"
-                        )
+                    // TODO: what if both are null?!
+                    if (rec.expiresOn != null) {
+                        if (java.util.Date() > rec.expiresOn) {
+                            throw RestProblem(
+                                    status = Response.Status.CONFLICT,
+                                    title = "expiresOn invalid to activate user"
+                            )
+                        }
                     }
                 } else {
                     if (java.util.Date() > user.expiresOn) {
@@ -368,18 +378,53 @@ class UserService :
 
         rec.store()
 
+        //check auth? evtl erst ab powerUser?
+//        if (userStations != null) {
+//            val allowedStations = userRepository.findAllowedStationsByUserId(rec.id)
+//
+//            userStations.forEach {
+//                if (!allowedStations.contains(it)) {
+//                    //Insert into mst_station_user
+//                    val recStation = dsl.newRecord(Tables.MST_STATION_USER)
+//                    recStation.userId = rec.id
+//                    val stationId = userRepository.findStationIdByDepotNr(it)
+//                    stationId ?: throw RestProblem(
+//                            status = Response.Status.NOT_FOUND,
+//                            title = "Station with No [$it] not found"
+//                    )
+//                    recStation.stationId = stationId
+//                    recStation.store()
+//                }
+//            }
+//            allowedStations.forEach {
+//                if (!userStations.contains(it)) {
+//                    //delete from mst_station_user
+////                    val stationId = userRepository.findStationIdByDepotNr(it)
+////                    if (stationId != null) {
+////                        dsl.deleteFrom(Tables.MST_STATION_USER)
+////                                .where(Tables.MST_STATION_USER.USER_ID.eq(rec.id))
+////                                .and(Tables.MST_STATION_USER.STATION_ID.eq(stationId))
+////                                .execute()
+////                    }
+//                }
+//            }
+//
+//        }
+
         if (sendAppLink) {
             sendDownloadLink(userRepository.findByMail(user.email)!!.id!!)
         }
     }
 
     override fun getById(userId: Int): User {
-        val u = userRepository.findById(userId) ?: throw RestProblem(
-                status = Response.Status.NOT_FOUND,
-                title = "User with ID [$userId] not found"
-        )
+        val u = userRepository.findById(userId)
+                ?: throw NoSuchElementException("User with ID [$userId] not found")
 
         return this.get(email = u.email).first()
+    }
+
+    override fun getIdsByDebitor(debitorId: Int): List<Int> {
+        return userRepository.findUserIdsByDebitor(debitorId)
     }
 
     override fun sendDownloadLink(userId: Int): Boolean {

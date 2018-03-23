@@ -19,7 +19,7 @@ class JooqKeyRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dsl: DSLContext
 
-    fun findByID(id: Int): MstKeyRecord? {
+    fun findById(id: Int): MstKeyRecord? {
         if (id == 0)
             return null
         else

@@ -154,6 +154,7 @@ interface OrderService {
         }
     }
 
+    fun getByIds(ids: List<Long>): List<OrderService.Order>
 }
 
 

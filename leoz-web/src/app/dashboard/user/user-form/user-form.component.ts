@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/takeUntil';
+import { takeUntil } from 'rxjs/operators';
 
 import { Message } from 'primeng/components/common/api';
 import { SelectItem } from 'primeng/api';
@@ -82,24 +82,26 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       phoneMobile: [ null, [ Validators.required ] ],
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
-      expiresOn: [ null ]
+      expiresOn: [ null, [ Validators.required ] ]
     } );
 
     this.userService.activeUser$
-      .takeUntil( this.ngUnsubscribe )
+      .pipe(
+        takeUntil( this.ngUnsubscribe )
+      )
       .subscribe( ( activeUser: User ) => {
         this.activeUser = activeUser;
-        const passwordControl = this.userForm.get( 'password' );
-        const validators = <ValidatorFn[]> [];
-        validators.push( Validators.minLength( 6 ) );
-        validators.push( Validators.maxLength( 25 ) );
-        if (this.isEditMode( activeUser )) {
-          this.msgService.clear();
-        } else {
-          validators.push( Validators.required );
-        }
-        passwordControl.clearValidators();
-        passwordControl.setValidators( validators );
+        // const passwordControl = this.userForm.get( 'password' );
+        // const validators = <ValidatorFn[]> [];
+        // validators.push( Validators.minLength( 6 ) );
+        // validators.push( Validators.maxLength( 25 ) );
+        // if (this.isEditMode( activeUser )) {
+        //   this.msgService.clear();
+        // } else {
+        //   validators.push( Validators.required );
+        // }
+        // passwordControl.clearValidators();
+        // passwordControl.setValidators( validators );
         this.userForm.patchValue( {
           emailOrigin: activeUser.email,
           firstName: activeUser.firstName,
@@ -173,7 +175,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
         ( resp: HttpResponse<any> ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.msgService.success( this.translate.instant( 'UserInsertSuccessful' ) )
+            this.msgService.success( this.translate.instant( 'UserInsertSuccessful' ) );
             this.clearActiveUser();
             this.userService.getUsers();
           } else {
@@ -194,7 +196,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
         ( resp: HttpResponse<any> ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.msgService.success( this.translate.instant( 'UserUpdateSuccessful' ) )
+            this.msgService.success( this.translate.instant( 'UserUpdateSuccessful' ) );
             this.clearActiveUser();
             this.userService.getUsers();
           } else {

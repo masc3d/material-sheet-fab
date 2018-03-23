@@ -11,6 +11,8 @@ import org.deku.leoz.central.data.repository.JooqMessagesRepository
 import org.deku.leoz.central.data.repository.JooqNodeRepository
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
+import org.deku.leoz.node.service.pub.DocumentService
+import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.ParcelServiceV1
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
@@ -22,6 +24,7 @@ import sx.log.slf4j.debug
 import sx.log.slf4j.trace
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.rs.RestProblem
 import sx.time.toTimestamp
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -32,6 +35,7 @@ import javax.imageio.ImageIO
 import javax.inject.Inject
 import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 
 /**
@@ -69,6 +73,9 @@ class ParcelServiceV1 :
 
     @Inject
     private lateinit var nodeRepository: JooqNodeRepository
+
+    @Inject
+    private lateinit var documentService: DocumentService
 
     /**
      * Parcel service message handler
@@ -414,6 +421,28 @@ class ParcelServiceV1 :
     }
 
     override fun getStatus(scanCode: String): List<ParcelServiceV1.ParcelStatus> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getLabel(parcelId: Long): Response {
+        TODO("not implemented")
+        val parcel = this.findParcel(parcelId)
+        if (parcel != null) {
+            return documentService.printParcelLabel(parcelId = parcelId)
+        } else {
+            throw RestProblem(title = "No parcel could be found with the id [$parcelId]", status = Response.Status.NOT_FOUND)
+        }
+    }
+
+    override fun findParcels(scanCode: String, reference: String): List<OrderService.Order.Parcel> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun findParcel(parcelId: Long): OrderService.Order.Parcel? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getWebStatus(searchRef: String, zipCode: String?): List<ParcelServiceV1.ParcelWebStatus> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

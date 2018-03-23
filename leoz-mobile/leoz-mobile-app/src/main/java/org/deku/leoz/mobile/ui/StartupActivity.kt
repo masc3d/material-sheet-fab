@@ -12,19 +12,19 @@ import com.github.salomonbrys.kodein.lazy
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.Database
-import org.deku.leoz.mobile.settings.LocationSettings
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.device.DeviceManagement
 import org.deku.leoz.mobile.model.service.create
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.service.*
+import org.deku.leoz.mobile.settings.LocationSettings
+import org.deku.leoz.mobile.settings.RemoteSettings
 import org.deku.leoz.mobile.ui.core.BaseActivity
 import org.deku.leoz.mobile.ui.core.extension.showErrorAlert
 import org.deku.leoz.service.internal.NodeServiceV1
@@ -32,12 +32,12 @@ import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.android.Device
+import sx.android.NtpTime
 import sx.android.aidc.AidcReader
+import sx.android.rx.observeOnMainThread
+import sx.mq.mqtt.MqttDispatcher
 import sx.mq.mqtt.channel
 import java.util.concurrent.TimeUnit
-import org.deku.leoz.mobile.settings.RemoteSettings
-import sx.android.NtpTime
-import sx.mq.mqtt.MqttDispatcher
 
 
 /**
@@ -114,7 +114,7 @@ class StartupActivity : BaseActivity() {
                         }
                     }
 
-            // Acquire AidcReader
+            // Acquire AidcReader(s)
             val ovAidcReader = Kodein.global.instance<Observable<out AidcReader>>()
                     .timeout(5, TimeUnit.SECONDS)
                     .onErrorReturn {
@@ -127,7 +127,7 @@ class StartupActivity : BaseActivity() {
                     ovPermissions.cast(Any::class.java),
                     ovAidcReader.cast(Any::class.java)
             )
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOnMainThread()
                     .subscribeBy(
                             onComplete = {
                                 try {
@@ -208,7 +208,8 @@ class StartupActivity : BaseActivity() {
                                 } catch (e: Throwable) {
                                     log.error(e.message, e)
 
-                                    this.showErrorAlert(text = e.message ?: e.javaClass.simpleName, onPositiveButton = {
+                                    this.showErrorAlert(text = e.message
+                                            ?: e.javaClass.simpleName, onPositiveButton = {
                                         this.app.terminate()
                                     })
                                 }

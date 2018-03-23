@@ -2,12 +2,13 @@ package org.deku.leoz.node.data.repository
 
 import com.google.common.collect.Lists
 import org.deku.leoz.node.data.jpa.*
+import org.deku.leoz.node.data.jpa.QMstStation.mstStation
 import org.deku.leoz.service.internal.entity.Address
 import org.deku.leoz.service.internal.entity.GeoLocation
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import javax.inject.Inject
-
+import org.deku.leoz.node.data.jpa.QMstStationUser.mstStationUser
 /**
  * Station repository
  * Created by masc on 30.04.15.
@@ -21,11 +22,15 @@ interface StationRepositoryExtension {
     fun findWithQuery(query: String): List<MstStation>
     fun findByStation(stationNo: Int): MstStation?
     fun findByStationIds(stationIds: List<Int>): List<MstStation>
+    fun findAllowedStationsByUserId(userId: Long): List<Int>
 }
 
 class StationRepositoryImpl : StationRepositoryExtension {
     @Inject
     private lateinit var depotRepository: StationRepository
+
+    @Inject
+    private lateinit var stationUserRepository: StationUserRepository
 
 
     override fun findWithQuery(query: String): List<MstStation> {
@@ -77,19 +82,27 @@ class StationRepositoryImpl : StationRepositoryExtension {
 
     override fun findByStation(stationNo: Int): MstStation? {
         // QueryDSL
-        val qStation = QMstStation.mstStation
         return depotRepository.findOne(
-                qStation.stationNr.eq(stationNo))
+                mstStation.stationNr.eq(stationNo))
                 .orElse(null)
     }
 
     override fun findByStationIds(stationIds: List<Int>): List<MstStation> {
         // QueryDSL
-        val qStation = QMstStation.mstStation
-
         return depotRepository.findAll(
-                qStation.stationId.`in`(stationIds)
+                mstStation.stationId.`in`(stationIds)
         ).toList()
+    }
+
+    override fun findAllowedStationsByUserId(userId: Long): List<Int> {
+        val stationIds = stationUserRepository.findAll(
+                mstStationUser.userId.eq(userId)
+        ).map { x -> x.stationId.toInt() }.toList()
+
+        val stationRecords = depotRepository.findByStationIds(stationIds)
+
+        return stationRecords.map { it.stationNr }
+
     }
 }
 

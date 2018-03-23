@@ -24,6 +24,8 @@ import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.model.process.toTourStop
 import org.deku.leoz.mobile.model.repository.StopRepository
+import org.deku.leoz.mobile.resetLocale
+import org.deku.leoz.mobile.setLocale
 import org.deku.leoz.mobile.ui.core.BaseCameraScreen
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.deku.leoz.mobile.ui.core.view.ActionItem
@@ -43,18 +45,17 @@ class SignatureScreen
         ScreenFragment<Any>(),
         SignaturePad.OnSignedListener,
         BaseCameraScreen.Listener {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    //region Listener
     interface Listener {
         fun onSignatureSubmitted(signatureSvg: String)
         fun onSignatureImageSubmitted(signatureJpeg: ByteArray)
     }
 
-    private val listener by lazy {
-        this.targetFragment as? Listener
-                ?: this.parentFragment as? Listener
-                ?: this.activity as? Listener
-    }
-
-    private val log = LoggerFactory.getLogger(this.javaClass)
+    private val listener by listenerDelegate<Listener>()
+    //endregion
 
     /**
      * Referring stop
@@ -115,11 +116,12 @@ class SignatureScreen
         this.flipScreen = true
         this.lockNavigationDrawer = true
 
-        this.setLanguage(CountryCode.valueOf(this.stop.entity.address.countryCode))
+        this.context.setLocale(CountryCode.valueOf(this.stop.entity.address.countryCode))
     }
 
     override fun onDestroy() {
-        this.resetLanguage()
+        this.context.resetLocale()
+
         super.onDestroy()
     }
 
@@ -177,7 +179,7 @@ class SignatureScreen
                 .subscribe {
                     when (it) {
                         R.id.action_signature_submit -> {
-                            this.resetLanguage()
+                            this.context.resetLocale()
                             this.listener?.onSignatureSubmitted(this.uxSignaturePad.signatureSvg)
                         }
 
@@ -186,7 +188,7 @@ class SignatureScreen
                         }
 
                         R.id.action_signature_paper -> {
-                            this.resetLanguage()
+                            this.context.resetLocale()
                             this.activity.showScreen(SignOnPaperCameraScreen().also {
                                 it.setTargetFragment(this, 0)
                                 it.parameters = SignOnPaperCameraScreen.Parameters(
@@ -212,7 +214,7 @@ class SignatureScreen
     }
 
     override fun onCameraScreenImageSubmitted(sender: Any, jpeg: ByteArray) {
-        this.resetLanguage()
+        this.context.resetLocale()
         this.listener?.onSignatureImageSubmitted(jpeg)
     }
 

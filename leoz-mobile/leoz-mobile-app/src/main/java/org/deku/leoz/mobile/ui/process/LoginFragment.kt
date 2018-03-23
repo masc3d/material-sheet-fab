@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory
 import sx.android.hideSoftInput
 import java.lang.IllegalStateException
 import java.util.*
+import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import java.util.concurrent.TimeUnit
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
@@ -58,7 +60,7 @@ class LoginFragment : Fragment<Any>() {
         fun onPrivacyRejected() {}
     }
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
@@ -178,8 +180,7 @@ class LoginFragment : Fragment<Any>() {
                 }
                 // Retrying the entire observable (including required triggers, eg. user input)
                 .retry()
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when {
                         it.pending == true -> {

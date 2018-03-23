@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import { distinctUntilChanged } from 'rxjs/operators';
 import 'rxjs/add/observable/fromEvent';
 
 import { environment } from '../../environments/environment';
@@ -13,7 +14,7 @@ export class InetConnectionService {
   private isPinging = false;
 
   private isOnlineSubject = new BehaviorSubject( false );
-  public isOnline$ = this.isOnlineSubject.asObservable().distinctUntilChanged();
+  public isOnline$ = this.isOnlineSubject.asObservable().pipe(distinctUntilChanged());
 
   constructor( private http: HttpClient ) {
     Observable.fromEvent( window, 'online' ).subscribe( ( evt: Event ) => {

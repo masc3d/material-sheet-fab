@@ -67,17 +67,12 @@ class ConfigurationService: ConfigurationService {
             }
         }
 
-        return try {
-            targetUserRecord.config.toString()
-        } catch (e: Exception) {
-            "{}"
-        }
+        return targetUserRecord.config?.toString() ?: "{}"
     }
 
     override fun getNodeConfiguration(nodeUid: String): String {
         val node = nodeJooqRepository.findByKey(nodeUid) ?: throw RestProblem(title = "Invalid Node UID", detail = "Node UID could not be found", status = Response.Status.NOT_FOUND)
 
-        return if (node.configuration.isNullOrEmpty()) "{}" else node.configuration
+        return node.config?.toString() ?: "{}"
     }
-
 }

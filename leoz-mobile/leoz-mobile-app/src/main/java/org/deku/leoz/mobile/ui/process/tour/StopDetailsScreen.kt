@@ -45,6 +45,8 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.Device
 import sx.android.aidc.*
+import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.VmItem
 import sx.android.ui.flexibleadapter.SimpleVmItem
 
@@ -63,7 +65,7 @@ class StopDetailsScreen
         fun onStopDetailUnitNumberInput(unitNumber: UnitNumber)
     }
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val feedback: Feedback by Kodein.global.lazy.instance()
@@ -271,15 +273,13 @@ class StopDetailsScreen
         )
 
         aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.onAidcRead(it)
                 }
 
         this.activity.actionEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     when (it) {
                         R.id.action_deliver_continue -> {

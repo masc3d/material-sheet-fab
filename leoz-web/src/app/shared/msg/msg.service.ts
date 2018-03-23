@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/operator/distinctUntilChanged';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 import { Message } from 'primeng/components/common/api';
 
@@ -11,7 +11,10 @@ import { TranslateService } from '../../core/translate/translate.service';
 export class MsgService {
 
   private msgsSubject = new BehaviorSubject<Message[]>( <Message[]> [] );
-  public msgs$ = this.msgsSubject.asObservable().distinctUntilChanged();
+  public msgs$ = this.msgsSubject.asObservable().pipe( distinctUntilChanged() );
+
+  private stickySubject = new BehaviorSubject<boolean>( false );
+  public sticky$ = this.stickySubject.asObservable().pipe( distinctUntilChanged() );
 
   constructor( private translate: TranslateService ) {
   }
@@ -20,7 +23,8 @@ export class MsgService {
     this.msgsSubject.next( <Message[]> [] );
   }
 
-  success( text: string ): void {
+  success( text: string, sticky: boolean = false ): void {
+    this.stickySubject.next( sticky );
     this.msgsSubject.next( <Message[]>  [ {
       severity: 'success',
       summary: '',
@@ -28,7 +32,8 @@ export class MsgService {
     } ] );
   }
 
-  info( text: string, withSpinner: boolean = false ) {
+  info( text: string, withSpinner: boolean = false, sticky: boolean = false ) {
+    this.stickySubject.next( sticky );
     let detail = this.translate.instant( text );
     if (withSpinner) {
       detail += '  <i class="fas fa-spinner fa-spin"></i>';
@@ -36,7 +41,8 @@ export class MsgService {
     this.msgsSubject.next( <Message[]>  [ { severity: 'info', summary: '', detail: detail } ] );
   }
 
-  error( text: string ): void {
+  error( text: string, sticky: boolean = false ): void {
+    this.stickySubject.next( sticky );
     this.msgsSubject.next( <Message[]>  [ { severity: 'warn', summary: '', detail: this.translate.instant( text ) } ] );
   }
 

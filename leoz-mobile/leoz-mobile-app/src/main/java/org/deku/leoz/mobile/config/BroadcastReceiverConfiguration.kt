@@ -1,12 +1,9 @@
 package org.deku.leoz.mobile.config
 
-import android.content.Intent
-import android.content.IntentFilter
-import android.support.v4.content.LocalBroadcastManager
-import android.util.Log
 import com.github.salomonbrys.kodein.*
 import org.deku.leoz.mobile.receiver.LocationProviderChangedReceiver
 import org.slf4j.LoggerFactory
+import sx.log.slf4j.debug
 
 /**
  * Broadcast receiver configuration
@@ -17,7 +14,8 @@ class BroadcastReceiverConfiguration {
         private val log by lazy { LoggerFactory.getLogger(BroadcastReceiverConfiguration::class.java) }
 
         var module = Kodein.Module {
-            Log.d(BroadcastReceiverConfiguration::class.java.simpleName, "Initialize BroadcastReceiverConfiguration")
+            log.debug { "Initialize BroadcastReceiverConfiguration" }
+
             bind<LocationProviderChangedReceiver>() with singleton {
                 val receiver = LocationProviderChangedReceiver()
 //                val broadcastManager = LocalBroadcastManager.getInstance(instance())
@@ -29,7 +27,7 @@ class BroadcastReceiverConfiguration {
             }
 
             bind<BroadcastReceiverConfiguration>() with eagerSingleton {
-                log.debug("Inizialized BroadcastReceiverConfiguration module")
+                log.debug { "Inizialized BroadcastReceiverConfiguration module" }
                 val config = BroadcastReceiverConfiguration()
                 // Init. all receiver here
                 instance<LocationProviderChangedReceiver>()

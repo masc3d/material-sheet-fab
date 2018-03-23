@@ -24,7 +24,7 @@ buildscript {
         v_material_dialogs = '0.9.6.0'
         v_multidex = '1.0.3'
         v_parceler = '1.1.10'
-        v_roboelectric = '3.7.1'
+        v_roboelectric = '3.8'
         v_rxlifecycle = '2.2.1'
         v_stetho = '1.5.0'
         v_truetime = '3.3'
@@ -202,6 +202,7 @@ dependencies {
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
 
             // Kodein
             "com.github.salomonbrys.kodein:kodein:$v_kodein",
@@ -248,6 +249,8 @@ dependencies {
             "io.requery:requery-android:$v_requery",
             "io.requery:sqlite-android:3.22.0",
 
+            "javax.transaction:jta:1.1",
+
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
 
@@ -278,10 +281,13 @@ dependencies {
             },
 
             // UI
-            "eu.davidea:flexible-adapter:5.0.0",
+            "eu.davidea:flexible-adapter:5.0.2",
             "eu.davidea:flexible-adapter-databinding:1.0.0-b2@aar",
-            "eu.davidea:flexible-adapter-ui:1.0.0-b1@aar",
+            "eu.davidea:flexible-adapter-ui:1.0.0-b3@aar",
             "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",
+
+            "me.tatarka.bindingcollectionadapter2:bindingcollectionadapter:2.2.0",
+            "me.tatarka.bindingcollectionadapter2:bindingcollectionadapter-recyclerview:2.2.0",
 
             // Dialog
             "com.afollestad.material-dialogs:core:$v_material_dialogs",

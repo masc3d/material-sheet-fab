@@ -101,7 +101,7 @@ class MenuScreen : ScreenFragment<Any>() {
         override fun getCount(): Int = entries.size
     }
 
-    private val listener by lazy { this.activity as? Listener }
+    private val listener by listenerDelegate<Listener>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

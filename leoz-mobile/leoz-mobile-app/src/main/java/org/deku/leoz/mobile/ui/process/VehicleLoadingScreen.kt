@@ -51,6 +51,8 @@ import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.inflateMenu
 import sx.android.rx.observeOnMainThread
+import sx.android.rx.observeOnMainThreadUntilEvent
+import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
 import sx.format.format
@@ -68,7 +70,7 @@ class VehicleLoadingScreen :
         fun onVehicleLoadingFinalized()
     }
 
-    val listener by lazy { this.activity as? Listener }
+    val listener by listenerDelegate<Listener>()
 
     /**
      * Created by masc on 10.07.17.
@@ -289,8 +291,7 @@ class VehicleLoadingScreen :
         )
 
         aidcReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     this.onAidcRead(it)
                 }
@@ -417,8 +418,7 @@ class VehicleLoadingScreen :
                     this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
                 }
         )
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOnMainThread()
+                .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     if (it.count() > 0) {
                         this.parcelListAdapter.addSection(
@@ -610,8 +610,7 @@ class VehicleLoadingScreen :
                                                                 .findByNumber(unitNumber.value)
                                                                 .subscribeOn(db.scheduler)
                                                 )
-                                                .bindToLifecycle(this)
-                                                .observeOnMainThread()
+                                                .observeOnMainThreadWithLifecycle(this)
                                                 .subscribeBy(
                                                         onSuccess = {
                                                             this.isBusy = false
@@ -702,7 +701,12 @@ class VehicleLoadingScreen :
             }
             else -> {
                 this.vehicleLoading.load(parcel)
-                        .subscribe()
+                        .subscribeBy(
+                                onError = {
+                                    log.error(it.message, it)
+                                    feedback.error()
+                                }
+                        )
 
                 this.parcelListAdapter.selectedSection = loadedSection
             }

@@ -40,7 +40,18 @@ class ArtemisBroker : MqBroker(NATIVE_TCP_PORT) {
         val BROKER_CONNECTOR_NAME = "broker-connector"
 
         // Setup security/authentication
-        val adminRole = Role("admin", true, true, true, true, true, true, true, true)
+        val adminRole = Role(
+                "admin",
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true)
 
         // ActiveMQSecurityManagerImpl is deprecated but works fine for our needs for now.
         // TODO: Make this work with ActiveMQJAASSecurityManager (requires a `SecurityConfiguration` and some kind of JAAS `LoginModule`, eg `PropertiesLoginModule`

@@ -17,7 +17,7 @@ import java.sql.ResultSet.TYPE_FORWARD_ONLY
  * Workaround for missing MYSQL specific REPLACE statement
  */
 fun <R : Record> DSLContext.replace(table: Table<R>, vararg values: List<Any>): ResultQuery<Record> {
-    val valuesTemplate = values.mapIndexed { index, list ->
+    val valuesTemplate = values.mapIndexed { index, _ ->
         "({${index + 2}})"
     }.joinToString(",")
 

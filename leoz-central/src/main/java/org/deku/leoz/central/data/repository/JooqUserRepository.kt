@@ -4,6 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_KEY
 import org.deku.leoz.central.data.jooq.dekuclient.Tables.MST_USER
+import org.deku.leoz.central.data.jooq.dekuclient.Tables.*
 import org.deku.leoz.central.data.jooq.dekuclient.tables.MstUser
 import org.deku.leoz.central.data.jooq.dekuclient.tables.records.MstUserRecord
 import org.deku.leoz.hashUserPassword
@@ -140,6 +141,21 @@ class JooqUserRepository {
         }
         r.store()
     }
+
+    fun findAllowedStationsByUserId(userId: Int): List<Int> {
+        return dsl.select(TBLDEPOTLISTE.DEPOTNR)
+                .from(TBLDEPOTLISTE)
+                .innerJoin(MST_STATION_USER).on(TBLDEPOTLISTE.ID.eq(MST_STATION_USER.STATION_ID))
+                .where(MST_STATION_USER.USER_ID.eq(userId)).and(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
+                .fetch(TBLDEPOTLISTE.DEPOTNR)
+
+    }
+    fun findStationIdByDepotNr(depotNr:Int):Int?{
+        return dsl.selectFrom(TBLDEPOTLISTE)
+                .where(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
+                .and(TBLDEPOTLISTE.DEPOTNR.eq(depotNr))
+                .fetchOne(TBLDEPOTLISTE.ID)
+    }
 }
 
 fun MstUserRecord.toUser(): UserService.User =
@@ -159,7 +175,8 @@ fun MstUserRecord.toUser(): UserService.User =
                 externalUser = this.isExternalUser,
                 phone = this.phone,
                 phoneMobile = this.phoneMobile,
-                expiresOn = this.expiresOn
+                expiresOn = this.expiresOn,
+                passwordExpiresOn = this.passwordExpiresOn
         )
 
 val MstUserRecord.isActive: Boolean
