@@ -177,7 +177,7 @@ open class Device(private val context: Context) {
     val isM2MConnected: Boolean by lazy {
         val telephonyManager = this.context.getTelephonyManager()
         try {
-            log.debug("NetworkOperator [${telephonyManager.networkOperator}]")
+            log.debug("NetworkOperator [${telephonyManager.networkOperator}] NetworkOperatorName [${telephonyManager.networkOperatorName}]")
             val mcc = telephonyManager.networkOperator.substring(0, 3)
             val mnc = telephonyManager.networkOperator.substring(3)
             log.debug("MCC [$mcc] MNC [$mnc]")
