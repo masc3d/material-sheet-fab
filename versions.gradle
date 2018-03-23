@@ -41,7 +41,7 @@ buildscript {
         v_logback = '1.2.3'
         v_paho = '1.2.0'
         v_protostuff = '1.5.3'
-        v_querydsl = '4.2.0'
+        v_querydsl = '4.2.1'
         v_rxjava = '2.1.11'
         v_rxjavafx = '2.0.2'
         v_rxkotlin = '2.0.0-RC1'
