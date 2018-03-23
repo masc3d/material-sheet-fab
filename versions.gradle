@@ -34,7 +34,7 @@ buildscript {
         v_jna = '4.5.1'
         v_jooq = '3.10.6'
         v_junit = '4.12'
-        v_kotlin = '1.2.30'
+        v_kotlin = '1.2.31'
         v_kodein = '4.1.0'
         v_kryo = '4.0.2'
         v_kryo_serializers = '0.42'
