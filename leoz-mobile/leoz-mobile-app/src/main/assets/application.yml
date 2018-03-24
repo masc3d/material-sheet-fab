@@ -25,6 +25,7 @@ remote:
    # NTP Server
    ntp:
       host: 'time.google.com'
+      host-internal: 'time'
 
 # Database settings
 database:

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.support.annotation.RequiresApi
@@ -12,6 +13,9 @@ import com.google.android.gms.common.GoogleApiAvailability
 import org.slf4j.LoggerFactory
 import sx.text.toHexString
 import java.util.*
+
+
+
 
 /**
  * Generic android device class, exposing device specific information like ids and serials
@@ -166,6 +170,20 @@ open class Device(private val context: Context) {
                 }
             }
         } catch (e: SecurityException) {
+            false
+        }
+    }
+
+    val isM2MConnected: Boolean by lazy {
+        val telephonyManager = this.context.getTelephonyManager()
+        try {
+            log.debug("NetworkOperator [${telephonyManager.networkOperator}] NetworkOperatorName [${telephonyManager.networkOperatorName}]")
+            val mcc = telephonyManager.networkOperator.substring(0, 3)
+            val mnc = telephonyManager.networkOperator.substring(3)
+            log.debug("MCC [$mcc] MNC [$mnc]")
+            (mcc == "901" && mnc == "28")
+        } catch (e: Exception) {
+            log.warn("NetworkOperator information could not be determined", e)
             false
         }
     }
