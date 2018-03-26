@@ -452,13 +452,11 @@ class SmartlaneBridge {
      * Optimize a tour
      * @param tour Tour to optimize
      * @param options Optimization options
-     * @param uidSupplier A supplier generating uid's for newly created tours
      * @return Single observable of optimized tours
      */
     fun optimize(
             tour: Tour,
-            options: TourOptimizationOptions,
-            uidSupplier: () -> String
+            options: TourOptimizationOptions
     ): Single<List<Tour>> {
         val domain = domain(customerId)
 
@@ -517,7 +515,7 @@ class SmartlaneBridge {
                             }
                             false -> {
                                 // Generate uid for new tour
-                                uid = uidSupplier()
+                                uid = UUID.randomUUID().toString()
                                 id = null
                                 parentId = tour.id
                                 customId = null

@@ -112,8 +112,6 @@ class TourServiceV1
     /** Tour update / subscription event */
     val updated = this.updatedSubject.hide()
 
-    fun createUid(): String = UUID.randomUUID().hashWithSha1(10)
-
     @PostConstruct
     fun onInitialize() {
 
@@ -247,7 +245,7 @@ class TourServiceV1
                                 else
                                     TadTourEntry().also { r ->
                                         r.tourUid = tourRecord.uid
-                                        r.uid = task.uid?.let { UUID.fromString(it) } ?: UUID.randomUUID()
+                                        r.uid = UUID.randomUUID()
                                     }
 
                                 entryRecord.also { r ->
@@ -830,8 +828,7 @@ class TourServiceV1
 
         return this.smartlane.optimize(
                 tour = tour,
-                options = options,
-                uidSupplier = { this.createUid() }
+                options = options
         )
                 .doOnSubscribe {
                     this.optimizations.onStart(tourId)
