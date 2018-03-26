@@ -22,6 +22,7 @@ buildscript {
         v_spring = '5.0.4.RELEASE'
         v_socketio = '1.0.0'
         v_slf4j = '1.7.25'
+        v_threeten = '1.3.6'
     }
 
     dependencies {
@@ -75,7 +76,7 @@ dependencies {
     compileOnly(
             // JSR-310 / java.time substitute.
             // Declared as compileOnly as android projects may want to include `com.jakewharton.threetenabp:threetenabp:1.0.5` instead.
-            "org.threeten:threetenbp:1.3.6",
+            "org.threeten:threetenbp:$v_threeten",
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:2.1",
@@ -150,6 +151,8 @@ dependencies {
     testCompile(
             "junit:junit:4.12",
             "ch.qos.logback:logback-classic:$v_logback",
+
+            "org.threeten:threetenbp:$v_threeten",
 
             "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
 
