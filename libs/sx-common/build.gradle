@@ -19,7 +19,7 @@ buildscript {
         v_logback = '1.2.3'
         v_requery = '1.5.1'
         v_resteasy = '4.0.0.Beta2'
-        v_sprin = '5.0.4.RELEASE'
+        v_spring = '5.0.4.RELEASE'
         v_socketio = '1.0.0'
         v_slf4j = '1.7.25'
     }
