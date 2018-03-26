@@ -174,7 +174,7 @@ class TourServiceV1
                         else
                             TadTour().also {
                                 it.id = tour.id
-                                it.uid = tour.uid ?: this.createUid()
+                                it.uid = tour.uid?.let { UUID.fromString(it) } ?: UUID.randomUUID()
                                 it.created = now
                             }
 
@@ -204,7 +204,7 @@ class TourServiceV1
                             em.flush()
 
                             tour.id = tourRecord.id
-                            tour.uid = tourRecord.uid
+                            tour.uid = tourRecord.uid.toString()
                         }
                         //endregion
 
@@ -213,7 +213,7 @@ class TourServiceV1
 
                         val entryRecords = if (tourExists)
                             tourEntryRepo.findAll(
-                                    tadTourEntry.tourId.eq(tour.id),
+                                    tadTourEntry.tourUid.eq(UUID.fromString(tour.uid)),
                                     tadTourEntry.position.asc(),
                                     tadTourEntry.id.asc())
                                     .toMutableList()
@@ -240,14 +240,14 @@ class TourServiceV1
 
                             // Create and update tour entries
                             stop.tasks.forEachIndexed { taskIndex, task ->
-                                val taskExists = tourExists && task.id != null
+                                val taskExists = tourExists && task.uid != null
 
                                 val entryRecord = if (taskExists)
-                                    entryRecords.first { it.id == task.id }
+                                    entryRecords.first { it.uid == UUID.fromString(task.uid) }
                                 else
                                     TadTourEntry().also { r ->
-                                        r.tourId = tour.id
-                                        r.uid = task.uid ?: this.createUid()
+                                        r.tourUid = tourRecord.uid
+                                        r.uid = task.uid?.let { UUID.fromString(it) } ?: UUID.randomUUID()
                                     }
 
                                 entryRecord.also { r ->
@@ -270,7 +270,7 @@ class TourServiceV1
                                     em.flush()
 
                                     task.id = entryRecord.id
-                                    task.uid = entryRecord.uid
+                                    task.uid = entryRecord.uid.toString()
                                 }
                             }
                         }
@@ -340,7 +340,7 @@ class TourServiceV1
 
         val tourEntries =
                 tourEntryRepo
-                        .findAll(tadTourEntry.tourId.`in`(tourRecords.map { it.id }))
+                        .findAll(tadTourEntry.tourUid.`in`(tourRecords.map { it.uid }))
 
         val orders =
                 this.orderService.getByIds(tourEntries
@@ -351,7 +351,7 @@ class TourServiceV1
             it.toTour(
                     nodeUid = it.nodeId?.let { nodeId -> nodeUidsById.getValue(nodeId) },
                     orderRecordsById = orders.associateBy { it.id },
-                    tourEntryRecordsByTourId = tourEntries.groupBy { it.tourId }
+                    tourEntryRecordsByTourId = tourEntries.groupBy { it.tourUid }
             )
         }
     }
@@ -459,24 +459,24 @@ class TourServiceV1
                     }
                     .also { records ->
                         if (records.count() > 0) {
-                            val tourIds = records
-                                    .map { it.get(tadTour.id) }
+                            val tourUids = records
+                                    .map { it.get(tadTour.uid) }
                                     .distinct()
 
                             em.delete(
                                     tadTourEntry,
-                                    tadTourEntry.tourId.`in`(tourIds))
+                                    tadTourEntry.tourUid.`in`(tourUids))
 
                             em.delete(
                                     tadTour,
-                                    tadTour.id.`in`(tourIds)
+                                    tadTour.uid.`in`(tourUids)
                             )
 
                             this.smartlane.deleteRoutes(
                                     tours = records.map {
                                         Tour(
                                                 id = it.get(tadTour.id),
-                                                uid = it.get(tadTour.uid)
+                                                uid = it.get(tadTour.uid).toString()
                                         )
                                     }
                             )
@@ -916,7 +916,7 @@ class TourServiceV1
     private fun TadTour.toTour(
             nodeUid: String? = null,
             orderRecordsById: Map<Long, org.deku.leoz.service.internal.OrderService.Order>? = null,
-            tourEntryRecordsByTourId: Map<Long, List<TadTourEntry>>? = null): Tour {
+            tourEntryRecordsByTourId: Map<UUID, List<TadTourEntry>>? = null): Tour {
         val tourRecord = this
 
         @Suppress("NAME_SHADOWING")
@@ -929,14 +929,14 @@ class TourServiceV1
         // Fetch tour entries. Equal positions represent stop tasks in order of PK
         val tourEntryRecords = if (tourEntryRecordsByTourId != null)
             tourEntryRecordsByTourId.get(
-                    tourRecord.id
+                    tourRecord.uid
             )
                     ?.sortedBy { it.position }
                     ?.sortedWith(compareBy<TadTourEntry> { it.position }.thenBy { it.id })
                     ?: listOf()
         else {
             tourEntryRepo.findAll(
-                    tadTourEntry.tourId.eq(tourRecord.id),
+                    tadTourEntry.tourUid.eq(tourRecord.uid),
                     tadTourEntry.position.asc(),
                     tadTourEntry.id.asc()
             )
@@ -957,7 +957,7 @@ class TourServiceV1
 
         return Tour(
                 id = tourRecord.id,
-                uid = tourRecord.uid,
+                uid = tourRecord.uid.toString(),
                 nodeUid = nodeUid,
                 userId = tourRecord.userId,
                 stationNo = tourRecord.stationNo,
@@ -978,7 +978,7 @@ class TourServiceV1
 
                                 Task(
                                         id = task.id,
-                                        uid = task.uid,
+                                        uid = task.uid.toString(),
                                         orderId = task.orderId,
                                         appointmentStart = when (taskType) {
                                             TaskType.DELIVERY -> order.deliveryAppointment.dateStart
