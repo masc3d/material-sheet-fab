@@ -126,6 +126,9 @@ dependencies {
 
             // JPA
             "javax.persistence:javax.persistence-api:$v_javax_persistence",
+            dependencies.create("org.eclipse.persistence:eclipselink:$v_eclipselink") {
+                exclude module: 'javax.persistence'
+            },
 
             // Requery
             "io.requery:requery:$v_requery",
