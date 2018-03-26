@@ -9,6 +9,7 @@ import org.deku.leoz.central.data.repository.JooqMailQueueRepository
 import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.setHashedPassword
+import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.verifyPassword
 import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.model.AllowedStations
 import org.deku.leoz.model.UserRole
@@ -455,8 +456,21 @@ class UserService : org.deku.leoz.service.internal.UserService {
         return true
     }
 
-    override fun changePassword(oldPassword: String, newPassword: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    override fun changePassword(userId: Int, oldPassword: String, newPassword: String) {
+        TODO("not implemented")
+        val userRecord = this.userRepository.findById(userId)
+
+        userRecord ?:
+        throw RestProblem(title = "User does not exist")
+
+        // Verify credentials
+        if (!userRecord.verifyPassword(oldPassword))
+            throw RestProblem(
+                    title = "User authentication failed",
+                    status = Response.Status.UNAUTHORIZED)
+        userRecord.setHashedPassword(newPassword)
+        userRecord.store()
     }
 
     override fun getConfigurationById(userId: Int): String {
