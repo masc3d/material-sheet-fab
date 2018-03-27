@@ -33,6 +33,7 @@ interface TourServiceV1 {
         const val FROM = "from"
         const val INCLUDE_RELATED = "include-related"
         const val NODE_UID = "node-uid"
+        const val OVERVIEW = "overview"
         const val STATION_NO = "station-no"
         const val TO = "to"
         const val USER_ID = "user-id"
@@ -45,6 +46,7 @@ interface TourServiceV1 {
             value = "Get tour(s)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
+            // Filter
             @QueryParam(ID) @ApiParam(value = "Ids", required = false)
             ids: List<Long>? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
@@ -54,7 +56,13 @@ interface TourServiceV1 {
             @QueryParam(FROM) @ApiParam(example = "2018-01-27", value = "From (tour) date", required = false)
             from: ShortDate? = null,
             @QueryParam(TO) @ApiParam(example = "2018-01-27", value = "To (tour) date", required = false)
-            to: ShortDate? = null
+            to: ShortDate? = null,
+
+            // Options
+            @QueryParam(OVERVIEW)
+            @DefaultValue("false")
+            @ApiParam(example = "false", value = "Excludes stops & orders", required = false)
+            overview: Boolean = false
     ): List<Tour>
 
     @GET
@@ -215,9 +223,9 @@ interface TourServiceV1 {
             @ApiModelProperty(position = 60, required = true, value = "Tour date")
             var date: ShortDate? = null,
             @ApiModelProperty(position = 70, required = true, value = "Orders referenced by this tour")
-            var orders: List<OrderService.Order> = listOf(),
+            var orders: List<OrderService.Order>? = null,
             @ApiModelProperty(position = 80, required = true, value = "Tour stop list")
-            var stops: List<Stop> = listOf(),
+            var stops: List<Stop>? = null,
             @ApiModelProperty(position = 90, required = false, value = "Last optimization time")
             var optimized: Date? = null,
             @ApiModelProperty(position = 100, required = true, value = "Creation date")

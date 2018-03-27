@@ -207,7 +207,9 @@ class TourServiceV1
                         //endregion
 
                         //region Update tour entry records
-                        val tourEntryIds = tour.stops.flatMap { it.tasks }.map { it.id }
+                        val stops = tour.stops ?: listOf()
+
+                        val tourEntryIds = stops.flatMap { it.tasks }.map { it.id }
 
                         val entryRecords = if (tourExists)
                             tourEntryRepo.findAll(
@@ -229,7 +231,7 @@ class TourServiceV1
                             }
                         }
 
-                        tour.stops.forEachIndexed { stopIndex, stop ->
+                        stops.forEachIndexed { stopIndex, stop ->
                             val newPosition = (stopIndex + 1).toDouble()
 
                             val route = stop.route?.let {
@@ -301,7 +303,9 @@ class TourServiceV1
             stationNo: Long?,
             userId: Long?,
             from: ShortDate?,
-            to: ShortDate?
+            to: ShortDate?,
+
+            overview: Boolean
     ): List<Tour> {
         val tourRecords =
                 this.tourRepo.findAll(BooleanBuilder()
@@ -331,13 +335,18 @@ class TourServiceV1
                         .associate { Pair(it.id, it.uid) }
 
         val tourEntries =
-                tourEntryRepo
-                        .findAll(tadTourEntry.tourUid.`in`(tourRecords.map { it.uid }))
+                if (!overview)
+                    tourEntryRepo
+                            .findAll(tadTourEntry.tourUid.`in`(tourRecords.map { it.uid }))
+                else listOf()
 
         val orders =
-                this.orderService.getByIds(tourEntries
-                        .map { it.orderId }
-                        .distinct())
+                if (!overview)
+                    this.orderService.getByIds(tourEntries
+                            .map { it.orderId }
+                            .distinct())
+                else
+                    listOf()
 
         return tourRecords.map {
             it.toTour(
@@ -946,6 +955,53 @@ class TourServiceV1
         val orders = tourEntryRecords.map { it.orderId }.distinct()
                 .map { ordersById.getValue(it) }
 
+        val stops = tourEntryRecords.groupBy { it.position }
+                .map { stop ->
+                    val tasks = stop.value.map { task ->
+                        val taskType = TaskType.valueMap.getValue(task.orderTaskType)
+                        val order = ordersById.getValue(task.orderId)
+
+                        Task(
+                                id = task.id,
+                                uid = task.uid.toString(),
+                                orderId = task.orderId,
+                                appointmentStart = when (taskType) {
+                                    TaskType.DELIVERY -> order.deliveryAppointment.dateStart
+                                    TaskType.PICKUP -> order.pickupAppointment.dateStart
+                                },
+                                appointmentEnd = when (taskType) {
+                                    TaskType.DELIVERY -> order.deliveryAppointment.dateEnd
+                                    TaskType.PICKUP -> order.pickupAppointment.dateEnd
+                                },
+                                taskType = when (taskType) {
+                                    TaskType.DELIVERY -> Task.Type.DELIVERY
+                                    TaskType.PICKUP -> Task.Type.PICKUP
+                                }
+                        )
+                    }
+
+                    Stop(
+                            address = stop.value.first().let { task ->
+                                orders.first { it.id == task.orderId }.let {
+                                    when (TaskType.valueMap.getValue(task.orderTaskType)) {
+                                        TaskType.DELIVERY -> it.deliveryAddress
+                                        TaskType.PICKUP -> it.pickupAddress
+                                    }
+                                }
+                            },
+                            tasks = tasks,
+                            appointmentStart = tasks.map { it.appointmentStart }.filterNotNull().max(),
+                            appointmentEnd = tasks.map { it.appointmentEnd }.filterNotNull().min(),
+                            weight = tasks
+                                    .map { ordersById.getValue(it.orderId) }
+                                    .flatMap { it.parcels }
+                                    .sumByDouble { it.dimension.weight },
+                            route = stop.value.first().routeMeta?.let {
+                                this@TourServiceV1.objectMapper.readValue(it, TourStopRouteMeta::class.java)
+                            }
+                    )
+                }
+
         return Tour(
                 id = tourRecord.id,
                 uid = tourRecord.uid.toString(),
@@ -957,56 +1013,11 @@ class TourServiceV1
                 created = tourRecord.created,
                 date = ShortDate(tourRecord.date),
                 optimized = tourRecord.optimized,
-                orders = orders,
+                orders = orders.let { if (it.count() > 0) it else null },
                 route = tourRecord.routeMeta?.let {
                     objectMapper.readValue(it, TourRouteMeta::class.java)
                 },
-                stops = tourEntryRecords.groupBy { it.position }
-                        .map { stop ->
-                            val tasks = stop.value.map { task ->
-                                val taskType = TaskType.valueMap.getValue(task.orderTaskType)
-                                val order = ordersById.getValue(task.orderId)
-
-                                Task(
-                                        id = task.id,
-                                        uid = task.uid.toString(),
-                                        orderId = task.orderId,
-                                        appointmentStart = when (taskType) {
-                                            TaskType.DELIVERY -> order.deliveryAppointment.dateStart
-                                            TaskType.PICKUP -> order.pickupAppointment.dateStart
-                                        },
-                                        appointmentEnd = when (taskType) {
-                                            TaskType.DELIVERY -> order.deliveryAppointment.dateEnd
-                                            TaskType.PICKUP -> order.pickupAppointment.dateEnd
-                                        },
-                                        taskType = when (taskType) {
-                                            TaskType.DELIVERY -> Task.Type.DELIVERY
-                                            TaskType.PICKUP -> Task.Type.PICKUP
-                                        }
-                                )
-                            }
-
-                            Stop(
-                                    address = stop.value.first().let { task ->
-                                        orders.first { it.id == task.orderId }.let {
-                                            when (TaskType.valueMap.getValue(task.orderTaskType)) {
-                                                TaskType.DELIVERY -> it.deliveryAddress
-                                                TaskType.PICKUP -> it.pickupAddress
-                                            }
-                                        }
-                                    },
-                                    tasks = tasks,
-                                    appointmentStart = tasks.map { it.appointmentStart }.filterNotNull().max(),
-                                    appointmentEnd = tasks.map { it.appointmentEnd }.filterNotNull().min(),
-                                    weight = tasks
-                                            .map { ordersById.getValue(it.orderId) }
-                                            .flatMap { it.parcels }
-                                            .sumByDouble { it.dimension.weight },
-                                    route = stop.value.first().routeMeta?.let {
-                                        this@TourServiceV1.objectMapper.readValue(it, TourStopRouteMeta::class.java)
-                                    }
-                            )
-                        }
+                stops = stops.let { if (it.count() > 0) it else null }
         )
     }
     //endregion

@@ -144,8 +144,7 @@ class SmartlaneBridge {
             private val SEPARATOR = "/"
 
             /** Helper to create smartlane short uid from uuid */
-            fun UUID.toSmartlaneUid(): String
-                    = this.mostSignificantBits.shr(8*4).toInt().toHexString()
+            fun UUID.toSmartlaneUid(): String = this.mostSignificantBits.shr(8 * 4).toInt().toHexString()
 
             /** Deserialize from smartlane */
             fun deserialize(value: String): CustomId {
@@ -484,7 +483,8 @@ class SmartlaneBridge {
                         val stops = route.deliveries
                                 .sortedBy { it.orderindex }
                                 .map { delivery ->
-                                    tour.stops.first { it.uid == delivery.customId }
+                                    val stops = tour.stops ?: listOf()
+                                    stops.first { it.uid == delivery.customId }
                                             .also {
                                                 it.route = TourStopRouteMeta(
                                                         eta = Interval(delivery.etaFrom, delivery.etaTo),
@@ -496,10 +496,12 @@ class SmartlaneBridge {
                                             }
                                 }
 
+                        val tourOrders = tour.orders ?: listOf()
+
                         val orders = stops
                                 .flatMap { it.tasks }
                                 .map { it.orderId }.distinct()
-                                .map { orderId -> tour.orders.first { it.id == orderId } }
+                                .map { orderId -> tourOrders.first { it.id == orderId } }
 
                         // Determine optimized tour id / uid
                         val id: Long?
@@ -603,7 +605,9 @@ class SmartlaneBridge {
                 if (it.count() > 0) it else null
             } ?: listOf(TourOptimizationOptions.Vehicle())
 
-            it.deliverydata = this.stops
+            val stops = this.stops ?: listOf()
+
+            it.deliverydata = stops
                     .map { stop ->
                         Routedeliveryinput().also {
                             stop.address?.also { address ->
