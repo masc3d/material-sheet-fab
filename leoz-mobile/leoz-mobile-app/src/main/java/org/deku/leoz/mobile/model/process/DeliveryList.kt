@@ -7,24 +7,19 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.*
-import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.log.user
 import org.deku.leoz.mobile.model.entity.*
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.StopRepository
 import org.deku.leoz.mobile.model.service.toOrder
-import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.rx.toHotIoObservable
 import org.deku.leoz.model.DekuDeliveryListNumber
-import org.deku.leoz.model.DekuUnitNumber
 import org.deku.leoz.model.UnitNumber
-import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
+import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
-import sx.mq.mqtt.channel
 import sx.requery.ObservableQuery
 import sx.requery.ObservableTupleQuery
 import sx.rx.CompositeDisposableSupplier
@@ -143,18 +138,19 @@ class DeliveryList : CompositeDisposableSupplier {
 
         return Observable.fromCallable {
 
-            val deliveryListService = Kodein.global.instance<DeliveryListService>()
+            val tourService = Kodein.global.instance<TourServiceV1>()
 
             // Retrieve delivery list
             val deliveryListId = deliveryListNumber.value.toLong()
-            val deliveryList = deliveryListService.getById(id = deliveryListId)
-            log.trace("Delivery list loaded in $sw orders [${deliveryList.orders.count()}] parcels [${deliveryList.orders.flatMap { it.parcels }.count()}]")
+            val tour = tourService.getByCustomId(customId = deliveryListId.toString())
+            log.trace("Delivery list loaded in $sw orders [${tour.orders?.count()}] parcels [${tour.orders?.flatMap { it.parcels }?.count()}]")
 
             // Process orders
             db.store.withTransaction {
                 run {
-                    val orders = deliveryList.orders
-                            .distinctOrders()
+                    val orders = tour.orders
+                            ?.distinctOrders()
+                            ?: listOf()
 
                     orderRepository
                             .merge(orders.map {
@@ -164,28 +160,30 @@ class DeliveryList : CompositeDisposableSupplier {
                 }
 
                 // Process stops
-                val stops = deliveryList.stops.map {
-                    Stop.create(
-                            tasks = it.tasks.map {
-                                val order = orderRepository
-                                        .findById(it.orderId)
-                                        .blockingGet()
+                val stops = tour.stops
+                        ?.map {
+                            Stop.create(
+                                    tasks = it.tasks.map {
+                                        val order = orderRepository
+                                                .findById(it.orderId)
+                                                .blockingGet()
 
-                                when {
-                                    order != null -> {
-                                        when (it.taskType ?: it.stopType) {
-                                            DeliveryListService.Task.Type.DELIVERY -> order.deliveryTask
-                                            DeliveryListService.Task.Type.PICKUP -> order.pickupTask
+                                        when {
+                                            order != null -> {
+                                                when (it.taskType) {
+                                                    TourServiceV1.Task.Type.DELIVERY -> order.deliveryTask
+                                                    TourServiceV1.Task.Type.PICKUP -> order.pickupTask
+                                                }
+                                            }
+                                            else -> {
+                                                log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
+                                                null
+                                            }
                                         }
-                                    }
-                                    else -> {
-                                        log.warn("Skipping order task. Referenced order [${it.orderId}] does not exist")
-                                        null
-                                    }
-                                }
-                            }.filterNotNull()
-                    )
-                }
+                                    }.filterNotNull()
+                            )
+                        }
+                        ?: listOf()
 
                 stopRepository
                         .merge(stops)

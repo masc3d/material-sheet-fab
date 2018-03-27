@@ -43,7 +43,7 @@ import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.mobile.ui.vm.SectionsAdapter
 import org.deku.leoz.model.*
-import org.deku.leoz.service.internal.DeliveryListService
+import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
@@ -454,8 +454,8 @@ class VehicleLoadingScreen :
 
             // Synthetic inputs for delivery lists, retrieved via online service
             val ovDeliveryLists = Observable.fromCallable {
-                val deliveryListService = Kodein.global.instance<DeliveryListService>()
-                deliveryListService.getInfo(deliveryDate = null)
+                val tourService = Kodein.global.instance<TourServiceV1>()
+                tourService.get(overview = true)
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)
@@ -468,10 +468,15 @@ class VehicleLoadingScreen :
                                 multipleChoice = true,
                                 entries = dlInfos
                                         .sortedWith(
-                                                compareByDescending({ it.date.date })
+                                                compareByDescending({ it.date?.date })
                                         )
-                                        .map {
-                                            val data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
+                                        .mapNotNull {
+                                            val customId = it.customId
+
+                                            if (customId == null)
+                                                return@mapNotNull null
+
+                                            val data = DekuDeliveryListNumber.parse(customId).value.label
                                             SyntheticInput.Entry(
                                                     symbologyType = SymbologyType.Interleaved25,
                                                     data = data,

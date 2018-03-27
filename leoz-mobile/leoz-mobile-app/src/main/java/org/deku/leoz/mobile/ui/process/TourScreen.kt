@@ -566,7 +566,7 @@ class TourScreen
                                             result.tour?.also { optimizedTour ->
                                                 val pendingStops = this.tour.pendingStops.blockingFirst().value
 
-                                                optimizedTour.stops.map { optimizedStop ->
+                                                optimizedTour.stops!!.map { optimizedStop ->
                                                     pendingStops.first { it.tasks.first().order.id == optimizedStop.tasks.first().orderId }
                                                 }
                                                         .also {
