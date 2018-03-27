@@ -89,6 +89,14 @@ interface TourServiceV1 {
             userId: Long
     ): Tour
 
+    @GET
+    @Path("/${CUSTOM_ID}/{${CUSTOM_ID}}")
+    @ApiOperation(value = "Get tour by custom id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getByCustomId(
+            @PathParam(CUSTOM_ID) @ApiParam(value = "Custom id")
+            customId: String
+    ): Tour
+
     @Deprecated("Superseded by automatic dl conversion in `DeliveryListService`, manual conversion method will be moved to (central only) delivery list service")
     @POST
     @Path("/deliverylist")
@@ -160,7 +168,6 @@ interface TourServiceV1 {
             @ApiParam(value = "Tour optimization options")
             options: TourOptimizationOptions
     )
-
 
     @Deprecated("Superseded by `subscribe`")
     @GET

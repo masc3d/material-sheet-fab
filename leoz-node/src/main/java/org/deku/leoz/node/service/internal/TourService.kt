@@ -405,6 +405,21 @@ class TourServiceV1
         }
     }
 
+    /**
+     * Get by custom id
+     * @param customId custom id
+     */
+    override fun getByCustomId(customId: String): Tour {
+        return this.emf.withEntityManager { em ->
+            val tourRecord = em.from(tadTour)
+                    .where(tadTour.customId.eq(customId))
+                    .fetchFirst()
+                    ?: throw NoSuchElementException("No tour with custom id [${customId}]")
+
+            tourRecord.toTour()
+        }
+    }
+
     override fun delete(
             ids: List<Long>?,
             userId: Long?,
