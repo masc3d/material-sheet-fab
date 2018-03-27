@@ -99,7 +99,7 @@ class LocationService :
                         || ((authorizedUser.debitorId == userRecord.debitorId.toInt())
                                 && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(userRecord.role).value))) {
 
-                    val posList = posRepository.findByUserIdAndPositionDatetimeAndPositionDatetime(userRecord.id.toInt(), pos_from, pos_to)
+                    val posList=posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(userRecord.id.toInt(),pos_from,pos_to)
                     if (posList != null) {
                         gpsList = filter(posList)
                         /*
@@ -128,15 +128,13 @@ class LocationService :
                     throw RestProblem(
                             status = Response.Status.NOT_FOUND,
                             title = "no user found by debitor-id")
-                //val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
                     if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
                             || ((authorizedUser.debitorId == it.debitorId.toInt())
                                     && (UserRole.valueOf(authorizedUser.role!!).value >= UserRole.valueOf(it.role).value))) {
 
-                        val posList = posRepository.findByUserIdAndPositionDatetimeAndPositionDatetime(it.id.toInt(), pos_from, pos_to)
-                        //gpsList.clear()
+                        val posList=posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(it.id.toInt(),pos_from,pos_to)
                         var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
                         if (posList != null) {
                             /*
@@ -151,7 +149,6 @@ class LocationService :
                                 gpsDataPoints = gpsListTmp))
                     }
                 }
-                //if (gpsdataList.isEmpty())
                 return gpsdataList.toList()
             }
 
@@ -204,9 +201,10 @@ class LocationService :
                     if (duration != null) {
                         val pos_to = Date()
                         val pos_from = Date().plusMinutes(duration * -1)
-                        posList = posRepository.findByUserIdAndPositionDatetimeAndPositionDatetime(userRecord.id.toInt(), pos_from, pos_to)
+                        posList=posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(userRecord.id.toInt(),pos_from,pos_to)
                     } else {
-                        posList = posRepository.findRecentByUserId(userRecord.id.toInt())
+                        val recentRecord =posRepository.findTopByUserIdOrderByPositionDatetimeDesc(userRecord.id.toInt()) //posRepository.findRecentByUserId(userRecord.id.toInt())
+                        posList=if(recentRecord!=null)listOf(recentRecord) else null
                     }
 
                     if (posList != null) {
@@ -239,7 +237,6 @@ class LocationService :
                     throw RestProblem(
                             status = Response.Status.NOT_FOUND,
                             title = "no user found by debitor-id")
-                //val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
                     if ((UserRole.valueOf(authorizedUser.role!!) == UserRole.ADMIN)
@@ -250,11 +247,11 @@ class LocationService :
                         if (duration != null) {
                             val pos_to = Date()
                             val pos_from = Date().plusMinutes(duration * -1)
-                            posList = posRepository.findByUserIdAndPositionDatetimeAndPositionDatetime(it.id.toInt(), pos_from, pos_to)
+                            posList=posRepository.findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(it.id.toInt(),pos_from,pos_to)
                         } else {
-                            posList = posRepository.findRecentByUserId(it.id.toInt())
+                            val recentRecord =posRepository.findTopByUserIdOrderByPositionDatetimeDesc(it.id.toInt())
+                            posList=if(recentRecord!=null)listOf(recentRecord) else null
                         }
-                        //gpsList.clear()
                         var gpsListTmp = mutableListOf<LocationServiceV2.GpsDataPoint>()
                         if (posList != null) {
                             /*
@@ -269,7 +266,6 @@ class LocationService :
                                 gpsDataPoints = gpsListTmp))
                     }
                 }
-                //if (gpsdataList.isEmpty())
                 return gpsdataList.toList()
             }
 
@@ -405,9 +401,11 @@ class LocationService :
                 dataPoints.forEach {
 
                     emf.transaction { em ->
+                        val pid = posRepository.findTopByOrderByPositionIdDesc()?.positionId
+                                ?: 0 //(QTadNodeGeoposition.tadNodeGeoposition.positionId.max() ?: 0)
                         val rec = TadNodeGeoposition()
                         rec.userId = message.userId
-                        rec.nodeId = nodeRepository.findByKey(message.nodeKey ?: "")?.id!!.toInt()
+                        rec.nodeId = nodeRepository.findByKey(message.nodeKey ?: "")?.id?.toInt()
                         rec.latitude = it.latitude
                         rec.longitude = it.longitude
                         rec.positionDatetime = it.time?.toTimestamp()
@@ -420,6 +418,9 @@ class LocationService :
                         rec.tsCreated = java.util.Date().toTimestamp()
                         //sync_id??
                         rec.syncId = 0
+
+                        rec.positionId = pid + 1
+
                         em.persist(rec)
                         em.flush()
                     }

@@ -17,11 +17,16 @@ import javax.persistence.PersistenceContext
 
 interface NodeGeopositionRepository :
         JpaRepository<TadNodeGeoposition, Long>,
-        QuerydslPredicateExecutor<TadNodeGeoposition>, NodeGeopositionRepositoryExtension
+        QuerydslPredicateExecutor<TadNodeGeoposition>, NodeGeopositionRepositoryExtension,NodeGeopositionRepositoryExtensionGeneral
 
 interface NodeGeopositionRepositoryExtension {
-    fun findByUserIdAndPositionDatetimeAndPositionDatetime(id: Int, from: Date, to: Date): List<TadNodeGeoposition>
-    fun findRecentByUserId(id: Int): List<TadNodeGeoposition>?
+
+}
+
+interface NodeGeopositionRepositoryExtensionGeneral{
+    fun findTopByOrderByPositionIdDesc():TadNodeGeoposition?
+    fun findTopByUserIdOrderByPositionDatetimeDesc(id: Int):TadNodeGeoposition?
+    fun findByUserIdAndPositionDatetimeBetweenOrderByPositionDatetime(id: Int, from: Date, to: Date): List<TadNodeGeoposition>
 }
 
 class NodeGeopostionRepositoryImpl : NodeGeopositionRepositoryExtension {
@@ -31,20 +36,6 @@ class NodeGeopostionRepositoryImpl : NodeGeopositionRepositoryExtension {
     @PersistenceContext
     private lateinit var em: EntityManager
 
-    override fun findByUserIdAndPositionDatetimeAndPositionDatetime(id: Int, from: Date, to: Date): List<TadNodeGeoposition> {
-        return posRepository.findAll(
-                tadNodeGeoposition.userId.eq(id)
-                        .and(tadNodeGeoposition.positionDatetime.between(from.toTimestamp(), to.toTimestamp()))
-        ).toList().sortedBy { it.positionDatetime }
-
-    }
-
-    override fun findRecentByUserId(id: Int): List<TadNodeGeoposition>? {
-        return em.from(tadNodeGeoposition)
-                .where(tadNodeGeoposition.userId.eq(id))
-                .orderBy(tadNodeGeoposition.positionDatetime.desc())
-                .limit(1).fetch()
-    }
 }
 
 
