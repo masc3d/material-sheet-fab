@@ -456,7 +456,28 @@ class UserService : org.deku.leoz.service.internal.UserService {
     }
 
     override fun changePassword(userId: Int, oldPassword: String, newPassword: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        val u = userRepository.findById(userId.toLong()) ?: throw RestProblem(
+                status = Response.Status.NOT_FOUND,
+                title = "User with ID [$userId] not found"
+        )
+        if (u.isPresent) {
+            emf.transaction { em ->
+                val userRecord=u.get()
+                if (!userRecord.verifyPassword(oldPassword))
+                    throw RestProblem(
+                            title = "User authentication failed",
+                            status = Response.Status.UNAUTHORIZED)
+                userRecord.setHashedPassword(newPassword)
+
+                em.merge(userRecord)
+            }
+
+        } else
+            throw RestProblem(
+                    status = Response.Status.NOT_FOUND,
+                    title = "User with ID [$userId] not found"
+            )
     }
 
     override fun getConfigurationById(userId: Int): String {

@@ -458,7 +458,6 @@ class UserService : org.deku.leoz.service.internal.UserService {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     override fun changePassword(userId: Int, oldPassword: String, newPassword: String) {
-        TODO("not implemented")
         val userRecord = this.userRepository.findById(userId)
 
         userRecord ?:
