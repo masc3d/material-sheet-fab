@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.DataTestConfiguration
 import org.deku.leoz.model.VehicleType
 import org.junit.Test
@@ -8,6 +9,7 @@ import org.junit.runner.RunWith
 import org.deku.leoz.service.internal.LocationServiceV2
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
 import sx.time.toTimestamp
@@ -21,6 +23,7 @@ import javax.inject.Inject
  */
 @Category(StandardTest::class)
 @RunWith(SpringRunner::class)
+@ActiveProfiles(Application.PROFILE_CENTRAL)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
         org.deku.leoz.central.service.internal.LocationServiceV2::class
