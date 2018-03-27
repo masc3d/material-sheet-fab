@@ -30,7 +30,6 @@ interface TourServiceV1 {
     companion object {
         const val ID = "id"
         const val CUSTOM_ID = "custom-id"
-        const val DEBITOR_ID = "debitor-id"
         const val FROM = "from"
         const val INCLUDE_RELATED = "include-related"
         const val NODE_UID = "node-uid"
@@ -48,8 +47,6 @@ interface TourServiceV1 {
     fun get(
             @QueryParam(ID) @ApiParam(value = "Ids", required = false)
             ids: List<Long>? = null,
-            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
-            debitorId: Long? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
             stationNo: Long? = null,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)

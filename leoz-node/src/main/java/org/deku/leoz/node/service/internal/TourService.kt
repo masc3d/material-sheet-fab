@@ -298,7 +298,6 @@ class TourServiceV1
      */
     override fun get(
             ids: List<Long>?,
-            debitorId: Long?,
             stationNo: Long?,
             userId: Long?,
             from: ShortDate?,
@@ -312,11 +311,6 @@ class TourServiceV1
                             else
                                 it
                         }
-                        .letWithParamNotNull(debitorId, {
-                            and(tadTour.userId.`in`(
-                                    userService.getIdsByDebitor(it.toInt()).map { it.toLong() }
-                            ))
-                        })
                         .letWithParamNotNull(stationNo, { and(tadTour.stationNo.eq(it)) })
                         .letWithParamNotNull(userId, { and(tadTour.userId.eq(it)) })
                         .letWithParamNotNull(from, { and(tadTour.date.goe(it.toString())) })
