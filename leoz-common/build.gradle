@@ -93,7 +93,9 @@ dependencies {
             // REST
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
-            "com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT",
+            dependencies.create("com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT") {
+                exclude module: 'feign-core'
+            },
 
             // YAML
             "org.yaml:snakeyaml:$v_snakeyaml",
@@ -136,7 +138,9 @@ dependencies {
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
-            "com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT",
+            dependencies.create("com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT") {
+                exclude module: 'feign-core'
+            },
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",

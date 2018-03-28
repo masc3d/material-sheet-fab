@@ -236,7 +236,9 @@ dependencies {
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
-            "com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT",
+            dependencies.create("com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT") {
+                exclude module: 'feign-core'
+            },
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
