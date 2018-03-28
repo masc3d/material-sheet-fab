@@ -74,9 +74,9 @@
               {{'tourID' | translate}}
               <p-sortIcon [field]="'id'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'deliverylistId'" pResizableColumn>
+            <th [pSortableColumn]="'customId'" pResizableColumn>
               {{'reference' | translate}}
-              <p-sortIcon [field]="'deliverylistId'"></p-sortIcon>
+              <p-sortIcon [field]="'customId'"></p-sortIcon>
             </th>
             <th>{{'vehicle' | translate}}</th>
             <th [pSortableColumn]="'stops'" pResizableColumn>
@@ -112,7 +112,7 @@
             <td></td>
             <td>{{tour.id}}</td>
             <td>
-              <span *ngIf="tour.deliverylistId; else parentID">{{tour.deliverylistId}}</span>
+              <span *ngIf="tour.customId; else parentID">{{tour.customId}}</span>
               <ng-template #parentID>P: {{tour.parentId}}</ng-template>
             </td>
             <td></td>

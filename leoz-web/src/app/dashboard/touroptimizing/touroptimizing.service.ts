@@ -198,7 +198,7 @@ export class TouroptimizingService {
 
       tour.isOptimizing = this.optimizationInProgress.indexOf( tour.id ) >= 0;
       tour.selected = false;
-      const dl = this.latestDeliverylists.filter( deliverylist => deliverylist.id === tour.deliverylistId );
+      const dl = this.latestDeliverylists.filter( deliverylist => deliverylist.id === tour.customId );
       tour.state = dl.length > 0 && dl[ 0 ].modified > tour.created ? 'changed' : 'new';
       return tour;
     } );

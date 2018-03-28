@@ -63,7 +63,7 @@ export class StoplistReportingService extends ReportingService {
               report_tourplan: this.translate.instant( 'report_tourplan' ),
               tourlist_Date_Short: moment().format( this.dateFormatShort ),
               tourID: this.translate.instant( 'tourID' ),
-              deliverylistID: listToPrint.deliverylistId,
+              deliverylistID: listToPrint.customId,
               tourIDValue: listToPrint.id,
 
               curentUserMail: JSON.parse( localStorage.getItem( 'currentUser' ) ).user.email,
