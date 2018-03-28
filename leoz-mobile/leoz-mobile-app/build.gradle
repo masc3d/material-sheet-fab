@@ -236,9 +236,7 @@ dependencies {
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
-            dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
-                exclude group: "javax.ws.rs", module: "jsr311-api"
-            },
+            "com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT",
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
