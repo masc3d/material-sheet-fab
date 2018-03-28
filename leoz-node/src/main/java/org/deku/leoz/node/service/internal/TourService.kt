@@ -519,7 +519,10 @@ class TourServiceV1
             ids: List<Long>,
             waitForCompletion: Boolean,
             options: TourOptimizationOptions,
-            response: AsyncResponse) {
+            response: AsyncResponse?) {
+
+        @Suppress("NAME_SHADOWING")
+        val response = response!!
 
         data class Optimization(val tourId: Long, val result: List<Tour>)
 
@@ -613,13 +616,13 @@ class TourServiceV1
             id: Long,
             waitForCompletion: Boolean,
             options: TourOptimizationOptions,
-            response: AsyncResponse) {
+            response: AsyncResponse?) {
 
         this.optimize(
                 ids = listOf(id),
                 waitForCompletion = waitForCompletion,
                 options = options,
-                response = response)
+                response = response!!)
     }
 
 

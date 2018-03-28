@@ -136,7 +136,7 @@ interface TourServiceV1 {
             waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
             options: TourOptimizationOptions,
-            @Suspended response: AsyncResponse
+            @Suspended response: AsyncResponse?
     )
 
     @PATCH
@@ -150,7 +150,7 @@ interface TourServiceV1 {
             waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
             options: TourOptimizationOptions,
-            @Suspended response: AsyncResponse
+            @Suspended response: AsyncResponse?
     )
 
     @PATCH
