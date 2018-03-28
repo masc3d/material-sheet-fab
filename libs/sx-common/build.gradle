@@ -51,6 +51,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -98,9 +99,7 @@ dependencies {
             // Feign REST
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
-            dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
-                exclude group: "javax.ws.rs", module: "jsr311-api"
-            },
+            "com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT",
 
             // YAML
             "org.yaml:snakeyaml:1.19",

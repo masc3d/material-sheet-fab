@@ -7,6 +7,7 @@ import feign.Request
 import feign.Retryer
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
+import feign.jaxrs.JAXRSContract
 import feign.okhttp.OkHttpClient
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.JerseyClientBuilder
@@ -243,7 +244,7 @@ class FeignClient(
                 .encoder(this.encoder)
                 .decoder(this.decoder)
                 // TODO: temporarily customized feign client with workaround for https://github.com/OpenFeign/feign/issues/669
-                .contract(sx.feign.JAXRSContract())
+                .contract(JAXRSContract())
                 .also {
                     when {
                         this.headers != null -> {
