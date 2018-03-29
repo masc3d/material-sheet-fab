@@ -17,6 +17,9 @@ export class AuthenticationService {
   private authUrl = `${environment.apiUrl}/internal/v1/authorize/web`;
   private debitorUrl = `${environment.apiUrl}/internal/v1/station/debitor/`;
 
+
+  allowedStations: number[];
+
   private debitorStationsSubject = new BehaviorSubject<Station[]>( null );
   public debitorStations$ = this.debitorStationsSubject.asObservable().pipe(distinctUntilChanged());
 
@@ -68,21 +71,27 @@ export class AuthenticationService {
   }
 
   public fetchStations( debitorId: number ) {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    this.allowedStations = currUser.user.allowedStations;
     this.http.get<Station[]>( this.debitorUrl + debitorId.toString() )
       .subscribe( ( stations ) => {
-          const debitorStations = stations.map( ( station: Station ) => <Station> {
+          const debitorStations = stations
+            .filter(( station: Station ) => this.allowedStations.indexOf(station.stationNo) >= 0)
+            .map( ( station: Station ) => <Station> {
             stationNo: station.stationNo,
             exportValuablesAllowed: station.exportValuablesAllowed,
             exportValuablesWithoutBagAllowed: station.exportValuablesWithoutBagAllowed
           } );
           this.debitorStationsSubject.next( debitorStations );
           localStorage.setItem( 'debitorStations', JSON.stringify( debitorStations ) );
-          const firstStation = stations[ 0 ];
-          this.changeActiveStation( <Station>{
-            stationNo: firstStation.stationNo,
-            exportValuablesAllowed: firstStation.exportValuablesAllowed,
-            exportValuablesWithoutBagAllowed: firstStation.exportValuablesWithoutBagAllowed
-          } );
+          if(debitorStations.length > 0) {
+            const firstStation = debitorStations[ 0 ];
+            this.changeActiveStation( <Station>{
+              stationNo: firstStation.stationNo,
+              exportValuablesAllowed: firstStation.exportValuablesAllowed,
+              exportValuablesWithoutBagAllowed: firstStation.exportValuablesWithoutBagAllowed
+            } );
+          }
         },
         ( error: Response ) => {
           console.log( error );
