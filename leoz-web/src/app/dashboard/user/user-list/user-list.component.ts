@@ -12,6 +12,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
 import { PermissionCheck } from '../../../core/auth/permission-check';
 import { RoleGuard } from '../../../core/auth/role.guard';
 import { compareCustom } from '../../../core/compare-fn/custom-compare';
+import { Station } from '../../../core/auth/station.model';
 
 @Component( {
   selector: 'app-user-list',
@@ -184,18 +185,31 @@ export class UserListComponent extends AbstractTranslateComponent implements OnI
   private initialSort( users: User[] ): User[] {
     // sorting active = true and lastName asc
     const activePart = users
-      .filter(user => user.active)
-      .sort((u1: User, u2: User) => u1.lastName.localeCompare( u2.lastName ));
+      .filter( user => user.active )
+      .sort( ( u1: User, u2: User ) => u1.lastName.localeCompare( u2.lastName ) );
     const inactivePart = users
-      .filter(user => !user.active)
-      .sort((u1: User, u2: User) => u1.lastName.localeCompare( u2.lastName ));
-    return [...activePart, ...inactivePart];
+      .filter( user => !user.active )
+      .sort( ( u1: User, u2: User ) => u1.lastName.localeCompare( u2.lastName ) );
+    return [ ...activePart, ...inactivePart ];
   }
 
   private filterUsers( users: User[] ): User[] {
     if (!users) {
       return [];
     }
-    return users.filter( ( user: User ) => PermissionCheck.isAllowedRole( this.roleGuard.userRole, user.role ) );
+    const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
+    const activeStationNo = activeStation && activeStation.stationNo ? activeStation.stationNo : -1;
+    const predicateMethod = this.roleGuard.isPoweruser() ? this.poweruserPredicate : this.userPredicate;
+    return users
+      .filter( ( user: User ) => predicateMethod( user, activeStationNo ) )
+      .filter( ( user: User ) => PermissionCheck.isAllowedRole( this.roleGuard.userRole, user.role ) );
+  }
+
+  private poweruserPredicate( user: User, activeStationNo ) {
+    return !user.allowedStations || user.allowedStations.length === 0 || user.allowedStations.indexOf( activeStationNo ) >= 0;
+  }
+
+  private userPredicate( user: User, activeStationNo ) {
+    return user.allowedStations && user.allowedStations.indexOf( activeStationNo ) >= 0;
   }
 }

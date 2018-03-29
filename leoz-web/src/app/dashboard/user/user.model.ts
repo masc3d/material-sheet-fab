@@ -12,7 +12,7 @@ export interface User {
   phone: string;
   phoneMobile: string;
   role: User.RoleEnum;
-
+  allowedStations?: number[];
 }
 
 export namespace User {
