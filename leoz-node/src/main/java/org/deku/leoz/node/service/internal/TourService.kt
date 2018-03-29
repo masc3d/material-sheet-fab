@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.querydsl.core.BooleanBuilder
-import com.querydsl.core.Tuple
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
@@ -24,7 +23,6 @@ import org.deku.leoz.node.data.repository.TadTourEntryRepository
 import org.deku.leoz.node.data.repository.TadTourRepository
 import org.deku.leoz.node.data.repository.toAddress
 import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.internal.LocationServiceV2
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.TourServiceV1
 import org.deku.leoz.service.internal.TourServiceV1.*
@@ -44,8 +42,8 @@ import sx.rs.RestProblem
 import sx.rs.push
 import sx.time.plusDays
 import sx.time.toTimestamp
-import sx.util.hashWithSha1
-import sx.util.letWithParamNotNull
+import sx.util.letWithItems
+import sx.util.letWithNotNull
 import sx.util.toNullable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -315,10 +313,10 @@ class TourServiceV1
                             else
                                 it
                         }
-                        .letWithParamNotNull(stationNo, { and(tadTour.stationNo.eq(it)) })
-                        .letWithParamNotNull(userId, { and(tadTour.userId.eq(it)) })
-                        .letWithParamNotNull(from, { and(tadTour.date.goe(it.toString())) })
-                        .letWithParamNotNull(to, { and(tadTour.date.loe(it.toString())) })
+                        .letWithNotNull(stationNo, { and(tadTour.stationNo.eq(it)) })
+                        .letWithNotNull(userId, { and(tadTour.userId.eq(it)) })
+                        .letWithNotNull(from, { and(tadTour.date.goe(it.toString())) })
+                        .letWithNotNull(to, { and(tadTour.date.loe(it.toString())) })
                 )
                         .also {
                             if (it.count() == 0) {
