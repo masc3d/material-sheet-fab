@@ -428,34 +428,21 @@ class TourServiceV1
         emf.transaction { em ->
             em.from(tadTour)
                     .select(tadTour.id, tadTour.stationNo, tadTour.uid)
-                    .let {
-                        when {
-                            ids != null -> {
-                                it.where(tadTour.id.`in`(ids))
-                            }
-                            else -> it
-                        }
-                    }
+                    .where(BooleanBuilder()
+                            .letWithItems(ids, {
+                                and(tadTour.id.`in`(it))
+                            })
+                            .letWithNotNull(userId, {
+                                and(tadTour.userId.eq(it))
+                            })
+                            .letWithNotNull(stationNo, {
+                                and(tadTour.stationNo.eq(it))
+                            })
+                            .letWithItems(customIds, {
+                                and(tadTour.customId.`in`(it))
+                            })
+                    )
                     .fetch()
-                    .plus(userId?.let {
-                        em.from(tadTour)
-                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
-                                .where(tadTour.userId.eq(it))
-                                .fetch()
-                    } ?: listOf<Tuple>())
-                    .plus(stationNo?.let {
-                        em.from(tadTour)
-                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
-                                .where(tadTour.stationNo.eq(it))
-                                .fetch()
-
-                    } ?: listOf())
-                    .plus(customIds?.let {
-                        em.from(tadTour)
-                                .select(tadTour.id, tadTour.stationNo, tadTour.uid)
-                                .where(tadTour.customId.`in`(it))
-                                .fetch()
-                    } ?: listOf())
                     .let {
                         when (includeRelated ?: false) {
                             true -> {

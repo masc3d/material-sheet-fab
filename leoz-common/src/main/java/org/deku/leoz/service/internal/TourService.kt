@@ -224,9 +224,6 @@ interface TourServiceV1 {
             var parentId: Long? = null,
             @ApiModelProperty(position = 50, required = false, value = "Custom id for this tour")
             var customId: String? = null,
-            @Deprecated("Will be replaced with customid")
-            @ApiModelProperty(position = 55, required = false, value = "Delivery list this tour refers to")
-            var deliverylistId: Long? = customId?.toLongOrNull(),
             @ApiModelProperty(position = 60, required = true, value = "Tour date")
             var date: ShortDate? = null,
             @ApiModelProperty(position = 70, required = true, value = "Orders referenced by this tour")
