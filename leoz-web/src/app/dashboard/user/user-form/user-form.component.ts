@@ -91,17 +91,17 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       )
       .subscribe( ( activeUser: User ) => {
         this.activeUser = activeUser;
-        // const passwordControl = this.userForm.get( 'password' );
-        // const validators = <ValidatorFn[]> [];
-        // validators.push( Validators.minLength( 6 ) );
-        // validators.push( Validators.maxLength( 25 ) );
-        // if (this.isEditMode( activeUser )) {
-        //   this.msgService.clear();
-        // } else {
-        //   validators.push( Validators.required );
-        // }
-        // passwordControl.clearValidators();
-        // passwordControl.setValidators( validators );
+        const passwordControl = this.userForm.get( 'password' );
+        const validators = <ValidatorFn[]> [];
+        validators.push( Validators.minLength( 6 ) );
+        validators.push( Validators.maxLength( 25 ) );
+        if (this.isEditMode( activeUser )) {
+          this.msgService.clear();
+        } else {
+          validators.push( Validators.required );
+        }
+        passwordControl.clearValidators();
+        passwordControl.setValidators( validators );
         this.userForm.patchValue( {
           emailOrigin: activeUser.email,
           firstName: activeUser.firstName,
