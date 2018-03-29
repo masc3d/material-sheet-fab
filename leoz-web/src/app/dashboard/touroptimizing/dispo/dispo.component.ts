@@ -97,7 +97,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.touroptimizingService.getTours();
 
     this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );
-    this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe );
+    this.touroptimizingService.initSSEtourChanges( this.ngUnsubscribe );
   }
 
   customSort( event: SortEvent ) {

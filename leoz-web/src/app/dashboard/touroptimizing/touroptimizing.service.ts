@@ -23,7 +23,7 @@ export class TouroptimizingService {
   protected deleteToursUrl = `${environment.apiUrl}/internal/v1/tour`; // DELETE ?id=1&id=2
   protected optimizeToursUrl = `${environment.apiUrl}/internal/v1/tour/optimize`; // PATCH ?id=1&id=2
   protected optimizeToursSSEUrl = `${environment.apiUrl}/internal/v1/tour/optimize/status/sse`; // EventSource ?station-no=100
-  protected sseWEUrl = `${environment.apiUrl}/internal/v1/tour/subscribe/sse`; // EventSource ?station-no=100
+  protected sseTourchangesUrl = `${environment.apiUrl}/internal/v1/tour/subscribe/sse`; // EventSource ?station-no=100
 
   private toursLoadingSubject = new BehaviorSubject<boolean>( true );
   public toursLoading$ = this.toursLoadingSubject.asObservable().pipe( distinctUntilChanged() );
@@ -78,9 +78,9 @@ export class TouroptimizingService {
     this.toursSubject.next( tmpTours );
   }
 
-  initSSEtourWhatever( ngUnsubscribe: Subject<void> ) {
+  initSSEtourChanges( ngUnsubscribe: Subject<void> ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
-    const sseUrl = `${this.sseWEUrl}?station-no=${activeStation.stationNo.toString()}`;
+    const sseUrl = `${this.sseTourchangesUrl}?station-no=${activeStation.stationNo.toString()}`;
     this.sse.observeMessages<{ stationNo?: number, items?: Tour[], deleted?: number[] }>( sseUrl )
       .pipe(
         takeUntil( ngUnsubscribe )
