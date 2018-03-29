@@ -511,83 +511,73 @@ class TourServiceV1
 
         data class Optimization(val tourId: Long, val result: List<Tour>)
 
-        try {
-            log.info("Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] ")
+        log.info("Starting ruote optimization for tour(s) [${ids.joinToString(", ")}] ")
 
-            // Schedule multiple optimizations
-            Observable.mergeDelayError(ids.map { id ->
-                val tour = this.getById(id)
+        // Schedule multiple optimizations
+        Observable.mergeDelayError(ids.map { id ->
+            val tour = this.getById(id)
 
-                if (tour.nodeUid != null) {
-                    // Node restrictions
-                    if (options.vehicles?.count() ?: 0 == 0)
-                        throw IllegalStateException("In place updates (vehicles not provided) are not supported for tours owned by nodes")
-                }
-
-                this.optimize(
-                        tour = tour,
-                        options = options
-                )
-                        .toObservable()
-                        .map { Optimization(tourId = id, result = it) }
-            })
-                    .subscribeBy(
-                            onNext = { optimization ->
-                                val tours = optimization.result
-
-                                log.info("Ruote optimization completed for tour [${optimization.tourId}]")
-
-                                if (options.vehicles?.count() ?: 0 > 0) {
-                                    // Reset ids for all optimized tours, enforce create
-                                    tours.forEach { it.id = null }
-
-                                    // Create tours from optimized results
-                                    this.put(tours).also {
-                                        // Update custom ids @smartlane
-                                        this.smartlane.updateRoutes(it)
-                                                .subscribeBy(onError = { e -> log.error(e.message, e) })
-                                    }
-
-                                } else {
-                                    // Update tour in place
-                                    this.put(
-                                            tours = listOf(tours.first())
-                                    )
-                                }
-                            },
-                            onComplete = {
-                                log.info("Route optimization process completed")
-
-                                if (waitForCompletion) {
-                                    response.resume(Response
-                                            .status(Response.Status.OK)
-                                            .build()
-                                    )
-                                }
-                            },
-                            onError = { e ->
-                                log.error(e.message, e)
-
-                                if (waitForCompletion) {
-                                    response.resume(RestProblem(
-                                            status = Status.INTERNAL_SERVER_ERROR,
-                                            detail = e.message
-                                    ))
-                                }
-                            }
-                    )
-
-
-            if (!waitForCompletion) {
-                response.resume(Response
-                        .status(Response.Status.ACCEPTED)
-                        .build()
-                )
+            if (tour.nodeUid != null) {
+                // Node restrictions
+                if (options.vehicles?.count() ?: 0 == 0)
+                    throw IllegalStateException("In place updates (vehicles not provided) are not supported for tours owned by nodes")
             }
-        } catch (e: Exception) {
-            throw RestProblem(
-                    status = Status.INTERNAL_SERVER_ERROR,
-                    detail = e.message
+
+            this.optimize(
+                    tour = tour,
+                    options = options
+            )
+                    .toObservable()
+                    .map { Optimization(tourId = id, result = it) }
+        })
+                .subscribeBy(
+                        onNext = { optimization ->
+                            val tours = optimization.result
+
+                            log.info("Ruote optimization completed for tour [${optimization.tourId}]")
+
+                            if (options.vehicles?.count() ?: 0 > 0) {
+                                // Reset ids for all optimized tours, enforce create
+                                tours.forEach { it.id = null }
+
+                                // Create tours from optimized results
+                                this.put(tours).also {
+                                    // Update custom ids @smartlane
+                                    this.smartlane.updateRoutes(it)
+                                            .subscribeBy(onError = { e -> log.error(e.message, e) })
+                                }
+
+                            } else {
+                                // Update tour in place
+                                this.put(
+                                        tours = listOf(tours.first())
+                                )
+                            }
+                        },
+                        onComplete = {
+                            log.info("Route optimization process completed")
+
+                            if (waitForCompletion) {
+                                response.resume(Response
+                                        .status(Response.Status.OK)
+                                        .build()
+                                )
+                            }
+                        },
+                        onError = { e ->
+                            log.error(e.message, e)
+
+                            if (waitForCompletion) {
+                                response.resume(e)
+                            }
+                        }
+                )
+
+
+        if (!waitForCompletion) {
+            response.resume(Response
+                    .status(Response.Status.ACCEPTED)
+                    .build()
             )
         }
     }
@@ -612,19 +602,22 @@ class TourServiceV1
 
 
     override fun status(stationNo: Long, sink: SseEventSink, sse: Sse) {
-        this.emf.withEntityManager { em ->
-            val tourIds = em.from(tadTour)
-                    .select(tadTour.id)
-                    .where(tadTour.stationNo.eq(stationNo))
-                    .fetch()
 
-            sink.push(
-                    sse = sse,
-                    events = this.optimizations.updated
-                            .filter { tourIds.contains(it.id) },
-                    onError = { log.error(it.message) }
-            )
-        }
+        sink.push(
+                sse = sse,
+                events = this.optimizations.updated
+                        .filter {
+                            this.emf.withEntityManager { em ->
+                                em.from(tadTour)
+                                        .select(tadTour.id)
+                                        .where(tadTour.stationNo.eq(stationNo))
+                                        .fetch()
+                                        .contains(it.id)
+                            }
+                        },
+                onError = { log.error(it.message) }
+        )
+
     }
 
     override fun optimizeForNode(
@@ -745,7 +738,9 @@ class TourServiceV1
             sink.push(
                     sse = sse,
                     events = this.updated
-                            .filter { it.stationNo == stationNo },
+                            .filter {
+                                it.stationNo == stationNo
+                            },
                     onError = { log.error(it.message) }
             )
         }
@@ -773,22 +768,30 @@ class TourServiceV1
          * @param tourRecord Tour record
          */
         fun onStart(id: Long) {
-            TourOptimizationStatus(id = id, inProgress = true).also { status ->
-                this.byId.set(id, status)
-                this.updatedSubject.onNext(status)
-            }
+            TourOptimizationStatus(
+                    id = id,
+                    inProgress = true
+            )
+                    .also { status ->
+                        this.byId.set(id, status)
+                        this.updatedSubject.onNext(status)
+                    }
         }
 
         /**
          * Should be called when tour optimization finishes
          * @param tourRecord Tour record
          */
-        fun onFinish(id: Long) {
-            // TODO: emit errors
-            TourOptimizationStatus(id = id, inProgress = false).also { status ->
-                this.byId.remove(id)
-                this.updatedSubject.onNext(status)
-            }
+        fun onFinish(id: Long, success: Boolean? = null) {
+            TourOptimizationStatus(
+                    id = id,
+                    inProgress = false,
+                    success = success
+            )
+                    .also { status ->
+                        this.byId.remove(id)
+                        this.updatedSubject.onNext(status)
+                    }
         }
 
         override fun iterator(): Iterator<TourServiceV1.TourOptimizationStatus> = this.byId.values.iterator()
@@ -839,8 +842,11 @@ class TourServiceV1
                 .doOnSubscribe {
                     this.optimizations.onStart(tourId)
                 }
-                .doFinally {
-                    this.optimizations.onFinish(tourId)
+                .doOnError {
+                    this.optimizations.onFinish(tourId, success = false)
+                }
+                .doOnSuccess {
+                    this.optimizations.onFinish(tourId, success = true)
                 }
     }
     //endregion

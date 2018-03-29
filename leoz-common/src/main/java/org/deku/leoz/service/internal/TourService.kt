@@ -430,7 +430,9 @@ interface TourServiceV1 {
             /** Tour id */
             var id: Long = 0,
             /** Optimization progress */
-            var inProgress: Boolean = false
+            var inProgress: Boolean = false,
+            /** Indicates if optimization was successful */
+            var success: Boolean? = null
     )
 
     /**
