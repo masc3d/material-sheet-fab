@@ -512,7 +512,7 @@ class SmartlaneBridge {
                             true -> {
                                 uid = tour.uid ?: throw IllegalArgumentException("Uid required for in place update")
                                 id = tour.id ?: throw IllegalArgumentException("Id required for in place update")
-                                parentId = null
+                                parentId = tour.parentId
                                 customId = tour.customId
                             }
                             false -> {
