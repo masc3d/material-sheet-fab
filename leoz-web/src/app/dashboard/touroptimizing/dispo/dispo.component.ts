@@ -90,7 +90,8 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
             return compareCustom( this.latestSortOrder, data1[ this.latestSortField ], data2[ this.latestSortField ] );
           } ) );
         } else {
-          this.tours.push( ...this.sortAndGroupTours( tours ) );
+          const sortedAndGrouped = this.sortAndGroupTours( tours );
+          this.tours.push( ...sortedAndGrouped );
         }
         this.cd.markForCheck();
       } );
@@ -121,8 +122,11 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
       return t1.id > t2.id ? -1 : 1;
     };
     // tours that are optimized within themselves have their own id as parentId
+    // reoptimized tours are parent and child
+    // const allTourIds = tours.map(tour => tour.id);
     const parentTours = tours
       .filter( tour => !tour.parentId || tour.id === tour.parentId )
+        // || allTourIds.indexOf(tour.parentId) >= 0 )
       .sort( sortIdDesc );
     const childTours = tours
       .filter( tour => tour.parentId && tour.id !== tour.parentId )

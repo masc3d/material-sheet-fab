@@ -46,7 +46,7 @@ export class TouroptimizingService {
   initSSEtouroptimization( ngUnsubscribe: Subject<void> ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.optimizeToursSSEUrl}?station-no=${activeStation.stationNo.toString()}`;
-    this.sse.observeMessages<{ id?: number, inProgress?: boolean }>( sseUrl )
+    this.sse.observeMessages<{ id?: number, inProgress?: boolean, success?: boolean }>( sseUrl )
       .pipe(
         takeUntil( ngUnsubscribe )
       )
@@ -55,8 +55,12 @@ export class TouroptimizingService {
         const id = data.id;
         this.optimizing( id, data.inProgress );
         if (!data.inProgress) {
-          this.msgService.clear();
-          this.getTours();
+          if (data.success) {
+            this.msgService.clear();
+            this.getTours();
+          } else {
+            this.msgService.error( 'Tour: ' + id + ' ' + 'could not be optimized', true );
+          }
         }
       } );
   }

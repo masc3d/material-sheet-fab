@@ -453,6 +453,7 @@ export const LANG_EN_TRANS = {
   'optimization': 'Optimization',
   'optimization-tour': 'Optimization-Tour',
   'stops': 'Stops',
+  'could not be optimized': 'could not be optimized',
   // report report_tourplan
   'report_tourplan': 'Tour Plan',
   'tourID': 'Tour No.',
