@@ -122,13 +122,15 @@ class TourServiceV1
                 .toTimestamp()
 
         emf.withEntityManager { em ->
-            this.delete(ids = em.from(tadTour).select(tadTour.id)
+            em.from(tadTour).select(tadTour.id)
                     .where(tadTour.created.lt(expiry))
                     .fetch()
                     .also {
-                        log.info("Removing expired tours [${it.joinToString(", ")}]")
+                        if (it.count() > 0) {
+                            log.info("Removing expired tours [${it.joinToString(", ")}]")
+                            this.delete(ids = it)
+                        }
                     }
-            )
         }
     }
 
@@ -424,6 +426,14 @@ class TourServiceV1
             stationNo: Long?,
             customIds: List<String>?,
             includeRelated: Boolean?) {
+
+        // Prevent deletion of all records, as jax-rs/resteasy doesn't make a difference
+        // between empty and no list on query collection params
+        if (ids?.count() == 0 &&
+                userId == null &&
+                stationNo == null &&
+                customIds?.count() == 0)
+            return
 
         emf.transaction { em ->
             em.from(tadTour)
