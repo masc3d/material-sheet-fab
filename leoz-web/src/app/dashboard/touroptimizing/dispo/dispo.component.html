@@ -110,6 +110,7 @@
         <ng-template pTemplate="body" let-tour>
           <tr>
             <td></td>
+
             <td>{{tour.id}}</td>
             <td>
               <span *ngIf="tour.customId; else parentID">{{tour.customId}}</span>
