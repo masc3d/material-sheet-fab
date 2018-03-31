@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.item_delivery_menu_entry.view.*
 import kotlinx.android.synthetic.main.screen_menu.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.process.Tour
-import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.ui.core.Headers
 import org.deku.leoz.mobile.ui.core.ScreenFragment
 import org.slf4j.LoggerFactory
@@ -33,7 +32,6 @@ class MenuScreen : ScreenFragment<Any>() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val tour: Tour by Kodein.global.lazy.instance()
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
@@ -62,7 +60,7 @@ class MenuScreen : ScreenFragment<Any>() {
                             tour.closedStops.blockingFirst().value.count() > 0
                 }
                 EntryType.UNLOADING -> {
-                    deliveryList.loadedParcels.get().count() > 0
+                    tour.loadedParcels.get().count() > 0
                 }
             }
     }
@@ -125,8 +123,8 @@ class MenuScreen : ScreenFragment<Any>() {
                         Entry(
                                 type = EntryType.LOADING,
                                 description = this.getText(R.string.vehicle_loading).toString(),
-                                counter1 = deliveryList.pendingParcels.get().count(),
-                                counter2 = deliveryList.loadedParcels.blockingFirst().value.count(),
+                                counter1 = tour.pendingParcels.get().count(),
+                                counter2 = tour.loadedParcels.blockingFirst().value.count(),
                                 icon = this.context.getDrawableCompat(R.drawable.ic_truck_loading)
                         ),
                         Entry(
@@ -138,8 +136,8 @@ class MenuScreen : ScreenFragment<Any>() {
                         Entry(
                                 type = EntryType.UNLOADING,
                                 description = this.getText(R.string.vehicle_unloading).toString(),
-                                counter1 = deliveryList.loadedParcels.get().count(),
-                                counter2 = deliveryList.pendingParcels.blockingFirst().value.count(),
+                                counter1 = tour.loadedParcels.get().count(),
+                                counter2 = tour.pendingParcels.blockingFirst().value.count(),
                                 icon = this.context.getDrawableCompat(R.drawable.ic_truck_unloading)
                         )
                 ))

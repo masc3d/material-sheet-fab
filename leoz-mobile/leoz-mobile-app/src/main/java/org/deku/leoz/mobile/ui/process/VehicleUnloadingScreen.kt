@@ -13,7 +13,6 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.screen_vehicleunloading.*
 import org.deku.leoz.mobile.BR
@@ -24,7 +23,7 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.VehicleUnloading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -45,7 +44,6 @@ import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.inflateMenu
-import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.ui.flexibleadapter.SimpleVmItem
 import sx.android.ui.flexibleadapter.VmHeaderItem
@@ -96,7 +94,7 @@ class VehicleUnloadingScreen :
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
 
     private val vehicleUnloading: VehicleUnloading by Kodein.global.lazy.instance()
 
@@ -110,7 +108,7 @@ class VehicleUnloadingScreen :
                 color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.unloaded).toString(),
-                items = this.deliveryList.pendingParcels.map { it.value }
+                items = this.tour.pendingParcels.map { it.value }
         )
     }
 
@@ -120,7 +118,7 @@ class VehicleUnloadingScreen :
                 color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_accent,
                 title = this.getString(R.string.event_reason_damaged),
-                items = this.deliveryList.damagedParcels.map { it.value }
+                items = this.tour.damagedParcels.map { it.value }
         )
     }
 
@@ -131,7 +129,7 @@ class VehicleUnloadingScreen :
                 background = R.drawable.section_background_grey,
                 expandOnSelection = true,
                 title = getString(R.string.pending),
-                items = this.deliveryList.loadedParcels.map { it.value }
+                items = this.tour.loadedParcels.map { it.value }
         )
     }
 
@@ -361,14 +359,14 @@ class VehicleUnloadingScreen :
 
         // Damaged parcels
         Observable.combineLatest(
-                this.deliveryList.damagedParcels,
+                this.tour.damagedParcels,
                 // Also fire when selected section changes */
                 this.parcelListAdapter.selectedSectionProperty.filter {
                     it.value != this.damagedSection
                 },
 
                 BiFunction { _: Any, _: Any ->
-                    this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
+                    this.tour.damagedParcels.map { it.value }.blockingFirst()
                 }
         )
                 .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
