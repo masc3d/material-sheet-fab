@@ -78,7 +78,7 @@
               {{'reference' | translate}}
               <p-sortIcon [field]="'customId'"></p-sortIcon>
             </th>
-            <th>{{'vehicle' | translate}} pResizableColumn</th>
+            <th pResizableColumn>{{'vehicle' | translate}}</th>
             <th [pSortableColumn]="'stops'" pResizableColumn>
               {{'stops' | translate}}
               <p-sortIcon [field]="'stops'"></p-sortIcon>
@@ -100,8 +100,12 @@
               <p-sortIcon [field]="'distance'"></p-sortIcon>
             </th>
             <th [pSortableColumn]="'created'" pResizableColumn>
-              {{'date' | translate}}
+              {{'optimized' | translate}}
               <p-sortIcon [field]="'created'"></p-sortIcon>
+            </th>
+            <th [pSortableColumn]="'date'" pResizableColumn>
+              {{'date' | translate}}
+              <p-sortIcon [field]="'date'"></p-sortIcon>
             </th>
             <th style="width: 100px;"></th>
           </tr>
@@ -123,6 +127,7 @@
             <td>{{formatTourDurationTime(tour.drivingTime)}}</td>
             <td>{{roundDecimalsAsStringWrapper(tour.distance)}}</td>
             <td>{{ tour.created | date:dateFormatMedium}}</td>
+            <td>{{ tour.date | date:dateFormatShorter}}</td>
             <td>
               <span *ngIf="tour.optimized; else notOptimized">
                 <i class="fas fa-sync {{tour.isOptimizing ? 'fa-spin' : ''}}" style="color: #00a200; margin-right: .5rem;"></i>
