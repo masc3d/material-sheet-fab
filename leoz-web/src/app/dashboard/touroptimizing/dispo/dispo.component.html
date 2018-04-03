@@ -112,7 +112,7 @@
         </ng-template>
 
         <ng-template pTemplate="body" let-tour>
-          <tr>
+          <tr class="{{tour.optimizationFailed ? 'bgOptimizationFailed' : ''}}" >
             <td></td>
 
             <td>{{tour.id}}</td>

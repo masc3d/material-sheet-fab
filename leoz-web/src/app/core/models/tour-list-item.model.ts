@@ -21,4 +21,5 @@ export interface TourListItem {
   distance?: number;
   drivingTime?: number;
   isOptimizing?: boolean;
+  optimizationFailed?: boolean;
 }

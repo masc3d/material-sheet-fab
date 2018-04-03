@@ -61,7 +61,17 @@ export class TouroptimizingService {
             this.msgService.clear();
             this.getTours();
           } else {
-            this.msgService.error( `${this.translate.instant('Tour')}: ${id} ${this.translate.instant('could not be optimized')}`, true );
+            // mark tour with id as 'optimization failed'
+            const tmpTours = this.toursSubject.getValue()
+              .map( tour => {
+                if (tour.id === id) {
+                  tour.optimizationFailed = true;
+                }
+                return tour;
+              } );
+            this.toursSubject.next( tmpTours );
+            const text = `${this.translate.instant( 'Tour' )}: ${id} ${this.translate.instant( 'could not be optimized' )}`;
+            this.msgService.error( text, true );
           }
         }
       } );
@@ -206,6 +216,7 @@ export class TouroptimizingService {
         : 0;
 
       tour.isOptimizing = this.optimizationInProgress.indexOf( tour.id ) >= 0;
+      tour.optimizationFailed = false; // if REST delivers this status use deliverd values
       tour.selected = false;
       const dl = this.latestDeliverylists.filter( deliverylist => deliverylist.id === tour.customId );
       tour.state = dl.length > 0 && dl[ 0 ].modified > tour.created ? 'changed' : 'new';
