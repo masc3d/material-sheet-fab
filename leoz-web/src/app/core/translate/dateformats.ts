@@ -6,12 +6,12 @@ export const DATEFORMATS = {
   },
   internalShort: {
     database: 'YYYY-MM-DD',
-    en: 'yyyy/MM/dd',
-    de: 'dd.MM.yyyy'
+    en: 'YYYY/MM/DD',
+    de: 'DD.MM.YYYY'
   },
   internalShorter: {
     database: 'YYYY-MM-DD',
-    en: 'MM/DD',
+    en: 'MM/dd',
     de: 'dd.MM.'
   },
   internalMedium: {
