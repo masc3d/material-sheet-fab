@@ -212,7 +212,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.selectedTours = this.filteredTours
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
-      .filter( tour => tour.orders.length > 1 );
+      .filter( tour => tour.orders && tour.orders.length > 1 );
     if (this.selectedOptimizableTours.length === 0) {
       this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
