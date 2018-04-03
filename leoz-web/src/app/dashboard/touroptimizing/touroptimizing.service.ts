@@ -110,6 +110,7 @@ export class TouroptimizingService {
         },
         ( error: HttpErrorResponse ) => {
           if (error.status === 404) {
+            this.toursSubject.next( [] );
             this.toursLoadingSubject.next( false );
           } else {
             this.ics.isOffline();
