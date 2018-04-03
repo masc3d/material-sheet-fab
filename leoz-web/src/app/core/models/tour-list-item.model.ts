@@ -22,4 +22,5 @@ export interface TourListItem {
   drivingTime?: number;
   isOptimizing?: boolean;
   optimizationFailed?: boolean;
+  children?: TourListItem[];
 }
