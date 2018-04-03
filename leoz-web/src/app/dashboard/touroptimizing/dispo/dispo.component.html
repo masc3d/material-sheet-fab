@@ -121,7 +121,7 @@
               <ng-template #parentID>P: {{tour.parentId}}</ng-template>
             </td>
             <td></td>
-            <td>{{tour.stops.length}}</td>
+            <td>{{tour.stops ? tour.stops.length : 0}}</td>
             <td>{{tour.totalPackages}}</td>
             <td>{{roundDecimalsAsStringWrapper( tour.totalWeight )}}</td>
             <td>{{formatTourDurationTime(tour.drivingTime)}}</td>

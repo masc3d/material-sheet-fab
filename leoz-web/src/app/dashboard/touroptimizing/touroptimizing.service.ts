@@ -178,12 +178,14 @@ export class TouroptimizingService {
 
   private processTourData( tours: Tour[] ): Tour[] {
     return tours.map( tour => {
-      tour.totalShipments = tour.orders.length;
+      tour.totalShipments = tour.orders ? tour.orders.length : 0;
 
       tour.totalPackages = tour.orders
-        .map( o => o.parcels.length )
-        .reduce( ( a, b ) => a + b );
-      const parcels = tour.orders.map( o => o.parcels );
+        ? tour.orders
+          .map( o => o.parcels.length )
+          .reduce( ( a, b ) => a + b )
+        : 0;
+      const parcels = tour.orders ? tour.orders.map( o => o.parcels ) : [];
       const mappedParcels = [].concat( ...parcels )
         .map( p => p.dimension.weight );
       tour.totalWeight = 0;
