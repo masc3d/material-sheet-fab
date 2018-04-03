@@ -14,6 +14,7 @@ import { roundDecimals } from '../../core/math/roundDecimals';
 import { Station } from '../../core/auth/station.model';
 import { SseService } from '../../core/sse.service';
 import { Vehicle } from '../../core/models/vehicle.model';
+import { TranslateService } from '../../core/translate/translate.service';
 
 
 @Injectable()
@@ -36,6 +37,7 @@ export class TouroptimizingService {
   private optimizationInProgress: number[] = [];
 
   constructor( protected http: HttpClient,
+               protected translate: TranslateService,
                protected msgService: MsgService,
                protected wds: WorkingdateService,
                protected ics: InetConnectionService,
@@ -59,7 +61,7 @@ export class TouroptimizingService {
             this.msgService.clear();
             this.getTours();
           } else {
-            this.msgService.error( 'Tour: ' + id + ' ' + 'could not be optimized', true );
+            this.msgService.error( `${this.translate.instant('Tour')}: ${id} ${this.translate.instant('could not be optimized')}`, true );
           }
         }
       } );
