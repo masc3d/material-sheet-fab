@@ -58,14 +58,14 @@
     <div class="ui-g-12" style="padding:0; margin-left: 10px;">
       <div class="ui-g" style="font-size:22px;">
         <div>
-          <i style="color: #186ba0;" (click)="switchDay(-1)" class="fas fa-caret-square-left" aria-hidden="true"></i>
-          <span>{{aktualTourDate | date:dateFormat}}</span>
-          <i style="color: #186ba0;" (click)="switchDay(1)"class="fas fa-caret-square-right" aria-hidden="true"></i>
+          <i style="color: #186ba0;" (click)="tourDateFilterPrevDay()" class="fas fa-caret-square-left" aria-hidden="true"></i>
+          <span>{{tourDateFilter | date:dateFormat}}</span>
+          <i style="color: #186ba0;" (click)="tourDateFilterNextDay()" class="fas fa-caret-square-right" aria-hidden="true"></i>
         </div>
       </div>
       <hr/>
-      <p-table [value]="tours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="15"
-               [totalRecords]="tours.length" (sortFunction)="customSort($event)" [customSort]="true"
+      <p-table [value]="filteredTours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="15"
+               [totalRecords]="filteredTours.length" (sortFunction)="customSort($event)" [customSort]="true"
                [loading]="toursLoading$ | async" [loadingIcon]="'fa-spinner'">
         <ng-template pTemplate="header">
           <tr>

@@ -29,6 +29,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   checkAll: boolean;
   tours: Tour[];
+  filteredTours: Tour[];
   toursLoading$: Observable<boolean>;
 
   public msgs$: Observable<Message[]>;
@@ -55,7 +56,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   dateFormatMedium: string;
 
   dateFormat: string;
-  aktualTourDate = null;
+  tourDateFilter: Date;
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
@@ -64,21 +65,20 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
                protected printingService: PrintingService,
                protected reportingService: StoplistReportingService,
                protected browserCheck: BrowserCheck ) {
-    super( translate, cd, msgService, () => {
-      this.aktualTourDate = this.initAktualTourDate();
-    } );
+    super( translate, cd, msgService );
   }
 
 
   ngOnInit() {
     super.ngOnInit();
 
-    this.aktualTourDate = this.initAktualTourDate();
+    this.tourDateFilter = new Date();
 
     this.notMicrodoof = this.browserCheck.browser === 'handsome Browser';
     this.toursLoading$ = this.touroptimizingService.toursLoading$;
 
     this.tours = [];
+    this.filteredTours = [];
     this.touroptimizingService.tours$
       .pipe(
         takeUntil( this.ngUnsubscribe )
@@ -93,12 +93,18 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
           const sortedAndGrouped = this.sortAndGroupTours( tours );
           this.tours.push( ...sortedAndGrouped );
         }
+        this.filterToursByDeliveryDate();
         this.cd.markForCheck();
       } );
     this.touroptimizingService.getTours();
 
     this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );
     this.touroptimizingService.initSSEtourChanges( this.ngUnsubscribe );
+  }
+
+  private filterToursByDeliveryDate() {
+    this.filteredTours.length = 0;
+    this.filteredTours.push( ...this.tours.filter( tour => moment( tour.date ).isSame( this.tourDateFilter, 'day' ) ) );
   }
 
   customSort( event: SortEvent ) {
@@ -126,7 +132,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     // const allTourIds = tours.map(tour => tour.id);
     const parentTours = tours
       .filter( tour => !tour.parentId || tour.id === tour.parentId )
-        // || allTourIds.indexOf(tour.parentId) >= 0 )
+      // || allTourIds.indexOf(tour.parentId) >= 0 )
       .sort( sortIdDesc );
     const childTours = tours
       .filter( tour => tour.parentId && tour.id !== tour.parentId )
@@ -148,7 +154,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   protected optimizeTours() {
-    this.selectedTours = this.tours
+    this.selectedTours = this.filteredTours
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
       .filter( tour => tour.orders.length > 1 );
@@ -193,7 +199,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   protected reporting( saving: boolean ) {
-    const listsToPrint = this.tours.filter( tour => tour.selected );
+    const listsToPrint = this.filteredTours.filter( tour => tour.selected );
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
     this.printingService.printReports( this.reportingService
@@ -203,7 +209,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   optimizeDialog() {
     this.displayOptimizationOptions = false;
-    this.selectedTours = this.tours
+    this.selectedTours = this.filteredTours
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
       .filter( tour => tour.orders.length > 1 );
@@ -233,19 +239,22 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     return '';
   }
 
-  roundDecimalsAsStringWrapper( input: number ) {
+  roundDecimalsAsStringWrapper( input: number ): string {
     return roundDecimalsAsString( input, 10, true );
   }
 
-  private initAktualTourDate() {
-    const d = new Date();
-    return d;
+  tourDateFilterPrevDay() {
+    this.tourDateFilter = moment( this.tourDateFilter )
+      .subtract( 1, 'days' )
+      .toDate();
+    this.filterToursByDeliveryDate();
   }
 
-  private switchDay( timeline: number ) {
-    const d = new Date( this.aktualTourDate );
-    d.setDate( d.getDate() + (timeline) );
-    this.aktualTourDate = d;
+  tourDateFilterNextDay() {
+    this.tourDateFilter = moment( this.tourDateFilter )
+      .add( 1, 'days' )
+      .toDate();
+    this.filterToursByDeliveryDate();
   }
 }
 
