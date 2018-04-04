@@ -85,7 +85,8 @@ dependencies {
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
-            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson_kt",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$v_jackson",
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
@@ -145,6 +146,8 @@ dependencies {
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$v_jackson",
 
             // MQTT client
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",

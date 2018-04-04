@@ -176,7 +176,7 @@ dependencies {
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
-            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson_kt",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson",
 
             "org.zalando:problem:$v_rest_problem",
             "org.zalando:jackson-datatype-problem:$v_rest_problem",

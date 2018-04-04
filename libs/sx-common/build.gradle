@@ -5,7 +5,6 @@ buildscript {
     ext {
         v_feign = '9.6.0'
         v_jackson = '2.9.5'
-        v_jackson_kt = '2.9.5'
         v_javax_persistence = '2.2'
         v_jersey = '2.26'
         v_jgit = '4.11.0.201803080745-r'
@@ -160,7 +159,7 @@ dependencies {
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
-            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson_kt"
+            "com.fasterxml.jackson.module:jackson-module-kotlin:$v_jackson"
     )
 }
 
