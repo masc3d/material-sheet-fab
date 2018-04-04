@@ -16,7 +16,7 @@ import sx.platform.OperatingSystem
 
 buildscript {
     ext {
-        v_aspectj = '1.8.11'
+        v_aspectj = '1.9.0'
         v_jaxb = '2.3.0'
     }
 

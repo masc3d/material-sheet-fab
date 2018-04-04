@@ -52,7 +52,7 @@ buildscript {
         v_slf4j = '1.7.25'
         v_snakeyaml = '1.19'
         v_socketio = '1.0.0'
-        v_spring = '5.0.4.RELEASE'
+        v_spring = '5.0.5.RELEASE'
         v_spring_data_jpa = '2.1.0.M1'
         v_spring_data_commons = '2.1.0.M1'
         v_springboot = '2.0.0.RELEASE'
