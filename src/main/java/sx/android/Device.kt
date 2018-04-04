@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.support.annotation.RequiresApi
+import android.telephony.TelephonyManager
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import org.slf4j.LoggerFactory
@@ -177,11 +178,21 @@ open class Device(private val context: Context) {
     val isM2MConnected: Boolean by lazy {
         val telephonyManager = this.context.getTelephonyManager()
         try {
-            log.debug("NetworkOperator [${telephonyManager.networkOperator}] NetworkOperatorName [${telephonyManager.networkOperatorName}]")
-            val mcc = telephonyManager.networkOperator.substring(0, 3)
-            val mnc = telephonyManager.networkOperator.substring(3)
-            log.debug("MCC [$mcc] MNC [$mnc]")
-            (mcc == "901" && mnc == "28")
+            if (telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
+                log.debug("NetworkOperator [${telephonyManager.networkOperator}] NetworkOperatorName [${telephonyManager.networkOperatorName}]")
+                val networkMcc = telephonyManager.networkOperator.substring(0, 3)
+                val networkMnc = telephonyManager.networkOperator.substring(3)
+                log.debug("Network-MCC [$networkMcc] Network-MNC [$networkMnc]")
+                log.debug("SimOperator [${telephonyManager.simOperator}] SimOperatorName [${telephonyManager.simOperatorName}]")
+                val simMcc = telephonyManager.simOperator.substring(0, 3)
+                val simMnc = telephonyManager.simOperator.substring(3)
+                log.debug("SIM-MCC [$simMcc] SIM-MNC [$simMnc]")
+                // RETURN
+                (networkMcc == "901" && networkMnc == "28")
+            } else {
+                false
+            }
+
         } catch (e: Exception) {
             log.warn("NetworkOperator information could not be determined", e)
             false
