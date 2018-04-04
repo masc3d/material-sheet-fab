@@ -1,5 +1,7 @@
 package org.deku.leoz.model
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import sx.Result
 import sx.io.serialization.Serializable
 import java.util.*
 
@@ -54,3 +56,36 @@ data class TourStopRouteMeta(
         /** Actual stay length in minutes */
         var stayLengtH: Int? = null
 )
+
+/**
+ * Tour identification
+ * @param id tour ids
+ * @param uid tour uid
+ */
+@Serializable(0x987f80204941b9)
+data class TourIdentification(
+        var id: Int? = null,
+        var uid: UUID? = null
+) {
+    companion object {
+        /**
+         * Parse tour identification from label.
+         * The expected format is
+         */
+        fun parseLabel(label: String): Result<TourIdentification> {
+            return try {
+                if (label.startsWith("<deku-tour")) {
+                    Result(
+                            XmlMapper().readValue(label, TourIdentification::class.java)
+                    )
+                } else {
+                    Result(
+                            IllegalArgumentException()
+                    )
+                }
+            } catch (t: Throwable) {
+                Result(t)
+            }
+        }
+    }
+}
