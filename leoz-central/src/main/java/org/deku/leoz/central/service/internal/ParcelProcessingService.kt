@@ -8,6 +8,7 @@ import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.toUInteger
 import org.deku.leoz.model.*
 import org.deku.leoz.node.Storage
+import org.deku.leoz.service.internal.ParcelServiceV1
 import org.deku.leoz.time.toDateWithoutTime
 import org.deku.leoz.time.toTimeWithoutDate
 import org.jooq.DSLContext
@@ -77,7 +78,11 @@ class ParcelProcessingService {
                 val addInfo = it.additionalInfo?.toString() ?: "{}"
 
                 val mapper = ObjectMapper()
-                val parcelAddInfo: ParcelDeliveryAdditionalinfo = mapper.readValue(addInfo, ParcelDeliveryAdditionalinfo::class.java)
+                val parcelAddInfo: ParcelServiceV1.Additionalinfo = mapper.readValue(
+                        addInfo,
+                        ParcelServiceV1.Additionalinfo::class.java
+                )
+
                 val checkPictureFile = parcelAddInfo.pictureFileUID != null
 
                 val parcel = it.parcelId ?: 0.toLong()

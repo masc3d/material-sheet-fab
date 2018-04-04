@@ -36,6 +36,13 @@ interface ParcelServiceV1 {
         const val CONSIGNEE_ZIPCODE = "consignee-zipcode"
     }
 
+    data class Additionalinfo(
+            var recipient: String? = null,
+            var damagedFileUIDs: List<String>? = null,
+            var pictureFileUID: String? = null,
+            var pictureLocation: String? = null,
+            var pictureFileName: String? = null
+    )
     /**
      * Event message sent by nodes/devices
      */

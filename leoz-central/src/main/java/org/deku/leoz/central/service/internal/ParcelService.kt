@@ -77,6 +77,11 @@ class ParcelServiceV1 :
     @Inject
     private lateinit var documentService: DocumentService
 
+    /** Dedicated object mapper */
+    private val mapper by lazy {
+        ObjectMapper()
+    }
+
     /**
      * Parcel service message handler
      */
@@ -125,7 +130,7 @@ class ParcelServiceV1 :
 
             recordMessages.store()
 
-            val parcelAddInfo = ParcelDeliveryAdditionalinfo()
+            val parcelAddInfo = ParcelServiceV1.Additionalinfo()
 
             val damagedInfo = it.damagedInfo
             if (damagedInfo != null) {
@@ -280,7 +285,7 @@ class ParcelServiceV1 :
                 else -> {
                 }
             }
-            val mapper = ObjectMapper()
+
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
             recordMessages.additionalInfo = mapper.writeValueAsString(parcelAddInfo)
 
@@ -446,4 +451,5 @@ class ParcelServiceV1 :
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
+
 

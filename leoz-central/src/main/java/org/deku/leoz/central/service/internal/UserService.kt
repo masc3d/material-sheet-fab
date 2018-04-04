@@ -1,7 +1,5 @@
 package org.deku.leoz.central.service.internal
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.dekuclient.Tables
@@ -11,12 +9,10 @@ import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.JooqUserRepository.Companion.verifyPassword
 import org.deku.leoz.central.data.repository.toUser
-import org.deku.leoz.model.AllowedStations
 import org.deku.leoz.model.UserRole
 import org.deku.leoz.node.rest.authorizedUser
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.UserService.User
-import org.deku.leoz.time.toDateWithoutTime
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
