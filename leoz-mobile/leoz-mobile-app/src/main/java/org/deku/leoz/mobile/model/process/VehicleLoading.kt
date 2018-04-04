@@ -35,7 +35,7 @@ class VehicleLoading : CompositeDisposableSupplier {
 
     private val db: Database by Kodein.global.lazy.instance()
 
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
     private val locationCache: LocationCache by Kodein.global.lazy.instance()
 
     //region Repositories
@@ -51,31 +51,31 @@ class VehicleLoading : CompositeDisposableSupplier {
     /**
      * Stops with loaded parcels
      */
-    val stops = deliveryList.loadedParcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct() }
+    val stops = tour.loadedParcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct() }
             .behave(this)
 
     //region Counters
-    val orderTotalAmount = deliveryList.parcels.map { it.value.map { it.order }.distinct().count() }
+    val orderTotalAmount = tour.parcels.map { it.value.map { it.order }.distinct().count() }
             .distinctUntilChanged()
             .behave(this)
 
-    val stopTotalAmount = deliveryList.parcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct().count() }
+    val stopTotalAmount = tour.parcels.map { it.value.flatMap { it.order.tasks }.mapNotNull { it.stop }.distinct().count() }
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelTotalAmount = deliveryList.parcels.map { it.value.count() }
+    val parcelTotalAmount = tour.parcels.map { it.value.count() }
             .distinctUntilChanged()
             .behave(this)
 
-    val totalWeight = deliveryList.parcels.map { it.value.sumByDouble { it.weight } }
+    val totalWeight = tour.parcels.map { it.value.sumByDouble { it.weight } }
             .distinctUntilChanged()
             .behave(this)
 
-    val orderAmount = deliveryList.loadedParcels.map { it.value.map { it.order }.distinct().count() }
+    val orderAmount = tour.loadedParcels.map { it.value.map { it.order }.distinct().count() }
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelAmount = deliveryList.loadedParcels.map { it.value.count() }
+    val parcelAmount = tour.loadedParcels.map { it.value.count() }
             .distinctUntilChanged()
             .behave(this)
 
@@ -83,7 +83,7 @@ class VehicleLoading : CompositeDisposableSupplier {
             .distinctUntilChanged()
             .behave(this)
 
-    val weight = deliveryList.loadedParcels.map { it.value.sumByDouble { it.weight } }
+    val weight = tour.loadedParcels.map { it.value.sumByDouble { it.weight } }
             .distinctUntilChanged()
             .behave(this)
     //endregion

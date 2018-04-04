@@ -6,7 +6,6 @@ interface TourRouteMeta {
 
 export interface TourListItem {
   id?: number;
-  deliverylistId?: number;
   parentId?: number;
   customId?: string;
   totalShipments?: number;
@@ -22,4 +21,6 @@ export interface TourListItem {
   distance?: number;
   drivingTime?: number;
   isOptimizing?: boolean;
+  optimizationFailed?: boolean;
+  children?: TourListItem[];
 }

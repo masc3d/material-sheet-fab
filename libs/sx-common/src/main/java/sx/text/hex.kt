@@ -48,7 +48,7 @@ fun String.parseHex(): ByteArray {
 }
 
 /** Convert long to hex string */
-fun Long.toHexString(): String = java.lang.Long.toHexString(this)
+fun Long.toHexString(): String = java.lang.Long.toHexString(this).padStart(16, '0')
 
 /** Convert integer to hex string */
-fun Int.toHexString(): String = java.lang.Integer.toHexString(this)
+fun Int.toHexString(): String = java.lang.Integer.toHexString(this).padStart(8, '0')

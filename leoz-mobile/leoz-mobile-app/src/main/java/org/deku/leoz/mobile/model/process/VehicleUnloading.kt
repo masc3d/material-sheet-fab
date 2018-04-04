@@ -39,7 +39,7 @@ class VehicleUnloading : CompositeDisposableSupplier {
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
     private val stopRepository: StopRepository by Kodein.global.lazy.instance()
 
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
     private val identity: Identity by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
 
@@ -47,8 +47,8 @@ class VehicleUnloading : CompositeDisposableSupplier {
     private val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
 
     val parcels = Observable.combineLatest(
-            deliveryList.loadedParcels.map { it.value },
-            deliveryList.pendingParcels.map { it.value },
+            tour.loadedParcels.map { it.value },
+            tour.pendingParcels.map { it.value },
             BiFunction { t1: List<ParcelEntity>, t2: List<ParcelEntity> ->
                 t1.plus(t2)
             }
@@ -64,11 +64,11 @@ class VehicleUnloading : CompositeDisposableSupplier {
             .distinctUntilChanged()
             .behave(this)
 
-    val parcelAmount = deliveryList.pendingParcels.map { it.value.count() }
+    val parcelAmount = tour.pendingParcels.map { it.value.count() }
             .distinctUntilChanged()
             .behave(this)
 
-    val weight = deliveryList.pendingParcels.map { it.value.sumByDouble { it.weight } }
+    val weight = tour.pendingParcels.map { it.value.sumByDouble { it.weight } }
             .distinctUntilChanged()
             .behave(this)
     //endregion

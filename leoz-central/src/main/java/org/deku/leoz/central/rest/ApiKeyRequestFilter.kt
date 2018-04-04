@@ -2,6 +2,7 @@ package org.deku.leoz.central.rest
 
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.data.repository.JooqNodeRepository
+import org.deku.leoz.central.data.repository.JooqStationRepository
 import org.deku.leoz.central.data.repository.JooqUserRepository
 import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.model.UserRole
@@ -39,6 +40,9 @@ class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter() {
     @Context
     private lateinit var httpRequest: HttpServletRequest
 
+    @Inject
+    private lateinit var stationJooqRepository: JooqStationRepository
+
     /** Annotated parameter */
     private data class AnnotatedParameter<A : Annotation>(
             val parameter: Parameter,
@@ -48,7 +52,7 @@ class ApiKeyRequestFilter : org.deku.leoz.node.rest.ApiKeyRequestFilter() {
 
     override fun verify(requestContext: ContainerRequestContext, resourceInfo: ResourceInfo, apiKey: String): Boolean {
         val user = this.userJooqRepository.findByKey(apiKey)
-                ?.toUser()?.also { x -> x.allowedStations = this.userJooqRepository.findAllowedStationsByUserId(x.id!!) }
+                ?.toUser()?.also { x -> x.allowedStations = this.stationJooqRepository.findAllowedStationsByUserId(x.id!!) }
 
         val userRole = user?.role
 

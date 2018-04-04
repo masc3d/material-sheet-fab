@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import javax.inject.Inject
 import org.deku.leoz.node.data.jpa.QMstStationUser.mstStationUser
+
 /**
  * Station repository
  * Created by masc on 30.04.15.
@@ -23,6 +24,7 @@ interface StationRepositoryExtension {
     fun findByStation(stationNo: Int): MstStation?
     fun findByStationIds(stationIds: List<Int>): List<MstStation>
     fun findAllowedStationsByUserId(userId: Long): List<Int>
+    fun findStationsByDebitorId(debitorId: Long): List<Int>
 }
 
 class StationRepositoryImpl : StationRepositoryExtension {
@@ -31,6 +33,9 @@ class StationRepositoryImpl : StationRepositoryExtension {
 
     @Inject
     private lateinit var stationUserRepository: StationUserRepository
+
+    @Inject
+    private lateinit var stationDebitorRepository: DebitorStationRepository
 
 
     override fun findWithQuery(query: String): List<MstStation> {
@@ -103,6 +108,12 @@ class StationRepositoryImpl : StationRepositoryExtension {
 
         return stationRecords.map { it.stationNr }
 
+    }
+
+    override fun findStationsByDebitorId(debitorId: Long): List<Int> {
+        val stationIds = stationDebitorRepository.findStationIdsByDebitorid(debitorId.toInt())
+        val stationRecords = depotRepository.findByStationIds(stationIds)
+        return stationRecords.map { it.stationNr }
     }
 }
 

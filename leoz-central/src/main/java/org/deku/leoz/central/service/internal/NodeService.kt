@@ -16,14 +16,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import org.zalando.problem.Status
 import sx.log.slf4j.info
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.channel
-import sx.rs.RestProblem
 import sx.time.toTimestamp
-import sx.util.letWithParamNotNull
+import sx.util.letWithNotNull
 import java.util.*
 import javax.inject.Inject
 import javax.ws.rs.Path
@@ -77,7 +75,7 @@ class NodeServiceV1
     override fun get(id: List<Int>?): List<NodeServiceV1.Node> {
         return dsl.selectFrom(MST_NODE)
                 .where()
-                .letWithParamNotNull(id, {
+                .letWithNotNull(id, {
                     if (it.count() > 0)
                         and(MST_NODE.NODE_ID.`in`(it))
                     else

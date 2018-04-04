@@ -7,7 +7,7 @@ interface Info {
 }
 
 export interface Deliverylist {
-  id?: number;
+  id?: string;
   date?: string,
   modified?: string,
   debitorId?: number;

@@ -44,7 +44,8 @@ class DatabaseSyncConfiguration {
                             d.version = s.version
                             d.syncId = s.syncId
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(
@@ -84,7 +85,8 @@ class DatabaseSyncConfiguration {
                             d.exportValuablesAllowed = if (s.valok == 1.toUInteger()) 1 else 0
                             d.exportValuablesWithoutBagAllowed = if (s.valokWithoutBag == 1) 1 else 0
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(
@@ -102,7 +104,8 @@ class DatabaseSyncConfiguration {
                             d.zipFormat = s.zipFormat
                             d.syncId = s.syncId
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(
@@ -120,7 +123,8 @@ class DatabaseSyncConfiguration {
                             d.timestamp = s.timestamp
                             d.syncId = s.syncId
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(
@@ -169,7 +173,8 @@ class DatabaseSyncConfiguration {
                             d.validTo = s.validto
                             d.syncId = s.syncId
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(
@@ -185,7 +190,8 @@ class DatabaseSyncConfiguration {
                             d.timestamp = s.timestamp
                             d.syncId = s.syncId
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(
@@ -202,7 +208,8 @@ class DatabaseSyncConfiguration {
                             d.timestamp = s.timestamp
                             d.syncId = s.syncId
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(
@@ -220,7 +227,8 @@ class DatabaseSyncConfiguration {
                             d.syncId = s.syncId
 
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(
@@ -240,7 +248,8 @@ class DatabaseSyncConfiguration {
                             d.syncId = s.syncId
 
                         }
-                    }
+                    },
+                    accurateDeletes = true
             ),
 
             SyncPreset(

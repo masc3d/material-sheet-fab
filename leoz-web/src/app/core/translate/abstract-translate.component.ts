@@ -13,6 +13,8 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
   protected ngUnsubscribe: Subject<void> = new Subject<void>();
 
   dateFormat: string;
+  dateFormatShort: string;
+  dateFormatShorter: string;
   dateFormatMedium: string;
   dateFormatLong: string;
   dateFormatEvenLonger: string;
@@ -38,10 +40,12 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
       )
       .subscribe( ( lang: string ) => {
         this.dateFormat = this.translate.setDateformat( 'internal' );
+        this.dateFormatShort = this.translate.setDateformat( 'internalShort' );
         this.dateFormatMedium = this.translate.setDateformat( 'internalMedium' );
         this.dateFormatLong = this.translate.setDateformat( 'internalLong' );
         this.dateFormatEvenLonger = this.translate.setDateformat( 'internalLonger' );
         this.dateFormatPrimeng = this.translate.setDateformat( 'primeng' );
+        this.dateFormatShorter = this.translate.setDateformat( 'internalShorter' );
         this.locale = this.translate.setCalendarLocale();
         if (this.doOnSubscribe) {
           this.doOnSubscribe( lang );
@@ -49,10 +53,12 @@ export class AbstractTranslateComponent implements OnInit, OnDestroy {
         this.cd.markForCheck();
       } );
     this.dateFormat = this.translate.setDateformat( 'internal' );
+    this.dateFormatShort = this.translate.setDateformat( 'internalShort' );
     this.dateFormatMedium = this.translate.setDateformat( 'internalMedium' );
     this.dateFormatLong = this.translate.setDateformat( 'internalLong' );
     this.dateFormatEvenLonger = this.translate.setDateformat( 'internalLonger' );
     this.dateFormatPrimeng = this.translate.setDateformat( 'primeng' );
+    this.dateFormatShorter = this.translate.setDateformat( 'internalShorter' );
     this.locale = this.translate.setCalendarLocale();
   }
 

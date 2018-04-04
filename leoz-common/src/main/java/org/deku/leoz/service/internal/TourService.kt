@@ -30,10 +30,10 @@ interface TourServiceV1 {
     companion object {
         const val ID = "id"
         const val CUSTOM_ID = "custom-id"
-        const val DEBITOR_ID = "debitor-id"
         const val FROM = "from"
         const val INCLUDE_RELATED = "include-related"
         const val NODE_UID = "node-uid"
+        const val OVERVIEW = "overview"
         const val STATION_NO = "station-no"
         const val TO = "to"
         const val USER_ID = "user-id"
@@ -46,10 +46,9 @@ interface TourServiceV1 {
             value = "Get tour(s)",
             authorizations = arrayOf(Authorization(Rest.API_KEY)))
     fun get(
+            // Filter
             @QueryParam(ID) @ApiParam(value = "Ids", required = false)
             ids: List<Long>? = null,
-            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id", required = false)
-            debitorId: Long? = null,
             @QueryParam(STATION_NO) @ApiParam(value = "Station no", required = false)
             stationNo: Long? = null,
             @QueryParam(USER_ID) @ApiParam(value = "User id", required = false)
@@ -57,7 +56,13 @@ interface TourServiceV1 {
             @QueryParam(FROM) @ApiParam(example = "2018-01-27", value = "From (tour) date", required = false)
             from: ShortDate? = null,
             @QueryParam(TO) @ApiParam(example = "2018-01-27", value = "To (tour) date", required = false)
-            to: ShortDate? = null
+            to: ShortDate? = null,
+
+            // Options
+            @QueryParam(OVERVIEW)
+            @DefaultValue("false")
+            @ApiParam(example = "false", value = "Excludes stops & orders", required = false)
+            overview: Boolean = false
     ): List<Tour>
 
     @GET
@@ -82,6 +87,14 @@ interface TourServiceV1 {
     fun getByUser(
             @PathParam(USER_ID) @ApiParam(value = "User id")
             userId: Long
+    ): Tour
+
+    @GET
+    @Path("/${CUSTOM_ID}/{${CUSTOM_ID}}")
+    @ApiOperation(value = "Get tour by custom id", authorizations = arrayOf(Authorization(Rest.API_KEY)))
+    fun getByCustomId(
+            @PathParam(CUSTOM_ID) @ApiParam(value = "Custom id")
+            customId: String
     ): Tour
 
     @Deprecated("Superseded by automatic dl conversion in `DeliveryListService`, manual conversion method will be moved to (central only) delivery list service")
@@ -123,7 +136,7 @@ interface TourServiceV1 {
             waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
             options: TourOptimizationOptions,
-            @Suspended response: AsyncResponse
+            @Suspended response: AsyncResponse?
     )
 
     @PATCH
@@ -137,7 +150,7 @@ interface TourServiceV1 {
             waitForCompletion: Boolean,
             @ApiParam(value = "Tour optimization options")
             options: TourOptimizationOptions,
-            @Suspended response: AsyncResponse
+            @Suspended response: AsyncResponse?
     )
 
     @PATCH
@@ -155,7 +168,6 @@ interface TourServiceV1 {
             @ApiParam(value = "Tour optimization options")
             options: TourOptimizationOptions
     )
-
 
     @Deprecated("Superseded by `subscribe`")
     @GET
@@ -212,15 +224,12 @@ interface TourServiceV1 {
             var parentId: Long? = null,
             @ApiModelProperty(position = 50, required = false, value = "Custom id for this tour")
             var customId: String? = null,
-            @Deprecated("Will be replaced with customid")
-            @ApiModelProperty(position = 55, required = false, value = "Delivery list this tour refers to")
-            var deliverylistId: Long? = customId?.toLongOrNull(),
             @ApiModelProperty(position = 60, required = true, value = "Tour date")
             var date: ShortDate? = null,
             @ApiModelProperty(position = 70, required = true, value = "Orders referenced by this tour")
-            var orders: List<OrderService.Order> = listOf(),
+            var orders: List<OrderService.Order>? = null,
             @ApiModelProperty(position = 80, required = true, value = "Tour stop list")
-            var stops: List<Stop> = listOf(),
+            var stops: List<Stop>? = null,
             @ApiModelProperty(position = 90, required = false, value = "Last optimization time")
             var optimized: Date? = null,
             @ApiModelProperty(position = 100, required = true, value = "Creation date")
@@ -421,7 +430,9 @@ interface TourServiceV1 {
             /** Tour id */
             var id: Long = 0,
             /** Optimization progress */
-            var inProgress: Boolean = false
+            var inProgress: Boolean = false,
+            /** Indicates if optimization was successful */
+            var success: Boolean? = null
     )
 
     /**

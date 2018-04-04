@@ -42,7 +42,6 @@ import org.deku.leoz.mobile.model.entity.ParcelEntity
 import org.deku.leoz.mobile.model.entity.StopEntity
 import org.deku.leoz.mobile.model.entity.address
 import org.deku.leoz.mobile.model.mobile
-import org.deku.leoz.mobile.model.process.DeliveryList
 import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.TourStop
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -128,7 +127,6 @@ class StopProcessScreen :
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
     private val tour: Tour by Kodein.global.lazy.instance()
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
 
     private val timer: sx.android.ui.Timer by Kodein.global.lazy.instance()
 
@@ -701,7 +699,7 @@ class StopProcessScreen :
                                     }
                             ))
                 },
-                this.deliveryList.loadedParcels.map { it.value }.switchMap {
+                this.tour.loadedParcels.map { it.value }.switchMap {
                     Observable.just(
                             SyntheticInput(
                                     name = "Parcels",

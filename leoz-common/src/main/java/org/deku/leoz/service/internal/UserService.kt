@@ -30,6 +30,8 @@ interface UserService {
         const val DEBITOR_NR = "debitor-nr"
         //const val DEBITOR_NO = "debitor-no"
         //const val Rest.AUTH_APIKEY_NAME = "x-api-key"
+        const val OLD_PASSWORD="old-password"
+        const val NEW_PASSWORD="new-password"
     }
 
     /**
@@ -180,8 +182,9 @@ interface UserService {
     @Path("/{$USER_ID}/changePassword")
     @ApiOperation(value = "Change users password")
     fun changePassword(
-            @ApiParam(value = "old_password") oldPassword: String,
-            @ApiParam(value = "new_password") newPassword: String
+            @PathParam(value = USER_ID) @ApiParam(value = "Users identifier", required = true) userId: Int,
+            @QueryParam(value = OLD_PASSWORD) @ApiParam(value = "old_password", required = true) oldPassword: String,
+            @QueryParam(value = NEW_PASSWORD) @ApiParam(value = "new_password", required = true) newPassword: String
     )
 
     @GET
@@ -199,5 +202,5 @@ interface UserService {
     @GET
     @Path("/id")
     @ApiOperation(value = "Get user id(s) by debitor id")
-    fun getIdsByDebitor(debitorId: Int): List<Int>
+    fun getIdsByDebitor(@QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id",required = true) debitorId: Int): List<Int>
 }

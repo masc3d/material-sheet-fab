@@ -82,7 +82,7 @@ class StartupActivity : BaseActivity() {
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
 //        Kodein.global.instance<BroadcastReceiverConfiguration>()
-        Kodein.global.instance<NtpTime>()
+        Kodein.global.instance<NtpTime>() // TODO Check order as NtpTime is using Device class, which may not be accessible at this time due to permission restrictions
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")

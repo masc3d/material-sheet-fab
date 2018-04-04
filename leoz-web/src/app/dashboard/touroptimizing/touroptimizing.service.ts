@@ -14,6 +14,7 @@ import { roundDecimals } from '../../core/math/roundDecimals';
 import { Station } from '../../core/auth/station.model';
 import { SseService } from '../../core/sse.service';
 import { Vehicle } from '../../core/models/vehicle.model';
+import { TranslateService } from '../../core/translate/translate.service';
 
 
 @Injectable()
@@ -23,7 +24,7 @@ export class TouroptimizingService {
   protected deleteToursUrl = `${environment.apiUrl}/internal/v1/tour`; // DELETE ?id=1&id=2
   protected optimizeToursUrl = `${environment.apiUrl}/internal/v1/tour/optimize`; // PATCH ?id=1&id=2
   protected optimizeToursSSEUrl = `${environment.apiUrl}/internal/v1/tour/optimize/status/sse`; // EventSource ?station-no=100
-  protected sseWEUrl = `${environment.apiUrl}/internal/v1/tour/subscribe/sse`; // EventSource ?station-no=100
+  protected sseTourchangesUrl = `${environment.apiUrl}/internal/v1/tour/subscribe/sse`; // EventSource ?station-no=100
 
   private toursLoadingSubject = new BehaviorSubject<boolean>( true );
   public toursLoading$ = this.toursLoadingSubject.asObservable().pipe( distinctUntilChanged() );
@@ -36,6 +37,7 @@ export class TouroptimizingService {
   private optimizationInProgress: number[] = [];
 
   constructor( protected http: HttpClient,
+               protected translate: TranslateService,
                protected msgService: MsgService,
                protected wds: WorkingdateService,
                protected ics: InetConnectionService,
@@ -46,7 +48,7 @@ export class TouroptimizingService {
   initSSEtouroptimization( ngUnsubscribe: Subject<void> ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
     const sseUrl = `${this.optimizeToursSSEUrl}?station-no=${activeStation.stationNo.toString()}`;
-    this.sse.observeMessages<{ id?: number, inProgress?: boolean }>( sseUrl )
+    this.sse.observeMessages<{ id?: number, inProgress?: boolean, success?: boolean }>( sseUrl )
       .pipe(
         takeUntil( ngUnsubscribe )
       )
@@ -55,8 +57,22 @@ export class TouroptimizingService {
         const id = data.id;
         this.optimizing( id, data.inProgress );
         if (!data.inProgress) {
-          this.msgService.clear();
-          this.getTours();
+          if (data.success) {
+            this.msgService.clear();
+            this.getTours();
+          } else {
+            // mark tour with id as 'optimization failed'
+            const tmpTours = this.toursSubject.getValue()
+              .map( tour => {
+                if (tour.id === id) {
+                  tour.optimizationFailed = true;
+                }
+                return tour;
+              } );
+            this.toursSubject.next( tmpTours );
+            const text = `${this.translate.instant( 'Tour' )}: ${id} ${this.translate.instant( 'could not be optimized' )}`;
+            this.msgService.error( text, true );
+          }
         }
       } );
   }
@@ -78,9 +94,9 @@ export class TouroptimizingService {
     this.toursSubject.next( tmpTours );
   }
 
-  initSSEtourWhatever( ngUnsubscribe: Subject<void> ) {
+  initSSEtourChanges( ngUnsubscribe: Subject<void> ) {
     const activeStation: Station = JSON.parse( localStorage.getItem( 'activeStation' ) );
-    const sseUrl = `${this.sseWEUrl}?station-no=${activeStation.stationNo.toString()}`;
+    const sseUrl = `${this.sseTourchangesUrl}?station-no=${activeStation.stationNo.toString()}`;
     this.sse.observeMessages<{ stationNo?: number, items?: Tour[], deleted?: number[] }>( sseUrl )
       .pipe(
         takeUntil( ngUnsubscribe )
@@ -106,6 +122,7 @@ export class TouroptimizingService {
         },
         ( error: HttpErrorResponse ) => {
           if (error.status === 404) {
+            this.toursSubject.next( [] );
             this.toursLoadingSubject.next( false );
           } else {
             this.ics.isOffline();
@@ -174,12 +191,14 @@ export class TouroptimizingService {
 
   private processTourData( tours: Tour[] ): Tour[] {
     return tours.map( tour => {
-      tour.totalShipments = tour.orders.length;
+      tour.totalShipments = tour.orders ? tour.orders.length : 0;
 
       tour.totalPackages = tour.orders
-        .map( o => o.parcels.length )
-        .reduce( ( a, b ) => a + b );
-      const parcels = tour.orders.map( o => o.parcels );
+        ? tour.orders
+          .map( o => o.parcels.length )
+          .reduce( ( a, b ) => a + b )
+        : 0;
+      const parcels = tour.orders ? tour.orders.map( o => o.parcels ) : [];
       const mappedParcels = [].concat( ...parcels )
         .map( p => p.dimension.weight );
       tour.totalWeight = 0;
@@ -197,8 +216,9 @@ export class TouroptimizingService {
         : 0;
 
       tour.isOptimizing = this.optimizationInProgress.indexOf( tour.id ) >= 0;
+      tour.optimizationFailed = false; // if REST delivers this status use deliverd values
       tour.selected = false;
-      const dl = this.latestDeliverylists.filter( deliverylist => deliverylist.id === tour.deliverylistId );
+      const dl = this.latestDeliverylists.filter( deliverylist => deliverylist.id === tour.customId );
       tour.state = dl.length > 0 && dl[ 0 ].modified > tour.created ? 'changed' : 'new';
       return tour;
     } );

@@ -149,13 +149,6 @@ class JooqUserRepository {
                 .where(MST_STATION_USER.USER_ID.eq(userId)).and(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
                 .fetch(TBLDEPOTLISTE.DEPOTNR)
 
-    }
-    fun findStationIdByDepotNr(depotNr:Int):Int?{
-        return dsl.selectFrom(TBLDEPOTLISTE)
-                .where(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
-                .and(TBLDEPOTLISTE.DEPOTNR.eq(depotNr))
-                .fetchOne(TBLDEPOTLISTE.ID)
-    }
 }
 
 fun MstUserRecord.toUser(): UserService.User =

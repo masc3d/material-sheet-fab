@@ -29,6 +29,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   checkAll: boolean;
   tours: Tour[];
+  filteredTours: Tour[];
   toursLoading$: Observable<boolean>;
 
   public msgs$: Observable<Message[]>;
@@ -55,7 +56,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   dateFormatMedium: string;
 
   dateFormat: string;
-  aktualTourDate = null;
+  tourDateFilter: Date;
 
   constructor( protected translate: TranslateService,
                protected cd: ChangeDetectorRef,
@@ -64,21 +65,20 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
                protected printingService: PrintingService,
                protected reportingService: StoplistReportingService,
                protected browserCheck: BrowserCheck ) {
-    super( translate, cd, msgService, () => {
-      this.aktualTourDate = this.initAktualTourDate();
-    } );
+    super( translate, cd, msgService );
   }
 
 
   ngOnInit() {
     super.ngOnInit();
 
-    this.aktualTourDate = this.initAktualTourDate();
+    this.tourDateFilter = new Date();
 
     this.notMicrodoof = this.browserCheck.browser === 'handsome Browser';
     this.toursLoading$ = this.touroptimizingService.toursLoading$;
 
     this.tours = [];
+    this.filteredTours = [];
     this.touroptimizingService.tours$
       .pipe(
         takeUntil( this.ngUnsubscribe )
@@ -90,14 +90,21 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
             return compareCustom( this.latestSortOrder, data1[ this.latestSortField ], data2[ this.latestSortField ] );
           } ) );
         } else {
-          this.tours.push( ...this.sortAndGroupTours( tours ) );
+          const sortedAndGrouped = this.invertTreeAndFlatten( this.convert2Tree( tours ) );
+          this.tours.push( ...sortedAndGrouped );
         }
+        this.filterToursByDeliveryDate();
         this.cd.markForCheck();
       } );
     this.touroptimizingService.getTours();
 
     this.touroptimizingService.initSSEtouroptimization( this.ngUnsubscribe );
-    this.touroptimizingService.initSSEtourWhatever( this.ngUnsubscribe );
+    this.touroptimizingService.initSSEtourChanges( this.ngUnsubscribe );
+  }
+
+  private filterToursByDeliveryDate() {
+    this.filteredTours.length = 0;
+    this.filteredTours.push( ...this.tours.filter( tour => moment( tour.date ).isSame( this.tourDateFilter, 'day' ) ) );
   }
 
   customSort( event: SortEvent ) {
@@ -115,36 +122,12 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     this.touroptimizingService.getTours();
   }
 
-  private sortAndGroupTours( tours: Tour[] ): Tour[] {
-    // split in parent and child tours and sort both arrays id descending
-    const sortIdDesc = function ( t1: Tour, t2: Tour ) {
-      return t1.id > t2.id ? -1 : 1;
-    };
-    // tours that are optimized within themselves have their own id as parentId
-    const parentTours = tours
-      .filter( tour => !tour.parentId || tour.id === tour.parentId )
-      .sort( sortIdDesc );
-    const childTours = tours
-      .filter( tour => tour.parentId && tour.id !== tour.parentId )
-      .sort( sortIdDesc );
-    // join arrays => add cildren after parent
-    const sortedTours = [];
-    parentTours.forEach( parent => {
-      sortedTours.push( parent );
-      sortedTours.push( ...childTours.filter( child => child.parentId === parent.id ) );
-    } );
-    if (parentTours.length === 0 && childTours.length > 0) {
-      childTours.forEach( child => sortedTours.push( child ) );
-    }
-    return sortedTours;
-  }
-
   changeCheckAllTours( evt: { checked: boolean } ) {
     this.touroptimizingService.switchSelectionAllTours( evt.checked );
   }
 
   protected optimizeTours() {
-    this.selectedTours = this.tours
+    this.selectedTours = this.filteredTours
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
       .filter( tour => tour.orders.length > 1 );
@@ -189,7 +172,7 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   protected reporting( saving: boolean ) {
-    const listsToPrint = this.tours.filter( tour => tour.selected );
+    const listsToPrint = this.filteredTours.filter( tour => tour.selected );
 
     const filename = 'sl_' + listsToPrint.map( tour => tour.id ).join( '_' );
     this.printingService.printReports( this.reportingService
@@ -199,10 +182,10 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
 
   optimizeDialog() {
     this.displayOptimizationOptions = false;
-    this.selectedTours = this.tours
+    this.selectedTours = this.filteredTours
       .filter( tour => tour.selected );
     this.selectedOptimizableTours = this.selectedTours
-      .filter( tour => tour.orders.length > 1 );
+      .filter( tour => tour.orders && tour.orders.length > 1 );
     if (this.selectedOptimizableTours.length === 0) {
       this.msgService.info( 'no_optimizable_tours_selected', false, false );
     } else {
@@ -229,19 +212,110 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     return '';
   }
 
-  roundDecimalsAsStringWrapper( input: number ) {
+  roundDecimalsAsStringWrapper( input: number ): string {
     return roundDecimalsAsString( input, 10, true );
   }
 
-  private initAktualTourDate() {
-    const d = new Date();
-    return d;
+  tourDateFilterPrevDay() {
+    this.tourDateFilter = moment( this.tourDateFilter )
+      .subtract( 1, 'days' )
+      .toDate();
+    this.filterToursByDeliveryDate();
   }
 
-  private switchDay( timeline: number ) {
-    const d = new Date( this.aktualTourDate );
-    d.setDate( d.getDate() + (timeline) );
-    this.aktualTourDate = d;
+  tourDateFilterNextDay() {
+    this.tourDateFilter = moment( this.tourDateFilter )
+      .add( 1, 'days' )
+      .toDate();
+    this.filterToursByDeliveryDate();
+  }
+
+  private invertTree( toursTree: Map<number, Tour> ): Tour[] {
+    return Array.from( toursTree ).reverse().map( numberTourPair => numberTourPair[ 1 ] );
+  }
+
+  private flatten( tours: Tour[], flattenedTours: Tour[] ): Tour[] {
+    tours.forEach( tour => {
+      flattenedTours.push( tour );
+      if (tour.children) {
+        this.flatten( tour.children, flattenedTours );
+      }
+    } );
+    return flattenedTours;
+  }
+
+  private invertTreeAndFlatten( toursTree: Map<number, Tour> ): Tour[] {
+    const inverted = this.invertTree( toursTree );
+    return this.flatten( inverted, [] );
+  }
+
+  private convert2Tree( tours: Tour[] ): Map<number, Tour> {
+    const toursTree = new Map<number, Tour>();
+    /**
+     * Initial sort is necessary for the conversion and the conversion only works,
+     * if parent tourIds are smaller numbers than the childIds.
+     */
+    const sortedTours = tours.sort( ( t1: Tour, t2: Tour ) => t1.id - t2.id );
+    const tourIdLookupMap = new Map<number, Tour>();
+    const tourToParentMapping = new Map<number, number>();
+    const tourToChildrenMapping = new Map<number, number[]>();
+
+    // filling the maps for later iteration and lookup
+    sortedTours.forEach( tour => {
+      const tourId = tour.id;
+      const parentId = tour.parentId;
+      tourIdLookupMap.set( tourId, tour );
+      tourToParentMapping.set( tourId, parentId );
+      if (parentId) {
+        const childIds = tourToChildrenMapping.has( parentId )
+          ? tourToChildrenMapping.get( parentId )
+          : [];
+        childIds.push( tourId );
+        tourToChildrenMapping.set( parentId, childIds )
+      }
+    } );
+
+    tourToParentMapping.forEach( ( parentId: number, tourId: number ) => {
+      if (!parentId) {
+        this.rootTourTreeEntry( toursTree, tourId, tourIdLookupMap, tourToChildrenMapping );
+      }
+    } );
+
+    return toursTree;
+  }
+
+  private rootTourTreeEntry( toursTree: Map<number, Tour>, tourId: number,
+                             tourIdLookupMap: Map<number, Tour>, tourToChildrenMapping: Map<number, number[]> ) {
+    // insert entry in toursTree as root
+    const rootTour = tourIdLookupMap.get( tourId );
+    toursTree.set( tourId, rootTour );
+    // check if tour has children
+    if (tourToChildrenMapping.has( tourId )) {
+      // iterate over childs and create entries recursively
+      tourToChildrenMapping.get( tourId )
+        .forEach( childId => {
+          const child = tourIdLookupMap.get( childId );
+          this.appendChild( toursTree, rootTour, child, tourIdLookupMap, tourToChildrenMapping );
+        } );
+    }
+  }
+
+  private appendChild( toursTreeResult: Map<number, Tour>, parent: Tour, tour: Tour,
+                       tourIdLookupMap: Map<number, Tour>, tourToChildrenMapping: Map<number, number[]> ) {
+    if (parent.children) {
+      parent.children.push( tour );
+    } else {
+      parent.children = [ tour ];
+    }
+    // check if tour has children
+    if (tourToChildrenMapping.has( tour.id )) {
+      // iterate over childs and create entries recursively
+      tourToChildrenMapping.get( tour.id )
+        .forEach( childId => {
+          const child = tourIdLookupMap.get( childId );
+          this.appendChild( toursTreeResult, tour, child, tourIdLookupMap, tourToChildrenMapping );
+        } );
+    }
   }
 }
 

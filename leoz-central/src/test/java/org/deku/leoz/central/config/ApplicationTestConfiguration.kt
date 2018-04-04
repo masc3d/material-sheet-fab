@@ -2,8 +2,7 @@ package org.deku.leoz.central.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import org.deku.leoz.node.Application
-import org.deku.leoz.node.config.ApplicationConfiguration
+import org.deku.leoz.central.Application
 import org.deku.leoz.node.config.LogConfiguration
 import org.springframework.context.annotation.Lazy
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -17,7 +16,7 @@ import javax.annotation.PostConstruct
  */
 @Configuration
 @EnableConfigurationProperties
-@ActiveProfiles(Application.PROFILE_CLIENT_NODE)
+@ActiveProfiles(Application.PROFILE_CENTRAL)
 @Lazy(false)
 open class ApplicationTestConfiguration : ApplicationConfiguration() {
 

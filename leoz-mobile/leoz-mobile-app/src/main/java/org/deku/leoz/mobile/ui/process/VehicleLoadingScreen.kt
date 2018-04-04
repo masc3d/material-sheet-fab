@@ -26,7 +26,7 @@ import org.deku.leoz.mobile.dev.SyntheticInput
 import org.deku.leoz.mobile.device.Feedback
 import org.deku.leoz.mobile.model.entity.Parcel
 import org.deku.leoz.mobile.model.entity.ParcelEntity
-import org.deku.leoz.mobile.model.process.DeliveryList
+import org.deku.leoz.mobile.model.process.Tour
 import org.deku.leoz.mobile.model.process.VehicleLoading
 import org.deku.leoz.mobile.model.repository.OrderRepository
 import org.deku.leoz.mobile.model.repository.ParcelRepository
@@ -43,14 +43,13 @@ import org.deku.leoz.mobile.ui.vm.ParcelViewModel
 import org.deku.leoz.mobile.ui.vm.SectionViewModel
 import org.deku.leoz.mobile.ui.vm.SectionsAdapter
 import org.deku.leoz.model.*
-import org.deku.leoz.service.internal.DeliveryListService
+import org.deku.leoz.service.internal.TourServiceV1
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import sx.Result
 import sx.aidc.SymbologyType
 import sx.android.aidc.*
 import sx.android.inflateMenu
-import sx.android.rx.observeOnMainThread
 import sx.android.rx.observeOnMainThreadUntilEvent
 import sx.android.rx.observeOnMainThreadWithLifecycle
 import sx.android.ui.flexibleadapter.SimpleVmItem
@@ -115,7 +114,7 @@ class VehicleLoadingScreen :
     private val orderRepository: OrderRepository by Kodein.global.lazy.instance()
     private val parcelRepository: ParcelRepository by Kodein.global.lazy.instance()
 
-    private val deliveryList: DeliveryList by Kodein.global.lazy.instance()
+    private val tour: Tour by Kodein.global.lazy.instance()
 
     private val vehicleLoading: VehicleLoading by Kodein.global.lazy.instance()
 
@@ -140,7 +139,7 @@ class VehicleLoadingScreen :
                 color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_green,
                 title = this.getText(R.string.loaded).toString(),
-                items = this.deliveryList.loadedParcels.map { it.value }
+                items = this.tour.loadedParcels.map { it.value }
         )
     }
 
@@ -150,7 +149,7 @@ class VehicleLoadingScreen :
                 color = R.color.colorDarkGrey,
                 background = R.drawable.section_background_accent,
                 title = this.getString(R.string.event_reason_damaged),
-                items = this.deliveryList.damagedParcels.map { it.value }
+                items = this.tour.damagedParcels.map { it.value }
         )
     }
 
@@ -161,7 +160,7 @@ class VehicleLoadingScreen :
                 background = R.drawable.section_background_grey,
                 expandOnSelection = true,
                 title = getString(R.string.pending),
-                items = this.deliveryList.pendingParcels.map { it.value }
+                items = this.tour.pendingParcels.map { it.value }
         )
     }
 
@@ -387,7 +386,7 @@ class VehicleLoadingScreen :
 
         Observable.combineLatest(
                 // Show finish button when parcels are loaded
-                this.deliveryList.loadedParcels
+                this.tour.loadedParcels
                         .map { it.value.count() > 0 },
                 // and process is not busy
                 this.isBusyProperty.map { it.value == false },
@@ -406,7 +405,7 @@ class VehicleLoadingScreen :
         // Damaged parcels
         Observable.combineLatest(
                 // Fire when damaged parcels change
-                this.deliveryList.damagedParcels
+                this.tour.damagedParcels
                         .map { it.value }
                         .distinctUntilChanged(),
                 // Also fire when selected section changes */
@@ -415,7 +414,7 @@ class VehicleLoadingScreen :
                 },
 
                 BiFunction { _: Any, _: Any ->
-                    this.deliveryList.damagedParcels.map { it.value }.blockingFirst()
+                    this.tour.damagedParcels.map { it.value }.blockingFirst()
                 }
         )
                 .observeOnMainThreadUntilEvent(this, FragmentEvent.PAUSE)
@@ -454,8 +453,8 @@ class VehicleLoadingScreen :
 
             // Synthetic inputs for delivery lists, retrieved via online service
             val ovDeliveryLists = Observable.fromCallable {
-                val deliveryListService = Kodein.global.instance<DeliveryListService>()
-                deliveryListService.getInfo(deliveryDate = null)
+                val tourService = Kodein.global.instance<TourServiceV1>()
+                tourService.get(overview = true)
             }
                     .toHotIoObservable()
                     .composeAsRest(this.activity)
@@ -468,10 +467,15 @@ class VehicleLoadingScreen :
                                 multipleChoice = true,
                                 entries = dlInfos
                                         .sortedWith(
-                                                compareByDescending({ it.date.date })
+                                                compareByDescending({ it.date?.date })
                                         )
-                                        .map {
-                                            val data = DekuDeliveryListNumber.parse(it.id.toString()).value.label
+                                        .mapNotNull {
+                                            val customId = it.customId
+
+                                            if (customId == null)
+                                                return@mapNotNull null
+
+                                            val data = DekuDeliveryListNumber.parse(customId).value.label
                                             SyntheticInput.Entry(
                                                     symbologyType = SymbologyType.Interleaved25,
                                                     data = data,
@@ -553,13 +557,13 @@ class VehicleLoadingScreen :
 
         this.isBusy = true
 
-        deliveryList.load(deliveryListNumber)
+        tour.load(deliveryListNumber)
                 .bindToLifecycle(this)
                 .composeAsRest(this.activity, R.string.error_invalid_delivery_list)
                 .subscribeBy(
                         onNext = {
                             loaded = true
-                            log.info("Current delivery lists [${this.deliveryList.ids.get().joinToString(", ")}")
+                            log.info("Current delivery lists [${this.tour.ids.get().joinToString(", ")}")
                         },
                         onComplete = {
                             this.isBusy = false
@@ -593,7 +597,7 @@ class VehicleLoadingScreen :
             }
             else -> {
                 // No corresponding order (yet)
-                this.deliveryList.retrieveOrder(unitNumber)
+                this.tour.retrieveOrder(unitNumber)
                         .bindToLifecycle(this)
                         .composeAsRest(this.activity, R.string.error_no_corresponding_order)
                         .subscribeBy(
@@ -603,7 +607,7 @@ class VehicleLoadingScreen :
                                     fun mergeOrder() {
                                         this.isBusy = true
 
-                                        this.deliveryList
+                                        this.tour
                                                 .mergeOrder(order)
                                                 .andThen(
                                                         this.parcelRepository
@@ -624,7 +628,7 @@ class VehicleLoadingScreen :
                                                 )
                                     }
 
-                                    if (this.deliveryList.ids.get().isEmpty() || acceptDetachedOrdersWithoutConfirmation) {
+                                    if (this.tour.ids.get().isEmpty() || acceptDetachedOrdersWithoutConfirmation) {
                                         mergeOrder()
                                     } else {
                                         val dialog = MaterialDialog.Builder(this.activity)

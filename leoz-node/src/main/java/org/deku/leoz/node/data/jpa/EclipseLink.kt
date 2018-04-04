@@ -4,20 +4,24 @@ import org.eclipse.persistence.config.DescriptorCustomizer
 import org.eclipse.persistence.descriptors.ClassDescriptor
 import org.eclipse.persistence.descriptors.DescriptorEvent
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter
-import org.eclipse.persistence.descriptors.DescriptorEventManager
+import org.eclipse.persistence.mappings.DirectToFieldMapping
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter
+import org.eclipse.persistence.sessions.SessionEvent
+import org.eclipse.persistence.sessions.SessionEventAdapter
 import org.slf4j.LoggerFactory
-import sx.log.slf4j.debug
 import sx.log.slf4j.trace
+import sx.persistence.eclipselink.h2.UUIDConverter
+import java.util.*
 
 /**
- * Change listener handling entity events
+ * Eclipselink event adapter / listener
  *
  * Those events only fire on direct entity manager interactions.
  * EG. a JPA delete will NOT fire delete events
  *
  * Created by masc on 11/10/2016.
  */
-class EclipseEventListener : DescriptorEventAdapter() {
+open class EclipselinkEventListener : DescriptorEventAdapter() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun aboutToDelete(event: DescriptorEvent?) {
@@ -94,10 +98,11 @@ class EclipseEventListener : DescriptorEventAdapter() {
 }
 
 /**
- * Descriptor customizor, setting up listeners.
- * Customizers are setup via annotations, eclispelink properties or persistence.xml
+ * Eclipselink Descriptor customizor
+ *
+ * RUntime setup for listeners and descriptor specific attribtues.
  */
-class EclipseLinkCustomizer : DescriptorCustomizer {
+class EclipselinkDescriptorCustomizer : DescriptorCustomizer {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun customize(descriptor: ClassDescriptor?) {
@@ -109,6 +114,46 @@ class EclipseLinkCustomizer : DescriptorCustomizer {
         descriptor.cachePolicy.setCacheable(true)
 
         // Register entity event listener
-        descriptor.eventManager.addListener(EclipseEventListener())
+        descriptor.eventManager.addListener(EclipselinkEventListener())
     }
 }
+
+/**
+ * Eclipselink session customizer
+ *
+ * Runtime mappings and type conversions are applied here.
+ */
+class EclipselinkSessionListener : SessionEventAdapter() {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    override fun preLogin(event: SessionEvent) {
+        for ((type, desc) in event.session.descriptors) {
+            desc.mappings.forEach { mapping ->
+                val dfm = mapping as? DirectToFieldMapping
+
+                if (dfm != null) {
+                    //region Converters
+                    var converter = dfm.converter
+
+                    // apply converters to fields which jpa cannot map directly.
+                    // that way no (jpa provider speciric) annotations have to be used to entities.
+                    if (converter != null && converter is SerializedObjectConverter) {
+                        // Lookup return type and override converter for specific types
+                        when (type.getMethod(mapping.getMethodName).returnType) {
+                            UUID::class.java -> {
+                                // H2 requires a simple pass through converter for UUID fields
+                                converter = UUIDConverter()
+                            }
+                        }
+
+                        dfm.converter = converter
+                    }
+                    //endregion
+                }
+            }
+        }
+    }
+}
+
+
+

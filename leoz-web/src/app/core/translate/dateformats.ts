@@ -9,6 +9,11 @@ export const DATEFORMATS = {
     en: 'YYYY/MM/DD',
     de: 'DD.MM.YYYY'
   },
+  internalShorter: {
+    database: 'YYYY-MM-DD',
+    en: 'MM/dd',
+    de: 'dd.MM.'
+  },
   internalMedium: {
     database: 'MM-dd HH:mm',
     en: 'MM/dd HH:mm',

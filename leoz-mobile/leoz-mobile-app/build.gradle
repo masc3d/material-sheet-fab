@@ -236,8 +236,8 @@ dependencies {
             "io.github.openfeign:feign-core:$v_feign",
             "io.github.openfeign:feign-jackson:$v_feign",
             "io.github.openfeign:feign-okhttp:$v_feign",
-            dependencies.create("io.github.openfeign:feign-jaxrs:$v_feign") {
-                exclude group: "javax.ws.rs", module: "jsr311-api"
+            dependencies.create("com.github.masc3d.feign:feign-jaxrs:master-SNAPSHOT") {
+                exclude module: 'feign-core'
             },
 
             // JAX-RS
@@ -281,7 +281,7 @@ dependencies {
             },
 
             // UI
-            "eu.davidea:flexible-adapter:5.0.2",
+            "eu.davidea:flexible-adapter:5.0.3",
             "eu.davidea:flexible-adapter-databinding:1.0.0-b2@aar",
             "eu.davidea:flexible-adapter-ui:1.0.0-b3@aar",
             "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0",

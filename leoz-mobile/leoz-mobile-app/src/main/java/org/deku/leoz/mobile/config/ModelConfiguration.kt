@@ -19,11 +19,7 @@ class ModelConfiguration {
             bind<Tour>() with singleton {
                 Tour()
             }
-
-            bind<DeliveryList>() with singleton {
-                DeliveryList()
-            }
-
+            
             bind<VehicleLoading>() with singleton {
                 VehicleLoading()
             }

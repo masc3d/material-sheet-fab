@@ -1,6 +1,7 @@
 package org.deku.leoz.service.internal
 
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.erased.instance
 import io.reactivex.Observable
 import org.deku.leoz.config.RestClientTestConfiguration
 import org.glassfish.jersey.client.JerseyClientBuilder
@@ -13,6 +14,7 @@ import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import sx.log.slf4j.info
 import sx.log.slf4j.trace
+import sx.rs.client.FeignClient
 import javax.ws.rs.sse.InboundSseEvent
 import javax.ws.rs.sse.SseEventSource
 
@@ -83,5 +85,28 @@ class TourServiceTest {
                 })
 
         error?.also { throw it }
+    }
+
+    @Test
+    fun testGetFeign() {
+        val feignClient = kodein.instance<FeignClient>()
+
+        feignClient.proxy(TourServiceV1::class.java)
+                .get()
+    }
+
+    @Test
+    fun testOptimizeFeign() {
+        val feignClient = kodein.instance<FeignClient>()
+
+        feignClient.proxy(TourServiceV1::class.java)
+                .optimize(
+                        id = 265,
+                        waitForCompletion = true,
+                        options = TourServiceV1.TourOptimizationOptions().also {
+                            it.appointments.omit = true
+                        },
+                        response = null
+                )
     }
 }

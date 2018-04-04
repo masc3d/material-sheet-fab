@@ -1,7 +1,8 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.node.Storage
-import org.deku.leoz.node.data.jpa.EclipseLinkCustomizer
+import org.deku.leoz.node.data.jpa.EclipselinkDescriptorCustomizer
+import org.deku.leoz.node.data.jpa.EclipselinkSessionListener
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.PersistenceUnitProperties
 import org.eclipse.persistence.platform.database.H2Platform
@@ -230,8 +231,14 @@ class PersistenceConfiguration {
             // Setup event listeners for all entity classes
             properties.set(
                     "${PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_}${bd.beanClassName}",
-                    EclipseLinkCustomizer::class.java.canonicalName)
+                    EclipselinkDescriptorCustomizer::class.java.canonicalName)
         }
+
+        // Setup session event listener for eg. setting type converters during runtime initialization
+        properties.set(
+                PersistenceUnitProperties.SESSION_EVENT_LISTENER_CLASS,
+                EclipselinkSessionListener::class.java.canonicalName
+        )
         //endregion
 
         em.setJpaProperties(properties)
@@ -266,22 +273,8 @@ class PersistenceConfiguration {
         }
     //endregion
 
-    /**
-     * Migrate flyway schema version table from `schema_version` (<= 4.x) to `flyway_schema_history` (>= 5.x)
-     */
-    @Deprecated("Required by leoz-central <= 0.147, leoz-node <= 0.74")
-    private fun migrateFLywaySchemaVersionTable() {
-        this.dataSource.connection.use { cn ->
-            cn.createStatement().use {
-                it.execute("ALTER TABLE IF EXISTS \"schema_version\" RENAME TO \"flyway_schema_history\"")
-            }
-        }
-    }
-
     @PostConstruct
     fun onInitialize() {
-        this.migrateFLywaySchemaVersionTable()
-
         // Migrate schema
         log.info("Migrating embedded data source schema")
         val flyway = Flyway()

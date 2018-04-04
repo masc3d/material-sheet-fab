@@ -58,14 +58,14 @@
     <div class="ui-g-12" style="padding:0; margin-left: 10px;">
       <div class="ui-g" style="font-size:22px;">
         <div>
-          <i style="color: #186ba0;" (click)="switchDay(-1)" class="fas fa-caret-square-left" aria-hidden="true"></i>
-          <span>{{aktualTourDate | date:dateFormat}}</span>
-          <i style="color: #186ba0;" (click)="switchDay(1)"class="fas fa-caret-square-right" aria-hidden="true"></i>
+          <i style="color: #186ba0;" (click)="tourDateFilterPrevDay()" class="fas fa-caret-square-left" aria-hidden="true"></i>
+          <span>{{tourDateFilter | date:dateFormat}}</span>
+          <i style="color: #186ba0;" (click)="tourDateFilterNextDay()" class="fas fa-caret-square-right" aria-hidden="true"></i>
         </div>
       </div>
       <hr/>
-      <p-table [value]="tours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="15"
-               [totalRecords]="tours.length" (sortFunction)="customSort($event)" [customSort]="true"
+      <p-table [value]="filteredTours" [resizableColumns]="true" [responsive]="true" [paginator]="true" [rows]="15"
+               [totalRecords]="filteredTours.length" (sortFunction)="customSort($event)" [customSort]="true"
                [loading]="toursLoading$ | async" [loadingIcon]="'fa-spinner'">
         <ng-template pTemplate="header">
           <tr>
@@ -74,11 +74,11 @@
               {{'tourID' | translate}}
               <p-sortIcon [field]="'id'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'deliverylistId'" pResizableColumn>
+            <th [pSortableColumn]="'customId'" pResizableColumn>
               {{'reference' | translate}}
-              <p-sortIcon [field]="'deliverylistId'"></p-sortIcon>
+              <p-sortIcon [field]="'customId'"></p-sortIcon>
             </th>
-            <th>{{'vehicle' | translate}}</th>
+            <th pResizableColumn>{{'vehicle' | translate}}</th>
             <th [pSortableColumn]="'stops'" pResizableColumn>
               {{'stops' | translate}}
               <p-sortIcon [field]="'stops'"></p-sortIcon>
@@ -87,41 +87,47 @@
               {{'packages' | translate}}
               <p-sortIcon [field]="'totalPackages'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'totalWeight'">
+            <th [pSortableColumn]="'totalWeight'" pResizableColumn>
               {{'weight' | translate}}
               <p-sortIcon [field]="'totalWeight'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'drivingTime'">
+            <th [pSortableColumn]="'drivingTime'" pResizableColumn>
               {{'time' | translate}}
               <p-sortIcon [field]="'drivingTime'"></p-sortIcon>
             </th>
-            <th [pSortableColumn]="'distance'">
+            <th [pSortableColumn]="'distance'" pResizableColumn>
               {{'distance' | translate}}
               <p-sortIcon [field]="'distance'"></p-sortIcon>
             </th>
             <th [pSortableColumn]="'created'" pResizableColumn>
-              {{'date' | translate}}
+              {{'optimized' | translate}}
               <p-sortIcon [field]="'created'"></p-sortIcon>
+            </th>
+            <th [pSortableColumn]="'date'" pResizableColumn>
+              {{'date' | translate}}
+              <p-sortIcon [field]="'date'"></p-sortIcon>
             </th>
             <th style="width: 100px;"></th>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-tour>
-          <tr>
+          <tr class="{{tour.optimizationFailed ? 'bgOptimizationFailed' : ''}}" >
             <td></td>
+
             <td>{{tour.id}}</td>
             <td>
-              <span *ngIf="tour.deliverylistId; else parentID">{{tour.deliverylistId}}</span>
+              <span *ngIf="tour.customId; else parentID">{{tour.customId}}</span>
               <ng-template #parentID>P: {{tour.parentId}}</ng-template>
             </td>
             <td></td>
-            <td>{{tour.stops.length}}</td>
+            <td>{{tour.stops ? tour.stops.length : 0}}</td>
             <td>{{tour.totalPackages}}</td>
             <td>{{roundDecimalsAsStringWrapper( tour.totalWeight )}}</td>
             <td>{{formatTourDurationTime(tour.drivingTime)}}</td>
             <td>{{roundDecimalsAsStringWrapper(tour.distance)}}</td>
             <td>{{ tour.created | date:dateFormatMedium}}</td>
+            <td>{{ tour.date | date:dateFormatShorter}}</td>
             <td>
               <span *ngIf="tour.optimized; else notOptimized">
                 <i class="fas fa-sync {{tour.isOptimizing ? 'fa-spin' : ''}}" style="color: #00a200; margin-right: .5rem;"></i>

@@ -16,7 +16,7 @@ import sx.rs.attachment
 import sx.rs.toStreamingOutput
 import sx.rx.limit
 import sx.time.toTimestamp
-import sx.util.letWithParamNotNull
+import sx.util.letWithNotNull
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -85,13 +85,13 @@ class DumpService : org.deku.leoz.service.internal.DumpService {
         val rkIds = dsl.select(RKKOPF.ID)
                 .from(RKKOPF)
                 .where()
-                .letWithParamNotNull(stationNo, {
+                .letWithNotNull(stationNo, {
                     and(RKKOPF.LIEFERDEPOT.eq(it.toDouble()))
                 })
-                .letWithParamNotNull(from, {
+                .letWithNotNull(from, {
                     and(RKKOPF.ROLLKARTENDATUM.ge(it.date.toTimestamp()))
                 })
-                .letWithParamNotNull(to, {
+                .letWithNotNull(to, {
                     and(RKKOPF.ROLLKARTENDATUM.le(it.date.toTimestamp()))
                 })
                 .fetch(RKKOPF.ID)
