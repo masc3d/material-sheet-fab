@@ -129,6 +129,7 @@ abstract class BaseLocationService: Service() {
 
     override fun onCreate() {
         super.onCreate()
+        log.trace("ONCREATE")
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             gnssStatusCallback = object : GnssStatus.Callback() {
@@ -147,6 +148,8 @@ abstract class BaseLocationService: Service() {
     }
 
     override fun onDestroy() {
+        log.trace("ONDESTROY")
+
         this.unregisterBroadcastReceiver()
         stopForeground(true)
 
