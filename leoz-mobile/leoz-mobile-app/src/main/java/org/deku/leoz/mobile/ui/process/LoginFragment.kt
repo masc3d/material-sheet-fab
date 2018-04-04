@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.process
 
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -251,6 +252,7 @@ class LoginFragment : Fragment<Any>() {
 
             MaterialDialog.Builder(this.context).also {
                 it.title(R.string.data_protection)
+                it.icon(ContextCompat.getDrawable(this.context, R.drawable.ic_search_data)!!)
                 it.checkBoxPrompt("Ich akzeptiere die Erklärung", false, { _, checked ->
                     privacyDisclaimerAccepted = checked
                 })

@@ -631,8 +631,8 @@ abstract class Activity : BaseActivity(),
             R.id.nav_data_policy -> {
                 MaterialDialog.Builder(this).also {
                     it.neutralText(R.string.dismiss)
-                    it.icon(this.getDrawableCompat(R.drawable.ic_launcher))
-                    it.title("Datenschutzerklärung")
+                    it.icon(ContextCompat.getDrawable(this.applicationContext, R.drawable.ic_search_data)!!)
+                    it.title(R.string.data_protection)
                     it.content(R.string.privacy_disclaimer_text)
                 }.show()
             }
