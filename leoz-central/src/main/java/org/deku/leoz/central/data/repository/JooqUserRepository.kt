@@ -148,7 +148,7 @@ class JooqUserRepository {
                 .innerJoin(MST_STATION_USER).on(TBLDEPOTLISTE.ID.eq(MST_STATION_USER.STATION_ID))
                 .where(MST_STATION_USER.USER_ID.eq(userId)).and(TBLDEPOTLISTE.ISTGUELTIG.eq(1))
                 .fetch(TBLDEPOTLISTE.DEPOTNR)
-
+    }
 }
 
 fun MstUserRecord.toUser(): UserService.User =
