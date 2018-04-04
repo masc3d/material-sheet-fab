@@ -226,7 +226,7 @@ class MqttDispatcher(
                                         .publishToWire()
 
                                         .doOnComplete {
-                                            log.info { "Dequeued ${count} in [${sw}]" }
+                                            log.info { "Dequeued ${count} for [${topic}] in [${sw}]" }
                                         }
 
                                         // Subscribe on topic specific scheduler
