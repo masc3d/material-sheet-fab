@@ -37,18 +37,19 @@ import { InetConnectionService } from '../../../core/inet-connection.service';
   ]
 } )
 export class UserFormComponent extends AbstractTranslateComponent implements OnInit {
-
   msgs$: Observable<Message[]>;
 
   dateFormatPrimeng: string;
 
-  locale: any;
-  roleOptions: SelectItem[];
   stateOptions: SelectItem[];
-  activeUser: User;
 
+  locale: any;
+  assignableStations: SelectItem[];
+  activeUser: User;
   userForm: FormGroup;
   private loading = false;
+
+  roleOptions: SelectItem[];
 
   constructor( private fb: FormBuilder,
                private userService: UserService,
@@ -70,6 +71,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
 
     this.roleOptions = this.createRoleOptions();
     this.stateOptions = this.createStateOptions();
+    this.assignableStations = this.createAssignableStations();
 
     this.userForm = this.fb.group( {
       emailOrigin: [ null ],
@@ -82,7 +84,8 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       phoneMobile: [ null, [ Validators.required ] ],
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ],
-      expiresOn: [ null, [ Validators.required ] ]
+      expiresOn: [ null, [ Validators.required ] ],
+      allowedStations: [ null, [ Validators.required ] ]
     } );
 
     this.userService.activeUser$
@@ -113,7 +116,8 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
           phoneMobile: activeUser.phoneMobile,
           role: activeUser.role,
           active: activeUser.active,
-          expiresOn: activeUser.expiresOn ? new Date( activeUser.expiresOn ) : activeUser.expiresOn
+          expiresOn: activeUser.expiresOn ? new Date( activeUser.expiresOn ) : activeUser.expiresOn,
+          allowedStations: activeUser.allowedStations
         } );
       } );
   }
@@ -137,6 +141,13 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       roleOptions.push( { label: this.translate.instant( 'Customer' ), value: 'CUSTOMER' } );
     }
     return roleOptions;
+  }
+
+  private createAssignableStations(): any {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    return currUser.user.allowedStations.map( stationNo => {
+      return { label: stationNo, value: stationNo };
+    } );
   }
 
   private isEditMode( activeUser: User ) {

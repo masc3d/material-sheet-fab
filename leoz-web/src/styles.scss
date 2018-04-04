@@ -194,6 +194,7 @@ a {
 input.ng-invalid,
 select.ng-invalid,
 input.invalid,
+p-multiSelect.ng-invalid > div,
 p-dropdown.ng-invalid > div > label,
 p-calendar.ng-invalid > span {
   border-left: 5px solid red !important;
@@ -201,6 +202,7 @@ p-calendar.ng-invalid > span {
 
 input.ng-valid,
 select.ng-valid,
+p-multiSelect.ng-valid > div,
 p-dropdown.ng-valid > div > label,
 p-calendar.ng-valid > span {
   padding-left: 5px;
