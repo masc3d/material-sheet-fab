@@ -36,6 +36,8 @@ export class TouroptimizingService {
 
   private optimizationInProgress: number[] = [];
 
+  private optimizationFailed: boolean = false;
+
   constructor( protected http: HttpClient,
                protected translate: TranslateService,
                protected msgService: MsgService,
@@ -58,6 +60,7 @@ export class TouroptimizingService {
         this.optimizing( id, data.inProgress );
         if (!data.inProgress) {
           if (data.success) {
+            console.log('tour.optimizationFailed', this.optimizationFailed);
             this.msgService.clear();
             this.getTours();
           } else {
@@ -66,6 +69,7 @@ export class TouroptimizingService {
               .map( tour => {
                 if (tour.id === id) {
                   tour.optimizationFailed = true;
+                  this.optimizationFailed = true;
                 }
                 return tour;
               } );

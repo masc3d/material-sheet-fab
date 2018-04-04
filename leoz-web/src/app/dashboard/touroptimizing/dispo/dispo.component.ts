@@ -164,11 +164,25 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   preview() {
-    this.reporting( false );
+    this.selectedTours = this.filteredTours
+      .filter( tour => tour.selected );
+    if (this.selectedTours && this.selectedTours.length === 0) {
+      this.msgService.info( 'no_tours_selected', false, false );
+    } else {
+      // this.displayOptimizationOptions = true;
+      this.reporting( false );
+    }
   }
 
   saving() {
-    this.reporting( true );
+    this.selectedTours = this.filteredTours
+      .filter( tour => tour.selected );
+    if (this.selectedTours && this.selectedTours.length === 0) {
+      this.msgService.info( 'no_tours_selected', false, false );
+    } else {
+      // this.displayOptimizationOptions = true;
+      this.reporting( true );
+    }
   }
 
   protected reporting( saving: boolean ) {

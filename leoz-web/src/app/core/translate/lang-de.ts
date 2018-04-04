@@ -440,6 +440,7 @@ export const LANG_DE_TRANS = {
   'cancel': 'Abbruch',
   'start': 'Start',
   'no_optimizable_tours_selected': 'Keine optimierbaren Touren ausgewählt',
+  'no_tours_selected': 'Keine Touren ausgewählt',
   'optimizeTodayAndFuture': 'Tourstart heute',
   'optimizeTraffic': 'Verkehrslage berücksichtigen',
   'optimizeExistingtours': 'Bestandstouren aktualisieren',
