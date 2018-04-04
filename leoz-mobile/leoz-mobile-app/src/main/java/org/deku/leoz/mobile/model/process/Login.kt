@@ -201,15 +201,16 @@ class Login {
                     // Store authenticated user in property
                     this.authenticatedUser = it
 
-                    mqttChannels.central.transient.channel().send(
-                            message = UserService.DataProtectionActivity(
-                                    scope = UserService.DataProtectionActivity.Scope.MOBILE,
-                                    userId = it.id,
-                                    ts_activity = it.lastLoginTime ?: Date(),
-                                    confirmed = true,
-                                    policyVersion = 0
-                            )
-                    )
+                    // TODO uncomment when message will be processed in backend (leoz-central version > 0.193-SNAPSHOT)
+//                    mqttChannels.central.transient.channel().send(
+//                            message = UserService.DataProtectionActivity(
+//                                    scope = UserService.DataProtectionActivity.Scope.MOBILE,
+//                                    userId = it.id,
+//                                    ts_activity = it.lastLoginTime ?: Date(),
+//                                    confirmed = true,
+//                                    policyVersion = 0
+//                            )
+//                    )
                 }
                 .toHotIoObservable(this.log)
 
