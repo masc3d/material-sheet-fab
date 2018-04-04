@@ -227,8 +227,7 @@ export const LANG_EN_TRANS = {
   'Please return 3 bags for relief.',
   'infoMsgfield': 'Open the scanning panel with F2.' + '<br>' +
   'Clear fields with F3.' + '<br>' +
-  'Finish processing with F5.' + '<br>' +
-  'Swap to emergency seal with F10.',
+  'Finish processing with F5.',
   'maxBagWeightReached': 'Maximum bagweight reached',
   'caution': 'Caution',
   'activateBlueSeal': 'Activate the blue seal if you have an important reason',

@@ -227,8 +227,7 @@ export const LANG_DE_TRANS = {
                       'Bitte senden Sie zur Entlastung 3 Bags zurück.',
   'infoMsgfield': 'Belegscanfeld öffnen mit F2.' + '<br>' +
                       'Felder leeren mit F3.' + '<br>' +
-                      'Bearbeitung abschliessen mit F5.' + '<br>' +
-                      'Tausch auf Notfallplombe mit F10.',
+                      'Bearbeitung abschliessen mit F5.',
   'maxBagWeightReached': 'Maximalgewicht erreicht',
   'caution': 'Achtung',
   'activateBlueSeal': 'Aktivieren der blauen Plombe, wenn Sie einen wichtigen Grund haben',
