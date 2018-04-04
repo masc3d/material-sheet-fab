@@ -261,12 +261,12 @@ export class BagscanComponent extends AbstractTranslateComponent implements OnIn
         takeUntil( this.ngUnsubscribe )
       )
       .subscribe( () => this.saveEmergencySeal() );
-    this.keyUpService.keyUpEvents$
-      .pipe(
-        filter( ( ev: KeyboardEvent ) => ev.key === 'F10' ),
-        takeUntil( this.ngUnsubscribe )
-      )
-      .subscribe( () => this.switchSeal() );
+    // this.keyUpService.keyUpEvents$
+    //   .pipe(
+    //     filter( ( ev: KeyboardEvent ) => ev.key === 'F10' ),
+    //     takeUntil( this.ngUnsubscribe )
+    //   )
+    //   .subscribe( () => this.switchSeal() );
   }
 
   private createBaglistItems( selectItems: SelectItem[] ) {
