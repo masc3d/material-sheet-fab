@@ -714,3 +714,14 @@ input[pinputtext] {
 .ui-dialog-footer {
   background-color: white !important;
 }
+
+.text2button{
+  margin-top: 6px;
+  padding-top: 4px;
+  text-align: center;
+  color: #FFFFFF;
+  background-color: $button-blue;
+  border-radius: 3px;
+  max-width: 120px;
+  height: 23px;
+}
