@@ -400,7 +400,6 @@ dependencies {
 
     kapt(
             "org.parceler:parceler:$v_parceler",
-            "com.android.databinding:compiler:$v_android_gradle"
     )
 }
 

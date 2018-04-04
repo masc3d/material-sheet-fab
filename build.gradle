@@ -86,7 +86,6 @@ buildscript {
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.github.ben-manes:gradle-versions-plugin:0.15.0",
                 "org.kordamp.gradle:stats-gradle-plugin:0.2.0",
-                "com.android.tools.build:gradle:$v_android_gradle",
                 "sx:sx-ssh:0.1",
                 "sx:sx-common:0.1",
                 "sx:sx-packager-gradle:0.1",
