@@ -169,7 +169,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     if (this.selectedTours && this.selectedTours.length === 0) {
       this.msgService.info( 'no_tours_selected', false, false );
     } else {
-      // this.displayOptimizationOptions = true;
       this.reporting( false );
     }
   }
@@ -180,7 +179,6 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
     if (this.selectedTours && this.selectedTours.length === 0) {
       this.msgService.info( 'no_tours_selected', false, false );
     } else {
-      // this.displayOptimizationOptions = true;
       this.reporting( true );
     }
   }
