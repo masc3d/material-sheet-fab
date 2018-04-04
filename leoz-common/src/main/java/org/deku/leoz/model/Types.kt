@@ -534,3 +534,7 @@ enum class RoutingZoneDe(val value: String) {
     WR("WR"),
     UL("UL")
 }
+
+enum class UserActivity(val value: String) {
+    DATA_PROTECTION_POLICY_ACCEPTED("data protection policy accepted")
+}

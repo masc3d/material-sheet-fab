@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import sx.mq.MqChannel
+import sx.mq.MqHandler
 import sx.rs.RestProblem
 import sx.time.toSqlDate
 import javax.inject.Inject
@@ -38,7 +40,10 @@ import javax.ws.rs.core.Response
 @Component
 @Path("internal/v1/user")
 @Profile(Application.PROFILE_CENTRAL)
-class UserService : org.deku.leoz.service.internal.UserService {
+class UserService :
+        org.deku.leoz.service.internal.UserService,
+        MqHandler<Any> {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -481,5 +486,16 @@ class UserService : org.deku.leoz.service.internal.UserService {
 
         return configurationService.getUserConfiguration(authorizedUser.id
                 ?: throw RestProblem(status = Response.Status.NOT_FOUND))
+    }
+
+    @MqHandler.Types(
+            UserService.DataProtectionActivity::class
+    )
+    override fun onMessage(message: Any, replyChannel: MqChannel?) {
+        when (message) {
+            is UserService.DataProtectionActivity -> {
+
+            }
+        }
     }
 }

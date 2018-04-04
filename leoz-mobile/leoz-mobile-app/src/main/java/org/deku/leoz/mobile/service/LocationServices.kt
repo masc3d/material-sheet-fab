@@ -31,9 +31,4 @@ class LocationServices(val context: Context) {
         it.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         it.smallestDisplacement = locationSettings.smallestDisplacement
     }
-
-    val googleApiClientBuilder: GoogleApiClient.Builder by lazy {
-        GoogleApiClient.Builder(context)
-                .addApi(LocationServices.API)
-    }
 }

@@ -5,6 +5,7 @@ import org.deku.leoz.config.Rest
 import org.deku.leoz.model.UserPreferenceKey
 import sx.io.serialization.Serializable
 import sx.rs.auth.ApiKey
+import java.util.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -105,6 +106,19 @@ interface UserService {
         enum class Type(val value: String) {
             WEB_UI("WEB_UI_PREFERENCE"),
             MOBILE("MOBILE_PREFERENCE")
+        }
+    }
+
+    @Serializable(0x226a3e74f8e3)
+    data class DataProtectionActivity(
+            val scope: DataProtectionActivity.Scope,
+            val userId: Int,
+            val ts_activity: Date,
+            val confirmed: Boolean,
+            val policyVersion: Int
+    ) {
+        enum class Scope {
+            MOBILE
         }
     }
 
