@@ -164,22 +164,20 @@ export class DispoComponent extends AbstractTranslateComponent implements OnInit
   }
 
   preview() {
-    this.selectedTours = this.filteredTours
-      .filter( tour => tour.selected );
-    if (this.selectedTours && this.selectedTours.length === 0) {
-      this.msgService.info( 'no_tours_selected', false, false );
-    } else {
-      this.reporting( false );
-    }
+    this.createReport( false );
   }
 
   saving() {
+    this.createReport( true );
+  }
+
+  createReport( saveReport ) {
     this.selectedTours = this.filteredTours
       .filter( tour => tour.selected );
     if (this.selectedTours && this.selectedTours.length === 0) {
       this.msgService.info( 'no_tours_selected', false, false );
     } else {
-      this.reporting( true );
+      this.reporting( saveReport );
     }
   }
 
