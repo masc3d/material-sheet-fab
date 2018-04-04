@@ -5,7 +5,7 @@ buildscript {
     }
 
     ext {
-        v_android_gradle = '3.0.1'
+        v_android_gradle = '3.1.0'
         v_android_buildtools = '27.0.3'
         v_android_support = '27.1.0'
         v_android_test = '1.0.1'
@@ -183,9 +183,5 @@ dependencies {
             },
 
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
-    )
-
-    kapt(
-            "com.android.databinding:compiler:$v_android_gradle"
     )
 }
