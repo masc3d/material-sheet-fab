@@ -179,22 +179,18 @@ open class Device(private val context: Context) {
         val telephonyManager = this.context.getTelephonyManager()
         try {
             if (telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
-                log.debug("NetworkOperator [${telephonyManager.networkOperator}] NetworkOperatorName [${telephonyManager.networkOperatorName}]")
-                val networkMcc = telephonyManager.networkOperator.substring(0, 3)
-                val networkMnc = telephonyManager.networkOperator.substring(3)
-                log.debug("Network-MCC [$networkMcc] Network-MNC [$networkMnc]")
-                log.debug("SimOperator [${telephonyManager.simOperator}] SimOperatorName [${telephonyManager.simOperatorName}]")
+                log.trace("SimOperator [${telephonyManager.simOperator}] SimOperatorName [${telephonyManager.simOperatorName}]")
                 val simMcc = telephonyManager.simOperator.substring(0, 3)
                 val simMnc = telephonyManager.simOperator.substring(3)
                 log.debug("SIM-MCC [$simMcc] SIM-MNC [$simMnc]")
                 // RETURN
-                (networkMcc == "901" && networkMnc == "28")
+                (simMcc == "901" && simMnc == "28")
             } else {
                 false
             }
 
         } catch (e: Exception) {
-            log.warn("NetworkOperator information could not be determined", e)
+            log.warn("SimOperator information could not be determined", e)
             false
         }
     }
