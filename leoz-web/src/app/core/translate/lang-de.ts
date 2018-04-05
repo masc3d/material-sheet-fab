@@ -454,6 +454,7 @@ export const LANG_DE_TRANS = {
   'optimization-tour': 'Optimierung-Tour',
   'stops': 'Stopps',
   'could not be optimized': 'konnte nicht optimiert werden',
+  'assigned stations': 'zugeordnete Stationen',
   // report report_tourplan
   'report_tourplan': 'Tourenplan',
   'tourID': 'Tour Nr.',
