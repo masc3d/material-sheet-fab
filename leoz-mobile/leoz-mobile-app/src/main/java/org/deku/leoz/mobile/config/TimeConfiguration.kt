@@ -20,7 +20,7 @@ class TimeConfiguration {
                 sx.android.NtpTime(
                         context = instance(),
                         ntpHost = if (device.isM2MConnected) remoteSettings.ntp.hostInternal else remoteSettings.host,
-                        maxRetryCount = 5,
+                        maxRetryCount = 100,
                         trueTimeInternalLoggingEnabled = false
                 )
             }

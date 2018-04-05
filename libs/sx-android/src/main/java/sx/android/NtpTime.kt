@@ -25,17 +25,17 @@ open class NtpTime(
         TrueTimeRx.build()
                 .withSharedPreferences(this.context)
                 .withLoggingEnabled(this.trueTimeInternalLoggingEnabled)
-                //.withRetryCount(this.maxRetryCount)
+                .withRetryCount(this.maxRetryCount)
                 .initializeRx(this.ntpHost)
                 .ignoreElements()
                 .subscribeOn(Schedulers.io())
                 .subscribeBy(
                         onComplete = {
-                            log.trace("TrueTime initialization succeeded")
+                            log.trace("TrueTime initialization [${this.ntpHost}] succeeded")
                         },
 
                         onError = {
-                            log.error("TrueTime initialization failed: ${it.message}")
+                            log.error("TrueTime initialization [${this.ntpHost}] failed: ${it.message}")
                         }
                 )
     }
