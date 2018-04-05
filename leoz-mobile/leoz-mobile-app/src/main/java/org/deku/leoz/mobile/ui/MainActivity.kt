@@ -151,7 +151,7 @@ class MainActivity
             it.title("Data policy rejected")
             it.content("This service / app can not be used without accepting the data protection policy. The app will close now.")
             it.neutralText(R.string.dismiss)
-            it.onNeutral { dialog, which ->
+            it.onNeutral { _, _ ->
                 this.app.terminate()
             }
         }.show()

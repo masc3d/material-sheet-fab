@@ -338,7 +338,7 @@ class TourStop(
                         this.missingParcels,
                         this.deliveredParcels
                 ).plus(this.parcelsByEvent.map { it.value }),
-                { x ->
+                { _ ->
                     val loaded = this.loadedParcels.blockingFirst().map { it.number }
                     val pending = this.pendingParcels.blockingFirst().map { it.number }
                     val missing = this.missingParcels.blockingFirst().map { it.number }
