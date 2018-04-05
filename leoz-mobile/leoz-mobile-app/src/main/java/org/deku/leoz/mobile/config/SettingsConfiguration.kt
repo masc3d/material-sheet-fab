@@ -5,7 +5,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.settings.*
 import org.slf4j.LoggerFactory
 import sx.ConfigurationMap
@@ -22,6 +22,9 @@ class SettingsConfiguration {
         val ASSET_SETTINGS = "application.yml"
         val ASSET_SETTINGS_DEBUG = "application-debug.yml"
 
+        /** Enforce debug settings also for release builds (STRICTLY for testing) */
+        val ENFORCE_DEBUG = false
+
         private val log = LoggerFactory.getLogger(SettingsConfiguration::class.java)
 
         val module = Kodein.Module {
@@ -30,7 +33,7 @@ class SettingsConfiguration {
 
                 val sources = mutableListOf<InputStream>()
                 sources.add(context.assets.open(ASSET_SETTINGS))
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG || ENFORCE_DEBUG) {
                     try {
                         sources.add(context.assets.open(ASSET_SETTINGS_DEBUG))
                     } catch (e: IOException) {
