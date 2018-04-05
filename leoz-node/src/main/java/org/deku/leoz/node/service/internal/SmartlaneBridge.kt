@@ -29,9 +29,7 @@ import sx.log.slf4j.trace
 import sx.rs.client.RestEasyClient
 import sx.rx.toObservable
 import sx.text.toHexString
-import sx.time.replaceDate
-import sx.time.toDate
-import sx.time.toLocalDateTime
+import sx.time.*
 import java.net.URI
 import java.util.*
 import java.util.concurrent.Callable
@@ -602,9 +600,37 @@ class SmartlaneBridge {
                         target = Interval(route.tstFrom, route.tstTo),
                         distance = route.distance?.let { it.toDouble() / 1000 },
                         totalDuration = route.grossDuration,
-                        drivingTime = route.netDuration
+                        drivingTime = route.netDuration,
+                        quality = this.calculateQuality()
                 )
         )
+    }
+
+    /**
+     * Caluclate tour route quality based on etas
+     * @return quality in percentage
+     */
+    private fun Tour.calculateQuality(): Double {
+        val stops = this.stops ?: listOf()
+
+        val stopsWithAppointments = stops.filter { it.appointmentEnd != null }
+
+        if (stopsWithAppointments.count() == 0)
+            return 1.0
+
+        val stopsNotOverdue = stopsWithAppointments.filter {
+            val from = it.route?.eta?.from ?: return@filter true
+            val to = it.route?.eta?.to ?: return@filter true
+
+            // Determine median eta
+            val eta = from.plusMinutes(
+                    (TimeSpan.between(from, to).totalMinutes / 2).toInt()
+            )
+
+            eta <= it.appointmentEnd
+        }
+
+        return stopsNotOverdue.count().toDouble() / stopsWithAppointments.count()
     }
 
     /**

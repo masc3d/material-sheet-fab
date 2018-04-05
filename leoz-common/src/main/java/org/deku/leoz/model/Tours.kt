@@ -33,7 +33,9 @@ data class TourRouteMeta(
         /** Route duration in minutes */
         var totalDuration: Int? = null,
         /** Driving time in minutes */
-        var drivingTime: Int? = null
+        var drivingTime: Int? = null,
+        /** Route optimization quality indication in percentage */
+        var quality: Double? = null
 )
 
 /**
