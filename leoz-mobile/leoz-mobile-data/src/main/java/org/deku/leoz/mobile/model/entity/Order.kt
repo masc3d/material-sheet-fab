@@ -34,7 +34,6 @@ abstract class Order : BaseRxObservable(), Persistable, Observable {
     @get:Key
     abstract var id: Long
 
-    @get:Bindable
     @get:Column(nullable = false)
     abstract var carrier: Carrier
     @get:Column(nullable = false)
